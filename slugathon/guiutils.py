@@ -21,18 +21,6 @@ def rgb_to_gtk(rgb):
     li = [256 * value for value in rgb]
     return tuple(li)
 
-def image_to_gdk_pixbuf(image):
-    file1 = StringIO.StringIO()
-    image.save(file1, "ppm")
-    contents = file1.getvalue()
-    file1.close()
-    loader = gtk.gdk.PixbufLoader("pnm")
-    loader.write(contents, len(contents))
-    pixbuf = loader.get_pixbuf()
-    loader.close()
-    return pixbuf
-
-
 def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     """Return a list of integer 2-tuple points along the semicircle that
     has (x0, y0) and (x1, y1) on opposite sides, going clockwise.
