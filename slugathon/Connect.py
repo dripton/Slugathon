@@ -5,6 +5,9 @@ try:
     pygtk.require('2.0')
 except ImportError, AttributeError:
     pass
+from twisted.internet import gtk2reactor
+gtk2reactor.install()
+from twisted.internet import reactor
 import gtk
 from gtk import glade
 import sys
@@ -30,6 +33,10 @@ class Connect:
         self.serverPorts = None
         self.load_prefs()
         self.init_lists()
+        self.connectWindow.connect("destroy", quit)
+        pixbuf = gtk.gdk.pixbuf_new_from_file(
+          '../images/creature/Colossus.gif')
+        self.connectWindow.set_icon(pixbuf)
         self.connectWindow.show()
 
     def load_prefs(self):
@@ -66,7 +73,7 @@ class Connect:
 
     def on_connectButton_clicked(self, *args):
         button = args[0]
-        print "Connect button clicked", button
+        print "Connect button clicked"
         playerName = self.playerNameCombo.get_text()
         password = self.passwordEntry.get_text()
         serverName = self.serverNameCombo.get_text()
@@ -77,9 +84,9 @@ class Connect:
 
     def on_startServerButton_clicked(self, *args):
         button = args[0]
-        print "Start server button clicked", button
-        #TODO Check portability
-        os.spawnv(os.P_NOWAIT, "python2.3", "Server.py")
+        print "Start server button clicked"
+        #XXX Not portable
+        os.system("python2.3 Server.py &")
 
 
 def quit(unused):
@@ -87,9 +94,7 @@ def quit(unused):
 
 if __name__ == '__main__':
     connect = Connect()
-    connect.connectWindow.connect("destroy", quit)
-    pixbuf = gtk.gdk.pixbuf_new_from_file('../images/creature/Colossus.gif')
-    connect.connectWindow.set_icon(pixbuf)
+    reactor.run()
 
     while 1:
         gtk.mainiteration()
