@@ -1,0 +1,19 @@
+Start with http://www.python.org/doc/essays/styleguide.html
+
+Clarifications:
+No tabs in code, period.  Spaces only.
+No code past column 79.
+Continuation lines should be indented two spaces past the continued line.
+
+Class names: CapWords
+Constants: UPPERCASE_WITH_UNDERSCORES
+Functions / methods: lower_case_with_underscores
+_not_part_of_public_interface
+__really_private_hands_off
+
+Don't use "from package import *"
+
+Use only Python code unless C is absolutely necessary.  If you must write
+something in C (e.g. the innermost most speed-critical AI loops), write a
+Python prototype first, and keep it around for documentation.
+
