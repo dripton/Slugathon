@@ -12,6 +12,14 @@ Persist usernames and server names/ports that have been used in Connect
 
 Add chi-square test to test_dice
 
-Make a GameOverview class with just simple public info.
-
 Make variable names consistently lowercase_with_underscores not camelCase
+
+Convert all images from GIF to PNG.
+Use OptiPNG to optimize PNG images.
+Make hex overlay image names saner.
+
+Solve the shebang line problem.  (distutils?)
+
+Custom Exception classes subclassing pb.Error 
+
+Standalone battle simulator
