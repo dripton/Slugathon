@@ -123,6 +123,7 @@ class Anteroom:
             text = self.chatEntry.get_text()
             if text:
                 def1 = self.user.callRemote("send_chat_message", text)
+                def1.addErrback(self.failure)
                 self.chatEntry.set_text("")
 
     def cb_click(self, widget, event):

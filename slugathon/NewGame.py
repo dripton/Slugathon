@@ -36,9 +36,15 @@ class NewGame:
         name = self.nameEntry.get_text()
         min_players = self.minplayersSpin.get_value_as_int()
         max_players = self.maxplayersSpin.get_value_as_int()
-        self.user.callRemote("form_game", name, min_players, max_players)
+        def1 = self.user.callRemote("form_game", name, min_players, 
+          max_players)
+        def1.addErrback(self.failure)
         self.newgameDialog.destroy()
 
     def cancel(self): 
         print "cancel"
         self.newgameDialog.destroy()
+
+    def failure(self, error): 
+        print error
+

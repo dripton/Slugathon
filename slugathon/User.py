@@ -31,7 +31,8 @@ class User(pb.Avatar):
 
     def receive_chat_message(self, text):
         print "User.receive_chat_message", text
-        self.client.callRemote("receive_chat_message", text)
+        def1 = self.client.callRemote("receive_chat_message", text)
+        def1.addErrback(self.failure)
 
     def perspective_form_game(self, game_name, min_players, max_players):
         print "perspective_form_game", game_name, min_players, max_players
@@ -39,7 +40,8 @@ class User(pb.Avatar):
 
     def notifyFormedGame(self, gamedict):
         print "notifyFormedGame", gamedict
-        self.client.callRemote("notifyFormedGame", gamedict)
+        def1 = self.client.callRemote("notifyFormedGame", gamedict)
+        def1.addErrback(self.failure)
 
     def __str__(self):
         return "User " + self.name
@@ -54,6 +56,9 @@ class User(pb.Avatar):
     def didSetName(self, arg):
         print "User.didSetName", arg
 
+    def success(self, arg):
+        pass
+
     def failure(self, arg):
         print "User.failure", arg
 
@@ -65,7 +70,9 @@ class User(pb.Avatar):
         self.server.delUser(self)
 
     def notifyAddUsername(self, username):
-        self.client.callRemote("notifyAddUsername", username)
+        def1 = self.client.callRemote("notifyAddUsername", username)
+        def1.addErrback(self.failure)
 
     def notifyDelUsername(self, username):
-        self.client.callRemote("notifyDelUsername", username)
+        def1 = self.client.callRemote("notifyDelUsername", username)
+        def1.addErrback(self.failure)
