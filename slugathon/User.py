@@ -61,6 +61,10 @@ class User(pb.Avatar):
         print "perspective_join_game", game
         self.server.join_game(self.name, game)
 
+    def perspective_start_game(self, game):
+        print "perspective_join_game", game
+        self.server.start_game(self.name, game)
+
     def __str__(self):
         return "User " + self.name
 
