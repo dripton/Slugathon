@@ -9,7 +9,7 @@ from twisted.internet import reactor
 from playercolordata import colors
 
 
-class PickColor:
+class PickColor(object):
     """Dialog to pick a player color."""
     def __init__(self, user, username, game_name, colors_left):
         print "PickColor.__init__"

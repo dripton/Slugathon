@@ -7,7 +7,7 @@ import gtk
 from twisted.internet import reactor
 
 
-class PickMarker:
+class PickMarker(object):
     """Dialog to pick a legion marker."""
     def __init__(self, client, username, game_name, markers_left):
         print "PickMarker.__init__", client, username, game_name, markers_left

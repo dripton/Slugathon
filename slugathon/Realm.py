@@ -2,7 +2,7 @@ from twisted.cred import portal
 from twisted.spread import pb
 import User
 
-class Realm:
+class Realm(object):
     __implements__ = portal.IRealm
 
     def __init__(self, server):

@@ -19,7 +19,7 @@ def format_time(secs):
     return time.strftime("%H:%M:%S", tup)
     
 
-class WaitingForPlayers:
+class WaitingForPlayers(object):
     """Waiting for players to start game dialog."""
 
     zope.interface.implements(IObserver)

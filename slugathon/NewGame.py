@@ -7,7 +7,7 @@ import gtk
 import gtk.glade
 
 
-class NewGame:
+class NewGame(object):
     """Form new game dialog."""
     def __init__(self, user, username):
         self.name = None

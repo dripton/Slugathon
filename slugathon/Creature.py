@@ -1,6 +1,6 @@
 import creaturedata
 
-class Creature:
+class Creature(object):
     """One instance of one Creature, Lord, or Demi-Lord."""
     def __init__(self, name):
         self.name = name

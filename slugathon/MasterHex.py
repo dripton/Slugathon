@@ -2,7 +2,7 @@ from twisted.spread import pb
 
 BIGNUM = 99999999
 
-class MasterHex:
+class MasterHex(object):
     """A logical MasterBoard hex.  No GUI logic.
 
     Hex vertexes are numbered like this:

@@ -21,7 +21,7 @@ import Server
 import Client
 
 
-class Connect:
+class Connect(object):
     """GUI for connecting to a server."""
     def __init__(self):
         self.glade = gtk.glade.XML('../glade/connect.glade')

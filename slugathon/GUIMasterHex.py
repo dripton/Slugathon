@@ -16,8 +16,7 @@ RAD_TO_DEG = 180. / math.pi
 x_font_position = [0.5, 0.75, 0.75, 0.5, 0.25, 0.25]
 y_font_position = [0.1, 0.125, 0.875, 0.95, 0.875, 0.125]
 
-class GUIMasterHex:
-
+class GUIMasterHex(object):
     def __init__(self, hex, guiboard):
         self.hex = hex
         self.guiboard = guiboard

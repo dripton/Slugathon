@@ -16,7 +16,7 @@ from Observer import IObserver
 import Action
 
 
-class Anteroom:
+class Anteroom(object):
     """GUI for a multiplayer chat and game finding lobby."""
 
     zope.interface.implements(IObserver)

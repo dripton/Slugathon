@@ -1,6 +1,6 @@
 import random
 
-class Dice:
+class Dice(object):
     """Simulate rolling dice.
 
        Runs only on the server side, for security.

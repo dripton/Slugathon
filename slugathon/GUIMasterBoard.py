@@ -16,7 +16,7 @@ import guiutils
 SQRT3 = math.sqrt(3.0)
 
 
-class GUIMasterBoard:
+class GUIMasterBoard(object):
     def __init__(self, root, board, scale=15):
         self.root = root
         self.board = board
