@@ -44,7 +44,7 @@ class Server:
         return names
 
     def getGames(self):
-        return [g.status_dict() for g in self.games]
+        return self.games[:]
 
     def send_chat_message(self, source, dest, text):
         """Send a chat message from user sender to users in dest.
@@ -74,7 +74,20 @@ class Server:
             min_players, max_players)
         self.games.append(game)
         for u in self.users:
-            u.notifyFormedGame(game.status_dict())
+            u.notifyFormedGame(game)
+
+    def drop_from_game(self, username, game):
+        if not username in game.players:
+            print 'drop_from_game from', username, 'not in game', game.name
+        elif len(game.players) == 1:
+            if game in self.games:
+                self.games.remove(game)
+            for u in self.users:
+                u.notifyRemovedGame(game)
+        else:
+            game.players.remove(username)
+            for u in self.users:
+                u.notifyChangedGame(game)
 
 
 class Options(usage.Options):

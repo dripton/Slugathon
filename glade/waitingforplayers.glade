@@ -43,13 +43,14 @@
 	<widget class="GtkScrolledWindow" id="scrolledwindow1">
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
-	  <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
-	  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
+	  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+	  <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
 	  <property name="shadow_type">GTK_SHADOW_NONE</property>
 	  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	  <child>
 	    <widget class="GtkTreeView" id="playerList">
+	      <property name="height_request">150</property>
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="headers_visible">True</property>
@@ -103,8 +104,8 @@
 		<widget class="GtkScrolledWindow" id="scrolledwindow2">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
-		  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
+		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
 		  <property name="shadow_type">GTK_SHADOW_NONE</property>
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
@@ -119,9 +120,9 @@
 			  <property name="can_focus">True</property>
 			  <property name="editable">False</property>
 			  <property name="visibility">True</property>
-			  <property name="max_length">0</property>
+			  <property name="max_length">8</property>
 			  <property name="text" translatable="yes"></property>
-			  <property name="has_frame">True</property>
+			  <property name="has_frame">False</property>
 			  <property name="invisible_char" translatable="yes">*</property>
 			  <property name="activates_default">False</property>
 			</widget>
@@ -174,8 +175,8 @@
 		<widget class="GtkScrolledWindow" id="scrolledwindow3">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
-		  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
+		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
 		  <property name="shadow_type">GTK_SHADOW_NONE</property>
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
@@ -190,9 +191,9 @@
 			  <property name="can_focus">True</property>
 			  <property name="editable">False</property>
 			  <property name="visibility">True</property>
-			  <property name="max_length">0</property>
+			  <property name="max_length">8</property>
 			  <property name="text" translatable="yes"></property>
-			  <property name="has_frame">True</property>
+			  <property name="has_frame">False</property>
 			  <property name="invisible_char" translatable="yes">*</property>
 			  <property name="activates_default">False</property>
 			</widget>
@@ -245,8 +246,8 @@
 		<widget class="GtkScrolledWindow" id="scrolledwindow4">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
-		  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
+		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
 		  <property name="shadow_type">GTK_SHADOW_NONE</property>
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
@@ -261,9 +262,9 @@
 			  <property name="can_focus">True</property>
 			  <property name="editable">False</property>
 			  <property name="visibility">True</property>
-			  <property name="max_length">0</property>
+			  <property name="max_length">8</property>
 			  <property name="text" translatable="yes"></property>
-			  <property name="has_frame">True</property>
+			  <property name="has_frame">False</property>
 			  <property name="invisible_char" translatable="yes">*</property>
 			  <property name="activates_default">False</property>
 			</widget>

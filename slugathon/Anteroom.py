@@ -9,7 +9,7 @@ import gtk
 from gtk import glade
 import sys
 import time
-import sets
+from sets import Set
 from twisted.internet import reactor
 import NewGame
 import WaitingForPlayers
@@ -17,17 +17,19 @@ import WaitingForPlayers
 
 class Anteroom:
     """GUI for a multiplayer chat and game finding lobby."""
-    def __init__(self, user):
+    def __init__(self, user, username):
         self.user = user
+        self.username = username
         self.glade = glade.XML('../glade/anteroom.glade')
         self.widgets = ['anteroomWindow', 'chatEntry', 'chatView', 'gameList',
           'userList', 'newGameButton']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
-        self.usernames = sets.Set()
+        self.usernames = Set()
         self.games = []
-        self.anteroomWindow.connect("destroy", quit)
+        self.wfp = None
 
+        self.anteroomWindow.connect("destroy", quit)
         self.chatEntry.connect("key-press-event", self.cb_keypress)
         self.newGameButton.connect("button-press-event", self.cb_click)
 
@@ -38,7 +40,7 @@ class Anteroom:
         def1.addCallbacks(self.gotUserNames, self.failure)
 
     def gotUserNames(self, usernames):
-        self.usernames = sets.Set(usernames)
+        self.usernames = Set(usernames)
         print "Anteroom got usernames", usernames
         def1 = self.user.callRemote("getGames")
         def1.addCallbacks(self.gotGames, self.failure)
@@ -82,15 +84,10 @@ class Anteroom:
         while len(self.userStore) > leng:
             del self.userStore[leng]
 
-    def gamedict_to_tuple(self, gamedict):
-        d = gamedict
-        return (d["name"], d["creator"], time.ctime(d["create_time"]), 
-          time.ctime(d["start_time"]), d["min_players"], d["max_players"])
-
     def updateGameStore(self):
         leng = len(self.gameStore)
         for ii, game in enumerate(self.games):
-            gametuple = self.gamedict_to_tuple(game)
+            gametuple = game.to_tuple()
             if ii < leng:
                 self.gameStore[ii, 0] = gametuple
             else:
@@ -126,8 +123,6 @@ class Anteroom:
     def cb_click(self, widget, event):
         print "clicked new game button"
         newgame = NewGame.NewGame(self.user)
-        wfp = WaitingForPlayers.WaitingForPlayers(self.user, newgame.name,
-          newgame.min_players, newgame.max_players)
 
     def receive_chat_message(self, message):
         buffer = self.chatView.get_buffer()
@@ -136,8 +131,20 @@ class Anteroom:
         buffer.insert(it, message)
         self.chatView.scroll_to_mark(buffer.get_insert(), 0)
 
-    def add_game(self, gamedict):
-        self.games.append(gamedict)
+    def add_game(self, game):
+        self.games.append(game)
+        self.updateGameStore()
+        if self.username in game.players:
+            self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, game)
+
+    def remove_game(self, game):
+        self.games.remove(game)
+        self.updateGameStore()
+        if self.wfp and self.wfp.game == game:
+            self.wfp.destroy()
+            self.wfp = None
+
+    def change_game(self, game):
         self.updateGameStore()
 
     def cb_userList_select(self, path, unused):

@@ -47,7 +47,7 @@ class Client(pb.Referenceable):
         print "Client.connected", self, user
         if user:
             self.user = user
-            self.anteroom = Anteroom.Anteroom(user)
+            self.anteroom = Anteroom.Anteroom(user, self.username)
             # Allow chaining callbacks
             return defer.succeed(user)
         else:
@@ -69,6 +69,14 @@ class Client(pb.Referenceable):
         if self.anteroom:
             self.anteroom.receive_chat_message(text)
 
-    def remote_notifyFormedGame(self, gamedict):
+    def remote_notifyFormedGame(self, game):
         if self.anteroom:
-            self.anteroom.add_game(gamedict)
+            self.anteroom.add_game(game)
+
+    def remote_notifyRemovedGame(self, game):
+        if self.anteroom:
+            self.anteroom.remove_game(game)
+
+    def remote_notifyChangedGame(self, game):
+        if self.anteroom:
+            self.anteroom.change_game(game)

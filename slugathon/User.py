@@ -38,10 +38,24 @@ class User(pb.Avatar):
         print "perspective_form_game", game_name, min_players, max_players
         self.server.form_game(self.name, game_name, min_players, max_players)
 
-    def notifyFormedGame(self, gamedict):
-        print "notifyFormedGame", gamedict
-        def1 = self.client.callRemote("notifyFormedGame", gamedict)
+    def notifyFormedGame(self, game):
+        print "notifyFormedGame", game
+        def1 = self.client.callRemote("notifyFormedGame", game)
         def1.addErrback(self.failure)
+
+    def notifyRemovedGame(self, game):
+        print "notifyRemovedGame", game
+        def1 = self.client.callRemote("notifyRemovedGame", game)
+        def1.addErrback(self.failure)
+
+    def notifyChangedGame(self, game):
+        print "notifyChangedGame", game
+        def1 = self.client.callRemote("notifyChangedGame", game)
+        def1.addErrback(self.failure)
+
+    def perspective_drop_from_game(self, game):
+        print "perspective_drop_from_game", game
+        self.server.drop_from_game(self.name, game)
 
     def __str__(self):
         return "User " + self.name
