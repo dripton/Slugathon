@@ -4,6 +4,7 @@ try:
     set
 except NameError:
     from sets import Set as set
+
 from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor, defer
@@ -71,6 +72,8 @@ class Client(pb.Referenceable, Observed):
     def got_usernames(self, usernames):
         """Only called when the client first connects to the server."""
         self.usernames.clear()
+        for username in usernames:
+            self.usernames.add(username)
         self.anteroom.set_usernames(self.usernames)
         def1 = self.user.callRemote("get_games")
         def1.addCallbacks(self.got_games, self.failure)
