@@ -24,7 +24,7 @@ class Anteroom:
           'userList']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
-        self.users = []
+        self.usernames = []
         self.games = []
         self.anteroomWindow.connect("destroy", quit)
         pixbuf = gtk.gdk.pixbuf_new_from_file(
@@ -35,16 +35,16 @@ class Anteroom:
 
     def gotUserNames(self, usernames):
         self.usernames = usernames
+        print "Anteroom got usernames", usernames
         def1 = self.user.callRemote("getGames")
         def1.addCallbacks(self.gotGames, self.failure)
 
     def gotGames(self, games):
+        print "Anteroom got games", games
         self.games = games
 
         self.userStore = gtk.ListStore(gobject.TYPE_STRING)
-        for user in self.users:
-            it = self.userStore.append()
-            self.userStore.set(it, 0, user)
+        self.updateUserStore()
         self.userList.set_model(self.userStore)
         column = gtk.TreeViewColumn('User Name', gtk.CellRendererText(),
           text=0)
@@ -61,10 +61,25 @@ class Anteroom:
 
         self.anteroomWindow.show_all()
 
+    def updateUserStore(self):
+        for username in self.usernames:
+            it = self.userStore.append()
+            self.userStore.set(it, 0, username)
 
     def failure(self, error):
         print "Anteroom.failure", self, error
         reactor.stop()
+
+
+    def addUsername(self, username):
+        self.usernames.append(username)
+        self.updateUserStore()
+        it = self.userStore.append()
+
+    def delUsername(self, username):
+        self.usernames.remove(username)
+        self.updateUserStore()
+        it = self.userStore.append()
 
 
 def quit(unused):
