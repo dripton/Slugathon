@@ -23,7 +23,8 @@ class ServerTestCase(unittest.TestCase):
         reactor.run()
 
     def connected(self, perspective):
-        perspective.callRemote('getname', 'foo').addCallbacks(self.success,
+        print "connected", self, perspective
+        perspective.callRemote('getName', 'foo').addCallbacks(self.success,
           self.failure)
 
     def success(self, name):

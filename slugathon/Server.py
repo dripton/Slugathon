@@ -6,6 +6,7 @@ from twisted.cred import checkers, portal
 from twisted.python import usage
 import twisted.internet.app
 import User
+import Realm
 
 
 DEFAULT_PORT = 26569
@@ -13,17 +14,19 @@ DEFAULT_PORT = 26569
 class Server:
     """A Slugathon server, which can host multiple games in parallel."""
     def __init__(self):
+        print "Called Server.init", self
         self.games = []
+        self.users = []
 
-class Realm:
-    __implements__ = portal.IRealm
+    def addUser(self, user):
+        print "called Server.addUser", self, user
+        self.users.append(user)
 
-    def requestAvatar(self, avatarId, mind, *interfaces):
-        assert pb.IPerspective in interfaces
-        avatar = User.User(avatarId)
-        avatar.server = self.server
-        return pb.IPerspective, User.User(avatarId), avatar.logout
+    def getUserNames(self):
+        return [user.name for user in self.users]
 
+    def getGames(self):
+        return self.games
 
 class Options(usage.Options):
     optParameters = [
@@ -34,8 +37,8 @@ class Options(usage.Options):
 def main(config):
     port = int(config["port"])
 
-    realm = Realm()
-    realm.server = Server()
+    server = Server()
+    realm = Realm.Realm(server)
     checker = checkers.FilePasswordDB("passwd.txt")
     po = portal.Portal(realm, [checker])
 
