@@ -59,7 +59,6 @@ class Player(Observed):
     def init_starting_legion(self):
         assert self.selected_marker 
         assert self.selected_marker in self.markers
-        creatures = creaturedata.starting_creature_names[:]
         action = Action.CreateStartingLegion(self.game_name, self.name,
           self.selected_marker)
         self.notify(action)
@@ -75,6 +74,6 @@ class Player(Observed):
         assert len(self.legions) == 0
         creatures = [Creature.Creature(name) for name in 
           creaturedata.starting_creature_names]
-        legion = Legion.Legion(self.take_marker(marker), creatures,
+        legion = Legion.Legion(self, self.take_marker(marker), creatures,
           self.starting_tower)
         self.legions.append(legion)

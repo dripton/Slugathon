@@ -28,7 +28,7 @@ class ShowLegion(object):
         for creature in legion.creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)
             chit.show()
-            self.show_legion_dialog.action_area.add(chit.image)
+            self.show_legion_dialog.action_area.add(chit.event_box)
 
         self.show_legion_dialog.show()
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     creatures = [Creature.Creature(name) for name in 
       creaturedata.starting_creature_names]
     
-    legion = Legion.Legion("Rd01", creatures, 1)
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
     username = "test"
     playercolor = "Red"
     showlegion = ShowLegion(username, legion, playercolor)
