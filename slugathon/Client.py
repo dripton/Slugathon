@@ -51,7 +51,7 @@ class Client(pb.Referenceable):
             return defer.failure(user)
 
     def failure(self, error):
-        "Client.failure", self, error
+        print "Client.failure", self, error
         reactor.stop()
 
     def remote_notifyAddUsername(self, username):
