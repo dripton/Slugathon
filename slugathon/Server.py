@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.3
 
 import sys
+from sets import Set
 from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.python import usage
@@ -16,17 +17,28 @@ class Server:
     def __init__(self):
         print "Called Server.init", self
         self.games = []
-        self.users = []
+        self.users = Set()
 
     def addUser(self, user):
         print "called Server.addUser", self, user
-        self.users.append(user)
+        self.users.add(user)
+        for u in self.users:
+            u.notifyAddUser(user)
+
+    def delUser(self, user):
+        print "called Server.delUser", self, user
+        self.users.remove(user)
+        for u in self.users:
+            u.notifyDelUser(user)
 
     def getUserNames(self):
-        return [user.name for user in self.users]
+        names = [user.name for user in self.users]
+        names.sort()
+        return names
 
     def getGames(self):
         return self.games
+
 
 class Options(usage.Options):
     optParameters = [
