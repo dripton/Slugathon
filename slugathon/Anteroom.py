@@ -7,13 +7,9 @@ except ImportError, AttributeError:
     pass
 import gtk
 from gtk import glade
-import gobject
 import sys
-import os
 import time
-from sets import Set
-import Server
-import Client
+import sets
 from twisted.internet import reactor
 import NewGame
 
@@ -27,7 +23,7 @@ class Anteroom:
           'userList', 'newGameButton']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
-        self.usernames = Set()
+        self.usernames = sets.Set()
         self.games = []
         self.anteroomWindow.connect("destroy", quit)
 
@@ -41,7 +37,7 @@ class Anteroom:
         def1.addCallbacks(self.gotUserNames, self.failure)
 
     def gotUserNames(self, usernames):
-        self.usernames = Set(usernames)
+        self.usernames = sets.Set(usernames)
         print "Anteroom got usernames", usernames
         def1 = self.user.callRemote("getGames")
         def1.addCallbacks(self.gotGames, self.failure)
@@ -53,8 +49,8 @@ class Anteroom:
         self.userStore = gtk.ListStore(str)
         self.updateUserStore()
         self.userList.set_model(self.userStore)
-        select = self.userList.get_selection()
-        select.connect("changed", self.cb_userList_select_changed)
+        selection = self.userList.get_selection()
+        selection.set_select_function(self.cb_userList_select, None)
         column = gtk.TreeViewColumn('User Name', gtk.CellRendererText(),
           text=0)
         self.userList.append_column(column)
@@ -62,8 +58,8 @@ class Anteroom:
         self.gameStore = gtk.ListStore(str, str, str, str, int, int)
         self.updateGameStore()
         self.gameList.set_model(self.gameStore)
-        select = self.gameList.get_selection()
-        select.connect("changed", self.cb_gameList_select_changed)
+        selection = self.gameList.get_selection()
+        selection.set_select_function(self.cb_gameList_select, None)
         headers = ['Game Name', 'Creator', 'Create Time', 'Start Time',
           'Min Players', 'Max Players']
         for (ii, title) in enumerate(headers):
@@ -129,6 +125,7 @@ class Anteroom:
     def cb_click(self, widget, event):
         print "clicked new game button"
         newgame = NewGame.NewGame(self.user)
+        # TODO
 
     def receive_chat_message(self, message):
         buffer = self.chatView.get_buffer()
@@ -141,11 +138,20 @@ class Anteroom:
         self.games.append(gamedict)
         self.updateGameStore()
 
-    def cb_userList_select_changed(self, *args):
-        print "userList_select_changed", args
+    def cb_userList_select(self, path, unused):
+        index = path[0]
+        print "userList_select", index
+        row = self.userStore[index, 0]
+        name = row[0]
+        print "name is", name
+        return False
 
-    def cb_gameList_select_changed(self, *args):
-        print "gameList_select_changed", args
+    def cb_gameList_select(self, path, unused):
+        index = path[0]
+        print "gameList_select", index
+        game = self.games[index]
+        print "game is", game
+        return False
 
 def quit(unused):
     sys.exit()
