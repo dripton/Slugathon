@@ -3,13 +3,14 @@ Requirements for Slugathon:
 Allow playing Titan against network and AI opponents
 Server enforces the rules and does not trust clients
 Portable to at least Linux, Windows, MacOS
-Test-first development; unit tests for everything
+Test-first development; unit tests for everything possible
 Very robust code
 No duplicated code
 Simple, usable GUI
 Allow standalone battles
 Allow observers
 Allow unlimited undo/redo, and saving/loading games
+Master server for finding games, statistics tracking
 
 
 Simplifications versus Colossus:
@@ -25,9 +26,10 @@ Use Subversion instead of CVS, to track moved files, etc.
 
 GUI toolkit candidates:
 
-PyQt: Not portable to Mac, bad license on Windows
-WxPython: Multiple event loops won't unify with Twisted
 PyGTK2: A bit hard to install.  Ugly API.
-PyGame: No higher-level GUI widgets, just surfaces.
+PyUI: Widgets on top of PyGame.  Pretty.  Not many widgets.  Stability?
+wxPython: Multiple event loops won't unify with Twisted.
 TkInter: Included with Python.  Ugly.  Slow.
+PyGame: No higher-level GUI widgets, just surfaces.
+PyQt: Not (yet) portable to Mac, bad license on Windows.
 
