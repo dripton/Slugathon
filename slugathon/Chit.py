@@ -5,6 +5,9 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import Image
+import ImageFont
+import ImageDraw
+
 import guiutils
 import colors
 
@@ -38,13 +41,14 @@ class Chit(object):
 
         paths = ["../images/%s/%s.png" % (self.IMAGE_DIR, base)
           for base in bases]
-        image = Image.open(paths[0]).convert("RGBA")
-        print paths[0], "mode", image.mode, "size", image.size
+        im = Image.open(paths[0]).convert("RGBA")
         for path in paths[1:]:
             mask = Image.open(path).convert("RGBA")
-            print path, "mode", mask.mode, "size", mask.size
-            image.paste(rgb, None, mask) 
-        raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(image)
+            im.paste(rgb, None, mask) 
+
+        self._render_text(im, rgb)
+
+        raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
           self.chit_scale, gtk.gdk.INTERP_BILINEAR)
         self.image = gtk.Image()
@@ -57,3 +61,35 @@ class Chit(object):
 
     def show(self):
         self.image.show()
+
+    def _render_text(self, im, rgb):
+        """Add creature name, power, and toughness to Image im"""
+        if not self.creature:
+            return
+        # XXX Un-hardcode font path; vary font size with scale
+        font = ImageFont.truetype("/usr/share/fonts/corefonts/courbd.ttf", 12)
+        draw = ImageDraw.Draw(im)
+        leng = im.size[0]
+
+        # Name
+        if self.name != "Titan":
+            label = self.name.upper()
+            text_width, text_height = draw.textsize(label, font=font)
+            # TODO If text_width is too big, try a smaller font
+            x = 0.5 * leng - 0.5 * text_width
+            y = 0.125 * leng - 0.5 * text_height
+            draw.text((x, y), label, fill=rgb, font=font)
+
+        # Power
+        label = str(self.creature.power)
+        text_width, text_height = draw.textsize(label, font=font)
+        x = 0.1 * leng - 0.5 * text_width
+        y = 0.9 * leng - 0.5 * text_height
+        draw.text((x, y), label, fill=rgb, font=font)
+
+        # Skill
+        label = str(self.creature.skill)
+        text_width, text_height = draw.textsize(label, font=font)
+        x = 0.9 * leng - 0.5 * text_width
+        y = 0.9 * leng - 0.5 * text_height
+        draw.text((x, y), label, fill=rgb, font=font)
