@@ -2,17 +2,11 @@ Handle failed logins cleanly -- show error message in Connect
 
 Do not allow multiple concurrent logins for same user.
 
-Add new game button and game info display to Anteroom
-
 Label chat widgets to match others in Anteroom
-
-Mark windows with user name
 
 Persist usernames and server names/ports that have been used in Connect
 
 Add chi-square test to test_dice
-
-Make variable names consistently lowercase_with_underscores not camelCase
 
 Convert all images from GIF to PNG.
 Use OptiPNG to optimize PNG images.
@@ -23,3 +17,6 @@ Solve the shebang line problem.  (distutils?)
 Custom Exception classes subclassing pb.Error 
 
 Standalone battle simulator
+
+When a user drops from the server, drop his player from games.
+
