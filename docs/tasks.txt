@@ -2,7 +2,7 @@ Format: order, priority, expected hours, actual hours, task
 
 priorities:  A: critical path B: required but can defer  C: optional
 
-1, A, 2, ?, Display legion markers in correct hexes on masterboard
+1, A, 2, 2, Display legion markers in correct hexes on masterboard
 ?, C, 1, ?, Show legion height in marker
 2, A, 2, ?, Allow clicking on legion to show its known contents or "?"
 ?, C, 1, ?, Show legion contents on mouseover
