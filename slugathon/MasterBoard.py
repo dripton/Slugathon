@@ -1,8 +1,9 @@
 import boarddata
 import MasterHex
+from twisted.spread import pb
 
 
-class MasterBoard:
+class MasterBoard(pb.Copyable, pb.RemoteCopy):
     """Model of the Titan MasterBoard.  No GUI logic allowed."""
     def __init__(self):
         self.compute_hexes_metadata()
@@ -42,3 +43,5 @@ class MasterBoard:
         """Return a list of int labels for this board's tower hexes."""
         return [hex.label for hex in self.hexes.values()
                 if hex.is_tower()]
+
+pb.setUnjellyableForClass(MasterBoard, MasterBoard)

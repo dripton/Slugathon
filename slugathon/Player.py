@@ -1,4 +1,6 @@
-class Player:
+from twisted.spread import pb
+
+class Player(pb.Copyable, pb.RemoteCopy):
     """A person or AI who is (or was) actively playing in a game.
 
        Note that players are distinct from users.  A user could be just
@@ -12,3 +14,17 @@ class Player:
     """
     def __init__(self, name):
         self.name = name
+        self.starting_tower = None    # a numeric hex label
+        self.score = 0
+
+    def __str__(self):
+        return self.name
+
+    def assign_starting_tower(self, tower):
+        """Set this player's starting tower to the (int) tower"""
+        self.starting_tower = tower
+        # TODO send event
+
+
+# TODO Create a client-side proxy without private data.
+pb.setUnjellyableForClass(Player, Player)
