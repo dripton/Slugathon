@@ -5,11 +5,14 @@ import Player
 import MasterBoard
 import rules
 from playercolordata import colors
+from Observed import Observed
+import Action
 
-class Game:
+class Game(Observed):
     """Central class holding information about one game."""
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players):
+        Observed.__init__(self) 
         self.name = name
         self.create_time = create_time
         self.start_time = start_time
@@ -55,6 +58,14 @@ class Game:
         return (self.name, self.create_time, self.start_time, 
           self.min_players, self.max_players, self.get_playernames()[:])
 
+    def update(self, observed, action):
+        print "Game.update", observed, action
+        if isinstance(action, Action.AssignTower):
+            player = self.get_player_by_name(action.playername)
+            if player.starting_tower is None:
+                player.assign_starting_tower(action.tower_num)
+            self.notify(action)
+
     def remove_player(self, playername):
         assert not self.started, 'remove_player on started game'
         player = self.get_player_by_name(playername)
@@ -71,24 +82,19 @@ class Game:
         self.num_players_joined += 1
         player = Player.Player(playername, self.num_players_joined)
         self.players.append(player)
-        player.add_observer(self)
+        player.attach(self)
 
     def start(self, playername):
+        """Called only on server side, and only by game owner."""
         assert playername == self.get_owner().name, \
           'start_game called for %s by non-owner %s' % (self.name, playername)
         self.started = True
         towers = rules.assign_towers(self.board.get_tower_labels(), 
           len(self.players))
+        assert len(towers) == len(self.players)
         for num, player in enumerate(self.players):
             player.assign_starting_tower(towers[num])
         self.sort_players()
-        for player in self.players:
-            pass
-            # XXX Figure out the right way to call up through server to 
-            # client.  This also gets called on the client copy, so we
-            # need to use observers.
-            # Need to add server as an observer on this game?
-
 
     def sort_players(self):
         """Sort players into descending order of tower number.
@@ -105,8 +111,4 @@ class Game:
             assert p.color != color
         player = self.get_player_by_name(playername)
         player.assign_color(color)
-
-    def update(self, observed, *args):
-        # TODO Game.update
-        pass
 

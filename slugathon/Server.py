@@ -14,6 +14,7 @@ from twisted.internet import reactor
 
 import Realm
 import Game
+import Action
 
 
 DEFAULT_PORT = 26569
@@ -87,6 +88,7 @@ class Server:
         print "built Game:", ".".join([game.__class__.__module__, 
           game.__class__.__name__])
         self.games.append(game)
+        game.attach(self)
         for u in self.users:
             u.notify_formed_game(game)
 
@@ -123,6 +125,13 @@ class Server:
     def pick_color(self, username, game_name, color):
         game = self.name_to_game(game_name)
         game.assign_color(username, color)
+
+    def update(self, observed, action):
+        print "Server.update", observed, action
+        if isinstance(action, Action.AssignTower):
+            for u in self.users:
+                pass
+
 
 
 class Options(usage.Options):

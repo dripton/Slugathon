@@ -2,6 +2,7 @@ Slugathon needs the following:
 
 Python 2.3+
 Twisted 1.1.0+
+ZopeInterfaces 3.0.0b1 +
 PyGTK 2.0+
 GTK+ 2
 Pango 1.2+
