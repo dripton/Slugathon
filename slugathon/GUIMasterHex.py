@@ -139,13 +139,13 @@ class GUIMasterHex:
         unit = self.guiboard.scale / 1.75
 
         if gateType == 'BLOCK':
-            return initBlock(x0, y0, x1, y1, theta, unit)
+            return _initBlock(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARCH':
-            return initArch(x0, y0, x1, y1, theta, unit)
+            return _initArch(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARROW':
-            return initArrow(x0, y0, x1, y1, theta, unit)
+            return _initArrow(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARROWS':
-            return initArrows(vx1, vy1, vx2, vy2, theta, unit)
+            return _initArrows(vx1, vy1, vx2, vy2, theta, unit)
 
 
 
@@ -174,23 +174,23 @@ class GUIMasterHex:
 
     def drawLabel(self, gc, style):
         """Display the hex label."""
-        # TODO Fix deprecation warning.
-        font = style.get_font()
         label = str(self.hex.label)
-        half_text_width = 0.5 * font.string_width(label)
-        half_text_height = 0.5 * font.string_height(label)
+        layout = self.guiboard.area.create_pango_layout(label)
+        text_width, text_height = layout.get_pixel_size()
+        half_text_width = 0.5 * text_width
+        half_text_height = 0.5 * text_height
         side = self.hex.label_side
 
         x = (self.cx + self.bboxsize[0] * x_font_position[side] -
                 half_text_width)
-        y = (self.cy + self.bboxsize[1] * y_font_position[side] +
+        y = (self.cy + self.bboxsize[1] * y_font_position[side] -
                 half_text_height)
 
         colormap = self.guiboard.area.get_colormap()
         fg = colormap.alloc_color('black')
         gc.foreground = fg
 
-        self.guiboard.area.window.draw_text(font, gc, x, y, label)
+        self.guiboard.area.window.draw_layout(gc, x, y, layout)
 
 
     def update(self, gc, style):
@@ -202,7 +202,8 @@ class GUIMasterHex:
         self.selected = not self.selected
 
 
-def initBlock(x0, y0, x1, y1, theta, unit):
+def _initBlock(x0, y0, x1, y1, theta, unit):
+    """Return a list of points to make a block."""
     xy = []
     xy.append((x0, y0))
     xy.append(((x0 + unit * math.sin(theta)), (y0 - unit * math.cos(theta))))
@@ -211,7 +212,9 @@ def initBlock(x0, y0, x1, y1, theta, unit):
     return xy
 
 
-def initArch(x0, y0, x1, y1, theta, unit):
+def _initArch(x0, y0, x1, y1, theta, unit):
+    """Return a list of points to make an approximate arch."""
+    xy = []
     half = unit / 2.0
     p0 = ((x0 + half * math.sin(theta), y0 - half * math.cos(theta)))
     p1 = ((x1 + half * math.sin(theta), y1 - half * math.cos(theta)))
@@ -229,7 +232,8 @@ def initArch(x0, y0, x1, y1, theta, unit):
 
     return xy
 
-def initArrow(x0, y0, x1, y1, theta, unit):
+def _initArrow(x0, y0, x1, y1, theta, unit):
+    """Return a list of points to make a single arrow."""
     xy = []
     xy.append((x0, y0))
     xy.append(((x0 + x1) / 2. + unit * math.sin(theta),
@@ -238,12 +242,13 @@ def initArrow(x0, y0, x1, y1, theta, unit):
     return xy
 
 
-def initArrows(vx1, vy1, vx2, vy2, theta, unit):
+def _initArrows(vx1, vy1, vx2, vy2, theta, unit):
+    """Return a list of points to make three arrows."""
     xy = []
     for i in range(3):
         x0 = vx1 + (vx2 - vx1) * (2 + 3 * i) / 12.
         y0 = vy1 + (vy2 - vy1) * (2 + 3 * i) / 12.
         x1 = vx1 + (vx2 - vx1) * (4 + 3 * i) / 12.
         y1 = vy1 + (vy2 - vy1) * (4 + 3 * i) / 12.
-        xy.extend(initArrow(x0, y0, x1, y1, theta, unit))
+        xy.extend(_initArrow(x0, y0, x1, y1, theta, unit))
     return xy
