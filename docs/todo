@@ -1,24 +1,16 @@
-* Work around pygtk.require('2.0') failing on .zip file in sys.path
-  (Just reinstalled pygtk, after turning off distcc and ccache.) 
+Handle failed logins cleanly -- show error message in Connect
 
-* Convert to new cred.  Eliminate deprecation warnings and broken code.
+Do not allow multiple concurrent logins for same user.
 
-* Eliminate GTK deprecation warnings.  Get basic Anteroom working.
+Add new game button and game info display to Anteroom
 
-  Handle failed logins cleanly -- show error message in Connect
+Label chat widgets to match others in Anteroom
 
-  Do not allow multiple concurrent logins for same user.
+Mark windows with user name
 
-  Add new game button and game info display to Anteroom
+Persist usernames and server names/ports that have been used in Connect
 
-* Get public chat working in Anteroom
+Add chi-square test to test_dice
 
-  Label chat widgets to match others in Anteroom
+Make a GameOverview class with just simple public info.
 
-  Mark windows with user name
-
-* Make textview un-focusable
-
-  Save all usernames and server names/ports that have been used in Connect
-
-  chi-square test in test_dice
