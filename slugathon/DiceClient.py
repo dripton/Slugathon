@@ -3,17 +3,20 @@
 import sys
 from twisted.internet import reactor
 from twisted.spread import pb
+from twisted.cred import credentials
 
 class DiceClient:
     def __init__(self, server="localhost", sides=6, numrolls=1):
         self.sides = sides
         self.numrolls = numrolls
-        ds = pb.getObjectAt(server, pb.portno, 30)
-        ds.addCallback(self.connected)
-        ds.addErrback(self.failure)
+        factory = pb.PBClientFactory()
+        reactor.connectTCP(server, pb.portno, factory)
+        def1 = factory.login(credentials.UsernamePassword("user1", "pass1"))
+        def1.addCallbacks(self.connected, self.failure)
         reactor.run()
 
     def connected(self, perspective):
+        print "client connected"
         perspective.callRemote('nextRoll', self.sides, 
           self.numrolls).addCallbacks(self.success, self.failure)
 
