@@ -54,7 +54,9 @@ class Game(pb.Copyable):
         assert len(self.players) < self.max_players, \
           '%s tried to join full game %s' % (playername, self.name)
         print 'adding', playername, 'to', self.name
-        self.players.append(Player.Player(playername))
+        player = Player.Player(playername)
+        self.players.append(player)
+        player.add_observer(self)
 
     def start(self, playername):
         assert playername == self.get_owner(), \
@@ -64,6 +66,10 @@ class Game(pb.Copyable):
           len(self.players))
         for num, player in enumerate(self.players):
             player.assign_starting_tower(towers[num])
+
+    def update(self, observed, *args):
+        # TODO
+        pass
 
     def getStateToCopy(self):
         di = self.__dict__.copy()

@@ -16,6 +16,18 @@ class Player(pb.Copyable, pb.RemoteCopy):
         self.name = name
         self.starting_tower = None    # a numeric hex label
         self.score = 0
+        self.observers = []
+
+    def add_observer(self, observer):
+        if not observer in self.observers:
+            self.observers.append(observer)
+
+    def remove_observer(self, observer):
+        self.observers.remove(observer)
+
+    def notify_observers(self):
+        for obs in observers:
+            obs.update(self)
 
     def __str__(self):
         return self.name
@@ -23,7 +35,7 @@ class Player(pb.Copyable, pb.RemoteCopy):
     def assign_starting_tower(self, tower):
         """Set this player's starting tower to the (int) tower"""
         self.starting_tower = tower
-        # TODO send event
+        self.notify_observers()
 
 
 # TODO Create a client-side proxy without private data.
