@@ -162,9 +162,9 @@ class Game(Observed):
         for player in self.players:
             player.init_starting_legion()
 
-    def create_starting_legion(self, playername, marker, creatures, hex):
+    def create_starting_legion(self, playername, marker):
         player = self.get_player_by_name(playername)
-        player.create_starting_legion(marker, creatures, hex)
+        player.create_starting_legion(marker)
 
     def update(self, observed, action):
         print "Game.update", observed, action
@@ -185,8 +185,7 @@ class Game(Observed):
         elif isinstance(action, Action.PickedColor):
             self.assign_color(action.playername, action.color)
         elif isinstance(action, Action.CreateStartingLegion):
-            self.create_starting_legion(action.playername, action.marker,
-              action.creatures, action.hex)
+            self.create_starting_legion(action.playername, action.marker)
 
         self.notify(action)
 
