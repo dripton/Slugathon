@@ -33,8 +33,9 @@ users.
 
 ###############
 
-Should WaitingForPlayers hold a direct Game reference?
-
+Should WaitingForPlayers and Anteroom hold direct Game references?
+For now, why not?  They're all on the client side.  Both holding
+a reference to and observing the same game is kind of odd, though.
 
 How to send to only some observers?  (e.g. a chat message for one 
 player, or hidden stack contents?)  Need each observer to leave
@@ -49,12 +50,13 @@ a Client or Server and saves them in one or more queues.  It should
 also be able to save and load.  When a new client joins, the EventSaver
 should send it all events needed to sync up.
 
+Need a distinct action for game start, rather than looking for an
+AssignTower?
 
-When owner drops from game and another player remains, Anteroom is
-not updating owner or players.  Timing problem -- Anteroom needs to 
-observe each Game.
+Fix log message for commit 159, after I get a pre-revprop-change hook.
 
-When only player drops from game, other players' WFP dialogs do not
-go away.
+Bugs:
 
-Getting multiple WFP dialogs for same game and player.
+Click in random spot in Anteroom game list, not on an actual game, 
+brings up WFP, once.
+
