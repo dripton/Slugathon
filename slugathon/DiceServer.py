@@ -5,7 +5,7 @@
 import time
 from twisted.spread import pb
 from twisted.cred import checkers, portal
-import twisted.internet
+from twisted.internet import reactor
 import Dice
 
 
@@ -46,9 +46,8 @@ def main():
     checker.addUser("user1", "pass1")
     po = portal.Portal(realm, [checker])
 
-    app = twisted.internet.app.Application("DiceServer")
-    app.listenTCP(pb.portno, pb.PBServerFactory(po))
-    app.run(save=False)
+    reactor.listenTCP(pb.portno, pb.PBServerFactory(po))
+    reactor.run()
 
 if __name__ == "__main__":
     main()
