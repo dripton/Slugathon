@@ -1,10 +1,10 @@
 Start with http://www.python.org/doc/essays/styleguide.html
 
-Clarifications:
 No tabs in code, period.  Spaces only.
 No code past column 79.
 Continuation lines should be indented two spaces (half of a full four-space
   indent) past the continued line.  Like this line.
+Prefer "double-quotes" to 'single-quotes'.
 
 Class names: CapWords
 Constants: UPPERCASE_WITH_UNDERSCORES
