@@ -145,11 +145,26 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         player.assign_color(color)
 
-    def done_assigning_colors(self):
+    def done_assigning_first_markers(self):
         for player in self.players:
-            if player.color is None:
+            if player.selected_marker is None:
                 return False
         return True
+
+    def assign_first_marker(self, playername, marker):
+        player = self.get_player_by_name(playername)
+        assert marker in player.markers
+        player.pick_marker(marker)
+        if self.done_assigning_first_markers():
+            self.init_starting_legions()
+
+    def init_starting_legions(self):
+        for player in self.players:
+            player.init_starting_legion()
+
+    def create_starting_legion(self, playername, marker, creatures, hex):
+        player = self.get_player_by_name(playername)
+        player.create_starting_legion(marker, creatures, hex)
 
     def update(self, observed, action):
         print "Game.update", observed, action
@@ -169,6 +184,9 @@ class Game(Observed):
             self.sort_players()
         elif isinstance(action, Action.PickedColor):
             self.assign_color(action.playername, action.color)
+        elif isinstance(action, Action.CreateStartingLegion):
+            self.create_starting_legion(action.playername, action.marker,
+              action.creatures, action.hex)
 
         self.notify(action)
 

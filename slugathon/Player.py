@@ -8,6 +8,9 @@ from twisted.spread import pb
 from Observed import Observed
 import Action
 import playercolordata
+import creaturedata
+import Creature
+import Legion
 
 
 class Player(Observed):
@@ -34,6 +37,7 @@ class Player(Observed):
         # Private to this instance; not shown to others until a
         # legion is actually split off with this marker.
         self.selected_marker = None
+        self.legions = []
 
     def __str__(self):
         return self.name
@@ -57,3 +61,27 @@ class Player(Observed):
     def pick_marker(self, marker):
         if marker in self.markers:
             self.selected_marker = marker
+
+    def init_starting_legion(self):
+        assert self.selected_marker 
+        assert self.selected_marker in self.markers
+        creatures = creaturedata.starting_creature_names[:]
+        action = Action.CreateStartingLegion(self.game_name, self.name,
+          self.selected_marker, creatures, self.starting_tower)
+        self.notify(action)
+
+    def take_selected_marker(self):
+        self.markers.remove(self.selected_marker)
+        marker = self.selected_marker
+        self.selected_marker = None
+        return marker
+
+    def create_starting_legion(self, marker, creature_names, hex):
+        marker = self.selected_marker 
+        assert self.selected_marker in self.markers
+        assert len(self.legions) == 0
+        creatures = [Creature.Creature(name) for name in 
+          creaturedata.starting_creature_names]
+        legion = Legion.Legion(self.take_selected_marker(), creatures,
+          self.starting_tower)
+        self.legions.append(legion)

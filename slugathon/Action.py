@@ -72,8 +72,19 @@ class PickedColor(Action):
         self.color = color
 pb.setUnjellyableForClass(PickedColor, PickedColor)
 
+
 class AssignedAllColors(Action):
     def __init__(self, game_name):
         self.game_name = game_name
 pb.setUnjellyableForClass(AssignedAllColors, AssignedAllColors)
+
+
+class CreateStartingLegion(Action):
+    def __init__(self, game_name, playername, marker, creatures, hex):
+        self.game_name = game_name
+        self.playername = playername
+        self.marker = marker
+        self.creatures = creatures
+        self.hex = hex
+pb.setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)
 

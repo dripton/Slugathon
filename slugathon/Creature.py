@@ -2,7 +2,7 @@ import creaturedata
 
 class Creature:
     """One instance of one Creature, Lord, or Demi-Lord."""
-    def __init__(self, name, legion=None):
+    def __init__(self, name):
         self.name = name
         (self.plural_name, self.power, self.skill, rangestrikes, self.flies,
           self.characterType, self.summonable, acquirable_every, 
@@ -11,4 +11,3 @@ class Creature:
         self.magicmissile = (rangestrikes == 2)
         self.acquirable = bool(acquirable_every)
         self.acquirable_every = acquirable_every
-        self.legion = legion

@@ -31,3 +31,6 @@ data = {
 'Wyvern': ('Wyverns', 7, 3, 0, 1, 'creature', 0, 0, 18, 'colossus_pink'),
 
 }
+
+starting_creature_names = ("Titan", "Angel", "Ogre", "Ogre", "Centaur", 
+  "Centaur", "Gargoyle", "Gargoyle")
