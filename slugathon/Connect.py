@@ -31,9 +31,9 @@ class Connect:
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.glade.signal_autoconnect(self)
-        self.playerNames = None
-        self.serverNames = None
-        self.serverPorts = None
+        self.playernames = None
+        self.server_names = None
+        self.server_ports = None
         self.init_lists()
         self.connect_window.connect("destroy", quit)
         pixbuf = gtk.gdk.pixbuf_new_from_file(
@@ -47,24 +47,24 @@ class Connect:
         self.init_server_ports()
 
     def init_player_names(self):
-        if not self.playerNames:
-            self.playerNames = set()
-        self.playerNames.add(getpass.getuser())
-        for name in self.playerNames:
+        if not self.playernames:
+            self.playernames = set()
+        self.playernames.add(getpass.getuser())
+        for name in self.playernames:
             self.player_name_combo.insert_text(name)
 
     def init_server_names(self):
-        if not self.serverNames:
-            self.serverNames = set()
-        self.serverNames.add('localhost')
-        for name in self.serverNames:
+        if not self.server_names:
+            self.server_names = set()
+        self.server_names.add('localhost')
+        for name in self.server_names:
             self.server_name_combo.insert_text(name)
 
     def init_server_ports(self):
-        if not self.serverPorts:
-            self.serverPorts = set()
-        self.serverPorts.add(Server.DEFAULT_PORT)
-        for name in self.serverPorts:
+        if not self.server_ports:
+            self.server_ports = set()
+        self.server_ports.add(Server.DEFAULT_PORT)
+        for name in self.server_ports:
             self.server_port_combo.insert_text(str(name))
 
     def on_connectButton_clicked(self, *args):
