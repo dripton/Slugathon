@@ -8,7 +8,6 @@ class Dice:
     def __init__(self, seed=None):
         self.rand = random.Random()
 
-    def roll(self, sides=6):
-        """Return a random integer from 1..sides"""
-        return self.rand.randint(1, sides)
-
+    def roll(self, sides=6, numrolls=1):
+        """Return a list of numrolls random integers from 1..sides"""
+        return [self.rand.randint(1, sides) for unused in range(numrolls)]

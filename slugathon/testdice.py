@@ -102,7 +102,7 @@ class DiceTestCase(unittest.TestCase):
         self.rolls = []
         self.bins = {}
         for unused in xrange(self.trials):
-            num = self.dice.roll()
+            num = self.dice.roll()[0]
             self.rolls.append(num)
             self.bins[num] = self.bins.get(num, 0) + 1
 
