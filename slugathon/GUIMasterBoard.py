@@ -54,12 +54,14 @@ class GUIMasterBoard(object):
         self.root.show()
 
     def area_expose_cb(self, area, event):
-        self.style = self.area.get_style()
-        self.gc = self.style.fg_gc[gtk.STATE_NORMAL]
-        self.update_gui()
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
+        self.update_gui(gc, style)
         return True
 
     def click_cb(self, area, event):
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
                 print "clicked on", marker
@@ -69,7 +71,7 @@ class GUIMasterBoard(object):
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 guihex.toggle_selection()
-                self.update_gui([guihex.hex.label])
+                self.update_gui(gc, style, [guihex.hex.label])
                 return True
         return True
 
@@ -120,12 +122,12 @@ class GUIMasterBoard(object):
             mih[2].location = (base_location[0] + chit_scale / 2,
               base_location[1] + chit_scale / 2)
 
-    def _render_marker(self, marker):
-        marker.pixbuf.render_to_drawable(self.area.window, self.gc, 0, 0, 
+    def _render_marker(self, marker, gc):
+        marker.pixbuf.render_to_drawable(self.area.window, gc, 0, 0, 
           marker.location[0], marker.location[1], -1, -1, 
           gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
-    def draw_markers(self):
+    def draw_markers(self, gc, style):
         if not self.game:
             return
         new_markernames = self._add_missing_markers()
@@ -140,17 +142,17 @@ class GUIMasterBoard(object):
             self._compute_marker_locations(hexlabel)
             mih = self.markers_in_hex(hexlabel)
             for marker in mih:
-                self._render_marker(marker)
+                self._render_marker(marker, gc)
 
 
-    def update_gui(self, hexlabels=None):
+    def update_gui(self, gc, style, hexlabels=None):
         if hexlabels is not None:
             guihexes = [self.guihexes[hl] for hl in hexlabels]
         else:
             guihexes = self.guihexes.values()
         for guihex in guihexes:
-            guihex.update_gui(self.gc, self.style)
-        self.draw_markers()
+            guihex.update_gui(gc, style)
+        self.draw_markers(gc, style)
 
     def update(self, observed, action):
         print "GUIMasterBoard.update", self, observed, action
