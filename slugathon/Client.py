@@ -1,10 +1,5 @@
 """Outward-facing facade for client side."""
 
-try:
-    set
-except NameError:
-    from sets import Set as set
-
 from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor, defer

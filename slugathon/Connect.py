@@ -13,10 +13,6 @@ import gtk.glade
 import sys
 import os
 import getpass
-try:
-    set
-except NameError:
-    from sets import Set as set
 import Server
 import Client
 

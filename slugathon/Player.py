@@ -1,8 +1,3 @@
-try:
-    set
-except NameError:
-    from sets import Set as set
-
 from twisted.spread import pb
 
 from Observed import Observed
