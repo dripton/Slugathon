@@ -1,9 +1,16 @@
+#!/usr/bin/env python 
+
+import sys
 try:
     import pygtk
     pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
+import Chit
+import creaturedata
+import Creature
+import Legion
 
 
 class ShowLegion(object):
@@ -31,3 +38,17 @@ class ShowLegion(object):
             self.show_legion_dialog.add_action_widget(image, ii + 1)
 
         self.show_legion_dialog.show()
+
+
+def quit(unused):
+    sys.exit()
+
+if __name__ == "__main__":
+    creatures = [Creature.Creature(name) for name in 
+      creaturedata.starting_creature_names]
+    legion = Legion.Legion("Rd01", creatures, 1)
+    username = "test"
+    showlegion = ShowLegion(username, legion)
+    showlegion.show_legion_dialog.connect("destroy", quit)
+
+    gtk.main()
