@@ -10,8 +10,8 @@ class MasterBoard(pb.Copyable, pb.RemoteCopy):
         self.hexes = {}
         for hexdata in boarddata.data:
             self.init_hex(hexdata)
-        for hex in self.hexes.values():
-            hex.connect_to_neighbors()
+        for hex1 in self.hexes.values():
+            hex1.connect_to_neighbors()
 
     def compute_hexes_metadata(self):
         """Find the min, max, midpoint, width, and height of the hexes."""
@@ -30,8 +30,8 @@ class MasterBoard(pb.Copyable, pb.RemoteCopy):
         assert len(hexdata) in (6, 8, 10)
         (label, x, y, terrain) = hexdata[:4]
         exits = hexdata[4:]
-        hex = MasterHex.MasterHex(self, label, x, y, terrain, exits)
-        self.hexes[label] = hex
+        hex1 = MasterHex.MasterHex(self, label, x, y, terrain, exits)
+        self.hexes[label] = hex1
 
     def hex_width(self):
         return self.maxX - self.minX + 1
@@ -41,7 +41,7 @@ class MasterBoard(pb.Copyable, pb.RemoteCopy):
 
     def get_tower_labels(self):
         """Return a list of int labels for this board's tower hexes."""
-        return [hex.label for hex in self.hexes.values()
-                if hex.is_tower()]
+        return [hex1.label for hex1 in self.hexes.values()
+                if hex1.is_tower()]
 
 pb.setUnjellyableForClass(MasterBoard, MasterBoard)
