@@ -6,10 +6,9 @@ import time
 from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.python import usage
-import twisted.internet.app
+from twisted.internet import reactor
 import Realm
 import Game
-
 
 DEFAULT_PORT = 26569
 
@@ -43,6 +42,7 @@ class Server:
         return names
 
     def getGames(self):
+        print "getGames called on", self
         return self.games[:]
 
     def send_chat_message(self, source, dest, text):
@@ -69,35 +69,40 @@ class Server:
             raise ValueError('min_players must be <= max_players')
         now = time.time()
         GAME_START_DELAY = 20
-        game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
-            min_players, max_players)
+        game = Game.Game(game_name, username, now, now + GAME_START_DELAY, 
+          min_players, max_players)
+        print "built Game:", ".".join([game.__class__.__module__, 
+          game.__class__.__name__])
         self.games.append(game)
         for u in self.users:
             u.notifyFormedGame(game)
 
     def drop_from_game(self, username, game):
-        if not username in game.players:
-            print 'drop_from_game from', username, 'not in game', game.name
-        elif len(game.players) == 1:
-            if game in self.games:
-                self.games.remove(game)
-            for u in self.users:
-                u.notifyRemovedGame(game)
-        else:
+        try:
             game.remove_player(username)
+        except AssertionError:
+            pass
+        else:
+            if len(game.players) == 0:
+                if game in self.games:
+                    self.games.remove(game)
+                for u in self.users:
+                    u.notifyRemovedGame(game)
+            else:
+                for u in self.users:
+                    u.notifyChangedGame(game)
+
+    def join_game(self, username, game):
+        try:
+            game.add_player(username)
+        except AssertionError:
+            pass
+        else:
             for u in self.users:
                 u.notifyChangedGame(game)
 
-    def join_game(self, username, game):
-        if username in game.players:
-            print 'join_game from', username, 'already in game', game.name
-        elif len(game.players) >= game.max_players:
-            print username, 'tried to join full game', game.name
-        else:
-            print 'adding', username, 'to', game.name
-            game.add_player(username)
-            for u in self.users:
-                u.notifyChangedGame(game)
+    def start_game(self, username, game):
+        game.start(username)
 
 
 class Options(usage.Options):
@@ -114,10 +119,9 @@ def main(config):
     checker = checkers.FilePasswordDB("passwd.txt")
     po = portal.Portal(realm, [checker])
 
-    app = twisted.internet.app.Application("Slugathon")
     pbfact = pb.PBServerFactory(po)
-    app.listenTCP(port, pbfact)
-    app.run(save=False)
+    reactor.listenTCP(port, pbfact)
+    reactor.run()
 
 
 if __name__ == '__main__':
