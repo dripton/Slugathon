@@ -25,7 +25,7 @@ class CreatureTestCase(unittest.TestCase):
         assert not creature.summonable
         assert not creature.acquirable
         assert creature.max_count == 25
-        assert creature.color_name == 'ogreRed'
+        assert creature.color_name == 'ogre_red'
 
 
 if __name__ == '__main__':
