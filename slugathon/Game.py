@@ -17,6 +17,7 @@ class Game(pb.Copyable, pb.RemoteCopy):
         self.min_players = min_players
         self.max_players = max_players
         self.players = [owner]
+        self.started = False
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
