@@ -37,7 +37,7 @@ class Connect:
         self.init_lists()
         self.connect_window.connect("destroy", quit)
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.gif')
+          '../images/creature/Colossus.png')
         self.connect_window.set_icon(pixbuf)
         self.connect_window.show()
 

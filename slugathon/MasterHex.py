@@ -83,11 +83,11 @@ class MasterHex:
         raise Exception("non-adjacent hex")
 
     def build_overlay_filename(self):
-        self.overlay_filename = self.terrain
-        # XXX Yes, this is backwards.
-        if not self.inverted:
-            self.overlay_filename += '_i'
-        self.overlay_filename += '.gif'
+        if self.inverted:
+            invert_indicator = 'i'
+        else:
+            invert_indicator = 'n'
+        self.overlay_filename = "%s_%s.png" % (self.terrain, invert_indicator)
 
     def find_label_side(self):
         """Return the hexside number where the hex label should go.

@@ -79,8 +79,8 @@ class MasterBoardTestCase(unittest.TestCase):
         assert guiutils.rgb_to_gtk((189, 0, 24)) == ((48384, 0, 6144))
 
     def test_build_overlay_filename(self):
-        assert self.hex.overlay_filename == "Plains.gif"
-        assert self.hex2.overlay_filename == "Woods_i.gif"
+        assert self.hex.overlay_filename == "Plains_i.png"
+        assert self.hex2.overlay_filename == "Woods_n.png"
 
     def test_find_label_side(self):
         assert self.hex.find_label_side() == 3

@@ -68,7 +68,7 @@ if __name__ == '__main__':
     root.set_title('Slugathon - MasterBoard')
     root.connect("destroy", quit)
 
-    pixbuf = gtk.gdk.pixbuf_new_from_file('../images/creature/Colossus.gif')
+    pixbuf = gtk.gdk.pixbuf_new_from_file('../images/creature/Colossus.png')
     root.set_icon(pixbuf)
 
     board = MasterBoard.MasterBoard()

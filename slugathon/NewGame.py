@@ -21,7 +21,7 @@ class NewGame:
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.gif')
+          '../images/creature/Colossus.png')
         self.new_game_dialog.set_icon(pixbuf)
         self.new_game_dialog.set_title("%s - %s" % (
           self.new_game_dialog.get_title(), self.username))

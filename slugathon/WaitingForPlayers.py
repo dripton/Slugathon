@@ -40,7 +40,7 @@ class WaitingForPlayers:
         self.update_player_store()
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.gif')
+          '../images/creature/Colossus.png')
         self.waiting_for_players_window.set_icon(pixbuf)
         self.waiting_for_players_window.set_title("%s - %s" % (
           self.waiting_for_players_window.get_title(), self.username))

@@ -22,7 +22,7 @@ class PickColor:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.gif')
+          '../images/creature/Colossus.png')
         self.pick_color_dialog.set_icon(pixbuf)
         self.pick_color_dialog.set_title("%s - %s" % (
           self.pick_color_dialog.get_title(), self.username))

@@ -39,7 +39,7 @@ class Anteroom:
         self.new_game_button.connect("button-press-event", self.cb_click)
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.gif')
+          '../images/creature/Colossus.png')
         self.anteroom_window.set_icon(pixbuf)
         self.anteroom_window.set_title("%s - %s" % (
           self.anteroom_window.get_title(), self.username))
