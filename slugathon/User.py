@@ -1,4 +1,5 @@
 from twisted.spread import pb
+import time
 
 class User(pb.Perspective):
     """Perspective for a player or observer."""
@@ -17,4 +18,6 @@ class User(pb.Perspective):
     def attached(self, reference, identity):
         print "called User.attached", reference, identity
         self.client = reference
+        self.client.callRemote("setname", self.perspectiveName)
+        self.client.callRemote("ping", time.time())
         return pb.Perspective.attached(self, reference, identity)
