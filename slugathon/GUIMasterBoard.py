@@ -79,8 +79,9 @@ class GUIMasterBoard(object):
     def compute_height(self):
         return int(round(self.scale * self.board.hex_height() * 4 * SQRT3))
 
-    def markers_in_hex(self, hex):
-        return [marker for marker in self.markers if marker.legion.hex == hex]
+    def markers_in_hex(self, hexlabel):
+        return [marker for marker in self.markers if marker.legion.hexlabel ==
+          hexlabel]
 
     def _add_missing_markers(self):
         """Add markers for any legions that lack them.
@@ -89,8 +90,9 @@ class GUIMasterBoard(object):
         """
         result = []
         for legion in self.game.gen_all_legions():
-            if legion.marker not in [marker.name for marker in self.markers]:
-                result.append(legion.marker)
+            if legion.markername not in [marker.name for marker in 
+              self.markers]:
+                result.append(legion.markername)
                 marker = Marker.Marker(legion)
                 self.markers.append(marker)
         return result
@@ -131,12 +133,12 @@ class GUIMasterBoard(object):
             return
         hexes_done = set()
         for marker in self.markers:
-            hex1 = marker.hex
-            if hex1 in hexes_done:
+            hexlabel = marker.hexlabel
+            if hexlabel in hexes_done:
                 continue
-            hexes_done.add(hex1)
-            self._compute_marker_locations(hex1)
-            mih = self.markers_in_hex(hex1)
+            hexes_done.add(hexlabel)
+            self._compute_marker_locations(hexlabel)
+            mih = self.markers_in_hex(hexlabel)
             for marker in mih:
                 self._render_marker(marker)
 
@@ -155,7 +157,7 @@ class GUIMasterBoard(object):
         if isinstance(action, Action.CreateStartingLegion):
             player = self.game.get_player_by_name(action.playername)
             legion = player.legions[0]
-            self.update_gui([legion.hex])
+            self.update_gui([legion.hexlabel])
 
 
 def quit(unused):

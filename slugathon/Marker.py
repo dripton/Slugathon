@@ -12,8 +12,8 @@ class Marker(object):
     """Clickable GUI legion marker"""
     def __init__(self, legion, scale=15):
         self.legion = legion
-        self.name = legion.marker
-        self.hex = legion.hex
+        self.name = legion.markername
+        self.hexlabel = legion.hexlabel
         self.chit_scale = CHIT_SCALE_FACTOR * scale
         raw_pixbuf = gtk.gdk.pixbuf_new_from_file("../images/legion/%s.png" % 
           self.name)

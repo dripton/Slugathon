@@ -1,8 +1,8 @@
 class Legion(object):
-    def __init__(self, marker, creatures, hex):
-        self.marker = marker
+    def __init__(self, markername, creatures, hexlabel):
+        self.markername = markername
         self.creatures = creatures
-        self.hex = hex
+        self.hexlabel = hexlabel
 
     def height(self):
         return len(self.creatures)

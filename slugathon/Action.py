@@ -80,9 +80,9 @@ pb.setUnjellyableForClass(AssignedAllColors, AssignedAllColors)
 
 
 class CreateStartingLegion(Action):
-    def __init__(self, game_name, playername, marker):
+    def __init__(self, game_name, playername, markername):
         self.game_name = game_name
         self.playername = playername
-        self.marker = marker
+        self.markername = markername
 pb.setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)
 
