@@ -26,7 +26,7 @@ class Player(pb.Copyable, pb.RemoteCopy):
         self.observers.remove(observer)
 
     def notify_observers(self):
-        for obs in observers:
+        for obs in self.observers:
             obs.update(self)
 
     def __str__(self):
