@@ -4,7 +4,7 @@ import Player
 import MasterBoard
 import rules
 
-class Game(pb.Copyable):
+class Game:
     """Central class holding information about one game."""
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players):
@@ -70,27 +70,3 @@ class Game(pb.Copyable):
     def update(self, observed, *args):
         # TODO
         pass
-
-    def getStateToCopy(self):
-        di = self.__dict__.copy()
-        print "Game.getStateToCopy", di
-        return di
-
-    def getTypeToCopy(self):
-        return "Game.Game"
-
-
-class RemoteGame(Game, pb.RemoteCopy):
-    """Client-side proxy for Game.  
-       
-       Should not see random number generator status or other players' 
-       legion contents, and should not be able to change global game state.
-    """
-    def __init__(self):
-        pass
-
-    def setCopyableState(self, state):
-        print "RemoteGame.setCopyableState", state
-        self.__dict__ = state
-
-pb.setUnjellyableForClass(Game, RemoteGame)

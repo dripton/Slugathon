@@ -7,7 +7,6 @@ import gtk
 import gtk.glade
 import time
 from twisted.internet import reactor
-import Game
 
 
 def format_time(secs):
