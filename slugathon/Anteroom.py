@@ -146,7 +146,7 @@ class Anteroom:
         if self.wfp:
             if self.wfp.game == game:  # Same name
                 self.wfp.game = game
-                self.wfp.updatePlayerStore()
+                self.wfp.update_player_store()
 
     def cb_user_list_select(self, path, unused):
         index = path[0]

@@ -7,6 +7,7 @@ import gtk
 import gtk.glade
 import time
 from twisted.internet import reactor
+import Game
 
 
 def format_time(secs):
@@ -25,29 +26,29 @@ class WaitingForPlayers:
           'join_button', 'drop_button', 'start_button']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
-        self.playerStore = gtk.ListStore(str)
-        self.updatePlayerStore()
+        self.player_store = gtk.ListStore(str)
+        self.update_player_store()
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
-        self.waitingForPlayersWindow.set_icon(pixbuf)
-        self.joinButton.connect("button-press-event", self.cb_click_join)
-        self.dropButton.connect("button-press-event", self.cb_click_drop)
-        self.startButton.connect("button-press-event", self.cb_click_start)
+        self.waiting_for_players_window.set_icon(pixbuf)
+        self.join_button.connect("button-press-event", self.cb_click_join)
+        self.drop_button.connect("button-press-event", self.cb_click_drop)
+        self.start_button.connect("button-press-event", self.cb_click_start)
         # TODO Start button should only be enabled for forming player
         # TODO Start button should automatically be triggered when max
         # players have joined, or min players have joined and time is up.
         #
-        self.gameNameLabel.set_text(game.name)
-        self.createdEntry.set_text(format_time(game.create_time))
-        self.startsByEntry.set_text(format_time(game.start_time))
+        self.game_name_label.set_text(game.name)
+        self.created_entry.set_text(format_time(game.create_time))
+        self.starts_by_entry.set_text(format_time(game.start_time))
         self.update_countdown()
-        self.playerList.set_model(self.playerStore)
-        selection = self.playerList.get_selection()
-        selection.set_select_function(self.cb_playerList_select, None)
+        self.player_list.set_model(self.player_store)
+        selection = self.player_list.get_selection()
+        selection.set_select_function(self.cb_player_list_select, None)
         column = gtk.TreeViewColumn('Player Name', gtk.CellRendererText(),
           text=0)
-        self.playerList.append_column(column)
+        self.player_list.append_column(column)
 
     def cb_click_join(self, widget, event):
         def1 = self.user.callRemote("join_game", self.game)
@@ -61,33 +62,33 @@ class WaitingForPlayers:
         def1 = self.user.callRemote("start_game", self.game)
         def1.addErrback(self.failure)
 
-    def cb_playerList_select(self, path, unused):
+    def cb_player_list_select(self, path, unused):
         index = path[0]
-        row = self.playerStore[index, 0]
+        row = self.player_store[index, 0]
         name = row[0]
         return False
 
     def update_countdown(self):
         diff = int(self.game.start_time - time.time())
         s = str(max(diff, 0))
-        self.countdownEntry.set_text(s)
+        self.countdown_entry.set_text(s)
         if diff > 0:
             reactor.callLater(1, self.update_countdown)
 
-    def updatePlayerStore(self):
+    def update_player_store(self):
         playernames = self.game.get_playernames()
-        leng = len(self.playerStore)
+        leng = len(self.player_store)
         for ii, playername in enumerate(playernames):
             if ii < leng:
-                self.playerStore[ii, 0] = (playername,)
+                self.player_store[ii, 0] = (playername,)
             else:
-                self.playerStore.append((playername,))
+                self.player_store.append((playername,))
         leng = len(self.game.get_playernames())
-        while len(self.playerStore) > leng:
-            del self.playerStore[leng]
+        while len(self.player_store) > leng:
+            del self.player_store[leng]
 
     def destroy(self):
-        self.waitingForPlayersWindow.destroy()
+        self.waiting_for_players_window.destroy()
 
     def failure(self, arg):
         print "WaitingForPlayers.failure", arg
