@@ -33,7 +33,7 @@ class PickColor:
                 button.connect('button-press-event', self.cb_click)
                 print "connecting button for", button_name
             else:
-                button.disable()
+                button.set_label("")
 
     def cb_click(self, widget, event):
         print self, widget, event
