@@ -11,3 +11,6 @@ class Legion(object):
 
     def __len__(self):
         return len(self.creatures)
+
+    def num_lords(self):
+        return sum(cr.character_type == "lord" for cr in self.creatures)
