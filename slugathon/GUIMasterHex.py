@@ -8,7 +8,6 @@ import os
 import math
 import guiutils
 import colors
-import Marker
 
 SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
@@ -30,7 +29,6 @@ class GUIMasterHex(object):
                 colors.terrain_colors[self.hex.terrain]])
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False
-        self.markers = []
 
         self.init_vertexes()
         self.init_gates()
@@ -162,8 +160,7 @@ class GUIMasterHex(object):
             return _init_arrow(x0, y0, x1, y1, theta, unit)
         elif gateType == "ARROWS":
             return _init_arrows(vx1, vy1, vx2, vy2, theta, unit)
-        else:
-            return None
+        return None
 
 
     def init_overlay(self):
@@ -210,36 +207,10 @@ class GUIMasterHex(object):
         self.guiboard.area.window.draw_layout(gc, x, y, layout)
 
 
-    def _init_markers(self):
-        game = self.guiboard.game
-        for legion in game.gen_all_legions():
-            if legion.hex == self.hex.label:
-                if legion.marker not in [m.name for m in self.markers]:
-                    marker = Marker.Marker(legion.marker)
-                    self.markers.append(marker)
-
-
-    def draw_markers(self, gc, style):
-        """Display markers for all legions in this hex."""
-        game = self.guiboard.game
-        if not game:
-            return
-        self._init_markers()
-        scale = self.guiboard.scale
-        chit_scale = scale * Marker.CHIT_SCALE_FACTOR
-        offset = (self.center[0] - chit_scale / 2, 
-          self.center[1] - chit_scale / 2)
-        for ii, marker in enumerate(self.markers):
-            marker.pixbuf.render_to_drawable(self.guiboard.area.window, gc,
-              0, 0, offset[0], offset[1], -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 
-              0, 0)
-
-
     def update_gui(self, gc, style):
         self.draw_hexagon(gc, style)
         self.draw_overlay(gc, style)
         self.draw_label(gc, style)
-        self.draw_markers(gc, style)
 
     def toggle_selection(self):
         self.selected = not self.selected

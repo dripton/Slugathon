@@ -33,8 +33,6 @@ def image_to_gdk_pixbuf(image):
     return pixbuf
 
 
-
-
 def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     """Return a list of integer 2-tuple points along the semicircle that
     has (x0, y0) and (x1, y1) on opposite sides, going clockwise.
@@ -77,6 +75,10 @@ def scale_polygon(vertexes, ratio):
         nv.append((center[0] + deltax, center[1] + deltay))
     return nv
 
+def point_in_square(point, topleft, length):
+    return (point[0] >= topleft[0] and point[1] >= topleft[1] and
+      point[0] < topleft[0] + length and point[1] < topleft[1] + length)
+
 def point_in_polygon(point, vertexes):
     """Return True iff the point (a 2-tuple) is in the polygon specified
     by vertexes (a sequence of 2-tuples).
@@ -84,12 +86,12 @@ def point_in_polygon(point, vertexes):
     # Test against the polygon's bounding box.
     xs = [x for (x, y) in vertexes]
     ys = [y for (x, y) in vertexes]
-    minX = min(xs)
-    minY = min(ys)
-    maxX = max(xs)
-    maxY = max(ys)
+    min_x = min(xs)
+    min_y = min(ys)
+    max_x = max(xs)
+    max_y = max(ys)
     (px, py) = point
-    if px < minX or px >= maxX or py < minY or py >= maxY:
+    if px < min_x or px >= max_x or py < min_y or py >= max_y:
         return False
 
     # Draw a ray due east from point, and see how many lines it crosses.

@@ -150,11 +150,9 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def _init_guiboard(self, game):
-        # XXX Don't hold a reference to the boardroot here.  Get to it via the
-        # guiboard, if necessary.
         boardroot = BoardRoot.BoardRoot(self.username)
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot.root,
-          game.board, game)
+          game.board, game, self.username)
         self.attach(self.guiboards[game])
 
     def update(self, observed, action):
