@@ -1,4 +1,5 @@
-# It's easier to maintain colors in decimal RGB format.
+"""Constants for colors, in decimal RGB format"""
+
 RgbColors = {
     # Defined in the HTML standard
     'aliceBlue': (240, 248, 255),

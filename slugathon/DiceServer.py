@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Simple test of Perspective Broker"""
+
 import time
 from twisted.spread import pb
 from twisted.cred import checkers, portal
