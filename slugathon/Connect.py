@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 
 try:
     import pygtk
@@ -78,7 +78,7 @@ class Connect:
     def on_startServerButton_clicked(self, *args):
         print "Start server button clicked"
         #XXX Not portable  Use reactor.spawnProcess
-        os.system("python2.3 Server.py &")
+        os.system("python Server.py &")
 
     def connected(self, user):
         print "Connect.connected", user

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 
 import os
 import time
@@ -10,7 +10,7 @@ import Client
 
 class AnteroomTestCase(unittest.TestCase):
     def setUp(self):
-        os.system("python2.3 Server.py &")
+        os.system("python Server.py &")
         time.sleep(1)
 
     def testInit(self):

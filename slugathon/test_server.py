@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 
 import unittest
 import os
@@ -13,7 +13,7 @@ import Client
 class ServerTestCase(unittest.TestCase):
     def setUp(self):
         # Need to run the server in another process
-        os.system("python2.3 Server.py &")
+        os.system("python Server.py &")
         # Give the OS a second to start it before we use it.
         time.sleep(1)
 
