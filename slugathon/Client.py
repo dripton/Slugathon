@@ -129,7 +129,7 @@ class Client(pb.Referenceable, Observed):
 
     def _maybe_pick_color(self, game):
         if game.next_playername_to_pick_color() == self.username:
-            pc = PickColor.PickColor(self.user, self.username, 
+            PickColor.PickColor(self.user, self.username, 
               game.name, game.colors_left())
 
     def update(self, observed, action):
