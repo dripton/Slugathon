@@ -1,14 +1,23 @@
 class bag(object):
     """A multiset, built on a dictionary."""
-    def __init__(self, dic=None, **kw):
+    def __init__(self, iterable=None):
         self._dic = {}
-        if dic:
-            for key, val in dic.items():
+        if iterable:
+            self.update(iterable)
+
+    def update(self, iterable):
+        if hasattr(iterable, "items"):
+            for key, val in iterable.items():
                 if val > 0:
                     self._dic[key] = val
-        for key, val in kw.items():
-            if val > 0:
-                self._dic[key] = val
+                elif val == 0:
+                    if key in self._dic:
+                        del self._dic[key]
+                else:
+                    raise ValueError, "bag value must be whole number"
+        else:
+            for item in iterable:
+                self.add(item)
 
     def add(self, key):
         self._dic[key] = self._dic.get(key, 0) + 1
