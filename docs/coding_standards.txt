@@ -12,14 +12,8 @@ Others: lower_case_with_underscores
 Private: _leading_underscore
 Really private: __two_leading_underscores -- tends to break unit tests
 
-Don't use "from package import *"   ("from package import a, b, c" is
+Don't use "from something import *"   ("from something import a, b, c" is
   fine -- it's only the "*" that leads to confusion.)
-
-Use only Python code unless C is absolutely necessary.  If you must write
-  something in C (e.g. the innermost most speed-critical AI loops), write a
-  Python prototype first, both to get the algorithm right in a readable
-  manner, and to prove the performance bottleneck is real not a guess.  Use
-  C89 standard C for portability -- no gcc extensions, C99 additions, or C++.
 
 Write unit tests for everything that could possibly break.  The GUI layer
   is hard to test, so keep it thin.

@@ -1,3 +1,5 @@
+Fix formatting of all multi-line docstrings.
+
 Make sure we have the distinction between username and playername correct.  
    username also includes spectators, while playername is just for players.
 
