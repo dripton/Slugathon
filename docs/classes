@@ -2,18 +2,10 @@ Server-side:
 
 Server
 User
+Realm
 Dice
-MasterBoard
-MasterHex
-Player
-Legion
-Creature (and subclasses)
-BattleMap
-BattleHex
 Battle
 Caretaker
-Proposal
-Game
 
 
 
@@ -21,14 +13,17 @@ Client-side:
 
 Client
 Connect
+NewGame
+Anteroom
+WaitingForPlayers
 PlayerConfig
 GUIMasterBoard
 GUIMasterHex
+GUIBattleMap
+GUIBattleHex
 Chit
 Marker
 BattleChit
-GUIBattleMap
-GUIBattleHex
 Acquire
 BattleDice
 Concede
@@ -45,5 +40,16 @@ ShowLegion
 ShowAllRecruits
 SplitLegion
 Summon
-FormGame
-AnteRoom
+
+
+Shared state:
+Game
+Player
+Legion
+Creature
+MasterBoard
+MasterHex
+BattleMap
+BattleHex
+Proposal
+
