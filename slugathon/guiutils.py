@@ -1,6 +1,11 @@
 import math
-import Image
 import StringIO
+try:
+    import pygtk
+    pygtk.require('2.0')
+except (ImportError, AttributeError):
+    pass
+import gtk
 
 
 def flatten_point_list(points):
@@ -54,7 +59,7 @@ def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     xlist = []
     ylist = []
     theta = theta0
-    for i in xrange(numpoints):
+    for unused in xrange(numpoints):
         xlist.append(int(round(xcenter + math.cos(theta) * radius)))
         ylist.append(int(round(ycenter - math.sin(theta) * radius)))
         theta += del_theta

@@ -43,7 +43,7 @@ class GUIMasterHex:
            bordering hexes.
         """
         self.vertexes = []
-        for i in range(6):
+        for unused in range(6):
             self.vertexes.append(None)
         cx = self.cx
         cy = self.cy
@@ -157,6 +157,8 @@ class GUIMasterHex:
             return _initArrow(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARROWS':
             return _initArrows(vx1, vy1, vx2, vy2, theta, unit)
+        else:
+            return None
 
 
 

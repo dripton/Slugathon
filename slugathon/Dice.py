@@ -5,7 +5,7 @@ class Dice:
 
        Runs only on the server side, for security.
     """
-    def __init__(self, seed=None):
+    def __init__(self):
         self.rand = random.Random()
 
     def roll(self, sides=6, numrolls=1):

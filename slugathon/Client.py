@@ -2,7 +2,6 @@
 
 """Outward-facing facade for client side."""
 
-import sys
 from twisted.spread import pb
 import Server
 from twisted.cred import credentials

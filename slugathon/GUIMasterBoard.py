@@ -74,5 +74,5 @@ if __name__ == '__main__':
     board = MasterBoard.MasterBoard()
     guiboard = GUIMasterBoard(root, board)
     # Allow exiting with control-C, unlike mainloop()
-    while 1:
+    while True:
         gtk.mainiteration()

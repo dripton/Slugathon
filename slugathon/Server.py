@@ -7,7 +7,6 @@ from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.python import usage
 import twisted.internet.app
-import User
 import Realm
 import Game
 

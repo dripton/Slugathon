@@ -72,7 +72,6 @@ class Connect:
             self.serverPortCombo.insert_text(str(name))
 
     def on_connectButton_clicked(self, *args):
-        button = args[0]
         print "Connect button clicked"
         playerName = self.playerNameCombo.get_text()
         password = self.passwordEntry.get_text()
@@ -84,7 +83,6 @@ class Connect:
         def1.addCallbacks(self.connected, self.failure)
 
     def on_startServerButton_clicked(self, *args):
-        button = args[0]
         print "Start server button clicked"
         #XXX Not portable  Use reactor.spawnProcess
         os.system("python2.3 Server.py &")
@@ -95,7 +93,7 @@ class Connect:
 
     def failure(self, arg):
         print "Connect.failure", arg
-        quit()
+        quit(None)
 
 def quit(unused):
     reactor.stop()
@@ -105,6 +103,6 @@ if __name__ == '__main__':
     connect = Connect()
     reactor.run()
 
-    while 1:
+    while True:
         gtk.mainiteration()
 

@@ -8,7 +8,6 @@ except (ImportError, AttributeError):
 import gtk
 from gtk import glade
 import sys
-import time
 from sets import Set
 from twisted.internet import reactor
 import NewGame
@@ -88,7 +87,6 @@ class Anteroom:
         leng = len(self.gameStore)
         for ii, game in enumerate(self.games):
             gametuple = game.to_tuple()
-            print "game tuple is", gametuple
             if ii < leng:
                 self.gameStore[ii, 0] = gametuple
             else:
@@ -123,7 +121,7 @@ class Anteroom:
 
     def cb_click(self, widget, event):
         print "clicked new game button"
-        newgame = NewGame.NewGame(self.user)
+        NewGame.NewGame(self.user)
 
     def receive_chat_message(self, message):
         buffer = self.chatView.get_buffer()
@@ -147,6 +145,7 @@ class Anteroom:
             self.wfp.destroy()
             self.wfp = None
 
+    # XXX The need to substitute references is ugly.  Use Cacheable.
     def change_game(self, game):
         print "Anteroom.change_game for", game.name
         for (ii, g) in enumerate(self.games):

@@ -7,7 +7,6 @@ except (ImportError, AttributeError):
     pass
 import gtk
 from gtk import glade
-import sys
 
 
 class NewGame:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import random
 import time
 from twisted.spread import pb
 from twisted.cred import checkers, portal
