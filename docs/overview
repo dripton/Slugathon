@@ -1,0 +1,31 @@
+The central class is Server, which represents a single game server.  A
+Server can be used for more than one simultaneous Game.  (A major change
+from Colossus.)
+
+When a Client connects to a Server, it should get back a list of existing
+Games and Users connected to the server, which Users are connected
+to which Games, which Games still have openings, etc.  ViewServer should
+display this information.  Each User needs a unique player name and a
+matching password.  For now we will auto-register new player names on first 
+login, though later we may do web registration.
+
+Any player can use the client-side FormGame dialog to set up a new Game.
+Attributes that can be attached to a game might include a unique number,
+a unique name, time formed, minimum and maximum number of players,
+a password to setup private games, a time limit for players to join before
+the game starts, settings for optional rules, whether AIs are welcome, etc.
+
+Other clients can join games, as players or observers, by selecting them
+in ViewGame.  When a game starts (either by the maximum number of players
+having joined, or at least the minimum number of players having joined plus
+the time limit being hit or the forming player saying to start), only new
+observers can join, not new players.  (Though we should eventually allow 
+observers or AIs to take over for players who drop, and use the player
+rankings to penalize players who drop and reward those who take over for
+dropped players.)
+
+When a game starts, towers are rolled for, then players pick colors in
+ascending order of tower number.  When all colors have been assigned the
+starting 8-high legions are placed in their towers, and the first player
+is given priority to start his turn.
+
