@@ -11,10 +11,6 @@ Persist usernames and server names/ports that have been used in Connect
 
 Add chi-square test to test_dice
 
-Convert all images from GIF to PNG.
-Use OptiPNG to optimize PNG images.
-Make hex overlay image names saner.
-
 Solve the shebang line problem.  (distutils?)
 
 Custom Exception classes subclassing pb.Error 
@@ -51,6 +47,9 @@ also be able to save and load.  When a new client joins, the EventSaver
 should send it all events needed to sync up.
 
 Fix log message for commit 159, after I get a pre-revprop-change hook.
+
+In Anteroom game list, show tower assignments, resort player names,
+and show colors.
 
 Bugs:
 

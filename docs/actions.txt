@@ -1,4 +1,4 @@
-Game Events (different from network / GUI events)
+Game Actions
 
 Goals:
   Minimize coupling
@@ -25,18 +25,18 @@ Security:
     another.  Each action must be manually checked to see if that user is
     currently allowed to perform that action.  We need a common idiom for
     this to make these checks hard to forget and easy to code.  Using a
-    single point for external events (e.g. Game.apply(event, player, args)
+    single point for external actions (e.g. Game.apply(action, player, args)
     should help.
   
 2. Avoiding information leakage:
   The server must avoid sharing hidden information (other players' legion
     contents, the state of the random number generator) with clients.
-  Revealing the contents of a legion is a separate event, with a restricted
+  Revealing the contents of a legion is a separate action, with a restricted
     list of observers.  Chatting is similar, but not really part of the
-    game protocol.  Other game events are all public.
+    game protocol.  Other game actions are all public.
     
-We should avoid leading clients around by the nose with action-prompting
-  events like "Flee?"  They should be smart enough (using the shared Game
+We should avoid leading clients around by the nose with prompting actions 
+  like "Flee?"  They should be smart enough (using the shared Game
   logic) to see that there's an engagement and their legion is the target 
   so they need to send a Flee / Concede / Fight / Wait.
 
@@ -55,11 +55,11 @@ We'd like to reuse the same basic logic classes (Game, Player, Legion,
   It also means the Legion class must be usable without certain knowledge
   of its contents.
 The standard Observer pattern is a solution.  We use attach / detach /
-  notify.  If the list of observers is empty, then no events are broadcast 
+  notify.  If the list of observers is empty, then no actions are broadcast 
   from this instance.  To avoid coupling, container classes get direct 
   references to contained classes, but the contained classes only see 
   their containers as Observers.
-Events should cascade back up the observation hierarchy (e.g. Creature to 
+Actions should cascade back up the observation hierarchy (e.g. Creature to 
   Legion to Game to Client to User) in a way that makes it easy to detach
   observers for hypothetical situations (AI, stepping through history).
   
@@ -68,16 +68,16 @@ The related jobs of creating savegames and logging game actions should be
   an observer on the Game.
 
 
-Every operation that can affect real game state is an event.
-Savegames are just event logs.
+Every operation that can affect real game state is an action.
+Savegames are just action logs.
 If we load a savegame, or a new spectator joins in mid-game, sync game
-  state by replaying the event stream.  Need a "new game" event to signal 
+  state by replaying the action stream.  Need a "new game" action to signal 
   a client that may have already been observing to clear its state and 
-  start receiving the event stream from the beginning.  (We might optimize
+  start receiving the action stream from the beginning.  (We might optimize
   this later to take advantage of a spectator's existing knowledge.)
 
 When a player attempts to change game state from the GUI (example: moving 
-  a legion to a new hex), the event trickles up to the client's Game 
+  a legion to a new hex), the action trickles up to the client's Game 
   (where it will be error-checked and an exception raised if illegal), 
   then from Client up to User on the server side.
 
@@ -86,17 +86,17 @@ Safe GUI actions that do not attempt to change game state (e.g. viewing a
   should extend to more complex actions like rewinding through game history.
 
 Should we extend this to letting a player make multiple "unsafe" actions 
-  locally then attempt to commit the event stream to the server?
+  locally then attempt to commit the action stream to the server?
   (Analagous to line-buffering in a chat client -- other users don't see
   how slowly the user types or how often he backspaces, just the line.)
   No -- it's good to show the action stream as close to realtime as 
   possible, to keep other users interested and keep everyone playing fast,
-  even though this exposes a bunch of undo events.  AIs should be an 
+  even though this exposes a bunch of undo actions.  AIs should be an 
   exception since watching an AI constantly undo moves would be annoying.
   (Except perhaps in a debug mode?)
 
 Undone actions should be trimmed from savegames for neatness.  But we 
-  can't prune undone events from the client's event record too
+  can't prune undone actions from the client's action record too
   early, or we break the ability to redo them.  Just keep a separate
   local redo stack on the client only.
 
@@ -108,4 +108,4 @@ We should be able to handle standalone battles by creating mock versions of
   non-battle classes.  Treat Legion and Forces separately.
 
 We need a non-GUI console client, for debugging and automated testing and
-  AI use.  This implies the ability to stringify and unstringify events.
+  AI use.  This implies the ability to stringify and unstringify actions.
