@@ -168,11 +168,6 @@ RgbColors = {
     'titanRed': (189, 0, 24),
 }
 
-TkColors = {}
-for (name, rgb) in RgbColors.items():
-    TkColors[name] = guiutils.RgbToTk(rgb)
-
-
 terrainColors = {
     'Brush': 'green',
     'Desert': 'orange',

@@ -16,10 +16,6 @@ def flatten_point_list(points):
             li.append(item)
     return tuple(li)
 
-def RgbToTk(rgb):
-    """Convert a tuple of decimal RGB color values to a Tk color string"""
-    return "#%02X%02X%02X" % rgb
-
 def RgbToGtk(rgb):
     """Convert a tuple of 8-bit decimal RGB color values 16-bit."""
     li = [256 * value for value in rgb]

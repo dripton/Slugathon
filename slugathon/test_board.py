@@ -73,11 +73,6 @@ class MasterBoardTestCase(unittest.TestCase):
         assert (guiutils.flatten_point_list(vertexes) ==
                 (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
 
-    def testRgbToTk(self):
-        assert guiutils.RgbToTk((0, 0, 0)) == '#000000'
-        assert guiutils.RgbToTk((255, 255, 255)) == '#FFFFFF'
-        assert guiutils.RgbToTk((189, 0, 24)) == '#BD0018'
-
     def testRgbToGtk(self):
         assert guiutils.RgbToGtk((0, 0, 0)) == ((0, 0, 0))
         assert guiutils.RgbToGtk((255, 255, 255)) == ((65280, 65280, 65280))
