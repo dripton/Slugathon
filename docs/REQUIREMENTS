@@ -8,7 +8,7 @@ Very robust code
 No duplicated code
 Simple, usable GUI
 Support standalone battles
-Allow observers
+Allow spectators
 Unlimited undo/redo, but prevent cheating undo versus humans
 Saving/loading games
 Master server for finding games, statistics tracking
