@@ -20,8 +20,8 @@ class Client(pb.Referenceable):
         self.anteroom = None
         print "Called Client init:", self
 
-    def remote_setName(self, name):
-        print "remote_setName(", name, ") called on", self
+    def remote_set_name(self, name):
+        print "remote_set_name(", name, ") called on", self
         self.playername = name
         return name
 
@@ -54,27 +54,27 @@ class Client(pb.Referenceable):
         print "Client.failure", self, error
         reactor.stop()
 
-    def remote_notifyAddUsername(self, username):
+    def remote_notify_add_username(self, username):
         if self.anteroom:
-            self.anteroom.addUsername(username)
+            self.anteroom.add_username(username)
 
-    def remote_notifyDelUsername(self, username):
+    def remote_notify_del_username(self, username):
         if self.anteroom:
-            self.anteroom.delUsername(username)
+            self.anteroom.del_username(username)
 
     def remote_receive_chat_message(self, text):
         if self.anteroom:
             self.anteroom.receive_chat_message(text)
 
-    def remote_notifyFormedGame(self, game):
+    def remote_notify_formed_game(self, game):
         if self.anteroom:
             self.anteroom.add_game(game)
 
-    def remote_notifyRemovedGame(self, game):
+    def remote_notify_removed_game(self, game):
         if self.anteroom:
             self.anteroom.remove_game(game)
 
-    def remote_notifyChangedGame(self, game):
-        print "Client.notifyChangedGame", game.name
+    def remote_notify_changed_game(self, game):
+        print "Client.notify_changed_game", game.name
         if self.anteroom:
             self.anteroom.change_game(game)

@@ -16,7 +16,7 @@ class PickColor:
     def __init__(self, user, colors_left):
         self.user = user
         self.glade = gtk.glade.XML('../glade/pickcolor.glade')
-        self.widgets = ['pickColorDialog', 'label1'] + self.player_colors
+        self.widgets = ['pick_color_dialog', 'label1'] + self.player_colors
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 

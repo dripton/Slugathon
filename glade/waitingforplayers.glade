@@ -3,7 +3,7 @@
 
 <glade-interface>
 
-<widget class="GtkWindow" id="waitingForPlayersWindow">
+<widget class="GtkWindow" id="waiting_for_players_window">
   <property name="visible">True</property>
   <property name="title" translatable="yes">Waiting For Players</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -19,7 +19,7 @@
       <property name="spacing">0</property>
 
       <child>
-	<widget class="GtkLabel" id="gameNameLabel">
+	<widget class="GtkLabel" id="game_name_label">
 	  <property name="visible">True</property>
 	  <property name="label" translatable="yes">Name of Game</property>
 	  <property name="use_underline">False</property>
@@ -40,7 +40,7 @@
       </child>
 
       <child>
-	<widget class="GtkScrolledWindow" id="scrolledwindow1">
+	<widget class="GtkScrolledWindow" id="scrolled_window1">
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
 	  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
@@ -49,7 +49,7 @@
 	  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	  <child>
-	    <widget class="GtkTreeView" id="playerList">
+	    <widget class="GtkTreeView" id="player_list">
 	      <property name="height_request">150</property>
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
@@ -80,7 +80,7 @@
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkLabel" id="createLabel">
+		<widget class="GtkLabel" id="create_label">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Created at</property>
 		  <property name="use_underline">False</property>
@@ -101,7 +101,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkScrolledWindow" id="scrolledwindow2">
+		<widget class="GtkScrolledWindow" id="scrolled_window2">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
@@ -115,7 +115,7 @@
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
 
 		      <child>
-			<widget class="GtkEntry" id="createdEntry">
+			<widget class="GtkEntry" id="created_entry">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="editable">False</property>
@@ -151,7 +151,7 @@
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkLabel" id="startLabel">
+		<widget class="GtkLabel" id="start_label">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Starts by</property>
 		  <property name="use_underline">False</property>
@@ -172,7 +172,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkScrolledWindow" id="scrolledwindow3">
+		<widget class="GtkScrolledWindow" id="scrolled_window3">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
@@ -186,7 +186,7 @@
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
 
 		      <child>
-			<widget class="GtkEntry" id="startsByEntry">
+			<widget class="GtkEntry" id="starts_by_entry">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="editable">False</property>
@@ -222,7 +222,7 @@
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkLabel" id="timeLeftLabel">
+		<widget class="GtkLabel" id="time_left_label">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Time Left</property>
 		  <property name="use_underline">False</property>
@@ -243,7 +243,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkScrolledWindow" id="scrolledwindow4">
+		<widget class="GtkScrolledWindow" id="scrolled_window4">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
@@ -257,7 +257,7 @@
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
 
 		      <child>
-			<widget class="GtkEntry" id="countdownEntry">
+			<widget class="GtkEntry" id="countdown_entry">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="editable">False</property>
@@ -294,7 +294,7 @@
       </child>
 
       <child>
-	<widget class="GtkButton" id="joinButton">
+	<widget class="GtkButton" id="join_button">
 	  <property name="border_width">3</property>
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
@@ -310,7 +310,7 @@
       </child>
 
       <child>
-	<widget class="GtkButton" id="dropButton">
+	<widget class="GtkButton" id="drop_button">
 	  <property name="border_width">3</property>
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
@@ -326,7 +326,7 @@
       </child>
 
       <child>
-	<widget class="GtkButton" id="startButton">
+	<widget class="GtkButton" id="start_button">
 	  <property name="border_width">3</property>
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>

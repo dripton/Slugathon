@@ -17,7 +17,7 @@ class ServerTestCase(unittest.TestCase):
         # Give the OS a second to start it before we use it.
         time.sleep(1)
 
-    def testStartup(self):
+    def test_startup(self):
         self.client = Client.Client(username='unittest', password='unittest')
         self.client.connect().addCallbacks(self.connected, self.failure)
         reactor.run()

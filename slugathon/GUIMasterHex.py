@@ -26,7 +26,7 @@ class GUIMasterHex:
         self.cy = hex.y * 4 * SQRT3 * scale
         if not hex.inverted:
             self.cy += SQRT3 * scale
-        self.fillcolor = guiutils.RgbToGtk(colors.RgbColors[
+        self.fillcolor = guiutils.rgb_to_gtk(colors.rgb_colors[
                 colors.terrainColors[self.hex.terrain]])
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False

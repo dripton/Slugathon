@@ -5,13 +5,7 @@ import Connect
 import Client
 
 class ConnectTestCase(unittest.TestCase):
-
-    def testSavePrefs(self):
-        pass
-
-    def testLoadPrefs(self):
-        pass
-
+    pass
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,7 +3,7 @@
 
 <glade-interface>
 
-<widget class="GtkDialog" id="PickColor">
+<widget class="GtkDialog" id="pick_color">
   <property name="visible">True</property>
   <property name="title" translatable="yes">pickColorDialog</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>

@@ -18,7 +18,7 @@ class DiceClient:
         reactor.run()
 
     def connected(self, perspective):
-        perspective.callRemote('nextRoll', self.sides, 
+        perspective.callRemote('next_roll', self.sides, 
           self.numrolls).addCallbacks(self.success, self.failure)
 
     def success(self, roll):

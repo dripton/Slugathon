@@ -17,7 +17,7 @@ class DiceServer:
     def perspective_login(self, arg):
         print "called perspective_login", arg
 
-    def perspective_nextRoll(self, sides=6, numrolls=1):
+    def perspective_next_roll(self, sides=6, numrolls=1):
         return self.dice.roll(sides, numrolls)
 
 class MyPerspective(pb.Avatar):
@@ -25,8 +25,8 @@ class MyPerspective(pb.Avatar):
         self.name = name
         self.server = server
 
-    def perspective_nextRoll(self, *args):
-        return self.server.perspective_nextRoll(*args)
+    def perspective_next_roll(self, *args):
+        return self.server.perspective_next_roll(*args)
 
 class MyRealm:
     __implements__ = portal.IRealm

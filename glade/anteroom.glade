@@ -3,7 +3,7 @@
 
 <glade-interface>
 
-<widget class="GtkWindow" id="anteroomWindow">
+<widget class="GtkWindow" id="anteroom_window">
   <property name="border_width">3</property>
   <property name="width_request">1024</property>
   <property name="height_request">768</property>
@@ -22,7 +22,7 @@
       <property name="spacing">0</property>
 
       <child>
-	<widget class="GtkScrolledWindow" id="scrolledwindow11">
+	<widget class="GtkScrolledWindow" id="scrolled_window11">
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
 	  <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
@@ -31,7 +31,7 @@
 	  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	  <child>
-	    <widget class="GtkTreeView" id="gameList">
+	    <widget class="GtkTreeView" id="game_list">
 	      <property name="border_width">3</property>
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
@@ -50,7 +50,7 @@
       </child>
 
       <child>
-	<widget class="GtkButton" id="newGameButton">
+	<widget class="GtkButton" id="new_game_button">
 	  <property name="border_width">3</property>
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
@@ -132,7 +132,7 @@
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkScrolledWindow" id="scrolledwindow9">
+		<widget class="GtkScrolledWindow" id="scrolled_window9">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
@@ -141,7 +141,7 @@
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkTextView" id="chatView">
+		    <widget class="GtkTextView" id="chat_view">
 		      <property name="border_width">3</property>
 		      <property name="visible">True</property>
 		      <property name="editable">False</property>
@@ -166,7 +166,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkEntry" id="chatEntry">
+		<widget class="GtkEntry" id="chat_entry">
 		  <property name="visible">True</property>
 		  <property name="can_default">True</property>
 		  <property name="has_default">True</property>
@@ -196,7 +196,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkScrolledWindow" id="scrolledwindow10">
+	    <widget class="GtkScrolledWindow" id="scrolled_window10">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
@@ -205,7 +205,7 @@
 	      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	      <child>
-		<widget class="GtkTreeView" id="userList">
+		<widget class="GtkTreeView" id="user_list">
 		  <property name="border_width">3</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>

@@ -20,9 +20,9 @@ class WaitingForPlayers:
         self.user = user
         self.game = game
         self.glade = gtk.glade.XML('../glade/waitingforplayers.glade')
-        self.widgets = ['waitingForPlayersWindow', 'gameNameLabel', 
-          'playerList', 'createdEntry', 'startsByEntry', 'countdownEntry',
-          'joinButton', 'dropButton', 'startButton']
+        self.widgets = ['waiting_for_players_window', 'game_name_label', 
+          'player_list', 'created_entry', 'starts_by_entry', 'countdown_entry',
+          'join_button', 'drop_button', 'start_button']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
         self.playerStore = gtk.ListStore(str)

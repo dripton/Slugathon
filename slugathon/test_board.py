@@ -19,21 +19,21 @@ class MasterBoardTestCase(unittest.TestCase):
         self.hex = self.board.hexes[1]
         self.hex2 = self.board.hexes[2]
 
-    def testInitHex(self):
+    def test_init_hex(self):
         assert self.hex.terrain == "Plains" 
         assert self.hex.x == 7
         assert self.hex.y == 5
 
-    def testFindDirection(self):
+    def test_find_direction(self):
         """Returns a direction (0 to 5) to the hex with the given label."""
         assert self.hex.find_direction(2) == 2
         assert self.hex.find_direction(1000) == 0
 
-    def testHexInverted(self):
+    def test_hex_inverted(self):
         assert self.hex.inverted
         assert not self.board.hexes[2].inverted
 
-    def testExits(self):
+    def test_exits(self):
         assert self.hex.exits[0] == "ARCH"
         assert self.hex.exits[1] == None
         assert self.hex.exits[2] == "ARROWS"
@@ -60,7 +60,7 @@ class MasterBoardTestCase(unittest.TestCase):
         assert self.hex2.entrances[5] == "ARROWS"
 
 
-    def testNeighbors(self):
+    def test_neighbors(self):
         assert self.hex.neighbors[0] == self.board.hexes[1000]
         assert self.hex.neighbors[1] == None
         assert self.hex.neighbors[2] == self.board.hexes[2]
@@ -68,21 +68,21 @@ class MasterBoardTestCase(unittest.TestCase):
         assert self.hex.neighbors[4] == self.board.hexes[42]
         assert self.hex.neighbors[5] == None
 
-    def testFlattenPointList(self):
+    def test_flatten_point_list(self):
         vertexes = [(0,1), (2,3), (4,5), (6,7), (8,9), (10,11)]
         assert (guiutils.flatten_point_list(vertexes) ==
                 (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
 
-    def testRgbToGtk(self):
-        assert guiutils.RgbToGtk((0, 0, 0)) == ((0, 0, 0))
-        assert guiutils.RgbToGtk((255, 255, 255)) == ((65280, 65280, 65280))
-        assert guiutils.RgbToGtk((189, 0, 24)) == ((48384, 0, 6144))
+    def test_rgb_to_gtk(self):
+        assert guiutils.rgb_to_gtk((0, 0, 0)) == ((0, 0, 0))
+        assert guiutils.rgb_to_gtk((255, 255, 255)) == ((65280, 65280, 65280))
+        assert guiutils.rgb_to_gtk((189, 0, 24)) == ((48384, 0, 6144))
 
-    def testBuildOverlayFilename(self):
+    def test_build_overlay_filename(self):
         assert self.hex.overlay_filename == "Plains.gif"
         assert self.hex2.overlay_filename == "Woods_i.gif"
 
-    def testFindLabelSide(self):
+    def test_find_label_side(self):
         assert self.hex.find_label_side() == 3
         assert self.hex2.find_label_side() == 0
         assert self.board.hexes[115].find_label_side() == 1
@@ -90,7 +90,7 @@ class MasterBoardTestCase(unittest.TestCase):
         assert self.board.hexes[5000].find_label_side() == 2
         assert self.board.hexes[105].find_label_side() == 5
 
-    def testGetSemicirclePoints(self):
+    def test_get_semicircle_points(self):
         assert guiutils.get_semicircle_points(0, 0, 1, 1, 0) == []
 
         li = guiutils.get_semicircle_points(100, 100, 200, 100, 4)
@@ -121,7 +121,7 @@ class MasterBoardTestCase(unittest.TestCase):
         assert li[2][1] > 100
         assert li[3] == (100, 100)
 
-    def testScalePolygon(self):
+    def test_scale_polygon(self):
         vertexes = [(100, 0), (200, 100), (100, 200), (0, 100)]
         nv = guiutils.scale_polygon(vertexes, 0.5)
         assert int(round(nv[0][0])) == 100
@@ -133,7 +133,7 @@ class MasterBoardTestCase(unittest.TestCase):
         assert int(round(nv[3][0])) == 50
         assert int(round(nv[3][1])) == 100
 
-    def testPointInPolygon(self):
+    def test_point_in_polygon(self):
         allPoints = [
             (450, 441.67295593006367),
             (480, 441.67295593006367),
@@ -181,7 +181,7 @@ class MasterBoardTestCase(unittest.TestCase):
         assert not guiutils.point_in_polygon((500, 481), allPoints)
         assert not guiutils.point_in_polygon((451, 514), allPoints)
 
-    def testTowers(self):
+    def test_towers(self):
         labels = self.board.get_tower_labels()
         labels.sort()
         assert labels == [100, 200, 300, 400, 500, 600]

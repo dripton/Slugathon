@@ -18,98 +18,98 @@ class Anteroom:
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML('../glade/anteroom.glade')
-        self.widgets = ['anteroomWindow', 'chatEntry', 'chatView', 'gameList',
-          'userList', 'newGameButton']
-        for widgetName in self.widgets:
-            setattr(self, widgetName, self.glade.get_widget(widgetName))
+        self.widgets = ['anteroom_window', 'chat_entry', 'chat_view', 
+          'game_list', 'user_list', 'new_game_button']
+        for widget_name in self.widgets:
+            setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.usernames = Set()
         self.games = []
         self.wfp = None
 
-        self.anteroomWindow.connect("destroy", quit)
-        self.chatEntry.connect("key-press-event", self.cb_keypress)
-        self.newGameButton.connect("button-press-event", self.cb_click)
+        self.anteroom_window.connect("destroy", quit)
+        self.chat_entry.connect("key-press-event", self.cb_keypress)
+        self.new_game_button.connect("button-press-event", self.cb_click)
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
-        self.anteroomWindow.set_icon(pixbuf)
-        def1 = user.callRemote("getUserNames")
-        def1.addCallbacks(self.gotUserNames, self.failure)
+        self.anteroom_window.set_icon(pixbuf)
+        def1 = user.callRemote("get_user_names")
+        def1.addCallbacks(self.got_user_names, self.failure)
 
-    def gotUserNames(self, usernames):
+    def got_user_names(self, usernames):
         self.usernames = Set(usernames)
-        def1 = self.user.callRemote("getGames")
-        def1.addCallbacks(self.gotGames, self.failure)
+        def1 = self.user.callRemote("get_games")
+        def1.addCallbacks(self.got_games, self.failure)
 
-    def gotGames(self, games):
+    def got_games(self, games):
         self.games = games
-        self.userStore = gtk.ListStore(str)
-        self.updateUserStore()
-        self.userList.set_model(self.userStore)
-        selection = self.userList.get_selection()
-        selection.set_select_function(self.cb_userList_select, None)
+        self.user_store = gtk.ListStore(str)
+        self.update_user_store()
+        self.user_list.set_model(self.user_store)
+        selection = self.user_list.get_selection()
+        selection.set_select_function(self.cb_user_list_select, None)
         column = gtk.TreeViewColumn('User Name', gtk.CellRendererText(),
           text=0)
-        self.userList.append_column(column)
+        self.user_list.append_column(column)
 
-        self.gameStore = gtk.ListStore(str, str, str, str, int, int, str)
-        self.updateGameStore()
-        self.gameList.set_model(self.gameStore)
-        selection = self.gameList.get_selection()
-        selection.set_select_function(self.cb_gameList_select, None)
+        self.game_store = gtk.ListStore(str, str, str, str, int, int, str)
+        self.update_game_store()
+        self.game_list.set_model(self.game_store)
+        selection = self.game_list.get_selection()
+        selection.set_select_function(self.cb_game_list_select, None)
         headers = ['Game Name', 'Owner', 'Create Time', 'Start Time',
           'Min Players', 'Max Players', 'Players']
         for (ii, title) in enumerate(headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
               text=ii)
-            self.gameList.append_column(column)
-        self.anteroomWindow.show_all()
+            self.game_list.append_column(column)
+        self.anteroom_window.show_all()
 
-    def updateUserStore(self):
+    def update_user_store(self):
         sorted_usernames = list(self.usernames)
         sorted_usernames.sort()
-        leng = len(self.userStore)
+        leng = len(self.user_store)
         for ii, username in enumerate(sorted_usernames):
             if ii < leng:
-                self.userStore[ii, 0] = (username,)
+                self.user_store[ii, 0] = (username,)
             else:
-                self.userStore.append((username,))
+                self.user_store.append((username,))
         leng = len(sorted_usernames)
-        while len(self.userStore) > leng:
-            del self.userStore[leng]
+        while len(self.user_store) > leng:
+            del self.user_store[leng]
 
-    def updateGameStore(self):
-        leng = len(self.gameStore)
+    def update_game_store(self):
+        leng = len(self.game_store)
         for ii, game in enumerate(self.games):
             game_tuple = game.to_tuple()
             if ii < leng:
-                self.gameStore[ii, 0] = game_tuple
+                self.game_store[ii, 0] = game_tuple
             else:
-                self.gameStore.append(game_tuple)
+                self.game_store.append(game_tuple)
         leng = len(self.games)
-        while len(self.gameStore) > leng:
-            del self.gameStore[leng]
+        while len(self.game_store) > leng:
+            del self.game_store[leng]
 
     def failure(self, error):
         print "Anteroom.failure", self, error
         reactor.stop()
 
-    def addUsername(self, username):
+    def add_username(self, username):
         self.usernames.add(username)
-        self.updateUserStore()
+        self.update_user_store()
 
-    def delUsername(self, username):
+    def del_username(self, username):
         self.usernames.remove(username)
-        self.updateUserStore()
+        self.update_user_store()
 
     def cb_keypress(self, entry, event):
         ENTER_KEY = 65293  # XXX Find a cleaner way to do this.
         if event.keyval == ENTER_KEY:
-            text = self.chatEntry.get_text()
+            text = self.chat_entry.get_text()
             if text:
                 def1 = self.user.callRemote("send_chat_message", text)
                 def1.addErrback(self.failure)
-                self.chatEntry.set_text("")
+                self.chat_entry.set_text("")
 
     def cb_click(self, widget, event):
         NewGame.NewGame(self.user)
@@ -123,7 +123,7 @@ class Anteroom:
 
     def add_game(self, game):
         self.games.append(game)
-        self.updateGameStore()
+        self.update_game_store()
         if self.username in game.get_playernames():
             if self.wfp:
                 self.wfp.destroy()
@@ -131,7 +131,7 @@ class Anteroom:
 
     def remove_game(self, game):
         self.games.remove(game)
-        self.updateGameStore()
+        self.update_game_store()
         if self.wfp and self.wfp.game == game:
             self.wfp.destroy()
             self.wfp = None
@@ -142,19 +142,19 @@ class Anteroom:
             if g == game:              # Same name
                 self.games[ii] = game  # update to latest values
                 break
-        self.updateGameStore()
+        self.update_game_store()
         if self.wfp:
             if self.wfp.game == game:  # Same name
                 self.wfp.game = game
                 self.wfp.updatePlayerStore()
 
-    def cb_userList_select(self, path, unused):
+    def cb_user_list_select(self, path, unused):
         index = path[0]
-        row = self.userStore[index, 0]
+        row = self.user_store[index, 0]
         name = row[0]
         return False
 
-    def cb_gameList_select(self, path, unused):
+    def cb_game_list_select(self, path, unused):
         index = path[0]
         game = self.games[index]
         # TODO popup menu

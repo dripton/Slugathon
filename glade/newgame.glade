@@ -4,7 +4,7 @@
 <glade-interface>
 <requires lib="gnome"/>
 
-<widget class="GtkDialog" id="newgameDialog">
+<widget class="GtkDialog" id="new_game_dialog">
   <property name="visible">True</property>
   <property name="title" translatable="yes">Form New Game</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -26,7 +26,7 @@
 	  <property name="layout_style">GTK_BUTTONBOX_END</property>
 
 	  <child>
-	    <widget class="GtkButton" id="cancelbutton1">
+	    <widget class="GtkButton" id="cancel_button1">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
@@ -38,7 +38,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkButton" id="okbutton1">
+	    <widget class="GtkButton" id="ok_button1">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
@@ -85,7 +85,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkEntry" id="nameEntry">
+	    <widget class="GtkEntry" id="name_entry">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="editable">True</property>
@@ -139,7 +139,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkSpinButton" id="minplayersSpin">
+	    <widget class="GtkSpinButton" id="min_players_spin">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="climb_rate">1</property>
@@ -179,7 +179,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkSpinButton" id="maxplayersSpin">
+	    <widget class="GtkSpinButton" id="max_players_spin">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="climb_rate">1</property>

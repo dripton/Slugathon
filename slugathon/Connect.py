@@ -22,28 +22,21 @@ class Connect:
     """GUI for connecting to a server."""
     def __init__(self):
         self.glade = gtk.glade.XML('../glade/connect.glade')
-        self.widgets = ['connectWindow', 'playerNameCombo', 'passwordEntry', 
-          'serverNameCombo', 'serverPortCombo', 'connectButton', 
-          'startServerButton']
+        self.widgets = ['connect_window', 'player_name_combo', 
+          'password_entry', 'server_name_combo', 'server_port_combo', 
+          'connect_button', 'start_server_button']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
         self.glade.signal_autoconnect(self)
         self.playerNames = None
         self.serverNames = None
         self.serverPorts = None
-        self.load_prefs()
         self.init_lists()
-        self.connectWindow.connect("destroy", quit)
+        self.connect_window.connect("destroy", quit)
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
-        self.connectWindow.set_icon(pixbuf)
-        self.connectWindow.show()
-
-    def load_prefs(self):
-        pass
-
-    def save_prefs(self):
-        pass
+        self.connect_window.set_icon(pixbuf)
+        self.connect_window.show()
 
     def init_lists(self):
         self.init_player_names()
@@ -55,28 +48,28 @@ class Connect:
             self.playerNames = Set()
         self.playerNames.add(getpass.getuser())
         for name in self.playerNames:
-            self.playerNameCombo.insert_text(name)
+            self.player_name_combo.insert_text(name)
 
     def init_server_names(self):
         if not self.serverNames:
             self.serverNames = Set()
         self.serverNames.add('localhost')
         for name in self.serverNames:
-            self.serverNameCombo.insert_text(name)
+            self.server_name_combo.insert_text(name)
 
     def init_server_ports(self):
         if not self.serverPorts:
             self.serverPorts = Set()
         self.serverPorts.add(Server.DEFAULT_PORT)
         for name in self.serverPorts:
-            self.serverPortCombo.insert_text(str(name))
+            self.server_port_combo.insert_text(str(name))
 
     def on_connectButton_clicked(self, *args):
         print "Connect button clicked"
-        playerName = self.playerNameCombo.get_text()
-        password = self.passwordEntry.get_text()
-        serverName = self.serverNameCombo.get_text()
-        serverPort = int(self.serverPortCombo.get_text())
+        playerName = self.player_name_combo.get_text()
+        password = self.password_entry.get_text()
+        serverName = self.server_name_combo.get_text()
+        serverPort = int(self.server_port_combo.get_text())
         print playerName, password, serverName, serverPort
         client = Client.Client(playerName, password, serverName, serverPort)
         def1 = client.connect()
@@ -89,7 +82,7 @@ class Connect:
 
     def connected(self, user):
         print "Connect.connected", user
-        self.connectWindow.hide()
+        self.connect_window.hide()
 
     def failure(self, arg):
         print "Connect.failure", arg

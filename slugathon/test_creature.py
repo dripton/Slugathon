@@ -5,7 +5,7 @@ import Creature
 
 class CreatureTestCase(unittest.TestCase):
 
-    def testNonExistentCreature(self):
+    def test_non_existent_creature(self):
         try:
             creature = Creature.Creature('Jackalope')
         except KeyError:
@@ -13,10 +13,10 @@ class CreatureTestCase(unittest.TestCase):
         else:
             fail("Should have raised")
 
-    def testInit(self):
+    def test_init(self):
         creature = Creature.Creature('Ogre')
         assert creature.name == 'Ogre'
-        assert creature.pluralName == 'Ogres'
+        assert creature.plural_name == 'Ogres'
         assert creature.power == 6
         assert creature.skill == 2
         assert not creature.flies
@@ -24,8 +24,8 @@ class CreatureTestCase(unittest.TestCase):
         assert creature.characterType == 'creature'
         assert not creature.summonable
         assert not creature.acquirable
-        assert creature.maxCount == 25
-        assert creature.colorName == 'ogreRed'
+        assert creature.max_count == 25
+        assert creature.color_name == 'ogreRed'
 
 
 if __name__ == '__main__':

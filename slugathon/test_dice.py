@@ -7,7 +7,7 @@ import Dice
 
 EPSILON = 0.000001
 
-def findMedian(rolls):
+def find_median(rolls):
     """Find the median of a sequence of numbers."""
     if len(rolls) == 0:
         return None
@@ -20,7 +20,7 @@ def findMedian(rolls):
         return (clone[int(round(midpoint - 0.5))] +
                 clone[int(round(midpoint + 0.5))]) / 2.
 
-def convertToBinary(rolls, median):
+def convert_to_binary(rolls, median):
     ms = []
     for roll in rolls:
         if roll <= median:
@@ -29,14 +29,14 @@ def convertToBinary(rolls, median):
             ms.append(1)
     return ms
 
-def countZeros(rolls):
+def count_zeros(rolls):
     count = 0
     for roll in rolls:
         if roll == 0:
             count += 1
     return count
 
-def countRuns(rolls):
+def count_runs(rolls):
     prev = None
     count = 0
     for roll in rolls:
@@ -45,7 +45,7 @@ def countRuns(rolls):
         prev = roll
     return count
 
-def countPositiveDiffs(rolls):
+def count_positive_diffs(rolls):
     prev = 7
     count = 0
     for roll in rolls:
@@ -54,7 +54,7 @@ def countPositiveDiffs(rolls):
         prev = roll
     return count
 
-def countNonZeroDiffs(rolls):
+def count_non_zero_diffs(rolls):
     prev = None
     count = 0
     for roll in rolls:
@@ -63,7 +63,7 @@ def countNonZeroDiffs(rolls):
         prev = roll
     return count
 
-def trimZeroRuns(rolls):
+def trim_zero_runs(rolls):
     """Return the list with runs of identical rolls reduced to just one."""
     li = []
     prev = None
@@ -83,7 +83,7 @@ def sign(num):
         return -1
 
 
-def failIfAbnormal(val, mean, var):
+def fail_if_abnormal(val, mean, var):
     """Fail if a result is outside the normal range."""
     # Avoid division by zero when we hit spot-on.
     if abs(var) < EPSILON:
@@ -107,89 +107,91 @@ class DiceTestCase(unittest.TestCase):
             self.rolls.append(num)
             self.bins[num] = self.bins.get(num, 0) + 1
 
-    def testFindMedian(self):
-        assert findMedian([]) == None
-        assert findMedian([0]) == 0
-        assert findMedian([-2, 0, 25]) == 0
-        assert findMedian([25, -2, 0]) == 0
-        self.failUnlessAlmostEqual(findMedian([2, 0.15, 3, 4329473]), 2.5)
-        self.failUnlessAlmostEqual(findMedian((2, 0.15, 3, 4329473)), 2.5)
+    def test_find_median(self):
+        assert find_median([]) == None
+        assert find_median([0]) == 0
+        assert find_median([-2, 0, 25]) == 0
+        assert find_median([25, -2, 0]) == 0
+        self.failUnlessAlmostEqual(find_median([2, 0.15, 3, 4329473]), 2.5)
+        self.failUnlessAlmostEqual(find_median((2, 0.15, 3, 4329473)), 2.5)
 
-    def testConvertToBinary(self):
-        assert (convertToBinary([-11111, 0.1, 2, 3, 4, 23947], 2.5) ==
+    def test_convert_to_binary(self):
+        assert (convert_to_binary([-11111, 0.1, 2, 3, 4, 23947], 2.5) ==
           [0, 0, 0, 1, 1, 1])
 
-    def testCountRuns(self):
-        assert countRuns([1, 2, 2, 2, 3, 2, 1, 6, 6, 5, 5, 1]) == 8
+    def test_count_runs(self):
+        assert count_runs([1, 2, 2, 2, 3, 2, 1, 6, 6, 5, 5, 1]) == 8
 
-    def testCountPositiveDiffs(self):
-        assert countPositiveDiffs([]) == 0
-        assert countPositiveDiffs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == 4
+    def test_count_positive_diffs(self):
+        assert count_positive_diffs([]) == 0
+        assert count_positive_diffs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == 4
 
-    def testCountNonZeroDiffs(self):
-        assert countNonZeroDiffs([]) == 0
-        assert countNonZeroDiffs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == 8
+    def test_count_non_zero_diffs(self):
+        assert count_non_zero_diffs([]) == 0
+        assert count_non_zero_diffs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == 8
 
-    def testTrimZeroRuns(self):
-        assert trimZeroRuns([]) == []
-        assert trimZeroRuns([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == \
-                               [3, 4, 2, 5, 3, 4, 2, 6, 1]
+    def test_trim_zero_runs(self):
+        assert trim_zero_runs([]) == []
+        assert trim_zero_runs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == \
+                              [3, 4, 2, 5, 3, 4, 2, 6, 1]
 
-    def testM(self):
+    def test_M(self):
         """Recode each sample as 0 if <= sample median, 1 if > sample median
            M is number of runs of consecutive 0s and 1s.
            r is number of 0s.
            null hypothesis, mean and variance of M in n observations are about
-           meanM = 2*r*(n-r)/n + 1
-           varianceM = 2*r*(n-r)*(2*r*(n-r)-n)/(n*n*(n-1))
-           for large samples Zm = (M - meanM) / standardDevM is standard normal
-           prob (M <= val) = Pr((M-meanM)/sdM = Pr(Z)
+           mean_M = 2*r*(n-r)/n + 1
+           variance_M = 2*r*(n-r)*(2*r*(n-r)-n)/(n*n*(n-1))
+           for large samples Z_M = (M - mean_M) / standard_dev_M is standard 
+           normal
+           prob (M <= val) = Pr((M-meanM)/sd_M = Pr(Z)
         """
-        median = findMedian(self.rolls)
-        ms = convertToBinary(self.rolls, median)
-        r = countZeros(ms)
-        M = countRuns(ms)
+        median = find_median(self.rolls)
+        ms = convert_to_binary(self.rolls, median)
+        r = count_zeros(ms)
+        M = count_runs(ms)
         n = self.trials
-        meanM = 2. * r * (n - r) / n + 1.
-        varM = (((2. * r) * (n - r) / n ** 2 * ((2. * r) * (n - r) - n)) /
+        mean_M = 2. * r * (n - r) / n + 1.
+        var_M = (((2. * r) * (n - r) / n ** 2 * ((2. * r) * (n - r) - n)) /
           (n - 1.))
-        print "M test: r =", r, "M = ", M, "mean = ", meanM, "var =", varM
-        failIfAbnormal(M, meanM, varM)
+        print "M test: r =", r, "M = ", M, "mean = ", mean_M, "var =", var_M
+        fail_if_abnormal(M, mean_M, var_M)
 
-    def testSign(self):
+    def test_sign(self):
         """P is number of positive signs among x2-x1, x3-x2, etc. (not zeros)
-           If m non-zero values of xi - x(i-1), meanP is m/2, varianceP is m/12
+           If M non-zero values of xi - x(i-1), mean_P is m/2, variance_P is 
+           M/12
         """
-        P = countPositiveDiffs(self.rolls)
-        m = countNonZeroDiffs(self.rolls)
-        meanP = m / 2.
-        varP = m / 12.
-        print "Sign test: P =", P, "m = ", m, "mean = ", meanP, "var =", varP
-        failIfAbnormal(P, meanP, varP)
+        P = count_positive_diffs(self.rolls)
+        M = count_non_zero_diffs(self.rolls)
+        mean_P = M / 2.
+        var_P = M / 12.
+        print "Sign test: P =", P, "M = ", M, "mean = ", mean_P, "var =", var_P
+        fail_if_abnormal(P, mean_P, var_P)
 
-    def testRuns(self):
-        trimmed = trimZeroRuns(self.rolls)
+    def test_runs(self):
+        trimmed = trim_zero_runs(self.rolls)
         m = len(trimmed)
-        pos = countPositiveDiffs(trimmed)
+        pos = count_positive_diffs(trimmed)
         neg = m - pos
         R = 0. + pos
-        meanR = 1. + (2 * pos * neg) / (pos + neg)
-        varR = ((( 2. * pos * neg) * (2. * pos * neg - pos - neg)) /
+        mean_R = 1. + (2 * pos * neg) / (pos + neg)
+        var_R = ((( 2. * pos * neg) * (2. * pos * neg - pos - neg)) /
                 ((pos + neg) * (pos + neg) * (pos + neg - 1)))
-        print "Runs test: R =", R, "m = ", m, "mean = ", meanR, "var =", varR
-        failIfAbnormal(R, meanR, varR)
+        print "Runs test: R =", R, "m = ", m, "mean = ", mean_R, "var =", var_R
+        fail_if_abnormal(R, mean_R, var_R)
 
-    def testMannKendall(self):
+    def test_mann_kendall(self):
         S = 0
         n = len(self.rolls)
         for i in range(1, n):
             for j in range(i):
                 val = sign(self.rolls[i] - self.rolls[j])
                 S += val
-        meanS = 0.
-        varS = (n / 18.) * (n - 1.) * (2. * n + 5.)
-        print "Mann-Kendall test: S =", S, "mean = ", meanS, "var =", varS
-        failIfAbnormal(S, meanS, varS)
+        mean_S = 0.
+        var_S = (n / 18.) * (n - 1.) * (2. * n + 5.)
+        print "Mann-Kendall test: S =", S, "mean = ", mean_S, "var =", var_S
+        fail_if_abnormal(S, mean_S, var_S)
 
     def test_shuffle(self):
         s = Set()

@@ -16,12 +16,12 @@ def flatten_point_list(points):
             li.append(item)
     return tuple(li)
 
-def RgbToGtk(rgb):
+def rgb_to_gtk(rgb):
     """Convert a tuple of 8-bit decimal RGB color values 16-bit."""
     li = [256 * value for value in rgb]
     return tuple(li)
 
-def ImageToGdkPixbuf(image):
+def image_to_gdk_pixbuf(image):
     file = StringIO.StringIO()
     image.save(file, 'ppm')
     contents = file.getvalue()

@@ -20,29 +20,29 @@ class Server:
         self.users = Set()
         self.name_to_user = {}
 
-    def addUser(self, user):
-        print "called Server.addUser", self, user
+    def add_user(self, user):
+        print "called Server.add_user", self, user
         self.users.add(user)
         username = user.name
         self.name_to_user[username] = user
         for u in self.users:
-            u.notifyAddUsername(username)
+            u.notify_add_username(username)
 
-    def delUser(self, user):
-        print "called Server.delUser", self, user
+    def del_user(self, user):
+        print "called Server.del_user", self, user
         self.users.remove(user)
         username = user.name
         del self.name_to_user[username]
         for u in self.users:
-            u.notifyDelUsername(username)
+            u.notify_del_username(username)
 
-    def getUserNames(self):
+    def get_user_names(self):
         names = self.name_to_user.keys()
         names.sort()
         return names
 
-    def getGames(self):
-        print "getGames called on", self
+    def get_games(self):
+        print "get_games called on", self
         return self.games[:]
 
     def send_chat_message(self, source, dest, text):
@@ -75,7 +75,7 @@ class Server:
           game.__class__.__name__])
         self.games.append(game)
         for u in self.users:
-            u.notifyFormedGame(game)
+            u.notify_formed_game(game)
 
     def drop_from_game(self, username, game):
         try:
@@ -87,10 +87,10 @@ class Server:
                 if game in self.games:
                     self.games.remove(game)
                 for u in self.users:
-                    u.notifyRemovedGame(game)
+                    u.notify_removed_game(game)
             else:
                 for u in self.users:
-                    u.notifyChangedGame(game)
+                    u.notify_changed_game(game)
 
     def join_game(self, username, game):
         try:
@@ -99,7 +99,7 @@ class Server:
             pass
         else:
             for u in self.users:
-                u.notifyChangedGame(game)
+                u.notify_changed_game(game)
 
     def start_game(self, username, game):
         game.start(username)

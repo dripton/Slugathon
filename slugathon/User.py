@@ -10,20 +10,20 @@ class User(pb.Avatar):
         self.server = server
         self.client = client
         # XXX Bidirectional references
-        self.server.addUser(self)
+        self.server.add_user(self)
         print "User.init", self, name, server, client
 
     def perspective_getName(self, arg):
         print "perspective_getName(", arg, ") called on", self
         return self.name
 
-    def perspective_getUserNames(self):
-        print "perspective_getUserNames called on", self
-        return self.server.getUserNames()
+    def perspective_get_user_names(self):
+        print "perspective_get_user_names called on", self
+        return self.server.get_user_names()
 
-    def perspective_getGames(self):
-        print "perspective_getGames called on", self
-        return self.server.getGames()
+    def perspective_get_games(self):
+        print "perspective_get_games called on", self
+        return self.server.get_games()
 
     def perspective_send_chat_message(self, text):
         print "perspective_send_chat_message", text
@@ -38,19 +38,19 @@ class User(pb.Avatar):
         print "perspective_form_game", game_name, min_players, max_players
         self.server.form_game(self.name, game_name, min_players, max_players)
 
-    def notifyFormedGame(self, game):
-        print "notifyFormedGame", game
-        def1 = self.client.callRemote("notifyFormedGame", game)
+    def notify_formed_game(self, game):
+        print "notify_formed_game", game
+        def1 = self.client.callRemote("notify_formed_game", game)
         def1.addErrback(self.failure)
 
-    def notifyRemovedGame(self, game):
-        print "notifyRemovedGame", game
-        def1 = self.client.callRemote("notifyRemovedGame", game)
+    def notify_removed_game(self, game):
+        print "notify_removed_game", game
+        def1 = self.client.callRemote("notify_removed_game", game)
         def1.addErrback(self.failure)
 
-    def notifyChangedGame(self, game):
-        print "notifyChangedGame", game
-        def1 = self.client.callRemote("notifyChangedGame", game)
+    def notify_changed_game(self, game):
+        print "notify_changed_game", game
+        def1 = self.client.callRemote("notify_changed_game", game)
         def1.addErrback(self.failure)
 
     def perspective_drop_from_game(self, game):
@@ -74,13 +74,13 @@ class User(pb.Avatar):
 
     def attached(self, mind):
         print "called User.attached", mind
-        def1 = self.client.callRemote("setName", self.name)
-        def1.addCallbacks(self.didSetName, self.failure)
+        def1 = self.client.callRemote("set_name", self.name)
+        def1.addCallbacks(self.did_set_name, self.failure)
         def2 = self.client.callRemote("ping", time.time())
-        def2.addCallbacks(self.didPing, self.failure)
+        def2.addCallbacks(self.did_ping, self.failure)
 
-    def didSetName(self, arg):
-        print "User.didSetName", arg
+    def did_set_name(self, arg):
+        print "User.did_set_name", arg
 
     def success(self, arg):
         pass
@@ -88,17 +88,17 @@ class User(pb.Avatar):
     def failure(self, arg):
         print "User.failure", arg
 
-    def didPing(self, arg):
-        print "User.didPing", arg
+    def did_ping(self, arg):
+        print "User.did_ping", arg
 
     def logout(self):
         print "called logout"
-        self.server.delUser(self)
+        self.server.del_user(self)
 
-    def notifyAddUsername(self, username):
-        def1 = self.client.callRemote("notifyAddUsername", username)
+    def notify_add_username(self, username):
+        def1 = self.client.callRemote("notify_add_username", username)
         def1.addErrback(self.failure)
 
-    def notifyDelUsername(self, username):
-        def1 = self.client.callRemote("notifyDelUsername", username)
+    def notify_del_username(self, username):
+        def1 = self.client.callRemote("notify_del_username", username)
         def1.addErrback(self.failure)
