@@ -9,6 +9,7 @@ import gtk
 from gtk import glade
 import sys
 import os
+import getpass
 from sets import Set
 import Server
 
@@ -26,14 +27,9 @@ class Connect:
         self.playerNames = None
         self.serverNames = None
         self.serverPorts = None
+        self.load_prefs()
         self.init_lists()
         self.connectWindow.show()
-
-    def init_lists(self):
-        self.load_prefs()
-        self.init_player_names()
-        self.init_server_names()
-        self.init_server_ports()
 
     def load_prefs(self):
         pass
@@ -41,25 +37,42 @@ class Connect:
     def save_prefs(self):
         pass
 
+    def init_lists(self):
+        self.init_player_names()
+        self.init_server_names()
+        self.init_server_ports()
+
     def init_player_names(self):
         if not self.playerNames:
             self.playerNames = Set()
-        # XXX Not portable
-        self.playerNames.add(os.getenv('USER'))
+        self.playerNames.add(getpass.getuser())
+        for name in self.playerNames:
+            self.playerNameCombo.insert_text(name)
 
     def init_server_names(self):
         if not self.serverNames:
             self.serverNames = Set()
         self.serverNames.add('localhost')
+        for name in self.serverNames:
+            self.serverNameCombo.insert_text(name)
 
     def init_server_ports(self):
         if not self.serverPorts:
             self.serverPorts = Set()
         self.serverPorts.add(Server.DEFAULT_PORT)
+        for name in self.serverPorts:
+            self.serverPortCombo.insert_text(str(name))
 
     def on_connectButton_clicked(self, *args):
         button = args[0]
         print "Connect button clicked", button
+        playerName = self.playerNameCombo.get_text()
+        password = self.passwordEntry.get_text()
+        serverName = self.serverNameCombo.get_text()
+        serverPort = int(self.serverPortCombo.get_text())
+        print playerName, password, serverName, serverPort
+        #client = Client.Client(playerName, password, serverName, serverPort)
+        #client.connect()
 
     def on_startServerButton_clicked(self, *args):
         button = args[0]
