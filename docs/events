@@ -56,7 +56,7 @@ We'd like to reuse the same basic logic classes (Game, Player, Legion,
   of its contents.
 The standard Observer pattern is a solution.  (Add observers in the 
   constructor or later?)  If the list of observers is empty, then no 
-  events are broadcast from this instance.  To avoid coupling, contained
+  events are broadcast from this instance.  To avoid coupling, container
   classes get direct references to contained classes, but the contained
   classes only see their containers as Observers and Oracles.
 Events should cascade back up the observation hierarchy (e.g. Creature to 
