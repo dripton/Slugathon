@@ -38,14 +38,11 @@ class Anteroom:
 
     def gotUserNames(self, usernames):
         self.usernames = Set(usernames)
-        print "Anteroom got usernames", usernames
         def1 = self.user.callRemote("getGames")
         def1.addCallbacks(self.gotGames, self.failure)
 
     def gotGames(self, games):
-        print "Anteroom got games", games
         self.games = games
-
         self.userStore = gtk.ListStore(str)
         self.updateUserStore()
         self.userList.set_model(self.userStore)
@@ -105,9 +102,6 @@ class Anteroom:
         self.usernames.remove(username)
         self.updateUserStore()
 
-    def cb_insert_text(self, *args):
-        print "cb_insert_text", args
-
     def cb_keypress(self, entry, event):
         ENTER_KEY = 65293  # XXX Find a cleaner way to do this.
         if event.keyval == ENTER_KEY:
@@ -118,7 +112,6 @@ class Anteroom:
                 self.chatEntry.set_text("")
 
     def cb_click(self, widget, event):
-        print "clicked new game button"
         NewGame.NewGame(self.user)
 
     def receive_chat_message(self, message):
@@ -131,7 +124,7 @@ class Anteroom:
     def add_game(self, game):
         self.games.append(game)
         self.updateGameStore()
-        if self.username in game.players:
+        if self.username in game.get_playernames():
             if self.wfp:
                 self.wfp.destroy()
             self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, game)
@@ -143,12 +136,10 @@ class Anteroom:
             self.wfp.destroy()
             self.wfp = None
 
-    # XXX The need to substitute references is ugly.  Use Cacheable.
+    # XXX The need to substitute references is ugly.  Use Cacheable?
     def change_game(self, game):
-        print "Anteroom.change_game for", game.name
         for (ii, g) in enumerate(self.games):
             if g == game:              # Same name
-                print "Anteroom.change_game updating game", ii, game.name
                 self.games[ii] = game  # update to latest values
                 break
         self.updateGameStore()
@@ -159,17 +150,13 @@ class Anteroom:
 
     def cb_userList_select(self, path, unused):
         index = path[0]
-        print "userList_select", index
         row = self.userStore[index, 0]
         name = row[0]
-        print "name is", name
         return False
 
     def cb_gameList_select(self, path, unused):
         index = path[0]
-        print "gameList_select", index
         game = self.games[index]
-        print "game is", game
         # TODO popup menu
         if self.wfp:
             self.wfp.destroy()
