@@ -7,13 +7,22 @@ Continuation lines should be indented two spaces past the continued line.
 
 Class names: CapWords
 Constants: UPPERCASE_WITH_UNDERSCORES
-Functions / methods: lower_case_with_underscores
+Others: lower_case_with_underscores.  camelCase okay sometimes.
 _not_part_of_public_interface
-__really_private_hands_off
+__really_private_hands_off interferes with testing and is unnecessary.
 
 Don't use "from package import *"
 
 Use only Python code unless C is absolutely necessary.  If you must write
 something in C (e.g. the innermost most speed-critical AI loops), write a
-Python prototype first, and keep it around for documentation.
+Python prototype first.
 
+Write unit tests for everything that could possibly break.
+
+Avoid unnecessary class coupling:
+Follow the Law of Demeter.  Classes should only talk to immediately contained
+   classes, classes passed in as parameters, and to classes they create.
+Contained classes should not hold references to their containers.
+
+Initialize instances as thoroughly as possible in __init__, rather than 
+   tweaking them after creation.
