@@ -87,7 +87,7 @@ class GUIMasterHex:
             # outer portion
             fg = colormap.alloc_color('white')
             gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, True, self.allPoints)
+            self.guiboard.area.window.draw_polygon(gc, True, self.points)
 
             # inner hex
             fg = colormap.alloc_color(*self.fillcolor)
@@ -98,18 +98,18 @@ class GUIMasterHex:
             # outline
             fg = colormap.alloc_color('black')
             gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, False, self.allPoints)
+            self.guiboard.area.window.draw_polygon(gc, False, self.points)
 
         else:
             # hex
             fg = colormap.alloc_color(*self.fillcolor)
             gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, True, self.allPoints)
+            self.guiboard.area.window.draw_polygon(gc, True, self.points)
 
             # outline
             fg = colormap.alloc_color('white')
             gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, False, self.allPoints)
+            self.guiboard.area.window.draw_polygon(gc, False, self.points)
 
 
     def init_gates(self):
@@ -140,9 +140,9 @@ class GUIMasterHex:
                 li.reverse()
                 gp.extend(li)
             ap.extend(gp)
-        self.allPoints = []
+        self.points = []
         for point in ap:
-            self.allPoints.append((int(round(point[0])), int(round(point[1]))))
+            self.points.append((int(round(point[0])), int(round(point[1]))))
 
     def init_gate(self, vx1, vy1, vx2, vy2, gateType):
         """Setup gate on one entrance / exit hexside."""

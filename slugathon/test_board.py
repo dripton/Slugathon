@@ -134,7 +134,7 @@ class MasterBoardTestCase(unittest.TestCase):
         assert int(round(nv[3][1])) == 100
 
     def test_point_in_polygon(self):
-        allPoints = [
+        points = [
             (450, 441.67295593006367),
             (480, 441.67295593006367),
             (485.0, 450.33320996790803),
@@ -172,14 +172,14 @@ class MasterBoardTestCase(unittest.TestCase):
             (449.9230748895809, 458.94905127254452),
             (445.0, 450.33320996790803)
         ]
-        assert guiutils.point_in_polygon((459, 485), allPoints)
-        assert guiutils.point_in_polygon((480, 523), allPoints)
-        assert guiutils.point_in_polygon((426, 480), allPoints)
-        assert guiutils.point_in_polygon((489, 455), allPoints)
-        assert not guiutils.point_in_polygon((386, 447), allPoints)
-        assert not guiutils.point_in_polygon((445, 455), allPoints)
-        assert not guiutils.point_in_polygon((500, 481), allPoints)
-        assert not guiutils.point_in_polygon((451, 514), allPoints)
+        assert guiutils.point_in_polygon((459, 485), points)
+        assert guiutils.point_in_polygon((480, 523), points)
+        assert guiutils.point_in_polygon((426, 480), points)
+        assert guiutils.point_in_polygon((489, 455), points)
+        assert not guiutils.point_in_polygon((386, 447), points)
+        assert not guiutils.point_in_polygon((445, 455), points)
+        assert not guiutils.point_in_polygon((500, 481), points)
+        assert not guiutils.point_in_polygon((451, 514), points)
 
     def test_towers(self):
         labels = self.board.get_tower_labels()

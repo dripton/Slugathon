@@ -30,8 +30,7 @@ class GUIMasterBoard:
         self.root.add(self.area)
         self.guihexes = {}
         for hex1 in self.board.hexes.values():
-            guihex = GUIMasterHex.GUIMasterHex(hex1, self)
-            self.guihexes[hex1.label] = guihex
+            self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.area.connect("expose-event", self.area_expose_cb)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.click_cb)
@@ -47,7 +46,7 @@ class GUIMasterBoard:
 
     def click_cb(self, area, event):
         for guihex in self.guihexes.values():
-            if guiutils.point_in_polygon((event.x, event.y), guihex.allPoints):
+            if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 guihex.toggle_selection()
                 guihex.update(self.gc, self.style)
                 break
