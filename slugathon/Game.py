@@ -53,7 +53,8 @@ class Game(Observed):
         for player in self.players:
             if player.name == name:
                 return player
-        raise KeyError("No player named %s" % name)
+        raise KeyError("No player named %s in players %s" % (
+          name, self.players))
 
     def to_gui_tuple(self):
         """Return state as a tuple of strings for GUI presentation."""
@@ -88,7 +89,7 @@ class Game(Observed):
     def start(self, playername):
         """Called only on server side, and only by game owner."""
         assert playername == self.get_owner().name, \
-          'start_game called for %s by non-owner %s' % (self.name, playername)
+          'Game.start called for %s by non-owner %s' % (self.name, playername)
         self.started = True
         towers = rules.assign_towers(self.board.get_tower_labels(), 
           len(self.players))
@@ -96,6 +97,12 @@ class Game(Observed):
         for num, player in enumerate(self.players):
             player.assign_starting_tower(towers[num])
         self.sort_players()
+
+    def done_assigning_towers(self):
+        for player in self.players:
+            if player.starting_tower is None:
+                return False
+        return True
 
     def sort_players(self):
         """Sort players into descending order of tower number.
