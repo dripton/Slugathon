@@ -29,6 +29,8 @@ game?
 Support sending chat messages to one user, or a group excluding some
 users.
 
+Use Observers to return results from modeless dialogs?
+
 ###############
 
 Should WaitingForPlayers and Anteroom hold direct Game references?
