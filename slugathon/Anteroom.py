@@ -4,7 +4,7 @@ try:
 except (ImportError, AttributeError):
     pass
 import gtk
-from gtk import glade
+import gtk.glade
 import sys
 from sets import Set
 from twisted.internet import reactor
@@ -17,7 +17,7 @@ class Anteroom:
     def __init__(self, user, username):
         self.user = user
         self.username = username
-        self.glade = glade.XML('../glade/anteroom.glade')
+        self.glade = gtk.glade.XML('../glade/anteroom.glade')
         self.widgets = ['anteroomWindow', 'chatEntry', 'chatView', 'gameList',
           'userList', 'newGameButton']
         for widgetName in self.widgets:

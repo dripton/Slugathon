@@ -4,7 +4,7 @@ try:
 except (ImportError, AttributeError):
     pass
 import gtk
-from gtk import glade
+import gtk.glade
 
 
 class NewGame:
@@ -14,7 +14,7 @@ class NewGame:
         self.min_players = None
         self.max_players = None
         self.user = user
-        self.glade = glade.XML('../glade/newgame.glade')
+        self.glade = gtk.glade.XML('../glade/newgame.glade')
         self.widgets = ['newgameDialog', 'nameEntry', 'minplayersSpin', 
           'maxplayersSpin']
         for widgetName in self.widgets:

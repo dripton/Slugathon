@@ -4,7 +4,7 @@ try:
 except (ImportError, AttributeError):
     pass
 import gtk
-from gtk import glade
+import gtk.glade
 import time
 from twisted.internet import reactor
 
@@ -19,7 +19,7 @@ class WaitingForPlayers:
     def __init__(self, user, game):
         self.user = user
         self.game = game
-        self.glade = glade.XML('../glade/waitingforplayers.glade')
+        self.glade = gtk.glade.XML('../glade/waitingforplayers.glade')
         self.widgets = ['waitingForPlayersWindow', 'gameNameLabel', 
           'playerList', 'createdEntry', 'startsByEntry', 'countdownEntry',
           'joinButton', 'dropButton']

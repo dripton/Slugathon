@@ -9,7 +9,7 @@ from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor
 import gtk
-from gtk import glade
+import gtk.glade
 import sys
 import os
 import getpass
@@ -21,7 +21,7 @@ import Client
 class Connect:
     """GUI for connecting to a server."""
     def __init__(self):
-        self.glade = glade.XML('../glade/connect.glade')
+        self.glade = gtk.glade.XML('../glade/connect.glade')
         self.widgets = ['connectWindow', 'playerNameCombo', 'passwordEntry', 
           'serverNameCombo', 'serverPortCombo', 'connectButton', 
           'startServerButton']
