@@ -6,3 +6,4 @@ ZopeInterfaces 3.0.0+
 GTK+ 2.4+
 PyGTK 2.4+
 Pango 1.8+
+Python Imaging Library 1.1.4+

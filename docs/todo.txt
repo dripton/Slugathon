@@ -1,4 +1,8 @@
-Fix formatting of all multi-line docstrings.
+Make some variable names consistent:
+   marker for a Marker, markername for a string
+   hex1 for a MasterHex, guihex for a GUIMasterHex, hexlabel for a string
+   legion for a Legion, markerid for a string
+   creature for a Creature, creaturename for a string
 
 Make sure we have the distinction between username and playername correct.  
    username also includes spectators, while playername is just for players.
@@ -50,10 +54,11 @@ a Client or Server and saves them in one or more queues.  It should
 also be able to save and load.  When a new client joins, the EventSaver
 should send it all events needed to sync up.
 
-Fix log message for commit 159, after I get a pre-revprop-change hook.
-
 In Anteroom game list, show tower assignments, resort player names,
 and show colors.
+
+Switch from unittest to twisted.trial or py.test?
+
 
 Bugs:
 
