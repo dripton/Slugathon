@@ -69,7 +69,7 @@ class GUIMasterBoard(object):
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 guihex.toggle_selection()
-                self.update_gui()
+                self.update_gui([guihex.hex.label])
                 return True
         return True
 
@@ -82,60 +82,80 @@ class GUIMasterBoard(object):
     def markers_in_hex(self, hex):
         return [marker for marker in self.markers if marker.legion.hex == hex]
 
+    def _add_missing_markers(self):
+        """Add markers for any legions that lack them.
+
+        Return a list of new markernames.
+        """
+        result = []
+        for legion in self.game.gen_all_legions():
+            if legion.marker not in [marker.name for marker in self.markers]:
+                result.append(legion.marker)
+                marker = Marker.Marker(legion)
+                self.markers.append(marker)
+        return result
+
+    def _compute_marker_locations(self, hex1):
+        mih = self.markers_in_hex(hex1)
+        num = len(mih)
+        assert 1 <= num <= 3
+        guihex = self.guihexes[hex1]
+        chit_scale = self.markers[0].chit_scale
+        base_location = (guihex.center[0] - chit_scale / 2,
+          guihex.center[1] - chit_scale / 2)
+
+        if num == 1:
+            mih[0].location = base_location
+        elif num == 2:
+            mih[0].location = (base_location[0] - chit_scale / 4,
+              base_location[1] - chit_scale / 4)
+            mih[1].location = (base_location[0] + chit_scale / 4,
+              base_location[1] + chit_scale / 4)
+        else:
+            mih[0].location = (base_location[0] - chit_scale / 2,
+              base_location[1] - chit_scale / 2)
+            mih[1].location = base_location
+            mih[2].location = (base_location[0] + chit_scale / 2,
+              base_location[1] + chit_scale / 2)
+
+    def _render_marker(self, marker):
+        marker.pixbuf.render_to_drawable(self.area.window, self.gc, 0, 0, 
+          marker.location[0], marker.location[1], -1, -1, 
+          gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+
     def draw_markers(self):
         if not self.game:
             return
-        # Add missing markers
-        for legion in self.game.gen_all_legions():
-            if legion.marker not in [marker.name for marker in self.markers]:
-                marker = Marker.Marker(legion)
-                self.markers.append(marker)
-
-        chit_scale = self.markers[0].chit_scale
+        new_markernames = self._add_missing_markers()
+        if not self.markers:
+            return
         hexes_done = set()
         for marker in self.markers:
             hex1 = marker.hex
-
             if hex1 in hexes_done:
                 continue
             hexes_done.add(hex1)
-
-            mih = self.markers_in_hex(marker.hex)
-            num = len(mih)
-            assert 1 <= num <= 3
-            guihex = self.guihexes[hex1]
-            base_location = (guihex.center[0] - chit_scale / 2,
-              guihex.center[1] - chit_scale / 2)
-
-            if num == 1:
-                mih[0].location = base_location
-            elif num == 2:
-                mih[0].location = (base_location[0] - chit_scale / 4,
-                  base_location[1] - chit_scale / 4)
-                mih[1].location = (base_location[0] + chit_scale / 4,
-                  base_location[1] + chit_scale / 4)
-            else:
-                mih[0].location = (base_location[0] - chit_scale / 2,
-                  base_location[1] - chit_scale / 2)
-                mih[1].location = base_location
-                mih[2].location = (base_location[0] + chit_scale / 2,
-                  base_location[1] + chit_scale / 2)
-
-        for marker in self.markers:
-            marker.pixbuf.render_to_drawable(self.area.window, self.gc, 0, 0, 
-              marker.location[0], marker.location[1], -1, -1, 
-              gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+            self._compute_marker_locations(hex1)
+            mih = self.markers_in_hex(hex1)
+            for marker in mih:
+                self._render_marker(marker)
 
 
-    def update_gui(self):
-        for guihex in self.guihexes.values():
+    def update_gui(self, hexlabels=None):
+        if hexlabels is not None:
+            guihexes = [self.guihexes[hl] for hl in hexlabels]
+        else:
+            guihexes = self.guihexes.values()
+        for guihex in guihexes:
             guihex.update_gui(self.gc, self.style)
         self.draw_markers()
 
     def update(self, observed, action):
         print "GUIMasterBoard.update", self, observed, action
         if isinstance(action, Action.CreateStartingLegion):
-            self.update_gui()
+            player = self.game.get_player_by_name(action.playername)
+            legion = player.legions[0]
+            self.update_gui([legion.hex])
 
 
 def quit(unused):
