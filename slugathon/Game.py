@@ -1,8 +1,10 @@
+import sys
 import time
 from twisted.spread import pb
 import Player
 import MasterBoard
 import rules
+from playercolordata import colors
 
 class Game(pb.Copyable):
     """Central class holding information about one game."""
@@ -15,6 +17,7 @@ class Game(pb.Copyable):
         self.max_players = max_players
         self.started = False
         self.players = []
+        self.num_players_joined = 0
         self.add_player(owner)
         self.board = MasterBoard.MasterBoard()
 
@@ -22,7 +25,15 @@ class Game(pb.Copyable):
         return isinstance(other, Game) and self.name == other.name
 
     def get_owner(self):
-        return self.players[0].name
+        """The owner of the game is the remaining player who joined first."""
+        min_join_order = sys.maxint
+        owner = None
+        for player in self.players:
+            if player.join_order < min_join_order:
+                owner = player
+                min_join_order = player.join_order
+        assert owner is not None
+        return owner
 
     def get_playernames(self):
         return [player.name for player in self.players]
@@ -31,19 +42,17 @@ class Game(pb.Copyable):
         for player in self.players:
             if player.name == name:
                 return player
-        return None
+        raise KeyError("No player named %s" % name)
 
     def to_tuple(self):
         """Return state as a tuple of strings for GUI presentation."""
-        return (self.name, self.get_owner(), time.ctime(self.create_time),
+        return (self.name, self.get_owner().name, time.ctime(self.create_time),
           time.ctime(self.start_time), self.min_players, self.max_players,
           ', '.join(self.get_playernames()))
 
     def remove_player(self, playername):
         assert not self.started, 'remove_player on started game'
         player = self.get_player_by_name(playername)
-        assert player, \
-          '%s tried to drop from %s but not in game' % (playername, self.name)
         self.players.remove(player)
 
     def add_player(self, playername):
@@ -54,21 +63,45 @@ class Game(pb.Copyable):
         assert len(self.players) < self.max_players, \
           '%s tried to join full game %s' % (playername, self.name)
         print 'adding', playername, 'to', self.name
-        player = Player.Player(playername)
+        self.num_players_joined++
+        player = Player.Player(playername, self.num_players_joined)
         self.players.append(player)
         player.add_observer(self)
 
     def start(self, playername):
-        assert playername == self.get_owner(), \
+        assert playername == self.get_owner().name, \
           'start_game called for %s by non-owner %s' % (self.name, playername)
         self.started = True
         towers = rules.assign_towers(self.board.get_tower_labels(), 
           len(self.players))
         for num, player in enumerate(self.players):
             player.assign_starting_tower(towers[num])
+        self.sort_players()
+        for player in players:
+            pass
+            # TODO Figure out the right way to call up through server to client.
+            # Need to add server as an observer on this game?
+
+
+    def sort_players(self):
+        """Sort players into descending order of tower number.
+        
+           Only call this after towers are assigned.
+        """
+        def starting_tower_desc(a, b):
+            return b.starting_tower - a.starting_tower
+        self.players.sort(starting_tower_desc)
+
+    def assign_color(self, playername, color):
+        assert color in colors
+        for p in players:
+            assert p.color != color
+        player = self.get_player_by_name(playername)
+        player.assign_color(color)
+
 
     def update(self, observed, *args):
-        # TODO
+        # TODO Game.update
         pass
 
     def getStateToCopy(self):
@@ -86,6 +119,7 @@ class RemoteGame(Game, pb.RemoteCopy):
        Should not see random number generator status or other players' 
        legion contents, and should not be able to change global game state.
     """
+    # XXX Need to call Game.__init__?  Use new-style classes?
     def __init__(self):
         pass
 

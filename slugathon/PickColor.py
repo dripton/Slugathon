@@ -6,17 +6,16 @@ except (ImportError, AttributeError):
 import gtk
 import gtk.glade
 from twisted.internet import reactor
+from playercolordata import colors
 
 
 class PickColor:
     """Dialog to pick a player color."""
 
-    player_colors = ['Black', 'Blue', 'Brown', 'Gold', 'Green', 'Red']
-
     def __init__(self, user, colors_left):
         self.user = user
         self.glade = gtk.glade.XML('../glade/pickcolor.glade')
-        self.widgets = ['pick_color_dialog', 'label1'] + self.player_colors
+        self.widgets = ['pick_color_dialog', 'label1'] + colors
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
@@ -24,7 +23,7 @@ class PickColor:
           '../images/creature/Colossus.gif')
         self.pickColorDialog.set_icon(pixbuf)
 
-        for button_name in self.player_colors:
+        for button_name in colors:
             button = getattr(self, button_name)
             if button_name in colors_left: 
                 button.connect('button-press-event', self.cb_click)

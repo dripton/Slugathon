@@ -12,11 +12,13 @@ class Player(pb.Copyable, pb.RemoteCopy):
        these cases.)  A user might drop his connection, and another user 
        might take over his player can continue the game.
     """
-    def __init__(self, name):
+    def __init__(self, name, join_order):
         self.name = name
+        self.join_order = join_order
         self.starting_tower = None    # a numeric hex label
         self.score = 0
         self.observers = []
+        self.color = None
 
     def add_observer(self, observer):
         if not observer in self.observers:
@@ -35,6 +37,11 @@ class Player(pb.Copyable, pb.RemoteCopy):
     def assign_starting_tower(self, tower):
         """Set this player's starting tower to the (int) tower"""
         self.starting_tower = tower
+        self.notify_observers()
+
+    def assign_color(self, color):
+        """Set this player's color"""
+        self.color = color
         self.notify_observers()
 
 

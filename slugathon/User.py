@@ -53,21 +53,21 @@ class User(pb.Avatar):
         def1 = self.client.callRemote("notify_changed_game", game)
         def1.addErrback(self.failure)
 
-    def perspective_drop_from_game(self, game):
-        print "perspective_drop_from_game", game
-        self.server.drop_from_game(self.name, game)
+    def perspective_drop_from_game(self, game_name):
+        print "perspective_drop_from_game", game_name
+        self.server.drop_from_game(self.name, game_name)
 
-    def perspective_join_game(self, game):
-        print "perspective_join_game", game
-        self.server.join_game(self.name, game)
+    def perspective_join_game(self, game_name):
+        print "perspective_join_game", game_name
+        self.server.join_game(self.name, game_name)
 
-    def perspective_start_game(self, game):
-        print "perspective_start_game", game, game.name
-        self.server.start_game(self.name, game)
+    def perspective_start_game(self, game_name):
+        print "perspective_start_game", game_name
+        self.server.start_game(self.name, game_name)
 
-    def perspective_pick_color(self, game, color):
-        print "perspective_pick_color", game, color
-        self.server.pick_color(self.name, game, color)
+    def perspective_pick_color(self, game_name, color):
+        print "perspective_pick_color", game_name, color
+        self.server.pick_color(self.name, game_name, color)
 
     def __str__(self):
         return "User " + self.name

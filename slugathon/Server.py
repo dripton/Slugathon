@@ -45,6 +45,12 @@ class Server:
         print "get_games called on", self
         return self.games[:]
 
+    def name_to_game(self, game_name):
+        for g in self.games:
+            if g.name == game_name:
+                return g
+        raise KeyError("No game named %s found" % game_name)
+
     def send_chat_message(self, source, dest, text):
         """Send a chat message from user sender to users in dest.
 
@@ -77,7 +83,8 @@ class Server:
         for u in self.users:
             u.notify_formed_game(game)
 
-    def drop_from_game(self, username, game):
+    def drop_from_game(self, username, game_name):
+        game = self.name_to_game(game_name)
         try:
             game.remove_player(username)
         except AssertionError:
@@ -92,7 +99,8 @@ class Server:
                 for u in self.users:
                     u.notify_changed_game(game)
 
-    def join_game(self, username, game):
+    def join_game(self, username, game_name):
+        game = self.name_to_game(game_name)
         try:
             game.add_player(username)
         except AssertionError:
@@ -101,12 +109,13 @@ class Server:
             for u in self.users:
                 u.notify_changed_game(game)
 
-    def start_game(self, username, game):
+    def start_game(self, username, game_name):
+        game = self.name_to_game(game_name)
         game.start(username)
 
-    def pick_color(self, username, game, color):
-        # TODO
-        pass
+    def pick_color(self, username, game_name, color):
+        game = self.name_to_game(game_name)
+        game.assign_color(username, color)
 
 
 class Options(usage.Options):
