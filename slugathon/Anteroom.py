@@ -22,7 +22,7 @@ class Anteroom:
         self.user = user
         self.glade = glade.XML('../glade/anteroom.glade')
         self.widgets = ['anteroomWindow', 'chatEntry', 'chatView', 'gameList',
-          'userList']
+          'userList', 'newGameButton']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
         self.usernames = Set()
@@ -30,6 +30,7 @@ class Anteroom:
         self.anteroomWindow.connect("destroy", quit)
 
         self.chatEntry.connect("key-press-event", self.cb_keypress)
+        self.newGameButton.connect("button-press-event", self.cb_click)
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
@@ -101,6 +102,9 @@ class Anteroom:
             if text:
                 def1 = self.user.callRemote("send_chat_message", text)
                 self.chatEntry.set_text("")
+
+    def cb_click(self, widget, event):
+        print "clicked new game button"
 
     def receive_chat_message(self, message):
         buffer = self.chatView.get_buffer()
