@@ -9,11 +9,12 @@ import gtk.glade
 
 class NewGame:
     """Form new game dialog."""
-    def __init__(self, user):
+    def __init__(self, user, username):
         self.name = None
         self.min_players = None
         self.max_players = None
         self.user = user
+        self.username = username
         self.glade = gtk.glade.XML('../glade/newgame.glade')
         self.widgets = ['new_game_dialog', 'name_entry', 'min_players_spin', 
           'max_players_spin']
@@ -22,6 +23,9 @@ class NewGame:
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
         self.new_game_dialog.set_icon(pixbuf)
+        self.new_game_dialog.set_title("%s - %s" % (
+          self.new_game_dialog.get_title(), self.username))
+
 
         response = self.new_game_dialog.run()
         if response == gtk.RESPONSE_OK:

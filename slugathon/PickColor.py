@@ -12,8 +12,9 @@ from playercolordata import colors
 class PickColor:
     """Dialog to pick a player color."""
 
-    def __init__(self, user, colors_left):
+    def __init__(self, user, username, colors_left):
         self.user = user
+        self.username = username
         self.glade = gtk.glade.XML('../glade/pickcolor.glade')
         self.widgets = ['pick_color_dialog', 'label1'] + colors
         for widget_name in self.widgets:
@@ -22,6 +23,9 @@ class PickColor:
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
         self.pick_color_dialog.set_icon(pixbuf)
+        self.pick_color_dialog.set_title("%s - %s" % (
+          self.pick_color_dialog.get_title(), self.username))
+
 
         for button_name in colors:
             button = getattr(self, button_name)

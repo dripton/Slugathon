@@ -16,8 +16,9 @@ def format_time(secs):
 
 class WaitingForPlayers:
     """Waiting for players to start game dialog."""
-    def __init__(self, user, game):
+    def __init__(self, user, username, game):
         self.user = user
+        self.username = username
         self.game = game
         self.glade = gtk.glade.XML('../glade/waitingforplayers.glade')
         self.widgets = ['waiting_for_players_window', 'game_name_label', 
@@ -31,6 +32,10 @@ class WaitingForPlayers:
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
         self.waiting_for_players_window.set_icon(pixbuf)
+        self.waiting_for_players_window.set_title("%s - %s" % (
+          self.waiting_for_players_window.get_title(), self.username))
+
+
         self.join_button.connect("button-press-event", self.cb_click_join)
         self.drop_button.connect("button-press-event", self.cb_click_drop)
         self.start_button.connect("button-press-event", self.cb_click_start)

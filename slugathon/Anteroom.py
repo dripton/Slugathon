@@ -40,6 +40,8 @@ class Anteroom:
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
         self.anteroom_window.set_icon(pixbuf)
+        self.anteroom_window.set_title("%s - %s" % (
+          self.anteroom_window.get_title(), self.username))
         def1 = user.callRemote("get_user_names")
         def1.addCallbacks(self.got_user_names, self.failure)
 
@@ -121,7 +123,7 @@ class Anteroom:
                 self.chat_entry.set_text("")
 
     def cb_click(self, widget, event):
-        NewGame.NewGame(self.user)
+        NewGame.NewGame(self.user, self.username)
 
     def receive_chat_message(self, message):
         buf = self.chat_view.get_buffer()
@@ -149,7 +151,8 @@ class Anteroom:
         if self.username in game.get_playernames():
             if self.wfp:
                 self.wfp.destroy()
-            self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, game)
+            self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, 
+              self.username, game)
 
     def remove_game(self, game_name):
         game = self.name_to_game(game_name)
@@ -185,7 +188,8 @@ class Anteroom:
         # TODO popup menu
         if self.wfp:
             self.wfp.destroy()
-        self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, game)
+        self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, 
+          self.username, game)
         return False
 
 def quit(unused):
