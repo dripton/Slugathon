@@ -37,3 +37,8 @@ class MasterBoard:
 
     def hex_height(self):
         return self.maxY - self.minY + 1
+
+    def get_tower_labels(self):
+        """Return a list of int labels for this board's tower hexes."""
+        return [hex.label for hex in self.hexes.values()
+                if hex.is_tower()]

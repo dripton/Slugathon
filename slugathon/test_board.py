@@ -181,6 +181,11 @@ class MasterBoardTestCase(unittest.TestCase):
         assert not guiutils.point_in_polygon((500, 481), allPoints)
         assert not guiutils.point_in_polygon((451, 514), allPoints)
 
+    def testTowers(self):
+        labels = self.board.get_tower_labels()
+        labels.sort()
+        assert labels == [100, 200, 300, 400, 500, 600]
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -119,3 +119,7 @@ class MasterHex:
                     return 1
                 else:
                     return 4
+
+    def is_tower(self):
+        """Return True iff this hex is a tower."""
+        return self.terrain == "Tower"
