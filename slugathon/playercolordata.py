@@ -1,10 +1,10 @@
 name_to_abbrev = {
-    'Black': 'Bk',
-    'Blue':  'Bu',
-    'Brown': 'Br',
-    'Gold':  'Gd',
-    'Green': 'Gr',
-    'Red':   'Rd',
+    "Black": "Bk",
+    "Blue":  "Bu",
+    "Brown": "Br",
+    "Gold":  "Gd",
+    "Green": "Gr",
+    "Red":   "Rd",
 }
 
 abbrev_to_name = {}

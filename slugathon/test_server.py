@@ -18,13 +18,13 @@ class ServerTestCase(unittest.TestCase):
         time.sleep(1)
 
     def test_startup(self):
-        self.client = Client.Client(username='unittest', password='unittest')
+        self.client = Client.Client(username="unittest", password="unittest")
         self.client.connect().addCallbacks(self.connected, self.failure)
         reactor.run()
 
     def connected(self, perspective):
         print "connected", self, perspective
-        perspective.callRemote('get_name', 'foo').addCallbacks(self.success,
+        perspective.callRemote("get_name", "foo").addCallbacks(self.success,
           self.failure)
 
     def success(self, name):
@@ -40,5 +40,5 @@ class ServerTestCase(unittest.TestCase):
         os.system('pkill -f "python.*Server.py"')
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,7 @@
 
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 from twisted.internet import gtk2reactor
@@ -20,10 +20,10 @@ import Client
 class Connect(object):
     """GUI for connecting to a server."""
     def __init__(self):
-        self.glade = gtk.glade.XML('../glade/connect.glade')
-        self.widgets = ['connect_window', 'playername_combo', 
-          'password_entry', 'server_name_combo', 'server_port_combo', 
-          'connect_button', 'start_server_button']
+        self.glade = gtk.glade.XML("../glade/connect.glade")
+        self.widgets = ["connect_window", "playername_combo", 
+          "password_entry", "server_name_combo", "server_port_combo", 
+          "connect_button", "start_server_button"]
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.glade.signal_autoconnect(self)
@@ -33,7 +33,7 @@ class Connect(object):
         self.init_lists()
         self.connect_window.connect("destroy", quit)
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.png')
+          "../images/creature/Colossus.png")
         self.connect_window.set_icon(pixbuf)
         self.connect_window.show()
 
@@ -52,7 +52,7 @@ class Connect(object):
     def init_server_names(self):
         if not self.server_names:
             self.server_names = set()
-        self.server_names.add('localhost')
+        self.server_names.add("localhost")
         for name in self.server_names:
             self.server_name_combo.insert_text(name)
 
@@ -91,7 +91,7 @@ def quit(unused):
     reactor.stop()
     sys.exit()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     connect = Connect()
     reactor.run()
 

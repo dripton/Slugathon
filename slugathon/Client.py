@@ -21,7 +21,7 @@ class Client(pb.Referenceable, Observed):
 
     zope.interface.implements(IObserver)
 
-    def __init__(self, username, password, host='localhost', 
+    def __init__(self, username, password, host="localhost", 
           port=Server.DEFAULT_PORT):
         Observed.__init__(self)
         self.username = username

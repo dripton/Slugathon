@@ -77,12 +77,12 @@ class Server(Observed):
 
     def form_game(self, username, game_name, min_players, max_players):
         if not game_name:
-            raise ValueError('Games must be named')
+            raise ValueError("Games must be named")
         if game_name in [g.name for g in self.games]:
             raise ValueError('The game name "%s" is already in use' 
               % game_name)
         if min_players > max_players:
-            raise ValueError('min_players must be <= max_players')
+            raise ValueError("min_players must be <= max_players")
         now = time.time()
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY, 
@@ -162,12 +162,12 @@ def main(config):
     reactor.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     config = Options()
     try:
         config.parseOptions()
     except usage.UsageError, errortext:
-        print '%s: %s' % (sys.argv[0], errortext)
-        print '%s: Try --help for usage details.' % (sys.argv[0])
+        print "%s: %s" % (sys.argv[0], errortext)
+        print "%s: Try --help for usage details." % (sys.argv[0])
         sys.exit(1)
     main(config)

@@ -84,9 +84,9 @@ class MasterHex(object):
 
     def build_overlay_filename(self):
         if self.inverted:
-            invert_indicator = 'i'
+            invert_indicator = "i"
         else:
-            invert_indicator = 'n'
+            invert_indicator = "n"
         self.overlay_filename = "%s_%s.png" % (self.terrain, invert_indicator)
 
     def find_label_side(self):

@@ -2,7 +2,7 @@
 
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
@@ -22,11 +22,11 @@ class GUIMasterBoard(object):
         self.board = board
         self.scale = scale
         self.area = gtk.DrawingArea()
-        black = self.area.get_colormap().alloc_color('black')
+        black = self.area.get_colormap().alloc_color("black")
         self.area.modify_bg(gtk.STATE_NORMAL, black)
         self.area.set_size_request(self.compute_width(), self.compute_height())
         # TODO Vary font size with scale
-        self.area.modify_font(pango.FontDescription('monospace 8'))
+        self.area.modify_font(pango.FontDescription("monospace 8"))
         self.root.add(self.area)
         self.guihexes = {}
         for hex1 in self.board.hexes.values():
@@ -62,12 +62,12 @@ class GUIMasterBoard(object):
 def quit(unused):
     sys.exit()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     root = gtk.Window()
-    root.set_title('Slugathon - MasterBoard')
+    root.set_title("Slugathon - MasterBoard")
     root.connect("destroy", quit)
 
-    pixbuf = gtk.gdk.pixbuf_new_from_file('../images/creature/Colossus.png')
+    pixbuf = gtk.gdk.pixbuf_new_from_file("../images/creature/Colossus.png")
     root.set_icon(pixbuf)
 
     board = MasterBoard.MasterBoard()

@@ -1,6 +1,6 @@
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
@@ -15,13 +15,13 @@ class NewGame(object):
         self.max_players = None
         self.user = user
         self.username = username
-        self.glade = gtk.glade.XML('../glade/newgame.glade')
-        self.widgets = ['new_game_dialog', 'name_entry', 'min_players_spin', 
-          'max_players_spin']
+        self.glade = gtk.glade.XML("../glade/newgame.glade")
+        self.widgets = ["new_game_dialog", "name_entry", "min_players_spin", 
+          "max_players_spin"]
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.png')
+          "../images/creature/Colossus.png")
         self.new_game_dialog.set_icon(pixbuf)
         self.new_game_dialog.set_title("%s - %s" % (
           self.new_game_dialog.get_title(), self.username))

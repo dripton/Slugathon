@@ -1,6 +1,6 @@
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
@@ -84,7 +84,7 @@ class GUIMasterHex(object):
 
         if self.selected:
             # outer portion
-            fg = colormap.alloc_color('white')
+            fg = colormap.alloc_color("white")
             gc.foreground = fg
             self.guiboard.area.window.draw_polygon(gc, True, self.points)
 
@@ -95,7 +95,7 @@ class GUIMasterHex(object):
                 self.innerVertexes)
 
             # outline
-            fg = colormap.alloc_color('black')
+            fg = colormap.alloc_color("black")
             gc.foreground = fg
             self.guiboard.area.window.draw_polygon(gc, False, self.points)
 
@@ -106,7 +106,7 @@ class GUIMasterHex(object):
             self.guiboard.area.window.draw_polygon(gc, True, self.points)
 
             # outline
-            fg = colormap.alloc_color('white')
+            fg = colormap.alloc_color("white")
             gc.foreground = fg
             self.guiboard.area.window.draw_polygon(gc, False, self.points)
 
@@ -152,13 +152,13 @@ class GUIMasterHex(object):
         theta = math.atan2(vy2 - vy1, vx2 - vx1)
         unit = self.guiboard.scale / 1.75
 
-        if gateType == 'BLOCK':
+        if gateType == "BLOCK":
             return _init_block(x0, y0, x1, y1, theta, unit)
-        elif gateType == 'ARCH':
+        elif gateType == "ARCH":
             return _init_arch(x0, y0, x1, y1, theta, unit)
-        elif gateType == 'ARROW':
+        elif gateType == "ARROW":
             return _init_arrow(x0, y0, x1, y1, theta, unit)
-        elif gateType == 'ARROWS':
+        elif gateType == "ARROWS":
             return _init_arrows(vx1, vy1, vx2, vy2, theta, unit)
         else:
             return None
@@ -203,7 +203,7 @@ class GUIMasterHex(object):
                 half_text_height)))
 
         colormap = self.guiboard.area.get_colormap()
-        fg = colormap.alloc_color('black')
+        fg = colormap.alloc_color("black")
         gc.foreground = fg
 
         self.guiboard.area.window.draw_layout(gc, x, y, layout)

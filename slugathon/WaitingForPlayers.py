@@ -2,7 +2,7 @@ import time
 
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
@@ -30,17 +30,17 @@ class WaitingForPlayers(object):
         self.username = username
         self.game = game
         self.game.attach(self)
-        self.glade = gtk.glade.XML('../glade/waitingforplayers.glade')
-        self.widgets = ['waiting_for_players_window', 'game_name_label', 
-          'player_list', 'created_entry', 'starts_by_entry', 'countdown_entry',
-          'join_button', 'drop_button', 'start_button']
+        self.glade = gtk.glade.XML("../glade/waitingforplayers.glade")
+        self.widgets = ["waiting_for_players_window", "game_name_label", 
+          "player_list", "created_entry", "starts_by_entry", "countdown_entry",
+          "join_button", "drop_button", "start_button"]
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.player_store = gtk.ListStore(str)
         self.update_player_store()
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.png')
+          "../images/creature/Colossus.png")
         self.waiting_for_players_window.set_icon(pixbuf)
         self.waiting_for_players_window.set_title("%s - %s" % (
           self.waiting_for_players_window.get_title(), self.username))
@@ -58,7 +58,7 @@ class WaitingForPlayers(object):
         self.player_list.set_model(self.player_store)
         selection = self.player_list.get_selection()
         selection.set_select_function(self.cb_player_list_select, None)
-        column = gtk.TreeViewColumn('Player Name', gtk.CellRendererText(),
+        column = gtk.TreeViewColumn("Player Name", gtk.CellRendererText(),
           text=0)
         self.player_list.append_column(column)
 

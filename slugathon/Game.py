@@ -60,7 +60,7 @@ class Game(Observed):
         """Return state as a tuple of strings for GUI presentation."""
         return (self.name, self.get_owner().name, time.ctime(self.create_time),
           time.ctime(self.start_time), self.min_players, self.max_players,
-          ', '.join(self.get_playernames()))
+          ", ".join(self.get_playernames()))
 
     def to_info_tuple(self):
         """Return state as a tuple of strings for passing to client."""
@@ -69,19 +69,19 @@ class Game(Observed):
 
     def add_player(self, playername):
         """Add a player to this game."""
-        assert not self.started, 'add_player on started game'
+        assert not self.started, "add_player on started game"
         assert playername not in self.get_playernames(), \
-          'add_player from %s already in game %s' % (playername, self.name)
+          "add_player from %s already in game %s" % (playername, self.name)
         assert len(self.players) < self.max_players, \
-          '%s tried to join full game %s' % (playername, self.name)
-        print 'adding', playername, 'to', self.name
+          "%s tried to join full game %s" % (playername, self.name)
+        print "adding", playername, "to", self.name
         self.num_players_joined += 1
         player = Player.Player(playername, self.name, self.num_players_joined)
         self.players.append(player)
         player.attach(self)
 
     def remove_player(self, playername):
-        assert not self.started, 'remove_player on started game'
+        assert not self.started, "remove_player on started game"
         player = self.get_player_by_name(playername)
         player.detach(self)
         self.players.remove(player)
@@ -89,7 +89,7 @@ class Game(Observed):
     def start(self, playername):
         """Called only on server side, and only by game owner."""
         assert playername == self.get_owner().name, \
-          'Game.start called for %s by non-owner %s' % (self.name, playername)
+          "Game.start called for %s by non-owner %s" % (self.name, playername)
         self.started = True
         towers = rules.assign_towers(self.board.get_tower_labels(), 
           len(self.players))

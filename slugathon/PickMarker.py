@@ -1,6 +1,6 @@
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
@@ -16,21 +16,21 @@ class PickMarker(object):
         self.pick_marker_dialog = gtk.Dialog()
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.png')
+          "../images/creature/Colossus.png")
         self.pick_marker_dialog.set_icon(pixbuf)
         self.pick_marker_dialog.set_title("PickMarker - %s" % (self.username))
 
         for ii, button_name in enumerate(markers_left):
             button = gtk.Button()
             button.tag = button_name
-            pixbuf = gtk.gdk.pixbuf_new_from_file('../images/legion/%s.png' % 
+            pixbuf = gtk.gdk.pixbuf_new_from_file("../images/legion/%s.png" % 
               button_name)
             image = gtk.Image()
             image.set_from_pixbuf(pixbuf)
             image.show()
             button.add(image)
             button.show()
-            button.connect('button-press-event', self.cb_click)
+            button.connect("button-press-event", self.cb_click)
             self.pick_marker_dialog.add_action_widget(button, ii + 1)
 
         self.pick_marker_dialog.show()

@@ -77,5 +77,5 @@ class AssignTowersTestCase(unittest.TestCase):
             assert math.floor(mean / 3) <= count <= math.ceil(2 * mean), \
               "counts out of range: %s" % counts
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

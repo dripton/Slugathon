@@ -2,7 +2,7 @@ import math
 import StringIO
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
@@ -23,10 +23,10 @@ def rgb_to_gtk(rgb):
 
 def image_to_gdk_pixbuf(image):
     file1 = StringIO.StringIO()
-    image.save(file1, 'ppm')
+    image.save(file1, "ppm")
     contents = file1.getvalue()
     file1.close()
-    loader = gtk.gdk.PixbufLoader('pnm')
+    loader = gtk.gdk.PixbufLoader("pnm")
     loader.write(contents, len(contents))
     pixbuf = loader.get_pixbuf()
     loader.close()

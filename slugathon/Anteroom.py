@@ -2,7 +2,7 @@ import sys
 
 try:
     import pygtk
-    pygtk.require('2.0')
+    pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
@@ -24,9 +24,9 @@ class Anteroom(object):
     def __init__(self, user, username):
         self.user = user
         self.username = username
-        self.glade = gtk.glade.XML('../glade/anteroom.glade')
-        self.widgets = ['anteroom_window', 'chat_entry', 'chat_view', 
-          'game_list', 'user_list', 'new_game_button']
+        self.glade = gtk.glade.XML("../glade/anteroom.glade")
+        self.widgets = ["anteroom_window", "chat_entry", "chat_view", 
+          "game_list", "user_list", "new_game_button"]
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.usernames = None   # set, aliased from Client
@@ -39,7 +39,7 @@ class Anteroom(object):
         self.new_game_button.connect("button-press-event", self.cb_click)
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-          '../images/creature/Colossus.png')
+          "../images/creature/Colossus.png")
         self.anteroom_window.set_icon(pixbuf)
         self.anteroom_window.set_title("%s - %s" % (
           self.anteroom_window.get_title(), self.username))
@@ -64,7 +64,7 @@ class Anteroom(object):
         self.user_list.set_model(self.user_store)
         selection = self.user_list.get_selection()
         selection.set_select_function(self.cb_user_list_select, None)
-        column = gtk.TreeViewColumn('User Name', gtk.CellRendererText(),
+        column = gtk.TreeViewColumn("User Name", gtk.CellRendererText(),
           text=0)
         self.user_list.append_column(column)
 
@@ -73,8 +73,8 @@ class Anteroom(object):
         self.game_list.set_model(self.game_store)
         selection = self.game_list.get_selection()
         selection.set_select_function(self.cb_game_list_select, None)
-        headers = ['Game Name', 'Owner', 'Create Time', 'Start Time',
-          'Min Players', 'Max Players', 'Players']
+        headers = ["Game Name", "Owner", "Create Time", "Start Time",
+          "Min Players", "Max Players", "Players"]
         for (ii, title) in enumerate(headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
               text=ii)

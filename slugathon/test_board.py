@@ -187,5 +187,5 @@ class MasterBoardTestCase(unittest.TestCase):
         assert labels == [100, 200, 300, 400, 500, 600]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

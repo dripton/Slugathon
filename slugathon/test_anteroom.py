@@ -31,5 +31,5 @@ class AnteroomTestCase(unittest.TestCase):
         os.system('pkill -f "python.*Server.py"')
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
