@@ -1,8 +1,0 @@
-GUI toolkit candidates:
-
-PyGTK2: Glade support.  A bit hard to install.  Ugly API.
-wxPython: Multiple event loops won't unify with Twisted.  Has MFC Nature.
-Tkinter: Included with Python.  Ugly.  Slow.
-PyGame: No higher-level GUI widgets, just surfaces.
-PyUI: Widgets on top of PyGame.  Pretty.  Not many widgets.  Not portable.
-PyQt: Not (yet) portable to Mac, bad license on Windows.
