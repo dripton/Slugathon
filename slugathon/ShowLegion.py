@@ -25,17 +25,10 @@ class ShowLegion(object):
         self.show_legion_dialog.set_title("ShowLegion - %s" % (username))
 
         # TODO Handle unknown creatures correctly
-        chit_names = [creature.name for creature in legion.creatures]
-        while len(chit_names) < legion.height():
-            chit_names.append("QuestionMarkMask")
-
-        for ii, chit_name in enumerate(chit_names):
-            pixbuf = gtk.gdk.pixbuf_new_from_file("../images/creature/%s.png" %
-              chit_name)
-            image = gtk.Image()
-            image.set_from_pixbuf(pixbuf)
-            image.show()
-            self.show_legion_dialog.add_action_widget(image, ii + 1)
+        for creature in legion.creatures:
+            chit = Chit.Chit(creature, scale=20)
+            chit.show()
+            self.show_legion_dialog.action_area.add(chit.image)
 
         self.show_legion_dialog.show()
 
