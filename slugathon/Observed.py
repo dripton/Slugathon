@@ -21,12 +21,15 @@ class Observed(object):
         self.observers = []
 
     def attach(self, observer):
+        print "called Observed.attach", self, observer
         if not observer in self.observers:
             self.observers.append(observer)
 
     def detach(self, observer):
+        print "called Observed.detach", self, observer
         self.observers.remove(observer)
 
     def notify(self, action):
+        print "called Observed.notify", self, action
         for obs in self.observers:
             obs.update(self, action)
