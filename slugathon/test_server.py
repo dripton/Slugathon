@@ -18,11 +18,8 @@ class ServerTestCase(unittest.TestCase):
         time.sleep(1)
 
     def testStartup(self):
-        self.client = Client.Client()
-        pb.connect(host='localhost', port=Server.DEFAULT_PORT, 
-          username="unittest", password="unittest",
-          serviceName="SlugathonService", client=self.client, 
-          timeout=30).addCallbacks(self.connected, self.failure)
+        self.client = Client.Client(username='unittest', password='unittest')
+        self.client.connect().addCallbacks(self.connected, self.failure)
         reactor.run()
 
     def connected(self, perspective):
