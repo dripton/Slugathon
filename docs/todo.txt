@@ -25,23 +25,16 @@ When a user drops from the server, drop his player from games.
 
 Try PyNSource http://www.atug.com/andypatterns/pynsource.htm
 
-Make the case and extensions of documention filenames consistent.
-
 If a player kills a WaitingForPlayers dialog, drop him from that
 game?
 
+Support sending chat messages to one user, or a group excluding some
+users.
+
 ###############
 
-get_usernames / got_usernames / get_games / got_games calls should 
-be moved outside Anteroom into Client, which Anteroom observes.
+Should WaitingForPlayers hold a direct Game reference?
 
-Game should observe Client.
-
-The main client-side list of Games should be held inside Client not
-Anteroom.  Anteroom should only hold the GUI view.
-
-We never use the observed argument on update, instead pulling the
-player or game out of the action.  Drop it?
 
 How to send to only some observers?  (e.g. a chat message for one 
 player, or hidden stack contents?)  Need each observer to leave
@@ -53,4 +46,15 @@ Document all observer / observed relationships.
 
 Need an EventSaver class that observes the stream of events hitting
 a Client or Server and saves them in one or more queues.  It should
-also be able to save and load.
+also be able to save and load.  When a new client joins, the EventSaver
+should send it all events needed to sync up.
+
+
+When owner drops from game and another player remains, Anteroom is
+not updating owner or players.  Timing problem -- Anteroom needs to 
+observe each Game.
+
+When only player drops from game, other players' WFP dialogs do not
+go away.
+
+Getting multiple WFP dialogs for same game and player.

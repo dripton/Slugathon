@@ -1,3 +1,5 @@
+import sys
+
 try:
     import pygtk
     pygtk.require('2.0')
@@ -5,13 +7,8 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import gtk.glade
-import sys
-try:
-    set
-except NameError:
-    from sets import Set as set
-
 from twisted.internet import reactor
+import zope.interface
 
 import NewGame
 import WaitingForPlayers
@@ -22,6 +19,9 @@ import Action
 
 class Anteroom:
     """GUI for a multiplayer chat and game finding lobby."""
+
+    zope.interface.implements(IObserver)
+
     def __init__(self, user, username):
         self.user = user
         self.username = username
@@ -30,10 +30,9 @@ class Anteroom:
           'game_list', 'user_list', 'new_game_button']
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
-        self.usernames = set()
-        self.games = []
+        self.usernames = None   # set, aliased from Client
+        self.games = None       # list, aliased from Client
         self.game_store = []
-        self.wfp = None
 
         self.anteroom_window.connect("destroy", quit)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
@@ -44,20 +43,22 @@ class Anteroom:
         self.anteroom_window.set_icon(pixbuf)
         self.anteroom_window.set_title("%s - %s" % (
           self.anteroom_window.get_title(), self.username))
-        def1 = user.callRemote("get_usernames")
-        def1.addCallbacks(self.got_usernames, self.failure)
 
-    def got_usernames(self, usernames):
+    def set_usernames(self, usernames):
         """Only called when the client first connects to the server."""
-        self.usernames = set(usernames)
-        def1 = self.user.callRemote("get_games")
-        def1.addCallbacks(self.got_games, self.failure)
+        self.usernames = usernames
 
-    def got_games(self, game_info_tuples):
+    def name_to_game(self, game_name):
+        for g in self.games:
+            if g.name == game_name:
+                return g
+        raise KeyError("No game named %s found" % game_name)
+
+    def set_games(self, games):
         """Only called when the client first connects to the server."""
-        self.games = []
-        for game_info_tuple in game_info_tuples:
-            self.add_game(game_info_tuple)
+        self.games = games
+        for game in self.games:
+            self.add_game(game)
         self.user_store = gtk.ListStore(str)
         self.update_user_store()
         self.user_list.set_model(self.user_store)
@@ -109,14 +110,6 @@ class Anteroom:
         print "Anteroom.failure", self, error
         reactor.stop()
 
-    def add_username(self, username):
-        self.usernames.add(username)
-        self.update_user_store()
-
-    def del_username(self, username):
-        self.usernames.remove(username)
-        self.update_user_store()
-
     def cb_keypress(self, entry, event):
         ENTER_KEY = 65293  # XXX Find a cleaner way to do this.
         if event.keyval == ENTER_KEY:
@@ -136,49 +129,22 @@ class Anteroom:
         buf.insert(it, message)
         self.chat_view.scroll_to_mark(buf.get_insert(), 0)
 
-    def name_to_game(self, game_name):
-        for g in self.games:
-            if g.name == game_name:
-                return g
-        raise KeyError("No game named %s found" % game_name)
-
-    def add_game(self, game_info_tuple):
-        (name, create_time, start_time, min_players, max_players,
-          playernames) = game_info_tuple
-        owner = playernames[0]
-        game = Game.Game(name, owner, create_time, start_time, min_players,
-          max_players)
-        for playername in playernames[1:]:
-            game.add_player(playername)
-        self.games.append(game)
+    def add_game(self, game):
+        print "Anteroom.add_game", game.name
         self.update_game_store()
         if self.username in game.get_playernames():
-            if self.wfp:
-                self.wfp.destroy()
-            self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, 
+            wfp = WaitingForPlayers.WaitingForPlayers(self.user,
               self.username, game)
 
     def remove_game(self, game_name):
-        game = self.name_to_game(game_name)
-        self.games.remove(game)
         self.update_game_store()
-        if self.wfp and self.wfp.game == game:
-            self.wfp.destroy()
-            self.wfp = None
 
     def joined_game(self, playername, game_name):
-        game = self.name_to_game(game_name)
-        game.add_player(playername)
+        print "Anteroom.joined_game", playername, game_name
         self.update_game_store()
-        if self.wfp and self.wfp.game == game:
-            self.wfp.update_player_store()
 
-    def dropped_from_game(self, playername, game_name):
-        game = self.name_to_game(game_name)
-        game.remove_player(playername)
+    def dropped_from_game(self, game_name):
         self.update_game_store()
-        if self.wfp and self.wfp.game == game:
-            self.wfp.update_player_store()
 
     def cb_user_list_select(self, path, unused):
         index = path[0]
@@ -187,12 +153,11 @@ class Anteroom:
         return False
 
     def cb_game_list_select(self, path, unused):
+        print "Anteroom.cb_game_list_select"
         index = path[0]
         game = self.games[index]
         # TODO popup menu
-        if self.wfp:
-            self.wfp.destroy()
-        self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, 
+        wfp = WaitingForPlayers.WaitingForPlayers(self.user, 
           self.username, game)
         return False
 
@@ -200,25 +165,20 @@ class Anteroom:
         print "Anteroom.update", self, observed, action
 
         if isinstance(action, Action.AddUsername):
-            self.add_username(action.username)
+            self.update_user_store()
         elif isinstance(action, Action.DelUsername):
-            self.del_username(action.username)
+            self.update_user_store()
         elif isinstance(action, Action.FormGame):
-            game_info_tuple = (action.game_name, action.create_time,
-              action.start_time, action.min_players, action.max_players,
-              [action.username])
-            self.add_game(game_info_tuple)
+            game = self.name_to_game(action.game_name)
+            self.add_game(game)
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.JoinGame):
             self.joined_game(action.username, action.game_name)
         elif isinstance(action, Action.DropFromGame):
-            self.dropped_from_game(action.username, 
-              action.game_name)
-        # XXX Game should observe Client directly
-        elif isinstance(action, Action.AssignTower):
-            game = self.name_to_game(action.game_name)
-            # XXX TODO
+            self.dropped_from_game(action.game_name)
+
+
 def quit(unused):
     sys.exit()
 

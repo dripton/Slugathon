@@ -66,19 +66,6 @@ class Game(Observed):
         return (self.name, self.create_time, self.start_time, 
           self.min_players, self.max_players, self.get_playernames()[:])
 
-    def update(self, observed, action):
-        print "Game.update", observed, action
-        if isinstance(action, Action.AssignTower):
-            player = self.get_player_by_name(action.playername)
-            if player.starting_tower is None:
-                player.assign_starting_tower(action.tower_num)
-            self.notify(action)
-
-    def remove_player(self, playername):
-        assert not self.started, 'remove_player on started game'
-        player = self.get_player_by_name(playername)
-        self.players.remove(player)
-
     def add_player(self, playername):
         """Add a player to this game."""
         assert not self.started, 'add_player on started game'
@@ -91,6 +78,12 @@ class Game(Observed):
         player = Player.Player(playername, self.name, self.num_players_joined)
         self.players.append(player)
         player.attach(self)
+
+    def remove_player(self, playername):
+        assert not self.started, 'remove_player on started game'
+        player = self.get_player_by_name(playername)
+        player.detach(self)
+        self.players.remove(player)
 
     def start(self, playername):
         """Called only on server side, and only by game owner."""
@@ -119,4 +112,20 @@ class Game(Observed):
             assert p.color != color
         player = self.get_player_by_name(playername)
         player.assign_color(color)
+
+    def update(self, observed, action):
+        print "Game.update", observed, action
+
+        if isinstance(action, Action.AssignTower):
+            player = self.get_player_by_name(action.playername)
+            if player.starting_tower is None:
+                player.assign_starting_tower(action.tower_num)
+        elif isinstance(action, Action.JoinGame):
+            if action.game_name == self.name:
+                self.add_player(action.username)
+        elif isinstance(action, Action.DropFromGame):
+            if action.game_name == self.name:
+                self.remove_player(action.username)
+
+        self.notify(action)
 

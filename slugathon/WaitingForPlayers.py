@@ -1,3 +1,5 @@
+import time
+
 try:
     import pygtk
     pygtk.require('2.0')
@@ -5,8 +7,11 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import gtk.glade
-import time
 from twisted.internet import reactor
+import zope.interface
+
+from Observer import IObserver
+import Action
 
 
 def format_time(secs):
@@ -20,6 +25,7 @@ class WaitingForPlayers:
         self.user = user
         self.username = username
         self.game = game
+        self.game.attach(self)
         self.glade = gtk.glade.XML('../glade/waitingforplayers.glade')
         self.widgets = ['waiting_for_players_window', 'game_name_label', 
           'player_list', 'created_entry', 'starts_by_entry', 'countdown_entry',
@@ -34,7 +40,6 @@ class WaitingForPlayers:
         self.waiting_for_players_window.set_icon(pixbuf)
         self.waiting_for_players_window.set_title("%s - %s" % (
           self.waiting_for_players_window.get_title(), self.username))
-
 
         self.join_button.connect("button-press-event", self.cb_click_join)
         self.drop_button.connect("button-press-event", self.cb_click_drop)
@@ -78,7 +83,9 @@ class WaitingForPlayers:
         if diff > 0:
             reactor.callLater(1, self.update_countdown)
 
+    # XXX cleanup
     def update_player_store(self):
+        print "WFP.update_player_store"
         playernames = self.game.get_playernames()
         leng = len(self.player_store)
         for ii, playername in enumerate(playernames):
@@ -95,3 +102,17 @@ class WaitingForPlayers:
 
     def failure(self, arg):
         print "WaitingForPlayers.failure", arg
+
+    def remove_game(self):
+        self.destroy()
+        self.game.detach(self)
+
+    def update(self, observed, action):
+        print "WaitingForPlayers.update", self, observed, action
+
+        if isinstance(action, Action.RemoveGame):
+            self.remove_game()
+        elif isinstance(action, Action.JoinGame):
+            self.update_player_store()
+        elif isinstance(action, Action.DropFromGame):
+            self.update_player_store()
