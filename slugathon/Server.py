@@ -104,6 +104,10 @@ class Server:
     def start_game(self, username, game):
         game.start(username)
 
+    def pick_color(self, username, game, color):
+        # TODO
+        pass
+
 
 class Options(usage.Options):
     optParameters = [

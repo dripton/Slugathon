@@ -65,6 +65,10 @@ class User(pb.Avatar):
         print "perspective_join_game", game
         self.server.start_game(self.name, game)
 
+    def perspective_pick_color(self, game, color):
+        print "perspective_pick_color", game, color
+        self.server.pick_color(self.name, game, color)
+
     def __str__(self):
         return "User " + self.name
 
