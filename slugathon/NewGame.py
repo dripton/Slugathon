@@ -13,6 +13,9 @@ import sys
 class NewGame:
     """Form new game dialog."""
     def __init__(self, user):
+        self.name = None
+        self.min_players = None
+        self.max_players = None
         self.user = user
         self.glade = glade.XML('../glade/newgame.glade')
         self.widgets = ['newgameDialog', 'nameEntry', 'minplayersSpin', 
@@ -23,21 +26,19 @@ class NewGame:
           '../images/creature/Colossus.gif')
         self.newgameDialog.set_icon(pixbuf)
 
-        
         response = self.newgameDialog.run()
         if response == gtk.RESPONSE_OK:
             self.ok()
         else:
             self.cancel()
 
-        
     def ok(self): 
         print "ok"
-        name = self.nameEntry.get_text()
-        min_players = self.minplayersSpin.get_value_as_int()
-        max_players = self.maxplayersSpin.get_value_as_int()
-        def1 = self.user.callRemote("form_game", name, min_players, 
-          max_players)
+        self.name = self.nameEntry.get_text()
+        self.min_players = self.minplayersSpin.get_value_as_int()
+        self.max_players = self.maxplayersSpin.get_value_as_int()
+        def1 = self.user.callRemote("form_game", self.name, self.min_players,
+          self.max_players)
         def1.addErrback(self.failure)
         self.newgameDialog.destroy()
 

@@ -126,7 +126,8 @@ class Anteroom:
     def cb_click(self, widget, event):
         print "clicked new game button"
         newgame = NewGame.NewGame(self.user)
-        wfp = WaitingForPlayers.WaitingForPlayers(self.user)
+        wfp = WaitingForPlayers.WaitingForPlayers(self.user, newgame.name,
+          newgame.min_players, newgame.max_players)
 
     def receive_chat_message(self, message):
         buffer = self.chatView.get_buffer()
@@ -152,6 +153,7 @@ class Anteroom:
         print "gameList_select", index
         game = self.games[index]
         print "game is", game
+        # TODO menu with join option -> WaitingForPlayers
         return False
 
 def quit(unused):
