@@ -8,6 +8,7 @@ except ImportError, AttributeError:
 import gtk
 from gtk import glade
 import sys
+import os
 
 
 class Connect:
@@ -18,7 +19,19 @@ class Connect:
           'startServerButton']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
+        self.glade.signal_autoconnect(self)
         self.connect.show()
+
+    def on_connectButton_clicked(self, *args):
+        button = args[0]
+        print "Connect button clicked", button
+
+    def on_startServerButton_clicked(self, *args):
+        button = args[0]
+        print "Start server button clicked", button
+        # XXX Not portable
+        os.system("python2.3 Server.py &")
+
 
 def quit(unused):
     sys.exit()
