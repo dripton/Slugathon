@@ -33,6 +33,10 @@ class User(pb.Avatar):
         print "User.receive_chat_message", text
         self.client.callRemote("receive_chat_message", text)
 
+    def perspective_formgame(self, name, min_players, max_players):
+        print "perspective_formgame", name, min_players, max_players
+        
+
     def __str__(self):
         return "User " + self.name
 
