@@ -13,5 +13,6 @@ class Realm:
         print "Called Realm.requestAvatar", self, avatarId, mind, interfaces
         assert pb.IPerspective in interfaces
         avatar = User.User(avatarId, self.server, mind)
+        avatar.attached(mind)
         return pb.IPerspective, avatar, avatar.logout
 
