@@ -45,10 +45,13 @@ class Client(pb.Referenceable):
 
     def connected(self, user):
         print "Client.connected", self, user
-        self.user = user
-        self.anteroom = Anteroom.Anteroom(user)
-        # Allow chaining callbacks
-        return defer.succeed(user)
+        if user:
+            self.user = user
+            self.anteroom = Anteroom.Anteroom(user)
+            # Allow chaining callbacks
+            return defer.succeed(user)
+        else:
+            return defer.failure(user)
 
     def failure(self, error):
         "Client.failure", self, error
