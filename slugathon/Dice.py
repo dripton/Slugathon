@@ -3,7 +3,7 @@ import random
 class Dice(object):
     """Simulate rolling dice.
 
-       Runs only on the server side, for security.
+    Runs only on the server side, for security.
     """
     def __init__(self):
         self.rand = random.Random()
@@ -15,6 +15,6 @@ class Dice(object):
     def shuffle(self, lst):
         """Shuffle the list in place.
 
-           Here so that we can reuse the same RNG for the whole game.
+        Here so that we can reuse the same RNG for the whole game.
         """
         self.rand.shuffle(lst)

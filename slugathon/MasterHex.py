@@ -58,7 +58,7 @@ class MasterHex(object):
 
     def find_direction(self, neighbor_label):
         """Return the direction (0 to 5) from this hex to the adjacent hex
-           with neighbor_label.
+        with neighbor_label.
         """
         neighbor = self.board.hexes[neighbor_label]
         deltax = neighbor.x - self.x
@@ -92,8 +92,8 @@ class MasterHex(object):
     def find_label_side(self):
         """Return the hexside number where the hex label should go.
 
-           This is always a short hexside, either the one closest to
-           the center of the board, or the one farthest away from it.
+        This is always a short hexside, either the one closest to
+        the center of the board, or the one farthest away from it.
         """
         deltaX = self.x - self.board.midX
         deltaY = (1.0 * (self.y - self.board.midY) *

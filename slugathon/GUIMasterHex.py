@@ -43,8 +43,8 @@ class GUIMasterHex(object):
     def init_vertexes(self):
         """Setup the hex vertexes.
 
-           Each vertex is the midpoint between the vertexes of the two
-           bordering hexes.
+        Each vertex is the midpoint between the vertexes of the two
+        bordering hexes.
         """
         self.vertexes = []
         for unused in range(6):
@@ -114,14 +114,14 @@ class GUIMasterHex(object):
     def init_gates(self):
         """Setup the entrance and exit gates.
 
-           There are up to 3 gates to draw on a hexside.  Each is 1/6
-           of a hexside square.  The first is positioned from 1/6 to 1/3
-           of the way along the hexside, the second from 5/12 to 7/12, and
-           the third from 2/3 to 5/6.  The inner edge of each is on the
-           hexside, and the outer edge is 1/12 of a hexside outside.
+        There are up to 3 gates to draw on a hexside.  Each is 1/6
+        of a hexside square.  The first is positioned from 1/6 to 1/3
+        of the way along the hexside, the second from 5/12 to 7/12, and
+        the third from 2/3 to 5/6.  The inner edge of each is on the
+        hexside, and the outer edge is 1/12 of a hexside outside.
 
-           Since exits extend into adjacent hexes, they can be overdrawn,
-           so we need to draw both exits and entrances for both hexes.
+        Since exits extend into adjacent hexes, they can be overdrawn,
+        so we need to draw both exits and entrances for both hexes.
         """
         hex1 = self.hex
         vertexes = self.vertexes

@@ -136,14 +136,14 @@ class DiceTestCase(unittest.TestCase):
 
     def test_M(self):
         """Recode each sample as 0 if <= sample median, 1 if > sample median
-           M is number of runs of consecutive 0s and 1s.
-           r is number of 0s.
-           null hypothesis, mean and variance of M in n observations are about
-           mean_M = 2*r*(n-r)/n + 1
-           variance_M = 2*r*(n-r)*(2*r*(n-r)-n)/(n*n*(n-1))
-           for large samples Z_M = (M - mean_M) / standard_dev_M is standard 
-           normal
-           prob (M <= val) = Pr((M-meanM)/sd_M = Pr(Z)
+        M is number of runs of consecutive 0s and 1s.
+        r is number of 0s.
+        null hypothesis, mean and variance of M in n observations are about
+        mean_M = 2*r*(n-r)/n + 1
+        variance_M = 2*r*(n-r)*(2*r*(n-r)-n)/(n*n*(n-1))
+        for large samples Z_M = (M - mean_M) / standard_dev_M is standard 
+        normal
+        prob (M <= val) = Pr((M-meanM)/sd_M = Pr(Z)
         """
         median = find_median(self.rolls)
         ms = convert_to_binary(self.rolls, median)
@@ -158,8 +158,7 @@ class DiceTestCase(unittest.TestCase):
 
     def test_sign(self):
         """P is number of positive signs among x2-x1, x3-x2, etc. (not zeros)
-           If M non-zero values of xi - x(i-1), mean_P is m/2, variance_P is 
-           M/12
+        If M non-zero values of xi - x(i-1), mean_P is m/2, variance_P is M/12
         """
         P = count_positive_diffs(self.rolls)
         M = count_non_zero_diffs(self.rolls)

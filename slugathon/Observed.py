@@ -13,7 +13,7 @@ class IObserved(zope.interface.Interface):
 
 class Observed(object):
     """Inherit from this mixin and call its __init__ to allow the class 
-       to be observed.""" 
+    to be observed.""" 
 
     zope.interface.implements(IObserved)
 

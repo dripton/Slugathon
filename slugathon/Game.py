@@ -103,7 +103,7 @@ class Game(Observed):
     def sort_players(self):
         """Sort players into descending order of tower number.
         
-           Only call this after towers are assigned.
+        Only call this after towers are assigned.
         """
         def starting_tower_desc(a, b):
             return b.starting_tower - a.starting_tower

@@ -4,10 +4,10 @@ import Dice
 
 def assign_towers(towers, num_players, dice=None):
     """Return a list of num_players distinct random tower assignments, in 
-       random order.
+    random order.
 
-       towers should be a sequence of distinct numeric tower labels.
-       len(towers) must be >= num_players
+    towers should be a sequence of distinct numeric tower labels.
+    len(towers) must be >= num_players
     """
     if dice is None:
         dice = Dice.Dice()

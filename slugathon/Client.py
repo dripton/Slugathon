@@ -121,9 +121,9 @@ class Client(pb.Referenceable, Observed):
 
     def remote_update(self, action):
         """Near-IObserver on the remote User, except observed is
-           not passed remotely.
+        not passed remotely.
 
-           Delegates to update to honor the interface.
+        Delegates to update to honor the interface.
         """
         observed = None
         print "Client.remote_update", self, observed, action
@@ -159,7 +159,7 @@ class Client(pb.Referenceable, Observed):
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
-           observed set to None."""
+        observed set to None."""
         print "Client.update", self, observed, action
 
         if isinstance(action, Action.AddUsername):

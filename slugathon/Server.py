@@ -64,8 +64,8 @@ class Server(Observed):
     def send_chat_message(self, source, dest, text):
         """Send a chat message from user sender to users in dest.
 
-           source is a username.  dest is a list of usernames.
-           If dest is None, send to all users
+        source is a username.  dest is a list of usernames.
+        If dest is None, send to all users
         """
         print "called Server.send_chat_message", source, dest, text
         message = "%s: %s" % (source, text)

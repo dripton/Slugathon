@@ -37,7 +37,7 @@ def image_to_gdk_pixbuf(image):
 
 def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     """Return a list of integer 2-tuple points along the semicircle that
-       has (x0, y0) and (x1, y1) on opposite sides, going clockwise.
+    has (x0, y0) and (x1, y1) on opposite sides, going clockwise.
     """
     if numpoints <= 0:
         return []
@@ -79,7 +79,7 @@ def scale_polygon(vertexes, ratio):
 
 def point_in_polygon(point, vertexes):
     """Return True iff the point (a 2-tuple) is in the polygon specified
-       by vertexes (a sequence of 2-tuples).
+    by vertexes (a sequence of 2-tuples).
     """
     # Test against the polygon's bounding box.
     xs = [x for (x, y) in vertexes]
