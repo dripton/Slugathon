@@ -123,3 +123,5 @@ class MasterHex:
                 else:
                     return 4
 
+    def toggleSelection(self):
+        self.selected = not self.selected

@@ -77,3 +77,33 @@ def scale_polygon(vertexes, ratio):
         deltay = (py - center[1]) * ratio
         nv.append((center[0] + deltax, center[1] + deltay))
     return nv
+
+def point_in_polygon(point, vertexes):
+    """Return True iff the point (a 2-tuple) is in the polygon specified
+       by vertexes (a sequence of 2-tuples).
+    """
+    # Test against the polygon's bounding box.
+    xs = [x for (x, y) in vertexes]
+    ys = [y for (x, y) in vertexes]
+    minX = min(xs)
+    minY = min(ys)
+    maxX = max(xs)
+    maxY = max(ys)
+    (px, py) = point
+    if px < minX or px >= maxX or py < minY or py >= maxY:
+        return False
+
+    # Draw a ray due east from point, and see how many lines it crosses.
+    # Treat intervals as closed on the low end, open on the high end.
+    crossings = 0
+    numpoints = len(vertexes)
+    for i in range(numpoints):
+        j = (i + 1) % numpoints
+        (xi, yi) = vertexes[i]
+        (xj, yj) = vertexes[j]
+        if (yi < py and yj < py) or (yi >= py and yj >= py):
+            # No intersection possible.
+            continue
+        if xi >= px and xj >= px:
+            crossings += 1
+    return crossings & 1

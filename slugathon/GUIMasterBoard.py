@@ -11,6 +11,7 @@ import sys
 import math
 import GUIMasterHex
 import MasterBoard
+import guiutils
 
 SQRT3 = math.sqrt(3.0)
 
@@ -40,12 +41,15 @@ class GUIMasterBoard:
     def area_expose_cb(self, area, event):
         self.style = self.area.get_style()
         self.gc = self.style.fg_gc[gtk.STATE_NORMAL]
-        for hex in self.guihexes.values():
-            hex.update(self.gc, self.style)
+        for guihex in self.guihexes.values():
+            guihex.update(self.gc, self.style)
         return True
 
     def click_cb(self, area, event):
-        print "Got click at (%d, %d)" % (event.x, event.y)
+        for guihex in self.guihexes.values():
+            if guiutils.point_in_polygon((event.x, event.y), guihex.allPoints):
+                guihex.hex.toggleSelection()
+                guihex.update(self.gc, self.style)
         return True
 
     def compute_width(self):
