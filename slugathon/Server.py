@@ -2,27 +2,27 @@
 
 import sys
 from twisted.spread import pb
-from twisted.cred import authorizer
+from twisted.cred import checkers, portal
 from twisted.python import usage
 import twisted.internet.app
 import User
-import LazyAuthorizer
-import userdata
 
 
 DEFAULT_PORT = 26569
 
-class Server(pb.Root):
+class Server:
     """A Slugathon server, which can host multiple games in parallel."""
     def __init__(self):
-        pb.Root.__init__(self)
         self.games = []
 
+class Realm:
+    __implements__ = portal.IRealm
 
-class SlugathonService(pb.Service):
-    def __init__(self, serviceName, serviceParent, authorizer):
-        pb.Service.__init__(self, serviceName, serviceParent, authorizer)
-    perspectiveClass = Server
+    def requestAvatar(self, avatarId, mind, *interfaces):
+        assert pb.IPerspective in interfaces
+        avatar = User.User(avatarId)
+        avatar.server = self.server
+        return pb.IPerspective, User.User(avatarId), avatar.logout
 
 
 class Options(usage.Options):
@@ -31,23 +31,16 @@ class Options(usage.Options):
     ]
 
 
-def add_users(service):
-    """Add username / password pairs from userdata"""
-    for (username, password) in userdata.data:
-        user = service.createPerspective(username)
-        user.makeIdentity(password)
-
 def main(config):
     port = int(config["port"])
 
+    realm = Realm()
+    realm.server = Server()
+    checker = checkers.FilePasswordDB("passwd.txt")
+    po = portal.Portal(realm, [checker])
+
     app = twisted.internet.app.Application("Slugathon")
-    auth = LazyAuthorizer.LazyAuthorizer(app)
-    service = SlugathonService("SlugathonService", app, auth)
-    service.perspectiveClass = User.User
-
-    add_users(service)
-
-    pbfact = pb.BrokerFactory(pb.AuthRoot(auth))
+    pbfact = pb.PBServerFactory(po)
     app.listenTCP(port, pbfact)
     app.run(save=False)
 

@@ -1,23 +1,27 @@
 from twisted.spread import pb
 import time
+from twisted.cred import portal
 
-class User(pb.Perspective):
+class User(pb.Avatar):
     """Perspective for a player or observer."""
 
-    def __init__(self, perspectiveName):
-        pb.Perspective.__init__(self, perspectiveName)
-        self.perspectiveName = perspectiveName
+    def __init__(self, name):
+        self.name = name
+        self.server = None
+        self.client = None
 
     def perspective_getname(self, arg):
         print "perspective_getname(", arg, ") called on", self
-        return self.perspectiveName
+        return self.name
 
     def __str__(self):
-        return "User " + self.perspectiveName
+        return "User " + self.name
 
-    def attached(self, reference, identity):
-        print "called User.attached", reference, identity
-        self.client = reference
-        self.client.callRemote("setname", self.perspectiveName)
+    def attached(self, mind):
+        print "called User.attached", mind
+        self.client = mind
+        self.client.callRemote("setname", self.name)
         self.client.callRemote("ping", time.time())
-        return pb.Perspective.attached(self, reference, identity)
+
+    def logout(self):
+        print "called logout"
