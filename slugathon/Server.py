@@ -2,49 +2,51 @@
 
 import sys
 import time
-try:
-    set
-except NameError:
-    from sets import Set as set
 
 from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.python import usage
 from twisted.internet import reactor
+import zope.interface
 
 import Realm
 import Game
 import Action
+from Observed import Observed
+from Observer import IObserver
 
 
 DEFAULT_PORT = 26569
 
 
-class Server:
+class Server(Observed):
     """A Slugathon server, which can host multiple games in parallel."""
+
+    zope.interface.implements(IObserver)
+
     def __init__(self):
         print "Called Server.init", self
+        Observed.__init__(self)
         self.games = []
-        self.users = set()
         self.name_to_user = {}
 
-    def add_user(self, user):
-        print "called Server.add_user", self, user
-        self.users.add(user)
+    def attach(self, user):
+        print "called Server.attach", self, user
+        Observed.attach(self, user)
         username = user.name
         self.name_to_user[username] = user
-        for u in self.users:
-            u.notify_add_username(username)
+        action = Action.AddUsername(username)
+        self.notify(action)
 
-    def del_user(self, user):
-        print "called Server.del_user", self, user
-        self.users.remove(user)
+    def detach(self, user):
+        print "called Server.detach", self, user
+        Observed.detach(self, user)
         username = user.name
         del self.name_to_user[username]
-        for u in self.users:
-            u.notify_del_username(username)
+        action = Action.DelUsername(username)
+        self.notify(action)
 
-    def get_user_names(self):
+    def get_usernames(self):
         names = self.name_to_user.keys()
         names.sort()
         return names
@@ -89,8 +91,19 @@ class Server:
           game.__class__.__name__])
         self.games.append(game)
         game.attach(self)
-        for u in self.users:
-            u.notify_formed_game(game)
+        action = Action.FormGame(username, game.name, game.create_time,
+          game.start_time, game.min_players, game.max_players)
+        self.notify(action)
+
+    def join_game(self, username, game_name):
+        game = self.name_to_game(game_name)
+        try:
+            game.add_player(username)
+        except AssertionError:
+            pass
+        else:
+            action = Action.JoinGame(username, game.name)
+            self.notify(action)
 
     def drop_from_game(self, username, game_name):
         game = self.name_to_game(game_name)
@@ -102,21 +115,11 @@ class Server:
             if len(game.players) == 0:
                 if game in self.games:
                     self.games.remove(game)
-                for u in self.users:
-                    u.notify_removed_game(game)
+                action = Action.RemoveGame(game.name)
+                self.notify(action)
             else:
-                for u in self.users:
-                    u.notify_dropped_from_game(username, game)
-
-    def join_game(self, username, game_name):
-        game = self.name_to_game(game_name)
-        try:
-            game.add_player(username)
-        except AssertionError:
-            pass
-        else:
-            for u in self.users:
-                u.notify_joined_game(username, game)
+                action = Action.DropFromGame(username, game.name)
+                self.notify(action)
 
     def start_game(self, username, game_name):
         game = self.name_to_game(game_name)
@@ -129,8 +132,7 @@ class Server:
     def update(self, observed, action):
         print "Server.update", observed, action
         if isinstance(action, Action.AssignTower):
-            for u in self.users:
-                pass
+            self.notify(action)
 
 
 

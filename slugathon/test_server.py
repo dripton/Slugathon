@@ -24,7 +24,7 @@ class ServerTestCase(unittest.TestCase):
 
     def connected(self, perspective):
         print "connected", self, perspective
-        perspective.callRemote('getName', 'foo').addCallbacks(self.success,
+        perspective.callRemote('get_name', 'foo').addCallbacks(self.success,
           self.failure)
 
     def success(self, name):
