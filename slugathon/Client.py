@@ -34,10 +34,7 @@ class Client(pb.Referenceable, Observed):
         self.anteroom = None
         self.usernames = set()
         self.games = []
-        # XXX Should this be explicit or lumped into the board
-        self.boardroot = None
-        # XXX Need ability to track multiple boards
-        self.guiboard = None
+        self.guiboards = {}   # Maps game to guiboard
         print "Called Client init:", self
 
     def remote_set_name(self, name):
@@ -153,8 +150,10 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def _init_guiboard(self, game):
-        self.boardroot = BoardRoot.BoardRoot(self.username)
-        self.guiboard = GUIMasterBoard.GUIMasterBoard(self.boardroot.root, 
+        # XXX Don't hold a reference to the boardroot here.  Get to it via the
+        # guiboard, if necessary.
+        boardroot = BoardRoot.BoardRoot(self.username)
+        self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot.root,
           game.board)
 
     def update(self, observed, action):
@@ -184,7 +183,7 @@ class Client(pb.Referenceable, Observed):
             self._maybe_pick_first_marker(game, action.playername)
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
-            if not self.guiboard:
+            if not self.guiboards.get(game):
                 self._init_guiboard(game)
 
         self.notify(action)
