@@ -21,7 +21,7 @@ class CreatureTestCase(unittest.TestCase):
         assert creature.skill == 2
         assert not creature.flies
         assert not creature.rangestrikes
-        assert creature.characterType == "creature"
+        assert creature.character_type == "creature"
         assert not creature.summonable
         assert not creature.acquirable
         assert creature.max_count == 25
