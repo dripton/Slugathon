@@ -6,8 +6,13 @@ except (ImportError, AttributeError):
 import gtk
 import gtk.glade
 import sys
-from sets import Set
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 from twisted.internet import reactor
+
 import NewGame
 import WaitingForPlayers
 import Game
@@ -23,7 +28,7 @@ class Anteroom:
           'game_list', 'user_list', 'new_game_button']
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
-        self.usernames = Set()
+        self.usernames = set()
         self.games = []
         self.game_store = []
         self.wfp = None
@@ -39,7 +44,7 @@ class Anteroom:
         def1.addCallbacks(self.got_user_names, self.failure)
 
     def got_user_names(self, usernames):
-        self.usernames = Set(usernames)
+        self.usernames = set(usernames)
         def1 = self.user.callRemote("get_games")
         def1.addCallbacks(self.got_games, self.failure)
 
@@ -119,11 +124,11 @@ class Anteroom:
         NewGame.NewGame(self.user)
 
     def receive_chat_message(self, message):
-        buffer = self.chatView.get_buffer()
+        buf = self.chat_view.get_buffer()
         message = message.strip() + "\n"
-        it = buffer.get_end_iter()
-        buffer.insert(it, message)
-        self.chatView.scroll_to_mark(buffer.get_insert(), 0)
+        it = buf.get_end_iter()
+        buf.insert(it, message)
+        self.chat_view.scroll_to_mark(buf.get_insert(), 0)
 
     def name_to_game(self, game_name):
         for g in self.games:

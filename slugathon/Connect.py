@@ -13,7 +13,10 @@ import gtk.glade
 import sys
 import os
 import getpass
-from sets import Set
+try:
+    set
+except NameError:
+    from sets import Set as set
 import Server
 import Client
 
@@ -45,21 +48,21 @@ class Connect:
 
     def init_player_names(self):
         if not self.playerNames:
-            self.playerNames = Set()
+            self.playerNames = set()
         self.playerNames.add(getpass.getuser())
         for name in self.playerNames:
             self.player_name_combo.insert_text(name)
 
     def init_server_names(self):
         if not self.serverNames:
-            self.serverNames = Set()
+            self.serverNames = set()
         self.serverNames.add('localhost')
         for name in self.serverNames:
             self.server_name_combo.insert_text(name)
 
     def init_server_ports(self):
         if not self.serverPorts:
-            self.serverPorts = Set()
+            self.serverPorts = set()
         self.serverPorts.add(Server.DEFAULT_PORT)
         for name in self.serverPorts:
             self.server_port_combo.insert_text(str(name))

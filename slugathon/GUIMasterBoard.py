@@ -29,9 +29,9 @@ class GUIMasterBoard:
         self.area.modify_font(pango.FontDescription('monospace 8'))
         self.root.add(self.area)
         self.guihexes = {}
-        for hex in self.board.hexes.values():
-            guihex = GUIMasterHex.GUIMasterHex(hex, self)
-            self.guihexes[hex.label] = guihex
+        for hex1 in self.board.hexes.values():
+            guihex = GUIMasterHex.GUIMasterHex(hex1, self)
+            self.guihexes[hex1.label] = guihex
         self.area.connect("expose-event", self.area_expose_cb)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.click_cb)

@@ -1,23 +1,30 @@
 #!/usr/bin/env python
 
 import sys
-from sets import Set
 import time
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.python import usage
 from twisted.internet import reactor
+
 import Realm
 import Game
 
+
 DEFAULT_PORT = 26569
+
 
 class Server:
     """A Slugathon server, which can host multiple games in parallel."""
     def __init__(self):
         print "Called Server.init", self
         self.games = []
-        self.users = Set()
+        self.users = set()
         self.name_to_user = {}
 
     def add_user(self, user):

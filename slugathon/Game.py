@@ -101,7 +101,7 @@ class Game:
 
     def assign_color(self, playername, color):
         assert color in colors
-        for p in players:
+        for p in self.players:
             assert p.color != color
         player = self.get_player_by_name(playername)
         player.assign_color(color)

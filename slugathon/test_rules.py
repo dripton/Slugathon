@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import unittest
-from sets import Set
 import math
 import MasterBoard
 import rules

@@ -22,10 +22,10 @@ def rgb_to_gtk(rgb):
     return tuple(li)
 
 def image_to_gdk_pixbuf(image):
-    file = StringIO.StringIO()
-    image.save(file, 'ppm')
-    contents = file.getvalue()
-    file.close()
+    file1 = StringIO.StringIO()
+    image.save(file1, 'ppm')
+    contents = file1.getvalue()
+    file1.close()
     loader = gtk.gdk.PixbufLoader('pnm')
     loader.write(contents, len(contents))
     pixbuf = loader.get_pixbuf()

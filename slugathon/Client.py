@@ -5,7 +5,6 @@ import Server
 from twisted.cred import credentials
 from twisted.internet import reactor, defer
 import Anteroom
-import Game
 
 
 class Client(pb.Referenceable):

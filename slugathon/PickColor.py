@@ -21,7 +21,7 @@ class PickColor:
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
-        self.pickColorDialog.set_icon(pixbuf)
+        self.pick_color_dialog.set_icon(pixbuf)
 
         for button_name in colors:
             button = getattr(self, button_name)
@@ -35,7 +35,7 @@ class PickColor:
         color = widget.get_text()
         def1 = self.user.callRemote("pick_color", color)
         def1.addErrback(self.failure)
-        self.pickColorDialog.destroy()
+        self.pick_color_dialog.destroy()
 
     def failure(self, error):
         print "PickColor.failure", error

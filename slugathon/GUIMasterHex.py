@@ -125,19 +125,19 @@ class GUIMasterHex:
            Since exits extend into adjacent hexes, they can be overdrawn,
            so we need to draw both exits and entrances for both hexes.
         """
-        hex = self.hex
+        hex1 = self.hex
         vertexes = self.vertexes
         ap = []
         for i in range(6):
             gp = [vertexes[i]]
             n = (i + 1) % 6
-            if hex.exits[i] != None:
+            if hex1.exits[i] != None:
                 li = self.initGate(vertexes[i][0], vertexes[i][1],
-                          vertexes[n][0], vertexes[n][1], hex.exits[i])
+                          vertexes[n][0], vertexes[n][1], hex1.exits[i])
                 gp.extend(li)
-            if hex.entrances[i] != None:
+            if hex1.entrances[i] != None:
                 li = self.initGate(vertexes[n][0], vertexes[n][1],
-                          vertexes[i][0], vertexes[i][1], hex.entrances[i])
+                          vertexes[i][0], vertexes[i][1], hex1.entrances[i])
                 li.reverse()
                 gp.extend(li)
             ap.extend(gp)

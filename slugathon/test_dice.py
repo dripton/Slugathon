@@ -2,8 +2,12 @@
 
 import unittest
 import math
-from sets import Set
 import Dice
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 
 EPSILON = 0.000001
 
@@ -194,7 +198,7 @@ class DiceTestCase(unittest.TestCase):
         fail_if_abnormal(S, mean_S, var_S)
 
     def test_shuffle(self):
-        s = Set()
+        s = set()
         lst = range(10)
         s.add(tuple(lst))
         num_shuffles = 100
