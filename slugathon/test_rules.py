@@ -5,6 +5,10 @@ import math
 import MasterBoard
 import rules
 import Dice
+import Player
+import Legion
+import Creature
+import creaturedata
 
 
 class AssignTowersTestCase(unittest.TestCase):
@@ -76,6 +80,21 @@ class AssignTowersTestCase(unittest.TestCase):
             mean = 1. * trials * num_players / num_towers
             assert math.floor(mean / 3) <= count <= math.ceil(2 * mean), \
               "counts out of range: %s" % counts
+
+class SplitTestCase(unittest.TestCase):
+    def test_is_legal_split(self):
+        creatures = Creature.n2c(creaturedata.starting_creature_names)
+        player = Player.Player("test", "Game1", 0)
+
+        parent = Legion.Legion(player, "Rd01", creatures, 1)
+        child1 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan", 
+          "Gargoyle", "Ogre", "Ogre"]), 1)
+        child2 = Legion.Legion(player, "Rd03", Creature.n2c(["Angel", 
+          "Gargoyle", "Centaur", "Centaur"]), 1)
+        assert rules.is_legal_split(parent, child1, child2)
+
+        assert not rules.is_legal_split(parent, child1, child1)
+        
 
 if __name__ == "__main__":
     unittest.main()
