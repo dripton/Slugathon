@@ -95,7 +95,7 @@ class Connect:
 
     def failure(self, arg):
         print "Connect.failure", arg
-        reactor.stop()
+        quit()
 
 def quit(unused):
     reactor.stop()
