@@ -12,6 +12,7 @@ import time
 import sets
 from twisted.internet import reactor
 import NewGame
+import WaitingForPlayers
 
 
 class Anteroom:
@@ -125,7 +126,7 @@ class Anteroom:
     def cb_click(self, widget, event):
         print "clicked new game button"
         newgame = NewGame.NewGame(self.user)
-        # TODO
+        wfp = WaitingForPlayers.WaitingForPlayers(self.user)
 
     def receive_chat_message(self, message):
         buffer = self.chatView.get_buffer()
