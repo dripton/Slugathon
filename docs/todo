@@ -1,17 +1,24 @@
-2003:
+* Work around pygtk.require('2.0') failing on .zip file in sys.path
+  (Just reinstalled pygtk, after turning off distcc and ccache.) 
 
-Cleanup bit-rotted code:
-*1112  Work around pygtk.require('2.0') failing on .zip file in sys.path
-       (Just reinstalled pygtk, after turning off distcc and ccache.) 
-*1113  Convert to new cred.  Eliminate deprecation warnings and broken code.
- 1114  Eliminate GTK deprecation warnings.  Get basic Anteroom working.
+* Convert to new cred.  Eliminate deprecation warnings and broken code.
 
-Standalone battle simulator spike:
- 1115  BattleMap, GUIBattleMap, BattleHex, GUIBattleHex, mapdata
- 1116  Player, Legion, Creature subclasses
- 1117  Battle, Game, Caretaker
- 1118  Chit, BattleChit
- 1119  Standalone battles through Anteroom
- 1120  BattleAI
+* Eliminate GTK deprecation warnings.  Get basic Anteroom working.
 
- 1121  chi-square test in test_dice
+  Handle failed logins cleanly -- show error message in Connect
+
+  Do not allow multiple concurrent logins for same user.
+
+  Add new game button and game info display to Anteroom
+
+* Get public chat working in Anteroom
+
+  Label chat widgets to match others in Anteroom
+
+  Mark windows with user name
+
+* Make textview un-focusable
+
+  Save all usernames and server names/ports that have been used in Connect
+
+  chi-square test in test_dice
