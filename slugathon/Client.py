@@ -18,6 +18,8 @@ import Action
 import Game
 import PickColor
 import PickMarker
+import BoardRoot
+import GUIMasterBoard
 
 
 class Client(pb.Referenceable, Observed):
@@ -37,6 +39,10 @@ class Client(pb.Referenceable, Observed):
         self.anteroom = None
         self.usernames = set()
         self.games = []
+        # XXX Should this be explicit or lumped into the board
+        self.boardroot = None
+        # XXX Need ability to track multiple boards
+        self.guiboard = None
         print "Called Client init:", self
 
     def remote_set_name(self, name):
@@ -151,6 +157,10 @@ class Client(pb.Referenceable, Observed):
             def1 = self.user.callRemote("pick_first_marker", game_name, marker)
             def1.addErrback(self.failure)
 
+    def _init_guiboard(self, game):
+        self.boardroot = BoardRoot.BoardRoot(self.username)
+        self.guiboard = GUIMasterBoard.GUIMasterBoard(self.boardroot.root, 
+          game.board)
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
@@ -177,6 +187,10 @@ class Client(pb.Referenceable, Observed):
             game.assign_color(action.playername, action.color)
             self._maybe_pick_color(game)
             self._maybe_pick_first_marker(game, action.playername)
+        elif isinstance(action, Action.CreateStartingLegion):
+            game = self.name_to_game(action.game_name)
+            if not self.guiboard:
+                self._init_guiboard(game)
 
         self.notify(action)
 
