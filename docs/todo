@@ -1,0 +1,17 @@
+2003:
+
+Cleanup bit-rotted code:
+*1112  Work around pygtk.require('2.0') failing on .zip file in sys.path
+       (Just reinstalled pygtk, after turning off distcc and ccache.) 
+*1113  Convert to new cred.  Eliminate deprecation warnings and broken code.
+ 1114  Eliminate GTK deprecation warnings.  Get basic Anteroom working.
+
+Standalone battle simulator spike:
+ 1115  BattleMap, GUIBattleMap, BattleHex, GUIBattleHex, mapdata
+ 1116  Player, Legion, Creature subclasses
+ 1117  Battle, Game, Caretaker
+ 1118  Chit, BattleChit
+ 1119  Standalone battles through Anteroom
+ 1120  BattleAI
+
+ 1121  chi-square test in test_dice
