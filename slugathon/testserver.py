@@ -2,6 +2,7 @@
 
 import unittest
 import os
+import time
 import Server
 from twisted.spread import pb
 from twisted.internet import reactor
@@ -11,7 +12,9 @@ from twisted.internet import reactor
 class ServerTestCase(unittest.TestCase):
     def setUp(self):
         # Need to run the server in another process
-        os.system("./Server.py &")
+        os.system("python2.3 Server.py &")
+        # Give the OS a second to start it before we use it.
+        time.sleep(1)
 
     def testStartup(self):
         defer = pb.getObjectAt('localhost', Server.DEFAULT_PORT, 30)
@@ -23,7 +26,6 @@ class ServerTestCase(unittest.TestCase):
           self.failure)
 
     def success(self, games):
-        print games
         assert len(games) == 0
         reactor.stop()
 
