@@ -13,6 +13,7 @@ DEFAULT_PORT = 26569
 class Server(pb.Root):
     """A Slugathon server, which can host multiple games in parallel."""
     def __init__(self):
+        pb.Root.__init__(self)
         self.games = []
 
 
@@ -32,17 +33,13 @@ def main(config):
 
     app = twisted.internet.app.Application("Slugathon")
     auth = authorizer.DefaultAuthorizer(app)
-    serv = SlugathonService("SlugathonService", app, auth)
-    serv.perspectiveClass = User.User
+    service = SlugathonService("SlugathonService", app, auth)
+    service.perspectiveClass = User.User
 
-    # TODO Make a username / password file
-    # TODO Add new users to file as they login.
-    pers = serv.createPerspective("unittest")
-    pers.myname = "unittest"
-    id = auth.createIdentity("unittest")
-    id.setPassword("unittest")
-    id.addKeyByString("SlugathonService", "unittest")
-    auth.addIdentity(id)
+    # TODO Add new users when they first login.
+    # TODO Persist users
+    user = service.createPerspective(name="unittest")
+    id = user.makeIdentity(password="unittest")
 
     pbfact = pb.BrokerFactory(pb.AuthRoot(auth))
     app.listenTCP(port, pbfact)

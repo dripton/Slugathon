@@ -4,6 +4,7 @@ class User(pb.Perspective):
     """Perspective for a player or observer."""
 
     def __init__(self, perspectiveName):
+        pb.Perspective.__init__(self, perspectiveName)
         self.perspectiveName = perspectiveName
 
     def perspective_getname(self, arg):

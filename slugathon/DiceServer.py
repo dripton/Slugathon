@@ -9,6 +9,7 @@ import Dice
 
 class DiceServer(pb.Root):
     def __init__(self):
+        pb.Root.__init__(self)
         self.dice = Dice.Dice()
         print "Started DiceServer at", time.ctime() 
 

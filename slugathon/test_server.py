@@ -3,9 +3,10 @@
 import unittest
 import os
 import time
-import Server
 from twisted.spread import pb
 from twisted.internet import reactor
+import Server
+import Client
 
 
 
@@ -17,8 +18,11 @@ class ServerTestCase(unittest.TestCase):
         time.sleep(1)
 
     def testStartup(self):
-        pb.connect('localhost', Server.DEFAULT_PORT, "unittest", "unittest",
-          "SlugathonService", "unittest", None, 30).addCallbacks(
+        self.client = Client.Client()
+        pb.connect(host='localhost', port=Server.DEFAULT_PORT, 
+          username="unittest", password="unittest",
+          serviceName="SlugathonService", client=self.client, 
+          timeout=30).addCallbacks(
           self.connected, self.failure)
         reactor.run()
 
