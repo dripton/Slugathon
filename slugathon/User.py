@@ -34,14 +34,12 @@ class User(pb.Avatar):
         self.client.callRemote("receive_chat_message", text)
 
     def perspective_form_game(self, game_name, min_players, max_players):
-        print "perspective_form_game", name, min_players, max_players
+        print "perspective_form_game", game_name, min_players, max_players
         self.server.form_game(self.name, game_name, min_players, max_players)
 
-    def notifyFormedGame(self, game):
-        print "notifyFormedGame", game
-        self.client.callRemote("notifyFormedGame", game.name, game.creator,
-          game.create_time, game.start_time, game.min_players, 
-          game.max_players)
+    def notifyFormedGame(self, gamedict):
+        print "notifyFormedGame", gamedict
+        self.client.callRemote("notifyFormedGame", gamedict)
 
     def __str__(self):
         return "User " + self.name

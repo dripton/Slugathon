@@ -10,3 +10,13 @@ class Game:
         self.min_players = min_players
         self.max_players = max_players
 
+    def status_dict(self):
+        return {
+            "name": self.name,
+            "creator": self.creator,
+            "create_time": self.create_time,
+            "start_time": self.start_time,
+            "min_players": self.min_players,
+            "max_players": self.max_players,
+        }
+

@@ -10,6 +10,7 @@ from gtk import glade
 import gobject
 import sys
 import os
+import time
 from sets import Set
 import Server
 import Client
@@ -27,7 +28,7 @@ class Anteroom:
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
         self.usernames = Set()
-        self.games = {}
+        self.games = []
         self.anteroomWindow.connect("destroy", quit)
 
         self.chatEntry.connect("key-press-event", self.cb_keypress)
@@ -56,13 +57,15 @@ class Anteroom:
           text=0)
         self.userList.append_column(column)
 
-        self.gameStore = gtk.ListStore(str)
+        self.gameStore = gtk.ListStore(str, str, str, str, int, int)
         self.updateGameStore()
         self.gameList.set_model(self.gameStore)
-        column = gtk.TreeViewColumn('Game Name', gtk.CellRendererText(),
-          text=0)
-        self.gameList.append_column(column)
-
+        headers = ['Game Name', 'Creator', 'Create Time', 'Start Time',
+          'Min Players', 'Max Players']
+        for (ii, title) in enumerate(headers):
+            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+              text=ii)
+            self.gameList.append_column(column)
         self.anteroomWindow.show_all()
 
     def updateUserStore(self):
@@ -78,15 +81,26 @@ class Anteroom:
         while len(self.userStore) > leng:
             del self.userStore[leng]
 
+    def gamedict_to_tuple(self, gamedict):
+        d = gamedict
+        return (d["name"], d["creator"], time.ctime(d["create_time"]), 
+          time.ctime(d["start_time"]), d["min_players"], d["max_players"])
+
     def updateGameStore(self):
-        for game in self.games:
-            it = self.gameStore.append()
-            self.gameStore.set(it, 0, game)
+        leng = len(self.gameStore)
+        for ii, game in enumerate(self.games):
+            gametuple = self.gamedict_to_tuple(game)
+            if ii < leng:
+                self.gameStore[ii, 0] = gametuple
+            else:
+                self.gameStore.append(gametuple)
+        leng = len(self.games)
+        while len(self.gameStore) > leng:
+            del self.gameStore[leng]
 
     def failure(self, error):
         print "Anteroom.failure", self, error
         reactor.stop()
-
 
     def addUsername(self, username):
         self.usernames.add(username)
@@ -118,10 +132,9 @@ class Anteroom:
         buffer.insert(it, message)
         self.chatView.scroll_to_mark(buffer.get_insert(), 0)
 
-    def add_game(self, name, creator, create_time, start_time, min_players,
-      max_players):
-        pass
-        
+    def add_game(self, gamedict):
+        self.games.append(gamedict)
+        self.updateGameStore()
 
 def quit(unused):
     sys.exit()

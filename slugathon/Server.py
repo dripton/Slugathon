@@ -9,6 +9,7 @@ from twisted.python import usage
 import twisted.internet.app
 import User
 import Realm
+import Game
 
 
 DEFAULT_PORT = 26569
@@ -43,7 +44,7 @@ class Server:
         return names
 
     def getGames(self):
-        return self.games
+        return [g.status_dict() for g in self.games]
 
     def send_chat_message(self, source, dest, text):
         """Send a chat message from user sender to users in dest.
@@ -59,7 +60,7 @@ class Server:
             user = self.name_to_user[username]
             user.receive_chat_message(message)
 
-    def form_game(username, game_name, min_players, max_players):
+    def form_game(self, username, game_name, min_players, max_players):
         if not game_name:
             raise ValueError('Games must be named')
         if game_name in [g.name for g in self.games]:
@@ -71,8 +72,9 @@ class Server:
         GAME_START_DELAY = 20
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
             min_players, max_players)
+        self.games.append(game)
         for u in self.users:
-            u.notifyFormedGame(game)
+            u.notifyFormedGame(game.status_dict())
 
 
 class Options(usage.Options):
