@@ -1,5 +1,3 @@
-#!/usr/bin/env python2.3
-
 """Outward-facing facade for client side."""
 
 from twisted.spread import pb

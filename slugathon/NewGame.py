@@ -1,5 +1,3 @@
-#!/usr/bin/env python2.3
-
 try:
     import pygtk
     pygtk.require('2.0')
@@ -47,4 +45,3 @@ class NewGame:
 
     def failure(self, error): 
         print error
-
