@@ -22,7 +22,7 @@ class NewGame:
         
     def cb_ok(self): 
         print "ok"
-        self.user.callRemote("formgame", name min_players, max_players)
+        self.user.callRemote("formgame", name, min_players, max_players)
         dismiss()
 
     def cb_cancel(self): 
