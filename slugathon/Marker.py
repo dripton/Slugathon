@@ -20,7 +20,12 @@ class Marker(object):
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
           self.chit_scale, gtk.gdk.INTERP_BILINEAR)
         self.location = None    # (x, y) of top left corner
+        self.image = gtk.Image()
+        self.image.set_from_pixbuf(self.pixbuf)
 
     def point_inside(self, point):
         assert self.location
         return guiutils.point_in_square(point, self.location, self.chit_scale)
+
+    def show(self):
+        self.image.show()
