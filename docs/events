@@ -54,16 +54,14 @@ We'd like to reuse the same basic logic classes (Game, Player, Legion,
   extracting the ability to directly modify real game state from them.
   It also means the Legion class must be usable without certain knowledge
   of its contents.
-The standard Observer pattern is a solution.  (Add observers in the 
-  constructor or later?)  If the list of observers is empty, then no 
-  events are broadcast from this instance.  To avoid coupling, container
-  classes get direct references to contained classes, but the contained
-  classes only see their containers as Observers and Oracles.
+The standard Observer pattern is a solution.  We use attach / detach /
+  notify.  If the list of observers is empty, then no events are broadcast 
+  from this instance.  To avoid coupling, container classes get direct 
+  references to contained classes, but the contained classes only see 
+  their containers as Observers.
 Events should cascade back up the observation hierarchy (e.g. Creature to 
   Legion to Game to Client to User) in a way that makes it easy to detach
   observers for hypothetical situations (AI, stepping through history).
-Should need Server directly hold the list of Clients (both player and observer) 
-  for each Game?  Seems like a god class.  Maybe we need a Switchboard.
   
 The related jobs of creating savegames and logging game actions should be
   merged.  (Though additional debug logging will be needed.)  The Saver is
@@ -72,11 +70,11 @@ The related jobs of creating savegames and logging game actions should be
 
 Every operation that can affect real game state is an event.
 Savegames are just event logs.
-If we load a savegame, or a new observer joins in mid-game, sync game
+If we load a savegame, or a new spectator joins in mid-game, sync game
   state by replaying the event stream.  Need a "new game" event to signal 
   a client that may have already been observing to clear its state and 
   start receiving the event stream from the beginning.  (We might optimize
-  this later to take advantage of an observer's existing knowledge.)
+  this later to take advantage of a spectator's existing knowledge.)
 
 When a player attempts to change game state from the GUI (example: moving 
   a legion to a new hex), the event trickles up to the client's Game 
@@ -108,9 +106,6 @@ When a player tries to make an illegal move, the exception should only
 
 We should be able to handle standalone battles by creating mock versions of
   non-battle classes.  Treat Legion and Forces separately.
-
-We should use read-only Oracle classes to avoid adding coupling just to
-  get at information.
 
 We need a non-GUI console client, for debugging and automated testing and
   AI use.  This implies the ability to stringify and unstringify events.
