@@ -25,7 +25,7 @@ class Connect:
     """GUI for connecting to a server."""
     def __init__(self):
         self.glade = gtk.glade.XML('../glade/connect.glade')
-        self.widgets = ['connect_window', 'player_name_combo', 
+        self.widgets = ['connect_window', 'playername_combo', 
           'password_entry', 'server_name_combo', 'server_port_combo', 
           'connect_button', 'start_server_button']
         for widget_name in self.widgets:
@@ -42,16 +42,16 @@ class Connect:
         self.connect_window.show()
 
     def init_lists(self):
-        self.init_player_names()
+        self.init_playernames()
         self.init_server_names()
         self.init_server_ports()
 
-    def init_player_names(self):
+    def init_playernames(self):
         if not self.playernames:
             self.playernames = set()
         self.playernames.add(getpass.getuser())
         for name in self.playernames:
-            self.player_name_combo.insert_text(name)
+            self.playername_combo.insert_text(name)
 
     def init_server_names(self):
         if not self.server_names:
@@ -67,18 +67,18 @@ class Connect:
         for name in self.server_ports:
             self.server_port_combo.insert_text(str(name))
 
-    def on_connectButton_clicked(self, *args):
+    def on_connect_button_clicked(self, *args):
         print "Connect button clicked"
-        playerName = self.player_name_combo.get_text()
+        playername = self.playername_combo.get_text()
         password = self.password_entry.get_text()
-        serverName = self.server_name_combo.get_text()
-        serverPort = int(self.server_port_combo.get_text())
-        print playerName, password, serverName, serverPort
-        client = Client.Client(playerName, password, serverName, serverPort)
+        server_name = self.server_name_combo.get_text()
+        server_port = int(self.server_port_combo.get_text())
+        print playername, password, server_name, server_port
+        client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
         def1.addCallbacks(self.connected, self.failure)
 
-    def on_startServerButton_clicked(self, *args):
+    def on_start_server_button_clicked(self, *args):
         print "Start server button clicked"
         #XXX Not portable  Use reactor.spawnProcess
         os.system("python Server.py &")
