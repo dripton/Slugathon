@@ -7,6 +7,7 @@ from twisted.python import usage
 import twisted.internet.app
 import User
 import LazyAuthorizer
+import userdata
 
 
 DEFAULT_PORT = 26569
@@ -29,6 +30,13 @@ class Options(usage.Options):
       ["port", "p", DEFAULT_PORT, "Port number"],
     ]
 
+
+def add_users(service):
+    """Add username / password pairs from userdata"""
+    for (username, password) in userdata.data:
+        user = service.createPerspective(username)
+        user.makeIdentity(password)
+
 def main(config):
     port = int(config["port"])
 
@@ -37,9 +45,7 @@ def main(config):
     service = SlugathonService("SlugathonService", app, auth)
     service.perspectiveClass = User.User
 
-    # TODO Persist users
-    user = service.createPerspective(name="unittest")
-    id = user.makeIdentity(password="unittest")
+    add_users(service)
 
     pbfact = pb.BrokerFactory(pb.AuthRoot(auth))
     app.listenTCP(port, pbfact)
