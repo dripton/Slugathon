@@ -59,7 +59,7 @@ class Server(Observed):
         for g in self.games:
             if g.name == game_name:
                 return g
-        raise KeyError("No game named %s found" % game_name)
+        return None
 
     def send_chat_message(self, source, dest, text):
         """Send a chat message from user sender to users in dest.
@@ -96,42 +96,45 @@ class Server(Observed):
 
     def join_game(self, username, game_name):
         game = self.name_to_game(game_name)
-        try:
-            game.add_player(username)
-        except AssertionError:
-            pass
-        else:
-            action = Action.JoinGame(username, game.name)
-            self.notify(action)
+        if game:
+            try:
+                game.add_player(username)
+            except AssertionError:
+                pass
+            else:
+                action = Action.JoinGame(username, game.name)
+                self.notify(action)
 
     def drop_from_game(self, username, game_name):
         game = self.name_to_game(game_name)
-        try:
-            game.remove_player(username)
-        except AssertionError:
-            pass
-        else:
-            if len(game.players) == 0:
-                if game in self.games:
-                    self.games.remove(game)
-                action = Action.RemoveGame(game.name)
-                self.notify(action)
+        if game:
+            try:
+                game.remove_player(username)
+            except AssertionError:
+                pass
             else:
-                action = Action.DropFromGame(username, game.name)
-                self.notify(action)
+                if len(game.players) == 0:
+                    if game in self.games:
+                        self.games.remove(game)
+                    action = Action.RemoveGame(game.name)
+                    self.notify(action)
+                else:
+                    action = Action.DropFromGame(username, game.name)
+                    self.notify(action)
 
     def start_game(self, username, game_name):
         game = self.name_to_game(game_name)
-        game.start(username)
+        if game:
+            game.start(username)
 
     def pick_color(self, username, game_name, color):
         game = self.name_to_game(game_name)
-        game.assign_color(username, color)
+        if game:
+            game.assign_color(username, color)
 
     def update(self, observed, action):
         print "Server.update", observed, action
-        if isinstance(action, Action.AssignTower):
-            self.notify(action)
+        self.notify(action)
 
 
 

@@ -131,7 +131,7 @@ class Anteroom:
 
     def _add_or_replace_wfp(self, game):
         if game.name in self.wfps:
-            self.wfps[game.name].remove_game()
+            self.wfps[game.name].shutdown()
         wfp = WaitingForPlayers.WaitingForPlayers(self.user,
           self.username, game)
         self.wfps[game.name] = wfp
@@ -156,7 +156,7 @@ class Anteroom:
     def dropped_from_game(self, game_name):
         self.update_game_store()
 
-    # TODO Actually saved marked user for private chats, user info, etc.
+    # TODO Actually save marked user for private chats, user info, etc.
     def cb_user_list_select(self, path, unused):
         index = path[0]
         row = self.user_store[index, 0]
@@ -180,7 +180,8 @@ class Anteroom:
             self.update_user_store()
         elif isinstance(action, Action.FormGame):
             game = self.name_to_game(action.game_name)
-            self.add_game(game)
+            if game:
+                self.add_game(game)
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.JoinGame):

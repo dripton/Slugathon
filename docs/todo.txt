@@ -50,9 +50,6 @@ a Client or Server and saves them in one or more queues.  It should
 also be able to save and load.  When a new client joins, the EventSaver
 should send it all events needed to sync up.
 
-Need a distinct action for game start, rather than looking for an
-AssignTower?
-
 Fix log message for commit 159, after I get a pre-revprop-change hook.
 
 Bugs:

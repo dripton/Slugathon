@@ -16,6 +16,7 @@ from Observer import IObserver
 from Observed import Observed
 import Action
 import Game
+import PickColor
 
 
 class Client(pb.Referenceable, Observed):
@@ -89,7 +90,7 @@ class Client(pb.Referenceable, Observed):
         for g in self.games:
             if g.name == game_name:
                 return g
-        raise KeyError("No game named %s found" % game_name)
+        return None
 
     def add_game(self, game_info_tuple):
         (name, create_time, start_time, min_players, max_players,
@@ -104,7 +105,9 @@ class Client(pb.Referenceable, Observed):
 
     def remove_game(self, game_name):
         game = self.name_to_game(game_name)
-        self.games.remove(game)
+        if game:
+            self.detach(game)
+            self.games.remove(game)
 
     def failure(self, error):
         print "Client.failure", self, error
@@ -124,7 +127,11 @@ class Client(pb.Referenceable, Observed):
         print "Client.remote_update", self, observed, action
         self.update(observed, action)
 
-    # TODO Game should observe Client directly.
+    def _maybe_pick_color(self, game):
+        if game.next_playername_to_pick_color() == self.username:
+            pc = PickColor.PickColor(self.user, self.username, 
+              game.name, game.colors_left())
+
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
            observed set to None."""
@@ -141,6 +148,14 @@ class Client(pb.Referenceable, Observed):
             self.add_game(game_info_tuple)
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
-        
+        elif isinstance(action, Action.AssignedAllTowers):
+            game = self.name_to_game(action.game_name)
+            self._maybe_pick_color(game)
+        elif isinstance(action, Action.PickedColor):
+            game = self.name_to_game(action.game_name)
+            # Do this now rather than waiting for game to be notified.
+            game.assign_color(action.playername, action.color)
+            self._maybe_pick_color(game)
+
         self.notify(action)
 

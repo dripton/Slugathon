@@ -21,6 +21,9 @@ def format_time(secs):
 
 class WaitingForPlayers:
     """Waiting for players to start game dialog."""
+
+    zope.interface.implements(IObserver)
+
     def __init__(self, user, username, game):
         print "new WaitingForPlayers", self, user, username, game
         self.user = user
@@ -71,6 +74,7 @@ class WaitingForPlayers:
         def1 = self.user.callRemote("start_game", self.game.name)
         def1.addErrback(self.failure)
 
+    # TODO Save the selection and do something useful with it.
     def cb_player_list_select(self, path, unused):
         index = path[0]
         row = self.player_store[index, 0]
@@ -105,7 +109,7 @@ class WaitingForPlayers:
     def failure(self, arg):
         print "WaitingForPlayers.failure", arg
 
-    def remove_game(self):
+    def shutdown(self):
         self.game.detach(self)
         self.destroy()
 
@@ -113,11 +117,10 @@ class WaitingForPlayers:
         print "WaitingForPlayers.update", self, observed, action
 
         if isinstance(action, Action.RemoveGame):
-            self.remove_game()
+            self.shutdown()
         elif isinstance(action, Action.JoinGame):
             self.update_player_store()
         elif isinstance(action, Action.DropFromGame):
             self.update_player_store()
         elif isinstance(action, Action.AssignTower):
-            # Game has started; don't need this dialog anymore.
-            self.remove_game()
+            self.shutdown()

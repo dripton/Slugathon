@@ -36,3 +36,5 @@ class Player(Observed):
     def assign_color(self, color):
         """Set this player's color"""
         self.color = color
+        action = Action.PickedColor(self.game_name, self.name, color)
+        self.notify(action)

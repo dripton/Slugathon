@@ -97,12 +97,8 @@ class Game(Observed):
         for num, player in enumerate(self.players):
             player.assign_starting_tower(towers[num])
         self.sort_players()
-
-    def done_assigning_towers(self):
-        for player in self.players:
-            if player.starting_tower is None:
-                return False
-        return True
+        action = Action.AssignedAllTowers(self.name)
+        self.notify(action)
 
     def sort_players(self):
         """Sort players into descending order of tower number.
@@ -113,26 +109,66 @@ class Game(Observed):
             return b.starting_tower - a.starting_tower
         self.players.sort(starting_tower_desc)
 
+    def done_assigning_towers(self):
+        for player in self.players:
+            if player.starting_tower is None:
+                return False
+        return True
+
+    def next_playername_to_pick_color(self):
+        if not self.done_assigning_towers():
+            return None
+        rev_players = self.players[:]
+        rev_players.reverse()
+        for player in rev_players:
+            if player.color is None:
+                return player.name
+        return None
+
+    def colors_left(self):
+        left = colors[:]
+        for player in self.players:
+            if player.color:
+                left.remove(player.color)
+        return left
+
     def assign_color(self, playername, color):
-        assert color in colors
+        player = self.get_player_by_name(playername)
+        # Just abort if we've already done this.  Simplifies timing.
+        if player.color == color:
+            return
+        left = self.colors_left()
+        assert color in left
         for p in self.players:
-            assert p.color != color
+            if p is not player:
+                assert p.color != color
         player = self.get_player_by_name(playername)
         player.assign_color(color)
+
+    def done_assigning_colors(self):
+        for player in self.players:
+            if player.color is None:
+                return False
+        return True
 
     def update(self, observed, action):
         print "Game.update", observed, action
 
-        if isinstance(action, Action.AssignTower):
-            player = self.get_player_by_name(action.playername)
-            if player.starting_tower is None:
-                player.assign_starting_tower(action.tower_num)
-        elif isinstance(action, Action.JoinGame):
+        if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
                 self.add_player(action.username)
         elif isinstance(action, Action.DropFromGame):
             if action.game_name == self.name:
                 self.remove_player(action.username)
+        elif isinstance(action, Action.AssignTower):
+            self.started = True
+            player = self.get_player_by_name(action.playername)
+            if player.starting_tower is None:
+                player.assign_starting_tower(action.tower_num)
+        elif isinstance(action, Action.AssignedAllTowers):
+            self.sort_players()
+        elif isinstance(action, Action.PickedColor):
+            self.assign_color(action.playername, action.color)
 
         self.notify(action)
 
