@@ -78,5 +78,6 @@ class Client(pb.Referenceable):
             self.anteroom.remove_game(game)
 
     def remote_notifyChangedGame(self, game):
+        print "Client.notifyChangedGame", game.name
         if self.anteroom:
             self.anteroom.change_game(game)

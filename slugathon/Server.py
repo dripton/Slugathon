@@ -85,7 +85,18 @@ class Server:
             for u in self.users:
                 u.notifyRemovedGame(game)
         else:
-            game.players.remove(username)
+            game.remove_player(username)
+            for u in self.users:
+                u.notifyChangedGame(game)
+
+    def join_game(self, username, game):
+        if username in game.players:
+            print 'join_game from', username, 'already in game', game.name
+        elif len(game.players) >= game.max_players:
+            print username, 'tried to join full game', game.name
+        else:
+            print 'adding', username, 'to', game.name
+            game.add_player(username)
             for u in self.users:
                 u.notifyChangedGame(game)
 

@@ -58,13 +58,13 @@ class Anteroom:
           text=0)
         self.userList.append_column(column)
 
-        self.gameStore = gtk.ListStore(str, str, str, str, int, int)
+        self.gameStore = gtk.ListStore(str, str, str, str, int, int, str)
         self.updateGameStore()
         self.gameList.set_model(self.gameStore)
         selection = self.gameList.get_selection()
         selection.set_select_function(self.cb_gameList_select, None)
-        headers = ['Game Name', 'Creator', 'Create Time', 'Start Time',
-          'Min Players', 'Max Players']
+        headers = ['Game Name', 'Owner', 'Create Time', 'Start Time',
+          'Min Players', 'Max Players', 'Players']
         for (ii, title) in enumerate(headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
               text=ii)
@@ -88,6 +88,7 @@ class Anteroom:
         leng = len(self.gameStore)
         for ii, game in enumerate(self.games):
             gametuple = game.to_tuple()
+            print "game tuple is", gametuple
             if ii < leng:
                 self.gameStore[ii, 0] = gametuple
             else:
@@ -135,6 +136,8 @@ class Anteroom:
         self.games.append(game)
         self.updateGameStore()
         if self.username in game.players:
+            if self.wfp:
+                self.wfp.destroy()
             self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, game)
 
     def remove_game(self, game):
@@ -145,7 +148,17 @@ class Anteroom:
             self.wfp = None
 
     def change_game(self, game):
+        print "Anteroom.change_game for", game.name
+        for (ii, g) in enumerate(self.games):
+            if g == game:              # Same name
+                print "Anteroom.change_game updating game", ii, game.name
+                self.games[ii] = game  # update to latest values
+                break
         self.updateGameStore()
+        if self.wfp:
+            if self.wfp.game == game:  # Same name
+                self.wfp.game = game
+                self.wfp.updatePlayerStore()
 
     def cb_userList_select(self, path, unused):
         index = path[0]
@@ -160,7 +173,10 @@ class Anteroom:
         print "gameList_select", index
         game = self.games[index]
         print "game is", game
-        # TODO menu with join option -> WaitingForPlayers
+        # TODO popup menu
+        if self.wfp:
+            self.wfp.destroy()
+        self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, game)
         return False
 
 def quit(unused):
