@@ -17,6 +17,7 @@ from Observed import Observed
 import Action
 import Game
 import PickColor
+import PickMarker
 
 
 class Client(pb.Referenceable, Observed):
@@ -132,6 +133,21 @@ class Client(pb.Referenceable, Observed):
             PickColor.PickColor(self.user, self.username, 
               game.name, game.colors_left())
 
+    def _maybe_pick_first_marker(self, game, playername):
+        if playername == self.username:
+            player = game.get_player_by_name(playername)
+            markers = list(player.markers.copy())
+            markers.sort()
+            PickMarker.PickMarker(self, self.username, game.name, markers)
+
+    def pick_marker(self, game_name, username, marker):
+        """Callback from PickMarker."""
+        print "Client.pick_marker", self, game_name, username, marker
+        game = self.name_to_game(game_name)
+        player = game.get_player_by_name(username)
+        player.pick_marker(marker)
+
+
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
            observed set to None."""
@@ -156,6 +172,7 @@ class Client(pb.Referenceable, Observed):
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
             self._maybe_pick_color(game)
+            self._maybe_pick_first_marker(game, action.playername)
 
         self.notify(action)
 

@@ -71,3 +71,9 @@ class PickedColor(Action):
         self.playername = playername
         self.color = color
 pb.setUnjellyableForClass(PickedColor, PickedColor)
+
+class AssignedAllColors(Action):
+    def __init__(self, game_name):
+        self.game_name = game_name
+pb.setUnjellyableForClass(AssignedAllColors, AssignedAllColors)
+

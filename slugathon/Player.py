@@ -1,7 +1,14 @@
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 from twisted.spread import pb
 
 from Observed import Observed
 import Action
+import playercolordata
+
 
 class Player(Observed):
     """A person or AI who is (or was) actively playing in a game.
@@ -23,6 +30,10 @@ class Player(Observed):
         self.starting_tower = None    # a numeric hex label
         self.score = 0
         self.color = None
+        self.markers = set()
+        # Private to this instance; not shown to others until a
+        # legion is actually split off with this marker.
+        self.selected_marker = None
 
     def __str__(self):
         return self.name
@@ -37,4 +48,12 @@ class Player(Observed):
         """Set this player's color"""
         self.color = color
         action = Action.PickedColor(self.game_name, self.name, color)
+        abbrev = playercolordata.name_to_abbrev[self.color]
+        # TODO Un-hardcode
+        for ii in range(12):
+            self.markers.add("%s%02d" % (abbrev, ii + 1))
         self.notify(action)
+
+    def pick_marker(self, marker):
+        if marker in self.markers:
+            self.selected_marker = marker
