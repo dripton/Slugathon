@@ -3,7 +3,7 @@
 try:
     import pygtk
     pygtk.require('2.0')
-except ImportError, AttributeError:
+except (ImportError, AttributeError):
     pass
 import gtk
 from gtk import glade
