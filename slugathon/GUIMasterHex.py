@@ -25,6 +25,7 @@ class GUIMasterHex:
         self.fillcolor = guiutils.RgbToGtk(colors.RgbColors[
                 colors.terrainColors[self.hex.terrain]])
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
+        self.selected = False
 
         self.initVertexes()
         self.initGates()
@@ -68,7 +69,7 @@ class GUIMasterHex:
 
         colormap = self.guiboard.area.get_colormap()
 
-        if self.hex.selected:
+        if self.selected:
             # outer portion
             fg = colormap.alloc_color('white')
             gc.foreground = fg
@@ -194,6 +195,9 @@ class GUIMasterHex:
         self.drawHexagon(gc, style)
         self.drawOverlay(gc, style)
         self.drawLabel(gc, style)
+
+    def toggleSelection(self):
+        self.selected = not self.selected
 
 
 def initBlock(x0, y0, x1, y1, theta, unit):

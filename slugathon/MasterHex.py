@@ -40,7 +40,6 @@ class MasterHex:
             self.neighbors.append(None)
         self.build_overlay_filename()
         self.label_side = self.find_label_side()
-        self.selected = False
 
     def __str__(self):
         return "%s hex %d at (%d,%d)" % (self.terrain, self.label,
@@ -122,6 +121,3 @@ class MasterHex:
                     return 1
                 else:
                     return 4
-
-    def toggleSelection(self):
-        self.selected = not self.selected

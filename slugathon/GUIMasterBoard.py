@@ -48,7 +48,7 @@ class GUIMasterBoard:
     def click_cb(self, area, event):
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.allPoints):
-                guihex.hex.toggleSelection()
+                guihex.toggleSelection()
                 guihex.update(self.gc, self.style)
         return True
 
