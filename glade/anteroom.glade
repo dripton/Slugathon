@@ -74,7 +74,6 @@
 		    <widget class="GtkTextView" id="chatView">
 		      <property name="border_width">3</property>
 		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
 		      <property name="editable">False</property>
 		      <property name="justification">GTK_JUSTIFY_LEFT</property>
 		      <property name="wrap_mode">GTK_WRAP_WORD</property>
@@ -99,16 +98,18 @@
 	      <child>
 		<widget class="GtkEntry" id="chatEntry">
 		  <property name="visible">True</property>
+		  <property name="can_default">True</property>
+		  <property name="has_default">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="has_focus">True</property>
 		  <property name="editable">True</property>
 		  <property name="visibility">True</property>
-		  <property name="max_length">80</property>
+		  <property name="max_length">100</property>
 		  <property name="text" translatable="yes"></property>
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char" translatable="yes">*</property>
-		  <property name="activates_default">False</property>
-		  <property name="width_chars">80</property>
+		  <property name="activates_default">True</property>
+		  <property name="width_chars">100</property>
 		</widget>
 		<packing>
 		  <property name="padding">0</property>
