@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import gtk
+import os
 import math
 import guiutils
 import colors
@@ -157,7 +158,8 @@ class GUIMasterHex:
         self.dest_x = self.center[0] - myboxsize[0] / 2
         self.dest_y = self.center[1] - myboxsize[1] / 2
 
-        image_filename = guiutils.IMAGE_DIR + self.hex.overlay_filename
+        image_filename = os.path.join("../images/masterhex",
+                                      self.hex.overlay_filename)
         pixbuf = gtk.gdk.pixbuf_new_from_file(image_filename)
         self.pixbuf = pixbuf.scale_simple(myboxsize[0], myboxsize[1],
                                           gtk.gdk.INTERP_BILINEAR)

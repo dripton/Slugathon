@@ -3,8 +3,6 @@ import Image
 import StringIO
 
 
-IMAGE_DIR = '../images/'
-
 def flatten_point_list(points):
     """Flatten a list of (x, y) tuples into a single tuple"""
     li = []
