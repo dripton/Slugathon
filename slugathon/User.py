@@ -1,25 +1,29 @@
 from twisted.spread import pb
 import time
 from twisted.cred import portal
+import zope.interface
+
+from Observer import IObserver
 
 class User(pb.Avatar):
-    """Perspective for a player or observer."""
+    """Perspective for a player or spectator."""
+
+    zope.interface.implements(IObserver)
 
     def __init__(self, name, server, client):
         self.name = name
         self.server = server
         self.client = client
-        # XXX Bidirectional references
-        self.server.add_user(self)
+        self.server.attach(self)
         print "User.init", self, name, server, client
 
-    def perspective_getName(self, arg):
-        print "perspective_getName(", arg, ") called on", self
+    def perspective_get_name(self, arg):
+        print "perspective_get_name(", arg, ") called on", self
         return self.name
 
-    def perspective_get_user_names(self):
-        print "perspective_get_user_names called on", self
-        return self.server.get_user_names()
+    def perspective_get_usernames(self):
+        print "perspective_get_usernames called on", self
+        return self.server.get_usernames()
 
     def perspective_get_games(self):
         print "perspective_get_games called on", self
@@ -38,29 +42,6 @@ class User(pb.Avatar):
     def perspective_form_game(self, game_name, min_players, max_players):
         print "perspective_form_game", game_name, min_players, max_players
         self.server.form_game(self.name, game_name, min_players, max_players)
-
-    def notify_formed_game(self, game):
-        print "notify_formed_game", game
-        def1 = self.client.callRemote("notify_formed_game", 
-          game.to_info_tuple())
-        def1.addErrback(self.failure)
-
-    def notify_removed_game(self, game):
-        print "notify_removed_game", game
-        def1 = self.client.callRemote("notify_removed_game", game.name)
-        def1.addErrback(self.failure)
-
-    def notify_dropped_from_game(self, playername, game):
-        print "notify_dropped_from_game", playername, game
-        def1 = self.client.callRemote("notify_dropped_from_game", playername,
-          game.name)
-        def1.addErrback(self.failure)
-
-    def notify_joined_game(self, playername, game):
-        print "notify_joined_game", playername, game
-        def1 = self.client.callRemote("notify_joined_game", playername,
-          game.name)
-        def1.addErrback(self.failure)
 
     def perspective_join_game(self, game_name):
         print "perspective_join_game", game_name
@@ -102,12 +83,10 @@ class User(pb.Avatar):
 
     def logout(self):
         print "called logout"
-        self.server.del_user(self)
+        self.server.detach(self)
 
-    def notify_add_username(self, username):
-        def1 = self.client.callRemote("notify_add_username", username)
-        def1.addErrback(self.failure)
-
-    def notify_del_username(self, username):
-        def1 = self.client.callRemote("notify_del_username", username)
+    def update(self, observed, action):
+        """Defers updates to its client, dropping the observed reference."""
+        print "User.update", self, observed, action
+        def1 = self.client.callRemote("update", action)
         def1.addErrback(self.failure)

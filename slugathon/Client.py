@@ -1,15 +1,23 @@
 """Outward-facing facade for client side."""
 
 from twisted.spread import pb
-import Server
 from twisted.cred import credentials
 from twisted.internet import reactor, defer
+import zope.interface
+
+import Server
 import Anteroom
+from Observer import IObserver
+from Observed import Observed
 
 
-class Client(pb.Referenceable):
+class Client(pb.Referenceable, Observed):
+
+    zope.interface.implements(IObserver)
+
     def __init__(self, username, password, host='localhost', 
           port=Server.DEFAULT_PORT):
+        Observed.__init__(self)
         self.username = username
         self.playername = username # In case the same user logs in twice
         self.password = password
@@ -45,6 +53,7 @@ class Client(pb.Referenceable):
         if user:
             self.user = user
             self.anteroom = Anteroom.Anteroom(user, self.username)
+            self.attach(self.anteroom)
             # Allow chaining callbacks
             return defer.succeed(user)
         else:
@@ -54,30 +63,23 @@ class Client(pb.Referenceable):
         print "Client.failure", self, error
         reactor.stop()
 
-    def remote_notify_add_username(self, username):
-        if self.anteroom:
-            self.anteroom.add_username(username)
-
-    def remote_notify_del_username(self, username):
-        if self.anteroom:
-            self.anteroom.del_username(username)
-
+    # TODO Make this an Action, after adding a filter on Observed.notify
     def remote_receive_chat_message(self, text):
-        if self.anteroom:
-            self.anteroom.receive_chat_message(text)
+        self.anteroom.receive_chat_message(text)
 
-    def remote_notify_formed_game(self, game_info_tuple):
-        if self.anteroom:
-            self.anteroom.add_game(game_info_tuple)
+    def remote_update(self, action):
+        """Near-IObserver on the remote User, except observed is
+           not passed remotely.
 
-    def remote_notify_removed_game(self, game_name):
-        if self.anteroom:
-            self.anteroom.remove_game(game_name)
+           Delegates to update to honor the interface.
+        """
+        observed = None
+        print "Client.remote_update", self, observed, action
+        self.update(observed, action)
 
-    def remote_notify_joined_game(self, playername, game_name):
-        if self.anteroom:
-            self.anteroom.joined_game(playername, game_name)
-
-    def remote_notify_dropped_from_game(self, playername, game_name):
-        if self.anteroom:
-            self.anteroom.dropped_from_game(playername, game_name)
+    # TODO Game should observe Client directly.
+    def update(self, observed, action):
+        """Updates from User will come via remote_update, with
+           observed set to None."""
+        print "Client.update", self, observed, action
+        self.notify(action)

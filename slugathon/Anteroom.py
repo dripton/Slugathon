@@ -16,6 +16,8 @@ from twisted.internet import reactor
 import NewGame
 import WaitingForPlayers
 import Game
+from Observer import IObserver
+import Action
 
 
 class Anteroom:
@@ -42,15 +44,17 @@ class Anteroom:
         self.anteroom_window.set_icon(pixbuf)
         self.anteroom_window.set_title("%s - %s" % (
           self.anteroom_window.get_title(), self.username))
-        def1 = user.callRemote("get_user_names")
-        def1.addCallbacks(self.got_user_names, self.failure)
+        def1 = user.callRemote("get_usernames")
+        def1.addCallbacks(self.got_usernames, self.failure)
 
-    def got_user_names(self, usernames):
+    def got_usernames(self, usernames):
+        """Only called when the client first connects to the server."""
         self.usernames = set(usernames)
         def1 = self.user.callRemote("get_games")
         def1.addCallbacks(self.got_games, self.failure)
 
     def got_games(self, game_info_tuples):
+        """Only called when the client first connects to the server."""
         self.games = []
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
@@ -192,6 +196,29 @@ class Anteroom:
           self.username, game)
         return False
 
+    def update(self, observed, action):
+        print "Anteroom.update", self, observed, action
+
+        if isinstance(action, Action.AddUsername):
+            self.add_username(action.username)
+        elif isinstance(action, Action.DelUsername):
+            self.del_username(action.username)
+        elif isinstance(action, Action.FormGame):
+            game_info_tuple = (action.game_name, action.create_time,
+              action.start_time, action.min_players, action.max_players,
+              [action.username])
+            self.add_game(game_info_tuple)
+        elif isinstance(action, Action.RemoveGame):
+            self.remove_game(action.game_name)
+        elif isinstance(action, Action.JoinGame):
+            self.joined_game(action.username, action.game_name)
+        elif isinstance(action, Action.DropFromGame):
+            self.dropped_from_game(action.username, 
+              action.game_name)
+        # XXX Game should observe Client directly
+        elif isinstance(action, Action.AssignTower):
+            game = self.name_to_game(action.game_name)
+            # XXX TODO
 def quit(unused):
     sys.exit()
 
