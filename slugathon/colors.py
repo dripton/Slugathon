@@ -1,6 +1,3 @@
-import guiutils
-
-
 # It's easier to maintain colors in decimal RGB format.
 RgbColors = {
     # Defined in the HTML standard
