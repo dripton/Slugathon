@@ -4,11 +4,11 @@ priorities:  A: critical path B: required but can defer  C: optional
 
 1, A, 2, 2, Display legion markers in correct hexes on masterboard
 ?, C, 1, ?, Show legion height in marker
-2, A, 2, ?, Allow clicking on legion to show its known contents or "?"
+2, A, 2, 2, Allow clicking on legion to show its known contents or "?"
 ?, C, 1, ?, Show legion contents on mouseover
 ?, B, 3, ?, Game status dialog with players, scores, etc.
-?, A, 5, ?, Split dialog and rules
-?, A, 5, ?, Masterboard menu with undo, redo, next phase
+3, A, 5, ?, Masterboard menu with undo, redo, next phase
+4, A, 5, ?, Split dialog and rules
 ?, B, 1, ?, Hotkeys for undo, redo, next phase
 ?, C, 2, ?, Toolbar with undo, redo, next phase
 ?, A, 2, ?, Masterboard movement roll and display
