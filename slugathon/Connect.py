@@ -100,5 +100,5 @@ if __name__ == '__main__':
     reactor.run()
 
     while True:
-        gtk.mainiteration()
+        gtk.main_iteration()
 

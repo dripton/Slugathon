@@ -31,17 +31,17 @@ class GUIMasterHex:
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False
 
-        self.initVertexes()
-        self.initGates()
+        self.init_vertexes()
+        self.init_gates()
         iv = guiutils.scale_polygon(self.vertexes, 0.7)
         self.innerVertexes = []
         for point in iv:
             self.innerVertexes.append((int(round(point[0])),
                                        int(round(point[1]))))
-        self.initOverlay()
+        self.init_overlay()
 
 
-    def initVertexes(self):
+    def init_vertexes(self):
         """Setup the hex vertexes.
 
            Each vertex is the midpoint between the vertexes of the two
@@ -75,7 +75,7 @@ class GUIMasterHex:
                                 int(round(cy + 2 * SQRT3 * scale)))
 
 
-    def drawHexagon(self, gc, style):
+    def draw_hexagon(self, gc, style):
         """Create the polygon, filled with the terrain color."""
 
         # TODO Fix random black/white edge color on border between selected
@@ -112,8 +112,7 @@ class GUIMasterHex:
             self.guiboard.area.window.draw_polygon(gc, False, self.allPoints)
 
 
-
-    def initGates(self):
+    def init_gates(self):
         """Setup the entrance and exit gates.
 
            There are up to 3 gates to draw on a hexside.  Each is 1/6
@@ -132,11 +131,11 @@ class GUIMasterHex:
             gp = [vertexes[i]]
             n = (i + 1) % 6
             if hex1.exits[i] != None:
-                li = self.initGate(vertexes[i][0], vertexes[i][1],
+                li = self.init_gate(vertexes[i][0], vertexes[i][1],
                           vertexes[n][0], vertexes[n][1], hex1.exits[i])
                 gp.extend(li)
             if hex1.entrances[i] != None:
-                li = self.initGate(vertexes[n][0], vertexes[n][1],
+                li = self.init_gate(vertexes[n][0], vertexes[n][1],
                           vertexes[i][0], vertexes[i][1], hex1.entrances[i])
                 li.reverse()
                 gp.extend(li)
@@ -145,7 +144,7 @@ class GUIMasterHex:
         for point in ap:
             self.allPoints.append((int(round(point[0])), int(round(point[1]))))
 
-    def initGate(self, vx1, vy1, vx2, vy2, gateType):
+    def init_gate(self, vx1, vy1, vx2, vy2, gateType):
         """Setup gate on one entrance / exit hexside."""
         x0 = vx1 + (vx2 - vx1) / 6.
         y0 = vy1 + (vy2 - vy1) / 6.
@@ -155,19 +154,19 @@ class GUIMasterHex:
         unit = self.guiboard.scale / 1.75
 
         if gateType == 'BLOCK':
-            return _initBlock(x0, y0, x1, y1, theta, unit)
+            return _init_block(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARCH':
-            return _initArch(x0, y0, x1, y1, theta, unit)
+            return _init_arch(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARROW':
-            return _initArrow(x0, y0, x1, y1, theta, unit)
+            return _init_arrow(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARROWS':
-            return _initArrows(vx1, vy1, vx2, vy2, theta, unit)
+            return _init_arrows(vx1, vy1, vx2, vy2, theta, unit)
         else:
             return None
 
 
 
-    def initOverlay(self):
+    def init_overlay(self):
         """Setup the overlay with terrain name and image."""
         scale = self.guiboard.scale
         self.bboxsize = (6 * scale, int(3 * SQRT3 * scale))
@@ -183,14 +182,14 @@ class GUIMasterHex:
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
 
-    def drawOverlay(self, gc, style):
+    def draw_overlay(self, gc, style):
         self.pixbuf.render_to_drawable(self.guiboard.area.window, gc,
                 0, 0, self.dest_x, self.dest_y,
                 -1, -1,
                 gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
 
-    def drawLabel(self, gc, style):
+    def draw_label(self, gc, style):
         """Display the hex label."""
         label = str(self.hex.label)
         layout = self.guiboard.area.create_pango_layout(label)
@@ -212,15 +211,15 @@ class GUIMasterHex:
 
 
     def update(self, gc, style):
-        self.drawHexagon(gc, style)
-        self.drawOverlay(gc, style)
-        self.drawLabel(gc, style)
+        self.draw_hexagon(gc, style)
+        self.draw_overlay(gc, style)
+        self.draw_label(gc, style)
 
-    def toggleSelection(self):
+    def toggle_selection(self):
         self.selected = not self.selected
 
 
-def _initBlock(x0, y0, x1, y1, theta, unit):
+def _init_block(x0, y0, x1, y1, theta, unit):
     """Return a list of points to make a block."""
     xy = []
     xy.append((x0, y0))
@@ -230,7 +229,7 @@ def _initBlock(x0, y0, x1, y1, theta, unit):
     return xy
 
 
-def _initArch(x0, y0, x1, y1, theta, unit):
+def _init_arch(x0, y0, x1, y1, theta, unit):
     """Return a list of points to make an approximate arch."""
     xy = []
     half = unit / 2.0
@@ -250,7 +249,7 @@ def _initArch(x0, y0, x1, y1, theta, unit):
 
     return xy
 
-def _initArrow(x0, y0, x1, y1, theta, unit):
+def _init_arrow(x0, y0, x1, y1, theta, unit):
     """Return a list of points to make a single arrow."""
     xy = []
     xy.append((x0, y0))
@@ -260,7 +259,7 @@ def _initArrow(x0, y0, x1, y1, theta, unit):
     return xy
 
 
-def _initArrows(vx1, vy1, vx2, vy2, theta, unit):
+def _init_arrows(vx1, vy1, vx2, vy2, theta, unit):
     """Return a list of points to make three arrows."""
     xy = []
     for i in range(3):
@@ -268,5 +267,5 @@ def _initArrows(vx1, vy1, vx2, vy2, theta, unit):
         y0 = vy1 + (vy2 - vy1) * (2 + 3 * i) / 12.
         x1 = vx1 + (vx2 - vx1) * (4 + 3 * i) / 12.
         y1 = vy1 + (vy2 - vy1) * (4 + 3 * i) / 12.
-        xy.extend(_initArrow(x0, y0, x1, y1, theta, unit))
+        xy.extend(_init_arrow(x0, y0, x1, y1, theta, unit))
     return xy

@@ -22,7 +22,7 @@ class AnteroomTestCase(unittest.TestCase):
         anteroom = self.client.anteroom
         assert isinstance(anteroom, Anteroom.Anteroom)
         while 1:
-            gtk.mainiteration()
+            gtk.main_iteration()
 
     def failure(self):
         self.fail()

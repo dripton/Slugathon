@@ -48,7 +48,7 @@ class GUIMasterBoard:
     def click_cb(self, area, event):
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.allPoints):
-                guihex.toggleSelection()
+                guihex.toggle_selection()
                 guihex.update(self.gc, self.style)
                 break
         return True
@@ -75,4 +75,4 @@ if __name__ == '__main__':
     guiboard = GUIMasterBoard(root, board)
     # Allow exiting with control-C, unlike mainloop()
     while True:
-        gtk.mainiteration()
+        gtk.main_iteration()
