@@ -1,0 +1,25 @@
+Requirements for Slugathon:
+
+Allows playing Titan against network and AI opponents
+Server always enforces the rules and never trusts clients
+Portable to at least Linux, Windows, MacOS
+Test-first development; unit tests for everything possible
+Very robust code
+No duplicated code
+Simple, usable GUI
+Support standalone battles
+Allow observers
+Unlimited undo/redo, but prevent cheating undo versus humans
+Saving/loading games
+Master server for finding games, statistics tracking
+
+
+Simplifications versus Colossus:
+
+No variants (at first)
+No threads on server side
+Very few options
+Python instead of Java
+Twisted PB instead of raw socket protocol
+Hardcoded dictionaries/lists for data, so no parsers
+Use Subversion instead of CVS, to better track moved files, etc.

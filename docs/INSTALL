@@ -1,0 +1,8 @@
+Slugathon needs the following:
+
+Python 2.3+
+PyGTK 2.0+
+Twisted 1.1.0+
+GTK+ 2
+Pango
+Python Imaging Library
