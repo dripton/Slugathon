@@ -13,3 +13,8 @@ class User(pb.Perspective):
 
     def __str__(self):
         return "User " + self.perspectiveName
+
+    def attached(self, reference, identity):
+        print "called User.attached", reference, identity
+        self.client = reference
+        return pb.Perspective.attached(self, reference, identity)

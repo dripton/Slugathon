@@ -6,6 +6,7 @@ from twisted.cred import authorizer
 from twisted.python import usage
 import twisted.internet.app
 import User
+import LazyAuthorizer
 
 
 DEFAULT_PORT = 26569
@@ -32,11 +33,10 @@ def main(config):
     port = int(config["port"])
 
     app = twisted.internet.app.Application("Slugathon")
-    auth = authorizer.DefaultAuthorizer(app)
+    auth = LazyAuthorizer.LazyAuthorizer(app)
     service = SlugathonService("SlugathonService", app, auth)
     service.perspectiveClass = User.User
 
-    # TODO Add new users when they first login.
     # TODO Persist users
     user = service.createPerspective(name="unittest")
     id = user.makeIdentity(password="unittest")
