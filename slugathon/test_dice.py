@@ -2,6 +2,7 @@
 
 import unittest
 import math
+from sets import Set
 import Dice
 
 EPSILON = 0.000001
@@ -190,6 +191,16 @@ class DiceTestCase(unittest.TestCase):
         print "Mann-Kendall test: S =", S, "mean = ", meanS, "var =", varS
         failIfAbnormal(S, meanS, varS)
 
-
+    def test_shuffle(self):
+        s = Set()
+        lst = range(10)
+        s.add(tuple(lst))
+        num_shuffles = 100
+        for unused in range(num_shuffles):
+            self.dice.shuffle(lst)
+            s.add(tuple(lst))
+        # We are highly unlikely to get a duplicate.  Though it's possible...
+        assert len(s) == num_shuffles + 1
+ 
 if __name__ == "__main__":
     unittest.main()
