@@ -67,18 +67,9 @@ class Client(pb.Referenceable):
         if self.anteroom:
             self.anteroom.receive_chat_message(text)
 
-    def remote_notify_formed_game(self, name, create_time, start_time, 
-          min_players, max_players, playernames):
-        # XXX Duplicate code
-        owner = playernames[0]
-        game = Game.Game(name, owner, create_time, start_time, min_players,
-          max_players)
-        for playername in playernames[1:]:
-            game.add_player(playername)
-
-        # XXX If clients join later, show them existing games.
+    def remote_notify_formed_game(self, game_info_tuple):
         if self.anteroom:
-            self.anteroom.add_game(game)
+            self.anteroom.add_game(game_info_tuple)
 
     def remote_notify_removed_game(self, game_name):
         if self.anteroom:

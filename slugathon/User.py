@@ -41,9 +41,8 @@ class User(pb.Avatar):
 
     def notify_formed_game(self, game):
         print "notify_formed_game", game
-        def1 = self.client.callRemote("notify_formed_game", game.name, 
-          game.create_time, game.start_time, game.min_players,
-          game.max_players, game.get_playernames())
+        def1 = self.client.callRemote("notify_formed_game", 
+          game.to_info_tuple())
         def1.addErrback(self.failure)
 
     def notify_removed_game(self, game):

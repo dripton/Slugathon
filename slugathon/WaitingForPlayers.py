@@ -35,10 +35,9 @@ class WaitingForPlayers:
         self.join_button.connect("button-press-event", self.cb_click_join)
         self.drop_button.connect("button-press-event", self.cb_click_drop)
         self.start_button.connect("button-press-event", self.cb_click_start)
-        # TODO Start button should only be enabled for forming player
+        # XXX Start button should only be enabled for forming player
         # TODO Start button should automatically be triggered when max
         # players have joined, or min players have joined and time is up.
-        #
         self.game_name_label.set_text(game.name)
         self.created_entry.set_text(format_time(game.create_time))
         self.starts_by_entry.set_text(format_time(game.start_time))

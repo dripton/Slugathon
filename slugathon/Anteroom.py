@@ -25,6 +25,7 @@ class Anteroom:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.usernames = Set()
         self.games = []
+        self.game_store = []
         self.wfp = None
 
         self.anteroom_window.connect("destroy", quit)
@@ -42,18 +43,10 @@ class Anteroom:
         def1 = self.user.callRemote("get_games")
         def1.addCallbacks(self.got_games, self.failure)
 
-    def got_games(self, game_tuples):
+    def got_games(self, game_info_tuples):
         self.games = []
-        # XXX Duplicate code
-        for game_tuple in game_tuples:
-            (name, create_time, start_time, min_players, max_players,
-              playernames) = game_tuple
-            owner = playernames[0]
-            game = Game.Game(name, owner, create_time, start_time, min_players,
-              max_players)
-            for playername in playernames[1:]:
-                game.add_player(playername)
-            self.games.append(game)
+        for game_info_tuple in game_info_tuples:
+            self.add_game(game_info_tuple)
         self.user_store = gtk.ListStore(str)
         self.update_user_store()
         self.user_list.set_model(self.user_store)
@@ -92,11 +85,11 @@ class Anteroom:
     def update_game_store(self):
         leng = len(self.game_store)
         for ii, game in enumerate(self.games):
-            game_tuple = game.to_gui_tuple()
+            game_gui_tuple = game.to_gui_tuple()
             if ii < leng:
-                self.game_store[ii, 0] = game_tuple
+                self.game_store[ii, 0] = game_gui_tuple
             else:
-                self.game_store.append(game_tuple)
+                self.game_store.append(game_gui_tuple)
         leng = len(self.games)
         while len(self.game_store) > leng:
             del self.game_store[leng]
@@ -138,7 +131,14 @@ class Anteroom:
                 return g
         raise KeyError("No game named %s found" % game_name)
 
-    def add_game(self, game):
+    def add_game(self, game_info_tuple):
+        (name, create_time, start_time, min_players, max_players,
+          playernames) = game_info_tuple
+        owner = playernames[0]
+        game = Game.Game(name, owner, create_time, start_time, min_players,
+          max_players)
+        for playername in playernames[1:]:
+            game.add_player(playername)
         self.games.append(game)
         self.update_game_store()
         if self.username in game.get_playernames():

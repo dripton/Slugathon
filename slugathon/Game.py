@@ -84,7 +84,7 @@ class Game:
         self.sort_players()
         for player in self.players:
             pass
-            # TODO Figure out the right way to call up through server to 
+            # XXX Figure out the right way to call up through server to 
             # client.  This also gets called on the client copy, so we
             # need to use observers.
             # Need to add server as an observer on this game?
