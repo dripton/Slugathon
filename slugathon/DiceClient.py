@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Simple test of Perspective Broker"
+"""Simple test of Perspective Broker"""
 
 import sys
 from twisted.internet import reactor
