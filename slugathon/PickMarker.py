@@ -4,7 +4,6 @@ try:
 except (ImportError, AttributeError):
     pass
 import gtk
-from twisted.internet import reactor
 
 
 class PickMarker(object):
