@@ -55,7 +55,13 @@ class Client(pb.Referenceable):
         reactor.stop()
 
     def remote_notifyAddUsername(self, username):
-        self.anteroom.addUsername(username)
+        if self.anteroom:
+            self.anteroom.addUsername(username)
 
     def remote_notifyDelUsername(self, username):
-        self.anteroom.delUsername(username)
+        if self.anteroom:
+            self.anteroom.delUsername(username)
+
+    def remote_receive_chat_message(self, text):
+        if self.anteroom:
+            self.anteroom.receive_chat_message(text)

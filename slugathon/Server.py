@@ -18,26 +18,45 @@ class Server:
         print "Called Server.init", self
         self.games = []
         self.users = Set()
+        self.name_to_user = {}
 
     def addUser(self, user):
         print "called Server.addUser", self, user
         self.users.add(user)
+        username = user.name
+        self.name_to_user[username] = user
         for u in self.users:
-            u.notifyAddUser(user)
+            u.notifyAddUsername(username)
 
     def delUser(self, user):
         print "called Server.delUser", self, user
         self.users.remove(user)
+        username = user.name
+        del self.name_to_user[username]
         for u in self.users:
-            u.notifyDelUser(user)
+            u.notifyDelUsername(username)
 
     def getUserNames(self):
-        names = [user.name for user in self.users]
+        names = self.name_to_user.keys()
         names.sort()
         return names
 
     def getGames(self):
         return self.games
+
+    def send_chat_message(self, source, dest, text):
+        """Send a chat message from user sender to users in dest.
+
+           source is a username.  dest is a list of usernames.
+           If dest is None, send to all users
+        """
+        print "called Server.send_chat_message", source, dest, text
+        message = "%s: %s" % (source, text)
+        if dest is None:
+            dest = self.name_to_user.keys()
+        for username in dest:
+            user = self.name_to_user[username]
+            user.receive_chat_message(message)
 
 
 class Options(usage.Options):

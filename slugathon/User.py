@@ -25,6 +25,14 @@ class User(pb.Avatar):
         print "perspective_getGames called on", self
         return self.server.getGames()
 
+    def perspective_send_chat_message(self, text):
+        print "perspective_send_chat_message", text
+        self.server.send_chat_message(self.name, None, text)
+
+    def receive_chat_message(self, text):
+        print "User.receive_chat_message", text
+        self.client.callRemote("receive_chat_message", text)
+
     def __str__(self):
         return "User " + self.name
 
@@ -48,8 +56,8 @@ class User(pb.Avatar):
         print "called logout"
         self.server.delUser(self)
 
-    def notifyAddUser(self, user):
-        self.client.callRemote("notifyAddUsername", user.name)
+    def notifyAddUsername(self, username):
+        self.client.callRemote("notifyAddUsername", username)
 
-    def notifyDelUser(self, user):
-        self.client.callRemote("notifyDelUsername", user.name)
+    def notifyDelUsername(self, username):
+        self.client.callRemote("notifyDelUsername", username)

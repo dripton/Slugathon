@@ -10,6 +10,7 @@ from gtk import glade
 import gobject
 import sys
 import os
+from sets import Set
 import Server
 import Client
 from twisted.internet import reactor
@@ -24,9 +25,12 @@ class Anteroom:
           'userList']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
-        self.usernames = []
+        self.usernames = Set()
         self.games = []
         self.anteroomWindow.connect("destroy", quit)
+
+        self.chatEntry.connect("key-press-event", self.cb_keypress)
+
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
         self.anteroomWindow.set_icon(pixbuf)
@@ -34,7 +38,7 @@ class Anteroom:
         def1.addCallbacks(self.gotUserNames, self.failure)
 
     def gotUserNames(self, usernames):
-        self.usernames = usernames
+        self.usernames = Set(usernames)
         print "Anteroom got usernames", usernames
         def1 = self.user.callRemote("getGames")
         def1.addCallbacks(self.gotGames, self.failure)
@@ -43,14 +47,14 @@ class Anteroom:
         print "Anteroom got games", games
         self.games = games
 
-        self.userStore = gtk.ListStore(gobject.TYPE_STRING)
+        self.userStore = gtk.ListStore(str)
         self.updateUserStore()
         self.userList.set_model(self.userStore)
         column = gtk.TreeViewColumn('User Name', gtk.CellRendererText(),
           text=0)
         self.userList.append_column(column)
 
-        self.gameStore = gtk.ListStore(gobject.TYPE_STRING)
+        self.gameStore = gtk.ListStore(str)
         for game in self.games:
             it = self.gameStore.append()
             self.gameStore.set(it, 0, game)
@@ -62,9 +66,17 @@ class Anteroom:
         self.anteroomWindow.show_all()
 
     def updateUserStore(self):
-        for username in self.usernames:
-            it = self.userStore.append()
-            self.userStore.set(it, 0, username)
+        sorted_usernames = list(self.usernames)
+        sorted_usernames.sort()
+        leng = len(self.userStore)
+        for ii, username in enumerate(sorted_usernames):
+            if ii < leng:
+                self.userStore[ii, 0] = (username,)
+            else:
+                self.userStore.append((username,))
+        leng = len(sorted_usernames)
+        while len(self.userStore) > leng:
+            del self.userStore[leng]
 
     def failure(self, error):
         print "Anteroom.failure", self, error
@@ -72,15 +84,30 @@ class Anteroom:
 
 
     def addUsername(self, username):
-        self.usernames.append(username)
+        self.usernames.add(username)
         self.updateUserStore()
-        it = self.userStore.append()
 
     def delUsername(self, username):
         self.usernames.remove(username)
         self.updateUserStore()
-        it = self.userStore.append()
 
+    def cb_insert_text(self, *args):
+        print "cb_insert_text", args
+
+    def cb_keypress(self, entry, event):
+        ENTER_KEY = 65293  # XXX Find a cleaner way to do this.
+        if event.keyval == ENTER_KEY:
+            text = self.chatEntry.get_text()
+            if text:
+                def1 = self.user.callRemote("send_chat_message", text)
+                self.chatEntry.set_text("")
+
+    def receive_chat_message(self, message):
+        buffer = self.chatView.get_buffer()
+        message = message.strip() + "\n"
+        it = buffer.get_end_iter()
+        buffer.insert(it, message)
+        self.chatView.scroll_to_mark(buffer.get_insert(), 0)
 
 def quit(unused):
     sys.exit()
