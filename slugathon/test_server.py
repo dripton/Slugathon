@@ -17,16 +17,17 @@ class ServerTestCase(unittest.TestCase):
         time.sleep(1)
 
     def testStartup(self):
-        defer = pb.getObjectAt('localhost', Server.DEFAULT_PORT, 30)
-        defer.addCallbacks(self.connected, self.failure)
+        pb.connect('localhost', Server.DEFAULT_PORT, "unittest", "unittest",
+          "SlugathonService", "unittest", None, 30).addCallbacks(
+          self.connected, self.failure)
         reactor.run()
 
     def connected(self, perspective):
-        perspective.callRemote('getGames').addCallbacks(self.success,
+        perspective.callRemote('getname', 'foo').addCallbacks(self.success,
           self.failure)
 
-    def success(self, games):
-        assert len(games) == 0
+    def success(self, name):
+        assert name == "unittest"
         reactor.stop()
 
     def failure(self, error):
@@ -36,6 +37,7 @@ class ServerTestCase(unittest.TestCase):
 
     def tearDown(self):
         os.system('pkill -f "python.*Server.py"')
+
 
 if __name__ == '__main__':
     unittest.main()
