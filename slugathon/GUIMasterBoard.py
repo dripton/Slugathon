@@ -124,8 +124,8 @@ class GUIMasterBoard(object):
 
     def _render_marker(self, marker, gc):
         marker.pixbuf.render_to_drawable(self.area.window, gc, 0, 0, 
-          marker.location[0], marker.location[1], -1, -1, 
-          gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+          int(round(marker.location[0])), int(round(marker.location[1])), 
+          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
     def draw_markers(self, gc, style):
         if not self.game:
@@ -159,7 +159,9 @@ class GUIMasterBoard(object):
         if isinstance(action, Action.CreateStartingLegion):
             player = self.game.get_player_by_name(action.playername)
             legion = player.legions[0]
-            self.update_gui([legion.hexlabel])
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, [legion.hexlabel])
 
 
 def quit(unused):
