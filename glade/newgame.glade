@@ -2,6 +2,7 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
+<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="newgameDialog">
   <property name="visible">True</property>
@@ -11,7 +12,6 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
-  <property name="icon">Colossus.gif</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">

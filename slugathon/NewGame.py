@@ -19,6 +19,9 @@ class NewGame:
           'maxplayersSpin']
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
+        pixbuf = gtk.gdk.pixbuf_new_from_file(
+          '../images/creature/Colossus.gif')
+        self.newgameDialog.set_icon(pixbuf)
         
     def cb_ok(self): 
         print "ok"
