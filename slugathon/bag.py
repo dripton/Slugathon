@@ -36,3 +36,17 @@ class bag(object):
 
     def __len__(self):
         return len(self._dic)
+
+    def __eq__(self, other):
+        if isinstance(other, bag):
+            return self._dic == other._dic
+        else:
+            return False
+
+    def union(self, other):
+        assert isinstance(other, bag)
+        newbag = bag(self._dic)
+        for key, val in other._dic.items():
+            newbag[key] += val
+        return newbag
+

@@ -44,5 +44,17 @@ class TestCase(unittest.TestCase):
         assert 1 in b
         assert b[1] == 1
 
+    def test_equal(self):
+        b1 = bag(a=1, b=1, c=2)
+        b2 = bag(c=2, b=1, a=1)
+        assert b1 == b2
+
+
+    def test_union(self):
+        b1 = bag(a=1, b=1)
+        b2 = bag(a=2, c=1)
+        b3 = b1.union(b2)
+        assert b3 == bag(a=3, b=1, c=1)
+
 if __name__ == "__main__":
     unittest.main()
