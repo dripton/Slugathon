@@ -45,7 +45,7 @@ def main():
 
     app = twisted.internet.app.Application("DiceServer")
     app.listenTCP(pb.portno, pb.PBServerFactory(p))
-    app.run()
+    app.run(save=False)
 
 if __name__ == "__main__":
     main()
