@@ -53,6 +53,8 @@ class Anteroom:
         self.userStore = gtk.ListStore(str)
         self.updateUserStore()
         self.userList.set_model(self.userStore)
+        select = self.userList.get_selection()
+        select.connect("changed", self.cb_userList_select_changed)
         column = gtk.TreeViewColumn('User Name', gtk.CellRendererText(),
           text=0)
         self.userList.append_column(column)
@@ -60,6 +62,8 @@ class Anteroom:
         self.gameStore = gtk.ListStore(str, str, str, str, int, int)
         self.updateGameStore()
         self.gameList.set_model(self.gameStore)
+        select = self.gameList.get_selection()
+        select.connect("changed", self.cb_gameList_select_changed)
         headers = ['Game Name', 'Creator', 'Create Time', 'Start Time',
           'Min Players', 'Max Players']
         for (ii, title) in enumerate(headers):
@@ -135,6 +139,12 @@ class Anteroom:
     def add_game(self, gamedict):
         self.games.append(gamedict)
         self.updateGameStore()
+
+    def cb_userList_select_changed(self, *args):
+        print "userList_select_changed", args
+
+    def cb_gameList_select_changed(self, *args):
+        print "gameList_select_changed", args
 
 def quit(unused):
     sys.exit()
