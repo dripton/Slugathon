@@ -70,18 +70,17 @@ class Player(Observed):
           self.selected_marker, creatures, self.starting_tower)
         self.notify(action)
 
-    def take_selected_marker(self):
-        self.markers.remove(self.selected_marker)
-        marker = self.selected_marker
+    def take_marker(self, marker):
+        assert marker in self.markers
+        self.markers.remove(marker)
         self.selected_marker = None
         return marker
 
     def create_starting_legion(self, marker, creature_names, hex):
-        marker = self.selected_marker 
-        assert self.selected_marker in self.markers
+        assert marker in self.markers
         assert len(self.legions) == 0
         creatures = [Creature.Creature(name) for name in 
           creaturedata.starting_creature_names]
-        legion = Legion.Legion(self.take_selected_marker(), creatures,
+        legion = Legion.Legion(self.take_marker(marker), creatures,
           self.starting_tower)
         self.legions.append(legion)
