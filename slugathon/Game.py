@@ -166,6 +166,11 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         player.create_starting_legion(marker)
 
+    def gen_all_legions(self):
+        for player in self.players:
+            for legion in player.legions:
+                yield legion
+
     def update(self, observed, action):
         print "Game.update", observed, action
 
@@ -188,4 +193,3 @@ class Game(Observed):
             self.create_starting_legion(action.playername, action.marker)
 
         self.notify(action)
-

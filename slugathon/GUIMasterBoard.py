@@ -9,17 +9,30 @@ import gtk
 import pango
 import sys
 import math
+import zope.interface
+
 import GUIMasterHex
 import MasterBoard
 import guiutils
+from Observer import IObserver
+import Action
+import Game
 
 SQRT3 = math.sqrt(3.0)
 
 
 class GUIMasterBoard(object):
-    def __init__(self, root, board, scale=15):
+
+    zope.interface.implements(IObserver)
+
+    def __init__(self, root, board, game=None, scale=15):
         self.root = root
         self.board = board
+
+        # XXX This feels like inappropriate coupling, but I haven't thought
+        # of a better way to handle the data needed for markers yet.
+        self.game = game
+
         self.scale = scale
         self.area = gtk.DrawingArea()
         black = self.area.get_colormap().alloc_color("black")
@@ -41,14 +54,14 @@ class GUIMasterBoard(object):
         self.style = self.area.get_style()
         self.gc = self.style.fg_gc[gtk.STATE_NORMAL]
         for guihex in self.guihexes.values():
-            guihex.update(self.gc, self.style)
+            guihex.update_gui(self.gc, self.style)
         return True
 
     def click_cb(self, area, event):
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 guihex.toggle_selection()
-                guihex.update(self.gc, self.style)
+                guihex.update_gui(self.gc, self.style)
                 break
         return True
 
@@ -57,6 +70,11 @@ class GUIMasterBoard(object):
 
     def compute_height(self):
         return int(round(self.scale * self.board.hex_height() * 4 * SQRT3))
+
+    def update(self, observed, action):
+        print "GUIMasterBoard.update", self, observed, action
+        if isinstance(action, Action.CreateStartingLegion):
+            guihex.update_gui(self.gc, self.style)
 
 
 def quit(unused):

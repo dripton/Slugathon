@@ -154,7 +154,8 @@ class Client(pb.Referenceable, Observed):
         # guiboard, if necessary.
         boardroot = BoardRoot.BoardRoot(self.username)
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot.root,
-          game.board)
+          game.board, game)
+        self.attach(self.guiboards[game])
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
@@ -181,8 +182,6 @@ class Client(pb.Referenceable, Observed):
             game.assign_color(action.playername, action.color)
             self._maybe_pick_color(game)
             self._maybe_pick_first_marker(game, action.playername)
-        elif isinstance(action, Action.CreateStartingLegion):
-            game = self.name_to_game(action.game_name)
             if not self.guiboards.get(game):
                 self._init_guiboard(game)
 

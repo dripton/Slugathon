@@ -8,6 +8,7 @@ import os
 import math
 import guiutils
 import colors
+import Marker
 
 SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
@@ -29,13 +30,14 @@ class GUIMasterHex(object):
                 colors.terrain_colors[self.hex.terrain]])
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False
+        self.markers = []
 
         self.init_vertexes()
         self.init_gates()
         iv = guiutils.scale_polygon(self.vertexes, 0.7)
-        self.innerVertexes = []
+        self.inner_vertexes = []
         for point in iv:
-            self.innerVertexes.append((int(round(point[0])),
+            self.inner_vertexes.append((int(round(point[0])),
                                        int(round(point[1]))))
         self.init_overlay()
 
@@ -92,7 +94,7 @@ class GUIMasterHex(object):
             fg = colormap.alloc_color(*self.fillcolor)
             gc.foreground = fg
             self.guiboard.area.window.draw_polygon(gc, True,
-                self.innerVertexes)
+                self.inner_vertexes)
 
             # outline
             fg = colormap.alloc_color("black")
@@ -164,7 +166,6 @@ class GUIMasterHex(object):
             return None
 
 
-
     def init_overlay(self):
         """Setup the overlay with terrain name and image."""
         scale = self.guiboard.scale
@@ -209,10 +210,36 @@ class GUIMasterHex(object):
         self.guiboard.area.window.draw_layout(gc, x, y, layout)
 
 
-    def update(self, gc, style):
+    def _init_markers(self):
+        game = self.guiboard.game
+        for legion in game.gen_all_legions():
+            if legion.hex == self.hex.label:
+                if legion.marker not in [m.name for m in self.markers]:
+                    marker = Marker.Marker(legion.marker)
+                    self.markers.append(marker)
+
+
+    def draw_markers(self, gc, style):
+        """Display markers for all legions in this hex."""
+        game = self.guiboard.game
+        if not game:
+            return
+        self._init_markers()
+        scale = self.guiboard.scale
+        chit_scale = scale * Marker.CHIT_SCALE_FACTOR
+        offset = (self.center[0] - chit_scale / 2, 
+          self.center[1] - chit_scale / 2)
+        for ii, marker in enumerate(self.markers):
+            marker.pixbuf.render_to_drawable(self.guiboard.area.window, gc,
+              0, 0, offset[0], offset[1], -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 
+              0, 0)
+
+
+    def update_gui(self, gc, style):
         self.draw_hexagon(gc, style)
         self.draw_overlay(gc, style)
         self.draw_label(gc, style)
+        self.draw_markers(gc, style)
 
     def toggle_selection(self):
         self.selected = not self.selected
