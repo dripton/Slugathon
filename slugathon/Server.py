@@ -2,6 +2,7 @@
 
 import sys
 from sets import Set
+import time
 from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.python import usage
@@ -57,6 +58,21 @@ class Server:
         for username in dest:
             user = self.name_to_user[username]
             user.receive_chat_message(message)
+
+    def form_game(username, game_name, min_players, max_players):
+        if not game_name:
+            raise ValueError('Games must be named')
+        if game_name in [g.name for g in self.games]:
+            raise ValueError('The game name "%s" is already in use' 
+              % game_name)
+        if min_players > max_players:
+            raise ValueError('min_players must be <= max_players')
+        now = time.time()
+        GAME_START_DELAY = 20
+        game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
+            min_players, max_players)
+        for u in self.users:
+            u.notifyFormedGame(game)
 
 
 class Options(usage.Options):

@@ -22,12 +22,23 @@ class NewGame:
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
         self.newgameDialog.set_icon(pixbuf)
-        
-    def cb_ok(self): 
-        print "ok"
-        self.user.callRemote("formgame", name, min_players, max_players)
-        dismiss()
 
-    def cb_cancel(self): 
+        
+        response = self.newgameDialog.run()
+        if response == gtk.RESPONSE_OK:
+            self.ok()
+        else:
+            self.cancel()
+
+        
+    def ok(self): 
+        print "ok"
+        name = self.nameEntry.get_text()
+        min_players = self.minplayersSpin.get_value_as_int()
+        max_players = self.maxplayersSpin.get_value_as_int()
+        self.user.callRemote("form_game", name, min_players, max_players)
+        self.newgameDialog.destroy()
+
+    def cancel(self): 
         print "cancel"
-        dismiss()
+        self.newgameDialog.destroy()

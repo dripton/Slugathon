@@ -65,3 +65,8 @@ class Client(pb.Referenceable):
     def remote_receive_chat_message(self, text):
         if self.anteroom:
             self.anteroom.receive_chat_message(text)
+
+    def remote_notifyFormedGame(self, name, creator, create_time, start_time,
+      min_players, max_players):
+        if self.anteroom:
+            pass

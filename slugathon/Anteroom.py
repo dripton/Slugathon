@@ -27,7 +27,7 @@ class Anteroom:
         for widgetName in self.widgets:
             setattr(self, widgetName, self.glade.get_widget(widgetName))
         self.usernames = Set()
-        self.games = []
+        self.games = {}
         self.anteroomWindow.connect("destroy", quit)
 
         self.chatEntry.connect("key-press-event", self.cb_keypress)
@@ -57,9 +57,7 @@ class Anteroom:
         self.userList.append_column(column)
 
         self.gameStore = gtk.ListStore(str)
-        for game in self.games:
-            it = self.gameStore.append()
-            self.gameStore.set(it, 0, game)
+        self.updateGameStore()
         self.gameList.set_model(self.gameStore)
         column = gtk.TreeViewColumn('Game Name', gtk.CellRendererText(),
           text=0)
@@ -79,6 +77,11 @@ class Anteroom:
         leng = len(sorted_usernames)
         while len(self.userStore) > leng:
             del self.userStore[leng]
+
+    def updateGameStore(self):
+        for game in self.games:
+            it = self.gameStore.append()
+            self.gameStore.set(it, 0, game)
 
     def failure(self, error):
         print "Anteroom.failure", self, error
@@ -114,6 +117,11 @@ class Anteroom:
         it = buffer.get_end_iter()
         buffer.insert(it, message)
         self.chatView.scroll_to_mark(buffer.get_insert(), 0)
+
+    def add_game(self, name, creator, create_time, start_time, min_players,
+      max_players):
+        pass
+        
 
 def quit(unused):
     sys.exit()
