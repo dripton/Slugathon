@@ -50,6 +50,7 @@ class GUIMasterBoard:
             if guiutils.point_in_polygon((event.x, event.y), guihex.allPoints):
                 guihex.toggleSelection()
                 guihex.update(self.gc, self.style)
+                break
         return True
 
     def compute_width(self):
