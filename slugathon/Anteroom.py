@@ -81,11 +81,11 @@ class Anteroom:
     def updateGameStore(self):
         leng = len(self.gameStore)
         for ii, game in enumerate(self.games):
-            gametuple = game.to_tuple()
+            game_tuple = game.to_tuple()
             if ii < leng:
-                self.gameStore[ii, 0] = gametuple
+                self.gameStore[ii, 0] = game_tuple
             else:
-                self.gameStore.append(gametuple)
+                self.gameStore.append(game_tuple)
         leng = len(self.games)
         while len(self.gameStore) > leng:
             del self.gameStore[leng]
