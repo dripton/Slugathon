@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 BIGNUM = 99999999
 
 class MasterHex:

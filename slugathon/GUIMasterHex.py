@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import gtk
 import os
 import math
@@ -30,7 +28,11 @@ class GUIMasterHex:
 
         self.initVertexes()
         self.initGates()
-        self.innerVertexes = guiutils.scale_polygon(self.vertexes, 0.7)
+        iv = guiutils.scale_polygon(self.vertexes, 0.7)
+        self.innerVertexes = []
+        for point in iv:
+            self.innerVertexes.append((int(round(point[0])),
+                                       int(round(point[1]))))
         self.initOverlay()
 
 
@@ -49,17 +51,23 @@ class GUIMasterHex:
         if self.hex.inverted:
             self.vertexes[0] = (cx + scale, cy)
             self.vertexes[1] = (cx + 5 * scale, cy)
-            self.vertexes[2] = (cx + 6 * scale, cy + SQRT3 * scale)
-            self.vertexes[3] = (cx + 4 * scale, cy + 3 * SQRT3 * scale)
-            self.vertexes[4] = (cx + 2 * scale, cy + 3 * SQRT3 * scale)
-            self.vertexes[5] = (cx, cy + SQRT3 * scale)
+            self.vertexes[2] = (cx + 6 * scale, int(round(cy + SQRT3 * scale)))
+            self.vertexes[3] = (cx + 4 * scale,
+                                int(round(cy + 3 * SQRT3 * scale)))
+            self.vertexes[4] = (cx + 2 * scale, 
+                               int(round(cy + 3 * SQRT3 * scale)))
+            self.vertexes[5] = (cx, int(round(cy + SQRT3 * scale)))
         else:
             self.vertexes[0] = (cx + 2 * scale, cy)
             self.vertexes[1] = (cx + 4 * scale, cy)
-            self.vertexes[2] = (cx + 6 * scale, cy + 2 * SQRT3 * scale)
-            self.vertexes[3] = (cx + 5 * scale, cy + 3 * SQRT3 * scale)
-            self.vertexes[4] = (cx + scale, cy + 3 * SQRT3 * scale)
-            self.vertexes[5] = (cx, cy + 2 * SQRT3 * scale)
+            self.vertexes[2] = (cx + 6 * scale, 
+                                int(round(cy + 2 * SQRT3 * scale)))
+            self.vertexes[3] = (cx + 5 * scale, 
+                                int(round(cy + 3 * SQRT3 * scale)))
+            self.vertexes[4] = (cx + scale, 
+                                int(round(cy + 3 * SQRT3 * scale)))
+            self.vertexes[5] = (cx, 
+                                int(round(cy + 2 * SQRT3 * scale)))
 
 
     def drawHexagon(self, gc, style):
@@ -114,7 +122,7 @@ class GUIMasterHex:
         """
         hex = self.hex
         vertexes = self.vertexes
-        self.allPoints = []
+        ap = []
         for i in range(6):
             gp = [vertexes[i]]
             n = (i + 1) % 6
@@ -127,7 +135,10 @@ class GUIMasterHex:
                           vertexes[i][0], vertexes[i][1], hex.entrances[i])
                 li.reverse()
                 gp.extend(li)
-            self.allPoints.extend(gp)
+            ap.extend(gp)
+        self.allPoints = []
+        for point in ap:
+            self.allPoints.append((int(round(point[0])), int(round(point[1]))))
 
     def initGate(self, vx1, vy1, vx2, vy2, gateType):
         """Setup gate on one entrance / exit hexside."""
@@ -155,14 +166,14 @@ class GUIMasterHex:
         self.bboxsize = (6 * scale, int(3 * SQRT3 * scale))
 
         myboxsize = [0.85 * mag for mag in self.bboxsize]
-        self.dest_x = self.center[0] - myboxsize[0] / 2
-        self.dest_y = self.center[1] - myboxsize[1] / 2
+        self.dest_x = int(round(self.center[0] - myboxsize[0] / 2.))
+        self.dest_y = int(round(self.center[1] - myboxsize[1] / 2.))
 
         image_filename = os.path.join("../images/masterhex",
                                       self.hex.overlay_filename)
         pixbuf = gtk.gdk.pixbuf_new_from_file(image_filename)
-        self.pixbuf = pixbuf.scale_simple(myboxsize[0], myboxsize[1],
-                                          gtk.gdk.INTERP_BILINEAR)
+        self.pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
+            int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
 
     def drawOverlay(self, gc, style):
@@ -181,10 +192,10 @@ class GUIMasterHex:
         half_text_height = 0.5 * text_height
         side = self.hex.label_side
 
-        x = (self.cx + self.bboxsize[0] * x_font_position[side] -
-                half_text_width)
-        y = (self.cy + self.bboxsize[1] * y_font_position[side] -
-                half_text_height)
+        x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
+                half_text_width)))
+        y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
+                half_text_height)))
 
         colormap = self.guiboard.area.get_colormap()
         fg = colormap.alloc_color('black')
@@ -206,8 +217,8 @@ def _initBlock(x0, y0, x1, y1, theta, unit):
     """Return a list of points to make a block."""
     xy = []
     xy.append((x0, y0))
-    xy.append(((x0 + unit * math.sin(theta)), (y0 - unit * math.cos(theta))))
-    xy.append(((x1 + unit * math.sin(theta)), (y1 - unit * math.cos(theta))))
+    xy.append((x0 + unit * math.sin(theta), (y0 - unit * math.cos(theta))))
+    xy.append((x1 + unit * math.sin(theta), (y1 - unit * math.cos(theta))))
     xy.append((x1, y1))
     return xy
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.3
 
 try:
     import pygtk
@@ -53,10 +53,10 @@ class GUIMasterBoard:
         return True
 
     def compute_width(self):
-        return self.scale * (self.board.hex_width() * 4 + 2)
+        return int(round(self.scale * (self.board.hex_width() * 4 + 2)))
 
     def compute_height(self):
-        return self.scale * self.board.hex_height() * 4 * SQRT3
+        return int(round(self.scale * self.board.hex_height() * 4 * SQRT3))
 
 
 def quit(unused):
