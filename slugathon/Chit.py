@@ -51,8 +51,11 @@ class Chit(object):
         raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
           self.chit_scale, gtk.gdk.INTERP_BILINEAR)
+        self.event_box = gtk.EventBox()
+        self.event_box.chit = self
         self.image = gtk.Image()
         self.image.set_from_pixbuf(self.pixbuf)
+        self.event_box.add(self.image)
         self.location = None    # (x, y) of top left corner
 
     def point_inside(self, point):
@@ -60,7 +63,11 @@ class Chit(object):
         return guiutils.point_in_square(point, self.location, self.chit_scale)
 
     def show(self):
+        self.event_box.show()
         self.image.show()
+
+    def connect(self, event, method):
+        self.event_box.connect(event, method)
 
     def _render_text(self, im, rgb):
         """Add creature name, power, and toughness to Image im"""
