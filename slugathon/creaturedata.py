@@ -5,7 +5,7 @@
 
 data = {
 
-"Angel": ("Angels", 6, 4, 0, 1, "lord", 1, 100, 18, "by_player"),
+"Angel": ("Angels", 6, 4, 0, 1, "lord", 1, 100, 18, "giant_blue"),
 "Archangel": ("Archangels", 9, 4, 0, 1, "lord", 1, 500, 6, "hydra_orange"),
 "Behemoth": ("Behemoths", 8, 3, 0, 0, "creature", 0, 0, 18, "behemoth_green"),
 "Centaur": ("Centaurs", 3, 4, 0, 0, "creature", 0, 0, 25, "centaur_gold"),
