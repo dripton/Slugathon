@@ -8,10 +8,10 @@ class User(pb.Avatar):
     def __init__(self, name, server, client):
         self.name = name
         self.server = server
-        self.client = None
+        self.client = client
         # XXX Bidirectional references
         self.server.addUser(self)
-        print "User.init", self, name, server
+        print "User.init", self, name, server, client
 
     def perspective_getName(self, arg):
         print "perspective_getName(", arg, ") called on", self
@@ -25,14 +25,31 @@ class User(pb.Avatar):
         print "perspective_getGames called on", self
         return self.server.getGames()
 
-
     def __str__(self):
         return "User " + self.name
 
     def attached(self, mind):
         print "called User.attached", mind
-        self.client.callRemote("setname", self.name)
-        self.client.callRemote("ping", time.time())
+        def1 = self.client.callRemote("setName", self.name)
+        def1.addCallbacks(self.didSetName, self.failure)
+        def2 = self.client.callRemote("ping", time.time())
+        def2.addCallbacks(self.didPing, self.failure)
+
+    def didSetName(self, arg):
+        print "User.didSetName", arg
+
+    def failure(self, arg):
+        print "User.failure", arg
+
+    def didPing(self, arg):
+        print "User.didPing", arg
 
     def logout(self):
         print "called logout"
+        self.server.delUser(self)
+
+    def notifyAddUser(self, user):
+        self.client.callRemote("notifyAddUsername", user.name)
+
+    def notifyDelUser(self, user):
+        self.client.callRemote("notifyDelUsername", user.name)
