@@ -6,7 +6,7 @@ import MasterBoard
 import rules
 from playercolordata import colors
 
-class Game(pb.Copyable):
+class Game:
     """Central class holding information about one game."""
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players):
@@ -44,11 +44,16 @@ class Game(pb.Copyable):
                 return player
         raise KeyError("No player named %s" % name)
 
-    def to_tuple(self):
+    def to_gui_tuple(self):
         """Return state as a tuple of strings for GUI presentation."""
         return (self.name, self.get_owner().name, time.ctime(self.create_time),
           time.ctime(self.start_time), self.min_players, self.max_players,
           ', '.join(self.get_playernames()))
+
+    def to_info_tuple(self):
+        """Return state as a tuple of strings for passing to client."""
+        return (self.name, self.create_time, self.start_time, 
+          self.min_players, self.max_players, self.get_playernames()[:])
 
     def remove_player(self, playername):
         assert not self.started, 'remove_player on started game'
@@ -63,7 +68,7 @@ class Game(pb.Copyable):
         assert len(self.players) < self.max_players, \
           '%s tried to join full game %s' % (playername, self.name)
         print 'adding', playername, 'to', self.name
-        self.num_players_joined++
+        self.num_players_joined += 1
         player = Player.Player(playername, self.num_players_joined)
         self.players.append(player)
         player.add_observer(self)
@@ -77,9 +82,11 @@ class Game(pb.Copyable):
         for num, player in enumerate(self.players):
             player.assign_starting_tower(towers[num])
         self.sort_players()
-        for player in players:
+        for player in self.players:
             pass
-            # TODO Figure out the right way to call up through server to client.
+            # TODO Figure out the right way to call up through server to 
+            # client.  This also gets called on the client copy, so we
+            # need to use observers.
             # Need to add server as an observer on this game?
 
 
@@ -99,32 +106,7 @@ class Game(pb.Copyable):
         player = self.get_player_by_name(playername)
         player.assign_color(color)
 
-
     def update(self, observed, *args):
         # TODO Game.update
         pass
 
-    def getStateToCopy(self):
-        di = self.__dict__.copy()
-        print "Game.getStateToCopy", di
-        return di
-
-    def getTypeToCopy(self):
-        return "Game.Game"
-
-
-class RemoteGame(Game, pb.RemoteCopy):
-    """Client-side proxy for Game.  
-       
-       Should not see random number generator status or other players' 
-       legion contents, and should not be able to change global game state.
-    """
-    # XXX Need to call Game.__init__?  Use new-style classes?
-    def __init__(self):
-        pass
-
-    def setCopyableState(self, state):
-        print "RemoteGame.setCopyableState", state
-        self.__dict__ = state
-
-pb.setUnjellyableForClass(Game, RemoteGame)

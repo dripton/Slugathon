@@ -2,7 +2,7 @@ from twisted.spread import pb
 
 BIGNUM = 99999999
 
-class MasterHex(pb.Copyable, pb.RemoteCopy):
+class MasterHex:
     """A logical MasterBoard hex.  No GUI logic.
 
     Hex vertexes are numbered like this:
@@ -125,5 +125,3 @@ class MasterHex(pb.Copyable, pb.RemoteCopy):
     def is_tower(self):
         """Return True iff this hex is a tower."""
         return self.terrain == "Tower"
-
-pb.setUnjellyableForClass(MasterHex, MasterHex)

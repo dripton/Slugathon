@@ -10,6 +10,7 @@ from sets import Set
 from twisted.internet import reactor
 import NewGame
 import WaitingForPlayers
+import Game
 
 
 class Anteroom:
@@ -41,8 +42,18 @@ class Anteroom:
         def1 = self.user.callRemote("get_games")
         def1.addCallbacks(self.got_games, self.failure)
 
-    def got_games(self, games):
-        self.games = games
+    def got_games(self, game_tuples):
+        self.games = []
+        # XXX Duplicate code
+        for game_tuple in game_tuples:
+            (name, create_time, start_time, min_players, max_players,
+              playernames) = game_tuple
+            owner = playernames[0]
+            game = Game.Game(name, owner, create_time, start_time, min_players,
+              max_players)
+            for playername in playernames[1:]:
+                game.add_player(playername)
+            self.games.append(game)
         self.user_store = gtk.ListStore(str)
         self.update_user_store()
         self.user_list.set_model(self.user_store)
@@ -81,7 +92,7 @@ class Anteroom:
     def update_game_store(self):
         leng = len(self.game_store)
         for ii, game in enumerate(self.games):
-            game_tuple = game.to_tuple()
+            game_tuple = game.to_gui_tuple()
             if ii < leng:
                 self.game_store[ii, 0] = game_tuple
             else:
@@ -121,6 +132,12 @@ class Anteroom:
         buffer.insert(it, message)
         self.chatView.scroll_to_mark(buffer.get_insert(), 0)
 
+    def name_to_game(self, game_name):
+        for g in self.games:
+            if g.name == game_name:
+                return g
+        raise KeyError("No game named %s found" % game_name)
+
     def add_game(self, game):
         self.games.append(game)
         self.update_game_store()
@@ -129,24 +146,27 @@ class Anteroom:
                 self.wfp.destroy()
             self.wfp = WaitingForPlayers.WaitingForPlayers(self.user, game)
 
-    def remove_game(self, game):
+    def remove_game(self, game_name):
+        game = self.name_to_game(game_name)
         self.games.remove(game)
         self.update_game_store()
         if self.wfp and self.wfp.game == game:
             self.wfp.destroy()
             self.wfp = None
 
-    # XXX The need to substitute references is ugly.  Use Cacheable?
-    def change_game(self, game):
-        for (ii, g) in enumerate(self.games):
-            if g == game:              # Same name
-                self.games[ii] = game  # update to latest values
-                break
+    def joined_game(self, playername, game_name):
+        game = self.name_to_game(game_name)
+        game.add_player(playername)
         self.update_game_store()
-        if self.wfp:
-            if self.wfp.game == game:  # Same name
-                self.wfp.game = game
-                self.wfp.update_player_store()
+        if self.wfp and self.wfp.game == game:
+            self.wfp.update_player_store()
+
+    def dropped_from_game(self, playername, game_name):
+        game = self.name_to_game(game_name)
+        game.remove_player(playername)
+        self.update_game_store()
+        if self.wfp and self.wfp.game == game:
+            self.wfp.update_player_store()
 
     def cb_user_list_select(self, path, unused):
         index = path[0]

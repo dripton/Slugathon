@@ -97,7 +97,7 @@ class Server:
                     u.notify_removed_game(game)
             else:
                 for u in self.users:
-                    u.notify_changed_game(game)
+                    u.notify_dropped_from_game(username, game)
 
     def join_game(self, username, game_name):
         game = self.name_to_game(game_name)
@@ -107,7 +107,7 @@ class Server:
             pass
         else:
             for u in self.users:
-                u.notify_changed_game(game)
+                u.notify_joined_game(username, game)
 
     def start_game(self, username, game_name):
         game = self.name_to_game(game_name)

@@ -5,6 +5,7 @@ import Server
 from twisted.cred import credentials
 from twisted.internet import reactor, defer
 import Anteroom
+import Game
 
 
 class Client(pb.Referenceable):
@@ -66,15 +67,27 @@ class Client(pb.Referenceable):
         if self.anteroom:
             self.anteroom.receive_chat_message(text)
 
-    def remote_notify_formed_game(self, game):
+    def remote_notify_formed_game(self, name, create_time, start_time, 
+          min_players, max_players, playernames):
+        # XXX Duplicate code
+        owner = playernames[0]
+        game = Game.Game(name, owner, create_time, start_time, min_players,
+          max_players)
+        for playername in playernames[1:]:
+            game.add_player(playername)
+
+        # XXX If clients join later, show them existing games.
         if self.anteroom:
             self.anteroom.add_game(game)
 
-    def remote_notify_removed_game(self, game):
+    def remote_notify_removed_game(self, game_name):
         if self.anteroom:
-            self.anteroom.remove_game(game)
+            self.anteroom.remove_game(game_name)
 
-    def remote_notify_changed_game(self, game):
-        print "Client.notify_changed_game", game.name
+    def remote_notify_joined_game(self, playername, game_name):
         if self.anteroom:
-            self.anteroom.change_game(game)
+            self.anteroom.joined_game(playername, game_name)
+
+    def remote_notify_dropped_from_game(self, playername, game_name):
+        if self.anteroom:
+            self.anteroom.dropped_from_game(playername, game_name)

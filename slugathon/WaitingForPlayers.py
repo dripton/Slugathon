@@ -51,15 +51,15 @@ class WaitingForPlayers:
         self.player_list.append_column(column)
 
     def cb_click_join(self, widget, event):
-        def1 = self.user.callRemote("join_game", self.game)
+        def1 = self.user.callRemote("join_game", self.game.name)
         def1.addErrback(self.failure)
 
     def cb_click_drop(self, widget, event):
-        def1 = self.user.callRemote("drop_from_game", self.game)
+        def1 = self.user.callRemote("drop_from_game", self.game.name)
         def1.addErrback(self.failure)
 
     def cb_click_start(self, widget, event):
-        def1 = self.user.callRemote("start_game", self.game)
+        def1 = self.user.callRemote("start_game", self.game.name)
         def1.addErrback(self.failure)
 
     def cb_player_list_select(self, path, unused):

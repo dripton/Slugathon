@@ -23,7 +23,8 @@ class User(pb.Avatar):
 
     def perspective_get_games(self):
         print "perspective_get_games called on", self
-        return self.server.get_games()
+        games = self.server.get_games()
+        return [game.to_info_tuple() for game in games]
 
     def perspective_send_chat_message(self, text):
         print "perspective_send_chat_message", text
@@ -40,26 +41,35 @@ class User(pb.Avatar):
 
     def notify_formed_game(self, game):
         print "notify_formed_game", game
-        def1 = self.client.callRemote("notify_formed_game", game)
+        def1 = self.client.callRemote("notify_formed_game", game.name, 
+          game.create_time, game.start_time, game.min_players,
+          game.max_players, game.get_playernames())
         def1.addErrback(self.failure)
 
     def notify_removed_game(self, game):
         print "notify_removed_game", game
-        def1 = self.client.callRemote("notify_removed_game", game)
+        def1 = self.client.callRemote("notify_removed_game", game.name)
         def1.addErrback(self.failure)
 
-    def notify_changed_game(self, game):
-        print "notify_changed_game", game
-        def1 = self.client.callRemote("notify_changed_game", game)
+    def notify_dropped_from_game(self, playername, game):
+        print "notify_dropped_from_game", playername, game
+        def1 = self.client.callRemote("notify_dropped_from_game", playername,
+          game.name)
         def1.addErrback(self.failure)
 
-    def perspective_drop_from_game(self, game_name):
-        print "perspective_drop_from_game", game_name
-        self.server.drop_from_game(self.name, game_name)
+    def notify_joined_game(self, playername, game):
+        print "notify_joined_game", playername, game
+        def1 = self.client.callRemote("notify_joined_game", playername,
+          game.name)
+        def1.addErrback(self.failure)
 
     def perspective_join_game(self, game_name):
         print "perspective_join_game", game_name
         self.server.join_game(self.name, game_name)
+
+    def perspective_drop_from_game(self, game_name):
+        print "perspective_drop_from_game", game_name
+        self.server.drop_from_game(self.name, game_name)
 
     def perspective_start_game(self, game_name):
         print "perspective_start_game", game_name
