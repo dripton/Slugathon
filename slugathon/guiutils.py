@@ -61,3 +61,19 @@ def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
         ylist.append(int(round(ycenter - math.sin(theta) * radius)))
         theta += del_theta
     return zip(xlist, ylist)
+
+
+def scale_polygon(vertexes, ratio):
+    """Return a rescaled version of the polygon, with the same center."""
+    totalx = 0
+    totaly = 0
+    for (px, py) in vertexes:
+        totalx += px
+        totaly += py
+    center = (totalx / len(vertexes), totaly / len(vertexes))
+    nv = []
+    for (px, py) in vertexes:
+        deltax = (px - center[0]) * ratio
+        deltay = (py - center[1]) * ratio
+        nv.append((center[0] + deltax, center[1] + deltay))
+    return nv

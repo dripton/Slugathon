@@ -126,5 +126,17 @@ class MasterBoardTestCase(unittest.TestCase):
         assert li[2][1] > 100
         assert li[3] == (100, 100)
 
+    def testScalePolygon(self):
+        vertexes = [(100, 0), (200, 100), (100, 200), (0, 100)]
+        nv = guiutils.scale_polygon(vertexes, 0.5)
+        assert int(round(nv[0][0])) == 100
+        assert int(round(nv[0][1])) == 50
+        assert int(round(nv[1][0])) == 150
+        assert int(round(nv[1][1])) == 100
+        assert int(round(nv[2][0])) == 100
+        assert int(round(nv[2][1])) == 150
+        assert int(round(nv[3][0])) == 50
+        assert int(round(nv[3][1])) == 100
+
 if __name__ == '__main__':
     unittest.main()

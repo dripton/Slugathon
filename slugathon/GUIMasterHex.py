@@ -2,7 +2,6 @@
 
 import gtk
 import math
-import pango
 import guiutils
 import colors
 
@@ -29,6 +28,7 @@ class GUIMasterHex:
 
         self.initVertexes()
         self.initGates()
+        self.innerVertexes = guiutils.scale_polygon(self.vertexes, 0.7)
         self.initOverlay()
 
 
@@ -59,18 +59,42 @@ class GUIMasterHex:
             self.vertexes[4] = (cx + scale, cy + 3 * SQRT3 * scale)
             self.vertexes[5] = (cx, cy + 2 * SQRT3 * scale)
 
+
     def drawHexagon(self, gc, style):
         """Create the polygon, filled with the terrain color."""
-        colormap = self.guiboard.area.get_colormap()
-        fg = colormap.alloc_color(*self.fillcolor)
-        gc.foreground = fg
-        self.guiboard.area.window.draw_polygon(gc, True, self.allPoints)
 
-        # outline
+        # TODO Fix random black/white edge color on border between selected
+        # and unselected hexes.
+
         colormap = self.guiboard.area.get_colormap()
-        fg = colormap.alloc_color('white')
-        gc.foreground = fg
-        self.guiboard.area.window.draw_polygon(gc, False, self.allPoints)
+
+        if self.hex.selected:
+            # outer portion
+            fg = colormap.alloc_color('white')
+            gc.foreground = fg
+            self.guiboard.area.window.draw_polygon(gc, True, self.allPoints)
+
+            # inner hex
+            fg = colormap.alloc_color(*self.fillcolor)
+            gc.foreground = fg
+            self.guiboard.area.window.draw_polygon(gc, True,
+                self.innerVertexes)
+
+            # outline
+            fg = colormap.alloc_color('black')
+            gc.foreground = fg
+            self.guiboard.area.window.draw_polygon(gc, False, self.allPoints)
+
+        else:
+            # hex
+            fg = colormap.alloc_color(*self.fillcolor)
+            gc.foreground = fg
+            self.guiboard.area.window.draw_polygon(gc, True, self.allPoints)
+
+            # outline
+            fg = colormap.alloc_color('white')
+            gc.foreground = fg
+            self.guiboard.area.window.draw_polygon(gc, False, self.allPoints)
 
 
 
@@ -110,17 +134,16 @@ class GUIMasterHex:
         x1 = vx1 + (vx2 - vx1) / 3.
         y1 = vy1 + (vy2 - vy1) / 3.
         theta = math.atan2(vy2 - vy1, vx2 - vx1)
-        #third = self.guiboard.scale / 3.
-        third = self.guiboard.scale / 1.75
+        unit = self.guiboard.scale / 1.75
 
         if gateType == 'BLOCK':
-            return initBlock(x0, y0, x1, y1, theta, third)
+            return initBlock(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARCH':
-            return initArch(x0, y0, x1, y1, theta, third)
+            return initArch(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARROW':
-            return initArrow(x0, y0, x1, y1, theta, third)
+            return initArrow(x0, y0, x1, y1, theta, unit)
         elif gateType == 'ARROWS':
-            return initArrows(vx1, vy1, vx2, vy2, theta, third)
+            return initArrows(vx1, vy1, vx2, vy2, theta, unit)
 
 
 
@@ -148,8 +171,6 @@ class GUIMasterHex:
 
     def drawLabel(self, gc, style):
         """Display the hex label."""
-        # TODO Font size should vary with scale and actual width of font.
-        self.guiboard.area.modify_font(pango.FontDescription('monospace 8'))
         # TODO Fix deprecation warning.
         font = style.get_font()
         label = str(self.hex.label)
@@ -175,19 +196,19 @@ class GUIMasterHex:
         self.drawLabel(gc, style)
 
 
-def initBlock(x0, y0, x1, y1, theta, third):
+def initBlock(x0, y0, x1, y1, theta, unit):
     xy = []
     xy.append((x0, y0))
-    xy.append((x0 + third * math.sin(theta), y0 - third * math.cos(theta)))
-    xy.append((x1 + third * math.sin(theta), y1 - third * math.cos(theta)))
+    xy.append(((x0 + unit * math.sin(theta)), (y0 - unit * math.cos(theta))))
+    xy.append(((x1 + unit * math.sin(theta)), (y1 - unit * math.cos(theta))))
     xy.append((x1, y1))
     return xy
 
 
-def initArch(x0, y0, x1, y1, theta, third):
-    sixth = third / 2.0
-    p0 = ((x0 + sixth * math.sin(theta), y0 - sixth * math.cos(theta)))
-    p1 = ((x1 + sixth * math.sin(theta), y1 - sixth * math.cos(theta)))
+def initArch(x0, y0, x1, y1, theta, unit):
+    half = unit / 2.0
+    p0 = ((x0 + half * math.sin(theta), y0 - half * math.cos(theta)))
+    p1 = ((x1 + half * math.sin(theta), y1 - half * math.cos(theta)))
 
     xy = []
 
@@ -202,21 +223,21 @@ def initArch(x0, y0, x1, y1, theta, third):
 
     return xy
 
-def initArrow(x0, y0, x1, y1, theta, third):
+def initArrow(x0, y0, x1, y1, theta, unit):
     xy = []
     xy.append((x0, y0))
-    xy.append(((x0 + x1) / 2. + third * math.sin(theta),
-               (y0 + y1) / 2. - third * math.cos(theta)))
+    xy.append(((x0 + x1) / 2. + unit * math.sin(theta),
+               (y0 + y1) / 2. - unit * math.cos(theta)))
     xy.append((x1, y1))
     return xy
 
 
-def initArrows(vx1, vy1, vx2, vy2, theta, third):
+def initArrows(vx1, vy1, vx2, vy2, theta, unit):
     xy = []
     for i in range(3):
         x0 = vx1 + (vx2 - vx1) * (2 + 3 * i) / 12.
         y0 = vy1 + (vy2 - vy1) * (2 + 3 * i) / 12.
         x1 = vx1 + (vx2 - vx1) * (4 + 3 * i) / 12.
         y1 = vy1 + (vy2 - vy1) * (4 + 3 * i) / 12.
-        xy.extend(initArrow(x0, y0, x1, y1, theta, third))
+        xy.extend(initArrow(x0, y0, x1, y1, theta, unit))
     return xy

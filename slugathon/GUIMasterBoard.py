@@ -6,6 +6,7 @@ try:
 except ImportError, AttributeError:
     pass
 import gtk
+import pango
 import sys
 import math
 import GUIMasterHex
@@ -23,12 +24,16 @@ class GUIMasterBoard:
         black = self.area.get_colormap().alloc_color('black')
         self.area.modify_bg(gtk.STATE_NORMAL, black)
         self.area.set_size_request(self.compute_width(), self.compute_height())
+        # TODO Vary font size with scale
+        self.area.modify_font(pango.FontDescription('monospace 8'))
         self.root.add(self.area)
         self.guihexes = {}
         for hex in self.board.hexes.values():
             guihex = GUIMasterHex.GUIMasterHex(hex, self)
             self.guihexes[hex.label] = guihex
         self.area.connect("expose-event", self.area_expose_cb)
+        self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.area.connect("button_press_event", self.click_cb)
         self.area.show()
         self.root.show()
 
@@ -37,6 +42,10 @@ class GUIMasterBoard:
         self.gc = self.style.fg_gc[gtk.STATE_NORMAL]
         for hex in self.guihexes.values():
             hex.update(self.gc, self.style)
+        return True
+
+    def click_cb(self, area, event):
+        print "Got click at (%d, %d)" % (event.x, event.y)
         return True
 
     def compute_width(self):
