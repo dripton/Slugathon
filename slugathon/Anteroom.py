@@ -12,7 +12,6 @@ import zope.interface
 
 import NewGame
 import WaitingForPlayers
-import Game
 from Observer import IObserver
 import Action
 
@@ -33,6 +32,7 @@ class Anteroom:
         self.usernames = None   # set, aliased from Client
         self.games = None       # list, aliased from Client
         self.game_store = []
+        self.wfps = {}          # game name : WaitingForPlayers
 
         self.anteroom_window.connect("destroy", quit)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
@@ -52,7 +52,7 @@ class Anteroom:
         for g in self.games:
             if g.name == game_name:
                 return g
-        raise KeyError("No game named %s found" % game_name)
+        return None
 
     def set_games(self, games):
         """Only called when the client first connects to the server."""
@@ -129,15 +129,25 @@ class Anteroom:
         buf.insert(it, message)
         self.chat_view.scroll_to_mark(buf.get_insert(), 0)
 
+    def _add_or_replace_wfp(self, game):
+        if game.name in self.wfps:
+            self.wfps[game.name].remove_game()
+        wfp = WaitingForPlayers.WaitingForPlayers(self.user,
+          self.username, game)
+        self.wfps[game.name] = wfp
+
     def add_game(self, game):
         print "Anteroom.add_game", game.name
+        game.attach(self)
         self.update_game_store()
         if self.username in game.get_playernames():
-            wfp = WaitingForPlayers.WaitingForPlayers(self.user,
-              self.username, game)
+            self._add_or_replace_wfp(game)
 
     def remove_game(self, game_name):
         self.update_game_store()
+        game = self.name_to_game(game_name)
+        if game:
+            game.detach(self)
 
     def joined_game(self, playername, game_name):
         print "Anteroom.joined_game", playername, game_name
@@ -146,6 +156,7 @@ class Anteroom:
     def dropped_from_game(self, game_name):
         self.update_game_store()
 
+    # TODO Actually saved marked user for private chats, user info, etc.
     def cb_user_list_select(self, path, unused):
         index = path[0]
         row = self.user_store[index, 0]
@@ -157,8 +168,7 @@ class Anteroom:
         index = path[0]
         game = self.games[index]
         # TODO popup menu
-        wfp = WaitingForPlayers.WaitingForPlayers(self.user, 
-          self.username, game)
+        self._add_or_replace_wfp(game)
         return False
 
     def update(self, observed, action):
@@ -177,6 +187,9 @@ class Anteroom:
             self.joined_game(action.username, action.game_name)
         elif isinstance(action, Action.DropFromGame):
             self.dropped_from_game(action.game_name)
+        elif isinstance(action, Action.AssignTower):
+            if action.game_name in self.wfps:
+                del self.wfps[action.game_name]
 
 
 def quit(unused):

@@ -22,6 +22,7 @@ def format_time(secs):
 class WaitingForPlayers:
     """Waiting for players to start game dialog."""
     def __init__(self, user, username, game):
+        print "new WaitingForPlayers", self, user, username, game
         self.user = user
         self.username = username
         self.game = game
@@ -85,7 +86,7 @@ class WaitingForPlayers:
 
     # XXX cleanup
     def update_player_store(self):
-        print "WFP.update_player_store"
+        print "WaitingForPlayers.update_player_store"
         playernames = self.game.get_playernames()
         leng = len(self.player_store)
         for ii, playername in enumerate(playernames):
@@ -98,14 +99,15 @@ class WaitingForPlayers:
             del self.player_store[leng]
 
     def destroy(self):
+        print "WaitingForPlayers: destroy"
         self.waiting_for_players_window.destroy()
 
     def failure(self, arg):
         print "WaitingForPlayers.failure", arg
 
     def remove_game(self):
-        self.destroy()
         self.game.detach(self)
+        self.destroy()
 
     def update(self, observed, action):
         print "WaitingForPlayers.update", self, observed, action
@@ -116,3 +118,6 @@ class WaitingForPlayers:
             self.update_player_store()
         elif isinstance(action, Action.DropFromGame):
             self.update_player_store()
+        elif isinstance(action, Action.AssignTower):
+            # Game has started; don't need this dialog anymore.
+            self.remove_game()
