@@ -15,8 +15,8 @@ import Legion
 
 class ShowLegion(object):
     """Dialog to show a legion's contents."""
-    def __init__(self, username, legion):
-        print "ShowLegion.__init__", username, legion
+    def __init__(self, username, legion, playercolor):
+        print "ShowLegion.__init__", username, legion, playercolor
         self.show_legion_dialog = gtk.Dialog()
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
@@ -26,7 +26,7 @@ class ShowLegion(object):
 
         # TODO Handle unknown creatures correctly
         for creature in legion.creatures:
-            chit = Chit.Chit(creature, scale=20)
+            chit = Chit.Chit(creature, playercolor, scale=20)
             chit.show()
             self.show_legion_dialog.action_area.add(chit.image)
 
@@ -39,9 +39,11 @@ def quit(unused):
 if __name__ == "__main__":
     creatures = [Creature.Creature(name) for name in 
       creaturedata.starting_creature_names]
+    
     legion = Legion.Legion("Rd01", creatures, 1)
     username = "test"
-    showlegion = ShowLegion(username, legion)
+    playercolor = "Red"
+    showlegion = ShowLegion(username, legion, playercolor)
     showlegion.show_legion_dialog.connect("destroy", quit)
 
     gtk.main()
