@@ -1,11 +1,16 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 import unittest
-import Tkinter as tk
-import ImageTk
+import math
+import guiutils
 import MasterBoard
 import GUIMasterBoard
-import guiutils
+
+
+EPSILON = 0.00001
+
+def assertClose(a, b, epsilon=EPSILON):
+    assert (abs(a - b) <= epsilon)
 
 
 class MasterBoardTestCase(unittest.TestCase):
@@ -13,7 +18,6 @@ class MasterBoardTestCase(unittest.TestCase):
         self.board = MasterBoard.MasterBoard()
         self.hex = self.board.hexes[1]
         self.hex2 = self.board.hexes[2]
-        self.guiboard = GUIMasterBoard.GUIMasterBoard(None, self.board)
 
     def testInitHex(self):
         assert self.hex.terrain == "Plains" 
@@ -74,6 +78,11 @@ class MasterBoardTestCase(unittest.TestCase):
         assert guiutils.RgbToTk((255, 255, 255)) == '#FFFFFF'
         assert guiutils.RgbToTk((189, 0, 24)) == '#BD0018'
 
+    def testRgbToGtk(self):
+        assert guiutils.RgbToGtk((0, 0, 0)) == ((0, 0, 0))
+        assert guiutils.RgbToGtk((255, 255, 255)) == ((65280, 65280, 65280))
+        assert guiutils.RgbToGtk((189, 0, 24)) == ((48384, 0, 6144))
+
     def testBuildOverlayFilename(self):
         assert self.hex.overlay_filename == "Plains.gif"
         assert self.hex2.overlay_filename == "Woods_i.gif"
@@ -86,6 +95,36 @@ class MasterBoardTestCase(unittest.TestCase):
         assert self.board.hexes[5000].find_label_side() == 2
         assert self.board.hexes[105].find_label_side() == 5
 
+    def testGetSemicirclePoints(self):
+        assert guiutils.get_semicircle_points(0, 0, 1, 1, 0) == []
+
+        li = guiutils.get_semicircle_points(100, 100, 200, 100, 4)
+        assert len(li) == 4
+        assert li[0] == (100, 100)
+        assert li[1][0] > 100
+        assert li[1][1] < 100
+        assert li[2][0] > li[1][0]
+        assert li[2][1] == li[1][1]
+        assert li[3] == (200, 100)
+
+        li = guiutils.get_semicircle_points(100, 100, 100, 200, 4)
+        assert len(li) == 4
+        assert li[0] == (100, 100)
+        assert li[1][0] > 100
+        assert li[1][1] > 100
+        assert li[2][0] > 100
+        assert li[2][0] == li[1][0]
+        assert li[2][1] > 100
+        assert li[3] == (100, 200)
+
+        li = guiutils.get_semicircle_points(200, 100, 100, 100, 4)
+        assert len(li) == 4
+        assert li[0] == (200, 100)
+        assert li[1][0] > 100
+        assert li[1][1] > 100
+        assert li[2][0] > 100
+        assert li[2][1] > 100
+        assert li[3] == (100, 100)
 
 if __name__ == '__main__':
     unittest.main()
