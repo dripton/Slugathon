@@ -84,11 +84,10 @@ class Server(Observed):
         if min_players > max_players:
             raise ValueError('min_players must be <= max_players')
         now = time.time()
-        GAME_START_DELAY = 20
+        GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY, 
           min_players, max_players)
-        print "built Game:", ".".join([game.__class__.__module__, 
-          game.__class__.__name__])
+        print "built Game"
         self.games.append(game)
         game.attach(self)
         action = Action.FormGame(username, game.name, game.create_time,
