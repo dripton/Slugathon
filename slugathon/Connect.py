@@ -12,6 +12,7 @@ import os
 import getpass
 from sets import Set
 import Server
+import Client
 
 
 class Connect:
@@ -71,14 +72,14 @@ class Connect:
         serverName = self.serverNameCombo.get_text()
         serverPort = int(self.serverPortCombo.get_text())
         print playerName, password, serverName, serverPort
-        #client = Client.Client(playerName, password, serverName, serverPort)
-        #client.connect()
+        client = Client.Client(playerName, password, serverName, serverPort)
+        client.connect()
 
     def on_startServerButton_clicked(self, *args):
         button = args[0]
         print "Start server button clicked", button
-        # XXX Not portable
-        os.system("python2.3 Server.py &")
+        #TODO Check portability
+        os.spawnv(os.P_NOWAIT, "python2.3", "Server.py")
 
 
 def quit(unused):
