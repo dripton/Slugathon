@@ -27,7 +27,8 @@ class Observed(object):
 
     def detach(self, observer):
         print "called Observed.detach", self, observer
-        self.observers.remove(observer)
+        if observer in self.observers:
+            self.observers.remove(observer)
 
     def notify(self, action):
         print "called Observed.notify", self, action
