@@ -7,15 +7,15 @@ Continuation lines should be indented two spaces past the continued line.
 
 Class names: CapWords
 Constants: UPPERCASE_WITH_UNDERSCORES
-Others: lower_case_with_underscores.  camelCase okay sometimes.
+Others: lower_case_with_underscores
 _not_part_of_public_interface
-__really_private_hands_off interferes with testing and is unnecessary.
+(__really_private_hands_off interferes with unit testing)
 
 Don't use "from package import *"
 
 Use only Python code unless C is absolutely necessary.  If you must write
 something in C (e.g. the innermost most speed-critical AI loops), write a
-Python prototype first.
+Python prototype first.  Do not use C++, ever.
 
 Write unit tests for everything that could possibly break.
 
