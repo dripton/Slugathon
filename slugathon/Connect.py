@@ -80,16 +80,25 @@ class Connect:
         serverPort = int(self.serverPortCombo.get_text())
         print playerName, password, serverName, serverPort
         client = Client.Client(playerName, password, serverName, serverPort)
-        client.connect()
+        def1 = client.connect()
+        def1.addCallbacks(self.connected, self.failure)
 
     def on_startServerButton_clicked(self, *args):
         button = args[0]
         print "Start server button clicked"
-        #XXX Not portable
+        #XXX Not portable  Use reactor.spawnProcess
         os.system("python2.3 Server.py &")
 
+    def connected(self, user):
+        print "Connect.connected", user
+        self.connectWindow.hide()
+
+    def failure(self, arg):
+        print "Connect.failure", arg
+        reactor.stop()
 
 def quit(unused):
+    reactor.stop()
     sys.exit()
 
 if __name__ == '__main__':
