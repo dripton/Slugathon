@@ -3,7 +3,7 @@
 
 <glade-interface>
 
-<widget class="GtkWindow" id="anteroom">
+<widget class="GtkWindow" id="anteroomWindow">
   <property name="border_width">3</property>
   <property name="width_request">1024</property>
   <property name="height_request">768</property>
@@ -31,7 +31,8 @@
 	  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	  <child>
-	    <widget class="GtkTreeView" id="gamesTree">
+	    <widget class="GtkTreeView" id="gameList">
+	      <property name="border_width">3</property>
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="headers_visible">True</property>
@@ -71,6 +72,7 @@
 
 		  <child>
 		    <widget class="GtkTextView" id="chatView">
+		      <property name="border_width">3</property>
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="editable">False</property>
@@ -98,11 +100,12 @@
 		<widget class="GtkEntry" id="chatEntry">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
+		  <property name="has_focus">True</property>
 		  <property name="editable">True</property>
 		  <property name="visibility">True</property>
 		  <property name="max_length">80</property>
 		  <property name="text" translatable="yes"></property>
-		  <property name="has_frame">False</property>
+		  <property name="has_frame">True</property>
 		  <property name="invisible_char" translatable="yes">*</property>
 		  <property name="activates_default">False</property>
 		  <property name="width_chars">80</property>
@@ -131,7 +134,8 @@
 	      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	      <child>
-		<widget class="GtkTreeView" id="playerList">
+		<widget class="GtkTreeView" id="userList">
+		  <property name="border_width">3</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="headers_visible">True</property>
