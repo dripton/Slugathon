@@ -3,7 +3,7 @@
 
 <glade-interface>
 
-<widget class="GtkWindow" id="connect">
+<widget class="GtkWindow" id="connectWindow">
   <property name="width_request">300</property>
   <property name="visible">True</property>
   <property name="can_default">True</property>
@@ -60,7 +60,7 @@
 	      <property name="enable_arrows_always">False</property>
 
 	      <child internal-child="entry">
-		<widget class="GtkEntry" id="combo-entry1">
+		<widget class="GtkEntry" id="playerNameCombo">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="editable">True</property>
@@ -122,7 +122,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkEntry" id="password">
+	    <widget class="GtkEntry" id="passwordEntry">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="editable">True</property>
@@ -184,7 +184,7 @@
 	      <property name="enable_arrows_always">True</property>
 
 	      <child internal-child="entry">
-		<widget class="GtkEntry" id="chooseServer">
+		<widget class="GtkEntry" id="serverNameCombo">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="editable">True</property>
@@ -255,7 +255,7 @@
 	      <property name="enable_arrows_always">False</property>
 
 	      <child internal-child="entry">
-		<widget class="GtkEntry" id="port">
+		<widget class="GtkEntry" id="serverPortCombo">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="editable">True</property>
