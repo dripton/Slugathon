@@ -30,7 +30,6 @@ class NewGame:
             self.cancel()
 
     def ok(self): 
-        print "ok"
         self.name = self.nameEntry.get_text()
         self.min_players = self.minplayersSpin.get_value_as_int()
         self.max_players = self.maxplayersSpin.get_value_as_int()
@@ -40,8 +39,7 @@ class NewGame:
         self.newgameDialog.destroy()
 
     def cancel(self): 
-        print "cancel"
         self.newgameDialog.destroy()
 
     def failure(self, error): 
-        print error
+        print "NewGame", error
