@@ -18,8 +18,8 @@ class NewGame:
         self.glade = gtk.glade.XML('../glade/newgame.glade')
         self.widgets = ['new_game_dialog', 'name_entry', 'min_players_spin', 
           'max_players_spin']
-        for widgetName in self.widgets:
-            setattr(self, widgetName, self.glade.get_widget(widgetName))
+        for widget_name in self.widgets:
+            setattr(self, widget_name, self.glade.get_widget(widget_name))
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           '../images/creature/Colossus.gif')
         self.new_game_dialog.set_icon(pixbuf)

@@ -24,8 +24,8 @@ class WaitingForPlayers:
         self.widgets = ['waiting_for_players_window', 'game_name_label', 
           'player_list', 'created_entry', 'starts_by_entry', 'countdown_entry',
           'join_button', 'drop_button', 'start_button']
-        for widgetName in self.widgets:
-            setattr(self, widgetName, self.glade.get_widget(widgetName))
+        for widget_name in self.widgets:
+            setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.player_store = gtk.ListStore(str)
         self.update_player_store()
 

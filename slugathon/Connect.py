@@ -28,8 +28,8 @@ class Connect:
         self.widgets = ['connect_window', 'player_name_combo', 
           'password_entry', 'server_name_combo', 'server_port_combo', 
           'connect_button', 'start_server_button']
-        for widgetName in self.widgets:
-            setattr(self, widgetName, self.glade.get_widget(widgetName))
+        for widget_name in self.widgets:
+            setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.glade.signal_autoconnect(self)
         self.playerNames = None
         self.serverNames = None
