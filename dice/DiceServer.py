@@ -6,7 +6,7 @@ import time
 from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.internet import reactor
-import Dice
+from slugathon import Dice
 
 
 class DiceServer:
