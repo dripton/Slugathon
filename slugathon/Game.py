@@ -1,15 +1,23 @@
 import sys
 import time
+
 from twisted.spread import pb
+import zope.interface
+
 import Player
 import MasterBoard
 import rules
 from playercolordata import colors
 from Observed import Observed
+from Observer import IObserver
 import Action
+
 
 class Game(Observed):
     """Central class holding information about one game."""
+
+    zope.interface.implements(IObserver)
+
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players):
         Observed.__init__(self) 
@@ -80,7 +88,7 @@ class Game(Observed):
           '%s tried to join full game %s' % (playername, self.name)
         print 'adding', playername, 'to', self.name
         self.num_players_joined += 1
-        player = Player.Player(playername, self.num_players_joined)
+        player = Player.Player(playername, self.name, self.num_players_joined)
         self.players.append(player)
         player.attach(self)
 

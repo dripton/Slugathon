@@ -15,9 +15,10 @@ class Player(Observed):
        these cases.)  A user might drop his connection, and another user 
        might take over his player can continue the game.
     """
-    def __init__(self, name, join_order):
+    def __init__(self, playername, game_name, join_order):
         Observed.__init__(self)
-        self.name = name
+        self.name = playername
+        self.game_name = game_name
         self.join_order = join_order
         self.starting_tower = None    # a numeric hex label
         self.score = 0
@@ -29,7 +30,7 @@ class Player(Observed):
     def assign_starting_tower(self, tower):
         """Set this player's starting tower to the (int) tower"""
         self.starting_tower = tower
-        action = Action.AssignTower(self.name, tower)
+        action = Action.AssignTower(self.game_name, self.name, tower)
         self.notify(action)
 
     def assign_color(self, color):
