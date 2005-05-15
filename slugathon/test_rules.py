@@ -1,4 +1,6 @@
 import math
+import py
+
 import MasterBoard
 import rules
 import Dice
@@ -20,7 +22,7 @@ class TestAssignTowers(object):
         except TypeError:
             pass
         else:
-            self.fail("Should have raised")
+            py.test.fail("Should have raised")
 
     def test_not_enough_towers(self):
         try:
@@ -28,7 +30,7 @@ class TestAssignTowers(object):
         except AssertionError:
             pass
         else:
-            self.fail("Should have raised")
+            py.test.fail("Should have raised")
 
     def _simple_helper(self, num_players):
         towers = rules.assign_towers(self.labels, num_players, self.dice)

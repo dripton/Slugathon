@@ -1,5 +1,7 @@
 import os
 import time
+import py
+
 import Anteroom
 import Server
 import Client
@@ -22,7 +24,7 @@ class TestAnteroom(object):
             gtk.main_iteration()
 
     def failure(self):
-        self.fail()
+        py.test.fail()
 
     def teardown_class(cls):
         os.system('pkill -f "python.*Server.py"')

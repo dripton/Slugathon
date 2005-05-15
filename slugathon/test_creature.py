@@ -1,12 +1,14 @@
+import py
+
 import Creature
 
 def test_non_existent_creature():
     try:
-        creature = Creature.Creature("Jackalope")
+        Creature.Creature("Jackalope")
     except KeyError:
         pass
     else:
-        fail("Should have raised")
+        py.test.fail("Should have raised")
 
 def test_init():
     creature = Creature.Creature("Ogre")
