@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-import unittest
 import math
 import MasterBoard
 import rules
@@ -11,8 +8,8 @@ import Creature
 import creaturedata
 
 
-class AssignTowersTestCase(unittest.TestCase):
-    def setUp(self):
+class TestAssignTowers(object):
+    def setup_method(self, method):
         self.board = MasterBoard.MasterBoard()
         self.labels = self.board.get_tower_labels()
         self.dice = Dice.Dice()
@@ -81,7 +78,7 @@ class AssignTowersTestCase(unittest.TestCase):
             assert math.floor(mean / 3) <= count <= math.ceil(2 * mean), \
               "counts out of range: %s" % counts
 
-class SplitTestCase(unittest.TestCase):
+class TestSplit(object):
     def test_is_legal_split(self):
         creatures = Creature.n2c(creaturedata.starting_creature_names)
         player = Player.Player("test", "Game1", 0)
@@ -94,7 +91,3 @@ class SplitTestCase(unittest.TestCase):
         assert rules.is_legal_split(parent, child1, child2)
 
         assert not rules.is_legal_split(parent, child1, child1)
-        
-
-if __name__ == "__main__":
-    unittest.main()

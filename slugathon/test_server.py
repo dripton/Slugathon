@@ -1,44 +1,36 @@
-#!/usr/bin/env python
-
-import unittest
 import os
 import time
 from twisted.spread import pb
 from twisted.internet import reactor
+import py
+
 import Server
 import Client
 
+def setup_module(module):
+    # Need to run the server in another process
+    os.system("python Server.py &")
+    # Give the OS a second to start it before we use it.
+    time.sleep(1)
 
+def test_startup():
+    client = Client.Client(username="unittest", password="unittest")
+    client.connect().addCallbacks(connected, failure)
+    reactor.run()
 
-class ServerTestCase(unittest.TestCase):
-    def setUp(self):
-        # Need to run the server in another process
-        os.system("python Server.py &")
-        # Give the OS a second to start it before we use it.
-        time.sleep(1)
+def connected(perspective):
+    print "connected", perspective
+    perspective.callRemote("get_name", "foo").addCallbacks(success,
+      failure)
 
-    def test_startup(self):
-        self.client = Client.Client(username="unittest", password="unittest")
-        self.client.connect().addCallbacks(self.connected, self.failure)
-        reactor.run()
+def success(name):
+    assert name == "unittest"
+    reactor.stop()
 
-    def connected(self, perspective):
-        print "connected", self, perspective
-        perspective.callRemote("get_name", "foo").addCallbacks(self.success,
-          self.failure)
+def failure(error):
+    print error
+    reactor.stop()
+    py.test.fail()
 
-    def success(self, name):
-        assert name == "unittest"
-        reactor.stop()
-
-    def failure(self, error):
-        print error
-        reactor.stop()
-        self.fail()
-
-    def tearDown(self):
-        os.system('pkill -f "python.*Server.py"')
-
-
-if __name__ == "__main__":
-    unittest.main()
+def teardown_module(module):
+    os.system('pkill -f "python.*Server.py"')

@@ -1,19 +1,16 @@
-#!/usr/bin/env python
-
 import os
 import time
-import unittest
 import Anteroom
 import Server
 import Client
 
 
-class AnteroomTestCase(unittest.TestCase):
-    def setUp(self):
+class TestAnteroom(object):
+    def setup_class(cls):
         os.system("python Server.py &")
         time.sleep(1)
 
-    def testInit(self):
+    def test_init(self):
         self.client = Client.Client("unittest", "unittest")
         def1 = self.client.connect()
         def1.addCallbacks(self.connected, self.failure)
@@ -27,9 +24,5 @@ class AnteroomTestCase(unittest.TestCase):
     def failure(self):
         self.fail()
 
-    def tearDown(self):
+    def teardown_class(cls):
         os.system('pkill -f "python.*Server.py"')
-
-
-if __name__ == "__main__":
-    unittest.main()

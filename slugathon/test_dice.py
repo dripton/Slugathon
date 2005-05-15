@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-import unittest
 import math
 import Dice
 
@@ -95,8 +92,8 @@ def fail_if_abnormal(val, mean, var):
         assert False
 
 
-class DiceTestCase(unittest.TestCase):
-    def setUp(self):
+class TestDice(object):
+    def setup_method(self, method):
         self.trials = 600
         self.dice = Dice.Dice()
         self.rolls = []
@@ -111,8 +108,7 @@ class DiceTestCase(unittest.TestCase):
         assert find_median([0]) == 0
         assert find_median([-2, 0, 25]) == 0
         assert find_median([25, -2, 0]) == 0
-        self.failUnlessAlmostEqual(find_median([2, 0.15, 3, 4329473]), 2.5)
-        self.failUnlessAlmostEqual(find_median((2, 0.15, 3, 4329473)), 2.5)
+        assert abs(find_median([2, 0.15, 3, 4329473]) - 2.5) < EPSILON
 
     def test_convert_to_binary(self):
         assert (convert_to_binary([-11111, 0.1, 2, 3, 4, 23947], 2.5) ==
@@ -201,6 +197,3 @@ class DiceTestCase(unittest.TestCase):
             s.add(tuple(lst))
         # We are highly unlikely to get a duplicate.  Though it's possible...
         assert len(s) == num_shuffles + 1
- 
-if __name__ == "__main__":
-    unittest.main()
