@@ -24,7 +24,8 @@ def is_legal_split(parent, child1, child2):
         return False
     if len(parent) != len(child1) + len(child2):
         return False
-    if not bag(parent.creatures) == bag(child1.creatures + child2.creatures):
+    if not bag(parent.creature_names()) == bag(child1.creature_names() +
+      child2.creature_names()):
         return False
     if len(parent) == 8:
         if len(child1) != 4 or len(child2) != 4:

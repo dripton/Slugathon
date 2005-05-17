@@ -14,3 +14,9 @@ class Legion(object):
 
     def num_lords(self):
         return sum(cr.character_type == "lord" for cr in self.creatures)
+
+    def creature_names(self):
+        li = [creature.name for creature in self.creatures]
+        li.sort()
+        return li
+
