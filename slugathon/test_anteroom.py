@@ -1,15 +1,23 @@
-import os
 import time
+import subprocess
+
 import py
+try:
+    import pygtk
+    pygtk.require("2.0")
+except (ImportError, AttributeError):
+    pass
+
+import gtk
+from twisted.internet import reactor
 
 import Anteroom
-import Server
 import Client
 
 
 class TestAnteroom(object):
     def setup_class(cls):
-        os.system("python Server.py &")
+        subprocess.Popen("python Server.py &", shell=True)
         time.sleep(1)
 
     def test_init(self):
@@ -20,11 +28,13 @@ class TestAnteroom(object):
     def connected(self):
         anteroom = self.client.anteroom
         assert isinstance(anteroom, Anteroom.Anteroom)
-        while 1:
+        while True:
             gtk.main_iteration()
 
     def failure(self):
+        reactor.stop()
         py.test.fail()
 
     def teardown_class(cls):
-        os.system('pkill -f "python.*Server.py"')
+        subprocess.call(["pkill", "-f", "python.*Server.py"])
+        time.sleep(1)

@@ -1,17 +1,15 @@
-import os
 import time
+import subprocess
+
 from twisted.spread import pb
 from twisted.internet import reactor
 import py
 
-import Server
 import Client
 
 class TestServer(object):
     def setup_class(cls):
-        # Need to run the server in another process
-        os.system("python Server.py &")
-        # Give the OS a second to start it before we use it.
+        subprocess.Popen("python Server.py &", shell=True)
         time.sleep(1)
     
     def test_startup(self):
@@ -34,4 +32,4 @@ class TestServer(object):
         py.test.fail()
     
     def teardown_class(cls):
-        os.system('pkill -f "python.*Server.py"')
+        subprocess.call(["pkill", "-f", "python.*Server.py"])

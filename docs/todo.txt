@@ -66,3 +66,6 @@ Click in random spot in Anteroom game list, not on an actual game,
 brings up WFP, once.
 
 Exiting Anteroom window no longer cleanly exits process.
+
+test_server.py seems somewhat timing-sensitive.  Sometimes throws an exception
+because the username is no longer in the dict?
