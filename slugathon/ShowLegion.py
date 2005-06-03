@@ -7,30 +7,39 @@ try:
 except (ImportError, AttributeError):
     pass
 import gtk
+import gtk.glade
 import Chit
 import creaturedata
 import Creature
 import Legion
 
+# TODO Conditionally use marker_hbox to show the legion's marker.
 
 class ShowLegion(object):
-    """Dialog to show a legion's contents."""
+    """Window to show a legion's contents."""
     def __init__(self, username, legion, playercolor):
         print "ShowLegion.__init__", username, legion, playercolor
-        self.show_legion_dialog = gtk.Dialog()
+        self.glade = gtk.glade.XML("../glade/showlegion.glade")
+        self.widgets = ["show_legion_window", "marker_hbox", "chits_hbox",
+          "legion_name"]
+        for widget_name in self.widgets:
+            setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(
           "../images/creature/Colossus.png")
-        self.show_legion_dialog.set_icon(pixbuf)
-        self.show_legion_dialog.set_title("ShowLegion - %s" % (username))
+        self.show_legion_window.set_icon(pixbuf)
+        self.show_legion_window.set_title("ShowLegion - %s" % (username))
+
+        self.legion_name.set_text("Legion %s in hex %s" % (legion.markername,
+          legion.hexlabel))
 
         # TODO Handle unknown creatures correctly
         for creature in legion.creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)
             chit.show()
-            self.show_legion_dialog.action_area.add(chit.event_box)
+            self.chits_hbox.add(chit.event_box)
 
-        self.show_legion_dialog.show()
+        self.show_legion_window.show()
 
 
 def quit(unused):
@@ -44,6 +53,6 @@ if __name__ == "__main__":
     username = "test"
     playercolor = "Red"
     showlegion = ShowLegion(username, legion, playercolor)
-    showlegion.show_legion_dialog.connect("destroy", quit)
+    showlegion.show_legion_window.connect("destroy", quit)
 
     gtk.main()

@@ -22,7 +22,8 @@ class SplitLegion(object):
         print "SplitLegion.__init__", username, player, legion
         self.glade = gtk.glade.XML("../glade/splitlegion.glade")
         self.widgets = ["split_legion_dialog", "old_marker_hbox", 
-          "old_chits_hbox", "new_marker_hbox", "new_chits_hbox"]
+          "old_chits_hbox", "new_marker_hbox", "new_chits_hbox",
+          "legion_name"]
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
@@ -30,6 +31,9 @@ class SplitLegion(object):
           "../images/creature/Colossus.png")
         self.split_legion_dialog.set_icon(pixbuf)
         self.split_legion_dialog.set_title("SplitLegion - %s" % (username))
+
+        self.legion_name.set_text("Splitting legion %s in hex %s" % (
+          legion.markername, legion.hexlabel))
 
         self.old_marker = Marker.Marker(legion, scale=20)
         self.old_marker_hbox.pack_start(self.old_marker.image, expand=False,
