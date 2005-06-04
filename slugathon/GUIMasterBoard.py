@@ -65,8 +65,8 @@ class GUIMasterBoard(object):
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
                 print "clicked on", marker
-                showlegion = ShowLegion.ShowLegion(self.username,
-                  marker.legion, marker.legion.player.color)
+                ShowLegion.ShowLegion(self.username, marker.legion, 
+                  marker.legion.player.color, True)
                 return True
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
@@ -92,8 +92,8 @@ class GUIMasterBoard(object):
         """
         result = []
         for legion in self.game.gen_all_legions():
-            if legion.markername not in [marker.name for marker in 
-              self.markers]:
+            if legion.markername not in (marker.name for marker in 
+              self.markers):
                 result.append(legion.markername)
                 marker = Marker.Marker(legion)
                 self.markers.append(marker)

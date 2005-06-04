@@ -12,12 +12,11 @@ import Chit
 import creaturedata
 import Creature
 import Legion
-
-# TODO Conditionally use marker_hbox to show the legion's marker.
+import Marker
 
 class ShowLegion(object):
     """Window to show a legion's contents."""
-    def __init__(self, username, legion, playercolor):
+    def __init__(self, username, legion, playercolor, show_marker):
         print "ShowLegion.__init__", username, legion, playercolor
         self.glade = gtk.glade.XML("../glade/showlegion.glade")
         self.widgets = ["show_legion_window", "marker_hbox", "chits_hbox",
@@ -33,6 +32,10 @@ class ShowLegion(object):
         self.legion_name.set_text("Legion %s in hex %s" % (legion.markername,
           legion.hexlabel))
 
+        self.marker = None
+        if show_marker:
+            self.init_marker()
+
         # TODO Handle unknown creatures correctly
         for creature in legion.creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)
@@ -40,6 +43,13 @@ class ShowLegion(object):
             self.chits_hbox.add(chit.event_box)
 
         self.show_legion_window.show()
+
+
+    def init_marker(self):
+        self.marker = Marker.Marker(legion, scale=20)
+        self.marker_hbox.pack_start(self.marker.image, expand=False,
+          fill=False)
+        self.marker.show()
 
 
 def quit(unused):
@@ -52,7 +62,7 @@ if __name__ == "__main__":
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     username = "test"
     playercolor = "Red"
-    showlegion = ShowLegion(username, legion, playercolor)
+    showlegion = ShowLegion(username, legion, playercolor, True)
     showlegion.show_legion_window.connect("destroy", quit)
 
     gtk.main()
