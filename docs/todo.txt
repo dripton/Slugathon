@@ -57,8 +57,6 @@ should send it all events needed to sync up.
 In Anteroom game list, show tower assignments, resort player names,
 and show colors.
 
-Switch from unittest to twisted.trial or py.test?
-
 
 Bugs:
 
