@@ -1,3 +1,5 @@
+"""Legion marker names by player color"""
+
 data = {
 
   "Black": [

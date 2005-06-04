@@ -1,5 +1,3 @@
-from twisted.spread import pb
-
 BIGNUM = 99999999
 
 class MasterHex(object):
@@ -61,21 +59,21 @@ class MasterHex(object):
         with neighbor_label.
         """
         neighbor = self.board.hexes[neighbor_label]
-        deltax = neighbor.x - self.x
-        deltay = neighbor.y - self.y
-        if deltax == 0:
-            if deltay == -1:
+        delta_x = neighbor.x - self.x
+        delta_y = neighbor.y - self.y
+        if delta_x == 0:
+            if delta_y == -1:
                 return 0
-            elif deltay == 1:
+            elif delta_y == 1:
                 return 3
             raise Exception("non-adjacent hex")
-        elif deltay == 0:
-            if deltax == 1:
+        elif delta_y == 0:
+            if delta_x == 1:
                 if self.inverted:
                     return 2
                 else:
                     return 1
-            elif deltax == -1:
+            elif delta_x == -1:
                 if self.inverted:
                     return 4
                 else:
@@ -95,13 +93,13 @@ class MasterHex(object):
         This is always a short hexside, either the one closest to
         the center of the board, or the one farthest away from it.
         """
-        deltaX = self.x - self.board.midX
-        deltaY = (1.0 * (self.y - self.board.midY) *
+        delta_x = self.x - self.board.midX
+        delta_y = (1.0 * (self.y - self.board.midY) *
                   self.board.width / self.board.height)
         try:
-            ratio = deltaX / deltaY
+            ratio = delta_x / delta_y
         except ZeroDivisionError:
-            ratio = deltaX * BIGNUM
+            ratio = delta_x * BIGNUM
 
         if abs(ratio) < 0.6:
             # Vertically dominated
@@ -111,7 +109,7 @@ class MasterHex(object):
                 return 0
         else:
             # Horizontally dominated
-            if deltaX * deltaY >= 0:
+            if delta_x * delta_y >= 0:
                 if self.inverted:
                     return 5
                 else:

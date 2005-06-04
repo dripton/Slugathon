@@ -1,3 +1,5 @@
+"""Raw data about player colors."""
+
 name_to_abbrev = {
     "Black": "Bk",
     "Blue":  "Bu",

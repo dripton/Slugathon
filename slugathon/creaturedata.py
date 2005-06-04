@@ -1,7 +1,11 @@
-# name: (plural, power, skill, rangestrikes, flies, character_type,
-#   summonable, acquirableEvery, count, color)
+"""
+Raw data about creature types.
 
-# rangestrikes 0:no, 1:normal, 2:magic missile
+name: (plural, power, skill, rangestrikes, flies, character_type,
+  summonable, acquirableEvery, count, color)
+
+rangestrikes 0:no, 1:normal, 2:magic missile
+"""
 
 data = {
 

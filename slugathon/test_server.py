@@ -1,7 +1,6 @@
 import time
 import subprocess
 
-from twisted.spread import pb
 from twisted.internet import reactor
 import py
 

@@ -1,3 +1,5 @@
+"""A multiset, built on a dictionary."""
+
 class bag(object):
     """A multiset, built on a dictionary."""
     def __init__(self, iterable=None):
@@ -6,6 +8,7 @@ class bag(object):
             self.update(iterable)
 
     def update(self, iterable):
+        """Update this object with items from the iterable."""
         if hasattr(iterable, "items"):
             for key, val in iterable.items():
                 if val > 0:
@@ -20,9 +23,11 @@ class bag(object):
                 self.add(item)
 
     def add(self, key):
+        """Add one of key."""
         self._dic[key] = self._dic.get(key, 0) + 1
 
     def remove(self, key):
+        """Remove one of key."""
         if self._dic[key] <= 1:
             del self._dic[key]
         else:
@@ -53,6 +58,7 @@ class bag(object):
             return False
 
     def union(self, other):
+        """Add all items from the other bag to this one."""
         assert isinstance(other, bag)
         newbag = bag(self._dic)
         for key, val in other._dic.items():

@@ -143,7 +143,7 @@ class GUIMasterHex(object):
         for point in ap:
             self.points.append((int(round(point[0])), int(round(point[1]))))
 
-    def init_gate(self, vx1, vy1, vx2, vy2, gateType):
+    def init_gate(self, vx1, vy1, vx2, vy2, gate_type):
         """Setup gate on one entrance / exit hexside."""
         x0 = vx1 + (vx2 - vx1) / 6.
         y0 = vy1 + (vy2 - vy1) / 6.
@@ -152,13 +152,13 @@ class GUIMasterHex(object):
         theta = math.atan2(vy2 - vy1, vx2 - vx1)
         unit = self.guiboard.scale / 1.75
 
-        if gateType == "BLOCK":
+        if gate_type == "BLOCK":
             return _init_block(x0, y0, x1, y1, theta, unit)
-        elif gateType == "ARCH":
+        elif gate_type == "ARCH":
             return _init_arch(x0, y0, x1, y1, theta, unit)
-        elif gateType == "ARROW":
+        elif gate_type == "ARROW":
             return _init_arrow(x0, y0, x1, y1, theta, unit)
-        elif gateType == "ARROWS":
+        elif gate_type == "ARROWS":
             return _init_arrows(vx1, vy1, vx2, vy2, theta, unit)
         return None
 

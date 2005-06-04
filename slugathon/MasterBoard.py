@@ -1,7 +1,5 @@
 import boarddata
 import MasterHex
-from twisted.spread import pb
-
 
 class MasterBoard(object):
     """Model of the Titan MasterBoard.  No GUI logic allowed."""
@@ -17,14 +15,14 @@ class MasterBoard(object):
         """Find the min, max, midpoint, width, and height of the hexes."""
         xs = [hexdata[1] for hexdata in boarddata.data]
         ys = [hexdata[2] for hexdata in boarddata.data]
-        self.minX = min(xs)
-        self.minY = min(ys)
-        self.maxX = max(xs)
-        self.maxY = max(ys)
-        self.midX = (self.minX + self.maxX) / 2.
-        self.midY = (self.minY + self.maxY) / 2.
-        self.width = self.maxX - self.minX + 1
-        self.height = self.maxY - self.minY + 1
+        self.min_x = min(xs)
+        self.min_y = min(ys)
+        self.max_x = max(xs)
+        self.max_y = max(ys)
+        self.midX = (self.min_x + self.max_x) / 2.
+        self.midY = (self.min_y + self.max_y) / 2.
+        self.width = self.max_x - self.min_x + 1
+        self.height = self.max_y - self.min_y + 1
 
     def init_hex(self, hexdata):
         assert len(hexdata) in (6, 8, 10)
@@ -34,10 +32,10 @@ class MasterBoard(object):
         self.hexes[label] = hex1
 
     def hex_width(self):
-        return self.maxX - self.minX + 1
+        return self.max_x - self.min_x + 1
 
     def hex_height(self):
-        return self.maxY - self.minY + 1
+        return self.max_y - self.min_y + 1
 
     def get_tower_labels(self):
         """Return a list of int labels for this board's tower hexes."""

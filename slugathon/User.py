@@ -1,6 +1,5 @@
 from twisted.spread import pb
 import time
-from twisted.cred import portal
 import zope.interface
 
 from Observer import IObserver

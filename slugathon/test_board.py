@@ -1,7 +1,5 @@
-import math
 import guiutils
 import MasterBoard
-import GUIMasterBoard
 
 
 board = MasterBoard.MasterBoard()

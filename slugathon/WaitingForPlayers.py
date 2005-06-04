@@ -83,8 +83,8 @@ class WaitingForPlayers(object):
 
     def update_countdown(self):
         diff = int(self.game.start_time - time.time())
-        s = str(max(diff, 0))
-        self.countdown_entry.set_text(s)
+        label = str(max(diff, 0))
+        self.countdown_entry.set_text(label)
         if diff > 0:
             reactor.callLater(1, self.update_countdown)
 

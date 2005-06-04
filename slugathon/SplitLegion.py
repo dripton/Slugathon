@@ -60,7 +60,6 @@ class SplitLegion(object):
 
     def cb_click(self, widget, event):
         """Move the clicked-on Chit's EventBox to the other hbox."""
-        chit = widget.chit
         if widget in self.old_chits_hbox.get_children():
             prev = self.old_chits_hbox
             next = self.new_chits_hbox
@@ -69,7 +68,6 @@ class SplitLegion(object):
             next = self.old_chits_hbox
         prev.remove(widget)
         next.pack_start(widget, expand=False, fill=False)
-
 
 
 def quit(unused):
