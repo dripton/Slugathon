@@ -123,8 +123,9 @@ class GUIMasterBoard(object):
               base_location[1] + chit_scale / 2)
 
     def _render_marker(self, marker, gc):
-        marker.pixbuf.render_to_drawable(self.area.window, gc, 0, 0, 
-          int(round(marker.location[0])), int(round(marker.location[1])), 
+        drawable = self.area.window
+        drawable.draw_pixbuf(gc, marker.pixbuf, 0, 0,
+          int(round(marker.location[0])), int(round(marker.location[1])),
           -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
     def draw_markers(self, gc, style):

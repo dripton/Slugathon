@@ -180,10 +180,9 @@ class GUIMasterHex(object):
 
 
     def draw_overlay(self, gc, style):
-        self.pixbuf.render_to_drawable(self.guiboard.area.window, gc,
-                0, 0, self.dest_x, self.dest_y,
-                -1, -1,
-                gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+        drawable = self.guiboard.area.window
+        drawable.draw_pixbuf(gc, self.pixbuf, 0, 0, self.dest_x, self.dest_y,
+          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
 
     def draw_label(self, gc, style):
