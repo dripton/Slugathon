@@ -34,7 +34,10 @@ class ShowLegion(object):
 
         self.marker = None
         if show_marker:
-            self.init_marker()
+            self.marker = Marker.Marker(legion, scale=20)
+            self.marker_hbox.pack_start(self.marker.image, expand=False,
+              fill=False)
+            self.marker.show()
 
         # TODO Handle unknown creatures correctly
         for creature in legion.creatures:
@@ -45,11 +48,6 @@ class ShowLegion(object):
         self.show_legion_window.show()
 
 
-    def init_marker(self):
-        self.marker = Marker.Marker(legion, scale=20)
-        self.marker_hbox.pack_start(self.marker.image, expand=False,
-          fill=False)
-        self.marker.show()
 
 
 def quit(unused):
