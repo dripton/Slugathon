@@ -37,6 +37,6 @@ class PickMarker(object):
 
     def cb_click(self, widget, event):
         print "PickMarker.cb_click", self, widget, event
-        marker = widget.tag
-        self.client.pick_marker(self.game_name, self.username, marker)
+        markername = widget.tag
+        self.client.pick_marker(self.game_name, self.username, markername)
         self.pick_marker_dialog.destroy()

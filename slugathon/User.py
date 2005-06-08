@@ -58,9 +58,9 @@ class User(pb.Avatar):
         print "perspective_pick_color", game_name, color
         self.server.pick_color(self.name, game_name, color)
 
-    def perspective_pick_first_marker(self, game_name, marker):
-        print "perspective_pick_first_marker", game_name, marker
-        self.server.pick_first_marker(self.name, game_name, marker)
+    def perspective_pick_first_marker(self, game_name, markername):
+        print "perspective_pick_first_marker", game_name, markername
+        self.server.pick_first_marker(self.name, game_name, markername)
 
     def __str__(self):
         return "User " + self.name

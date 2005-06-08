@@ -27,10 +27,10 @@ class Player(Observed):
         self.starting_tower = None    # a numeric hex label
         self.score = 0
         self.color = None
-        self.markers = set()
+        self.markernames = set()
         # Private to this instance; not shown to others until a
         # legion is actually split off with this marker.
-        self.selected_marker = None
+        self.selected_markername = None
         self.legions = []
 
     def __str__(self):
@@ -49,31 +49,31 @@ class Player(Observed):
         abbrev = playercolordata.name_to_abbrev[self.color]
         # TODO Un-hardcode
         for ii in range(12):
-            self.markers.add("%s%02d" % (abbrev, ii + 1))
+            self.markernames.add("%s%02d" % (abbrev, ii + 1))
         self.notify(action)
 
-    def pick_marker(self, marker):
-        if marker in self.markers:
-            self.selected_marker = marker
+    def pick_marker(self, markername):
+        if markername in self.markernames:
+            self.selected_markername = markername
 
     def init_starting_legion(self):
-        assert self.selected_marker 
-        assert self.selected_marker in self.markers
+        assert self.selected_markername 
+        assert self.selected_markername in self.markernames
         action = Action.CreateStartingLegion(self.game_name, self.name,
-          self.selected_marker)
+          self.selected_markername)
         self.notify(action)
 
-    def take_marker(self, marker):
-        assert marker in self.markers
-        self.markers.remove(marker)
-        self.selected_marker = None
-        return marker
+    def take_marker(self, markername):
+        assert markername in self.markernames
+        self.markernames.remove(markername)
+        self.selected_markername = None
+        return markername
 
-    def create_starting_legion(self, marker):
-        assert marker in self.markers
+    def create_starting_legion(self, markername):
+        assert markername in self.markernames
         assert len(self.legions) == 0
         creatures = [Creature.Creature(name) for name in 
           creaturedata.starting_creature_names]
-        legion = Legion.Legion(self, self.take_marker(marker), creatures,
+        legion = Legion.Legion(self, self.take_marker(markername), creatures,
           self.starting_tower)
         self.legions.append(legion)

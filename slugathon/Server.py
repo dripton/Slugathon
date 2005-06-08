@@ -132,10 +132,10 @@ class Server(Observed):
         if game:
             game.assign_color(username, color)
 
-    def pick_first_marker(self, username, game_name, marker):
+    def pick_first_marker(self, username, game_name, markername):
         game = self.name_to_game(game_name)
         if game:
-            game.assign_first_marker(username, marker)
+            game.assign_first_marker(username, markername)
 
     def update(self, observed, action):
         print "Server.update", observed, action

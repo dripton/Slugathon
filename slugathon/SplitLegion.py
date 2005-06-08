@@ -40,7 +40,7 @@ class SplitLegion(object):
           fill=False)
         self.old_marker.show()
 
-        self.new_legion = Legion.Legion(player, player.selected_marker, [],
+        self.new_legion = Legion.Legion(player, player.selected_markername, [],
           legion.hexlabel)
         self.new_marker = Marker.Marker(self.new_legion, scale=20)
         self.new_marker_hbox.pack_start(self.new_marker.image, expand=False,
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     playercolor = "Red"
     player = Player.Player(username, "Game1", 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    player.selected_marker = "Rd02"
+    player.selected_markername = "Rd02"
     SplitLegion = SplitLegion(username, player, legion)
     SplitLegion.split_legion_dialog.connect("destroy", quit)
 

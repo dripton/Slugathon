@@ -147,14 +147,14 @@ class Game(Observed):
 
     def done_assigning_first_markers(self):
         for player in self.players:
-            if player.selected_marker is None:
+            if player.selected_markername is None:
                 return False
         return True
 
-    def assign_first_marker(self, playername, marker):
+    def assign_first_marker(self, playername, markername):
         player = self.get_player_by_name(playername)
-        assert marker in player.markers
-        player.pick_marker(marker)
+        assert markername in player.markernames
+        player.pick_marker(markername)
         if self.done_assigning_first_markers():
             self.init_starting_legions()
 

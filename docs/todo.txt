@@ -1,9 +1,3 @@
-Make some variable names consistent:
-   marker for a Marker, markername for a string
-   hex1 for a MasterHex, guihex for a GUIMasterHex, hexlabel for a string
-   legion for a Legion, markerid for a string
-   creature for a Creature, creaturename for a string
-
 Make sure we have the distinction between username and playername correct.  
    username also includes spectators, while playername is just for players.
 

@@ -134,19 +134,20 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
             player = game.get_player_by_name(playername)
-            markers = list(player.markers.copy())
-            markers.sort()
-            PickMarker.PickMarker(self, self.username, game.name, markers)
+            markernames = list(player.markernames.copy())
+            markernames.sort()
+            PickMarker.PickMarker(self, self.username, game.name, markernames)
 
-    def pick_marker(self, game_name, username, marker):
+    def pick_marker(self, game_name, username, markername):
         """Callback from PickMarker."""
-        print "Client.pick_marker", self, game_name, username, marker
+        print "Client.pick_marker", self, game_name, username, markername
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
-        player.pick_marker(marker)
+        player.pick_marker(markername)
         # XXX Need a more explicit way to note that it's the first time?
         if len(player.legions) == 0:
-            def1 = self.user.callRemote("pick_first_marker", game_name, marker)
+            def1 = self.user.callRemote("pick_first_marker", game_name, 
+              markername)
             def1.addErrback(self.failure)
 
     def _init_guiboard(self, game):
