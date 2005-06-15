@@ -18,6 +18,7 @@ from Observer import IObserver
 import Action
 import Marker
 import ShowLegion
+import BoardRoot
 
 SQRT3 = math.sqrt(3.0)
 
@@ -42,7 +43,7 @@ class GUIMasterBoard(object):
         self.area.set_size_request(self.compute_width(), self.compute_height())
         # TODO Vary font size with scale
         self.area.modify_font(pango.FontDescription("monospace 8"))
-        self.root.add(self.area)
+        self.root.vbox.pack_start(self.area)
         self.markers = []
         self.guihexes = {}
         for hex1 in self.board.hexes.values():
@@ -50,8 +51,7 @@ class GUIMasterBoard(object):
         self.area.connect("expose-event", self.area_expose_cb)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.click_cb)
-        self.area.show()
-        self.root.show()
+        self.root.show_all()
 
     def area_expose_cb(self, area, event):
         style = self.area.get_style()
@@ -165,17 +165,8 @@ class GUIMasterBoard(object):
             self.update_gui(gc, style, [legion.hexlabel])
 
 
-def quit(unused):
-    sys.exit()
-
 if __name__ == "__main__":
-    root = gtk.Window()
-    root.set_title("Slugathon - MasterBoard")
-    root.connect("destroy", quit)
-
-    pixbuf = gtk.gdk.pixbuf_new_from_file("../images/creature/Colossus.png")
-    root.set_icon(pixbuf)
-
+    root = BoardRoot.BoardRoot("player")
     board = MasterBoard.MasterBoard()
     guiboard = GUIMasterBoard(root, board)
     # Allow exiting with control-C, unlike mainloop()

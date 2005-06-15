@@ -151,8 +151,9 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def _init_guiboard(self, game):
+        print "Client._init_guiboard"
         boardroot = BoardRoot.BoardRoot(self.username)
-        self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot.root,
+        self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot,
           game.board, game, self.username)
         self.attach(self.guiboards[game])
 
