@@ -6,7 +6,7 @@ class Realm(object):
     __implements__ = portal.IRealm
 
     def __init__(self, server):
-        print "called Realm.init", self, server
+        print "called Realm.__init__", self, server
         self.server = server
 
     def requestAvatar(self, avatarId, mind, *interfaces):

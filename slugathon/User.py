@@ -14,7 +14,7 @@ class User(pb.Avatar):
         self.server = server
         self.client = client
         self.server.attach(self)
-        print "User.init", self, name, server, client
+        print "called User.__init__", self, name, server, client
 
     def perspective_get_name(self, arg):
         print "perspective_get_name(", arg, ") called on", self

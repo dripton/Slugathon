@@ -25,7 +25,7 @@ class Server(Observed):
     zope.interface.implements(IObserver)
 
     def __init__(self):
-        print "Called Server.init", self
+        print "Called Server.__init__", self
         Observed.__init__(self)
         self.games = []
         self.name_to_user = {}
