@@ -42,9 +42,10 @@ class Server(Observed):
         print "called Server.detach", self, user
         Observed.detach(self, user)
         username = user.name
-        del self.name_to_user[username]
-        action = Action.DelUsername(username)
-        self.notify(action)
+        if username in self.name_to_user:
+            del self.name_to_user[username]
+            action = Action.DelUsername(username)
+            self.notify(action)
 
     def get_usernames(self):
         names = self.name_to_user.keys()
