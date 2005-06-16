@@ -33,6 +33,12 @@ class bag(object):
         else:
             self._dic[key] -= 1
 
+    def discard(self, key):
+        """Remove one of key, if possible.  If not, do nothing."""
+        if key not in self._dic:
+            return
+        self.remove(key)
+
     def __getitem__(self, key):
         return self._dic.get(key, 0)
 
@@ -65,3 +71,47 @@ class bag(object):
             newbag[key] += val
         return newbag
 
+    def clear(self):
+        """Remove all elements from this bag."""
+        self._dic.clear()
+
+    def copy(self):
+        """Return a shallow copy."""
+        return bag(self._dic)
+
+    def difference(self, other):
+        """Return the difference between this bag and other as a new bag."""
+        assert isinstance(other, bag)
+        newbag = bag(self._dic)
+        for key, val in self._dic.items():
+            val2 = other[key]
+            if val2:
+                newbag[key] = max(val - val2, 0)
+        return newbag
+
+    def intersection(self, other):
+        """Return a new bag with the elements that are in both bags."""
+        assert isinstance(other, bag)
+        newbag = bag(self._dic)
+        for key, val in self._dic.items():
+            val2 = other[key]
+            newbag[key] = min(val, val2)
+        return newbag
+
+    def issubset(self, other):
+        """Report whether the other bag contains everything in this one."""
+        assert isinstance(other, bag)
+        for key, val in self._dic.items():
+            val2 = other[key]
+            if val2 < val:
+                return False
+        return True
+
+    def issuperset(self, other):
+        """Report whether this bag contains everything in the other one."""
+        assert isinstance(other, bag)
+        for key, val in other._dic.items():
+            val2 = self[key]
+            if val2 < val:
+                return False
+        return True

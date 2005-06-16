@@ -18,6 +18,24 @@ def test_remove():
     b.remove(1)
     assert b[1] == 0
     assert 1 not in b
+    try:
+        b.remove("not in there")
+    except KeyError:
+        pass
+    else:
+        py.test.fail("should have raised")
+
+def test_discard():
+    b = bag()
+    b.add(1)
+    b.add(1)
+    b.discard(1)
+    assert b[1] == 1
+    assert 1 in b
+    b.discard(1)
+    assert b[1] == 0
+    assert 1 not in b
+    b.discard("not in there")
 
 def test_repr():
     b = bag()
@@ -68,3 +86,56 @@ def test_update():
 
     b1.update(["c", "c", "c", "b", "c"])
     assert b1 == bag(dict(a=1, b=2, c=4))
+
+def test_clear():
+    b = bag()
+    b.add(1)
+    assert b
+    b.clear()
+    assert not b
+    assert len(b) == 0
+
+def test_copy():
+    b1 = bag()
+    b1.add(1)
+    b2 = b1.copy()
+    assert len(b1) == len(b2)
+    assert b1 == b2
+
+def test_difference():
+    b1 = bag({"a":1, "b":0, 1:2})
+    b2 = bag({"a":1, "b":1, 1:1})
+    assert b1.difference(b2) == bag({1:1})
+
+def test_intersection():
+    b1 = bag({"a":1, "b":0, 1:4})
+    b2 = bag({"a":1, "b":1, 1:2})
+    assert b1.intersection(b2) == b2.intersection(b1) == bag({"a":1, 1:2})
+
+def test_issubset():
+    b1 = bag({"a":1, "b":0, 1:4})
+    b2 = bag({"a":1, "b":1, 1:2})
+    b3 = bag({"a":9, "b":9, 1:9})
+    assert b1.issubset(b1)
+    assert b2.issubset(b2)
+    assert b3.issubset(b3)
+    assert not b1.issubset(b2)
+    assert b1.issubset(b3)
+    assert not b2.issubset(b1)
+    assert b2.issubset(b3)
+    assert not b3.issubset(b1)
+    assert not b3.issubset(b2)
+
+def test_issuperset():
+    b1 = bag({"a":1, "b":0, 1:4})
+    b2 = bag({"a":1, "b":1, 1:2})
+    b3 = bag({"a":9, "b":9, 1:9})
+    assert b1.issuperset(b1)
+    assert b2.issuperset(b2)
+    assert b3.issuperset(b3)
+    assert not b1.issuperset(b2)
+    assert not b1.issuperset(b3)
+    assert not b2.issuperset(b1)
+    assert not b2.issuperset(b3)
+    assert b3.issuperset(b1)
+    assert b3.issuperset(b2)
