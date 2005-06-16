@@ -29,6 +29,9 @@ users.
 
 Use Observers to return results from modeless dialogs?
 
+Add a version number somewhere.  svn revision?  date?
+Put artist credits from Colossus into About
+
 ###############
 
 Should WaitingForPlayers and Anteroom hold direct Game references?
