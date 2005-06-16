@@ -1,3 +1,4 @@
+import sys
 import math
 import StringIO
 try:
@@ -109,3 +110,8 @@ def point_in_polygon(point, vertexes):
         if xi >= px and xj >= px:
             crossings += 1
     return crossings & 1
+
+
+def die(*unused):
+    """Quit the program."""
+    sys.exit(0)

@@ -13,6 +13,8 @@ import creaturedata
 import Creature
 import Legion
 import Marker
+import icon
+import guiutils
 
 class ShowLegion(object):
     """Window to show a legion's contents."""
@@ -24,9 +26,7 @@ class ShowLegion(object):
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.show_legion_window.set_icon(pixbuf)
+        self.show_legion_window.set_icon(icon.pixbuf)
         self.show_legion_window.set_title("ShowLegion - %s" % (username))
 
         self.legion_name.set_text("Legion %s in hex %s" % (legion.markername,
@@ -48,11 +48,6 @@ class ShowLegion(object):
         self.show_legion_window.show()
 
 
-
-
-def quit(unused):
-    sys.exit()
-
 if __name__ == "__main__":
     creatures = [Creature.Creature(name) for name in 
       creaturedata.starting_creature_names]
@@ -61,6 +56,6 @@ if __name__ == "__main__":
     username = "test"
     playercolor = "Red"
     showlegion = ShowLegion(username, legion, playercolor, True)
-    showlegion.show_legion_window.connect("destroy", quit)
+    showlegion.show_legion_window.connect("destroy", guiutils.die)
 
     gtk.main()

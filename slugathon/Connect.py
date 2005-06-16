@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys
+import os
 try:
     import pygtk
     pygtk.require("2.0")
@@ -10,11 +12,12 @@ gtk2reactor.install()
 from twisted.internet import reactor
 import gtk
 import gtk.glade
-import sys
-import os
+
 import getpass
 import Server
 import Client
+import icon
+import guiutils
 
 
 class Connect(object):
@@ -31,10 +34,8 @@ class Connect(object):
         self.server_names = None
         self.server_ports = None
         self.init_lists()
-        self.connect_window.connect("destroy", quit)
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.connect_window.set_icon(pixbuf)
+        self.connect_window.connect("destroy", guiutils.die)
+        self.connect_window.set_icon(icon.pixbuf)
         self.connect_window.show()
 
     def init_lists(self):
@@ -85,11 +86,8 @@ class Connect(object):
 
     def failure(self, arg):
         print "Connect.failure", arg
-        quit(None)
+        guiutils.die(None)
 
-def quit(unused):
-    reactor.stop()
-    sys.exit()
 
 if __name__ == "__main__":
     connect = Connect()
@@ -97,4 +95,3 @@ if __name__ == "__main__":
 
     while True:
         gtk.main_iteration()
-

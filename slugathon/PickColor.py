@@ -6,6 +6,7 @@ except (ImportError, AttributeError):
 import gtk
 import gtk.glade
 from playercolordata import colors
+import icon
 
 
 class PickColor(object):
@@ -20,9 +21,7 @@ class PickColor(object):
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.pick_color_dialog.set_icon(pixbuf)
+        self.pick_color_dialog.set_icon(icon.pixbuf)
         self.pick_color_dialog.set_title("%s - %s" % (
           self.pick_color_dialog.get_title(), self.username))
 

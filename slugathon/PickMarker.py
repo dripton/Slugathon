@@ -4,6 +4,7 @@ try:
 except (ImportError, AttributeError):
     pass
 import gtk
+import icon
 
 
 class PickMarker(object):
@@ -15,9 +16,7 @@ class PickMarker(object):
         self.game_name = game_name
         self.pick_marker_dialog = gtk.Dialog()
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.pick_marker_dialog.set_icon(pixbuf)
+        self.pick_marker_dialog.set_icon(icon.pixbuf)
         self.pick_marker_dialog.set_title("PickMarker - %s" % (self.username))
 
         for ii, button_name in enumerate(markers_left):

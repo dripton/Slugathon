@@ -14,6 +14,8 @@ import creaturedata
 import Creature
 import Legion
 import Player
+import icon
+import guiutils
 
 
 class SplitLegion(object):
@@ -27,9 +29,7 @@ class SplitLegion(object):
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.split_legion_dialog.set_icon(pixbuf)
+        self.split_legion_dialog.set_icon(icon.pixbuf)
         self.split_legion_dialog.set_title("SplitLegion - %s" % (username))
 
         self.legion_name.set_text("Splitting legion %s in hex %s" % (
@@ -70,9 +70,6 @@ class SplitLegion(object):
         next.pack_start(widget, expand=False, fill=False)
 
 
-def quit(unused):
-    sys.exit()
-
 if __name__ == "__main__":
     creatures = [Creature.Creature(name) for name in 
       creaturedata.starting_creature_names]
@@ -83,6 +80,6 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
     SplitLegion = SplitLegion(username, player, legion)
-    SplitLegion.split_legion_dialog.connect("destroy", quit)
+    SplitLegion.split_legion_dialog.connect("destroy", guiutils.die)
 
     gtk.main()

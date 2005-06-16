@@ -14,6 +14,8 @@ import NewGame
 import WaitingForPlayers
 from Observer import IObserver
 import Action
+import icon
+import guiutils
 
 
 class Anteroom(object):
@@ -34,13 +36,11 @@ class Anteroom(object):
         self.game_store = []
         self.wfps = {}          # game name : WaitingForPlayers
 
-        self.anteroom_window.connect("destroy", quit)
+        self.anteroom_window.connect("destroy", guiutils.die)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
         self.new_game_button.connect("button-press-event", self.cb_click)
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.anteroom_window.set_icon(pixbuf)
+        self.anteroom_window.set_icon(icon.pixbuf)
         self.anteroom_window.set_title("%s - %s" % (
           self.anteroom_window.get_title(), self.username))
 
@@ -191,8 +191,3 @@ class Anteroom(object):
         elif isinstance(action, Action.AssignTower):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
-
-
-def quit(unused):
-    sys.exit()
-

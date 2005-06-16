@@ -5,6 +5,10 @@ try:
 except (ImportError, AttributeError):
     pass
 import gtk
+import About
+import icon
+import guiutils
+
 
 ui_string = """<ui>
   <menubar name="Menubar">
@@ -32,10 +36,6 @@ ui_string = """<ui>
 </ui>"""
 
 
-def quit(unused):
-    sys.exit()
-
-
 class BoardRoot(gtk.Window):
     """Root Window for GUIMasterBoard."""
     def __init__(self, username):
@@ -43,11 +43,9 @@ class BoardRoot(gtk.Window):
         gtk.Window.__init__(self)
         self.username = username
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.set_icon(pixbuf)
+        self.set_icon(icon.pixbuf)
         self.set_title("Slugathon - Masterboard - %s" % self.username)
-        self.connect("destroy", quit)
+        self.connect("destroy", guiutils.die)
 
         self.vbox = gtk.VBox()
         self.add(self.vbox)
@@ -62,10 +60,8 @@ class BoardRoot(gtk.Window):
         actions = [
           ("GameMenu", None, "_Game"),
           ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
-            quit),
+            guiutils.die),
           ("PhaseMenu", None, "_Phase"),
-          ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program", 
-            quit),
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
           ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
           ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
@@ -96,4 +92,4 @@ class BoardRoot(gtk.Window):
 
     def cb_about(self, action):
         print "about", action
-
+        about = About.About()

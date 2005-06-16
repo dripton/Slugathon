@@ -12,6 +12,7 @@ import zope.interface
 
 from Observer import IObserver
 import Action
+import icon
 
 
 def format_time(secs):
@@ -39,9 +40,7 @@ class WaitingForPlayers(object):
         self.player_store = gtk.ListStore(str)
         self.update_player_store()
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(
-          "../images/creature/Colossus.png")
-        self.waiting_for_players_window.set_icon(pixbuf)
+        self.waiting_for_players_window.set_icon(icon.pixbuf)
         self.waiting_for_players_window.set_title("%s - %s" % (
           self.waiting_for_players_window.get_title(), self.username))
 
