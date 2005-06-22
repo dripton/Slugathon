@@ -27,7 +27,7 @@ class GUIMasterBoard(object):
 
     zope.interface.implements(IObserver)
 
-    def __init__(self, root, board, game=None, username=None, scale=15):
+    def __init__(self, root, board, game=None, username=None, scale=None):
         self.root = root
         self.board = board
         self.username = username
@@ -36,7 +36,10 @@ class GUIMasterBoard(object):
         # of a better way to handle the data needed for markers yet.
         self.game = game
 
-        self.scale = scale
+        if scale is None:
+            self.scale = self.compute_scale()
+        else:
+            self.scale = scale
         self.area = gtk.DrawingArea()
         black = self.area.get_colormap().alloc_color("black")
         self.area.modify_bg(gtk.STATE_NORMAL, black)
@@ -75,11 +78,23 @@ class GUIMasterBoard(object):
                 return True
         return True
 
+    def compute_scale(self):
+        """Return the maximum scale that let the board fit on the screen
+        
+        This is approximate not exact.
+        """
+        width = gtk.gdk.screen_width()
+        height = gtk.gdk.screen_height()
+        xscale = math.floor(width / (self.board.hex_width() * 4. + 2))
+        # The -3 is a fudge factor to leave room for menus and toolbars.
+        yscale = math.floor(height / (self.board.hex_height() * 4 * SQRT3)) - 3
+        return int(min(xscale, yscale))
+
     def compute_width(self):
-        return int(round(self.scale * (self.board.hex_width() * 4 + 2)))
+        return int(math.ceil(self.scale * (self.board.hex_width() * 4 + 2)))
 
     def compute_height(self):
-        return int(round(self.scale * self.board.hex_height() * 4 * SQRT3))
+        return int(math.ceil(self.scale * self.board.hex_height() * 4 * SQRT3))
 
     def markers_in_hex(self, hexlabel):
         return [marker for marker in self.markers if marker.legion.hexlabel ==
@@ -131,7 +146,7 @@ class GUIMasterBoard(object):
     def draw_markers(self, gc, style):
         if not self.game:
             return
-        new_markernames = self._add_missing_markers()
+        self._add_missing_markers()
         if not self.markers:
             return
         hexes_done = set()
