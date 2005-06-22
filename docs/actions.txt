@@ -54,13 +54,13 @@ We'd like to reuse the same basic logic classes (Game, Player, Legion,
   extracting the ability to directly modify real game state from them.
   It also means the Legion class must be usable without certain knowledge
   of its contents.
-The standard Observer pattern is a solution.  We use attach / detach /
-  notify.  If the list of observers is empty, then no actions are broadcast 
-  from this instance.  To avoid coupling, container classes get direct 
-  references to contained classes, but the contained classes only see 
-  their containers as Observers.
+The standard Observer pattern is a solution.  We use add_observer /
+  remove_observer / notify.  If the list of observers is empty, then no 
+  actions are broadcast from this instance.  To avoid coupling, container 
+  classes get direct references to contained classes, but the contained 
+  classes only see their containers as Observers.
 Actions should cascade back up the observation hierarchy (e.g. Creature to 
-  Legion to Game to Client to User) in a way that makes it easy to detach
+  Legion to Game to Client to User) in a way that makes it easy to remove
   observers for hypothetical situations (AI, stepping through history).
   
 The related jobs of creating savegames and logging game actions should be

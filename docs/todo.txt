@@ -17,9 +17,9 @@ Custom Exception classes subclassing pb.Error
 
 Standalone battle simulator
 
-When a user drops from the server, drop his player from games.
-
 Try PyNSource http://www.atug.com/andypatterns/pynsource.htm
+
+When a user drops from the server, drop his player from games.
 
 If a player kills a WaitingForPlayers dialog, drop him from that
 game?
@@ -30,7 +30,6 @@ users.
 Use Observers to return results from modeless dialogs?
 
 Add a version number somewhere.  svn revision?  date?
-Put artist credits from Colossus into About
 
 ###############
 
@@ -40,7 +39,7 @@ a reference to and observing the same game is kind of odd, though.
 
 How to send to only some observers?  (e.g. a chat message for one 
 player, or hidden stack contents?)  Need each observer to leave
-a unique name when in attaches, and then filter based on that
+a unique name when it is added, and then filter based on that
 name.  (Also need to be able to send to all, and to all players
 involved with a certain game?)
 

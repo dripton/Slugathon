@@ -62,7 +62,7 @@ class Client(pb.Referenceable, Observed):
         if user:
             self.user = user
             self.anteroom = Anteroom.Anteroom(user, self.username)
-            self.attach(self.anteroom)
+            self.add_observer(self.anteroom)
             def1 = user.callRemote("get_usernames")
             def1.addCallbacks(self.got_usernames, self.failure)
             return defer.succeed(user)
@@ -97,7 +97,7 @@ class Client(pb.Referenceable, Observed):
         owner = playernames[0]
         game = Game.Game(name, owner, create_time, start_time, min_players,
           max_players)
-        self.attach(game)
+        self.add_observer(game)
         for playername in playernames[1:]:
             game.add_player(playername)
         self.games.append(game)
@@ -105,7 +105,7 @@ class Client(pb.Referenceable, Observed):
     def remove_game(self, game_name):
         game = self.name_to_game(game_name)
         if game:
-            self.detach(game)
+            self.remove_observer(game)
             self.games.remove(game)
 
     def failure(self, error):
@@ -155,7 +155,7 @@ class Client(pb.Referenceable, Observed):
         boardroot = BoardRoot.BoardRoot(self.username)
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot,
           game.board, game, self.username)
-        self.attach(self.guiboards[game])
+        self.add_observer(self.guiboards[game])
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with

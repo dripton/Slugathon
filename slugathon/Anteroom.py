@@ -138,7 +138,7 @@ class Anteroom(object):
 
     def add_game(self, game):
         print "Anteroom.add_game", game.name
-        game.attach(self)
+        game.add_observer(self)
         self.update_game_store()
         if self.username in game.get_playernames():
             self._add_or_replace_wfp(game)
@@ -147,7 +147,7 @@ class Anteroom(object):
         self.update_game_store()
         game = self.name_to_game(game_name)
         if game:
-            game.detach(self)
+            game.remove_observer(self)
 
     def joined_game(self, playername, game_name):
         print "Anteroom.joined_game", playername, game_name

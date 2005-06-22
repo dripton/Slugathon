@@ -78,12 +78,12 @@ class Game(Observed):
         self.num_players_joined += 1
         player = Player.Player(playername, self.name, self.num_players_joined)
         self.players.append(player)
-        player.attach(self)
+        player.add_observer(self)
 
     def remove_player(self, playername):
         assert not self.started, "remove_player on started game"
         player = self.get_player_by_name(playername)
-        player.detach(self)
+        player.remove_observer(self)
         self.players.remove(player)
 
     def start(self, playername):

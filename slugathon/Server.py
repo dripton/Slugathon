@@ -30,17 +30,17 @@ class Server(Observed):
         self.games = []
         self.name_to_user = {}
 
-    def attach(self, user):
-        print "called Server.attach", self, user
-        Observed.attach(self, user)
+    def add_observer(self, user):
+        print "called Server.add_observer", self, user
+        Observed.add_observer(self, user)
         username = user.name
         self.name_to_user[username] = user
         action = Action.AddUsername(username)
         self.notify(action)
 
-    def detach(self, user):
-        print "called Server.detach", self, user
-        Observed.detach(self, user)
+    def remove_observer(self, user):
+        print "called Server.remove_observer", self, user
+        Observed.remove_observer(self, user)
         username = user.name
         if username in self.name_to_user:
             del self.name_to_user[username]
@@ -90,7 +90,7 @@ class Server(Observed):
           min_players, max_players)
         print "built Game"
         self.games.append(game)
-        game.attach(self)
+        game.add_observer(self)
         action = Action.FormGame(username, game.name, game.create_time,
           game.start_time, game.min_players, game.max_players)
         self.notify(action)

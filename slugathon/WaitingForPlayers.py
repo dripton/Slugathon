@@ -30,7 +30,7 @@ class WaitingForPlayers(object):
         self.user = user
         self.username = username
         self.game = game
-        self.game.attach(self)
+        self.game.add_observer(self)
         self.glade = gtk.glade.XML("../glade/waitingforplayers.glade")
         self.widgets = ["waiting_for_players_window", "game_name_label", 
           "player_list", "created_entry", "starts_by_entry", "countdown_entry",
@@ -109,7 +109,7 @@ class WaitingForPlayers(object):
         print "WaitingForPlayers.failure", arg
 
     def shutdown(self):
-        self.game.detach(self)
+        self.game.remove_observer(self)
         self.destroy()
 
     def update(self, observed, action):

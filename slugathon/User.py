@@ -13,7 +13,7 @@ class User(pb.Avatar):
         self.name = name
         self.server = server
         self.client = client
-        self.server.attach(self)
+        self.server.add_observer(self)
         print "called User.__init__", self, name, server, client
 
     def perspective_get_name(self, arg):
@@ -65,8 +65,8 @@ class User(pb.Avatar):
     def __str__(self):
         return "User " + self.name
 
-    def attached(self, mind):
-        print "called User.attached", mind
+    def add_observered(self, mind):
+        print "called User.add_observered", mind
         def1 = self.client.callRemote("set_name", self.name)
         def1.addCallbacks(self.did_set_name, self.failure)
         def2 = self.client.callRemote("ping", time.time())
@@ -86,7 +86,7 @@ class User(pb.Avatar):
 
     def logout(self):
         print "called logout"
-        self.server.detach(self)
+        self.server.remove_observer(self)
 
     def update(self, observed, action):
         """Defers updates to its client, dropping the observed reference."""

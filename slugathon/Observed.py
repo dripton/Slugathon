@@ -1,10 +1,10 @@
 import zope.interface
 
 class IObserved(zope.interface.Interface):
-    def attach(observer):
+    def add_observer(observer):
         """Add an observer to this object."""
 
-    def detach(observer):
+    def remove_observer(observer):
         """Remove an observer from this object."""
 
     def notify(action):
@@ -20,13 +20,13 @@ class Observed(object):
     def __init__(self):
         self.observers = []
 
-    def attach(self, observer):
-        print "called Observed.attach", self, observer
+    def add_observer(self, observer):
+        print "called Observed.add_observer", self, observer
         if not observer in self.observers:
             self.observers.append(observer)
 
-    def detach(self, observer):
-        print "called Observed.detach", self, observer
+    def remove_observer(self, observer):
+        print "called Observed.remove_observer", self, observer
         if observer in self.observers:
             self.observers.remove(observer)
 
