@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Help/About dialog, wrapped around gtk.AboutDialog"""
+
 import sys
 try:
     import pygtk
@@ -26,6 +28,11 @@ class About(object):
         ad.set_license(st)
 
         ad.set_authors(["David Ripton",])
+        ad.set_artists(["Chris Byler", "Keith Carter", "Chris Howe",
+          "Klint Hull", "David Lum", "John Lum", "Agustin Martin",
+          "Tchula Ripton", "Jerry Reiger", "Josh Smith", 
+          "Sakis Spyropoulos", "D. U. Thibault",])
+
         ad.set_logo(icon.pixbuf)
         ad.set_website("http://slugathon.sf.net")
         ad.show()
