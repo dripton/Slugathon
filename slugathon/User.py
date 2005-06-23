@@ -16,6 +16,12 @@ class User(pb.Avatar):
         self.server.add_observer(self)
         print "called User.__init__", self, name, server, client
 
+    def attached(self, mind):
+        print "User attached", mind
+
+    def detached(self, mind):
+        print "User detached", mind
+
     def perspective_get_name(self, arg):
         print "perspective_get_name(", arg, ") called on", self
         return self.name
@@ -65,8 +71,8 @@ class User(pb.Avatar):
     def __str__(self):
         return "User " + self.name
 
-    def add_observered(self, mind):
-        print "called User.add_observered", mind
+    def add_observer(self, mind):
+        print "called User.add_observer", mind
         def1 = self.client.callRemote("set_name", self.name)
         def1.addCallbacks(self.did_set_name, self.failure)
         def2 = self.client.callRemote("ping", time.time())
