@@ -16,3 +16,9 @@ class Creature(object):
         self.magicmissile = (rangestrikes == 2)
         self.acquirable = bool(acquirable_every)
         self.acquirable_every = acquirable_every
+
+    def __str__(self):
+        if self.name == "Titan":
+            return "%s(%d)" % (self.name, self.power)
+        else:
+            return self.name
