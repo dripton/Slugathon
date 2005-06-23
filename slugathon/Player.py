@@ -31,7 +31,7 @@ class Player(Observed):
         # Private to this instance; not shown to others until a
         # legion is actually split off with this marker.
         self.selected_markername = None
-        self.legions = []
+        self.legions = {}
 
     def __str__(self):
         return self.name
@@ -71,9 +71,9 @@ class Player(Observed):
 
     def create_starting_legion(self, markername):
         assert markername in self.markernames
-        assert len(self.legions) == 0
+        assert not self.legions
         creatures = [Creature.Creature(name) for name in 
           creaturedata.starting_creature_names]
         legion = Legion.Legion(self, self.take_marker(markername), creatures,
           self.starting_tower)
-        self.legions.append(legion)
+        self.legions[markername] = legion

@@ -11,6 +11,7 @@ from playercolordata import colors
 from Observed import Observed
 from Observer import IObserver
 import Action
+import Phase
 
 
 class Game(Observed):
@@ -31,6 +32,8 @@ class Game(Observed):
         self.num_players_joined = 0
         self.add_player(owner)
         self.board = MasterBoard.MasterBoard()
+        self.turn = 1
+        self.phase = Phase.SPLIT
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -168,7 +171,7 @@ class Game(Observed):
 
     def gen_all_legions(self):
         for player in self.players:
-            for legion in player.legions:
+            for legion in player.legions.itervalues():
                 yield legion
 
     def update(self, observed, action):

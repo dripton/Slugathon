@@ -19,6 +19,9 @@ import Action
 import Marker
 import ShowLegion
 import BoardRoot
+import Phase
+import PickMarker
+import SplitLegion
 
 SQRT3 = math.sqrt(3.0)
 
@@ -49,6 +52,7 @@ class GUIMasterBoard(object):
         self.root.vbox.pack_start(self.area)
         self.markers = []
         self.guihexes = {}
+        self._splitting_legion = None
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.area.connect("expose-event", self.area_expose_cb)
@@ -67,9 +71,8 @@ class GUIMasterBoard(object):
         gc = style.fg_gc[gtk.STATE_NORMAL]
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
-                print "clicked on", marker
-                ShowLegion.ShowLegion(self.username, marker.legion, 
-                  marker.legion.player.color, True)
+                print "clicked on", marker, "with button", event.button
+                self.clicked_on_marker(area, event, marker)
                 return True
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
@@ -77,6 +80,41 @@ class GUIMasterBoard(object):
                 self.update_gui(gc, style, [guihex.hex.label])
                 return True
         return True
+
+    def clicked_on_marker(self, area, event, marker):
+        if event.button >= 2:
+            ShowLegion.ShowLegion(self.username, marker.legion,
+              marker.legion.player.color, True)
+        else: # left button
+            phase = self.game.phase
+            if phase == Phase.SPLIT:
+                legion = marker.legion
+                player = legion.player
+                if player.selected_markername:
+                    self.split_legion(player, legion)
+                else:
+                    if not player.markernames:
+                        return True
+                    self._splitting_legion = legion
+                    PickMarker.PickMarker(self.username, self.game.name, 
+                      player.markernames, self.pick_marker)
+        return True
+
+    def pick_marker(self, game_name, username, markername):
+        player = self.game.get_player_by_name(username)
+        player.pick_marker(markername)
+        self.split_legion(player)
+
+    def split_legion(self, player):
+        # TODO make sure it's this player's legion
+        # TODO reset to None when it's done
+        legion = self._splitting_legion
+        self._splitting_legion = None
+        SplitLegion.SplitLegion(self.username, player, legion,
+          self.try_to_split_legion)
+
+    def try_to_split_legion(self, oldlegion, newlegion):
+        print "try_to_split_legion", oldlegion, newlegion
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen
@@ -110,7 +148,7 @@ class GUIMasterBoard(object):
             if legion.markername not in (marker.name for marker in 
               self.markers):
                 result.append(legion.markername)
-                marker = Marker.Marker(legion)
+                marker = Marker.Marker(legion, self.scale)
                 self.markers.append(marker)
         return result
 
@@ -174,7 +212,7 @@ class GUIMasterBoard(object):
         print "GUIMasterBoard.update", self, observed, action
         if isinstance(action, Action.CreateStartingLegion):
             player = self.game.get_player_by_name(action.playername)
-            legion = player.legions[0]
+            legion = player.legions.values()[0]
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, [legion.hexlabel])

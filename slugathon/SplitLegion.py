@@ -20,8 +20,10 @@ import guiutils
 
 class SplitLegion(object):
     """Dialog to split a legion."""
-    def __init__(self, username, player, legion):
+    def __init__(self, username, player, legion, callback):
         print "SplitLegion.__init__", username, player, legion
+        self.old_legion = legion
+        self.callback = callback
         self.glade = gtk.glade.XML("../glade/splitlegion.glade")
         self.widgets = ["split_legion_dialog", "old_marker_hbox", 
           "old_chits_hbox", "new_marker_hbox", "new_chits_hbox",
@@ -47,14 +49,14 @@ class SplitLegion(object):
           fill=False)
         self.new_marker.show()
 
-        # TODO Handle unknown creatures correctly
         for creature in legion.creatures:
-            chit = Chit.Chit(creature, playercolor, scale=20)
+            chit = Chit.Chit(creature, player.color, scale=20)
             chit.show()
             self.old_chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
             chit.connect("button_press_event", self.cb_click)
             
+        self.split_legion_dialog.connect("response", self.cb_response)
         self.split_legion_dialog.show()
 
 
@@ -69,17 +71,21 @@ class SplitLegion(object):
         prev.remove(widget)
         next.pack_start(widget, expand=False, fill=False)
 
+    def cb_response(self, widget, response_id):
+        print "SplitLegion.cb_response", widget, response_id
+        self.callback(self.old_legion, self.new_legion)
+
 
 if __name__ == "__main__":
     creatures = [Creature.Creature(name) for name in 
       creaturedata.starting_creature_names]
     
     username = "test"
-    playercolor = "Red"
     player = Player.Player(username, "Game1", 0)
+    player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
-    SplitLegion = SplitLegion(username, player, legion)
+    SplitLegion = SplitLegion(username, player, legion, guiutils.die)
     SplitLegion.split_legion_dialog.connect("destroy", guiutils.die)
 
     gtk.main()

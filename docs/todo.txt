@@ -53,6 +53,8 @@ should send it all events needed to sync up.
 In Anteroom game list, show tower assignments, resort player names,
 and show colors.
 
+Make Anteroom always fit on screen.
+
 
 Bugs:
 

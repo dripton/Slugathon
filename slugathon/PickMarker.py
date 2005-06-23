@@ -1,19 +1,25 @@
+#!/usr/bin/env python
+
 try:
     import pygtk
     pygtk.require("2.0")
 except (ImportError, AttributeError):
     pass
 import gtk
+
 import icon
+import guiutils
 
 
 class PickMarker(object):
     """Dialog to pick a legion marker."""
-    def __init__(self, client, username, game_name, markers_left):
-        print "PickMarker.__init__", client, username, game_name, markers_left
-        self.client = client
+    def __init__(self, username, game_name, markers_left, callback):
+        print "PickMarker.__init__", username, game_name, markers_left, \
+          callback
         self.username = username
         self.game_name = game_name
+        self.callback = callback
+
         self.pick_marker_dialog = gtk.Dialog()
 
         self.pick_marker_dialog.set_icon(icon.pixbuf)
@@ -37,5 +43,13 @@ class PickMarker(object):
     def cb_click(self, widget, event):
         print "PickMarker.cb_click", self, widget, event
         markername = widget.tag
-        self.client.pick_marker(self.game_name, self.username, markername)
+        self.callback(self.game_name, self.username, markername)
         self.pick_marker_dialog.destroy()
+
+if __name__ == "__main__":
+    username = "test user"
+    game_name = "test game"
+    markers_left = ["Rd%02d" % ii for ii in xrange(1, 12+1)]
+    pickmarker = PickMarker(username, game_name, markers_left, guiutils.die)
+    pickmarker.pick_marker_dialog.connect("destroy", guiutils.die)
+    gtk.main()
