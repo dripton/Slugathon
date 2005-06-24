@@ -1,5 +1,3 @@
-from twisted.spread import pb
-
 from Observed import Observed
 import Action
 import playercolordata

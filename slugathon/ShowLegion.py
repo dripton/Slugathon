@@ -1,6 +1,5 @@
 #!/usr/bin/env python 
 
-import sys
 try:
     import pygtk
     pygtk.require("2.0")

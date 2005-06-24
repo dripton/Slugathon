@@ -2,7 +2,6 @@
 
 """Help/About dialog, wrapped around gtk.AboutDialog"""
 
-import sys
 try:
     import pygtk
     pygtk.require("2.0")

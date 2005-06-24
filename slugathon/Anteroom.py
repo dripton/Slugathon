@@ -1,5 +1,3 @@
-import sys
-
 try:
     import pygtk
     pygtk.require("2.0")
