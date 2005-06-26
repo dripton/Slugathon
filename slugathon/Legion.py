@@ -10,9 +10,6 @@ class Legion(object):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
           self.creatures)
 
-    def height(self):
-        return len(self.creatures)
-
     def __len__(self):
         return len(self.creatures)
 
