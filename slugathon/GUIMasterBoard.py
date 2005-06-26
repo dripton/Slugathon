@@ -113,8 +113,8 @@ class GUIMasterBoard(object):
         SplitLegion.SplitLegion(self.username, player, legion,
           self.try_to_split_legion)
 
-    def try_to_split_legion(self, oldlegion, newlegion):
-        print "try_to_split_legion", oldlegion, newlegion
+    def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
+        print "try_to_split_legion", old_legion, new_legion1, new_legion2
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen

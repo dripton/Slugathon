@@ -15,6 +15,7 @@ import Legion
 import Player
 import icon
 import guiutils
+import rules
 
 
 class SplitLegion(object):
@@ -41,9 +42,11 @@ class SplitLegion(object):
           fill=False)
         self.old_marker.show()
 
-        self.new_legion = Legion.Legion(player, player.selected_markername, [],
-          legion.hexlabel)
-        self.new_marker = Marker.Marker(self.new_legion, scale=20)
+        self.new_legion1 = Legion.Legion(player, legion.markername,
+          legion.creatures[:], legion.hexlabel)
+        self.new_legion2 = Legion.Legion(player, player.selected_markername, 
+          [], legion.hexlabel)
+        self.new_marker = Marker.Marker(self.new_legion2, scale=20)
         self.new_marker_hbox.pack_start(self.new_marker.image, expand=False,
           fill=False)
         self.new_marker.show()
@@ -54,25 +57,39 @@ class SplitLegion(object):
             self.old_chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
             chit.connect("button_press_event", self.cb_click)
-            
+
+        self.okbutton = self.split_legion_dialog.action_area.get_children()[0]
+        self.okbutton.set_sensitive(False)
+
         self.split_legion_dialog.connect("response", self.cb_response)
         self.split_legion_dialog.show()
 
 
     def cb_click(self, widget, event):
         """Move the clicked-on Chit's EventBox to the other hbox."""
-        if widget in self.old_chits_hbox.get_children():
+        eventbox = widget
+        if eventbox in self.old_chits_hbox.get_children():
             prev = self.old_chits_hbox
             next = self.new_chits_hbox
+            prev_legion = self.new_legion1
+            next_legion = self.new_legion2
         else:
             prev = self.new_chits_hbox
             next = self.old_chits_hbox
-        prev.remove(widget)
-        next.pack_start(widget, expand=False, fill=False)
+            prev_legion = self.new_legion2
+            next_legion = self.new_legion1
+        prev.remove(eventbox)
+        next.pack_start(eventbox, expand=False, fill=False)
+        chit = eventbox.chit
+        prev_legion.creatures.remove(chit.creature)
+        next_legion.creatures.append(chit.creature)
+        legal = rules.is_legal_split(self.old_legion, self.new_legion1,
+          self.new_legion2)
+        self.okbutton.set_sensitive(legal)
 
     def cb_response(self, widget, response_id):
         print "SplitLegion.cb_response", widget, response_id
-        self.callback(self.old_legion, self.new_legion)
+        self.callback(self.old_legion, self.new_legion1, self.new_legion2)
 
 
 if __name__ == "__main__":
@@ -84,7 +101,7 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
-    SplitLegion = SplitLegion(username, player, legion, guiutils.die)
-    SplitLegion.split_legion_dialog.connect("destroy", guiutils.die)
+    splitlegion = SplitLegion(username, player, legion, guiutils.die)
+    splitlegion.split_legion_dialog.connect("destroy", guiutils.die)
 
     gtk.main()
