@@ -34,6 +34,7 @@ class Game(Observed):
         self.board = MasterBoard.MasterBoard()
         self.turn = 1
         self.phase = Phase.SPLIT
+        self.active_player = None
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -111,6 +112,7 @@ class Game(Observed):
         def starting_tower_desc(a, b):
             return b.starting_tower - a.starting_tower
         self.players.sort(starting_tower_desc)
+        self.active_player = players[0]
 
     def done_assigning_towers(self):
         for player in self.players:
