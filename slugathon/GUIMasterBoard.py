@@ -90,6 +90,11 @@ class GUIMasterBoard(object):
             if phase == Phase.SPLIT:
                 legion = marker.legion
                 player = legion.player
+                # Make sure it's this player's legion and turn.
+                if player.name != self.username:
+                    return True
+                if player != self.game.active_player:
+                    return True
                 if player.selected_markername:
                     self.split_legion(player, legion)
                 else:
@@ -97,17 +102,15 @@ class GUIMasterBoard(object):
                         return True
                     self._splitting_legion = legion
                     PickMarker.PickMarker(self.username, self.game.name, 
-                      player.markernames, self.pick_marker)
+                      player.markernames, self.picked_marker_presplit)
         return True
 
-    def pick_marker(self, game_name, username, markername):
+    def picked_marker_presplit(self, game_name, username, markername):
         player = self.game.get_player_by_name(username)
         player.pick_marker(markername)
         self.split_legion(player)
 
     def split_legion(self, player):
-        # TODO make sure it's this player's legion
-        # TODO reset to None when it's done
         legion = self._splitting_legion
         self._splitting_legion = None
         SplitLegion.SplitLegion(self.username, player, legion,
@@ -115,6 +118,7 @@ class GUIMasterBoard(object):
 
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
         print "try_to_split_legion", old_legion, new_legion1, new_legion2
+        # TODO
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen
