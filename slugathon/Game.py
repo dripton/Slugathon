@@ -112,7 +112,7 @@ class Game(Observed):
         def starting_tower_desc(a, b):
             return b.starting_tower - a.starting_tower
         self.players.sort(starting_tower_desc)
-        self.active_player = players[0]
+        self.active_player = self.players[0]
 
     def done_assigning_towers(self):
         for player in self.players:
@@ -175,6 +175,15 @@ class Game(Observed):
         for player in self.players:
             for legion in player.legions.itervalues():
                 yield legion
+
+    def split_legion(self, playername, parent_markername, child_markername,
+      parent_creaturenames, child_creaturenames):
+        player = self.get_player_by_name(playername)
+        if player is not self.active_player:
+            raise AssertionError("splitting out of turn")
+        player.split_legion(parent_markername, child_markername, 
+          parent_creaturenames, child_creaturenames)
+
 
     def update(self, observed, action):
         print "Game.update", observed, action

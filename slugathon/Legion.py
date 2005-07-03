@@ -21,3 +21,9 @@ class Legion(object):
         li.sort()
         return li
 
+    def remove_creature_by_name(self, creaturename):
+        for creature in self.creatures:
+            if creature.name == creaturename:
+                self.creatures.remove(creature)
+                return
+        raise ValueError, "tried to remove missing creature"

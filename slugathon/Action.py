@@ -86,3 +86,18 @@ class CreateStartingLegion(Action):
         self.markername = markername
 pb.setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)
 
+
+class SplitLegion(Action):
+    def __init__(self, game_name, playername, parent_markername, 
+      child_markername, parent_creaturenames, child_creaturenames):
+        """parent_creaturenames and child_creaturenames are lists of the actual
+        creature names if known, or lists of height * None if not known
+        """
+        self.game_name = game_name
+        self.playername = playername
+        self.parent_markername = parent_markername
+        self.child_markername = child_markername
+        self.parent_creaturenames = parent_creaturenames
+        self.child_creaturenames = child_creaturenames
+pb.setUnjellyableForClass(SplitLegion, SplitLegion)
+

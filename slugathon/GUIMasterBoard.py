@@ -30,9 +30,11 @@ class GUIMasterBoard(object):
 
     zope.interface.implements(IObserver)
 
-    def __init__(self, root, board, game=None, username=None, scale=None):
+    def __init__(self, root, board, game=None, user=None, username=None, 
+      scale=None):
         self.root = root
         self.board = board
+        self.user = user
         self.username = username
 
         # XXX This feels like inappropriate coupling, but I haven't thought
@@ -118,7 +120,10 @@ class GUIMasterBoard(object):
 
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
         print "try_to_split_legion", old_legion, new_legion1, new_legion2
-        # TODO
+        def1 = self.user.callRemote("split_legion", self.game.name,
+          new_legion1.markername, new_legion2.markername, 
+          new_legion1.creature_names(), new_legion2.creature_names())
+        # TODO callbacks
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen

@@ -155,7 +155,7 @@ class Client(pb.Referenceable, Observed):
         print "Client._init_guiboard"
         boardroot = BoardRoot.BoardRoot(self.username)
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot,
-          game.board, game, self.username)
+          game.board, game, self.user, self.username)
         self.add_observer(self.guiboards[game])
 
     def update(self, observed, action):
