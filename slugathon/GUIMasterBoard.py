@@ -7,7 +7,6 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import pango
-import sys
 import math
 import zope.interface
 
@@ -79,7 +78,7 @@ class GUIMasterBoard(object):
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 guihex.toggle_selection()
-                self.update_gui(gc, style, [guihex.hex.label])
+                self.update_gui(gc, style, [guihex.masterhex.label])
                 return True
         return True
 

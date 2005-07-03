@@ -17,16 +17,16 @@ x_font_position = [0.5, 0.75, 0.75, 0.5, 0.25, 0.25]
 y_font_position = [0.1, 0.125, 0.875, 0.95, 0.875, 0.125]
 
 class GUIMasterHex(object):
-    def __init__(self, hex, guiboard):
-        self.hex = hex
+    def __init__(self, masterhex, guiboard):
+        self.masterhex = masterhex
         self.guiboard = guiboard
         scale = self.guiboard.scale
-        self.cx = hex.x * 4 * scale
-        self.cy = hex.y * 4 * SQRT3 * scale
-        if not hex.inverted:
+        self.cx = masterhex.x * 4 * scale
+        self.cy = masterhex.y * 4 * SQRT3 * scale
+        if not masterhex.inverted:
             self.cy += SQRT3 * scale
         self.fillcolor = guiutils.rgb_to_gtk(colors.rgb_colors[
-                colors.terrain_colors[self.hex.terrain]])
+                colors.terrain_colors[self.masterhex.terrain]])
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False
 
@@ -52,7 +52,7 @@ class GUIMasterHex(object):
         cx = self.cx
         cy = self.cy
         scale = self.guiboard.scale
-        if self.hex.inverted:
+        if self.masterhex.inverted:
             self.vertexes[0] = (cx + scale, cy)
             self.vertexes[1] = (cx + 5 * scale, cy)
             self.vertexes[2] = (cx + 6 * scale, int(round(cy + SQRT3 * scale)))
@@ -123,7 +123,7 @@ class GUIMasterHex(object):
         Since exits extend into adjacent hexes, they can be overdrawn,
         so we need to draw both exits and entrances for both hexes.
         """
-        hex1 = self.hex
+        hex1 = self.masterhex
         vertexes = self.vertexes
         ap = []
         for i in range(6):
@@ -172,8 +172,8 @@ class GUIMasterHex(object):
         self.dest_x = int(round(self.center[0] - myboxsize[0] / 2.))
         self.dest_y = int(round(self.center[1] - myboxsize[1] / 2.))
 
-        image_filename = os.path.join("../images/masterhex",
-                                      self.hex.overlay_filename)
+        image_filename = os.path.join("../images/masterhex", 
+          self.masterhex.overlay_filename)
         pixbuf = gtk.gdk.pixbuf_new_from_file(image_filename)
         self.pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
@@ -187,12 +187,12 @@ class GUIMasterHex(object):
 
     def draw_label(self, gc, style):
         """Display the hex label."""
-        label = str(self.hex.label)
+        label = str(self.masterhex.label)
         layout = self.guiboard.area.create_pango_layout(label)
         text_width, text_height = layout.get_pixel_size()
         half_text_width = 0.5 * text_width
         half_text_height = 0.5 * text_height
-        side = self.hex.label_side
+        side = self.masterhex.label_side
 
         x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
                 half_text_width)))
