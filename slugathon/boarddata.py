@@ -1,4 +1,7 @@
-# (label, x, y, terrain, neighbor1, gate1, neighbor2, gate2, neighbor3, gate3)
+"""Static board data
+
+(label, x, y, terrain, neighbor1, gate1, neighbor2, gate2, neighbor3, gate3)
+"""
 
 data = [
 
