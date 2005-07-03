@@ -63,6 +63,9 @@ class bag(object):
         else:
             return False
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def union(self, other):
         """Add all items from the other bag to this one."""
         assert isinstance(other, bag)

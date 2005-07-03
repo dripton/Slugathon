@@ -70,6 +70,13 @@ def test_equal():
     b2 = bag(dict(c=2, b=1, a=1))
     assert b1 == b2
 
+def test_not_equal():
+    b1 = bag(dict(a=1, b=1, c=2))
+    b2 = bag(dict(c=2, b=1, a=1))
+    assert not (b1 != b2)
+    b3 = bag(dict(c=3, b=1, a=1))
+    assert b1 != b3
+
 def test_union():
     b1 = bag(dict(a=1, b=1))
     b2 = bag(dict(a=2, c=1))
