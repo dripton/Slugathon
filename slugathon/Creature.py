@@ -17,7 +17,7 @@ class Creature(object):
         self.acquirable = bool(acquirable_every)
         self.acquirable_every = acquirable_every
 
-    def __str__(self):
+    def __repr__(self):
         if self.name == "Titan":
             return "%s(%d)" % (self.name, self.power)
         else:
