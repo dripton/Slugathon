@@ -209,5 +209,12 @@ class Game(Observed):
             self.assign_color(action.playername, action.color)
         elif isinstance(action, Action.CreateStartingLegion):
             self.create_starting_legion(action.playername, action.markername)
+        elif isinstance(action, Action.SplitLegion):
+            player = self.get_player_by_name(action.playername)
+            # Avoid doing the same split twice.
+            if not action.child_markername in player.legions:
+                self.split_legion(action.playername, action.parent_markername,
+                action.child_markername, action.parent_creaturenames, 
+                 action.child_creaturenames)
 
         self.notify(action)
