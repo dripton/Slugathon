@@ -2,7 +2,7 @@ from twisted.spread import pb
 
 class Action(pb.Copyable, pb.RemoteCopy):
 
-    def __str__(self):
+    def __repr__(self):
         return "%s %s" % (self.__class__.__name__, self.__dict__)
 pb.setUnjellyableForClass(Action, Action)
 

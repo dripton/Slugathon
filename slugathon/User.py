@@ -75,7 +75,7 @@ class User(pb.Avatar):
         self.server.split_legion(self.name, game_name, parent_markername,
           child_markername, parent_creaturenames, child_creaturenames)
 
-    def __str__(self):
+    def __repr__(self):
         return "User " + self.name
 
     def add_observer(self, mind):

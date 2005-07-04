@@ -6,7 +6,7 @@ class Legion(object):
         # XXX bidirectional references are bad
         self.player = player
 
-    def __str__(self):
+    def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
           self.creatures)
 

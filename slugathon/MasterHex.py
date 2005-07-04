@@ -39,7 +39,7 @@ class MasterHex(object):
         self.build_overlay_filename()
         self.label_side = self.find_label_side()
 
-    def __str__(self):
+    def __repr__(self):
         return "%s hex %d at (%d,%d)" % (self.terrain, self.label,
                                          self.x, self.y)
 

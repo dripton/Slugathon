@@ -46,7 +46,7 @@ class Client(pb.Referenceable, Observed):
         print "remote_ping(", arg, ") called on", self
         return True
 
-    def __str__(self):
+    def __repr__(self):
         return "Client " + str(self.username)
 
     def connect(self):

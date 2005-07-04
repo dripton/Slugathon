@@ -33,8 +33,8 @@ class Player(Observed):
         self.selected_markername = None
         self.legions = {}
 
-    def __str__(self):
-        return self.name
+    def __repr__(self):
+        return "Player " + self.name
 
     def assign_starting_tower(self, tower):
         """Set this player's starting tower to the (int) tower"""
