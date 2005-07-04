@@ -47,7 +47,8 @@ class Game(Observed):
             if player.join_order < min_join_order:
                 owner = player
                 min_join_order = player.join_order
-        assert owner is not None
+        if owner is None:
+            raise AssertionError, "Game has no owner"
         return owner
 
     def get_playernames(self):
@@ -73,11 +74,14 @@ class Game(Observed):
 
     def add_player(self, playername):
         """Add a player to this game."""
-        assert not self.started, "add_player on started game"
-        assert playername not in self.get_playernames(), \
-          "add_player from %s already in game %s" % (playername, self.name)
-        assert len(self.players) < self.max_players, \
-          "%s tried to join full game %s" % (playername, self.name)
+        if self.started:
+            raise AssertionError, "add_player on started game"
+        if playername in self.get_playernames():
+            raise AssertionError, "add_player from %s already in game %s" % (
+              playername, self.name)
+        if len(self.players) >= self.max_players:
+            raise AssertionError, "%s tried to join full game %s" % (
+              playername, self.name)
         print "adding", playername, "to", self.name
         self.num_players_joined += 1
         player = Player.Player(playername, self.name, self.num_players_joined)
@@ -85,15 +89,17 @@ class Game(Observed):
         player.add_observer(self)
 
     def remove_player(self, playername):
-        assert not self.started, "remove_player on started game"
+        if self.started:
+            raise AssertionError, "remove_player on started game"
         player = self.get_player_by_name(playername)
         player.remove_observer(self)
         self.players.remove(player)
 
     def start(self, playername):
         """Called only on server side, and only by game owner."""
-        assert playername == self.get_owner().name, \
-          "Game.start called for %s by non-owner %s" % (self.name, playername)
+        if playername != self.get_owner().name:
+            raise AssertionError, "Game.start %s called by non-owner %s" % (
+              self.name, playername)
         self.started = True
         towers = rules.assign_towers(self.board.get_tower_labels(), 
           len(self.players))
@@ -143,11 +149,8 @@ class Game(Observed):
         if player.color == color:
             return
         left = self.colors_left()
-        assert color in left
-        for p in self.players:
-            if p is not player:
-                assert p.color != color
-        player = self.get_player_by_name(playername)
+        if color not in left:
+            raise AssertionError, "tried to take unavailable color"
         player.assign_color(color)
 
     def done_assigning_first_markers(self):
@@ -158,7 +161,8 @@ class Game(Observed):
 
     def assign_first_marker(self, playername, markername):
         player = self.get_player_by_name(playername)
-        assert markername in player.markernames
+        if markername not in player.markernames:
+            raise AssertionError, "marker not available"
         player.pick_marker(markername)
         if self.done_assigning_first_markers():
             self.init_starting_legions()

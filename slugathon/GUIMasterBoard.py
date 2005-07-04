@@ -163,7 +163,6 @@ class GUIMasterBoard(object):
     def _compute_marker_locations(self, hex1):
         mih = self.markers_in_hex(hex1)
         num = len(mih)
-        assert 1 <= num <= 3
         guihex = self.guihexes[hex1]
         chit_scale = self.markers[0].chit_scale
         base_location = (guihex.center[0] - chit_scale / 2,
@@ -176,12 +175,14 @@ class GUIMasterBoard(object):
               base_location[1] - chit_scale / 4)
             mih[1].location = (base_location[0] + chit_scale / 4,
               base_location[1] + chit_scale / 4)
-        else:
+        elif num == 3:
             mih[0].location = (base_location[0] - chit_scale / 2,
               base_location[1] - chit_scale / 2)
             mih[1].location = base_location
             mih[2].location = (base_location[0] + chit_scale / 2,
               base_location[1] + chit_scale / 2)
+        else:
+            raise AssertionError("invalid number of markers in hex")
 
     def _render_marker(self, marker, gc):
         drawable = self.area.window

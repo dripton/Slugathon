@@ -68,7 +68,8 @@ class bag(object):
 
     def union(self, other):
         """Add all items from the other bag to this one."""
-        assert isinstance(other, bag)
+        if not isinstance(other, bag):
+            raise TypeError, "not a bag"
         newbag = bag(self._dic)
         for key, val in other._dic.items():
             newbag[key] += val
@@ -84,7 +85,8 @@ class bag(object):
 
     def difference(self, other):
         """Return the difference between this bag and other as a new bag."""
-        assert isinstance(other, bag)
+        if not isinstance(other, bag):
+            raise TypeError, "not a bag"
         newbag = bag(self._dic)
         for key, val in self._dic.items():
             val2 = other[key]
@@ -94,7 +96,8 @@ class bag(object):
 
     def intersection(self, other):
         """Return a new bag with the elements that are in both bags."""
-        assert isinstance(other, bag)
+        if not isinstance(other, bag):
+            raise TypeError, "not a bag"
         newbag = bag(self._dic)
         for key, val in self._dic.items():
             val2 = other[key]
@@ -103,7 +106,8 @@ class bag(object):
 
     def issubset(self, other):
         """Report whether the other bag contains everything in this one."""
-        assert isinstance(other, bag)
+        if not isinstance(other, bag):
+            raise TypeError, "not a bag"
         for key, val in self._dic.items():
             val2 = other[key]
             if val2 < val:
@@ -112,7 +116,8 @@ class bag(object):
 
     def issuperset(self, other):
         """Report whether this bag contains everything in the other one."""
-        assert isinstance(other, bag)
+        if not isinstance(other, bag):
+            raise TypeError, "not a bag"
         for key, val in other._dic.items():
             val2 = self[key]
             if val2 < val:

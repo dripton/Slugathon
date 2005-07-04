@@ -1,8 +1,6 @@
 Make sure we have the distinction between username and playername correct.  
    username also includes spectators, while playername is just for players.
 
-Don't use assert to check correctness.
-
 Handle failed logins cleanly -- show error message in Connect
 
 Do not allow multiple concurrent logins for same user.
