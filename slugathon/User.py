@@ -70,7 +70,7 @@ class User(pb.Avatar):
 
     def perspective_split_legion(self, game_name, parent_markername, 
       child_markername, parent_creaturenames, child_creaturenames):
-        print "perspective_pick_first_marker", game_name, parent_markername, \
+        print "perspective_split_legion", game_name, parent_markername, \
           child_markername, parent_creaturenames, child_creaturenames
         self.server.split_legion(self.name, game_name, parent_markername,
           child_markername, parent_creaturenames, child_creaturenames)
