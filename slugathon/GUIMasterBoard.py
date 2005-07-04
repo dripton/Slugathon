@@ -194,17 +194,13 @@ class GUIMasterBoard(object):
         if not self.game:
             return
         self._add_missing_markers()
-        if not self.markers:
-            return
-        hexes_done = set()
-        for marker in self.markers:
-            hexlabel = marker.hexlabel
-            if hexlabel in hexes_done:
-                continue
-            hexes_done.add(hexlabel)
+        hexlabels = set((marker.hexlabel for marker in self.markers))
+        for hexlabel in hexlabels:
             self._compute_marker_locations(hexlabel)
             mih = self.markers_in_hex(hexlabel)
-            for marker in mih:
+            # Draw in reverse order so that the markers that come earlier
+            # in self.markers are on top.
+            for marker in reversed(mih):
                 self._render_marker(marker, gc)
 
 
