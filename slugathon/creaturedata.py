@@ -2,7 +2,7 @@
 Raw data about creature types.
 
 name: (plural, power, skill, rangestrikes, flies, character_type,
-  summonable, acquirableEvery, count, color)
+  summonable, acquirable_every, count, color)
 
 rangestrikes 0:no, 1:normal, 2:magic missile
 """
