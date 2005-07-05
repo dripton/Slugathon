@@ -178,8 +178,8 @@ class TestDice(object):
     def test_mann_kendall(self):
         S = 0
         n = len(self.rolls)
-        for i in range(1, n):
-            for j in range(i):
+        for i in xrange(1, n):
+            for j in xrange(i):
                 val = sign(self.rolls[i] - self.rolls[j])
                 S += val
         mean_S = 0.

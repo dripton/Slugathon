@@ -48,7 +48,7 @@ class Player(Observed):
         action = Action.PickedColor(self.game_name, self.name, color)
         abbrev = playercolordata.name_to_abbrev[self.color]
         # TODO Un-hardcode
-        for ii in range(12):
+        for ii in xrange(12):
             self.markernames.add("%s%02d" % (abbrev, ii + 1))
         self.notify(action)
 

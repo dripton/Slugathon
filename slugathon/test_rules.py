@@ -66,7 +66,7 @@ class TestAssignTowers(object):
         trials = 100
         num_towers = 6
         counts = {}
-        for unused in range(trials):
+        for unused in xrange(trials):
             towers = rules.assign_towers(self.labels, num_players, self.dice)
             assert len(towers) == num_players
             for tower in towers:

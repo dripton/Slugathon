@@ -100,7 +100,7 @@ def point_in_polygon(point, vertexes):
     # Treat intervals as closed on the low end, open on the high end.
     crossings = 0
     numpoints = len(vertexes)
-    for i in range(numpoints):
+    for i in xrange(numpoints):
         j = (i + 1) % numpoints
         (xi, yi) = vertexes[i]
         (xj, yj) = vertexes[j]

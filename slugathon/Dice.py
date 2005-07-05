@@ -10,7 +10,7 @@ class Dice(object):
 
     def roll(self, sides=6, numrolls=1):
         """Return a list of numrolls random integers from 1..sides"""
-        return [self.rand.randint(1, sides) for unused in range(numrolls)]
+        return [self.rand.randint(1, sides) for unused in xrange(numrolls)]
 
     def shuffle(self, lst):
         """Shuffle the list in place.
