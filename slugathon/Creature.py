@@ -10,12 +10,11 @@ class Creature(object):
     def __init__(self, name):
         self.name = name
         (self.plural_name, self.power, self.skill, rangestrikes, self.flies,
-          self.character_type, self.summonable, acquirable_every, 
+          self.character_type, self.summonable, self.acquirable_every, 
           self.max_count, self.color_name) = creaturedata.data[name]
         self.rangestrikes = bool(rangestrikes)
         self.magicmissile = (rangestrikes == 2)
-        self.acquirable = bool(acquirable_every)
-        self.acquirable_every = acquirable_every
+        self.acquirable = bool(self.acquirable_every)
 
     def __repr__(self):
         if self.name == "Titan":
