@@ -221,7 +221,7 @@ class GUIMasterBoard(object):
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, [legion.hexlabel])
-        if isinstance(action, Action.SplitLegion):
+        elif isinstance(action, Action.SplitLegion):
             player = self.game.get_player_by_name(action.playername)
             parent = player.legions[action.parent_markername]
             style = self.area.get_style()
