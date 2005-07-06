@@ -94,9 +94,12 @@ class GUIMasterBoard(object):
                 # Make sure it's this player's legion and turn.
                 if player.name != self.username:
                     return True
-                if player != self.game.active_player:
+                elif player != self.game.active_player:
                     return True
-                if player.selected_markername:
+                # Ensure that the legion can legally be split.
+                elif not legion.can_be_split(self.game.turn):
+                    return True
+                elif player.selected_markername:
                     self.split_legion(player, legion)
                 else:
                     if not player.markernames:

@@ -17,9 +17,7 @@ class Legion(object):
         return sum(cr.character_type == "lord" for cr in self.creatures)
 
     def creature_names(self):
-        li = [creature.name for creature in self.creatures]
-        li.sort()
-        return li
+        return sorted(creature.name for creature in self.creatures)
 
     def remove_creature_by_name(self, creaturename):
         for creature in self.creatures:
@@ -27,3 +25,10 @@ class Legion(object):
                 self.creatures.remove(creature)
                 return
         raise ValueError, "tried to remove missing creature"
+
+    def can_be_split(self, turn):
+        if turn == 1:
+            return len(self) == 8
+        else:
+            return len(self) >= 4
+
