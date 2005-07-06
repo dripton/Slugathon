@@ -56,15 +56,6 @@ class Player(Observed):
         if markername in self.markernames:
             self.selected_markername = markername
 
-    def init_starting_legion(self):
-        if self.selected_markername is None:
-            raise AssertionError("init_starting_legion without marker")
-        if self.selected_markername not in self.markernames:
-            raise AssertionError("init_starting_legion with bad marker")
-        action = Action.CreateStartingLegion(self.game_name, self.name,
-          self.selected_markername)
-        self.notify(action)
-
     def take_marker(self, markername):
         if markername not in self.markernames:
             raise AssertionError("take_marker with bad marker")
@@ -72,7 +63,10 @@ class Player(Observed):
         self.selected_markername = None
         return markername
 
-    def create_starting_legion(self, markername):
+    def create_starting_legion(self):
+        markername = self.selected_markername
+        if markername is None:
+            raise AssertionError("create_starting_legion without marker")
         if markername not in self.markernames:
             raise AssertionError("create_starting_legion with bad marker")
         if self.legions:
@@ -82,6 +76,9 @@ class Player(Observed):
         legion = Legion.Legion(self, self.take_marker(markername), creatures,
           self.starting_tower)
         self.legions[markername] = legion
+        action = Action.CreateStartingLegion(self.game_name, self.name,
+          markername)
+        self.notify(action)
 
     def split_legion(self, parent_markername, child_markername,
       parent_creaturenames, child_creaturenames):

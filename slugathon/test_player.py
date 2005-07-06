@@ -6,7 +6,7 @@ def test_can_exit_split_phase():
     assert len(player.markernames) == 12
     player.pick_marker("Rd01")
     assert player.selected_markername == "Rd01"
-    player.create_starting_legion(player.selected_markername)
+    player.create_starting_legion()
     assert len(player.legions) == 1
     assert not player.can_exit_split_phase()
 

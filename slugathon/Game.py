@@ -165,15 +165,11 @@ class Game(Observed):
             raise AssertionError, "marker not available"
         player.pick_marker(markername)
         if self.done_assigning_first_markers():
-            self.init_starting_legions()
+            self.create_starting_legions()
 
-    def init_starting_legions(self):
+    def create_starting_legions(self):
         for player in self.players:
-            player.init_starting_legion()
-
-    def create_starting_legion(self, playername, markername):
-        player = self.get_player_by_name(playername)
-        player.create_starting_legion(markername)
+            player.create_starting_legion()
 
     def gen_all_legions(self):
         for player in self.players:
@@ -208,7 +204,11 @@ class Game(Observed):
         elif isinstance(action, Action.PickedColor):
             self.assign_color(action.playername, action.color)
         elif isinstance(action, Action.CreateStartingLegion):
-            self.create_starting_legion(action.playername, action.markername)
+            player = self.get_player_by_name(action.playername)
+            # Avoid doing twice
+            if not player.legions:
+                player.pick_marker(action.markername)
+                player.create_starting_legion()
         elif isinstance(action, Action.SplitLegion):
             player = self.get_player_by_name(action.playername)
             # Avoid doing the same split twice.
