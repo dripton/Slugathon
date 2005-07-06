@@ -107,3 +107,7 @@ class Player(Observed):
           parent_markername, child_markername, parent_creaturenames, 
           child_creaturenames)
         self.notify(action)
+
+    def can_exit_split_phase(self):
+        """Return True if legal to exit the split phase"""
+        return max([len(legion) for legion in self.legions.values()]) < 8
