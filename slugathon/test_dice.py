@@ -95,11 +95,10 @@ def fail_if_abnormal(val, mean, var):
 class TestDice(object):
     def setup_method(self, method):
         self.trials = 600
-        self.dice = Dice.Dice()
         self.rolls = []
         self.bins = {}
         for unused in xrange(self.trials):
-            num = self.dice.roll()[0]
+            num = Dice.roll()[0]
             self.rolls.append(num)
             self.bins[num] = self.bins.get(num, 0) + 1
 
@@ -193,7 +192,7 @@ class TestDice(object):
         s.add(tuple(lst))
         num_shuffles = 100
         for unused in range(num_shuffles):
-            self.dice.shuffle(lst)
+            Dice.shuffle(lst)
             s.add(tuple(lst))
         # We are highly unlikely to get a duplicate.  Though it's possible...
         assert len(s) == num_shuffles + 1

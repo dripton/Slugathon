@@ -115,9 +115,7 @@ class Player(Observed):
     def done_with_splits(self):
         if not self.can_exit_split_phase():
             return
-        # TODO Reuse rather than making new RNGs.
-        dice = Dice.Dice()
-        self.movement_roll = dice.roll()
+        self.movement_roll = Dice.roll()
         action = Action.RollMovement(self.game_name, self.name, 
           self.movement_roll)
         self.notify(action)

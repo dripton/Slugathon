@@ -11,14 +11,13 @@ from slugathon import Dice
 
 class DiceServer:
     def __init__(self):
-        self.dice = Dice.Dice()
         print "Started DiceServer at", time.ctime() 
 
     def perspective_login(self, arg):
         print "called perspective_login", arg
 
     def perspective_next_roll(self, sides=6, numrolls=1):
-        return self.dice.roll(sides, numrolls)
+        return Dice.roll(sides, numrolls)
 
 class MyPerspective(pb.Avatar):
     def __init__(self, name, server):

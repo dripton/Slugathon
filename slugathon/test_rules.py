@@ -14,11 +14,10 @@ class TestAssignTowers(object):
     def setup_method(self, method):
         self.board = MasterBoard.MasterBoard()
         self.labels = self.board.get_tower_labels()
-        self.dice = Dice.Dice()
 
     def test_bad_input(self):
         try:
-            rules.assign_towers(None, 1, self.dice)
+            rules.assign_towers(None, 1)
         except TypeError:
             pass
         else:
@@ -26,14 +25,14 @@ class TestAssignTowers(object):
 
     def test_not_enough_towers(self):
         try:
-            rules.assign_towers(self.labels, 7, self.dice)
+            rules.assign_towers(self.labels, 7)
         except AssertionError:
             pass
         else:
             py.test.fail("Should have raised")
 
     def _simple_helper(self, num_players):
-        towers = rules.assign_towers(self.labels, num_players, self.dice)
+        towers = rules.assign_towers(self.labels, num_players)
         assert len(towers) == num_players
         for tower in towers:
             assert tower in self.labels
@@ -67,7 +66,7 @@ class TestAssignTowers(object):
         num_towers = 6
         counts = {}
         for unused in xrange(trials):
-            towers = rules.assign_towers(self.labels, num_players, self.dice)
+            towers = rules.assign_towers(self.labels, num_players)
             assert len(towers) == num_players
             for tower in towers:
                 counts[tower] = counts.get(tower, 0) + 1
