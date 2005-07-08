@@ -53,10 +53,6 @@ ui_string = """<ui>
 </ui>"""
 
 
-
-
-
-
 class GUIMasterBoard(gtk.Window):
 
     zope.interface.implements(IObserver)
@@ -97,9 +93,9 @@ class GUIMasterBoard(gtk.Window):
         self._splitting_legion = None
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
-        self.area.connect("expose-event", self.area_expose_cb)
+        self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.area.connect("button_press_event", self.click_cb)
+        self.area.connect("button_press_event", self.cb_click)
         self.show_all()
 
     def create_ui(self):
@@ -124,13 +120,13 @@ class GUIMasterBoard(gtk.Window):
         self.ui.add_ui_from_string(ui_string)
         self.add_accel_group(self.ui.get_accel_group())
 
-    def area_expose_cb(self, area, event):
+    def cb_area_expose(self, area, event):
         style = self.area.get_style()
         gc = style.fg_gc[gtk.STATE_NORMAL]
         self.update_gui(gc, style)
         return True
 
-    def click_cb(self, area, event):
+    def cb_click(self, area, event):
         style = self.area.get_style()
         gc = style.fg_gc[gtk.STATE_NORMAL]
         for marker in self.markers:
