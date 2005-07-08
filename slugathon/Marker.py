@@ -23,6 +23,9 @@ class Marker(object):
         self.image = gtk.Image()
         self.image.set_from_pixbuf(self.pixbuf)
 
+    def __repr__(self):
+        return "Marker %s in %s" % (self.name, self.hexlabel)
+
     def point_inside(self, point):
         assert self.location
         return guiutils.point_in_square(point, self.location, self.chit_scale)
