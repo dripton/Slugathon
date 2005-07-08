@@ -75,6 +75,11 @@ class User(pb.Avatar):
         self.server.split_legion(self.name, game_name, parent_markername,
           child_markername, parent_creaturenames, child_creaturenames)
 
+    def perspective_done_with_splits(self, game_name):
+        print "perspective_done_with_splits", game_name
+        self.server.done_with_splits(self.name, game_name)
+
+
     def __repr__(self):
         return "User " + self.name
 

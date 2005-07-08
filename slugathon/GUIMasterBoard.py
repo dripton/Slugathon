@@ -275,6 +275,30 @@ class GUIMasterBoard(gtk.Window):
             guihex.update_gui(gc, style)
         self.draw_markers(gc, style)
 
+    def cb_done(self, action):
+        print "done", action
+        player = self.game.get_player_by_name(self.username)
+        if player == self.game.active_player:
+            if self.game.phase == Phase.SPLIT:
+                if player.can_exit_split_phase():
+                    def1 = self.user.callRemote("done_with_splits", 
+                      self.game.name)
+
+    def cb_mulligan(self, action):
+        print "mulligan", action
+
+    def cb_about(self, action):
+        print "about", action
+        about = About.About()
+
+    # TODO
+    def cb_undo(self, action):
+        print "undo", action
+
+    def cb_redo(self, action):
+        print "redo", action
+
+
     def update(self, observed, action):
         print "GUIMasterBoard.update", self, observed, action
         if isinstance(action, Action.CreateStartingLegion):
@@ -289,25 +313,6 @@ class GUIMasterBoard(gtk.Window):
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, [parent.hexlabel])
-
-
-    # TODO
-    def cb_done(self, action):
-        print "done", action
-
-    def cb_undo(self, action):
-        print "undo", action
-
-    def cb_redo(self, action):
-        print "redo", action
-
-    def cb_mulligan(self, action):
-        print "mulligan", action
-
-    def cb_about(self, action):
-        print "about", action
-        about = About.About()
-
 
 
 if __name__ == "__main__":

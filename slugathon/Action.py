@@ -101,3 +101,12 @@ class SplitLegion(Action):
         self.child_creaturenames = child_creaturenames
 pb.setUnjellyableForClass(SplitLegion, SplitLegion)
 
+class RollMovement(Action):
+    def __init__(self, game_name, playername, movement_roll):
+        """parent_creaturenames and child_creaturenames are lists of the actual
+        creature names if known, or lists of height * None if not known
+        """
+        self.game_name = game_name
+        self.playername = playername
+        self.movement_roll = movement_roll
+pb.setUnjellyableForClass(RollMovement, RollMovement)

@@ -6,6 +6,7 @@ import Creature
 import Legion
 import rules
 from bag import bag
+import Dice
 
 
 class Player(Observed):
@@ -32,6 +33,8 @@ class Player(Observed):
         # legion is actually split off with this marker.
         self.selected_markername = None
         self.legions = {}
+        self.mulligans_left = 1
+        self.movement_roll = None
 
     def __repr__(self):
         return "Player " + self.name
@@ -108,3 +111,13 @@ class Player(Observed):
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
         return max([len(legion) for legion in self.legions.values()]) < 8
+
+    def done_with_splits(self):
+        if not self.can_exit_split_phase():
+            return
+        # TODO Reuse rather than making new RNGs.
+        dice = Dice.Dice()
+        self.movement_roll = dice.roll()
+        action = Action.RollMovement(self.game_name, self.name, 
+          self.movement_roll)
+        self.notify(action)

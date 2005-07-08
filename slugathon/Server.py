@@ -145,6 +145,12 @@ class Server(Observed):
             game.split_legion(username, parent_markername, child_markername,
               parent_creaturenames, child_creaturenames)
 
+    def done_with_splits(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.done_with_splits(username)
+
+
     def update(self, observed, action):
         print "Server.update", observed, action
         self.notify(action)

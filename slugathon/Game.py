@@ -184,6 +184,13 @@ class Game(Observed):
         player.split_legion(parent_markername, child_markername, 
           parent_creaturenames, child_creaturenames)
 
+    def done_with_splits(self, playername):
+        player = self.get_player_by_name(playername)
+        if player is not self.active_player:
+            raise AssertionError("ending split phase out of turn")
+        if self.phase == Phase.SPLIT:
+            player.done_with_splits()
+
 
     def update(self, observed, action):
         print "Game.update", observed, action
@@ -216,5 +223,10 @@ class Game(Observed):
                 self.split_legion(action.playername, action.parent_markername,
                 action.child_markername, action.parent_creaturenames, 
                  action.child_creaturenames)
+        elif isinstance(action, Action.RollMovement):
+            player = self.get_player_by_name(action.playername)
+            self.phase = Phase.MOVE
+            # Possibly redundant, but harmless
+            player.movement_roll = action.movement_roll
 
         self.notify(action)
