@@ -13,7 +13,6 @@ import Action
 import Game
 import PickColor
 import PickMarker
-import BoardRoot
 import GUIMasterBoard
 
 
@@ -153,9 +152,8 @@ class Client(pb.Referenceable, Observed):
 
     def _init_guiboard(self, game):
         print "Client._init_guiboard"
-        boardroot = BoardRoot.BoardRoot(self.username)
-        self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(boardroot,
-          game.board, game, self.user, self.username)
+        self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(game.board, game,
+          self.user, self.username)
         self.add_observer(self.guiboards[game])
 
     def update(self, observed, action):

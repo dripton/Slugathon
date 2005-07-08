@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import math
 try:
     import pygtk
     pygtk.require("2.0")
@@ -7,7 +8,6 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import pango
-import math
 import zope.interface
 
 import GUIMasterHex
@@ -17,28 +17,69 @@ from Observer import IObserver
 import Action
 import Marker
 import ShowLegion
-import BoardRoot
 import Phase
 import PickMarker
 import SplitLegion
+import About
+import icon
+
 
 SQRT3 = math.sqrt(3.0)
 
 
-class GUIMasterBoard(object):
+ui_string = """<ui>
+  <menubar name="Menubar">
+    <menu action="GameMenu">
+      <menuitem action="Quit"/>
+    </menu>
+    <menu action="PhaseMenu">
+      <menuitem action="Done"/>
+      <menuitem action="Undo"/>
+      <menuitem action="Redo"/>
+      <separator/>
+      <menuitem action="Mulligan"/>
+    </menu>
+    <menu action="HelpMenu">
+      <menuitem action="About"/>
+    </menu>
+  </menubar>
+  <toolbar name="Toolbar">
+    <toolitem action="Done"/>
+    <toolitem action="Undo"/>
+    <toolitem action="Redo"/>
+    <separator/>
+    <toolitem action="Mulligan"/>
+  </toolbar>
+</ui>"""
+
+
+
+
+
+
+class GUIMasterBoard(gtk.Window):
 
     zope.interface.implements(IObserver)
 
-    def __init__(self, root, board, game=None, user=None, username=None, 
+    def __init__(self, board, game=None, user=None, username=None, 
       scale=None):
-        self.root = root
+        gtk.Window.__init__(self)
+
         self.board = board
         self.user = user
         self.username = username
-
-        # XXX This feels like inappropriate coupling, but I haven't thought
-        # of a better way to handle the data needed for markers yet.
+        # XXX This feels like inappropriate coupling
         self.game = game
+
+        self.set_icon(icon.pixbuf)
+        self.set_title("Slugathon - Masterboard - %s" % self.username)
+        self.connect("destroy", guiutils.die)
+
+        self.vbox = gtk.VBox()
+        self.add(self.vbox)
+        self.create_ui()
+        self.vbox.pack_start(self.ui.get_widget("/Menubar"), False, False, 0)
+        self.vbox.pack_start(self.ui.get_widget("/Toolbar"), False, False, 0)
 
         if scale is None:
             self.scale = self.compute_scale()
@@ -50,7 +91,7 @@ class GUIMasterBoard(object):
         self.area.set_size_request(self.compute_width(), self.compute_height())
         # TODO Vary font size with scale
         self.area.modify_font(pango.FontDescription("monospace 8"))
-        self.root.vbox.pack_start(self.area)
+        self.vbox.pack_start(self.area)
         self.markers = []
         self.guihexes = {}
         self._splitting_legion = None
@@ -59,7 +100,29 @@ class GUIMasterBoard(object):
         self.area.connect("expose-event", self.area_expose_cb)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.click_cb)
-        self.root.show_all()
+        self.show_all()
+
+    def create_ui(self):
+        ag = gtk.ActionGroup("MasterActions")
+        # TODO confirm quit
+        actions = [
+          ("GameMenu", None, "_Game"),
+          ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
+            guiutils.die),
+          ("PhaseMenu", None, "_Phase"),
+          ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
+          ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
+          ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
+          ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan", 
+            self.cb_mulligan),
+          ("HelpMenu", None, "_Help"),
+          ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
+        ]
+        ag.add_actions(actions)
+        self.ui = gtk.UIManager()
+        self.ui.insert_action_group(ag, 0)
+        self.ui.add_ui_from_string(ui_string)
+        self.add_accel_group(self.ui.get_accel_group())
 
     def area_expose_cb(self, area, event):
         style = self.area.get_style()
@@ -232,10 +295,28 @@ class GUIMasterBoard(object):
             self.update_gui(gc, style, [parent.hexlabel])
 
 
+    # TODO
+    def cb_done(self, action):
+        print "done", action
+
+    def cb_undo(self, action):
+        print "undo", action
+
+    def cb_redo(self, action):
+        print "redo", action
+
+    def cb_mulligan(self, action):
+        print "mulligan", action
+
+    def cb_about(self, action):
+        print "about", action
+        about = About.About()
+
+
+
 if __name__ == "__main__":
-    root = BoardRoot.BoardRoot("player")
     board = MasterBoard.MasterBoard()
-    guiboard = GUIMasterBoard(root, board)
+    guiboard = GUIMasterBoard(board)
     # Allow exiting with control-C, unlike mainloop()
     while True:
         gtk.main_iteration()
