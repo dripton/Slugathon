@@ -14,9 +14,10 @@ import colors
 CHIT_SCALE_FACTOR = 3
 
 class Chit(object):
+    """Clickable GUI creature chit"""
+
     IMAGE_DIR = "creature"
 
-    """Clickable GUI creature chit"""
     def __init__(self, creature, playercolor, scale=15):
         self.creature = creature
         if creature is None:
