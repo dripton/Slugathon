@@ -22,6 +22,7 @@ import PickMarker
 import SplitLegion
 import About
 import icon
+import Die
 
 
 SQRT3 = math.sqrt(3.0)
@@ -265,6 +266,18 @@ class GUIMasterBoard(gtk.Window):
             for marker in reversed(mih):
                 self._render_marker(marker, gc)
 
+    def draw_movement_die(self, gc, style):
+        try:
+            roll = self.game.active_player.movement_roll
+        except AttributeError:
+            return
+        if not roll:
+            return
+        die = Die.Die(roll, scale=self.scale)
+        drawable = self.area.window
+        drawable.draw_pixbuf(gc, die.pixbuf, 0, 0, 0, 0,
+          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+
 
     def update_gui(self, gc, style, hexlabels=None):
         if hexlabels is not None:
@@ -274,6 +287,8 @@ class GUIMasterBoard(gtk.Window):
         for guihex in guihexes:
             guihex.update_gui(gc, style)
         self.draw_markers(gc, style)
+        self.draw_movement_die(gc, style)
+
 
     def cb_done(self, action):
         print "done", action
@@ -313,6 +328,11 @@ class GUIMasterBoard(gtk.Window):
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, [parent.hexlabel])
+        elif isinstance(action, Action.RollMovement):
+            player = self.game.get_player_by_name(action.playername)
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style)
 
 
 if __name__ == "__main__":
