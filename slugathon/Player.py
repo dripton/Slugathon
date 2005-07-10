@@ -115,7 +115,7 @@ class Player(Observed):
     def done_with_splits(self):
         if not self.can_exit_split_phase():
             return
-        self.movement_roll = Dice.roll()
+        self.movement_roll = Dice.roll()[0]
         action = Action.RollMovement(self.game_name, self.name, 
           self.movement_roll)
         self.notify(action)
