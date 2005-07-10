@@ -119,3 +119,10 @@ class Player(Observed):
         action = Action.RollMovement(self.game_name, self.name, 
           self.movement_roll)
         self.notify(action)
+
+    def take_mulligan(self):
+        self.mulligans_left -= 1
+        self.movement_roll = Dice.roll()[0]
+        action = Action.RollMovement(self.game_name, self.name, 
+          self.movement_roll)
+        self.notify(action)

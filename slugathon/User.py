@@ -79,6 +79,10 @@ class User(pb.Avatar):
         print "perspective_done_with_splits", game_name
         self.server.done_with_splits(self.name, game_name)
 
+    def perspective_take_mulligan(self, game_name):
+        print "perspective_take_mulligan", game_name
+        self.server.take_mulligan(self.name, game_name)
+
 
     def __repr__(self):
         return "User " + self.name

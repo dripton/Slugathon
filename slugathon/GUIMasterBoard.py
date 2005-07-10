@@ -301,6 +301,9 @@ class GUIMasterBoard(gtk.Window):
 
     def cb_mulligan(self, action):
         print "mulligan", action
+        player = self.game.get_player_by_name(self.username)
+        if self.game.can_take_mulligan(player):
+            def1 = self.user.callRemote("take_mulligan", self.game.name)
 
     def cb_about(self, action):
         print "about", action

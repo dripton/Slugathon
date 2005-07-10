@@ -150,6 +150,10 @@ class Server(Observed):
         if game:
             game.done_with_splits(username)
 
+    def take_mulligan(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.take_mulligan(username)
 
     def update(self, observed, action):
         print "Server.update", observed, action

@@ -191,6 +191,15 @@ class Game(Observed):
         if self.phase == Phase.SPLIT:
             player.done_with_splits()
 
+    def can_take_mulligan(self, player):
+        return bool(player == self.active_player and self.turn == 1 
+          and self.phase == Phase.MOVE and player.mulligans_left)
+
+    def take_mulligan(self, playername):
+        player = self.get_player_by_name(playername)
+        if not self.can_take_mulligan(player):
+            raise AssertionError("illegal mulligan attempt")
+        player.take_mulligan()
 
     def update(self, observed, action):
         print "Game.update", observed, action
