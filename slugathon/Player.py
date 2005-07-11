@@ -4,7 +4,6 @@ import playercolordata
 import creaturedata
 import Creature
 import Legion
-import rules
 from bag import bag
 import Dice
 
@@ -95,7 +94,7 @@ class Player(Observed):
           Creature.n2c(parent_creaturenames), parent.hexlabel)
         new_legion2 = Legion.Legion(self, child_markername, 
           Creature.n2c(child_creaturenames), parent.hexlabel)
-        if not rules.is_legal_split(parent, new_legion1, new_legion2):
+        if not parent.is_legal_split(new_legion1, new_legion2):
             raise AssertionError("illegal split")
         self.take_marker(child_markername)
         for creaturename in child_creaturenames:

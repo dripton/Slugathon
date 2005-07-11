@@ -6,12 +6,12 @@ import zope.interface
 
 import Player
 import MasterBoard
-import rules
 from playercolordata import colors
 from Observed import Observed
 from Observer import IObserver
 import Action
 import Phase
+import Dice
 
 
 class Game(Observed):
@@ -95,17 +95,19 @@ class Game(Observed):
         player.remove_observer(self)
         self.players.remove(player)
 
+    def assign_towers(self):
+        towers = self.board.get_tower_labels()
+        Dice.shuffle(towers)
+        for num, player in enumerate(self.players):
+            player.assign_starting_tower(towers[num])
+
     def start(self, playername):
         """Called only on server side, and only by game owner."""
         if playername != self.get_owner().name:
             raise AssertionError, "Game.start %s called by non-owner %s" % (
               self.name, playername)
         self.started = True
-        towers = rules.assign_towers(self.board.get_tower_labels(), 
-          len(self.players))
-        assert len(towers) == len(self.players)
-        for num, player in enumerate(self.players):
-            player.assign_starting_tower(towers[num])
+        self.assign_towers()
         self.sort_players()
         action = Action.AssignedAllTowers(self.name)
         self.notify(action)

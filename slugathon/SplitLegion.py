@@ -15,7 +15,6 @@ import Legion
 import Player
 import icon
 import guiutils
-import rules
 
 
 class SplitLegion(object):
@@ -83,7 +82,7 @@ class SplitLegion(object):
         chit = eventbox.chit
         prev_legion.creatures.remove(chit.creature)
         next_legion.creatures.append(chit.creature)
-        legal = rules.is_legal_split(self.old_legion, self.new_legion1,
+        legal = self.old_legion.is_legal_split(self.new_legion1,
           self.new_legion2)
         self.okbutton.set_sensitive(legal)
 

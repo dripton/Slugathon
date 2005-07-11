@@ -42,3 +42,16 @@ def test_remove_creature_by_name():
     else:
         raise "should have raised"
 
+def test_is_legal_split():
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("test", "Game1", 0)
+
+    parent = Legion.Legion(player, "Rd01", creatures, 1)
+    child1 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
+      "Gargoyle", "Ogre", "Ogre"]), 1)
+    child2 = Legion.Legion(player, "Rd03", Creature.n2c(["Angel",
+      "Gargoyle", "Centaur", "Centaur"]), 1)
+    assert parent.is_legal_split(child1, child2)
+
+    assert not parent.is_legal_split(child1, child1)
+
