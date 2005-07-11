@@ -111,17 +111,16 @@ class Player(Observed):
         """Return True if legal to exit the split phase"""
         return max([len(legion) for legion in self.legions.values()]) < 8
 
-    def done_with_splits(self):
-        if not self.can_exit_split_phase():
-            return
+    def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
         action = Action.RollMovement(self.game_name, self.name, 
           self.movement_roll)
         self.notify(action)
 
+    def done_with_splits(self):
+        if self.can_exit_split_phase():
+            self._roll_movement()
+
     def take_mulligan(self):
         self.mulligans_left -= 1
-        self.movement_roll = Dice.roll()[0]
-        action = Action.RollMovement(self.game_name, self.name, 
-          self.movement_roll)
-        self.notify(action)
+        self._roll_movement()
