@@ -7,6 +7,8 @@ class Legion(object):
         self.hexlabel = hexlabel
         # XXX bidirectional references are bad
         self.player = player
+        self.moved = False
+        self.previous_hexlabel = None
 
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
@@ -50,3 +52,14 @@ class Legion(object):
             if child1.num_lords() != 1 or child2.num_lords() != 1:
                 return False
         return True
+
+    def move(self, hexlabel):
+        self.moved = True
+        self.previous_hexlabel = self.hexlabel
+        self.hexlabel = hexlabel
+
+    def undo_move(self):
+        if self.moved:
+            self.moved = False
+            self.hexlabel = self.previous_hexlabel
+            self.previous_hexlabel = None
