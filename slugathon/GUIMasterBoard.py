@@ -65,7 +65,6 @@ class GUIMasterBoard(gtk.Window):
         self.board = board
         self.user = user
         self.username = username
-        # XXX This feels like inappropriate coupling
         self.game = game
 
         self.set_icon(icon.pixbuf)
@@ -137,10 +136,16 @@ class GUIMasterBoard(gtk.Window):
                 return True
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
-                guihex.toggle_selection()
-                self.update_gui(gc, style, [guihex.masterhex.label])
+                self.clicked_on_hex(area, event, guihex)
                 return True
         return True
+
+    def clicked_on_hex(self, area, event, guihex):
+        if not self.game:
+            guihex.toggle_selection()
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
+        self.update_gui(gc, style, [guihex.masterhex.label])
 
     def clicked_on_marker(self, area, event, marker):
         if event.button >= 2:
@@ -167,6 +172,9 @@ class GUIMasterBoard(gtk.Window):
                     self._splitting_legion = legion
                     PickMarker.PickMarker(self.username, self.game.name, 
                       player.markernames, self.picked_marker_presplit)
+            elif phase == Phase.MOVE:
+                legion = marker.legion
+
         return True
 
     def picked_marker_presplit(self, game_name, username, markername):
@@ -185,7 +193,6 @@ class GUIMasterBoard(gtk.Window):
         def1 = self.user.callRemote("split_legion", self.game.name,
           new_legion1.markername, new_legion2.markername, 
           new_legion1.creature_names(), new_legion2.creature_names())
-        # TODO callbacks
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen
@@ -253,7 +260,7 @@ class GUIMasterBoard(gtk.Window):
           int(round(marker.location[0])), int(round(marker.location[1])),
           -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
-    def draw_markers(self, gc, style):
+    def draw_markers(self, gc):
         if not self.game:
             return
         self._add_missing_markers()
@@ -266,7 +273,7 @@ class GUIMasterBoard(gtk.Window):
             for marker in reversed(mih):
                 self._render_marker(marker, gc)
 
-    def draw_movement_die(self, gc, style):
+    def draw_movement_die(self, gc):
         try:
             roll = self.game.active_player.movement_roll
         except AttributeError:
@@ -286,8 +293,36 @@ class GUIMasterBoard(gtk.Window):
             guihexes = self.guihexes.values()
         for guihex in guihexes:
             guihex.update_gui(gc, style)
-        self.draw_markers(gc, style)
-        self.draw_movement_die(gc, style)
+        self.draw_markers(gc)
+        self.draw_movement_die(gc)
+
+    def unselect_all(self):
+        repaint_hexlabels = set()
+        for guihex in self.guihexes.values():
+            if guihex.selected:
+                guihex.selected = False
+                repaint_hexlabels.add(guihex.masterhex.label)
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
+        self.update_gui(gc, style, repaint_hexlabels)
+
+    def highlight_unmoved_legions(self):
+        """Highlight all hexes containing an unmoved legion belonging to the
+        active, current player."""
+        player = self.game.get_player_by_name(self.username)
+        if player == self.game.active_player:
+            self.unselect_all()
+            hexlabels = set()
+            for legion in player.legions.values():
+                if not legion.moved:
+                    hexlabels.add(legion.hexlabel)
+            for hexlabel in hexlabels:
+                guihex = self.guihexes[hexlabel]
+                guihex.selected = True
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, hexlabels)
+                
 
 
     def cb_done(self, action):
@@ -307,7 +342,7 @@ class GUIMasterBoard(gtk.Window):
 
     def cb_about(self, action):
         print "about", action
-        about = About.About()
+        About.About()
 
     # TODO
     def cb_undo(self, action):
@@ -332,10 +367,11 @@ class GUIMasterBoard(gtk.Window):
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, [parent.hexlabel])
         elif isinstance(action, Action.RollMovement):
-            player = self.game.get_player_by_name(action.playername)
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style)
+            if action.playername == self.username:
+                self.highlight_unmoved_legions()
 
 
 if __name__ == "__main__":
