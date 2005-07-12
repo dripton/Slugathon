@@ -46,12 +46,12 @@ class MasterHex(object):
     def connect_to_neighbors(self):
         it = iter(self._exits)
         for (neighbor_label, gate_type) in zip(it, it):
-            direct = self.find_direction(neighbor_label)
-            self.exits[direct] = gate_type
+            direction = self.find_direction(neighbor_label)
+            self.exits[direction] = gate_type
             neighbor = self.board.hexes[neighbor_label]
-            self.neighbors[direct] = neighbor
-            neighbor.neighbors[(direct + 3) % 6] = self
-            neighbor.entrances[(direct + 3) % 6] = gate_type
+            self.neighbors[direction] = neighbor
+            neighbor.neighbors[(direction + 3) % 6] = self
+            neighbor.entrances[(direction + 3) % 6] = gate_type
         del (self._exits)
 
     def find_direction(self, neighbor_label):
@@ -123,3 +123,18 @@ class MasterHex(object):
     def is_tower(self):
         """Return True iff this hex is a tower."""
         return self.terrain == "Tower"
+
+    def find_entry_side(self, came_from):
+        """Find the entry side, relative to the hex label."""
+        if self.terrain == "Tower":
+            return 3
+        else:
+            return (6 + came_from - self.find_label_side) % 6
+
+    def find_block(self):
+        """Return the direction of a forced starting move from this hex,
+        or None if there is not one."""
+        for direction, gate in enumerate(self.exits):
+            if gate == "BLOCK":
+                return direction
+        return None
