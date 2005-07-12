@@ -19,8 +19,8 @@ class MasterBoard(object):
         self.min_y = min(ys)
         self.max_x = max(xs)
         self.max_y = max(ys)
-        self.midX = (self.min_x + self.max_x) / 2.
-        self.midY = (self.min_y + self.max_y) / 2.
+        self.mid_x = (self.min_x + self.max_x) / 2.
+        self.mid_y = (self.min_y + self.max_y) / 2.
         self.width = self.max_x - self.min_x + 1
         self.height = self.max_y - self.min_y + 1
 
