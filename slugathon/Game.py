@@ -234,17 +234,15 @@ class Game(Observed):
         # as a legal move, and stop.
         if self.enemy_legions(hexlabel, player): 
             if not self.friendly_legions(hexlabel, player):
-                if came_from is not None:
-                    set.add((hexlabel, masterhex.find_entry_side(came_from)))
-                return moves
-        if roll == 0:
+                moves.add((hexlabel, masterhex.find_entry_side(came_from)))
+        elif roll == 0:
             # Final destination
             # Do not add this hex if already occupied by another friendly
             # legion.
             allies = set(self.friendly_legions(hexlabel, player))
             allies.discard(legion)
             if not allies:
-                moves.add((hexlabel, hex.find_entry_side(came_from)))
+                moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif block >= 0:
             moves.update(self.find_normal_moves(masterhex.neighbors[block], 
               legion, roll - 1, ARROWS_ONLY, (block + 3) % 6))
