@@ -241,9 +241,9 @@ class Game(Observed):
             # Final destination
             # Do not add this hex if already occupied by another friendly
             # legion.
-            friendlies = self.friendly_legions(hexlabel, player)
-            if not friendlies or (len(friendlies) == 1 and friendlies[0] is 
-              legion):
+            allies = set(self.friendly_legions(hexlabel, player))
+            allies.discard(legion)
+            if not allies:
                 moves.add((hexlabel, hex.find_entry_side(came_from)))
         elif block >= 0:
             moves.update(self.find_normal_moves(masterhex.neighbors[block], 
