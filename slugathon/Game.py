@@ -14,6 +14,11 @@ import Phase
 import Dice
 
 
+# Movement constants
+ARCHES_AND_ARROWS = -1
+ARROWS_ONLY = -2
+
+
 class Game(Observed):
     """Central class holding information about one game."""
 
@@ -202,6 +207,63 @@ class Game(Observed):
         if not self.can_take_mulligan(player):
             raise AssertionError("illegal mulligan attempt")
         player.take_mulligan()
+
+    def friendly_legions(self, hexlabel, player):
+        """Return a list of player's legions in the hex with hexlabel"""
+        return [legion for legion in player.legions if legion.hexlabel 
+          == hexlabel]
+
+    def enemy_legions(self, hexlabel, player):
+        """Return a list of legions belonging to other than player in the 
+        hex with hexlabel"""
+        return [legion for legion in self.gen_all_legions() if legion.player 
+          is not player and legion.hexlabel == hexlabel]
+
+    def find_normal_moves(self, masterhex, legion, roll, block, came_from):
+        """Recursively find non-teleport moves for legion from masterhex.
+
+        If block >= 0, go only that way.  
+        If block == ARCHES_AND_ARROWS, use arches and arrows.  
+        If block == ARROWS_ONLY, use only arrows.  
+        Return a set of (hexlabel, entry_side) tuples.
+        """
+        moves = set()
+        hexlabel = masterhex.label
+        player = legion.player
+        # If there is an enemy legion and no friendly legion, mark the hex
+        # as a legal move, and stop.
+        if self.enemy_legions(hexlabel, player): 
+            if not self.friendly_legions(hexlabel, player):
+                if came_from is not None:
+                    set.add((hexlabel, masterhex.find_entry_side(came_from)))
+                return moves
+        if roll == 0:
+            # Final destination
+            # Do not add this hex if already occupied by another friendly
+            # legion.
+            friendlies = self.friendly_legions(hexlabel, player)
+            if not friendlies or (len(friendlies) == 1 and friendlies[0] is 
+              legion):
+                moves.add((hexlabel, hex.find_entry_side(came_from)))
+        elif block >= 0:
+            moves.update(self.find_normal_moves(masterhex.neighbors[block], 
+              legion, roll - 1, ARROWS_ONLY, (block + 3) % 6))
+        elif block == ARCHES_AND_ARROWS:
+            for direction, gate in enumerate(masterhex.exits):
+                if gate in ("ARCH", "ARROW", "ARROWS") and (direction != 
+                  came_from):
+                    moves.update(self.find_normal_moves(masterhex.neighbors[
+                      direction], legion, roll - 1, ARROWS_ONLY, 
+                      (direction + 3) % 6))
+        elif block == ARROWS_ONLY:
+            for direction, gate in enumerate(masterhex.exits):
+                if gate in ("ARROW", "ARROWS") and (direction != came_from):
+                    moves.update(self.find_normal_moves(masterhex.neighbors[
+                      direction], legion, roll - 1, ARROWS_ONLY, 
+                      (direction + 3) % 6))
+        return moves
+
+
 
     def update(self, observed, action):
         print "Game.update", observed, action
