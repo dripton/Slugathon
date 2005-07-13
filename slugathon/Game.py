@@ -18,6 +18,12 @@ import Dice
 ARCHES_AND_ARROWS = -1
 ARROWS_ONLY = -2
 
+# Entry side
+ANY = 1 + 3 + 5
+
+def opposite(direction):
+    return (direction + 3) % 6
+
 
 class Game(Observed):
     """Central class holding information about one game."""
@@ -199,7 +205,7 @@ class Game(Observed):
             player.done_with_splits()
 
     def can_take_mulligan(self, player):
-        return bool(player == self.active_player and self.turn == 1 
+        return bool(player is self.active_player and self.turn == 1 
           and self.phase == Phase.MOVE and player.mulligans_left)
 
     def take_mulligan(self, playername):
@@ -208,9 +214,14 @@ class Game(Observed):
             raise AssertionError("illegal mulligan attempt")
         player.take_mulligan()
 
+    def all_legions(self, hexlabel):
+        """Return a list of all legions in the hex with hexlabel"""
+        return [legion for legion in self.gen_all_legions() if 
+          legion.hexlabel == hexlabel]
+
     def friendly_legions(self, hexlabel, player):
         """Return a list of player's legions in the hex with hexlabel"""
-        return [legion for legion in player.legions if legion.hexlabel 
+        return [legion for legion in player.legions.values() if legion.hexlabel
           == hexlabel]
 
     def enemy_legions(self, hexlabel, player):
@@ -219,7 +230,7 @@ class Game(Observed):
         return [legion for legion in self.gen_all_legions() if legion.player 
           is not player and legion.hexlabel == hexlabel]
 
-    def find_normal_moves(self, masterhex, legion, roll, block, came_from):
+    def find_normal_moves(self, legion, masterhex, roll, block, came_from):
         """Recursively find non-teleport moves for legion from masterhex.
 
         If block >= 0, go only that way.  
@@ -227,6 +238,8 @@ class Game(Observed):
         If block == ARROWS_ONLY, use only arrows.  
         Return a set of (hexlabel, entry_side) tuples.
         """
+        if block is None:
+            block = ARCHES_AND_ARROWS
         moves = set()
         hexlabel = masterhex.label
         player = legion.player
@@ -244,23 +257,82 @@ class Game(Observed):
             if not allies:
                 moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif block >= 0:
-            moves.update(self.find_normal_moves(masterhex.neighbors[block], 
-              legion, roll - 1, ARROWS_ONLY, (block + 3) % 6))
+            print "block", block
+            moves.update(self.find_normal_moves(legion, 
+              masterhex.neighbors[block], roll - 1, ARROWS_ONLY, 
+              opposite(block)))
         elif block == ARCHES_AND_ARROWS:
             for direction, gate in enumerate(masterhex.exits):
                 if gate in ("ARCH", "ARROW", "ARROWS") and (direction != 
                   came_from):
-                    moves.update(self.find_normal_moves(masterhex.neighbors[
-                      direction], legion, roll - 1, ARROWS_ONLY, 
-                      (direction + 3) % 6))
+                    moves.update(self.find_normal_moves(legion, 
+                      masterhex.neighbors[direction], roll - 1, ARROWS_ONLY, 
+                      opposite(direction)))
         elif block == ARROWS_ONLY:
             for direction, gate in enumerate(masterhex.exits):
                 if gate in ("ARROW", "ARROWS") and (direction != came_from):
-                    moves.update(self.find_normal_moves(masterhex.neighbors[
-                      direction], legion, roll - 1, ARROWS_ONLY, 
-                      (direction + 3) % 6))
+                    moves.update(self.find_normal_moves(legion,
+                      masterhex.neighbors[direction], roll - 1, ARROWS_ONLY,
+                      opposite(direction)))
         return moves
 
+    def find_nearby_empty_hexes(self, legion, masterhex, roll, came_from):
+        """Recursively find empty hexes within roll hexes, for tower 
+        teleport"""
+        hexlabel = masterhex.label
+        moves = set()
+        if not self.all_legions(hexlabel):
+            moves.add((hexlabel, ANY))
+        if roll > 0:
+            for direction, gate in enumerate(masterhex.exits):
+                if direction != came_from: 
+                    neighbor = masterhex.neighbors[direction]
+                    if neighbor and (gate != "NONE" or 
+                      neighbor.exits[opposite(direction)] != "NONE"):
+                        moves.update(self.find_nearby_empty_hexes(legion,
+                          neighbor, roll - 1, opposite(direction)))
+        return moves
+
+    def find_tower_teleport_moves(self, legion, masterhex):
+        """Return set of hexlabels describing where legion can tower 
+        teleport."""
+        moves = set()
+        if masterhex.is_tower() and legion.num_lords():
+            moves.update(self.find_nearby_empty_hexes(legion, masterhex, 6,
+              None))
+        for hexlabel in self.board.get_tower_labels():
+            if hexlabel != masterhex.label and not self.all_legions(hexlabel):
+                moves.add((hexlabel, ANY))
+        return moves
+
+    def find_titan_teleport_moves(self, legion):
+        """Return set of hexlabels describing where legion can titan 
+        teleport."""
+        player = legion.player
+        moves = set()
+        if player.can_titan_teleport() and "Titan" in legion.creature_names():
+            for legion in self.gen_all_legions():
+                hexlabel = legion.hexlabel
+                if not self.friendly_legions(hexlabel, player):
+                    moves.add((hexlabel, ANY))
+        return moves
+
+    def find_all_teleport_moves(self, legion, masterhex, roll):
+        """Return set of hexlabels describing where legion can teleport."""
+        player = legion.player
+        moves = set()
+        if roll != 6 or legion.moved or player.teleported:
+            return moves
+        moves.update(self.find_tower_teleport_moves(legion, masterhex))
+        moves.update(self.find_titan_teleport_moves(legion))
+        return moves
+
+    def find_all_moves(self, legion, masterhex, roll):
+        """Return set of hexlabels describing where legion can move."""
+        moves = self.find_normal_moves(legion, masterhex, roll, 
+          masterhex.find_block(), None)
+        moves.update(self.find_all_teleport_moves(legion, masterhex, roll))
+        return moves
 
 
     def update(self, observed, action):

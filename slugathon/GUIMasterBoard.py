@@ -173,7 +173,20 @@ class GUIMasterBoard(gtk.Window):
                     PickMarker.PickMarker(self.username, self.game.name, 
                       player.markernames, self.picked_marker_presplit)
             elif phase == Phase.MOVE:
+                self.unselect_all()
                 legion = marker.legion
+                moves = self.game.find_all_moves(legion, self.board.hexes[
+                  legion.hexlabel], legion.player.movement_roll)
+                print "moves is", moves
+                repaint_hexlabels = set()
+                for move in moves:
+                    hexlabel = move[0]
+                    guihex = self.guihexes[hexlabel]
+                    guihex.selected = True
+                    repaint_hexlabels.add(hexlabel)
+                style = self.area.get_style()
+                gc = style.fg_gc[gtk.STATE_NORMAL]
+                self.update_gui(gc, style, repaint_hexlabels)
 
         return True
 
