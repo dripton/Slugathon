@@ -1,10 +1,12 @@
 from bag import bag
+import types
 
 class Legion(object):
     def __init__(self, player, markername, creatures, hexlabel):
+        assert type(hexlabel) == types.IntType
         self.markername = markername
         self.creatures = creatures
-        self.hexlabel = hexlabel
+        self.hexlabel = hexlabel  # an int not a str
         # XXX bidirectional references are bad
         self.player = player
         self.moved = False
