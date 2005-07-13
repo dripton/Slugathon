@@ -1,14 +1,7 @@
 import math
 import time
-import py
 
-import MasterBoard
 import Game
-import Dice
-import Player
-import Legion
-import Creature
-import creaturedata
 
 
 class TestAssignTowers(object):
@@ -140,7 +133,7 @@ class TestMovement(object):
 
         moves = self.game.find_all_teleport_moves(legion, masterhex, 6)
         for move in moves:
-            assert move[1] == Game.ANY
+            assert move[1] == Game.TELEPORT
         hexlabels = set([move[0] for move in moves])
         print sorted(hexlabels)
 
@@ -165,5 +158,8 @@ class TestMovement(object):
           15, 16, 17, 21, 37, 41, 42, 101, 102, 103, 104, 105, 106, 107, 108,
           109, 110, 111, 112, 113, 114, 115, 300, 400, 500, 600, 1000, 2000,
           3000, 4000, 6000])
-        for move in moves:
-            assert move[1] == Game.ANY
+        for hexlabel in hexlabels:
+            assert (hexlabel, Game.TELEPORT) in moves
+        assert (11, 5) in moves
+        assert (15, 1) in moves
+        assert (103, 5) in moves

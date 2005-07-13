@@ -18,8 +18,8 @@ import Dice
 ARCHES_AND_ARROWS = -1
 ARROWS_ONLY = -2
 
-# Entry side
-ANY = 1 + 3 + 5
+# Entry side constants
+TELEPORT = "TELEPORT"
 
 def opposite(direction):
     return (direction + 3) % 6
@@ -282,7 +282,7 @@ class Game(Observed):
         hexlabel = masterhex.label
         moves = set()
         if not self.all_legions(hexlabel):
-            moves.add((hexlabel, ANY))
+            moves.add((hexlabel, TELEPORT))
         if roll > 0:
             for direction, gate in enumerate(masterhex.exits):
                 if direction != came_from: 
@@ -302,7 +302,7 @@ class Game(Observed):
               None))
         for hexlabel in self.board.get_tower_labels():
             if hexlabel != masterhex.label and not self.all_legions(hexlabel):
-                moves.add((hexlabel, ANY))
+                moves.add((hexlabel, TELEPORT))
         return moves
 
     def find_titan_teleport_moves(self, legion):
@@ -314,7 +314,7 @@ class Game(Observed):
             for legion in self.gen_all_legions():
                 hexlabel = legion.hexlabel
                 if not self.friendly_legions(hexlabel, player):
-                    moves.add((hexlabel, ANY))
+                    moves.add((hexlabel, TELEPORT))
         return moves
 
     def find_all_teleport_moves(self, legion, masterhex, roll):
