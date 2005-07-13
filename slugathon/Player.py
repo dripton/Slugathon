@@ -1,3 +1,5 @@
+import types
+
 from Observed import Observed
 import Action
 import playercolordata
@@ -34,12 +36,14 @@ class Player(Observed):
         self.legions = {}
         self.mulligans_left = 1
         self.movement_roll = None
+        self.teleported = False
 
     def __repr__(self):
         return "Player " + self.name
 
     def assign_starting_tower(self, tower):
         """Set this player's starting tower to the (int) tower"""
+        assert type(tower) == types.IntType
         self.starting_tower = tower
         action = Action.AssignTower(self.game_name, self.name, tower)
         self.notify(action)
@@ -124,3 +128,6 @@ class Player(Observed):
     def take_mulligan(self):
         self.mulligans_left -= 1
         self._roll_movement()
+
+    def can_titan_teleport(self):
+        return self.score >= 400
