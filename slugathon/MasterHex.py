@@ -129,7 +129,7 @@ class MasterHex(object):
         if self.terrain == "Tower":
             return 3
         else:
-            return (6 + came_from - self.find_label_side) % 6
+            return (6 + came_from - self.find_label_side()) % 6
 
     def find_block(self):
         """Return the direction of a forced starting move from this hex,
