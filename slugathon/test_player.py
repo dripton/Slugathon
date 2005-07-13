@@ -2,6 +2,7 @@ import Player
 
 def test_can_exit_split_phase():
     player = Player.Player("test", "Game1", 0)
+    player.assign_starting_tower(600)
     player.assign_color("Red")
     assert len(player.markernames) == 12
     player.pick_marker("Rd01")
