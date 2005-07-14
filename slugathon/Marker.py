@@ -13,7 +13,6 @@ class Marker(object):
     def __init__(self, legion, scale=15):
         self.legion = legion
         self.name = legion.markername
-        self.hexlabel = legion.hexlabel
         self.chit_scale = CHIT_SCALE_FACTOR * scale
         raw_pixbuf = gtk.gdk.pixbuf_new_from_file("../images/legion/%s.png" % 
           self.name)
@@ -24,7 +23,7 @@ class Marker(object):
         self.image.set_from_pixbuf(self.pixbuf)
 
     def __repr__(self):
-        return "Marker %s in %s" % (self.name, self.hexlabel)
+        return "Marker %s in %s" % (self.name, self.legion.hexlabel)
 
     def point_inside(self, point):
         assert self.location
