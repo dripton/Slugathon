@@ -50,6 +50,9 @@ class Game(Observed):
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
 
+    def __repr__(self):
+        return "Game %s" % self.name
+
     def get_owner(self):
         """The owner of the game is the remaining player who joined first."""
         min_join_order = sys.maxint
@@ -189,6 +192,13 @@ class Game(Observed):
             for legion in player.legions.itervalues():
                 yield legion
 
+    def find_legion(self, markername):
+        for player in self.players:
+            if markername in player.legions:
+                return player.legions[markername]
+        return None
+
+
     def split_legion(self, playername, parent_markername, child_markername,
       parent_creaturenames, child_creaturenames):
         player = self.get_player_by_name(playername)
@@ -257,7 +267,6 @@ class Game(Observed):
             if not allies:
                 moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif block >= 0:
-            print "block", block
             moves.update(self.find_normal_moves(legion, 
               masterhex.neighbors[block], roll - 1, ARROWS_ONLY, 
               opposite(block)))
@@ -334,6 +343,44 @@ class Game(Observed):
         moves.update(self.find_all_teleport_moves(legion, masterhex, roll))
         return moves
 
+    def can_move_legion(self, player, legion, hexlabel, teleport, 
+      teleporting_lord, entry_side):
+        """Return True iff player can legally make this legion move."""
+        if player is not self.active_player or player is not legion.player:
+            return False
+        masterhex = self.board.hexes[legion.hexlabel]
+        if teleport:
+            if (player.teleported or teleporting_lord not in
+              legion.creature_names()):
+                return False
+            moves = self.find_all_teleport_moves(legion, masterhex, 
+              player.movement_roll)
+            if (hexlabel, TELEPORT) not in moves:
+                return False
+            if entry_side not in (1, 3, 5):
+                return False
+        else:
+            moves = self.find_normal_moves(legion, masterhex, 
+              player.movement_roll, masterhex.find_block(), None)
+            if (hexlabel, entry_side) not in moves:
+                return False
+        return True
+
+    def move_legion(self, playername, markername, hexlabel, teleport, 
+      teleporting_lord, entry_side):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        if not self.can_move_legion(player, legion, hexlabel, teleport,
+          teleporting_lord, entry_side):
+            raise AssertionError("illegal move attempt")
+        # TODO reveal teleporting lord
+        legion.move(hexlabel, teleport, entry_side)
+        if teleport:
+            player.teleported = True
+        action = Action.MoveLegion(self.name, playername, markername, 
+          hexlabel, teleport, teleporting_lord, entry_side)
+        self.notify(action)
 
     def update(self, observed, action):
         print "Game.update", observed, action
@@ -371,5 +418,15 @@ class Game(Observed):
             self.phase = Phase.MOVE
             # Possibly redundant, but harmless
             player.movement_roll = action.movement_roll
+        elif isinstance(action, Action.MoveLegion):
+            player = self.get_player_by_name(action.playername)
+            markername = action.markername
+            legion = player.legions[markername]
+            hexlabel = action.hexlabel
+            # Avoid double move
+            if not (legion.moved and legion.hexlabel == hexlabel):
+                self.move_legion(action.playername, markername, 
+                  action.hexlabel, action.teleport, action.teleporting_lord,
+                  action.entry_side)
 
         self.notify(action)

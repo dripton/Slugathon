@@ -23,6 +23,7 @@ import SplitLegion
 import About
 import icon
 import Die
+import Game
 
 
 SQRT3 = math.sqrt(3.0)
@@ -93,6 +94,8 @@ class GUIMasterBoard(gtk.Window):
         self._splitting_legion = None
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
+        self.selected_marker = None
+
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.cb_click)
@@ -140,12 +143,46 @@ class GUIMasterBoard(gtk.Window):
                 return True
         return True
 
+    def _all_teleports(self, moves):
+        """Return True iff all the move tuples in moves are teleports"""
+        for move in moves:
+            if move[1] != Game.TELEPORT:
+                return False
+        return True
+
+
     def clicked_on_hex(self, area, event, guihex):
+        repaint_hexlabels = set()
         if not self.game:
             guihex.toggle_selection()
-        style = self.area.get_style()
-        gc = style.fg_gc[gtk.STATE_NORMAL]
-        self.update_gui(gc, style, [guihex.masterhex.label])
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, [guihex.masterhex.label])
+        elif event.button == 1:
+            phase = self.game.phase
+            if phase == Phase.MOVE and self.selected_marker:
+                if guihex.selected:
+                    legion = self.selected_marker.legion
+                    hexlabel = guihex.masterhex.label
+                    moves = self.game.find_all_moves(legion, self.board.hexes[
+                      legion.hexlabel], legion.player.movement_roll)
+                    hexmoves = [m for m in moves if m[0] == hexlabel]
+                    # TODO if choice between titan teleport and normal, pick
+                    teleport = self._all_teleports(hexmoves)
+                    # TODO if >1 entry side and enemy in hex, pick
+                    if teleport:
+                        entry_side = 1
+                        # TODO if >1 lord type and tower teleport, pick
+                        teleporting_lord = legion.first_lord_name()
+                    else:
+                        entry_side = hexmoves[0][1]
+                        teleporting_lord = None
+                    self.user.callRemote("move_legion", self.game.name, 
+                      legion.markername, guihex.masterhex.label, teleport,
+                      teleporting_lord, entry_side)
+                self.selected_marker = None
+                self.unselect_all()
+
 
     def clicked_on_marker(self, area, event, marker):
         if event.button >= 2:
@@ -175,15 +212,19 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.MOVE:
                 self.unselect_all()
                 legion = marker.legion
-                moves = self.game.find_all_moves(legion, self.board.hexes[
-                  legion.hexlabel], legion.player.movement_roll)
-                print "moves is", moves
+                if legion.moved:
+                    moves = []
+                else:
+                    moves = self.game.find_all_moves(legion, self.board.hexes[
+                      legion.hexlabel], legion.player.movement_roll)
                 repaint_hexlabels = set()
-                for move in moves:
-                    hexlabel = move[0]
-                    guihex = self.guihexes[hexlabel]
-                    guihex.selected = True
-                    repaint_hexlabels.add(hexlabel)
+                if moves:
+                    self.selected_marker = marker
+                    for move in moves:
+                        hexlabel = move[0]
+                        guihex = self.guihexes[hexlabel]
+                        guihex.selected = True
+                        repaint_hexlabels.add(hexlabel)
                 style = self.area.get_style()
                 gc = style.fg_gc[gtk.STATE_NORMAL]
                 self.update_gui(gc, style, repaint_hexlabels)
@@ -202,7 +243,6 @@ class GUIMasterBoard(gtk.Window):
           self.try_to_split_legion)
 
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
-        print "try_to_split_legion", old_legion, new_legion1, new_legion2
         def1 = self.user.callRemote("split_legion", self.game.name,
           new_legion1.markername, new_legion2.markername, 
           new_legion1.creature_names(), new_legion2.creature_names())
@@ -277,7 +317,7 @@ class GUIMasterBoard(gtk.Window):
         if not self.game:
             return
         self._add_missing_markers()
-        hexlabels = set((marker.hexlabel for marker in self.markers))
+        hexlabels = set((marker.legion.hexlabel for marker in self.markers))
         for hexlabel in hexlabels:
             self._compute_marker_locations(hexlabel)
             mih = self.markers_in_hex(hexlabel)
@@ -300,10 +340,17 @@ class GUIMasterBoard(gtk.Window):
 
 
     def update_gui(self, gc, style, hexlabels=None):
-        if hexlabels is not None:
-            guihexes = [self.guihexes[hl] for hl in hexlabels]
-        else:
+        if hexlabels is None:
             guihexes = self.guihexes.values()
+        else:
+            # Also redraw neighbors, to clean up chit overdraw.
+            guihexes = set()
+            for hexlabel in hexlabels:
+                guihexes.add(self.guihexes[hexlabel])
+                masterhex = self.board.hexes[hexlabel]
+                for neighbor in masterhex.neighbors:
+                    if neighbor:
+                        guihexes.add(self.guihexes[neighbor.label])
         for guihex in guihexes:
             guihex.update_gui(gc, style)
         self.draw_markers(gc)
@@ -354,7 +401,6 @@ class GUIMasterBoard(gtk.Window):
             def1 = self.user.callRemote("take_mulligan", self.game.name)
 
     def cb_about(self, action):
-        print "about", action
         About.About()
 
     # TODO
@@ -382,9 +428,18 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.RollMovement):
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
-            self.update_gui(gc, style)
+            self.update_gui(gc, style, [])
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
+        elif isinstance(action, Action.MoveLegion):
+            self.selected_marker = None
+            self.unselect_all()
+            legion = self.game.find_legion(action.markername)
+            repaint_hexlabels = set([legion.hexlabel, 
+              legion.previous_hexlabel])
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, repaint_hexlabels)
 
 
 if __name__ == "__main__":

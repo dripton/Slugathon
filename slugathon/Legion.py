@@ -10,6 +10,8 @@ class Legion(object):
         # XXX bidirectional references are bad
         self.player = player
         self.moved = False
+        self.teleported = False
+        self.entry_side = None
         self.previous_hexlabel = None
 
     def __repr__(self):
@@ -20,7 +22,14 @@ class Legion(object):
         return len(self.creatures)
 
     def num_lords(self):
-        return sum(cr.character_type == "lord" for cr in self.creatures)
+        return sum(creature.character_type == "lord" for creature in 
+          self.creatures)
+
+    def first_lord_name(self):
+        for creature in self.creatures:
+            if creature.character_type == "lord":
+                return creature.name
+        return None
 
     def creature_names(self):
         return sorted(creature.name for creature in self.creatures)
@@ -55,13 +64,17 @@ class Legion(object):
                 return False
         return True
 
-    def move(self, hexlabel):
+    def move(self, hexlabel, teleport, entry_side):
         self.moved = True
         self.previous_hexlabel = self.hexlabel
         self.hexlabel = hexlabel
+        self.teleported = teleport
+        self.entry_side = entry_side
 
     def undo_move(self):
         if self.moved:
             self.moved = False
             self.hexlabel = self.previous_hexlabel
             self.previous_hexlabel = None
+            self.teleported = False
+            self.entry_side = None

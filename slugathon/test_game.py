@@ -74,9 +74,10 @@ class TestMovement(object):
         player1 = game.players[1]
         player0.assign_starting_tower(200)
         player1.assign_starting_tower(100)
+        game.sort_players()
         game.started = True
-        game.assign_color("p1", "Blue")
         game.assign_color("p0", "Red")
+        game.assign_color("p1", "Blue")
         game.assign_first_marker("p0", "Rd01")
         game.assign_first_marker("p1", "Bu01")
         player0.pick_marker("Rd02")
@@ -163,3 +164,25 @@ class TestMovement(object):
         assert (11, 5) in moves
         assert (15, 1) in moves
         assert (103, 5) in moves
+
+    def test_can_move_legion(self):
+        game = self.game
+        player = self.game.players[0]
+        legion = player.legions["Rd01"]
+
+        player.movement_roll = 1
+        assert game.can_move_legion(player, legion, 6, False, None, 5)
+        assert game.can_move_legion(player, legion, 10, False, None, 1)
+        assert game.can_move_legion(player, legion, 108, False, None, 3)
+        assert not game.can_move_legion(player, legion, 108, True, None, 3)
+
+        player.movement_roll = 6
+        assert game.can_move_legion(player, legion, 15, False, None, 1)
+        assert game.can_move_legion(player, legion, 11, False, None, 5)
+        assert game.can_move_legion(player, legion, 103, False, None, 5)
+        assert not game.can_move_legion(player, legion, 16, False, None, 1)
+        assert game.can_move_legion(player, legion, 16, True, "Titan", 1)
+        assert game.can_move_legion(player, legion, 16, True, "Titan", 3)
+        assert game.can_move_legion(player, legion, 16, True, "Titan", 5)
+        assert not game.can_move_legion(player, legion, 16, True, "Titan", 4)
+        assert game.can_move_legion(player, legion, 4000, True, "Titan", 1)
