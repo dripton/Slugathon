@@ -4,6 +4,7 @@ from Observed import Observed
 import Action
 import playercolordata
 import creaturedata
+import markerdata
 import Creature
 import Legion
 from bag import bag
@@ -53,8 +54,8 @@ class Player(Observed):
         self.color = color
         action = Action.PickedColor(self.game_name, self.name, color)
         abbrev = playercolordata.name_to_abbrev[self.color]
-        # TODO Un-hardcode
-        for ii in xrange(12):
+        num_markers = len(markerdata.data[color])
+        for ii in xrange(num_markers):
             self.markernames.add("%s%02d" % (abbrev, ii + 1))
         self.notify(action)
 
@@ -125,9 +126,40 @@ class Player(Observed):
         if self.can_exit_split_phase():
             self._roll_movement()
 
+    def can_take_mulligan(self, game):
+        """Return True iff this player can take a mulligan"""
+        return bool(self is game.active_player and game.turn == 1 
+          and game.phase == Phase.MOVE and self.mulligans_left)
+
     def take_mulligan(self):
         self.mulligans_left -= 1
         self._roll_movement()
 
     def can_titan_teleport(self):
         return self.score >= 400
+
+    def moved_legions(self):
+        return [legion for legion in self.legions if legion.moved]
+
+    def friendly_legions(self, hexlabel=None):
+        """Return a list of this player's legions, in hexlabel if not None."""
+        return [legion for legion in self.legions.values() if hexlabel in
+          (None, legion.hexlabel)]
+
+    def enemy_legions(self, game, hexlabel=None):
+        """Return a list of other players' legions, in hexlabel if not None."""
+        return [legion for legion in game.all_legions(hexlabel) 
+          if legion.player is not self]
+
+    def can_exit_move_phase(self, game):
+        """Return True iff this player can finish the move phase."""
+        if not self.moved_legions():
+            return False
+        for legion in self.friendly_legions():
+            if self.friendly_legions(legion.hexlabel) >= 2:
+                if not legion.moved and game.find_all_moves(legion, 
+                  game.board.hexes[legion.hexlabel], self.movement_roll):
+                    return False
+            # else will need to recombine
+        return True
+

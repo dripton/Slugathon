@@ -84,11 +84,11 @@ class User(pb.Avatar):
         self.server.take_mulligan(self.name, game_name)
 
     def perspective_move_legion(self, game_name, markername, hexlabel, 
-          teleport, teleporting_lord, entry_side):
+          entry_side, teleport, teleporting_lord):
         print "perspective_move_legion", game_name, markername, hexlabel, \
-          teleport, teleporting_lord, entry_side
+          entry_side, teleport, teleporting_lord
         self.server.move_legion(self.name, game_name, markername, hexlabel,
-          teleport, teleporting_lord, entry_side)
+          entry_side, teleport, teleporting_lord)
 
 
     def __repr__(self):

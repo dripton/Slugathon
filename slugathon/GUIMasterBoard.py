@@ -150,7 +150,6 @@ class GUIMasterBoard(gtk.Window):
                 return False
         return True
 
-
     def clicked_on_hex(self, area, event, guihex):
         repaint_hexlabels = set()
         if not self.game:
@@ -177,9 +176,10 @@ class GUIMasterBoard(gtk.Window):
                     else:
                         entry_side = hexmoves[0][1]
                         teleporting_lord = None
-                    self.user.callRemote("move_legion", self.game.name, 
-                      legion.markername, guihex.masterhex.label, teleport,
-                      teleporting_lord, entry_side)
+                    def1 = self.user.callRemote("move_legion", self.game.name,
+                      legion.markername, guihex.masterhex.label, entry_side,
+                      teleport, teleporting_lord)
+                    def1.addErrback(self.failure)
                 self.selected_marker = None
                 self.unselect_all()
 
@@ -246,6 +246,7 @@ class GUIMasterBoard(gtk.Window):
         def1 = self.user.callRemote("split_legion", self.game.name,
           new_legion1.markername, new_legion2.markername, 
           new_legion1.creature_names(), new_legion2.creature_names())
+        def1.addErrback(self.failure)
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen
@@ -275,7 +276,7 @@ class GUIMasterBoard(gtk.Window):
         Return a list of new markernames.
         """
         result = []
-        for legion in self.game.gen_all_legions():
+        for legion in self.game.all_legions():
             if legion.markername not in (marker.name for marker in 
               self.markers):
                 result.append(legion.markername)
@@ -384,7 +385,6 @@ class GUIMasterBoard(gtk.Window):
             self.update_gui(gc, style, hexlabels)
                 
 
-
     def cb_done(self, action):
         print "done", action
         player = self.game.get_player_by_name(self.username)
@@ -393,12 +393,20 @@ class GUIMasterBoard(gtk.Window):
                 if player.can_exit_split_phase():
                     def1 = self.user.callRemote("done_with_splits", 
                       self.game.name)
+                    def1.addErrback(self.failure)
+            elif self.game.phase == Phase.SPLIT:
+                if player.can_exit_move_phase(self.game):
+                    # TODO
+                    def1 = self.user.callRemote("done_with_moves",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
     def cb_mulligan(self, action):
         print "mulligan", action
         player = self.game.get_player_by_name(self.username)
-        if self.game.can_take_mulligan(player):
+        if player.can_take_mulligan(game):
             def1 = self.user.callRemote("take_mulligan", self.game.name)
+            def1.addErrback(self.failure)
 
     def cb_about(self, action):
         About.About()
@@ -410,6 +418,8 @@ class GUIMasterBoard(gtk.Window):
     def cb_redo(self, action):
         print "redo", action
 
+    def failure(self, arg):
+        print "GUIMasterBoard.failure", arg
 
     def update(self, observed, action):
         print "GUIMasterBoard.update", self, observed, action

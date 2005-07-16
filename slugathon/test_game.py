@@ -1,69 +1,6 @@
-import math
 import time
 
 import Game
-
-
-class TestAssignTowers(object):
-    def setup_method(self, method):
-        now = time.time()
-        self.game = Game.Game("g1", "p1", now, now, 2, 6)
-
-    def _simple_helper(self, num_players):
-        for num in xrange(num_players-1):
-            self.game.add_player("p%d" % (num+2))
-        self.game.assign_towers()
-        towers = set([player.starting_tower for player in self.game.players])
-        assert len(towers) == num_players
-        for tower in towers:
-            assert tower in self.game.board.get_tower_labels()
-
-    def test_1_player_simple(self):
-        self._simple_helper(1)
-
-    def test_6_player_simple(self):
-        self._simple_helper(6)
-
-    def _range_helper(self, num_players):
-        trials = 100
-        num_towers = 6
-        counts = {}
-        for num in xrange(num_players-1):
-            self.game.add_player("p%d" % (num+2))
-        for unused in xrange(trials):
-            self.game.assign_towers()
-            towers = set([player.starting_tower for player in 
-              self.game.players])
-            assert len(towers) == num_players
-            for tower in towers:
-                counts[tower] = counts.get(tower, 0) + 1
-        assert len(counts) == num_towers, \
-          "len(counts) is wrong: %s" % counts
-        assert sum(counts.values()) == trials * num_players
-        for count in counts.values():
-            # XXX Do real statistical tests.
-            mean = 1. * trials * num_players / num_towers
-            assert math.floor(mean / 3) <= count <= math.ceil(2 * mean), \
-              "counts out of range: %s" % counts
-
-    def test_1_player(self):
-        self._range_helper(1)
-
-    def test_2_player(self):
-        self._range_helper(2)
-
-    def test_3_player(self):
-        self._range_helper(3)
-
-    def test_4_player(self):
-        self._range_helper(4)
-
-    def test_5_player(self):
-        self._range_helper(5)
-
-    def test_6_player(self):
-        self._range_helper(6)
-
 
 class TestMovement(object):
     def setup_method(self, method):
@@ -86,12 +23,14 @@ class TestMovement(object):
           ["Angel", "Ogre", "Ogre", "Gargoyle"])
         player0.done_with_splits()
 
-    def test_friendly_legions(self):
+    def test_all_legions(self):
         game = self.game
-        player0 = game.players[0]
-        legions = game.friendly_legions(200, player0)
-        assert len(legions) == 2
-        assert legions == player0.legions.values()
+        print game.all_legions()
+        assert len(game.all_legions()) == 3
+        assert len(game.all_legions(200)) == 2
+        assert len(game.all_legions(100)) == 1
+        assert len(game.all_legions(300)) == 0
+
 
     def test_find_normal_moves(self):
         game = self.game
@@ -99,40 +38,40 @@ class TestMovement(object):
         legion = player.legions["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
-        moves = self.game.find_normal_moves(legion, masterhex, 1, 
-          masterhex.find_block(), None)
+        moves = self.game.find_normal_moves(legion, masterhex, 1)
         assert moves == set([(6, 5), (10, 1), (108, 3)])
 
-        moves = self.game.find_normal_moves(legion, masterhex, 2, 
-          masterhex.find_block(), None)
+        moves = self.game.find_normal_moves(legion, masterhex, 2) 
         assert moves == set([(7, 3), (11, 5), (107, 1)])
 
-        moves = self.game.find_normal_moves(legion, masterhex, 3, 
-          masterhex.find_block(), None)
+        moves = self.game.find_normal_moves(legion, masterhex, 3)
         assert moves == set([(8, 1), (12, 5), (106, 5)])
 
-        moves = self.game.find_normal_moves(legion, masterhex, 4, 
-          masterhex.find_block(), None)
+        moves = self.game.find_normal_moves(legion, masterhex, 4)
         assert moves == set([(9, 5), (13, 1), (105, 1)])
 
-        moves = self.game.find_normal_moves(legion, masterhex, 5, 
-          masterhex.find_block(), None)
+        moves = self.game.find_normal_moves(legion, masterhex, 5)
         assert moves == set([(10, 3), (14, 3), (104, 1)])
 
-        moves = self.game.find_normal_moves(legion, masterhex, 6, 
-          masterhex.find_block(), None)
+        moves = self.game.find_normal_moves(legion, masterhex, 6)
         assert moves == set([(15, 1), (11, 5), (103, 5)])
 
-    def test_find_teleport_moves(self):
+    def test_find_all_teleport_moves(self):
         game = self.game
-        player = self.game.players[0]
+        player = game.players[0]
         legion = player.legions["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
-        moves = self.game.find_all_teleport_moves(legion, masterhex, 1)
+        moves = game.find_all_teleport_moves(legion, masterhex, 1)
         assert not moves
 
-        moves = self.game.find_all_teleport_moves(legion, masterhex, 6)
+    def test_find_all_teleport_moves2(self):
+        game = self.game
+        player = game.players[0]
+        legion = player.legions["Rd01"]
+        masterhex = game.board.hexes[legion.hexlabel]
+
+        moves = game.find_all_teleport_moves(legion, masterhex, 6)
         for move in moves:
             assert move[1] == Game.TELEPORT
         hexlabels = set([move[0] for move in moves])
@@ -145,14 +84,20 @@ class TestMovement(object):
 
     def test_find_all_moves(self):
         game = self.game
-        player = self.game.players[0]
+        player = game.players[0]
         legion = player.legions["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
-        moves = self.game.find_all_moves(legion, masterhex, 1)
+        moves = game.find_all_moves(legion, masterhex, 1)
         assert moves == set([(6, 5), (10, 1), (108, 3)])
 
-        moves = self.game.find_all_moves(legion, masterhex, 6)
+    def test_find_all_moves2(self):
+        game = self.game
+        player = game.players[0]
+        legion = player.legions["Rd01"]
+        masterhex = game.board.hexes[legion.hexlabel]
+
+        moves = game.find_all_moves(legion, masterhex, 6)
         print sorted(moves)
         hexlabels = set([move[0] for move in moves])
         assert hexlabels == set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
@@ -167,22 +112,25 @@ class TestMovement(object):
 
     def test_can_move_legion(self):
         game = self.game
-        player = self.game.players[0]
+        player = game.players[0]
         legion = player.legions["Rd01"]
-
         player.movement_roll = 1
-        assert game.can_move_legion(player, legion, 6, False, None, 5)
-        assert game.can_move_legion(player, legion, 10, False, None, 1)
-        assert game.can_move_legion(player, legion, 108, False, None, 3)
-        assert not game.can_move_legion(player, legion, 108, True, None, 3)
+        assert game.can_move_legion(player, legion, 6, 5, False, None)
+        assert game.can_move_legion(player, legion, 10, 1, False, None)
+        assert game.can_move_legion(player, legion, 108, 3, False, None)
+        assert not game.can_move_legion(player, legion, 108, 3, True, None)
 
+    def test_can_move_legion2(self):
+        game = self.game
+        player = game.players[0]
+        legion = player.legions["Rd01"]
         player.movement_roll = 6
-        assert game.can_move_legion(player, legion, 15, False, None, 1)
-        assert game.can_move_legion(player, legion, 11, False, None, 5)
-        assert game.can_move_legion(player, legion, 103, False, None, 5)
-        assert not game.can_move_legion(player, legion, 16, False, None, 1)
-        assert game.can_move_legion(player, legion, 16, True, "Titan", 1)
-        assert game.can_move_legion(player, legion, 16, True, "Titan", 3)
-        assert game.can_move_legion(player, legion, 16, True, "Titan", 5)
-        assert not game.can_move_legion(player, legion, 16, True, "Titan", 4)
-        assert game.can_move_legion(player, legion, 4000, True, "Titan", 1)
+        assert game.can_move_legion(player, legion, 15, 1, False, None)
+        assert game.can_move_legion(player, legion, 11, 5, False, None)
+        assert game.can_move_legion(player, legion, 103, 5, False, None)
+        assert not game.can_move_legion(player, legion, 16, 1, False, None)
+        assert game.can_move_legion(player, legion, 16, 1, True, "Titan")
+        assert game.can_move_legion(player, legion, 16, 3, True, "Titan")
+        assert game.can_move_legion(player, legion, 16, 5, True, "Titan")
+        assert not game.can_move_legion(player, legion, 16, 4, True, "Titan")
+        assert game.can_move_legion(player, legion, 4000, 1, True, "Titan")

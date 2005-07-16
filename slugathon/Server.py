@@ -155,12 +155,12 @@ class Server(Observed):
         if game:
             game.take_mulligan(username)
 
-    def move_legion(self, username, game_name, markername, hexlabel, teleport,
-          teleporting_lord, entry_side):
+    def move_legion(self, username, game_name, markername, hexlabel, 
+      entry_side, teleport, teleporting_lord):
         game = self.name_to_game(game_name)
         if game:
-            game.move_legion(username, markername, hexlabel, teleport, 
-              teleporting_lord, entry_side)
+            game.move_legion(username, markername, hexlabel, entry_side,
+              teleport, teleporting_lord)
 
 
     def update(self, observed, action):

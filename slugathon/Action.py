@@ -112,14 +112,13 @@ class RollMovement(Action):
 pb.setUnjellyableForClass(RollMovement, RollMovement)
 
 class MoveLegion(Action):
-    def __init__(self, game_name, playername, markername, hexlabel, teleport,
-      teleporting_lord, entry_side):
+    def __init__(self, game_name, playername, markername, hexlabel,
+      entry_side,teleport, teleporting_lord):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
         self.hexlabel = hexlabel
+        self.entry_side = entry_side
         self.teleport = teleport
         self.teleporting_lord = teleporting_lord
-        self.entry_side = entry_side
-
 pb.setUnjellyableForClass(MoveLegion, MoveLegion)
