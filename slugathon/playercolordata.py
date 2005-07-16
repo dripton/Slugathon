@@ -12,9 +12,8 @@ name_to_abbrev = {
 abbrev_to_name = {}
 for (name, abbrev) in name_to_abbrev.items():
     abbrev_to_name[abbrev] = name
+del name, abbrev
 
-colors = name_to_abbrev.keys()
-colors.sort()
+colors = sorted(name_to_abbrev.keys())
 
-abbrevs = abbrev_to_name.keys()
-abbrevs.sort()
+abbrevs = sorted(abbrev_to_name.keys())
