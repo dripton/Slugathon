@@ -1,5 +1,5 @@
-Make sure we have the distinction between username and playername correct.  
-   username also includes spectators, while playername is just for players.
+Make sure we have the distinction between username and playername correct.
+username also includes spectators, while playername is just for players.
 
 Handle failed logins cleanly -- show error message in Connect
 
@@ -13,55 +13,88 @@ Add chi-square test to test_dice
 
 Solve the shebang line problem.  (distutils?)
 
-Custom Exception classes subclassing pb.Error 
+Custom Exception classes subclassing pb.Error
 
 Standalone battle simulator
 
-Try PyNSource http://www.atug.com/andypatterns/pynsource.htm
-
 When a user drops from the server, drop his player from games.
 
-If a player kills a WaitingForPlayers dialog, drop him from that
-game?
+If a player kills a WaitingForPlayers dialog, drop him from that game?
 
-Support sending chat messages to one user, or a group excluding some
-users.
+Support sending chat messages to one user, or a group excluding some users.
 
 Use Observers to return results from modeless dialogs?
 
 Add a version number somewhere.  svn revision?  date?
 
-###############
+###############################################################################
+epydoc -o epydocs -v -n Slugathon -u http://slugathon.sf.net --inheritance
+listed --debug slugathon/[^test]*.py
+But epydoc won't list public instance attributes, only methods.
 
-Should WaitingForPlayers and Anteroom hold direct Game references?
-For now, why not?  They're all on the client side.  Both holding
-a reference to and observing the same game is kind of odd, though.
+PyNSource http://www.atug.com/andypatterns/pynsource.htm
+python /usr/lib/python2.4/site-packages/pynsource/pynsource.py -v
+slugathon/[^test]*.py
 
-How to send to only some observers?  (e.g. a chat message for one 
-player, or hidden stack contents?)  Need each observer to leave
-a unique name when it is added, and then filter based on that
-name.  (Also need to be able to send to all, and to all players
-involved with a certain game?)
+Looks pretty good.  Can't get pyNsourceGui.py to work due to wxPython
+versioning problems.
+###############################################################################
 
-Document all observer / observed relationships.
+Game.update has lots of special logic to avoid doing the same move twice.
+Need to figure out a cleaner way.
 
-Need an EventSaver class that observes the stream of events hitting
-a Client or Server and saves them in one or more queues.  It should
-also be able to save and load.  When a new client joins, the EventSaver
-should send it all events needed to sync up.
+We need to document all observer / observed relationships, not just direct
+containment.
 
-In Anteroom game list, show tower assignments, resort player names,
-and show colors.
+Should WaitingForPlayers and Anteroom hold direct Game references?  For now,
+why not?  They're all on the client side.  Both holding a reference to and
+observing the same game is kind of odd, though.
+
+The reference from Legion back up to Player bothers me.
+
+Does Legion need to be Observed and throw off its own Actions, rather than
+making Player do it?
+
+How to send to only some observers?  (e.g. a chat message for one player, or
+hidden stack contents?)  Need each observer to leave a unique name when it is
+added, and then filter based on that name.  
+
+Options for splitting with hidden legion contents:
+1. Send a split message without details to everyone, then a reveal message per
+child legion to just the splitting player.
+2. Send a split message without details to everyone.  Expect the splitting
+player to figure out the details.  (Easy in the interactive case since he just
+sent the split request; hard in the loading game case.)
+3. Send a public split message to everyone but the splitter, and a private
+split message to the splitter.
+
+Need an EventSaver class that observes the stream of events hitting a Client
+or Server and saves them in one or more queues.  It should also be able to
+save and load.  When a new client joins, the EventSaver should send it all
+events needed to sync up.  It needs to see all information, including hidden
+stack contents.
+
+In chat, need to be able to target everyone in the lobby, everyone in one
+game, and any one user.
+
+In Anteroom game list, show tower assignments, resort player names, and show
+colors.  Can we get all the game status we need in there, or do we need a
+separate window?  Anteroom is pretty big, so maybe a separate window is easier
+to use alongside the masterboard.
 
 Make Anteroom always fit on screen.
 
+###############################################################################
 
 Bugs:
 
 Click in random spot in Anteroom game list, not on an actual game, 
-brings up WFP, once.
+brings up WaitingForPlayers, once.
 
-Exiting Anteroom window no longer cleanly exits process.
+Exiting Anteroom window no longer cleanly exits process.  Killing GTK windows
+without control-C got a lot harder.  What happened?
 
 test_server.py seems somewhat timing-sensitive.  Sometimes throws an exception
-because the username is no longer in the dict?
+because the username is no longer in the dict?  Is this solvable in py.test,
+or do we need to use twisted.trial?
+
