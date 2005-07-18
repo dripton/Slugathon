@@ -384,6 +384,34 @@ class GUIMasterBoard(gtk.Window):
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, hexlabels)
                 
+    def highlight_engagements(self):
+        """Highlight all hexes with engagements."""
+        self.unselect_all()
+        hexlabels = self.game.engagement_hexlabels()
+        for hexlabel in hexlabels:
+            guihex = self.guihexes[hexlabel]
+            guihex.selected = True
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
+        self.update_gui(gc, style, hexlabels)
+
+    def highlight_recruits(self):
+        """Highlight all hexes in which the active player can recruit."""
+        player = self.game.get_player_by_name(self.username)
+        if player == self.game.active_player:
+            self.unselect_all()
+            hexlabels = set()
+            for legion in player.legions.values():
+                hexlabel = legion.hexlabel
+                if legion.moved and legion.available_recruits(
+                  self.game.hexes[hexlabel], self.game.caretaker):
+                    hexlabels.add(hexlabel)
+            for hexlabel in hexlabels:
+                guihex = self.guihexes[hexlabel]
+                guihex.selected = True
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, hexlabels)
 
     def cb_done(self, action):
         print "done", action
@@ -396,7 +424,6 @@ class GUIMasterBoard(gtk.Window):
                     def1.addErrback(self.failure)
             elif self.game.phase == Phase.SPLIT:
                 if player.can_exit_move_phase(self.game):
-                    # TODO
                     def1 = self.user.callRemote("done_with_moves",
                       self.game.name)
                     def1.addErrback(self.failure)
@@ -404,7 +431,7 @@ class GUIMasterBoard(gtk.Window):
     def cb_mulligan(self, action):
         print "mulligan", action
         player = self.game.get_player_by_name(self.username)
-        if player.can_take_mulligan(game):
+        if player.can_take_mulligan(self.game):
             def1 = self.user.callRemote("take_mulligan", self.game.name)
             def1.addErrback(self.failure)
 
@@ -450,6 +477,11 @@ class GUIMasterBoard(gtk.Window):
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, repaint_hexlabels)
+        elif isinstance(action, Action.DoneMoving):
+            if self.game.phase == Phase.FIGHT:
+                self.highlight_engagements()
+            elif self.game.phase == Phase.MUSTER:
+                self.highlight_recruits()
 
 
 if __name__ == "__main__":

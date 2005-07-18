@@ -163,3 +163,7 @@ class Player(Observed):
             # else will need to recombine
         return True
 
+    def done_with_moves(self, game):
+        if self.can_exit_move_phase(game):
+            action = Action.DoneMoving(self.game_name, self.name)
+            self.notify(action)

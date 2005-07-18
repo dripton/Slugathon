@@ -1,7 +1,11 @@
+import time
+
 import Legion
 import Player
 import Creature
 import creaturedata
+import Game
+import Caretaker
 
 def test_num_lords():
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -40,7 +44,7 @@ def test_remove_creature_by_name():
     except ValueError:
         pass
     else:
-        raise "should have raised"
+        raise AssertionError, "should have raised"
 
 def test_is_legal_split():
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -54,4 +58,28 @@ def test_is_legal_split():
     assert parent.is_legal_split(child1, child2)
 
     assert not parent.is_legal_split(child1, child1)
+
+def test_available_recruits():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("p0", "g1", 0)
+    board = game.board
+
+    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
+      "Gargoyle", "Centaur", "Centaur"]), 1)
+    caretaker = Caretaker.Caretaker()
+
+    masterhex = board.hexes[140] # Marsh
+    assert legion.available_recruits(masterhex, caretaker) == []
+    masterhex = board.hexes[139] # Desert
+    assert legion.available_recruits(masterhex, caretaker) == []
+    masterhex = board.hexes[138] # Plains
+    assert legion.available_recruits(masterhex, caretaker) == ["Centaur",
+      "Lion"]
+    masterhex = board.hexes[137] # Brush
+    assert legion.available_recruits(masterhex, caretaker) == ["Gargoyle"]
+    masterhex = board.hexes[600] # Tower
+    assert legion.available_recruits(masterhex, caretaker) == ["Centaur",
+      "Gargoyle", "Ogre", "Warlock"]
 

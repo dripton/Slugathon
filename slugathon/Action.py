@@ -122,3 +122,10 @@ class MoveLegion(Action):
         self.teleport = teleport
         self.teleporting_lord = teleporting_lord
 pb.setUnjellyableForClass(MoveLegion, MoveLegion)
+
+class DoneMoving(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(DoneMoving, DoneMoving)
+

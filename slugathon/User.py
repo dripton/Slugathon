@@ -90,6 +90,9 @@ class User(pb.Avatar):
         self.server.move_legion(self.name, game_name, markername, hexlabel,
           entry_side, teleport, teleporting_lord)
 
+    def perspective_done_with_moves(self, game_name):
+        print "perspective_done_with_moves", game_name
+        self.server.done_with_moves(self.name, game_name)
 
     def __repr__(self):
         return "User " + self.name

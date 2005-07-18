@@ -1,5 +1,8 @@
-from bag import bag
 import types
+
+from bag import bag
+import recruitdata
+import Creature
 
 class Legion(object):
     def __init__(self, player, markername, creatures, hexlabel):
@@ -78,3 +81,64 @@ class Legion(object):
             self.previous_hexlabel = None
             self.teleported = False
             self.entry_side = None
+
+    def _gen_sublists(self, recruits):
+        """Generate a sublist of recruits, within which up- and down-recruiting
+        is possible."""
+        sublist = []
+        for tup in recruits:
+            if tup:
+                sublist.append(tup)
+            else:
+                yield sublist
+                sublist = []
+        yield sublist
+
+    def _max_creatures_of_one_type(self):
+        """Return the maximum number of creatures (not lords or demi-lords) of
+        the same type in this legion."""
+        counts = bag(self.creature_names())
+        maximum = 0
+        for name, num in counts.items():
+            if (num > maximum and Creature.Creature(name).character_type == 
+              "creature"):
+                maximum = num
+        return maximum
+
+    def available_recruits(self, masterhex, caretaker):
+        """Return a list of the creature names that this legion could
+        recruit in masterhex, if it moved there.
+
+        The list is sorted in the same order as within recruitdata.
+        """
+        result_set = set()
+        counts = bag(self.creature_names())
+        recruits = recruitdata.data[masterhex.terrain]
+        for sublist in self._gen_sublists(recruits):
+            names = [tup[0] for tup in sublist]
+            nums = [tup[1] for tup in sublist]
+            ii = len(sublist) - 1
+            while ii >= 0:
+                name = names[ii]
+                num = nums[ii]
+                if ii >= 1:
+                    prev = names[ii - 1]
+                else:
+                    prev = None
+                if ((counts[name] and num) or (counts[prev] >= num) or 
+                  prev == recruitdata.ANYTHING or (prev == recruitdata.CREATURE
+                  and self._max_creatures_of_one_type() >= num)):
+                    for jj in xrange(0, ii+1):
+                        if nums[jj]:
+                            result_set.add(names[jj])
+                    break
+                ii -= 1
+        # Order matters, so revisit the original recruits list.  Also check
+        # the caretaker.
+        result_list = []
+        for tup in recruits:
+            if tup:
+                name = tup[0]
+                if name in result_set and caretaker.counts.get(name):
+                    result_list.append(name)
+        return result_list

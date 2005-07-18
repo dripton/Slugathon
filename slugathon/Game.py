@@ -12,6 +12,7 @@ from Observer import IObserver
 import Action
 import Phase
 import Dice
+import Caretaker
 
 
 # Movement constants
@@ -46,6 +47,7 @@ class Game(Observed):
         self.turn = 1
         self.phase = Phase.SPLIT
         self.active_player = None
+        self.caretaker = Caretaker.Caretaker()
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -389,6 +391,31 @@ class Game(Observed):
           hexlabel, entry_side, teleport, teleporting_lord)
         self.notify(action)
 
+    def done_with_moves(self, playername):
+        """Try to end playername's move phase."""
+        player = self.get_player_by_name(playername)
+        if player is not self.active_player:
+            raise AssertionError("ending split phase out of turn")
+        if self.phase == Phase.MOVE:
+            player.done_with_moves(self)
+
+    def engagement_hexlabels(self):
+        """Return a set of all hexlabels with engagements"""
+        hexlabels_to_legion_colors = {}
+        for legion in self.all_legions():
+            hexlabel = legion.hexlabel
+            color = legion.player.color
+            if hexlabel in hexlabels_to_legion_colors:
+                hexlabels_to_legion_colors[hexlabel].add(color)
+            else:
+                hexlabels_to_legion_colors[hexlabel] = set([color])
+        results = set()
+        for hexlabel, colorset in hexlabels_to_legion_colors.items():
+            if len(colorset) >= 2:
+                results.add(hexlabel)
+        return results
+
+
     def update(self, observed, action):
         print "Game.update", observed, action
 
@@ -435,5 +462,11 @@ class Game(Observed):
                 self.move_legion(action.playername, markername, 
                   action.hexlabel, action.entry_side, action.teleport, 
                   action.teleporting_lord)
+        elif isinstance(action, Action.DoneMoving):
+            player = self.get_player_by_name(action.playername)
+            if self.engagement_hexlabels():
+                self.phase = Phase.FIGHT
+            else:
+                self.phase = Phase.MUSTER
 
         self.notify(action)

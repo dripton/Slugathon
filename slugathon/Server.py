@@ -162,6 +162,11 @@ class Server(Observed):
             game.move_legion(username, markername, hexlabel, entry_side,
               teleport, teleporting_lord)
 
+    def done_with_moves(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.done_with_moves(username)
+
 
     def update(self, observed, action):
         print "Server.update", observed, action
