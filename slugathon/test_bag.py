@@ -146,3 +146,20 @@ def test_issuperset():
     assert not b2.issuperset(b3)
     assert b3.issuperset(b1)
     assert b3.issuperset(b2)
+
+def test_iter():
+    b1 = bag({"a":1, "b":0, 1:4})
+    lst = []
+    for el in b1:
+        lst.append(el)
+    assert "a" in lst
+    assert 1 in lst
+    assert "b" not in lst
+
+def test_items():
+    b1 = bag({"a":1, "b":0, 1:4})
+    assert b1.items() == [("a", 1), (1, 4)]
+
+def test_keys():
+    b1 = bag({"a":1, "b":0, 1:4})
+    assert b1.keys() == ["a", 1]

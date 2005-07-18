@@ -123,3 +123,15 @@ class bag(object):
             if val2 < val:
                 return False
         return True
+
+    def __iter__(self):
+        """Return an iterator, which returns one of each item in the set."""
+        return iter(self._dic.iterkeys())
+
+    def items(self):
+        """Return a list of item, count pairs."""
+        return self._dic.items()
+
+    def keys(self):
+        """Return a list of one of each item in the set."""
+        return self._dic.keys()
