@@ -88,8 +88,8 @@ class PickRecruit(object):
 
 
 if __name__ == "__main__":
-    creaturenames = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
-    creatures = Creature.n2c(creaturenames)
+    creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
+    creatures = Creature.n2c(creature_names)
    
     now = time.time()
     username = "p0"

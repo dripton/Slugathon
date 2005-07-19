@@ -37,14 +37,14 @@ class Legion(object):
     def creature_names(self):
         return sorted(creature.name for creature in self.creatures)
 
-    def add_creature_by_name(self, creaturename):
+    def add_creature_by_name(self, creature_name):
         if len(self) >= 7:
             raise ValueError, "no room to add another creature"
-        self.creatures.append(Creature.Creature(creaturename))
+        self.creatures.append(Creature.Creature(creature_name))
 
-    def remove_creature_by_name(self, creaturename):
+    def remove_creature_by_name(self, creature_name):
         for creature in self.creatures:
-            if creature.name == creaturename:
+            if creature.name == creature_name:
                 self.creatures.remove(creature)
                 return
         raise ValueError, "tried to remove missing creature"

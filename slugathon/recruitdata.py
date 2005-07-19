@@ -1,14 +1,14 @@
 """Static recruiting data
 
-Terrain type to list of tuples, (creaturename, num_to_recruit)
+Terrain type to list of tuples, (creature_name, num_to_recruit)
 
-Lowercase creaturenames are special.  "anything" means anything.
+Lowercase creature_names are special.  "anything" means anything.
 "creature" means anything with character_type of "creature"
 
-Any non-special creaturename with num_to_recruit >= 1 can be 
+Any non-special creature_name with num_to_recruit >= 1 can be 
 recruited with one of the same type of creature, >= 1 of any
 creature later in the list, or num_to_recruit of the preceding
-creaturename.
+creature_name.
 
 An empty tuple in the list is a break.  Neither up- or 
 down-recruiting can cross a break.

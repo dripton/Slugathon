@@ -88,28 +88,28 @@ class Player(Observed):
         self.notify(action)
 
     def split_legion(self, parent_markername, child_markername,
-      parent_creaturenames, child_creaturenames):
+      parent_creature_names, child_creature_names):
         parent = self.legions[parent_markername]
         if not child_markername in self.markernames:
             raise AssertionError("illegal marker")
-        if bag(parent.creature_names()) != bag(parent_creaturenames).union(
-          bag(child_creaturenames)):
+        if bag(parent.creature_names()) != bag(parent_creature_names).union(
+          bag(child_creature_names)):
             raise AssertionError("wrong creatures")
         new_legion1 = Legion.Legion(self, parent_markername, 
-          Creature.n2c(parent_creaturenames), parent.hexlabel)
+          Creature.n2c(parent_creature_names), parent.hexlabel)
         new_legion2 = Legion.Legion(self, child_markername, 
-          Creature.n2c(child_creaturenames), parent.hexlabel)
+          Creature.n2c(child_creature_names), parent.hexlabel)
         if not parent.is_legal_split(new_legion1, new_legion2):
             raise AssertionError("illegal split")
         self.take_marker(child_markername)
-        for creaturename in child_creaturenames:
-            parent.remove_creature_by_name(creaturename)
+        for creature_name in child_creature_names:
+            parent.remove_creature_by_name(creature_name)
         self.legions[child_markername] = new_legion2
         # TODO One action for our player with creature names, and a 
         # different action for other players without.
         action = Action.SplitLegion(self.game_name, self.name, 
-          parent_markername, child_markername, parent_creaturenames, 
-          child_creaturenames)
+          parent_markername, child_markername, parent_creature_names, 
+          child_creature_names)
         self.notify(action)
 
     def can_exit_split_phase(self):

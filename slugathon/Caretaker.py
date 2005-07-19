@@ -9,41 +9,41 @@ class Caretaker(object):
         self.counts = {}
         self.max_counts = {}
         self.graveyard = {}
-        for creaturename in creaturedata.data:
-            creature = Creature.Creature(creaturename)
+        for creature_name in creaturedata.data:
+            creature = Creature.Creature(creature_name)
             self.counts[creature.name] = creature.max_count
             self.max_counts[creature.name] = creature.max_count
             self.graveyard[creature.name] = 0
 
-    def num_left(self, creaturename):
-        """Return the number of creaturename left in the stacks."""
-        return self.counts[creaturename]
+    def num_left(self, creature_name):
+        """Return the number of creature_name left in the stacks."""
+        return self.counts[creature_name]
 
-    def take_one(self, creaturename):
-        """Take one of creaturename off the stack.  Need to ensure that one
+    def take_one(self, creature_name):
+        """Take one of creature_name off the stack.  Need to ensure that one
         remains before calling this."""
-        if self.counts[creaturename] >= 1:
-            self.counts[creaturename] -= 1
+        if self.counts[creature_name] >= 1:
+            self.counts[creature_name] -= 1
         else:
-            raise AssertionError("No %s left to take" % creaturename)
+            raise AssertionError("No %s left to take" % creature_name)
 
-    def put_one_back(self, creaturename):
-        """Put one of creaturename back onto the stack."""
-        creature = Creature.Creature(creaturename)
-        if self.counts[creaturename] >= creature.max_count:
-            raise AssertionError("Put too many %s back" % creaturename)
-        self.counts[creaturename] += 1
+    def put_one_back(self, creature_name):
+        """Put one of creature_name back onto the stack."""
+        creature = Creature.Creature(creature_name)
+        if self.counts[creature_name] >= creature.max_count:
+            raise AssertionError("Put too many %s back" % creature_name)
+        self.counts[creature_name] += 1
 
-    def kill_one(self, creaturename):
-        """If creaturename is mortal, put it in the graveyard.  Otherwise put
+    def kill_one(self, creature_name):
+        """If creature_name is mortal, put it in the graveyard.  Otherwise put
         it back onto the stack."""
-        creature = Creature.Creature(creaturename)
+        creature = Creature.Creature(creature_name)
         if creature.character_type == "creature":
-            self.graveyard[creaturename] += 1
+            self.graveyard[creature_name] += 1
         else:
-            self.put_one_back(creaturename)
+            self.put_one_back(creature_name)
 
-    def number_in_play(self, creaturename):
-        """Return the number of creaturename that are currently onboard."""
-        return (self.max_counts[creaturename] - self.counts[creaturename] - 
-          self.graveyard[creaturename])
+    def number_in_play(self, creature_name):
+        """Return the number of creature_name that are currently onboard."""
+        return (self.max_counts[creature_name] - self.counts[creature_name] - 
+          self.graveyard[creature_name])

@@ -69,11 +69,11 @@ class User(pb.Avatar):
         self.server.pick_first_marker(self.name, game_name, markername)
 
     def perspective_split_legion(self, game_name, parent_markername, 
-      child_markername, parent_creaturenames, child_creaturenames):
+      child_markername, parent_creature_names, child_creature_names):
         print "perspective_split_legion", game_name, parent_markername, \
-          child_markername, parent_creaturenames, child_creaturenames
+          child_markername, parent_creature_names, child_creature_names
         self.server.split_legion(self.name, game_name, parent_markername,
-          child_markername, parent_creaturenames, child_creaturenames)
+          child_markername, parent_creature_names, child_creature_names)
 
     def perspective_done_with_splits(self, game_name):
         print "perspective_done_with_splits", game_name

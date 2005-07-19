@@ -220,14 +220,14 @@ class Game(Observed):
         return None
 
     def split_legion(self, playername, parent_markername, child_markername,
-      parent_creaturenames, child_creaturenames):
-        """Split legion child_markername containing child_creaturenames off
-        of legion parent_markername, leaving parent_creaturenames."""
+      parent_creature_names, child_creature_names):
+        """Split legion child_markername containing child_creature_names off
+        of legion parent_markername, leaving parent_creature_names."""
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("splitting out of turn")
         player.split_legion(parent_markername, child_markername, 
-          parent_creaturenames, child_creaturenames)
+          parent_creature_names, child_creature_names)
 
     def done_with_splits(self, playername):
         """Try to end playername's split phase."""
@@ -445,8 +445,8 @@ class Game(Observed):
             # Avoid doing the same split twice.
             if not action.child_markername in player.legions:
                 self.split_legion(action.playername, action.parent_markername,
-                action.child_markername, action.parent_creaturenames, 
-                 action.child_creaturenames)
+                action.child_markername, action.parent_creature_names, 
+                 action.child_creature_names)
         elif isinstance(action, Action.RollMovement):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.MOVE
