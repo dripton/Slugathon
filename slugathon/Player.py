@@ -9,6 +9,7 @@ import Creature
 import Legion
 from bag import bag
 import Dice
+import Phase
 
 
 class Player(Observed):
