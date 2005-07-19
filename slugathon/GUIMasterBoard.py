@@ -404,7 +404,7 @@ class GUIMasterBoard(gtk.Window):
             for legion in player.legions.values():
                 hexlabel = legion.hexlabel
                 if legion.moved and legion.available_recruits(
-                  self.game.hexes[hexlabel], self.game.caretaker):
+                  self.game.board.hexes[hexlabel], self.game.caretaker):
                     hexlabels.add(hexlabel)
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
@@ -422,7 +422,7 @@ class GUIMasterBoard(gtk.Window):
                     def1 = self.user.callRemote("done_with_splits", 
                       self.game.name)
                     def1.addErrback(self.failure)
-            elif self.game.phase == Phase.SPLIT:
+            elif self.game.phase == Phase.MOVE:
                 if player.can_exit_move_phase(self.game):
                     def1 = self.user.callRemote("done_with_moves",
                       self.game.name)

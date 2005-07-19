@@ -139,7 +139,7 @@ class Player(Observed):
         return self.score >= 400
 
     def moved_legions(self):
-        return [legion for legion in self.legions if legion.moved]
+        return [legion for legion in self.legions.values() if legion.moved]
 
     def friendly_legions(self, hexlabel=None):
         """Return a list of this player's legions, in hexlabel if not None."""
