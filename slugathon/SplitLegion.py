@@ -89,7 +89,8 @@ class SplitLegion(object):
     def cb_response(self, widget, response_id):
         print "SplitLegion.cb_response", widget, response_id
         self.split_legion_dialog.destroy()
-        self.callback(self.old_legion, self.new_legion1, self.new_legion2)
+        if response_id == gtk.RESPONSE_OK:
+            self.callback(self.old_legion, self.new_legion1, self.new_legion2)
 
 
 if __name__ == "__main__":

@@ -80,11 +80,13 @@ class PickRecruit(object):
             self.recruit = None
             self.okbutton.set_sensitive(False)
 
-    def cb_response(self, widget, response_id):
+    def cb_response(self, dialog, response_id):
         """Send the recruit to the callback function."""
-        print "PickRecruit.cb_response", widget, response_id, self.recruit
+        print ("PickRecruit.cb_response", dialog, response_id, 
+          type(response_id), self.recruit)
+        if response_id == gtk.RESPONSE_OK:
+            self.callback(self.legion, self.recruit)
         self.pick_recruit_dialog.destroy()
-        self.callback(self.legion, self.recruit)
 
 
 if __name__ == "__main__":
