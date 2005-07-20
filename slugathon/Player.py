@@ -1,6 +1,9 @@
 import types
 
+import zope.interface
+
 from Observed import Observed
+from Observer import IObserver
 import Action
 import playercolordata
 import creaturedata
@@ -23,6 +26,9 @@ class Player(Observed):
     enough to handle these cases.)  A user might drop his connection, and
     another user might take over his player can continue the game.
     """
+
+    zope.interface.implements(IObserver)
+
     def __init__(self, playername, game_name, join_order):
         Observed.__init__(self)
         self.name = playername
@@ -84,6 +90,7 @@ class Player(Observed):
         legion = Legion.Legion(self, self.take_marker(markername), creatures,
           self.starting_tower)
         self.legions[markername] = legion
+        legion.add_observer(self)
         action = Action.CreateStartingLegion(self.game_name, self.name,
           markername)
         self.notify(action)
@@ -98,8 +105,10 @@ class Player(Observed):
             raise AssertionError("wrong creatures")
         new_legion1 = Legion.Legion(self, parent_markername, 
           Creature.n2c(parent_creature_names), parent.hexlabel)
+        new_legion1.add_observer(self)
         new_legion2 = Legion.Legion(self, child_markername, 
           Creature.n2c(child_creature_names), parent.hexlabel)
+        new_legion2.add_observer(self)
         if not parent.is_legal_split(new_legion1, new_legion2):
             raise AssertionError("illegal split")
         self.take_marker(child_markername)
@@ -168,3 +177,11 @@ class Player(Observed):
         if self.can_exit_move_phase(game):
             action = Action.DoneMoving(self.game_name, self.name)
             self.notify(action)
+
+    def update(self, observed, action):
+        print "Player.update", observed, action
+        if isinstance(action, Action.RecruitCreature):
+            legion = self.legions[action.markername]
+            creature = Creature.Creature(action.creature_name)
+            legion.recruit(creature)
+        self.notify(action)

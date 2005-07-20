@@ -90,8 +90,8 @@ pb.setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)
 class SplitLegion(Action):
     def __init__(self, game_name, playername, parent_markername, 
       child_markername, parent_creature_names, child_creature_names):
-        """parent_creature_names and child_creature_names are lists of the actual
-        creature names if known, or lists of height * None if not known
+        """parent_creature_names and child_creature_names are lists of the 
+        actual creature names if known, or lists of height * None if not known
         """
         self.game_name = game_name
         self.playername = playername
@@ -103,8 +103,8 @@ pb.setUnjellyableForClass(SplitLegion, SplitLegion)
 
 class RollMovement(Action):
     def __init__(self, game_name, playername, movement_roll):
-        """parent_creature_names and child_creature_names are lists of the actual
-        creature names if known, or lists of height * None if not known
+        """parent_creature_names and child_creature_names are lists of the 
+        actual creature names if known, or lists of height * None if not known
         """
         self.game_name = game_name
         self.playername = playername
@@ -129,3 +129,10 @@ class DoneMoving(Action):
         self.playername = playername
 pb.setUnjellyableForClass(DoneMoving, DoneMoving)
 
+class RecruitCreature(Action):
+    def __init__(self, game_name, playername, markername, creature_name):
+        self.game_name = game_name
+        self.playername = playername
+        self.markername = markername
+        self.creature_name = creature_name
+pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)

@@ -3,9 +3,12 @@ import types
 from bag import bag
 import recruitdata
 import Creature
+from Observed import Observed
+import Action
 
-class Legion(object):
+class Legion(Observed):
     def __init__(self, player, markername, creatures, hexlabel):
+        Observed.__init__(self)
         assert type(hexlabel) == types.IntType
         self.markername = markername
         self.creatures = creatures
@@ -16,6 +19,7 @@ class Legion(object):
         self.teleported = False
         self.entry_side = None
         self.previous_hexlabel = None
+        self.recruited = False
 
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
@@ -147,3 +151,21 @@ class Legion(object):
                 if name in result_set and caretaker.counts.get(name):
                     result_list.append(name)
         return result_list
+
+    def recruit(self, creature):
+        """Recruit creature, and notify observers."""
+        player = self.player
+        if self.recruited: 
+            if self.creatures[-1].name == creature.name:
+                # okay, don't do it twice
+                pass
+            else:
+                raise AssertionError("legion tried to recruit twice")
+        else:
+            if len(self) >= 7:
+                raise AssertionError("legion too tall to recruit")
+            self.creatures.append(creature)
+            self.recruited = True
+            action = Action.RecruitCreature(player.game_name, player.name,
+              self.markername, creature.name)
+            self.notify(action)

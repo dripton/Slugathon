@@ -24,6 +24,7 @@ import About
 import icon
 import Die
 import Game
+import PickRecruit
 
 
 SQRT3 = math.sqrt(3.0)
@@ -141,6 +142,7 @@ class GUIMasterBoard(gtk.Window):
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
                 return True
+        self.clicked_on_background(area, event)
         return True
 
     def _all_teleports(self, moves):
@@ -149,6 +151,20 @@ class GUIMasterBoard(gtk.Window):
             if move[1] != Game.TELEPORT:
                 return False
         return True
+
+    def clicked_on_background(self, area, event):
+        """The user clicked on the board outside a hex or marker."""
+        game = self.game
+        if game:
+            if game.phase == Phase.SPLIT:
+                self.highlight_tall_legions()
+            elif game.phase == Phase.MOVE:
+                self.selected_marker = None
+                self.highlight_unmoved_legions()
+            elif game.phase == Phase.FIGHT:
+                self.highlight_engagements()
+            elif self.game.phase == Phase.MUSTER:
+                self.highlight_recruits()
 
     def clicked_on_hex(self, area, event, guihex):
         repaint_hexlabels = set()
@@ -159,7 +175,9 @@ class GUIMasterBoard(gtk.Window):
             self.update_gui(gc, style, [guihex.masterhex.label])
         elif event.button == 1:
             phase = self.game.phase
-            if phase == Phase.MOVE and self.selected_marker:
+            if phase == Phase.SPLIT:
+                self.highlight_tall_legions()
+            elif phase == Phase.MOVE and self.selected_marker:
                 if guihex.selected:
                     legion = self.selected_marker.legion
                     hexlabel = guihex.masterhex.label
@@ -182,6 +200,10 @@ class GUIMasterBoard(gtk.Window):
                     def1.addErrback(self.failure)
                 self.selected_marker = None
                 self.unselect_all()
+            elif phase == Phase.MOVE:
+                self.highlight_unmoved_legions()
+            elif phase == Phase.MUSTER:
+                self.highlight_recruits()
 
 
     def clicked_on_marker(self, area, event, marker):
@@ -228,7 +250,18 @@ class GUIMasterBoard(gtk.Window):
                 style = self.area.get_style()
                 gc = style.fg_gc[gtk.STATE_NORMAL]
                 self.update_gui(gc, style, repaint_hexlabels)
-
+            elif phase == Phase.MUSTER:
+                self.unselect_all()
+                legion = marker.legion
+                if not legion.recruited:
+                    masterhex = self.board.hexes[legion.hexlabel]
+                    caretaker = self.game.caretaker
+                    recruit_names = legion.available_recruits(masterhex,
+                      caretaker)
+                    if recruit_names:
+                        PickRecruit.PickRecruit(self.username, legion.player,
+                          legion, masterhex, caretaker, self.picked_recruit)
+                self.highlight_recruits()
         return True
 
     def picked_marker_presplit(self, game_name, username, markername):
@@ -247,6 +280,10 @@ class GUIMasterBoard(gtk.Window):
           new_legion1.markername, new_legion2.markername, 
           new_legion1.creature_names(), new_legion2.creature_names())
         def1.addErrback(self.failure)
+
+    def picked_recruit(self, legion, creature):
+        """Callback from PickRecruit"""
+        legion.recruit(creature)
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen
@@ -367,6 +404,23 @@ class GUIMasterBoard(gtk.Window):
         gc = style.fg_gc[gtk.STATE_NORMAL]
         self.update_gui(gc, style, repaint_hexlabels)
 
+    def highlight_tall_legions(self):
+        """Highlight all hexes containing a legion of height 7 or more
+        belonging to the active, current player."""
+        player = self.game.get_player_by_name(self.username)
+        if player == self.game.active_player:
+            self.unselect_all()
+            hexlabels = set()
+            for legion in player.legions.values():
+                if len(legion) >= 7:
+                    hexlabels.add(legion.hexlabel)
+            for hexlabel in hexlabels:
+                guihex = self.guihexes[hexlabel]
+                guihex.selected = True
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, hexlabels)
+
     def highlight_unmoved_legions(self):
         """Highlight all hexes containing an unmoved legion belonging to the
         active, current player."""
@@ -403,9 +457,10 @@ class GUIMasterBoard(gtk.Window):
             hexlabels = set()
             for legion in player.legions.values():
                 hexlabel = legion.hexlabel
-                if legion.moved and legion.available_recruits(
-                  self.game.board.hexes[hexlabel], self.game.caretaker):
-                    hexlabels.add(hexlabel)
+                if (legion.moved and not legion.recruited and 
+                  legion.available_recruits(self.game.board.hexes[hexlabel],
+                    self.game.caretaker)):
+                      hexlabels.add(hexlabel)
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
@@ -456,6 +511,7 @@ class GUIMasterBoard(gtk.Window):
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
             self.update_gui(gc, style, [legion.hexlabel])
+            self.highlight_tall_legions()
         elif isinstance(action, Action.SplitLegion):
             player = self.game.get_player_by_name(action.playername)
             parent = player.legions[action.parent_markername]
@@ -482,6 +538,8 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_engagements()
             elif self.game.phase == Phase.MUSTER:
                 self.highlight_recruits()
+        elif isinstance(action, Action.RecruitCreature):
+            self.highlight_recruits()
 
 
 if __name__ == "__main__":
