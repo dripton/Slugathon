@@ -508,22 +508,18 @@ class GUIMasterBoard(gtk.Window):
         if isinstance(action, Action.CreateStartingLegion):
             player = self.game.get_player_by_name(action.playername)
             legion = player.legions.values()[0]
-            style = self.area.get_style()
-            gc = style.fg_gc[gtk.STATE_NORMAL]
-            self.update_gui(gc, style, [legion.hexlabel])
             self.highlight_tall_legions()
         elif isinstance(action, Action.SplitLegion):
             player = self.game.get_player_by_name(action.playername)
             parent = player.legions[action.parent_markername]
-            style = self.area.get_style()
-            gc = style.fg_gc[gtk.STATE_NORMAL]
-            self.update_gui(gc, style, [parent.hexlabel])
+            self.highlight_tall_legions()
         elif isinstance(action, Action.RollMovement):
-            style = self.area.get_style()
-            gc = style.fg_gc[gtk.STATE_NORMAL]
-            self.update_gui(gc, style, [])
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
+            else:
+                style = self.area.get_style()
+                gc = style.fg_gc[gtk.STATE_NORMAL]
+                self.update_gui(gc, style, [])
         elif isinstance(action, Action.MoveLegion):
             self.selected_marker = None
             self.unselect_all()
