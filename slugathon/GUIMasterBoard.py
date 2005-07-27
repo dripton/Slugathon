@@ -224,7 +224,7 @@ class GUIMasterBoard(gtk.Window):
                 elif not legion.can_be_split(self.game.turn):
                     return True
                 elif player.selected_markername:
-                    self.split_legion(player, legion)
+                    self.split_legion(player)
                 else:
                     if not player.markernames:
                         return True
@@ -253,7 +253,7 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.MUSTER:
                 self.unselect_all()
                 legion = marker.legion
-                if not legion.recruited:
+                if legion.moved and not legion.recruited:
                     masterhex = self.board.hexes[legion.hexlabel]
                     caretaker = self.game.caretaker
                     recruit_names = legion.available_recruits(masterhex,
@@ -271,7 +271,6 @@ class GUIMasterBoard(gtk.Window):
 
     def split_legion(self, player):
         legion = self._splitting_legion
-        self._splitting_legion = None
         SplitLegion.SplitLegion(self.username, player, legion,
           self.try_to_split_legion)
 
@@ -284,6 +283,7 @@ class GUIMasterBoard(gtk.Window):
     def picked_recruit(self, legion, creature):
         """Callback from PickRecruit"""
         legion.recruit(creature)
+        self.highlight_recruits()
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen
@@ -469,7 +469,7 @@ class GUIMasterBoard(gtk.Window):
             self.update_gui(gc, style, hexlabels)
 
     def cb_done(self, action):
-        print "done", action
+        print "done", action, self.game.phase
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
             if self.game.phase == Phase.SPLIT:
@@ -510,6 +510,7 @@ class GUIMasterBoard(gtk.Window):
             legion = player.legions.values()[0]
             self.highlight_tall_legions()
         elif isinstance(action, Action.SplitLegion):
+            self._splitting_legion = None
             player = self.game.get_player_by_name(action.playername)
             parent = player.legions[action.parent_markername]
             self.highlight_tall_legions()

@@ -149,28 +149,30 @@ class Player(Observed):
         return self.score >= 400
 
     def moved_legions(self):
-        return [legion for legion in self.legions.values() if legion.moved]
+        """Return a set of this players legions that have moved this turn."""
+        return set([legion for legion in self.legions.values() if 
+          legion.moved])
 
     def friendly_legions(self, hexlabel=None):
-        """Return a list of this player's legions, in hexlabel if not None."""
-        return [legion for legion in self.legions.values() if hexlabel in
-          (None, legion.hexlabel)]
+        """Return a set of this player's legions, in hexlabel if not None."""
+        return set([legion for legion in self.legions.values() if hexlabel in
+          (None, legion.hexlabel)])
 
     def enemy_legions(self, game, hexlabel=None):
-        """Return a list of other players' legions, in hexlabel if not None."""
-        return [legion for legion in game.all_legions(hexlabel) 
-          if legion.player is not self]
+        """Return a set of other players' legions, in hexlabel if not None."""
+        return set([legion for legion in game.all_legions(hexlabel) 
+          if legion.player is not self])
 
     def can_exit_move_phase(self, game):
         """Return True iff this player can finish the move phase."""
         if not self.moved_legions():
             return False
         for legion in self.friendly_legions():
-            if self.friendly_legions(legion.hexlabel) >= 2:
+            if len(self.friendly_legions(legion.hexlabel)) >= 2:
                 if not legion.moved and game.find_all_moves(legion, 
                   game.board.hexes[legion.hexlabel], self.movement_roll):
                     return False
-            # else will need to recombine
+            # XXX else will need to recombine
         return True
 
     def done_with_moves(self, game):

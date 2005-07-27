@@ -2,6 +2,9 @@ import time
 
 import Player
 import Game
+import Creature
+import creaturedata
+import Legion
 
 def test_can_exit_split_phase():
     player = Player.Player("test", "Game1", 0)
@@ -22,20 +25,47 @@ def test_can_exit_split_phase():
 def test_friendly_legions():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player = game.players[0]
-    player.assign_starting_tower(200)
-    game.sort_players()
-    game.started = True
-    game.assign_color("p0", "Red")
-    game.assign_first_marker("p0", "Rd01")
-    player.pick_marker("Rd02")
-    player.split_legion("Rd01", "Rd02",
-      ["Titan", "Centaur", "Centaur", "Gargoyle"],
-      ["Angel", "Ogre", "Ogre", "Gargoyle"])
-    player.done_with_splits()
-    legions = player.friendly_legions(200)
-    assert len(legions) == 2
-    assert legions == player.legions.values()
-    legions = player.friendly_legions()
-    assert len(legions) == 2
-    assert legions == player.legions.values()
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("p0", "g1", 0)
+    player.assign_starting_tower(100)
+    player.assign_color("Red")
+    board = game.board
+    player.pick_marker("Rd01")
+    player.create_starting_legion()
+    legion1 = player.legions["Rd01"]
+    player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
+      ["Angel", "Gargoyle", "Centaur", "Centaur"])
+    legion2 = player.legions["Rd02"]
+    assert player.friendly_legions() == set([legion1, legion2])
+    assert player.friendly_legions(100) == set([legion1, legion2])
+    assert player.friendly_legions(200) == set()
+    legion1.move(8, False, 1)
+    assert player.friendly_legions() == set([legion1, legion2])
+    assert player.friendly_legions(100) == set([legion2])
+    assert player.friendly_legions(8) == set([legion1])
+    assert player.friendly_legions(200) == set()
+    legion2.move(200, True, 3)
+    assert player.friendly_legions() == set([legion1, legion2])
+    assert player.friendly_legions(100) == set()
+    assert player.friendly_legions(8) == set([legion1])
+    assert player.friendly_legions(200) == set([legion2])
+
+def test_can_exit_move_phase():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("p0", "g1", 0)
+    player.assign_starting_tower(100)
+    player.assign_color("Red")
+    board = game.board
+    player.pick_marker("Rd01")
+    player.create_starting_legion()
+    legion1 = player.legions["Rd01"]
+    player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
+      ["Angel", "Gargoyle", "Centaur", "Centaur"])
+    legion2 = player.legions["Rd02"]
+    assert not player.can_exit_move_phase(game)
+    legion1.move(8, False, 1)
+    assert player.can_exit_move_phase(game)
+    legion2.move(200, True, 3)
+    assert player.can_exit_move_phase(game)

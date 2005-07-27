@@ -203,13 +203,13 @@ class Game(Observed):
                 player.create_starting_legion()
 
     def all_legions(self, hexlabel=None):
-        """Return a list of all legions in hexlabel, or in the whole
+        """Return a set of all legions in hexlabel, or in the whole
         game if hexlabel is None"""
-        legions = []
+        legions = set()
         for player in self.players:
             for legion in player.legions.values():
-                if hexlabel is None or hexlabel == legion.hexlabel:
-                    legions.append(legion)
+                if hexlabel in (None, legion.hexlabel):
+                    legions.add(legion)
         return legions
 
     def find_legion(self, markername):
@@ -328,7 +328,7 @@ class Game(Observed):
         player = legion.player
         moves = set()
         if player.can_titan_teleport() and "Titan" in legion.creature_names():
-            for legion in self.all_legions():
+            for legion in player.enemy_legions():
                 hexlabel = legion.hexlabel
                 if not player.friendly_legions(hexlabel):
                     moves.add((hexlabel, TELEPORT))
