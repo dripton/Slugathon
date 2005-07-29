@@ -23,7 +23,7 @@ data = {
 
     "Desert": [("Lion", 1), ("Griffon", 3), ("Hydra", 2)],
 
-    "Hills": [("Ogre", 1), ("Minotaur", 2), ("Unicorn", 2)],
+    "Hills": [("Ogre", 1), ("Minotaur", 3), ("Unicorn", 2)],
 
     "Jungle": [("Gargoyle", 1), ("Cyclops", 2), ("Behemoth", 3), 
       ("Serpent", 2)],
@@ -49,5 +49,5 @@ data = {
 
     "Tundra": [("Troll", 1), ("Warbear", 2), ("Giant", 2), ("Colossus", 2)],
 
-    "Woods": [("Centaur", 1), ("Warbear", 2), ("Unicorn", 2)],
+    "Woods": [("Centaur", 1), ("Warbear", 3), ("Unicorn", 2)],
 }
