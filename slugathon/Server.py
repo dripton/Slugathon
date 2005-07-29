@@ -167,6 +167,11 @@ class Server(Observed):
         if game:
             game.done_with_moves(username)
 
+    def done_with_recruits(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.done_with_recruits(username)
+
 
     def update(self, observed, action):
         print "Server.update", observed, action

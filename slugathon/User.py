@@ -94,6 +94,10 @@ class User(pb.Avatar):
         print "perspective_done_with_moves", game_name
         self.server.done_with_moves(self.name, game_name)
 
+    def perspective_done_with_recruits(self, game_name):
+        print "perspective_done_with_recruits", game_name
+        self.server.done_with_recruits(self.name, game_name)
+
     def __repr__(self):
         return "User " + self.name
 

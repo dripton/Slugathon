@@ -136,3 +136,9 @@ class RecruitCreature(Action):
         self.markername = markername
         self.creature_name = creature_name
 pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)
+
+class DoneRecruiting(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(DoneRecruiting, DoneRecruiting)

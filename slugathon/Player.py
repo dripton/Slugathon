@@ -180,6 +180,21 @@ class Player(Observed):
             action = Action.DoneMoving(self.game_name, self.name)
             self.notify(action)
 
+    def done_with_recruits(self, game):
+        action = Action.DoneRecruiting(self.game_name, self.name)
+        self.notify(action)
+
+    def new_turn(self):
+        self.selected_markername = None
+        self.movement_roll = None
+        self.teleported = False
+        for legion in self.legions.values():
+            legion.moved = False
+            legion.teleported = False
+            legion.entry_side = None
+            legion.previous_hexlabel = None
+            legion.recruited = False
+
     def update(self, observed, action):
         print "Player.update", observed, action
         if isinstance(action, Action.RecruitCreature):

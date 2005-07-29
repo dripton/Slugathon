@@ -482,6 +482,10 @@ class GUIMasterBoard(gtk.Window):
                     def1 = self.user.callRemote("done_with_moves",
                       self.game.name)
                     def1.addErrback(self.failure)
+            elif self.game.phase == Phase.MUSTER:
+                def1 = self.user.callRemote("done_with_recruits",
+                  self.game.name)
+                def1.addErrback(self.failure)
 
     def cb_mulligan(self, action):
         print "mulligan", action

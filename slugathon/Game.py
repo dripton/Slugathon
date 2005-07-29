@@ -399,6 +399,14 @@ class Game(Observed):
         if self.phase == Phase.MOVE:
             player.done_with_moves(self)
 
+    def done_with_recruits(self, playername):
+        """Try to end playername's muster phase."""
+        player = self.get_player_by_name(playername)
+        if player is not self.active_player:
+            raise AssertionError("ending muster phase out of turn")
+        if self.phase == Phase.MUSTER:
+            player.done_with_recruits(self)
+
     def engagement_hexlabels(self):
         """Return a set of all hexlabels with engagements"""
         hexlabels_to_legion_colors = {}
@@ -468,5 +476,14 @@ class Game(Observed):
                 self.phase = Phase.FIGHT
             else:
                 self.phase = Phase.MUSTER
+        elif isinstance(action, Action.DoneRecruiting):
+            player = self.get_player_by_name(action.playername)
+            self.phase = Phase.SPLIT
+            player_num = self.players.index(player)
+            new_player_num = (player_num + 1) % len(self.players)
+            if new_player_num == 0:
+                self.turn += 1
+            self.active_player = self.players[new_player_num]
+            self.active_player.new_turn()
 
         self.notify(action)
