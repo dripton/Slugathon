@@ -253,7 +253,7 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.MUSTER:
                 self.unselect_all()
                 legion = marker.legion
-                if legion.moved and not legion.recruited:
+                if legion.moved and not legion.recruited and len(legion) < 7:
                     masterhex = self.board.hexes[legion.hexlabel]
                     caretaker = self.game.caretaker
                     recruit_names = legion.available_recruits(masterhex,
@@ -282,8 +282,9 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_recruit(self, legion, creature):
         """Callback from PickRecruit"""
-        legion.recruit(creature)
-        self.highlight_recruits()
+        def1 = self.user.callRemote("recruit_creature", self.game.name,
+          legion.markername, creature.name)
+        def1.addErrback(self.failure)
 
     def compute_scale(self):
         """Return the maximum scale that let the board fit on the screen

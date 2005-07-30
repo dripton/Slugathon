@@ -167,6 +167,11 @@ class Server(Observed):
         if game:
             game.done_with_moves(username)
 
+    def recruit_creature(self, username, game_name, markername, creature_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.recruit_creature(username, markername, creature_name)
+
     def done_with_recruits(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:

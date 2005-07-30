@@ -13,6 +13,7 @@ import Action
 import Phase
 import Dice
 import Caretaker
+import Creature
 
 
 # Movement constants
@@ -399,6 +400,17 @@ class Game(Observed):
         if self.phase == Phase.MOVE:
             player.done_with_moves(self)
 
+    def recruit_creature(self, playername, markername, creature_name):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        if player is not self.active_player:
+            raise AssertionError("recruiting out of turn")
+        # Avoid double recruit
+        if not legion.recruited:
+            creature = Creature.Creature(creature_name)
+            legion.recruit(creature)
+
     def done_with_recruits(self, playername):
         """Try to end playername's muster phase."""
         player = self.get_player_by_name(playername)
@@ -476,6 +488,9 @@ class Game(Observed):
                 self.phase = Phase.FIGHT
             else:
                 self.phase = Phase.MUSTER
+        elif isinstance(action, Action.RecruitCreature):
+            self.recruit_creature(action.playername, action.markername, 
+              action.creature_name)
         elif isinstance(action, Action.DoneRecruiting):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.SPLIT
