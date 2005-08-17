@@ -14,6 +14,7 @@ import Phase
 import Dice
 import Caretaker
 import Creature
+import History
 
 
 # Movement constants
@@ -49,6 +50,8 @@ class Game(Observed):
         self.phase = Phase.SPLIT
         self.active_player = None
         self.caretaker = Caretaker.Caretaker()
+        self.history = History.History()
+        self.add_observer(self.history)
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
