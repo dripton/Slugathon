@@ -233,6 +233,12 @@ class Game(Observed):
         player.split_legion(parent_markername, child_markername, 
           parent_creature_names, child_creature_names)
 
+    def undo_split(self, playername, parent_markername, child_markername):
+        player = self.get_player_by_name(playername)
+        if player is not self.active_player:
+            raise AssertionError("splitting out of turn")
+        player.undo_split(parent_markername, child_markername)
+
     def done_with_splits(self, playername):
         """Try to end playername's split phase."""
         player = self.get_player_by_name(playername)
@@ -395,6 +401,14 @@ class Game(Observed):
           hexlabel, entry_side, teleport, teleporting_lord)
         self.notify(action)
 
+    def undo_move_legion(self, playername, markername):
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        action = Action.UndoMoveLegion(self.name, playername, markername, 
+          legion.hexlabel)
+        legion.undo_move()
+        self.notify(action)
+
     def done_with_moves(self, playername):
         """Try to end playername's move phase."""
         player = self.get_player_by_name(playername)
@@ -413,6 +427,13 @@ class Game(Observed):
         if not legion.recruited:
             creature = Creature.Creature(creature_name)
             legion.recruit(creature)
+
+    def undo_recruit(self, playername, markername):
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        if player is not self.active_player:
+            raise AssertionError("recruiting out of turn")
+        legion.undo_recruit()
 
     def done_with_recruits(self, playername):
         """Try to end playername's muster phase."""
@@ -470,6 +491,12 @@ class Game(Observed):
                 self.split_legion(action.playername, action.parent_markername,
                 action.child_markername, action.parent_creature_names, 
                  action.child_creature_names)
+        elif isinstance(action, Action.UndoSplit):
+            player = self.get_player_by_name(action.playername)
+            # Avoid doing the same split twice.
+            if action.child_markername in player.legions:
+                self.undo_split(action.playername, action.parent_markername,
+                action.child_markername)
         elif isinstance(action, Action.RollMovement):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.MOVE
@@ -485,6 +512,13 @@ class Game(Observed):
                 self.move_legion(action.playername, markername, 
                   action.hexlabel, action.entry_side, action.teleport, 
                   action.teleporting_lord)
+        elif isinstance(action, Action.UndoMoveLegion):
+            player = self.get_player_by_name(action.playername)
+            markername = action.markername
+            legion = player.legions[markername]
+            # Avoid double undo
+            if legion.moved:
+                self.undo_move_legion(action.playername, markername)
         elif isinstance(action, Action.DoneMoving):
             player = self.get_player_by_name(action.playername)
             if self.engagement_hexlabels():
@@ -494,6 +528,8 @@ class Game(Observed):
         elif isinstance(action, Action.RecruitCreature):
             self.recruit_creature(action.playername, action.markername, 
               action.creature_name)
+        elif isinstance(action, Action.UndoRecruit):
+            self.undo_recruit(action.playername, action.markername)
         elif isinstance(action, Action.DoneRecruiting):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.SPLIT

@@ -3,6 +3,7 @@ import time
 import zope.interface
 
 from Observer import IObserver
+import Action
 
 class User(pb.Avatar):
     """Perspective for a player or spectator."""
@@ -104,6 +105,19 @@ class User(pb.Avatar):
     def perspective_done_with_recruits(self, game_name):
         print "perspective_done_with_recruits", game_name
         self.server.done_with_recruits(self.name, game_name)
+
+    def perspective_apply_action(self, action):
+        """Pull the exact method and args out of the Action."""
+        print "perspective_apply_action", action
+        if isinstance(action, Action.UndoSplit):
+            self.server.undo_split(self.name, action.game_name, 
+              action.parent_markername, action.child_markername)
+        elif isinstance(action, Action.UndoMoveLegion):
+            self.server.undo_move_legion(self.name, action.game_name, 
+              action.markername)
+        elif isinstance(action, Action.UndoRecruit):
+            self.server.undo_move_legion(self.name, action.game_name,
+              action.markername)
 
     def __repr__(self):
         return "User " + self.name

@@ -86,8 +86,9 @@ class Legion(Observed):
     def undo_move(self):
         if self.moved:
             self.moved = False
-            self.hexlabel = self.previous_hexlabel
-            self.previous_hexlabel = None
+            # XXX This is bogus, but makes repainting the UI easier.
+            (self.hexlabel, self.previous_hexlabel) = (self.previous_hexlabel,
+              self.hexlabel)
             self.teleported = False
             self.entry_side = None
 
@@ -169,3 +170,15 @@ class Legion(Observed):
             action = Action.RecruitCreature(player.game_name, player.name,
               self.markername, creature.name)
             self.notify(action)
+
+    def undo_recruit(self):
+        """Undo last recruit, and notify observers."""
+        # Avoid double undo
+        if not self.recruited:
+            return
+        player = self.player
+        creature = self.creatures[-1]
+        self.recruited = False
+        action = Action.UndoRecruit(player.game_name, player.name,
+          self.markername, creature.name)
+        self.notify(action)

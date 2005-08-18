@@ -122,6 +122,22 @@ class Player(Observed):
           child_creature_names)
         self.notify(action)
 
+    def undo_split(self, parent_markername, child_markername):
+        parent = self.legions[parent_markername]
+        child = self.legions[child_markername]
+        parent_creature_names = parent.creature_names()
+        child_creature_names = child.creature_names()
+        parent.creatures += child.creatures
+        del self.legions[child_markername]
+        self.markernames.add(child.markername)
+        # TODO One action for our player with creature names, and a 
+        # different action for other players without.
+        action = Action.UndoSplit(self.game_name, self.name, 
+          parent_markername, child_markername, parent_creature_names, 
+          child_creature_names)
+        self.notify(action)
+
+
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
         return max([len(legion) for legion in self.legions.values()]) < 8

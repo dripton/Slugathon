@@ -145,6 +145,12 @@ class Server(Observed):
             game.split_legion(username, parent_markername, child_markername,
               parent_creaturenames, child_creaturenames)
 
+    def undo_split(self, username, game_name, parent_markername, 
+      child_markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.undo_split(username, parent_markername, child_markername)
+
     def done_with_splits(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
@@ -162,6 +168,11 @@ class Server(Observed):
             game.move_legion(username, markername, hexlabel, entry_side,
               teleport, teleporting_lord)
 
+    def undo_move_legion(self, username, game_name, markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.undo_move_legion(username, markername)
+
     def done_with_moves(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
@@ -171,6 +182,11 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             game.recruit_creature(username, markername, creature_name)
+
+    def undo_recruit(self, username, game_name, markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.undo_recruit(username, markername)
 
     def done_with_recruits(self, username, game_name):
         game = self.name_to_game(game_name)

@@ -309,18 +309,21 @@ class GUIMasterBoard(gtk.Window):
           hexlabel]
 
     def _add_missing_markers(self):
-        """Add markers for any legions that lack them.
-
-        Return a list of new markernames.
-        """
-        result = []
+        """Add markers for any legions that lack them."""
         for legion in self.game.all_legions():
             if legion.markername not in (marker.name for marker in 
               self.markers):
-                result.append(legion.markername)
                 marker = Marker.Marker(legion, self.scale)
                 self.markers.append(marker)
-        return result
+
+    def _remove_extra_markers(self):
+        """Remove markers for any legions that are no longer there."""
+        all_markernames = [legion.markername for legion in 
+          self.game.all_legions()]
+        hitlist = [marker for marker in self.markers 
+          if marker.name not in all_markernames]
+        for marker in hitlist:
+            self.markers.remove(marker)
 
     def _compute_marker_locations(self, hex1):
         mih = self.markers_in_hex(hex1)
@@ -356,6 +359,7 @@ class GUIMasterBoard(gtk.Window):
         if not self.game:
             return
         self._add_missing_markers()
+        self._remove_extra_markers()
         hexlabels = set((marker.legion.hexlabel for marker in self.markers))
         for hexlabel in hexlabels:
             self._compute_marker_locations(hexlabel)
@@ -498,10 +502,18 @@ class GUIMasterBoard(gtk.Window):
     def cb_about(self, action):
         About.About()
 
-    # TODO
     def cb_undo(self, action):
         print "undo", action
+        if self.game:
+            history = self.game.history
+            if history.can_undo(self.username):
+                last_action = history.actions[-1]
+                def1 = self.user.callRemote("apply_action", 
+                  last_action.undo_action())
+                def1.addErrback(self.failure)
 
+
+    # TODO
     def cb_redo(self, action):
         print "redo", action
 
@@ -514,7 +526,8 @@ class GUIMasterBoard(gtk.Window):
             player = self.game.get_player_by_name(action.playername)
             legion = player.legions.values()[0]
             self.highlight_tall_legions()
-        elif isinstance(action, Action.SplitLegion):
+        elif isinstance(action, Action.SplitLegion) or isinstance(action, 
+          Action.UndoSplit):
             self._splitting_legion = None
             player = self.game.get_player_by_name(action.playername)
             parent = player.legions[action.parent_markername]
@@ -526,11 +539,12 @@ class GUIMasterBoard(gtk.Window):
                 style = self.area.get_style()
                 gc = style.fg_gc[gtk.STATE_NORMAL]
                 self.update_gui(gc, style, [])
-        elif isinstance(action, Action.MoveLegion):
+        elif isinstance(action, Action.MoveLegion) or isinstance(action,
+          Action.UndoMoveLegion):
             self.selected_marker = None
             self.unselect_all()
             legion = self.game.find_legion(action.markername)
-            repaint_hexlabels = set([legion.hexlabel, 
+            repaint_hexlabels = set([legion.hexlabel,
               legion.previous_hexlabel])
             style = self.area.get_style()
             gc = style.fg_gc[gtk.STATE_NORMAL]
@@ -540,7 +554,8 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_engagements()
             elif self.game.phase == Phase.MUSTER:
                 self.highlight_recruits()
-        elif isinstance(action, Action.RecruitCreature):
+        elif isinstance(action, Action.RecruitCreature) or isinstance(action,
+          Action.UndoRecruit):
             self.highlight_recruits()
 
 
