@@ -10,6 +10,7 @@ import ImageDraw
 
 import guiutils
 import colors
+import config
 
 CHIT_SCALE_FACTOR = 3
 
@@ -74,8 +75,13 @@ class Chit(object):
         """Add creature name, power, and toughness to Image im"""
         if not self.creature:
             return
-        # XXX Un-hardcode font path; vary font size with scale
-        font = ImageFont.truetype("/usr/share/fonts/corefonts/courbd.ttf", 12)
+        if hasattr(config, "chit_font_path"):
+            font_path = config.chit_font_path
+        else:
+            font_path = "/usr/share/fonts/corefonts/courbd.ttf"
+        # TODO Vary font size with scale
+        font_size = 12
+        font = ImageFont.truetype(font_path, font_size)
         draw = ImageDraw.Draw(im)
         leng = im.size[0]
 
