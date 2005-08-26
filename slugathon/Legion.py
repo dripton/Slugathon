@@ -89,7 +89,9 @@ class Legion(Observed):
             # XXX This is bogus, but makes repainting the UI easier.
             (self.hexlabel, self.previous_hexlabel) = (self.previous_hexlabel,
               self.hexlabel)
-            self.teleported = False
+            if self.teleported:
+                self.teleported = False
+                self.player.teleported = False
             self.entry_side = None
 
     def _gen_sublists(self, recruits):
@@ -153,6 +155,7 @@ class Legion(Observed):
                     result_list.append(name)
         return result_list
 
+    # TODO caretaker
     def recruit(self, creature):
         """Recruit creature, and notify observers."""
         player = self.player
@@ -171,13 +174,14 @@ class Legion(Observed):
               self.markername, creature.name)
             self.notify(action)
 
+    # TODO caretaker
     def undo_recruit(self):
         """Undo last recruit, and notify observers."""
         # Avoid double undo
         if not self.recruited:
             return
         player = self.player
-        creature = self.creatures[-1]
+        creature = self.creatures.pop()
         self.recruited = False
         action = Action.UndoRecruit(player.game_name, player.name,
           self.markername, creature.name)
