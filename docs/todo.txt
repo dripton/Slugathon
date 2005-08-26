@@ -98,3 +98,6 @@ test_server.py seems somewhat timing-sensitive.  Sometimes throws an exception
 because the username is no longer in the dict?  Is this solvable in py.test,
 or do we need to use twisted.trial?
 
+Ugly repaints after undoing a legion split.  Need to erase the chits
+and redraw the hex (and possibly its neighbors)
+
