@@ -116,7 +116,7 @@ class User(pb.Avatar):
             self.server.undo_move_legion(self.name, action.game_name, 
               action.markername)
         elif isinstance(action, Action.UndoRecruit):
-            self.server.undo_move_legion(self.name, action.game_name,
+            self.server.undo_recruit(self.name, action.game_name,
               action.markername)
 
     def __repr__(self):
