@@ -527,9 +527,18 @@ class GUIMasterBoard(gtk.Window):
             legion = player.legions.values()[0]
             self.highlight_tall_legions()
 
-        elif isinstance(action, Action.SplitLegion) or isinstance(action, 
-          Action.UndoSplit):
+        elif isinstance(action, Action.SplitLegion):
             self._splitting_legion = None
+            self.highlight_tall_legions()
+
+        elif isinstance(action, Action.UndoSplit):
+            self._splitting_legion = None
+            legion = self.game.find_legion(action.markername)
+            repaint_hexlabels = set([legion.hexlabel,
+              legion.previous_hexlabel])
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, repaint_hexlabels)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.RollMovement):
@@ -547,12 +556,11 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(action.markername)
             repaint_hexlabels = set([legion.hexlabel,
               legion.previous_hexlabel])
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, repaint_hexlabels)
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
-            else:
-                style = self.area.get_style()
-                gc = style.fg_gc[gtk.STATE_NORMAL]
-                self.update_gui(gc, style, repaint_hexlabels)
 
         elif isinstance(action, Action.DoneMoving):
             if self.game.phase == Phase.FIGHT:
