@@ -526,12 +526,12 @@ class GUIMasterBoard(gtk.Window):
             player = self.game.get_player_by_name(action.playername)
             legion = player.legions.values()[0]
             self.highlight_tall_legions()
+
         elif isinstance(action, Action.SplitLegion) or isinstance(action, 
           Action.UndoSplit):
             self._splitting_legion = None
-            player = self.game.get_player_by_name(action.playername)
-            parent = player.legions[action.parent_markername]
             self.highlight_tall_legions()
+
         elif isinstance(action, Action.RollMovement):
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
@@ -539,6 +539,7 @@ class GUIMasterBoard(gtk.Window):
                 style = self.area.get_style()
                 gc = style.fg_gc[gtk.STATE_NORMAL]
                 self.update_gui(gc, style, [])
+
         elif isinstance(action, Action.MoveLegion) or isinstance(action,
           Action.UndoMoveLegion):
             self.selected_marker = None
@@ -546,17 +547,28 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(action.markername)
             repaint_hexlabels = set([legion.hexlabel,
               legion.previous_hexlabel])
-            style = self.area.get_style()
-            gc = style.fg_gc[gtk.STATE_NORMAL]
-            self.update_gui(gc, style, repaint_hexlabels)
+            if action.playername == self.username:
+                self.highlight_unmoved_legions()
+            else:
+                style = self.area.get_style()
+                gc = style.fg_gc[gtk.STATE_NORMAL]
+                self.update_gui(gc, style, repaint_hexlabels)
+
         elif isinstance(action, Action.DoneMoving):
             if self.game.phase == Phase.FIGHT:
                 self.highlight_engagements()
             elif self.game.phase == Phase.MUSTER:
                 self.highlight_recruits()
+
         elif isinstance(action, Action.RecruitCreature) or isinstance(action,
           Action.UndoRecruit):
             self.highlight_recruits()
+
+        elif isinstance(action, Action.DoneRecruiting):
+            if self.game.phase == Phase.SPLIT:
+                self.highlight_tall_legions()
+            elif self.game.phase == Phase.MOVE:
+                self.highlight_unmoved_legions()
 
 
 if __name__ == "__main__":
