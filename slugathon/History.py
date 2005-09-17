@@ -26,8 +26,7 @@ class History(object):
         prev = self.actions[-1]
         if hash(undo_action) != hash(prev):
             return
-        del self.actions[-1]
-        self.undone.append(prev)
+        self.undone.append(self.actions.pop())
 
     def update(self, observed, action):
         """Update history with a new action.
@@ -54,17 +53,11 @@ class History(object):
         if not self.actions:
             return False
         action = self.actions[-1]
-        if not action.undoable():
-            return False
-        if action.playername != playername:
-            return False
-        return True
+        return action.undoable() and action.playername == playername
 
     def can_redo(self, playername):
         """Return True iff playername can redo an undone action."""
         if not self.undone:
             return False
         action = self.undone[-1]
-        if action.playername != playername:
-            return False
-        return True
+        return action.playername == playername
