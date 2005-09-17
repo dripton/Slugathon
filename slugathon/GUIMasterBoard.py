@@ -389,11 +389,12 @@ class GUIMasterBoard(gtk.Window):
             # Also redraw neighbors, to clean up chit overdraw.
             guihexes = set()
             for hexlabel in hexlabels:
-                guihexes.add(self.guihexes[hexlabel])
-                masterhex = self.board.hexes[hexlabel]
-                for neighbor in masterhex.neighbors:
-                    if neighbor:
-                        guihexes.add(self.guihexes[neighbor.label])
+                if hexlabel in self.guihexes:
+                    guihexes.add(self.guihexes[hexlabel])
+                    masterhex = self.board.hexes[hexlabel]
+                    for neighbor in masterhex.neighbors:
+                        if neighbor:
+                            guihexes.add(self.guihexes[neighbor.label])
         for guihex in guihexes:
             guihex.update_gui(gc, style)
         self.draw_markers(gc)
@@ -533,7 +534,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.UndoSplit):
             self._splitting_legion = None
-            legion = self.game.find_legion(action.markername)
+            legion = self.game.find_legion(action.parent_markername)
             repaint_hexlabels = set([legion.hexlabel,
               legion.previous_hexlabel])
             style = self.area.get_style()
