@@ -17,6 +17,7 @@ class Legion(Observed):
         self.player = player
         self.moved = False
         self.teleported = False
+        self.teleporting_lord = None
         self.entry_side = None
         self.previous_hexlabel = None
         self.recruited = False
@@ -76,11 +77,12 @@ class Legion(Observed):
                 return False
         return True
 
-    def move(self, hexlabel, teleport, entry_side):
+    def move(self, hexlabel, teleport, teleporting_lord, entry_side):
         self.moved = True
         self.previous_hexlabel = self.hexlabel
         self.hexlabel = hexlabel
         self.teleported = teleport
+        self.teleporting_lord = teleporting_lord
         self.entry_side = entry_side
 
     def undo_move(self):
@@ -92,6 +94,7 @@ class Legion(Observed):
             if self.teleported:
                 self.teleported = False
                 self.player.teleported = False
+                self.teleporting_lord = None
             self.entry_side = None
 
     def _gen_sublists(self, recruits):
