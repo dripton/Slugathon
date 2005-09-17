@@ -8,7 +8,7 @@ class Action(pb.Copyable, pb.RemoteCopy):
         """Based on all the attributes of the Action, but not its class,
         so that an Action and its matching UndoAction have the same hash.
         """
-        return hash(tuple(self.__dict__.iteritems()))
+        return hash(tuple(sorted(list(self.__dict__.iteritems()))))
 
     def __eq__(self, other):
         """Based on all the attributes of the Action, and its class."""
@@ -188,16 +188,20 @@ class MoveLegion(Action):
 
     def undo_action(self):
         return UndoMoveLegion(self.game_name, self.playername, self.markername,
-          self.hexlabel)
+          self.hexlabel, self.entry_side, self.teleport, self.teleporting_lord)
 
 pb.setUnjellyableForClass(MoveLegion, MoveLegion)
 
 class UndoMoveLegion(UndoAction):
-    def __init__(self, game_name, playername, markername, hexlabel):
+    def __init__(self, game_name, playername, markername, hexlabel,
+      entry_side, teleport, teleporting_lord):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
         self.hexlabel = hexlabel
+        self.entry_side = entry_side
+        self.teleport = teleport
+        self.teleporting_lord = teleporting_lord
 pb.setUnjellyableForClass(UndoMoveLegion, UndoMoveLegion)
 
 class DoneMoving(Action):

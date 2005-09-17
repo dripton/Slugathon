@@ -394,7 +394,7 @@ class Game(Observed):
           teleport, teleporting_lord):
             raise AssertionError("illegal move attempt")
         # TODO reveal teleporting lord
-        legion.move(hexlabel, teleport, entry_side)
+        legion.move(hexlabel, teleport, teleporting_lord, entry_side)
         if teleport:
             player.teleported = True
         action = Action.MoveLegion(self.name, playername, markername, 
@@ -405,7 +405,8 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         action = Action.UndoMoveLegion(self.name, playername, markername, 
-          legion.hexlabel)
+          legion.hexlabel, legion.entry_side, legion.teleported, 
+          legion.teleporting_lord)
         legion.undo_move()
         self.notify(action)
 
@@ -489,14 +490,14 @@ class Game(Observed):
             # Avoid doing the same split twice.
             if not action.child_markername in player.legions:
                 self.split_legion(action.playername, action.parent_markername,
-                action.child_markername, action.parent_creature_names, 
-                 action.child_creature_names)
+                  action.child_markername, action.parent_creature_names, 
+                  action.child_creature_names)
         elif isinstance(action, Action.UndoSplit):
             player = self.get_player_by_name(action.playername)
             # Avoid doing the same split twice.
             if action.child_markername in player.legions:
                 self.undo_split(action.playername, action.parent_markername,
-                action.child_markername)
+                  action.child_markername)
         elif isinstance(action, Action.RollMovement):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.MOVE
