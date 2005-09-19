@@ -513,10 +513,14 @@ class GUIMasterBoard(gtk.Window):
                   last_action.undo_action())
                 def1.addErrback(self.failure)
 
-
-    # TODO
     def cb_redo(self, action):
         print "redo", action
+        if self.game:
+            history = self.game.history
+            if history.can_redo(self.username):
+                action = history.undone[-1]
+                def1 = self.user.callRemote("apply_action", action)
+                def1.addErrback(self.failure)
 
     def failure(self, arg):
         print "GUIMasterBoard.failure", arg

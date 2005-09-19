@@ -118,6 +118,21 @@ class User(pb.Avatar):
         elif isinstance(action, Action.UndoRecruit):
             self.server.undo_recruit(self.name, action.game_name,
               action.markername)
+        elif isinstance(action, Action.SplitLegion):
+            self.server.split_legion(self.name, action.game_name, 
+              action.parent_markername, action.child_markername, 
+              action.parent_creature_names, action.child_creature_names)
+        elif isinstance(action, Action.MoveLegion):
+            self.server.move_legion(self.name, action.game_name, 
+              action.markername, action.hexlabel, action.entry_side, 
+              action.teleport, action.teleporting_lord)
+        elif isinstance(action, Action.DoneMoving):
+            self.server.done_with_moves(self.name, action.game_name)
+        elif isinstance(action, Action.RecruitCreature):
+            self.server.recruit_creature(self.name, action.game_name, 
+              action.markername, action.creature_name)
+        elif isinstance(action, Action.DoneRecruiting):
+            self.server.done_with_recruits(self.name, action.game_name)
 
     def __repr__(self):
         return "User " + self.name
