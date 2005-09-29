@@ -13,6 +13,30 @@ def init_all_labels():
 
 all_labels = init_all_labels()
 
+def label_to_coords(label):
+    """Convert a hex label to X and Y coordinates, starting at the 
+    bottom left.
+   
+    5          *
+    4    *  *  *  *  *
+    3 *  *  *  *  *  *
+    2 *  *  *  *  *  *
+    1 *  *  *  *  *  *
+    0       *  *  *
+      0  1  2  3  4  5
+     
+    """
+    if label not in all_labels:
+        raise KeyError, "bad battle hex label"
+    letter = label[0]
+    xx = ord(letter) - ord("A")
+    number = label[1]
+    if 2 <= xx <= 4:
+        yy = int(number) - 1
+    else:
+        yy = int(number)
+    return (xx, yy)
+
 
 class BattleMap(object):
     """A logical battle map.  No GUI code.

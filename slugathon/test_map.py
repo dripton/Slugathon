@@ -35,3 +35,21 @@ def test_non_default_hex_init():
     assert hex3.borders[4] == "c"
     assert hex3.borders[5] == "s"
 
+def test_label_to_coords():
+    assert BattleMap.label_to_coords("A1") == (0,1)
+    assert BattleMap.label_to_coords("B1") == (1,1)
+    assert BattleMap.label_to_coords("C1") == (2,0)
+    assert BattleMap.label_to_coords("D1") == (3,0)
+    assert BattleMap.label_to_coords("E1") == (4,0)
+    assert BattleMap.label_to_coords("F1") == (5,1)
+    assert BattleMap.label_to_coords("A3") == (0,3)
+    assert BattleMap.label_to_coords("D6") == (3,5)
+    assert BattleMap.label_to_coords("E4") == (4,3)
+    for label in ("", "A0", "A4", "A10", "G1"):
+        try:
+            BattleMap.label_to_coords(label)
+        except KeyError:
+            pass
+        else:
+            py.test.fail()
+
