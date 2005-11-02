@@ -57,6 +57,7 @@ ui_string = """<ui>
 
 
 class GUIMasterBoard(gtk.Window):
+    """GUI representation of the masterboard."""
 
     zope.interface.implements(IObserver)
 
@@ -145,6 +146,7 @@ class GUIMasterBoard(gtk.Window):
         self.clicked_on_background(area, event)
         return True
 
+    # XXX Move this.
     def _all_teleports(self, moves):
         """Return True iff all the move tuples in moves are teleports"""
         for move in moves:
@@ -287,10 +289,8 @@ class GUIMasterBoard(gtk.Window):
         def1.addErrback(self.failure)
 
     def compute_scale(self):
-        """Return the maximum scale that let the board fit on the screen
-        
-        This is approximate not exact.
-        """
+        """Return the approximate maximum scale that let the board fit on 
+        the screen."""
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
         xscale = math.floor(width / (self.board.hex_width() * 4. + 2))
@@ -299,9 +299,11 @@ class GUIMasterBoard(gtk.Window):
         return int(min(xscale, yscale))
 
     def compute_width(self):
+        """Return the width of the board in pixels."""
         return int(math.ceil(self.scale * (self.board.hex_width() * 4 + 2)))
 
     def compute_height(self):
+        """Return the height of the board in pixels."""
         return int(math.ceil(self.scale * self.board.hex_height() * 4 * SQRT3))
 
     def markers_in_hex(self, hexlabel):
