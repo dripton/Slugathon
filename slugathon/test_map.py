@@ -1,4 +1,5 @@
 import BattleMap
+import guiutils
 
 map1 = BattleMap.BattleMap("Mountains")
 hex1 = map1.hexes["A1"]
@@ -53,3 +54,13 @@ def test_label_to_coords():
         else:
             py.test.fail()
 
+def test_midpoint():
+    point1 = (1, 0) 
+    point2 = (6, 3)
+    assert guiutils.midpoint((1, 0), (6, 3)) == (3.5, 1.5)
+
+def test_roundpoint():
+    assert guiutils.roundpoint((1, 2)) == (1, 2)
+    assert guiutils.roundpoint((1., 2.)) == (1, 2)
+    assert guiutils.roundpoint((1.5, 2.4999)) == (2, 2)
+    assert guiutils.roundpoint((-0.3, 9.5)) == (0, 10)

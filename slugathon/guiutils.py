@@ -111,6 +111,15 @@ def point_in_polygon(point, vertexes):
             crossings += 1
     return crossings & 1
 
+def midpoint(point1, point2):
+    """Return a point midway between two points."""
+    xx = (point1[0] + point2[0]) / 2.
+    yy = (point1[1] + point2[1]) / 2.
+    return (xx, yy)
+
+def roundpoint(point):
+    """Return a point with both coordinates rounded to integers."""
+    return (int(round(point[0])), int(round(point[1])))
 
 def die(*unused):
     """Quit the program."""
