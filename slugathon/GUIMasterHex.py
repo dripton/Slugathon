@@ -16,6 +16,8 @@ RAD_TO_DEG = 180. / math.pi
 x_font_position = [0.5, 0.75, 0.75, 0.5, 0.25, 0.25]
 y_font_position = [0.1, 0.125, 0.875, 0.95, 0.875, 0.125]
 
+rp = guiutils.roundpoint
+
 class GUIMasterHex(object):
     def __init__(self, masterhex, guiboard):
         self.masterhex = masterhex
@@ -35,8 +37,7 @@ class GUIMasterHex(object):
         iv = guiutils.scale_polygon(self.vertexes, 0.7)
         self.inner_vertexes = []
         for point in iv:
-            self.inner_vertexes.append((int(round(point[0])),
-                                       int(round(point[1]))))
+            self.inner_vertexes.append(rp(point))
         self.init_overlay()
 
 
@@ -55,23 +56,17 @@ class GUIMasterHex(object):
         if self.masterhex.inverted:
             self.vertexes[0] = (cx + scale, cy)
             self.vertexes[1] = (cx + 5 * scale, cy)
-            self.vertexes[2] = (cx + 6 * scale, int(round(cy + SQRT3 * scale)))
-            self.vertexes[3] = (cx + 4 * scale,
-                                int(round(cy + 3 * SQRT3 * scale)))
-            self.vertexes[4] = (cx + 2 * scale, 
-                               int(round(cy + 3 * SQRT3 * scale)))
-            self.vertexes[5] = (cx, int(round(cy + SQRT3 * scale)))
+            self.vertexes[2] = rp((cx + 6 * scale, cy + SQRT3 * scale))
+            self.vertexes[3] = rp((cx + 4 * scale, cy + 3 * SQRT3 * scale))
+            self.vertexes[4] = rp((cx + 2 * scale, cy + 3 * SQRT3 * scale))
+            self.vertexes[5] = rp((cx, cy + SQRT3 * scale))
         else:
             self.vertexes[0] = (cx + 2 * scale, cy)
             self.vertexes[1] = (cx + 4 * scale, cy)
-            self.vertexes[2] = (cx + 6 * scale, 
-                                int(round(cy + 2 * SQRT3 * scale)))
-            self.vertexes[3] = (cx + 5 * scale, 
-                                int(round(cy + 3 * SQRT3 * scale)))
-            self.vertexes[4] = (cx + scale, 
-                                int(round(cy + 3 * SQRT3 * scale)))
-            self.vertexes[5] = (cx, 
-                                int(round(cy + 2 * SQRT3 * scale)))
+            self.vertexes[2] = rp((cx + 6 * scale, cy + 2 * SQRT3 * scale))
+            self.vertexes[3] = rp((cx + 5 * scale, cy + 3 * SQRT3 * scale))
+            self.vertexes[4] = rp((cx + scale, cy + 3 * SQRT3 * scale))
+            self.vertexes[5] = rp((cx, cy + 2 * SQRT3 * scale))
 
 
     def draw_hexagon(self, gc, style):
@@ -139,9 +134,7 @@ class GUIMasterHex(object):
                 li.reverse()
                 gp.extend(li)
             ap.extend(gp)
-        self.points = []
-        for point in ap:
-            self.points.append((int(round(point[0])), int(round(point[1]))))
+        self.points = [rp(point) for point in ap]
 
     def init_gate(self, vx1, vy1, vx2, vy2, gate_type):
         """Setup gate on one entrance / exit hexside."""
