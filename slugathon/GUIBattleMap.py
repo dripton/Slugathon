@@ -16,6 +16,8 @@ import icon
 import guiutils
 import GUIBattleHex
 
+SQRT3 = math.sqrt(3.0)
+
 
 class GUIBattleMap(gtk.Window):
     """GUI representation of a battlemap.
@@ -50,6 +52,9 @@ class GUIBattleMap(gtk.Window):
         self.set_title("Slugathon - BattleMap - %s" % self.username)
         self.connect("destroy", guiutils.die)
 
+        self.vbox = gtk.VBox()
+        self.add(self.vbox)
+
         if scale is None:
             self.scale = self.compute_scale()
         else:
@@ -61,6 +66,7 @@ class GUIBattleMap(gtk.Window):
         self.area.set_size_request(self.compute_width(), self.compute_height())
         # TODO Vary font size with scale
         self.area.modify_font(pango.FontDescription("monospace 8"))
+        self.vbox.pack_start(self.area)
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.values():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
@@ -75,20 +81,21 @@ class GUIBattleMap(gtk.Window):
         screen."""
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
-        xscale = math.floor(width / self.battlemap.hex_width())
-        yscale = math.floor(height / self.battlemap.hex_height())
+        # The -2 is a fudge factor to leave room on the sides.
+        xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 2
+        # The -3 is a fudge factor for menus and toolbars.
+        yscale = math.floor(height / (2 * SQRT3 * 
+          self.battlemap.hex_height())) - 3
         return int(min(xscale, yscale))
 
     def compute_width(self):
         """Return the width of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_width())) 
+        return int(math.ceil(self.scale * self.battlemap.hex_width() * 4)) 
 
     def compute_height(self):
         """Return the height of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_height()))
-
-    def update(self, observed, action):
-        print "GUIBattleMap.update", observed, action
+        return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 * 
+          SQRT3))
 
     def cb_area_expose(self, area, event):
         style = self.area.get_style()
@@ -111,6 +118,17 @@ class GUIBattleMap(gtk.Window):
 
     def clicked_on_hex(self, area, event, guihex):
         print "clicked on hex", area, event, guihex
+
+    def update_gui(self, gc, style, hexlabels=None):
+        if hexlabels is None:
+            guihexes = self.guihexes.values()
+        else:
+            guihexes = set(self.guihexes[hexlabel] for hexlabel in hexlabels)
+        for guihex in guihexes:
+            guihex.update_gui(gc, style)
+
+    def update(self, observed, action):
+        print "GUIBattleMap.update", observed, action
 
 
 if __name__ == "__main__":

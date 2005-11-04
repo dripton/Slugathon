@@ -12,26 +12,35 @@ import colors
 SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
 
+# Where to place the label, by hexside.  Derived experimentally.
+x_font_position = [0.5, 0.75, 0.75, 0.5, 0.25, 0.25]
+y_font_position = [0.1, 0.125, 0.875, 0.95, 0.875, 0.125]
+
+rp = guiutils.roundpoint
+
 
 class GUIBattleHex(object):
     def __init__(self, battlehex, guimap):
         self.battlehex = battlehex
         self.guimap = guimap
         scale = self.guimap.scale
-        self.cx = battlehex.x * 4 * scale
-        self.cy = battlehex.y * 4 * SQRT3 * scale
+        # Leftmost point
+        self.cx = battlehex.x * 3 * scale
+        # Uppermost point
+        self.cy = battlehex.y * 2 * SQRT3 * scale
         if battlehex.down:
             self.cy += SQRT3 * scale
         self.fillcolor = self.find_fillcolor()
-        self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False
 
         self.init_vertexes()
+        self.center = rp(guiutils.midpoint(self.vertexes[0], self.vertexes[3]))
+        self.bboxsize = rp((self.vertexes[2][0] - self.vertexes[5][0], 
+          self.vertexes[3][1] - self.vertexes[0][1]))
         iv = guiutils.scale_polygon(self.vertexes, 0.7)
         self.inner_vertexes = []
         for point in iv:
-            self.inner_vertexes.append((int(round(point[0])),
-                                       int(round(point[1]))))
+            self.inner_vertexes.append(rp(point))
         self.init_overlay()
 
     def find_fillcolor(self):
@@ -54,12 +63,15 @@ class GUIBattleHex(object):
         cx = self.cx
         cy = self.cy
         scale = self.guimap.scale
-        self.vertexes[0] = (cx, cy)
-        self.vertexes[1] = (cx + 2 * scale, cy)
-        self.vertexes[2] = (cx + 3 * scale, int(round(cy + SQRT3 * scale)))
-        self.vertexes[3] = (cx + 2 * scale, int(round(cy + 2 * SQRT3 * scale)))
-        self.vertexes[4] = (cx, int(round(cy + 2 * SQRT3 * scale)))
-        self.vertexes[5] = (cx - scale, int(round(cy + SQRT3 * scale)))
+        self.vertexes[0] = rp((cx + scale, cy))
+        self.vertexes[1] = rp((cx + 3 * scale, cy))
+        self.vertexes[2] = rp((cx + 4 * scale, cy + SQRT3 * scale))
+        self.vertexes[3] = rp((cx + 3 * scale, cy + 2 * SQRT3 * scale))
+        self.vertexes[4] = rp((cx + scale, cy + 2 * SQRT3 * scale))
+        self.vertexes[5] = rp((cx, cy + SQRT3 * scale))
+
+        # TODO Move the points in a bit.
+        self.points = self.vertexes[:]
 
 
     def draw_hexagon(self, gc, style):
@@ -99,15 +111,12 @@ class GUIBattleHex(object):
             self.guimap.area.window.draw_polygon(gc, False, self.points)
 
 
-
-
     def init_overlay(self):
         """Setup the overlay with terrain name and image."""
         overlay_filename = self.battlehex.overlay_filename
         if overlay_filename is None:
             return
         scale = self.guimap.scale
-        self.bboxsize = (6 * scale, int(3 * SQRT3 * scale))
 
         myboxsize = [0.85 * mag for mag in self.bboxsize]
         self.dest_x = int(round(self.center[0] - myboxsize[0] / 2.))
@@ -157,3 +166,5 @@ class GUIBattleHex(object):
     def toggle_selection(self):
         self.selected = not self.selected
 
+    def __repr__(self):
+        return "GUIBattleHex %s" % self.battlehex.label
