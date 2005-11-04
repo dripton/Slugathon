@@ -180,3 +180,20 @@ terrain_colors = {
     "Woods": "olive",
 }
 
+battle_terrain_colors = {
+    "Plains": "light_olive",
+    ("Plains", 1): "dark_yellow",
+    ("Plains", 2): "light_yellow",
+    "Tower": "dim_gray",
+    ("Tower", 1): "dark_gray",
+    ("Tower", 2): "gray",
+    "Bramble": "green",
+    ("Bramble", 1): "bramble_green1",
+    ("Bramble", 2): "bramble_green2",
+    "Sand": "orange",
+    "Tree": "brown",
+    "Bog": "gray",
+    "Volcano": "dark_red",
+    "Drift": "blue",
+}
+
