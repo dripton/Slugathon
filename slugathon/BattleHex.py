@@ -26,8 +26,9 @@ class BattleHex(object):
         self.borders = []
         for ii in xrange(6):
             self.borders.append(borderdict.get(ii, " "))
-        self.down = ((self.x + self.y) & 1 == 0)
+        self.down = (self.x & 1 == 0)
         self.build_overlay_filename()
+        self.label_side = 5
 
     def build_overlay_filename(self):
         if self.terrain == "Plains":
