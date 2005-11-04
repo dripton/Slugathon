@@ -14,8 +14,10 @@ def init_all_labels():
 all_labels = init_all_labels()
 
 def label_to_coords(label):
-    """Convert a hex label to X and Y coordinates, starting at the 
+    """Convert a hex label to a tuple of X and Y coordinates, starting at the
     bottom left.
+
+    This works on the unrotated map.
    
     5          *
     4    *  *  *  *  *
@@ -60,7 +62,19 @@ class BattleMap(object):
         self.hexes = {}
         mydata = battlemapdata.data[terrain]
         for label in all_labels:
+            x, y = label_to_coords(label)
             if label in mydata:
-                self.hexes[label] = BattleHex.BattleHex(*mydata[label])
+                self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
+                  *mydata[label])
             else:
-                self.hexes[label] = BattleHex.BattleHex("Plains", 0, {})
+                self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
+                  "Plains", 0, {})
+
+    def hex_width(self):
+        """Width of the map, in hexes."""
+        return 6
+
+    def hex_height(self):
+        """Height of the map, in hexes."""
+        return 6
+
