@@ -11,14 +11,14 @@ Omitted hexes default to Plains, elevation 0, no borders
 
 data = {
     "Brush": {
-        "A1": ("Brambles", 0, {}),
-        "B3": ("Brambles", 0, {}),
-        "C2": ("Brambles", 0, {}),
-        "D2": ("Brambles", 0, {}),
-        "D5": ("Brambles", 0, {}),
-        "D6": ("Brambles", 0, {}),
-        "E3": ("Brambles", 0, {}),
-        "F1": ("Brambles", 0, {}),
+        "A1": ("Bramble", 0, {}),
+        "B3": ("Bramble", 0, {}),
+        "C2": ("Bramble", 0, {}),
+        "D2": ("Bramble", 0, {}),
+        "D5": ("Bramble", 0, {}),
+        "D6": ("Bramble", 0, {}),
+        "E3": ("Bramble", 0, {}),
+        "F1": ("Bramble", 0, {}),
     }, 
 
     "Desert": {
@@ -46,15 +46,15 @@ data = {
     },
 
     "Jungle": {
-        "A2": ("Brambles", 0, {}),
+        "A2": ("Bramble", 0, {}),
         "B1": ("Tree", 1, {}),
-        "C1": ("Brambles", 0, {}),
-        "C3": ("Brambles", 0, {}),
-        "C5": ("Brambles", 0, {}),
-        "D3": ("Brambles", 0, {}),
+        "C1": ("Bramble", 0, {}),
+        "C3": ("Bramble", 0, {}),
+        "C5": ("Bramble", 0, {}),
+        "D3": ("Bramble", 0, {}),
         "D4": ("Tree", 1, {}),
-        "E4": ("Brambles", 0, {}),
-        "F1": ("Brambles", 0, {}),
+        "E4": ("Bramble", 0, {}),
+        "F1": ("Bramble", 0, {}),
         "F2": ("Tree", 1, {}),
     },
 
