@@ -37,10 +37,6 @@ class GUIBattleHex(object):
         self.center = rp(guiutils.midpoint(self.vertexes[0], self.vertexes[3]))
         self.bboxsize = rp((self.vertexes[2][0] - self.vertexes[5][0], 
           self.vertexes[3][1] - self.vertexes[0][1]))
-        iv = guiutils.scale_polygon(self.vertexes, 0.7)
-        self.inner_vertexes = []
-        for point in iv:
-            self.inner_vertexes.append(rp(point))
         self.init_overlay()
 
     def find_fillcolor(self):
@@ -70,8 +66,12 @@ class GUIBattleHex(object):
         self.vertexes[4] = rp((cx + scale, cy + 2 * SQRT3 * scale))
         self.vertexes[5] = rp((cx, cy + SQRT3 * scale))
 
-        # TODO Move the points in a bit.
-        self.points = self.vertexes[:]
+        self.inner_vertexes = []
+        iv = guiutils.scale_polygon(self.vertexes, 0.9)
+        for point in iv:
+            self.inner_vertexes.append(rp(point))
+
+        self.points = self.inner_vertexes[:]
 
 
     def draw_hexagon(self, gc, style):
@@ -91,8 +91,7 @@ class GUIBattleHex(object):
             # inner hex
             fg = colormap.alloc_color(*self.fillcolor)
             gc.foreground = fg
-            self.guimap.area.window.draw_polygon(gc, True,
-                self.inner_vertexes)
+            self.guimap.area.window.draw_polygon(gc, True, self.inner_vertexes)
 
             # outline
             fg = colormap.alloc_color("black")
