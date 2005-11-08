@@ -118,6 +118,10 @@ class GUIBattleMap(gtk.Window):
 
     def clicked_on_hex(self, area, event, guihex):
         print "clicked on hex", area, event, guihex
+        guihex.toggle_selection()
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
+        self.update_gui(gc, style, [guihex.battlehex.label])
 
     def update_gui(self, gc, style, hexlabels=None):
         if hexlabels is None:
