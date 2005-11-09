@@ -196,3 +196,14 @@ class TestDice(object):
             s.add(tuple(lst))
         # We are highly unlikely to get a duplicate.  Though it's possible...
         assert len(s) == num_shuffles + 1
+
+    def test_chi_square(self):
+        chi_square = 0
+        for roll, num in self.bins.items():
+            expected = self.trials / 6.0
+            chi_square += (num - expected) ** 2.0 / expected
+        chi_square /= self.trials - 1
+        print "chi_square is", chi_square
+        # degrees of freedom = 5, 99.5% chance of randomness
+        assert chi_square < 0.4117
+
