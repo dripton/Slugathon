@@ -14,7 +14,7 @@ RAD_TO_DEG = 180. / math.pi
 
 # Where to place the label, by hexside.  Derived experimentally.
 x_font_position = [0.5, 0.75, 0.75, 0.5, 0.25, 0.25]
-y_font_position = [0.1, 0.125, 0.875, 0.95, 0.875, 0.125]
+y_font_position = [0.2, 0.2, 0.8, 0.85, 0.8, 0.2]
 
 rp = guiutils.roundpoint
 
@@ -136,14 +136,12 @@ class GUIBattleHex(object):
           -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
 
-    def draw_label(self, gc, style):
+    def draw_label(self, gc, style, label, side):
         """Display the hex label."""
-        label = str(self.battlehex.label)
         layout = self.guimap.area.create_pango_layout(label)
         text_width, text_height = layout.get_pixel_size()
         half_text_width = 0.5 * text_width
         half_text_height = 0.5 * text_height
-        side = self.battlehex.label_side
 
         x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
                 half_text_width)))
@@ -160,7 +158,10 @@ class GUIBattleHex(object):
     def update_gui(self, gc, style):
         self.draw_hexagon(gc, style)
         self.draw_overlay(gc, style)
-        self.draw_label(gc, style)
+        self.draw_label(gc, style, self.battlehex.label, 
+          self.battlehex.label_side)
+        self.draw_label(gc, style, self.battlehex.terrain, 
+          self.battlehex.terrain_side)
 
     def toggle_selection(self):
         self.selected = not self.selected

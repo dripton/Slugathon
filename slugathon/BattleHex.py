@@ -29,6 +29,7 @@ class BattleHex(object):
         self.down = (self.x & 1 == 0)
         self.build_overlay_filename()
         self.label_side = 5
+        self.terrain_side = 3
 
     def build_overlay_filename(self):
         if self.terrain == "Plains":
