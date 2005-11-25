@@ -136,7 +136,14 @@ class GUIBattleMap(gtk.Window):
 
 
 if __name__ == "__main__":
-    battlemap = BattleMap.BattleMap("Brush")
+    import random
+    import battlemapdata
+    import sys
+    if len(sys.argv) > 1:
+        terrain = sys.argv[1].title()
+    else:
+        terrain = random.choice(battlemapdata.data.keys())
+    battlemap = BattleMap.BattleMap(terrain)
     guimap = GUIBattleMap(battlemap, 1)
     while True:
         gtk.main_iteration()
