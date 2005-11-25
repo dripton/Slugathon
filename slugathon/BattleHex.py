@@ -27,13 +27,5 @@ class BattleHex(object):
         for ii in xrange(6):
             self.borders.append(borderdict.get(ii, " "))
         self.down = (self.x & 1 == 0)
-        self.build_overlay_filename()
         self.label_side = 5
         self.terrain_side = 3
-
-    def build_overlay_filename(self):
-        if self.terrain == "Plains":
-            self.overlay_filename = None
-        else:
-            self.overlay_filename = "%s.png" % self.terrain
-

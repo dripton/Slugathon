@@ -13,7 +13,7 @@ SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
 
 # Where to place the label, by hexside.  Derived experimentally.
-x_font_position = [0.5, 0.75, 0.75, 0.5, 0.25, 0.25]
+x_font_position = [0.5, 0.7, 0.7, 0.5, 0.3, 0.3]
 y_font_position = [0.2, 0.2, 0.8, 0.85, 0.8, 0.2]
 
 rp = guiutils.roundpoint
@@ -37,6 +37,7 @@ class GUIBattleHex(object):
         self.center = rp(guiutils.midpoint(self.vertexes[0], self.vertexes[3]))
         self.bboxsize = rp((self.vertexes[2][0] - self.vertexes[5][0], 
           self.vertexes[3][1] - self.vertexes[0][1]))
+        self.pixbuf = None
         self.init_overlay()
 
     def find_fillcolor(self):
@@ -111,25 +112,29 @@ class GUIBattleHex(object):
 
 
     def init_overlay(self):
-        """Setup the overlay with terrain name and image."""
-        overlay_filename = self.battlehex.overlay_filename
-        if overlay_filename is None:
+        """Setup the overlay with terrain name and image.
+        
+        TODO Also handle border hexside overlays.
+        """
+        overlay_filename = "%s.png" % self.battlehex.terrain
+        image_filename = os.path.join("../images/battlehex", 
+          overlay_filename)
+        if not os.path.exists(image_filename):
             return
+
         scale = self.guimap.scale
 
         myboxsize = [0.85 * mag for mag in self.bboxsize]
         self.dest_x = int(round(self.center[0] - myboxsize[0] / 2.))
         self.dest_y = int(round(self.center[1] - myboxsize[1] / 2.))
 
-        image_filename = os.path.join("../images/battlehex", 
-          overlay_filename)
         pixbuf = gtk.gdk.pixbuf_new_from_file(image_filename)
         self.pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
 
     def draw_overlay(self, gc, style):
-        if self.battlehex.overlay_filename is None:
+        if self.pixbuf is None:
             return
         drawable = self.guimap.area.window
         drawable.draw_pixbuf(gc, self.pixbuf, 0, 0, self.dest_x, self.dest_y,
