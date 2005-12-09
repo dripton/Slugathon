@@ -15,26 +15,26 @@ def test_default_hex_init():
     assert hex1.terrain == "Plains"
     assert hex1.elevation == 0
     for ii in xrange(6):
-        assert hex1.borders[ii] == " "
+        assert hex1.borders[ii] is None
 
 def test_non_default_hex_init():
     assert hex2.terrain == "Plains"
     assert hex2.elevation == 1
-    assert hex2.borders[0] == "s"
-    assert hex2.borders[1] == " "
-    assert hex2.borders[2] == " "
-    assert hex2.borders[3] == " "
-    assert hex2.borders[4] == " "
-    assert hex2.borders[5] == " "
+    assert hex2.borders[0] == "Slope"
+    assert hex2.borders[1] is None
+    assert hex2.borders[2] is None
+    assert hex2.borders[3] is None
+    assert hex2.borders[4] is None
+    assert hex2.borders[5] is None
 
     assert hex3.terrain == "Volcano"
     assert hex3.elevation == 2
-    assert hex3.borders[0] == "s"
-    assert hex3.borders[1] == "s"
-    assert hex3.borders[2] == "s"
-    assert hex3.borders[3] == "s"
-    assert hex3.borders[4] == "c"
-    assert hex3.borders[5] == "s"
+    assert hex3.borders[0] == "Slope"
+    assert hex3.borders[1] == "Slope"
+    assert hex3.borders[2] == "Slope"
+    assert hex3.borders[3] == "Slope"
+    assert hex3.borders[4] == "Cliff"
+    assert hex3.borders[5] == "Slope"
 
 def test_label_to_coords():
     assert BattleMap.label_to_coords("A1") == (0,1)
