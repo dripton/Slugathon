@@ -22,10 +22,10 @@ class BattleHex(object):
         self.y = y
         self.terrain = terrain
         self.elevation = elevation
-        # XXX borders should probably not be 1-char strings
+        # TODO Perhaps borders should be objects rather than strings?
         self.borders = []
         for ii in xrange(6):
-            self.borders.append(borderdict.get(ii, " "))
+            self.borders.append(borderdict.get(ii))
         self.down = (self.x & 1 == 0)
         self.label_side = 5
         self.terrain_side = 3
