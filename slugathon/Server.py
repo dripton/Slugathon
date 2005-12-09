@@ -206,8 +206,8 @@ class Options(usage.Options):
     ]
 
 
-def main(config):
-    port = int(config["port"])
+def main(options):
+    port = int(options["port"])
 
     server = Server()
     realm = Realm.Realm(server)
@@ -220,11 +220,11 @@ def main(config):
 
 
 if __name__ == "__main__":
-    config = Options()
+    options = Options()
     try:
-        config.parseOptions()
+        options.parseOptions()
     except usage.UsageError, errortext:
         print "%s: %s" % (sys.argv[0], errortext)
         print "%s: Try --help for usage details." % (sys.argv[0])
         sys.exit(1)
-    main(config)
+    main(options)
