@@ -18,6 +18,8 @@ y_font_position = [0.2, 0.2, 0.8, 0.85, 0.8, 0.2]
 
 rp = guiutils.roundpoint
 
+IMAGE_DIR = "../images/battlehex"
+
 
 class GUIBattleHex(object):
     def __init__(self, battlehex, guimap):
@@ -35,10 +37,14 @@ class GUIBattleHex(object):
 
         self.init_vertexes()
         self.center = rp(guiutils.midpoint(self.vertexes[0], self.vertexes[3]))
-        self.bboxsize = rp((self.vertexes[2][0] - self.vertexes[5][0], 
+        self.bboxsize = rp((self.vertexes[2][0] - self.vertexes[5][0],
           self.vertexes[3][1] - self.vertexes[0][1]))
-        self.pixbuf = None
-        self.init_overlay()
+        self.hex_pixbuf = None
+        self.hex_pixbuf_x = None
+        self.hex_pixbuf_y = None
+        self.border_pixbufs = []
+        self.init_hex_overlay()
+        self.init_border_overlays()
 
     def find_fillcolor(self):
         terrain = self.battlehex.terrain
@@ -111,35 +117,60 @@ class GUIBattleHex(object):
             self.guimap.area.window.draw_polygon(gc, False, self.points)
 
 
-    def init_overlay(self):
-        """Setup the overlay with terrain name and image.
-        
-        TODO Also handle border hexside overlays.
-        """
+    def init_hex_overlay(self):
+        """Setup the overlay with terrain name and image."""
         overlay_filename = "%s.png" % self.battlehex.terrain
-        image_filename = os.path.join("../images/battlehex", 
-          overlay_filename)
-        if not os.path.exists(image_filename):
+        image_path = os.path.join(IMAGE_DIR, overlay_filename)
+        if not os.path.exists(image_path):
             return
-
-        scale = self.guimap.scale
 
         myboxsize = [0.85 * mag for mag in self.bboxsize]
-        self.dest_x = int(round(self.center[0] - myboxsize[0] / 2.))
-        self.dest_y = int(round(self.center[1] - myboxsize[1] / 2.))
+        self.hex_pixbuf_x = int(round(self.center[0] - myboxsize[0] / 2.))
+        self.hex_pixbuf_y = int(round(self.center[1] - myboxsize[1] / 2.))
 
-        pixbuf = gtk.gdk.pixbuf_new_from_file(image_filename)
-        self.pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
+        pixbuf = gtk.gdk.pixbuf_new_from_file(image_path)
+        self.hex_pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
+    def init_border_overlays(self):
+        """Setup the overlays for each border."""
+        for hexside, border in enumerate(self.battlehex.borders):
+            overlay_filename = "%s.png" % border
+            image_path = os.path.join(IMAGE_DIR, overlay_filename)
+            if not os.path.exists(image_path):
+                self.border_pixbufs.append(None)
+                continue
 
-    def draw_overlay(self, gc, style):
-        if self.pixbuf is None:
+            # TODO Remove all but this hexside.
+
+            myboxsize = [0.97 * mag for mag in self.bboxsize]
+
+            pixbuf = gtk.gdk.pixbuf_new_from_file(image_path)
+            border_pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
+              int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
+            self.border_pixbufs.append(border_pixbuf)
+
+    def draw_hex_overlay(self, gc, style):
+        """Draw the main terrain overlay for the hex."""
+        if self.hex_pixbuf is None:
             return
         drawable = self.guimap.area.window
-        drawable.draw_pixbuf(gc, self.pixbuf, 0, 0, self.dest_x, self.dest_y,
-          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+        drawable.draw_pixbuf(gc, self.hex_pixbuf, 0, 0, self.hex_pixbuf_x,
+          self.hex_pixbuf_y, -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
+    def draw_border_overlays(self, gc, style):
+        """Draw the overlays for all borders that have them."""
+        if self.hex_pixbuf_x is None:
+            return
+        for hexside, border in enumerate(self.battlehex.borders):
+            if border:
+                drawable = self.guimap.area.window
+                print (gc, self.border_pixbufs[hexside], 0, 0, 
+                  self.hex_pixbuf_x, self.hex_pixbuf_y, -1, -1, 
+                  gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+                drawable.draw_pixbuf(gc, self.border_pixbufs[hexside], 0, 0, 
+                  self.hex_pixbuf_x, self.hex_pixbuf_y, -1, -1, 
+                  gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
     def draw_label(self, gc, style, label, side):
         """Display the hex label."""
@@ -162,10 +193,11 @@ class GUIBattleHex(object):
 
     def update_gui(self, gc, style):
         self.draw_hexagon(gc, style)
-        self.draw_overlay(gc, style)
-        self.draw_label(gc, style, self.battlehex.label, 
+        self.draw_hex_overlay(gc, style)
+        self.draw_border_overlays(gc, style)
+        self.draw_label(gc, style, self.battlehex.label,
           self.battlehex.label_side)
-        self.draw_label(gc, style, self.battlehex.terrain, 
+        self.draw_label(gc, style, self.battlehex.terrain,
           self.battlehex.terrain_side)
 
     def toggle_selection(self):
