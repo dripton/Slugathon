@@ -43,6 +43,8 @@ class GUIBattleHex(object):
         self.hex_pixbuf_x = None
         self.hex_pixbuf_y = None
         self.border_pixbufs = []
+        self.border_pixbuf_x = None
+        self.border_pixbuf_y = None
         self.init_hex_overlay()
         self.init_border_overlays()
 
@@ -123,31 +125,27 @@ class GUIBattleHex(object):
         image_path = os.path.join(IMAGE_DIR, overlay_filename)
         if not os.path.exists(image_path):
             return
-
         myboxsize = [0.85 * mag for mag in self.bboxsize]
         self.hex_pixbuf_x = int(round(self.center[0] - myboxsize[0] / 2.))
         self.hex_pixbuf_y = int(round(self.center[1] - myboxsize[1] / 2.))
-
         pixbuf = gtk.gdk.pixbuf_new_from_file(image_path)
         self.hex_pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
     def init_border_overlays(self):
         """Setup the overlays for each border."""
+        # TODO Remove all but this hexside.
+        myboxsize = [0.97 * mag for mag in self.bboxsize]
+        self.border_pixbuf_x = int(round(self.center[0] - myboxsize[0] / 2.))
+        self.border_pixbuf_y = int(round(self.center[1] - myboxsize[1] / 2.))
         for hexside, border in enumerate(self.battlehex.borders):
             overlay_filename = "%s.png" % border
             image_path = os.path.join(IMAGE_DIR, overlay_filename)
-            if not os.path.exists(image_path):
-                self.border_pixbufs.append(None)
-                continue
-
-            # TODO Remove all but this hexside.
-
-            myboxsize = [0.97 * mag for mag in self.bboxsize]
-
-            pixbuf = gtk.gdk.pixbuf_new_from_file(image_path)
-            border_pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
-              int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
+            border_pixbuf = None
+            if os.path.exists(image_path):
+                pixbuf = gtk.gdk.pixbuf_new_from_file(image_path)
+                border_pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
+                  int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
             self.border_pixbufs.append(border_pixbuf)
 
     def draw_hex_overlay(self, gc, style):
@@ -160,16 +158,14 @@ class GUIBattleHex(object):
 
     def draw_border_overlays(self, gc, style):
         """Draw the overlays for all borders that have them."""
-        if self.hex_pixbuf_x is None:
-            return
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
                 drawable = self.guimap.area.window
                 print (gc, self.border_pixbufs[hexside], 0, 0, 
-                  self.hex_pixbuf_x, self.hex_pixbuf_y, -1, -1, 
+                  self.border_pixbuf_x, self.border_pixbuf_y, -1, -1, 
                   gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
                 drawable.draw_pixbuf(gc, self.border_pixbufs[hexside], 0, 0, 
-                  self.hex_pixbuf_x, self.hex_pixbuf_y, -1, -1, 
+                  self.border_pixbuf_x, self.border_pixbuf_y, -1, -1, 
                   gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
     def draw_label(self, gc, style, label, side):
