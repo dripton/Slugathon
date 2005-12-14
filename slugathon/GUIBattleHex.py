@@ -6,8 +6,10 @@ except (ImportError, AttributeError):
 import gtk
 import os
 import math
+
 import guiutils
 import colors
+import sliceborder
 
 SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
@@ -143,7 +145,12 @@ class GUIBattleHex(object):
             image_path = os.path.join(IMAGE_DIR, overlay_filename)
             border_pixbuf = None
             if os.path.exists(image_path):
-                pixbuf = gtk.gdk.pixbuf_new_from_file(image_path)
+                border_filename = "%s-%d.png" % (border, hexside)
+                border_path = os.path.join(IMAGE_DIR, border_filename)
+                if not os.path.exists(border_path):
+                    sliceborder.slice_border_image(image_path, border_path,
+                      [hexside])
+                pixbuf = gtk.gdk.pixbuf_new_from_file(border_path)
                 border_pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
                   int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
             self.border_pixbufs.append(border_pixbuf)
@@ -161,9 +168,6 @@ class GUIBattleHex(object):
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
                 drawable = self.guimap.area.window
-                print (gc, self.border_pixbufs[hexside], 0, 0, 
-                  self.border_pixbuf_x, self.border_pixbuf_y, -1, -1, 
-                  gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
                 drawable.draw_pixbuf(gc, self.border_pixbufs[hexside], 0, 0, 
                   self.border_pixbuf_x, self.border_pixbuf_y, -1, -1, 
                   gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
