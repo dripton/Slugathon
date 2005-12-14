@@ -84,6 +84,8 @@ to use alongside the masterboard.
 
 Make Anteroom always fit on screen.
 
+Use cairo to get antialiasing.
+
 ###############################################################################
 
 Bugs:
@@ -92,7 +94,9 @@ Click in random spot in Anteroom game list, not on an actual game,
 brings up WaitingForPlayers, once.
 
 Exiting Anteroom window no longer cleanly exits process.  Killing GTK windows
-without control-C got a lot harder.  What happened?
+without control-C got a lot harder.  What happened?  
+Need to insert reactor.stop() in the right places, so we can call
+gtk.main_loop() instead of gtk.main_iteration in an infinite loop.
 
 test_server.py seems somewhat timing-sensitive.  Sometimes throws an exception
 because the username is no longer in the dict?  Is this solvable in py.test,
