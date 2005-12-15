@@ -64,3 +64,11 @@ def test_roundpoint():
     assert guiutils.roundpoint((1., 2.)) == (1, 2)
     assert guiutils.roundpoint((1.5, 2.4999)) == (2, 2)
     assert guiutils.roundpoint((-0.3, 9.5)) == (0, 10)
+
+def test_hexsides_with_border():
+    assert hex1.hexsides_with_border("Slope") == set()
+    assert hex1.hexsides_with_border("Cliff") == set()
+    assert hex1.hexsides_with_border("Wall") == set()
+    assert hex2.hexsides_with_border("Slope") == set([0])
+    assert hex3.hexsides_with_border("Slope") == set([0, 1, 2, 3, 5])
+    assert hex3.hexsides_with_border("Cliff") == set([4])

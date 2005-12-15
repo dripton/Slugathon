@@ -29,3 +29,12 @@ class BattleHex(object):
         self.down = (self.x & 1 == 0)
         self.label_side = 5
         self.terrain_side = 3
+
+    def hexsides_with_border(self, border):
+        """Return the set of hexsides with this border."""
+        result = set()
+        for hexside in xrange(6):
+            if self.borders[hexside] == border:
+                result.add(hexside)
+        return result
+
