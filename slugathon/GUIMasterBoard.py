@@ -204,6 +204,10 @@ class GUIMasterBoard(gtk.Window):
                 self.unselect_all()
             elif phase == Phase.MOVE:
                 self.highlight_unmoved_legions()
+            elif phase == Phase.FIGHT:
+                if guihex.selected:
+                    self.user.callRemote("resolve_engagement", self.game.name,
+                      guihex.masterhex.label)
             elif phase == Phase.MUSTER:
                 self.highlight_recruits()
 
@@ -252,6 +256,12 @@ class GUIMasterBoard(gtk.Window):
                 style = self.area.get_style()
                 gc = style.fg_gc[gtk.STATE_NORMAL]
                 self.update_gui(gc, style, repaint_hexlabels)
+            elif phase == Phase.FIGHT:
+                legion = marker.legion
+                guihex = self.guihexes[legion.hexlabel]
+                if guihex.selected:
+                    self.user.callRemote("resolve_engagement", self.game.name,
+                      guihex.masterhex.label)
             elif phase == Phase.MUSTER:
                 self.unselect_all()
                 legion = marker.legion
@@ -531,7 +541,6 @@ class GUIMasterBoard(gtk.Window):
         print "GUIMasterBoard.update", self, observed, action
         if isinstance(action, Action.CreateStartingLegion):
             player = self.game.get_player_by_name(action.playername)
-            legion = player.legions.values()[0]
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.SplitLegion):

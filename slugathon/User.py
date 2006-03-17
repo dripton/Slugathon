@@ -95,6 +95,10 @@ class User(pb.Avatar):
         print "perspective_done_with_moves", game_name
         self.server.done_with_moves(self.name, game_name)
 
+    def perspective_resolve_engagement(self, game_name, hexlabel):
+        print "perspective_resolve_engagement", game_name, hexlabel
+        self.server.resolve_engagement(self.name, game_name, hexlabel)
+
     def perspective_recruit_creature(self, game_name, markername, 
       creature_name):
         print "perspective_recruit_creature", game_name, markername, \

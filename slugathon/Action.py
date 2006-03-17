@@ -239,3 +239,13 @@ class DoneRecruiting(Action):
         self.game_name = game_name
         self.playername = playername
 pb.setUnjellyableForClass(DoneRecruiting, DoneRecruiting)
+
+
+# TODO Act on this action.  Currently meaningless since all legion contents
+# are public.
+class RevealLegion(Action):
+    def __init__(self, game_name, markername, creature_names):
+        self.game_name = game_name
+        self.markername = markername
+        self.creature_names = creature_names
+pb.setUnjellyableForClass(RevealLegion, RevealLegion)

@@ -52,6 +52,7 @@ class Game(Observed):
         self.caretaker = Caretaker.Caretaker()
         self.history = History.History()
         self.add_observer(self.history)
+        self.current_engagement_hexlabel = None
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -417,6 +418,32 @@ class Game(Observed):
             raise AssertionError("ending split phase out of turn")
         if self.phase == Phase.MOVE:
             player.done_with_moves(self)
+
+    def resolve_engagement(self, playername, hexlabel):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        if player is not self.active_player:
+            raise AssertionError("resolving engagement out of turn")
+        if hexlabel not in self.engagement_hexlabels():
+            raise AssertionError("no engagement to resolve in %s" % hexlabel)
+        legions = self.all_legions(hexlabel)
+        assert len(legions) == 2
+        for legion in legions:
+            if legion.player.name == playername:
+                attacker = legion
+            else:
+                defender = legion
+        # TODO Reveal attacker only to defender
+        action = Action.RevealLegion(self.name, attacker.markername, 
+          attacker.creature_names())
+        self.notify(action)
+        # TODO Reveal defender only to attacker
+        action = Action.RevealLegion(self.name, defender.markername, 
+          defender.creature_names())
+        self.notify(action)
+        self.current_engagement_hexlabel = hexlabel
+        # TODO notify everyone that we're resolving this engagement
+        # Then return, and let clients DTRT: flee, concede, negotiate, fight
 
     def recruit_creature(self, playername, markername, creature_name):
         """Called from Server"""

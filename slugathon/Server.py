@@ -178,6 +178,11 @@ class Server(Observed):
         if game:
             game.done_with_moves(username)
 
+    def resolve_engagement(self, username, game_name, hexlabel):
+        game = self.name_to_game(game_name)
+        if game:
+            game.resolve_engagement(username, hexlabel)
+
     def recruit_creature(self, username, game_name, markername, creature_name):
         game = self.name_to_game(game_name)
         if game:
