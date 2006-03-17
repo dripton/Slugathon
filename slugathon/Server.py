@@ -57,9 +57,9 @@ class Server(Observed):
         return self.games[:]
 
     def name_to_game(self, game_name):
-        for g in self.games:
-            if g.name == game_name:
-                return g
+        for game in self.games:
+            if game.name == game_name:
+                return game
         return None
 
     def send_chat_message(self, source, dest, text):
@@ -79,7 +79,7 @@ class Server(Observed):
     def form_game(self, username, game_name, min_players, max_players):
         if not game_name:
             raise ValueError("Games must be named")
-        if game_name in [g.name for g in self.games]:
+        if game_name in [game.name for game in self.games]:
             raise ValueError('The game name "%s" is already in use' 
               % game_name)
         if min_players > max_players:

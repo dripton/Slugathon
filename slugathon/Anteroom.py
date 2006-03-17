@@ -47,9 +47,9 @@ class Anteroom(object):
         self.usernames = usernames
 
     def name_to_game(self, game_name):
-        for g in self.games:
-            if g.name == game_name:
-                return g
+        for game in self.games:
+            if game.name == game_name:
+                return game
         return None
 
     def set_games(self, games):

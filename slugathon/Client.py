@@ -85,9 +85,9 @@ class Client(pb.Referenceable, Observed):
         self.anteroom.set_games(self.games)
 
     def name_to_game(self, game_name):
-        for g in self.games:
-            if g.name == game_name:
-                return g
+        for game in self.games:
+            if game.name == game_name:
+                return game
         return None
 
     def add_game(self, game_info_tuple):
