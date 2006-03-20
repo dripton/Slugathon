@@ -154,7 +154,7 @@ class Client(pb.Referenceable, Observed):
         print "Client._init_guiboard"
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(game.board, game,
           self.user, self.username)
-        self.add_observer(self.guiboards[game])
+        game.add_observer(self.guiboards[game])
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
