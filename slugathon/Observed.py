@@ -1,13 +1,13 @@
 import zope.interface
 
 class IObserved(zope.interface.Interface):
-    def add_observer(observer):
+    def add_observer(observer, name=None):
         """Add an observer to this object."""
 
     def remove_observer(observer):
         """Remove an observer from this object."""
 
-    def notify(action):
+    def notify(action, names=None):
         """Tell all observers about this action."""
 
 
@@ -18,19 +18,21 @@ class Observed(object):
     zope.interface.implements(IObserved)
 
     def __init__(self):
-        self.observers = []
+        self.observers = {}
 
-    def add_observer(self, observer):
+    def add_observer(self, observer, name=None):
         print "called Observed.add_observer", self, observer
         if not observer in self.observers:
-            self.observers.append(observer)
+            self.observers[observer] = name
 
     def remove_observer(self, observer):
         print "called Observed.remove_observer", self, observer
         if observer in self.observers:
-            self.observers.remove(observer)
+            del self.observers[observer]
 
-    def notify(self, action):
-        print "called Observed.notify", self, action
-        for obs in self.observers:
-            obs.update(self, action)
+    def notify(self, action, names=None):
+        print "called Observed.notify", self, action, names
+        for observer, name in self.observers.items():
+            if names is None or name in names:
+                print self, "notifying", observer, "about", action
+                observer.update(self, action)

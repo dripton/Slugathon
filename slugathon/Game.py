@@ -433,16 +433,16 @@ class Game(Observed):
                 attacker = legion
             else:
                 defender = legion
-        # TODO Reveal attacker only to defender
+        # Reveal attacker only to defender
         action = Action.RevealLegion(self.name, attacker.markername, 
           attacker.creature_names())
-        self.notify(action)
-        # TODO Reveal defender only to attacker
+        self.notify(action, defender.player.name)
+        # Reveal defender only to attacker
         action = Action.RevealLegion(self.name, defender.markername, 
           defender.creature_names())
-        self.notify(action)
+        self.notify(action, attacker.player.name)
         self.current_engagement_hexlabel = hexlabel
-        # TODO notify everyone that we're resolving this engagement
+        # TODO Notify everyone that we're currently resolving this engagement
         # Then return, and let clients DTRT: flee, concede, negotiate, fight
 
     def recruit_creature(self, playername, markername, creature_name):

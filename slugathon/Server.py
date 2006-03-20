@@ -32,8 +32,8 @@ class Server(Observed):
 
     def add_observer(self, user):
         print "called Server.add_observer", self, user
-        Observed.add_observer(self, user)
         username = user.name
+        Observed.add_observer(self, user, username)
         self.name_to_user[username] = user
         action = Action.AddUsername(username)
         self.notify(action)
