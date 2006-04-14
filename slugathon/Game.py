@@ -443,7 +443,9 @@ class Game(Observed):
         self.notify(action, attacker.player.name)
         self.current_engagement_hexlabel = hexlabel
         # TODO Notify everyone that we're currently resolving this engagement
-        # Then return, and let clients DTRT: flee, concede, negotiate, fight
+        action = Action.ResolvingEngagement(self.name, hexlabel)
+        self.notify(action)
+        # Let clients DTRT: flee, concede, negotiate, fight
 
     def recruit_creature(self, playername, markername, creature_name):
         """Called from Server"""

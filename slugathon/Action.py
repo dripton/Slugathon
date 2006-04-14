@@ -249,3 +249,10 @@ class RevealLegion(Action):
         self.markername = markername
         self.creature_names = creature_names
 pb.setUnjellyableForClass(RevealLegion, RevealLegion)
+
+
+class ResolvingEngagement(Action):
+    def __init__(self, game_name, hexlabel):
+        self.game_name = game_name
+        self.hexlabel = hexlabel
+pb.setUnjellyableForClass(ResolvingEngagement, ResolvingEngagement)

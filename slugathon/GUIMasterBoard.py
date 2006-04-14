@@ -467,6 +467,15 @@ class GUIMasterBoard(gtk.Window):
         gc = style.fg_gc[gtk.STATE_NORMAL]
         self.update_gui(gc, style, hexlabels)
 
+    def highlight_hex(self, hexlabel):
+        """Highlight one hex."""
+        self.unselect_all()
+        guihex = self.guihexes[hexlabel]
+        guihex.selected = True
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
+        self.update_gui(gc, style, [hexlabel])
+
     def highlight_recruits(self):
         """Highlight all hexes in which the active player can recruit."""
         player = self.game.get_player_by_name(self.username)
@@ -583,6 +592,22 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_engagements()
             elif self.game.phase == Phase.MUSTER:
                 self.highlight_recruits()
+
+        elif isinstance(action, Action.ResolvingEngagement):
+            hexlabel = action.hexlabel
+            self.highlight_hex(hexlabel)
+            player = self.game.get_player_by_name(self.username)
+            for legion in self.game.all_legions(hexlabel):
+                if legion.player == self.game.active_player:
+                    attacker = legion
+                else:
+                    defender = legion
+            if defender.can_flee():
+                if defender.player.name == self.username:
+                    print "TODO flee dialog"
+            else:
+                if attacker.player.name == self.username:
+                    print "TODO concede dialog"
 
         elif isinstance(action, Action.RecruitCreature) or isinstance(action,
           Action.UndoRecruit):

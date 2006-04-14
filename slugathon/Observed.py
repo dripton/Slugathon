@@ -20,7 +20,7 @@ class Observed(object):
     def __init__(self):
         self.observers = {}
 
-    def add_observer(self, observer, name=None):
+    def add_observer(self, observer, name=""):
         print "called Observed.add_observer", self, observer
         if not observer in self.observers:
             self.observers[observer] = name
