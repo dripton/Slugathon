@@ -99,6 +99,14 @@ class User(pb.Avatar):
         print "perspective_resolve_engagement", game_name, hexlabel
         self.server.resolve_engagement(self.name, game_name, hexlabel)
 
+    def perspective_flee(self, game_name, markername):
+        print "perspective_flee", game_name, markername
+        self.server.flee(self.name, game_name, markername)
+
+    def perspective_do_not_flee(self, game_name, markername):
+        print "perspective_do_not_flee", game_name, markername
+        self.server.do_not_flee(self.name, game_name, markername)
+
     def perspective_recruit_creature(self, game_name, markername, 
       creature_name):
         print "perspective_recruit_creature", game_name, markername, \

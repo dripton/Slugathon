@@ -183,6 +183,16 @@ class Server(Observed):
         if game:
             game.resolve_engagement(username, hexlabel)
 
+    def flee(self, username, game_name, markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.flee(username, markername)
+
+    def do_not_flee(self, username, game_name, markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.do_not_flee(username, markername)
+
     def recruit_creature(self, username, game_name, markername, creature_name):
         game = self.name_to_game(game_name)
         if game:

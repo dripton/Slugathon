@@ -256,3 +256,17 @@ class ResolvingEngagement(Action):
         self.game_name = game_name
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(ResolvingEngagement, ResolvingEngagement)
+
+
+class Flee(Action):
+    def __init__(self, game_name, markername):
+        self.game_name = game_name
+        self.markername = markername
+pb.setUnjellyableForClass(Flee, Flee)
+
+
+class DoNotFlee(Action):
+    def __init__(self, game_name, markername):
+        self.game_name = game_name
+        self.markername = markername
+pb.setUnjellyableForClass(DoNotFlee, DoNotFlee)

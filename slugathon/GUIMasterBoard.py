@@ -25,6 +25,7 @@ import icon
 import Die
 import Game
 import PickRecruit
+import Flee
 
 
 SQRT3 = math.sqrt(3.0)
@@ -543,6 +544,15 @@ class GUIMasterBoard(gtk.Window):
                 def1 = self.user.callRemote("apply_action", action)
                 def1.addErrback(self.failure)
 
+    def cb_maybe_flee(self, attacker, defender, fled):
+        print "maybe_flee", attacker, defender, fled
+        if fled:
+            def1 = self.user.callRemote("flee", self.game.name, 
+              defender.markername)
+        else:
+            def1 = self.user.callRemote("do_not_flee", self.game.name,
+              defender.markername)
+
     def failure(self, arg):
         print "GUIMasterBoard.failure", arg
 
@@ -602,12 +612,23 @@ class GUIMasterBoard(gtk.Window):
                     attacker = legion
                 else:
                     defender = legion
-            if defender.can_flee():
-                if defender.player.name == self.username:
-                    print "TODO flee dialog"
-            else:
-                if attacker.player.name == self.username:
-                    print "TODO concede dialog"
+            if defender.player.name == self.username:
+                if defender.can_flee():
+                    Flee.Flee(self.username, attacker, defender, 
+                      self.cb_maybe_flee)
+                else:
+                    # Can't flee, so we always send the do_not_flee.
+                    # (Others may not know that we have a lord here.)
+                    self.cb_maybe_flee(attacker, defender, False)
+
+        elif isinstance(action, Action.Flee):
+            pass
+            # TODO
+
+        elif isinstance(action, Action.DoNotFlee):
+            if (defender.player.name == self.username or
+              attacker.player.name == self.username):
+                print "TODO negotiate / concede dialog"
 
         elif isinstance(action, Action.RecruitCreature) or isinstance(action,
           Action.UndoRecruit):
