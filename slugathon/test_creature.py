@@ -23,3 +23,9 @@ def test_init():
     assert not creature.acquirable
     assert creature.max_count == 25
     assert creature.color_name == "ogre_red"
+
+def test_score():
+    creature = Creature.Creature("Ogre")
+    assert creature.score() == 12
+    creature = Creature.Creature("Colossus")
+    assert creature.score() == 40

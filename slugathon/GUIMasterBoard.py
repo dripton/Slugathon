@@ -626,6 +626,12 @@ class GUIMasterBoard(gtk.Window):
             # TODO
 
         elif isinstance(action, Action.DoNotFlee):
+            markername = action.markername
+            defender = self.game.find_legion(markername)
+            hexlabel = defender.hexlabel
+            for legion in self.game.all_legions(hexlabel=hexlabel):
+                if legion != defender:
+                    attacker = legion
             if (defender.player.name == self.username or
               attacker.player.name == self.username):
                 print "TODO negotiate / concede dialog"

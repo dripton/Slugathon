@@ -11,7 +11,8 @@ Persist usernames and server names/ports that have been used in Connect
 
 Add chi-square test to test_dice
 
-Solve the shebang line problem.  (distutils?)
+distutils setup.py to solve the shebang line problem.
+egg?
 
 Custom Exception classes subclassing pb.Error
 
@@ -43,6 +44,8 @@ slugathon/[^test]*.py
 
 Looks pretty good.  Can't get pyNsourceGui.py to work due to wxPython
 versioning problems.
+
+pydoctor?
 ###############################################################################
 
 Game.update has lots of special logic to avoid doing the same move twice.
@@ -59,10 +62,6 @@ The reference from Legion back up to Player bothers me.
 
 Does Legion need to be Observed and throw off its own Actions, rather than
 making Player do it?
-
-How to send to only some observers?  (e.g. a chat message for one player, or
-hidden stack contents?)  Need each observer to leave a unique name when it is
-added, and then filter based on that name.  
 
 Options for splitting with hidden legion contents:
 1. Send a split message without details to everyone, then a reveal message per

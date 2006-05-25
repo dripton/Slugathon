@@ -21,3 +21,7 @@ class Creature(object):
             return "%s(%d)" % (self.name, self.power)
         else:
             return self.name
+
+    def score(self):
+        """Return the point value of this creature."""
+        return self.power * self.skill

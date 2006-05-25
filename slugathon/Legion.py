@@ -192,3 +192,10 @@ class Legion(Observed):
         action = Action.UndoRecruit(player.game_name, player.name,
           self.markername, creature.name)
         self.notify(action)
+
+    def score(self):
+        """Return the point value of this legion."""
+        total = 0
+        for creature in self.creatures:
+            total += creature.score()
+        return total

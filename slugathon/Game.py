@@ -449,11 +449,28 @@ class Game(Observed):
 
     def flee(self, playername, markername):
         """Called from Server"""
-        # TODO
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        assert legion.can_flee()
+        hexlabel = legion.hexlabel
+        for legion2 in self.all_legions(hexlabel):
+            if legion2 != legion:
+                break
+        assert legion2 != legion
+        player2 = legion2.player
+        assert player2 != player
+        points = legion.score() // 2
+        for creature in legion.creatures:
+            self.caretaker.kill_one(creature.name)
+        player2.add_points(points)
+        player.remove_legion(markername)
+        action = Action.Flee(self.name, markername)
+        self.notify(action)
 
     def do_not_flee(self, playername, markername):
         """Called from Server"""
-        # TODO
+        action = Action.DoNotFlee(self.name, markername)
+        self.notify(action)
 
     def recruit_creature(self, playername, markername, creature_name):
         """Called from Server"""

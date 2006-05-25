@@ -110,3 +110,8 @@ def test_available_recruits():
     assert legion.available_recruits(masterhex, caretaker) == ["Centaur",
       "Gargoyle", "Ogre", "Warlock"]
 
+def test_score():
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("test", "Game1", 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
+    assert legion.score() == 120

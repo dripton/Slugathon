@@ -211,6 +211,16 @@ class Player(Observed):
             legion.previous_hexlabel = None
             legion.recruited = False
 
+    # TODO angels
+    def add_points(self, points):
+        self.score += points
+
+    def remove_legion(self, markername):
+        """Remove the legion, with no side effects."""
+        assert markername in self.legions
+        del self.legions[markername]
+        self.markernames.add(markername)
+
     def update(self, observed, action):
         print "Player.update", observed, action
         if isinstance(action, Action.RecruitCreature):
@@ -218,3 +228,4 @@ class Player(Observed):
             creature = Creature.Creature(action.creature_name)
             legion.recruit(creature)
         self.notify(action)
+
