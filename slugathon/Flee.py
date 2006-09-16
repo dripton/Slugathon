@@ -79,7 +79,9 @@ class Flee(object):
         print "Flee.cb_response", widget, response_id
         self.flee_dialog.destroy()
         self.callback(self.attacker_legion, self.defender_legion, 
-          response_id == self.flee_button.response_id)
+          response_id == 1)
+        # XXX I want to say response_id == self.flee_button.response_id, 
+        # but I can't find the button's response_id through the button.
 
 
 if __name__ == "__main__":

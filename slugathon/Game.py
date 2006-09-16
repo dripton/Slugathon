@@ -447,8 +447,8 @@ class Game(Observed):
         self.notify(action)
         # Let clients DTRT: flee, concede, negotiate, fight
 
-    def flee(self, playername, markername):
-        """Called from Server"""
+    def _flee(self, playername, markername):
+        print "called Game._flee", self, playername, markername
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         assert legion.can_flee()
@@ -464,7 +464,17 @@ class Game(Observed):
             self.caretaker.kill_one(creature.name)
         player2.add_points(points)
         player.remove_legion(markername)
-        action = Action.Flee(self.name, markername)
+        assert markername not in player.legions
+        for legion in self.all_legions():
+            assert legion.markername != markername
+
+    def flee(self, playername, markername):
+        """Called from Server"""
+        print "called Game.flee", self, playername, markername
+        legion = self.find_legion(markername)
+        hexlabel = legion.hexlabel
+        self._flee(playername, markername)
+        action = Action.Flee(self.name, markername, hexlabel)
         self.notify(action)
 
     def do_not_flee(self, playername, markername):
@@ -594,5 +604,9 @@ class Game(Observed):
                 self.turn += 1
             self.active_player = self.players[new_player_num]
             self.active_player.new_turn()
+        elif isinstance(action, Action.Flee):
+            legion = self.find_legion(action.markername)
+            playername = legion.player.name
+            self._flee(playername, action.markername)
 
         self.notify(action)

@@ -259,9 +259,10 @@ pb.setUnjellyableForClass(ResolvingEngagement, ResolvingEngagement)
 
 
 class Flee(Action):
-    def __init__(self, game_name, markername):
+    def __init__(self, game_name, markername, hexlabel):
         self.game_name = game_name
         self.markername = markername
+        self.hexlabel = hexlabel
 pb.setUnjellyableForClass(Flee, Flee)
 
 

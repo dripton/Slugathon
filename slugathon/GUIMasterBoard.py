@@ -622,8 +622,10 @@ class GUIMasterBoard(gtk.Window):
                     self.cb_maybe_flee(attacker, defender, False)
 
         elif isinstance(action, Action.Flee):
-            pass
-            # TODO
+            print "GUIMasterBoard got Flee", action.markername, action.hexlabel
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, [action.hexlabel])
 
         elif isinstance(action, Action.DoNotFlee):
             markername = action.markername
