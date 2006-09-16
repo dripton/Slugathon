@@ -98,7 +98,7 @@ class Legion(Observed):
             self.entry_side = None
 
     def can_flee(self):
-        return self.num_lords == 0
+        return self.num_lords() == 0
 
     def _gen_sublists(self, recruits):
         """Generate a sublist of recruits, within which up- and down-recruiting
