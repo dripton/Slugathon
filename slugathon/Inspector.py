@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 try:
     import pygtk
@@ -14,6 +14,7 @@ import Legion
 import Marker
 import icon
 import guiutils
+import Player
 
 class Inspector(object):
     """Window to show a legion's contents."""
@@ -53,3 +54,24 @@ class Inspector(object):
             self.chits_hbox.add(chit.event_box)
 
         self.show_legion_window.show()
+
+
+if __name__ == "__main__":
+    creatures = [Creature.Creature(name) for name in
+      creaturedata.starting_creature_names]
+
+    username = "test"
+    player = Player.Player(username, None, None)
+    player.color = "Red"
+    inspector = Inspector(username)
+    inspector.show_legion_window.connect("destroy", guiutils.die)
+
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
+    inspector.show_legion(legion)
+
+    creatures2 = [Creature.Creature(name) for name in
+      ["Angel", "Giant", "Warbear", "Unicorn"]]
+    legion2 = Legion.Legion(player, "Rd02", creatures2, 2)
+    inspector.show_legion(legion2)
+
+    gtk.main()
