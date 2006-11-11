@@ -26,6 +26,7 @@ import Die
 import Game
 import PickRecruit
 import Flee
+import Inspector
 
 
 SQRT3 = math.sqrt(3.0)
@@ -98,10 +99,13 @@ class GUIMasterBoard(gtk.Window):
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
+        self.inspector = Inspector.Inspector(self.username)
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.cb_click)
+        self.area.add_events(gtk.gdk.POINTER_MOTION_MASK)
+        self.area.connect("motion_notify_event", self.cb_motion)
         self.show_all()
 
     def create_ui(self):
@@ -145,6 +149,16 @@ class GUIMasterBoard(gtk.Window):
                 self.clicked_on_hex(area, event, guihex)
                 return True
         self.clicked_on_background(area, event)
+        return True
+
+    def cb_motion(self, area, event):
+        """Callback for mouse motion."""
+        style = self.area.get_style()
+        gc = style.fg_gc[gtk.STATE_NORMAL]
+        for marker in self.markers:
+            if marker.point_inside((event.x, event.y)):
+                self.inspector.show_legion(marker.legion)
+                return True
         return True
 
     # XXX Move this.
