@@ -27,6 +27,8 @@ import Game
 import PickRecruit
 import Flee
 import Inspector
+import Creature
+import Chit
 
 
 SQRT3 = math.sqrt(3.0)
@@ -95,6 +97,8 @@ class GUIMasterBoard(gtk.Window):
         self.vbox.pack_start(self.area)
         self.markers = []
         self.guihexes = {}
+        # list of tuples (Chit, hexlabel)
+        self.recruitchits = []
         self._splitting_legion = None
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
@@ -216,6 +220,7 @@ class GUIMasterBoard(gtk.Window):
                       teleport, teleporting_lord)
                     def1.addErrback(self.failure)
                 self.selected_marker = None
+                self.clear_recruitchits()
                 self.unselect_all()
             elif phase == Phase.MOVE:
                 self.highlight_unmoved_legions()
@@ -231,6 +236,7 @@ class GUIMasterBoard(gtk.Window):
         if event.button >= 2:
             ShowLegion.ShowLegion(self.username, marker.legion,
               marker.legion.player.color, True)
+
         else: # left button
             phase = self.game.phase
             if phase == Phase.SPLIT:
@@ -252,9 +258,11 @@ class GUIMasterBoard(gtk.Window):
                     self._splitting_legion = legion
                     PickMarker.PickMarker(self.username, self.game.name, 
                       player.markernames, self.picked_marker_presplit)
+
             elif phase == Phase.MOVE:
                 self.unselect_all()
                 legion = marker.legion
+                self.clear_recruitchits()
                 if legion.moved:
                     moves = []
                 else:
@@ -268,15 +276,28 @@ class GUIMasterBoard(gtk.Window):
                         guihex = self.guihexes[hexlabel]
                         guihex.selected = True
                         repaint_hexlabels.add(hexlabel)
+                        recruitnames = legion.available_recruits(
+                          self.board.hexes[hexlabel], self.game.caretaker)
+                        if recruitnames:
+                            creaturename = recruitnames[-1]
+                            recruit = Creature.Creature(creaturename)
+                            chit = Chit.Chit(recruit, legion.player.color, 
+                              self.scale / 2)
+                            chit_scale = chit.chit_scale
+                            chit.location = (guihex.center[0] - chit_scale / 2,
+                              guihex.center[1] - chit_scale / 2)
+                            self.recruitchits.append((chit, hexlabel))
                 style = self.area.get_style()
                 gc = style.fg_gc[gtk.STATE_NORMAL]
                 self.update_gui(gc, style, repaint_hexlabels)
+
             elif phase == Phase.FIGHT:
                 legion = marker.legion
                 guihex = self.guihexes[legion.hexlabel]
                 if guihex.selected:
                     self.user.callRemote("resolve_engagement", self.game.name,
                       guihex.masterhex.label)
+
             elif phase == Phase.MUSTER:
                 self.unselect_all()
                 legion = marker.legion
@@ -289,7 +310,9 @@ class GUIMasterBoard(gtk.Window):
                         PickRecruit.PickRecruit(self.username, legion.player,
                           legion, masterhex, caretaker, self.picked_recruit)
                 self.highlight_recruits()
+
         return True
+
 
     def picked_marker_presplit(self, game_name, username, markername):
         player = self.game.get_player_by_name(username)
@@ -396,6 +419,12 @@ class GUIMasterBoard(gtk.Window):
             for marker in reversed(mih):
                 self._render_marker(marker, gc)
 
+    def draw_recruitchits(self, gc):
+        if not self.game:
+            return
+        for (chit, unused) in self.recruitchits:
+            self._render_marker(chit, gc)
+
     def draw_movement_die(self, gc):
         try:
             roll = self.game.active_player.movement_roll
@@ -425,6 +454,7 @@ class GUIMasterBoard(gtk.Window):
         for guihex in guihexes:
             guihex.update_gui(gc, style)
         self.draw_markers(gc)
+        self.draw_recruitchits(gc)
         self.draw_movement_die(gc)
 
     def unselect_all(self):
@@ -436,6 +466,14 @@ class GUIMasterBoard(gtk.Window):
         style = self.area.get_style()
         gc = style.fg_gc[gtk.STATE_NORMAL]
         self.update_gui(gc, style, repaint_hexlabels)
+
+    def clear_recruitchits(self):
+        if self.recruitchits:
+            hexlabels = set((tup[1] for tup in self.recruitchits))
+            self.recruitchits = []
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, hexlabels)
 
     def highlight_tall_legions(self):
         """Highlight all hexes containing a legion of height 7 or more
@@ -459,6 +497,7 @@ class GUIMasterBoard(gtk.Window):
         active, current player."""
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
+            self.clear_recruitchits()
             self.unselect_all()
             hexlabels = set()
             for legion in player.legions.values():
@@ -612,6 +651,7 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_unmoved_legions()
 
         elif isinstance(action, Action.DoneMoving):
+            self.clear_recruitchits()
             if self.game.phase == Phase.FIGHT:
                 self.highlight_engagements()
             elif self.game.phase == Phase.MUSTER:
