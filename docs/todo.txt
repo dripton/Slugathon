@@ -109,6 +109,3 @@ or do we need to use twisted.trial?
 Need to ignore config.py so it can't get checked in accidentally.  Maybe
 config-sample.py that gets renamed to config.py.
 
-Redraw problems:
-Inactive players' boards do not show starting legions 
-Inactive players' boards do not update markers immediately after split
