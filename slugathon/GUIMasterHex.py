@@ -69,7 +69,7 @@ class GUIMasterHex(object):
             self.vertexes[5] = rp((cx, cy + 2 * SQRT3 * scale))
 
 
-    def draw_hexagon(self, gc, style):
+    def draw_hexagon(self, gc):
         """Create the polygon, filled with the terrain color."""
 
         # TODO Fix random black/white edge color on border between selected
@@ -172,13 +172,13 @@ class GUIMasterHex(object):
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
 
-    def draw_overlay(self, gc, style):
+    def draw_overlay(self, gc):
         drawable = self.guiboard.area.window
         drawable.draw_pixbuf(gc, self.pixbuf, 0, 0, self.dest_x, self.dest_y,
           -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
 
-    def draw_label(self, gc, style):
+    def draw_label(self, gc):
         """Display the hex label."""
         label = str(self.masterhex.label)
         layout = self.guiboard.area.create_pango_layout(label)
@@ -199,10 +199,10 @@ class GUIMasterHex(object):
         self.guiboard.area.window.draw_layout(gc, x, y, layout)
 
 
-    def update_gui(self, gc, style):
-        self.draw_hexagon(gc, style)
-        self.draw_overlay(gc, style)
-        self.draw_label(gc, style)
+    def update_gui(self, gc):
+        self.draw_hexagon(gc)
+        self.draw_overlay(gc)
+        self.draw_label(gc)
 
     def toggle_selection(self):
         self.selected = not self.selected

@@ -98,14 +98,10 @@ class GUIBattleMap(gtk.Window):
           SQRT3))
 
     def cb_area_expose(self, area, event):
-        style = self.area.get_style()
-        gc = style.fg_gc[gtk.STATE_NORMAL]
-        self.update_gui(gc, style)
+        self.update_gui()
         return True
 
     def cb_click(self, area, event):
-        style = self.area.get_style()
-        gc = style.fg_gc[gtk.STATE_NORMAL]
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
@@ -119,17 +115,16 @@ class GUIBattleMap(gtk.Window):
     def clicked_on_hex(self, area, event, guihex):
         print "clicked on hex", area, event, guihex
         guihex.toggle_selection()
-        style = self.area.get_style()
-        gc = style.fg_gc[gtk.STATE_NORMAL]
-        self.update_gui(gc, style, [guihex.battlehex.label])
+        self.update_gui([guihex.battlehex.label])
 
-    def update_gui(self, gc, style, hexlabels=None):
+    def update_gui(self, hexlabels=None):
+        gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
         if hexlabels is None:
             guihexes = self.guihexes.values()
         else:
             guihexes = set(self.guihexes[hexlabel] for hexlabel in hexlabels)
         for guihex in guihexes:
-            guihex.update_gui(gc, style)
+            guihex.update_gui(gc)
 
     def update(self, observed, action):
         print "GUIBattleMap.update", observed, action

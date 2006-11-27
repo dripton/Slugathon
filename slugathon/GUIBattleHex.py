@@ -85,7 +85,7 @@ class GUIBattleHex(object):
         self.points = self.inner_vertexes[:]
 
 
-    def draw_hexagon(self, gc, style):
+    def draw_hexagon(self, gc):
         """Create the polygon, filled with the terrain color."""
 
         # TODO Fix random black/white edge color on border between selected
@@ -157,7 +157,7 @@ class GUIBattleHex(object):
                       gtk.gdk.INTERP_BILINEAR)
             self.border_pixbufs.append(border_pixbuf)
 
-    def draw_hex_overlay(self, gc, style):
+    def draw_hex_overlay(self, gc):
         """Draw the main terrain overlay for the hex."""
         if self.hex_pixbuf is None:
             return
@@ -165,7 +165,7 @@ class GUIBattleHex(object):
         drawable.draw_pixbuf(gc, self.hex_pixbuf, 0, 0, self.hex_pixbuf_x,
           self.hex_pixbuf_y, -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
-    def draw_border_overlays(self, gc, style):
+    def draw_border_overlays(self, gc):
         """Draw the overlays for all borders that have them."""
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
@@ -174,7 +174,7 @@ class GUIBattleHex(object):
                   self.border_pixbuf_x, self.border_pixbuf_y, -1, -1, 
                   gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
-    def draw_label(self, gc, style, label, side):
+    def draw_label(self, gc, label, side):
         """Display the hex label."""
         layout = self.guimap.area.create_pango_layout(label)
         text_width, text_height = layout.get_pixel_size()
@@ -193,13 +193,12 @@ class GUIBattleHex(object):
         self.guimap.area.window.draw_layout(gc, x, y, layout)
 
 
-    def update_gui(self, gc, style):
-        self.draw_hexagon(gc, style)
-        self.draw_hex_overlay(gc, style)
-        self.draw_border_overlays(gc, style)
-        self.draw_label(gc, style, self.battlehex.label,
-          self.battlehex.label_side)
-        self.draw_label(gc, style, self.battlehex.terrain,
+    def update_gui(self, gc):
+        self.draw_hexagon(gc)
+        self.draw_hex_overlay(gc)
+        self.draw_border_overlays(gc)
+        self.draw_label(gc, self.battlehex.label, self.battlehex.label_side)
+        self.draw_label(gc, self.battlehex.terrain,
           self.battlehex.terrain_side)
 
     def toggle_selection(self):
