@@ -612,11 +612,20 @@ class GUIMasterBoard(gtk.Window):
     def update(self, observed, action):
         print "GUIMasterBoard.update", self, observed, action
         if isinstance(action, Action.CreateStartingLegion):
-            player = self.game.get_player_by_name(action.playername)
+            legion = self.game.find_legion(action.markername)
+            hexlabels = [legion.hexlabel]
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, hexlabels)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.SplitLegion):
             self._splitting_legion = None
+            legion = self.game.find_legion(action.parent_markername)
+            hexlabels = [legion.hexlabel]
+            style = self.area.get_style()
+            gc = style.fg_gc[gtk.STATE_NORMAL]
+            self.update_gui(gc, style, hexlabels)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.UndoSplit):
