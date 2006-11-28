@@ -31,8 +31,6 @@ Add a version number somewhere.  svn revision?  date?
 Cleanup ShowLegion dialog with a click anywhere on it.  Maybe have a static
 legion contents pane, and show whichever legion the mouse last moved over.
 
-Remove the OK button from the the PickRecruit dialog.
-
 ###############################################################################
 epydoc -o epydocs -v -n Slugathon -u http://slugathon.sf.net --inheritance
 listed --debug slugathon/[^test]*.py
