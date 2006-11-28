@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 try:
     import pygtk
     pygtk.require("2.0")
@@ -5,13 +7,16 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import gtk.glade
+from twisted.internet import defer
+
 from playercolordata import colors
 import icon
+import guiutils
 
 
 class PickColor(object):
     """Dialog to pick a player color."""
-    def __init__(self, user, username, game_name, colors_left):
+    def __init__(self, user, username, game_name, colors_left, parent):
         print "PickColor.__init__"
         self.user = user
         self.username = username
@@ -24,6 +29,7 @@ class PickColor(object):
         self.pick_color_dialog.set_icon(icon.pixbuf)
         self.pick_color_dialog.set_title("%s - %s" % (
           self.pick_color_dialog.get_title(), self.username))
+        self.pick_color_dialog.set_transient_for(parent)
 
         for button_name in colors:
             button = getattr(self, button_name)
@@ -42,3 +48,16 @@ class PickColor(object):
 
     def failure(self, error):
         print "PickColor.failure", error
+
+if __name__ == "__main__":
+    class NullUser(object):
+        def callRemote(*args):
+            return defer.Deferred()
+
+    user = NullUser()
+    username = "test user"
+    game_name = "test game"
+    colors_left = colors[:]
+    pickcolor = PickColor(user, username, game_name, colors_left, None)
+    pickcolor.pick_color_dialog.connect("destroy", guiutils.die)
+    gtk.main()

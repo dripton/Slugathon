@@ -128,7 +128,7 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_color(self, game):
         if game.next_playername_to_pick_color() == self.username:
             PickColor.PickColor(self.user, self.username, 
-              game.name, game.colors_left())
+              game.name, game.colors_left(), self.anteroom.anteroom_window)
 
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
@@ -136,7 +136,7 @@ class Client(pb.Referenceable, Observed):
             markernames = list(player.markernames.copy())
             markernames.sort()
             PickMarker.PickMarker(self.username, game.name, markernames,
-              self.pick_marker)
+              self.pick_marker, self.anteroom.anteroom_window)
 
     def pick_marker(self, game_name, username, markername):
         """Callback from PickMarker."""

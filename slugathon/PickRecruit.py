@@ -22,7 +22,7 @@ import Game
 class PickRecruit(object):
     """Dialog to pick a recruit."""
     def __init__(self, username, player, legion, masterhex, caretaker, 
-      callback):
+      callback, parent):
         print "PickRecruit.__init__", username, player, legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/pickrecruit.glade")
@@ -33,6 +33,7 @@ class PickRecruit(object):
 
         self.pick_recruit_dialog.set_icon(icon.pixbuf)
         self.pick_recruit_dialog.set_title("PickRecruit - %s" % (username))
+        self.pick_recruit_dialog.set_transient_for(parent)
 
         self.legion_name.set_text("Pick recruit for legion %s in hex %s" % (
           legion.markername, legion.hexlabel))
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     legion.hexlabel = 1000
     masterhex = game.board.hexes[legion.hexlabel]
     pickrecruit = PickRecruit(username, player, legion, masterhex, 
-      game.caretaker, guiutils.die)
+      game.caretaker, guiutils.die, None)
     pickrecruit.pick_recruit_dialog.connect("destroy", guiutils.die)
 
     gtk.main()

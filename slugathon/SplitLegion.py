@@ -19,7 +19,7 @@ import guiutils
 
 class SplitLegion(object):
     """Dialog to split a legion."""
-    def __init__(self, username, player, legion, callback):
+    def __init__(self, username, player, legion, callback, parent):
         print "SplitLegion.__init__", username, player, legion
         self.old_legion = legion
         self.callback = callback
@@ -32,6 +32,7 @@ class SplitLegion(object):
 
         self.split_legion_dialog.set_icon(icon.pixbuf)
         self.split_legion_dialog.set_title("SplitLegion - %s" % (username))
+        self.split_legion_dialog.set_transient_for(parent)
 
         self.legion_name.set_text("Splitting legion %s in hex %s" % (
           legion.markername, legion.hexlabel))
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
-    splitlegion = SplitLegion(username, player, legion, guiutils.die)
+    splitlegion = SplitLegion(username, player, legion, guiutils.die, None)
     splitlegion.split_legion_dialog.connect("destroy", guiutils.die)
 
     gtk.main()

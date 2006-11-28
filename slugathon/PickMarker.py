@@ -13,7 +13,7 @@ import guiutils
 
 class PickMarker(object):
     """Dialog to pick a legion marker."""
-    def __init__(self, username, game_name, markers_left, callback):
+    def __init__(self, username, game_name, markers_left, callback, parent):
         print "PickMarker.__init__", username, game_name, markers_left, \
           callback
         self.username = username
@@ -24,6 +24,7 @@ class PickMarker(object):
 
         self.pick_marker_dialog.set_icon(icon.pixbuf)
         self.pick_marker_dialog.set_title("PickMarker - %s" % (self.username))
+        self.pick_marker_dialog.set_transient_for(parent)
 
         for ii, button_name in enumerate(markers_left):
             button = gtk.Button()
@@ -50,6 +51,7 @@ if __name__ == "__main__":
     username = "test user"
     game_name = "test game"
     markers_left = ["Rd%02d" % ii for ii in xrange(1, 12+1)]
-    pickmarker = PickMarker(username, game_name, markers_left, guiutils.die)
+    pickmarker = PickMarker(username, game_name, markers_left, guiutils.die, 
+      None)
     pickmarker.pick_marker_dialog.connect("destroy", guiutils.die)
     gtk.main()

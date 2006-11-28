@@ -118,7 +118,7 @@ class Anteroom(object):
                 self.chat_entry.set_text("")
 
     def cb_click(self, widget, event):
-        NewGame.NewGame(self.user, self.username)
+        NewGame.NewGame(self.user, self.username, self.anteroom_window)
 
     def receive_chat_message(self, message):
         buf = self.chat_view.get_buffer()

@@ -20,7 +20,7 @@ import guiutils
 class Flee(object):
     """Dialog to choose whether to flee."""
     def __init__(self, username, attacker_legion, defender_legion,
-      callback):
+      callback, parent):
         print "Flee.__init__", username, attacker_legion, defender_legion
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
@@ -43,6 +43,7 @@ class Flee(object):
 
         self.flee_dialog.set_icon(icon.pixbuf)
         self.flee_dialog.set_title("Flee - %s" % (username))
+        self.flee_dialog.set_transient_for(parent)
 
         self.legion_name.set_text("Flee with legion %s in hex %s?" % (
           defender_legion.markername, defender_legion.hexlabel))
@@ -105,7 +106,7 @@ if __name__ == "__main__":
       defender_creatures, 1)
     
     flee = Flee(defender_username, attacker_legion, defender_legion, 
-      guiutils.die)
+      guiutils.die, None)
     flee.flee_dialog.connect("destroy", guiutils.die)
 
     gtk.main()

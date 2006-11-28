@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 try:
     import pygtk
     pygtk.require("2.0")
@@ -5,12 +7,15 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import gtk.glade
+from twisted.internet import defer
+
 import icon
+import guiutils
 
 
 class NewGame(object):
     """Form new game dialog."""
-    def __init__(self, user, username):
+    def __init__(self, user, username, parent):
         self.name = None
         self.min_players = None
         self.max_players = None
@@ -24,7 +29,7 @@ class NewGame(object):
         self.new_game_dialog.set_icon(icon.pixbuf)
         self.new_game_dialog.set_title("%s - %s" % (
           self.new_game_dialog.get_title(), self.username))
-
+        self.new_game_dialog.set_transient_for(parent)
 
         response = self.new_game_dialog.run()
         if response == gtk.RESPONSE_OK:
@@ -46,3 +51,16 @@ class NewGame(object):
 
     def failure(self, error): 
         print "NewGame", error
+
+
+if __name__ == "__main__":
+    class NullUser(object):
+        def callRemote(*args):
+            return defer.Deferred()
+
+    user = NullUser()
+    username = "test user"
+    newgame = NewGame(user, username, None)
+    newgame.new_game_dialog.connect("destroy", guiutils.die)
+    gtk.main()
+

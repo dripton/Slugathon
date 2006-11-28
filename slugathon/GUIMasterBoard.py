@@ -249,7 +249,7 @@ class GUIMasterBoard(gtk.Window):
                         return True
                     self._splitting_legion = legion
                     PickMarker.PickMarker(self.username, self.game.name, 
-                      player.markernames, self.picked_marker_presplit)
+                      player.markernames, self.picked_marker_presplit, self)
 
             elif phase == Phase.MOVE:
                 self.unselect_all()
@@ -298,7 +298,8 @@ class GUIMasterBoard(gtk.Window):
                       caretaker)
                     if recruit_names:
                         PickRecruit.PickRecruit(self.username, legion.player,
-                          legion, masterhex, caretaker, self.picked_recruit)
+                          legion, masterhex, caretaker, self.picked_recruit,
+                          self)
                 self.highlight_recruits()
 
         return True
@@ -312,7 +313,7 @@ class GUIMasterBoard(gtk.Window):
     def split_legion(self, player):
         legion = self._splitting_legion
         SplitLegion.SplitLegion(self.username, player, legion,
-          self.try_to_split_legion)
+          self.try_to_split_legion, self)
 
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
         def1 = self.user.callRemote("split_legion", self.game.name,
@@ -645,7 +646,7 @@ class GUIMasterBoard(gtk.Window):
             if defender.player.name == self.username:
                 if defender.can_flee():
                     Flee.Flee(self.username, attacker, defender, 
-                      self.cb_maybe_flee)
+                      self.cb_maybe_flee, self)
                 else:
                     # Can't flee, so we always send the do_not_flee.
                     # (Others may not know that we have a lord here.)
