@@ -48,13 +48,13 @@ class Flee(object):
         self.legion_name.set_text("Flee with legion %s in hex %s?" % (
           defender_legion.markername, defender_legion.hexlabel))
 
-        self.attacker_marker = Marker.Marker(attacker_legion, scale=20)
-        self.attacker_marker_hbox.pack_start(self.attacker_marker.image, 
+        self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
+        self.attacker_marker_hbox.pack_start(self.attacker_marker.event_box,
           expand=False, fill=False)
         self.attacker_marker.show()
 
-        self.defender_marker = Marker.Marker(defender_legion, scale=20)
-        self.defender_marker_hbox.pack_start(self.defender_marker.image, 
+        self.defender_marker = Marker.Marker(defender_legion, True, scale=20)
+        self.defender_marker_hbox.pack_start(self.defender_marker.event_box,
           expand=False, fill=False)
         self.defender_marker.show()
 

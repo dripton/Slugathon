@@ -33,8 +33,8 @@ class ShowLegion(object):
 
         self.marker = None
         if show_marker:
-            self.marker = Marker.Marker(legion, scale=20)
-            self.marker_hbox.pack_start(self.marker.image, expand=False,
+            self.marker = Marker.Marker(legion, True, scale=20)
+            self.marker_hbox.pack_start(self.marker.event_box, expand=False,
               fill=False)
             self.marker.show()
 

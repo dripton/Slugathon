@@ -354,7 +354,7 @@ class GUIMasterBoard(gtk.Window):
         for legion in self.game.all_legions():
             if legion.markername not in (marker.name for marker in 
               self.markers):
-                marker = Marker.Marker(legion, self.scale)
+                marker = Marker.Marker(legion, True, self.scale)
                 self.markers.append(marker)
 
     def _remove_extra_markers(self):
@@ -408,6 +408,7 @@ class GUIMasterBoard(gtk.Window):
             # Draw in reverse order so that the markers that come earlier
             # in self.markers are on top.
             for marker in reversed(mih):
+                marker.update_height()
                 self._render_marker(marker, gc)
 
     def draw_recruitchits(self, gc):

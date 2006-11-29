@@ -37,18 +37,18 @@ class SplitLegion(object):
         self.legion_name.set_text("Splitting legion %s in hex %s" % (
           legion.markername, legion.hexlabel))
 
-        self.old_marker = Marker.Marker(legion, scale=20)
-        self.old_marker_hbox.pack_start(self.old_marker.image, expand=False,
-          fill=False)
+        self.old_marker = Marker.Marker(legion, False, scale=20)
+        self.old_marker_hbox.pack_start(self.old_marker.event_box,
+          expand=False, fill=False)
         self.old_marker.show()
 
         self.new_legion1 = Legion.Legion(player, legion.markername,
           legion.creatures[:], legion.hexlabel)
         self.new_legion2 = Legion.Legion(player, player.selected_markername, 
           [], legion.hexlabel)
-        self.new_marker = Marker.Marker(self.new_legion2, scale=20)
-        self.new_marker_hbox.pack_start(self.new_marker.image, expand=False,
-          fill=False)
+        self.new_marker = Marker.Marker(self.new_legion2, False, scale=20)
+        self.new_marker_hbox.pack_start(self.new_marker.event_box,
+          expand=False, fill=False)
         self.new_marker.show()
 
         for creature in legion.creatures:
