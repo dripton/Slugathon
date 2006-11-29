@@ -80,7 +80,7 @@ class Chit(object):
             return
         try:
             font_path = config.chit_font_path
-        except NameError, AttributeError:
+        except (NameError, AttributeError):
             font_path = "/usr/share/fonts/corefonts/courbd.ttf"
         # TODO Vary font size with scale
         font_size = 12
