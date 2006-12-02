@@ -14,6 +14,7 @@ import Game
 import PickColor
 import PickMarker
 import GUIMasterBoard
+import StatusScreen
 
 
 class Client(pb.Referenceable, Observed):
@@ -34,6 +35,7 @@ class Client(pb.Referenceable, Observed):
         self.usernames = set()
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
+        self.status_screens = {}   # Maps game to status_screen
         print "Called Client init:", self
 
     def remote_set_name(self, name):
@@ -150,6 +152,12 @@ class Client(pb.Referenceable, Observed):
               markername)
             def1.addErrback(self.failure)
 
+    def _init_status_screen(self, game):
+        print "Client._init_status_screen"
+        self.status_screens[game] = StatusScreen.StatusScreen(game, self.user,
+          self.username)
+        game.add_observer(self.status_screens[game])
+
     def _init_guiboard(self, game):
         print "Client._init_guiboard"
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(game.board, game,
@@ -175,6 +183,8 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
             self._maybe_pick_color(game)
+            if not self.guiboards.get(game):
+                self._init_status_screen(game)
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
