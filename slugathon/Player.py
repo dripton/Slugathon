@@ -164,6 +164,9 @@ class Player(Observed):
     def can_titan_teleport(self):
         return self.score >= 400
 
+    def titan_power(self):
+        return 6 + self.score // 100
+
     def moved_legions(self):
         """Return a set of this players legions that have moved this turn."""
         return set([legion for legion in self.legions.values() if 
