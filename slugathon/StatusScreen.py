@@ -16,6 +16,11 @@ import guiutils
 from Observer import IObserver
 import Game
 import Player
+import creaturedata
+import Legion
+import Creature
+import Action
+import Phase
 
 
 class StatusScreen(gtk.Window):
@@ -42,11 +47,39 @@ class StatusScreen(gtk.Window):
             self.widgets.append("legions%d_label" % num)
             self.widgets.append("markers%d_label" % num)
             self.widgets.append("creatures%d_label" % num)
-            self.widgets.append("titansize%d_label" % num)
+            self.widgets.append("titan_power%d_label" % num)
             self.widgets.append("eliminated%d_label" % num)
             self.widgets.append("score%d_label" % num)
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
+
+        self.game_turn_label.set_text(str(self.game.turn))
+        self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+        if self.game.active_player:
+            self.game_player_label.set_text(self.game.active_player.name)
+
+        for num in xrange(num_players):
+            player = game.players[num]
+            name_label = getattr(self, "name%d_label" % num)
+            name_label.set_text(player.name)
+            tower_label = getattr(self, "tower%d_label" % num)
+            tower_label.set_text(str(player.starting_tower))
+            color_label = getattr(self, "color%d_label" % num)
+            color_label.set_text(player.color or "")
+            legions_label = getattr(self, "legions%d_label" % num)
+            legions_label.set_text(str(len(player.legions)))
+            markers_label = getattr(self, "markers%d_label" % num)
+            markers_label.set_text(str(len(player.markernames)))
+            creatures_label = getattr(self, "creatures%d_label" % num)
+            creatures_label.set_text(str(sum(len(legion) for legion in 
+              player.legions.itervalues())))
+            titan_power_label = getattr(self, "titan_power%d_label" % num)
+            titan_power_label.set_text(str(player.titan_power()))
+            eliminated_label = getattr(self, "eliminated%d_label" % num)
+            eliminated_label.set_text("")
+            score_label = getattr(self, "score%d_label" % num)
+            score_label.set_text(str(player.score))
+
         self.status_screen_window.set_icon(icon.pixbuf)
         self.status_screen_window.set_title("%s - %s" % (
           self.status_screen_window.get_title(), self.username))
@@ -55,13 +88,83 @@ class StatusScreen(gtk.Window):
     def update(self, observed, action):
         print "StatusScreen.update", self, observed, action
 
+        if isinstance(action, Action.AssignedAllTowers):
+            self.game_turn_label.set_text(str(self.game.turn))
+            self.game_player_label.set_text(self.game.active_player.name)
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+
+        elif isinstance(action, Action.PickedColor):
+            playername = action.playername
+            player = self.game.get_player_by_name(playername)
+            player_num = self.game.players.index(player)
+            color = action.color
+            color_label = getattr(self, "color%d_label" % player_num)
+            color_label.set_text(color)
+
+        elif isinstance(action, Action.CreateStartingLegion):
+            playername = action.playername
+            player = self.game.get_player_by_name(playername)
+            player_num = self.game.players.index(player)
+            legions_label = getattr(self, "legions%d_label" % player_num)
+            legions_label.set_text(str(len(player.legions)))
+            creatures_label = getattr(self, "creatures%d_label" % player_num)
+            creatures_label.set_text(str(sum(len(legion) for legion in 
+              player.legions.itervalues())))
+            markers_label = getattr(self, "markers%d_label" % player_num)
+            markers_label.set_text(str(len(player.markernames)))
+
+        elif (isinstance(action, Action.SplitLegion) or
+          isinstance(action, Action.UndoSplit) or
+          isinstance(action, Action.MergeLegions)):
+            playername = action.playername
+            player = self.game.get_player_by_name(playername)
+            player_num = self.game.players.index(player)
+            legions_label = getattr(self, "legions%d_label" % player_num)
+            legions_label.set_text(str(len(player.legions)))
+            markers_label = getattr(self, "markers%d_label" % player_num)
+            markers_label.set_text(str(len(player.markernames)))
+
+        
+        elif isinstance(action, Action.RollMovement):
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+
+        elif isinstance(action, Action.DoneMoving):
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+
+        elif (isinstance(action, Action.RecruitCreature) or 
+          isinstance(action, Action.UndoRecruit)):
+            playername = action.playername
+            player = self.game.get_player_by_name(playername)
+            player_num = self.game.players.index(player)
+            creatures_label = getattr(self, "creatures%d_label" % player_num)
+            creatures_label.set_text(str(sum(len(legion) for legion in 
+              player.legions.itervalues())))
+
+        elif isinstance(action, Action.DoneRecruiting):
+            self.game_turn_label.set_text(str(self.game.turn))
+            self.game_player_label.set_text(self.game.active_player.name)
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+
+        elif isinstance(action, Action.Flee):
+            # XXX TODO
+            pass
+
+
 if __name__ == "__main__":
     now = time.time()
     user = None
-    username = "test user"
+    username = "p0"
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player = Player.Player(username, "g1", 0)
-    player.color = "Red"
+    player0 = Player.Player(username, "g1", 0)
+    player0.assign_starting_tower(600)
+    assert player0.starting_tower == 600
+    player0.assign_color("Red")
+    assert player0.color == "Red"
+    player0.pick_marker("Rd01")
+    player0.create_starting_legion()
+    assert len(player0.legions) == 1
+
     status_screen = StatusScreen(game, user, username)
     status_screen.status_screen_window.connect("destroy", guiutils.die)
     gtk.main()
