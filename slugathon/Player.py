@@ -167,6 +167,9 @@ class Player(Observed):
     def titan_power(self):
         return 6 + self.score // 100
 
+    def num_creatures(self):
+        return sum(len(legion) for legion in self.legions.itervalues())
+
     def moved_legions(self):
         """Return a set of this players legions that have moved this turn."""
         return set([legion for legion in self.legions.values() if 

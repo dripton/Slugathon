@@ -60,3 +60,13 @@ def test_can_exit_move_phase():
     assert player.can_exit_move_phase(game)
     legion2.move(200, True, 3, "Angel")
     assert player.can_exit_move_phase(game)
+
+def test_num_creatures():
+    player = Player.Player("test", "Game1", 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markernames) == 12
+    player.pick_marker("Rd01")
+    assert player.selected_markername == "Rd01"
+    player.create_starting_legion()
+    assert player.num_creatures() == 8

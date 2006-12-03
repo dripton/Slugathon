@@ -71,8 +71,7 @@ class StatusScreen(gtk.Window):
             markers_label = getattr(self, "markers%d_label" % num)
             markers_label.set_text(str(len(player.markernames)))
             creatures_label = getattr(self, "creatures%d_label" % num)
-            creatures_label.set_text(str(sum(len(legion) for legion in 
-              player.legions.itervalues())))
+            creatures_label.set_text(str(player.num_creatures()))
             titan_power_label = getattr(self, "titan_power%d_label" % num)
             titan_power_label.set_text(str(player.titan_power()))
             eliminated_label = getattr(self, "eliminated%d_label" % num)
@@ -108,8 +107,7 @@ class StatusScreen(gtk.Window):
             legions_label = getattr(self, "legions%d_label" % player_num)
             legions_label.set_text(str(len(player.legions)))
             creatures_label = getattr(self, "creatures%d_label" % player_num)
-            creatures_label.set_text(str(sum(len(legion) for legion in 
-              player.legions.itervalues())))
+            creatures_label.set_text(str(player.num_creatures()))
             markers_label = getattr(self, "markers%d_label" % player_num)
             markers_label.set_text(str(len(player.markernames)))
 
@@ -137,8 +135,7 @@ class StatusScreen(gtk.Window):
             player = self.game.get_player_by_name(playername)
             player_num = self.game.players.index(player)
             creatures_label = getattr(self, "creatures%d_label" % player_num)
-            creatures_label.set_text(str(sum(len(legion) for legion in 
-              player.legions.itervalues())))
+            creatures_label.set_text(str(player.num_creatures()))
 
         elif isinstance(action, Action.DoneRecruiting):
             self.game_turn_label.set_text(str(self.game.turn))
