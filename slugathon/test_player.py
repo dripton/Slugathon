@@ -2,9 +2,6 @@ import time
 
 import Player
 import Game
-import Creature
-import creaturedata
-import Legion
 
 def test_can_exit_split_phase():
     player = Player.Player("test", "Game1", 0)
@@ -23,13 +20,9 @@ def test_can_exit_split_phase():
 
 
 def test_friendly_legions():
-    now = time.time()
-    game = Game.Game("g1", "p0", now, now, 2, 6)
-    creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", "g1", 0)
     player.assign_starting_tower(100)
     player.assign_color("Red")
-    board = game.board
     player.pick_marker("Rd01")
     player.create_starting_legion()
     legion1 = player.legions["Rd01"]
@@ -53,11 +46,9 @@ def test_friendly_legions():
 def test_can_exit_move_phase():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", "g1", 0)
     player.assign_starting_tower(100)
     player.assign_color("Red")
-    board = game.board
     player.pick_marker("Rd01")
     player.create_starting_legion()
     legion1 = player.legions["Rd01"]
