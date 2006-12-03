@@ -107,3 +107,4 @@ or do we need to use twisted.trial?
 Need to ignore config.py so it can't get checked in accidentally.  Maybe
 config-sample.py that gets renamed to config.py.
 
+If Inspector window is closed, a new one will appear but never show legions.
