@@ -28,40 +28,46 @@ class Chit(object):
             self.name = "QuestionMarkMask"
         else:
             self.name = creature.name
+        self.dead = False
+        self.location = None    # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
-        bases = [self.name]
+
+        self.bases = [self.name]
         if creature:
             color_name = creature.color_name
             if creature.flies and creature.rangestrikes:
-                bases.append("FlyingRangestrikeBase")
+                self.bases.append("FlyingRangestrikeBase")
             elif creature.flies:
-                bases.append("FlyingBase")
+                self.bases.append("FlyingBase")
             elif creature.rangestrikes:
-                bases.append("RangestrikeBase")
+                self.bases.append("RangestrikeBase")
         else:
             color_name = "black"
         if color_name == "by_player":
             color_name = "titan_%s" % playercolor.lower()
-        rgb = colors.rgb_colors[color_name]
+        self.rgb = colors.rgb_colors[color_name]
 
-        paths = ["../images/%s/%s.png" % (self.IMAGE_DIR, base)
-          for base in bases]
-        im = Image.open(paths[0]).convert("RGBA")
-        for path in paths[1:]:
-            mask = Image.open(path).convert("RGBA")
-            im.paste(rgb, None, mask) 
+        self.paths = ["../images/%s/%s.png" % (self.IMAGE_DIR, base)
+          for base in self.bases]
 
-        self._render_text(im, rgb)
-
-        raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
-        self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
-          self.chit_scale, gtk.gdk.INTERP_BILINEAR)
         self.event_box = gtk.EventBox()
         self.event_box.chit = self
         self.image = gtk.Image()
-        self.image.set_from_pixbuf(self.pixbuf)
         self.event_box.add(self.image)
-        self.location = None    # (x, y) of top left corner
+        self._build_image()
+
+    def _build_image(self):
+        im = Image.open(self.paths[0]).convert("RGBA")
+        for path in self.paths[1:]:
+            mask = Image.open(path).convert("RGBA")
+            im.paste(self.rgb, None, mask) 
+        self._render_text(im, self.rgb)
+        if self.dead:
+            self._render_x(im)
+        raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
+        self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
+          self.chit_scale, gtk.gdk.INTERP_BILINEAR)
+        self.image.set_from_pixbuf(self.pixbuf)
 
     def point_inside(self, point):
         assert self.location
@@ -110,3 +116,11 @@ class Chit(object):
         x = 0.9 * leng - 0.5 * text_width
         y = 0.9 * leng - 0.5 * text_height
         draw.text((x, y), label, fill=rgb, font=font)
+
+    def _render_x(self, im):
+        """Add a big red X through Image im"""
+        rgb = colors.rgb_colors["red"]
+        draw = ImageDraw.Draw(im)
+        draw.line((0, 0) + im.size, fill=rgb, width=2)
+        draw.line((0, im.size[1], im.size[0], 0), fill=rgb, width=2)
+
