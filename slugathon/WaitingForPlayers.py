@@ -47,7 +47,8 @@ class WaitingForPlayers(object):
         self.join_button.connect("button-press-event", self.cb_click_join)
         self.drop_button.connect("button-press-event", self.cb_click_drop)
         self.start_button.connect("button-press-event", self.cb_click_start)
-        # XXX Start button should only be enabled for game owner
+        self.start_button.set_sensitive(self.username == 
+          self.game.get_owner().name)
         # TODO Start button should automatically be triggered when max
         # players have joined, or min players have joined and time is up.
         self.game_name_label.set_text(game.name)
@@ -100,6 +101,8 @@ class WaitingForPlayers(object):
         leng = len(self.game.get_playernames())
         while len(self.player_store) > leng:
             del self.player_store[leng]
+        self.start_button.set_sensitive(self.username == 
+          self.game.get_owner().name)
 
     def destroy(self):
         print "WaitingForPlayers: destroy"
