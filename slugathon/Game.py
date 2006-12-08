@@ -415,7 +415,7 @@ class Game(Observed):
         """Try to end playername's move phase."""
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
-            raise AssertionError("ending split phase out of turn")
+            raise AssertionError("ending move phase out of turn")
         if self.phase == Phase.MOVE:
             player.done_with_moves(self)
 
@@ -472,15 +472,34 @@ class Game(Observed):
         """Called from Server"""
         print "called Game.flee", self, playername, markername
         legion = self.find_legion(markername)
+        player = legion.player
         hexlabel = legion.hexlabel
+        for enemy_legion in self.all_legions(hexlabel):
+            if enemy_legion != legion:
+                break
+        enemy_markername = enemy_legion.markername
         self._flee(playername, markername)
-        action = Action.Flee(self.name, markername, hexlabel)
+        action = Action.Flee(self.name, markername, enemy_markername, hexlabel)
         self.notify(action)
 
     def do_not_flee(self, playername, markername):
         """Called from Server"""
-        action = Action.DoNotFlee(self.name, markername)
+        legion = self.find_legion(markername)
+        player = legion.player
+        hexlabel = legion.hexlabel
+        enemy_legion = player.enemy_legions(self, hexlabel)[0]
+        enemy_markername = enemy_legion.markername
+        action = Action.DoNotFlee(self.name, markername, enemy_markername, 
+          hexlabel)
         self.notify(action)
+
+    def done_with_engagements(self, playername):
+        """Try to end playername's fight phase."""
+        player = self.get_player_by_name(playername)
+        if player is not self.active_player:
+            raise AssertionError("ending fight phase out of turn")
+        if self.phase == Phase.FIGHT:
+            player.done_with_engagements(self)
 
     def recruit_creature(self, playername, markername, creature_name):
         """Called from Server"""
@@ -590,6 +609,12 @@ class Game(Observed):
                 self.phase = Phase.FIGHT
             else:
                 self.phase = Phase.MUSTER
+        elif isinstance(action, Action.Flee):
+            legion = self.find_legion(action.markername)
+            playername = legion.player.name
+            self._flee(playername, action.markername)
+        elif isinstance(action, Action.DoneFighting):
+            self.phase = Phase.MUSTER
         elif isinstance(action, Action.RecruitCreature):
             self.recruit_creature(action.playername, action.markername, 
               action.creature_name)
@@ -604,9 +629,5 @@ class Game(Observed):
                 self.turn += 1
             self.active_player = self.players[new_player_num]
             self.active_player.new_turn()
-        elif isinstance(action, Action.Flee):
-            legion = self.find_legion(action.markername)
-            playername = legion.player.name
-            self._flee(playername, action.markername)
 
         self.notify(action)

@@ -236,30 +236,36 @@ class GUIMasterBoard(gtk.Window):
                 player = legion.player
                 # Make sure it's this player's legion and turn.
                 if player.name != self.username:
-                    return True
+                    return
                 elif player != self.game.active_player:
-                    return True
+                    return
                 # Ensure that the legion can legally be split.
                 elif not legion.can_be_split(self.game.turn):
-                    return True
+                    return
                 elif player.selected_markername:
                     self.split_legion(player)
                 else:
                     if not player.markernames:
-                        return True
+                        return
                     self._splitting_legion = legion
                     PickMarker.PickMarker(self.username, self.game.name, 
                       player.markernames, self.picked_marker_presplit, self)
 
             elif phase == Phase.MOVE:
-                self.unselect_all()
                 legion = marker.legion
+                player = legion.player
+                if player.name != self.username:
+                    # Not my marker; ignore it and click on the hex
+                    guihex = self.guihexes[legion.hexlabel]
+                    self.clicked_on_hex(area, event, guihex)
+                    return
+                self.unselect_all()
                 self.clear_recruitchits()
                 if legion.moved:
                     moves = []
                 else:
                     moves = self.game.find_all_moves(legion, self.board.hexes[
-                      legion.hexlabel], legion.player.movement_roll)
+                      legion.hexlabel], player.movement_roll)
                 repaint_hexlabels = set()
                 if moves:
                     self.selected_marker = marker
@@ -273,7 +279,7 @@ class GUIMasterBoard(gtk.Window):
                         if recruitnames:
                             creaturename = recruitnames[-1]
                             recruit = Creature.Creature(creaturename)
-                            chit = Chit.Chit(recruit, legion.player.color, 
+                            chit = Chit.Chit(recruit, player.color, 
                               self.scale / 2)
                             chit_scale = chit.chit_scale
                             chit.location = (guihex.center[0] - chit_scale / 2,
@@ -301,8 +307,6 @@ class GUIMasterBoard(gtk.Window):
                           legion, masterhex, caretaker, self.picked_recruit,
                           self)
                 self.highlight_recruits()
-
-        return True
 
 
     def picked_marker_presplit(self, game_name, username, markername):
@@ -542,6 +546,11 @@ class GUIMasterBoard(gtk.Window):
                     def1 = self.user.callRemote("done_with_moves",
                       self.game.name)
                     def1.addErrback(self.failure)
+            elif self.game.phase == Phase.FIGHT:
+                if player.can_exit_fight_phase(self.game):
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
             elif self.game.phase == Phase.MUSTER:
                 def1 = self.user.callRemote("done_with_recruits",
                   self.game.name)
@@ -656,8 +665,10 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Flee):
             print "GUIMasterBoard got Flee", action.markername, action.hexlabel
             self.update_gui([action.hexlabel])
+            self.highlight_engagements()
 
         elif isinstance(action, Action.DoNotFlee):
+            print "GUIMasterBoard got DoNotFlee", action.markername
             markername = action.markername
             defender = self.game.find_legion(markername)
             hexlabel = defender.hexlabel
@@ -667,6 +678,9 @@ class GUIMasterBoard(gtk.Window):
             if (defender.player.name == self.username or
               attacker.player.name == self.username):
                 print "TODO negotiate / concede dialog"
+
+        elif isinstance(action, Action.DoneFighting):
+            self.highlight_recruits()
 
         elif isinstance(action, Action.RecruitCreature) or isinstance(action,
           Action.UndoRecruit):

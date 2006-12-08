@@ -143,8 +143,22 @@ class StatusScreen(gtk.Window):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
         elif isinstance(action, Action.Flee):
-            # XXX TODO
-            pass
+            for num, player in enumerate(self.game.players):
+                legions_label = getattr(self, "legions%d_label" % num)
+                legions_label.set_text(str(len(player.legions)))
+                markers_label = getattr(self, "markers%d_label" % num)
+                markers_label.set_text(str(len(player.markernames)))
+                creatures_label = getattr(self, "creatures%d_label" % num)
+                creatures_label.set_text(str(player.num_creatures()))
+                titan_power_label = getattr(self, "titan_power%d_label" % num)
+                titan_power_label.set_text(str(player.titan_power()))
+                score_label = getattr(self, "score%d_label" % num)
+                score_label.set_text(str(player.score))
+
+        elif isinstance(action, Action.DoneFighting):
+            self.game_turn_label.set_text(str(self.game.turn))
+            self.game_player_label.set_text(self.game.active_player.name)
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
 
 if __name__ == "__main__":

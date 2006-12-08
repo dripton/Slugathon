@@ -259,15 +259,55 @@ pb.setUnjellyableForClass(ResolvingEngagement, ResolvingEngagement)
 
 
 class Flee(Action):
-    def __init__(self, game_name, markername, hexlabel):
+    def __init__(self, game_name, markername, enemy_markername, hexlabel):
         self.game_name = game_name
         self.markername = markername
+        self.enemy_markername = enemy_markername
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(Flee, Flee)
 
 
 class DoNotFlee(Action):
-    def __init__(self, game_name, markername):
+    def __init__(self, game_name, markername, enemy_markername, hexlabel):
         self.game_name = game_name
         self.markername = markername
+        self.enemy_markername = enemy_markername
+        self.hexlabel = hexlabel
 pb.setUnjellyableForClass(DoNotFlee, DoNotFlee)
+
+
+class Concede(Action):
+    def __init__(self, game_name, markername, enemy_markername, hexlabel):
+        self.game_name = game_name
+        self.markername = markername
+        self.enemy_markername = enemy_markername
+        self.hexlabel = hexlabel
+pb.setUnjellyableForClass(Concede, Concede)
+
+
+class Fight(Action):
+    def __init__(self, game_name, markername, enemy_markername, hexlabel):
+        self.game_name = game_name
+        self.markername = markername
+        self.enemy_markername = enemy_markername
+        self.hexlabel = hexlabel
+pb.setUnjellyableForClass(Fight, Fight)
+
+
+class MakeProposal(Action):
+    def __init__(self, game_name, attacker_markername, defender_markername, 
+      hexlabel, attacker_creaturenames, defender_creaturenames):
+        self.game_name = game_name
+        self.attacker_markername = attacker_markername
+        self.defender_markername = defender_markername
+        self.hexlabel = hexlabel
+        self.attacker_creaturenames = tuple(attacker_creaturenames)
+        self.defender_creaturenames = tuple(defender_creaturenames)
+pb.setUnjellyableForClass(MakeProposal, MakeProposal)
+
+
+class DoneFighting(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(DoneFighting, DoneFighting)

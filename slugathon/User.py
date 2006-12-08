@@ -107,6 +107,10 @@ class User(pb.Avatar):
         print "perspective_do_not_flee", game_name, markername
         self.server.do_not_flee(self.name, game_name, markername)
 
+    def perspective_done_with_engagements(self, game_name):
+        print "perspective_done_with_engagements", game_name
+        self.server.done_with_engagements(self.name, game_name)
+
     def perspective_recruit_creature(self, game_name, markername, 
       creature_name):
         print "perspective_recruit_creature", game_name, markername, \

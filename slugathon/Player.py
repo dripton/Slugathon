@@ -202,6 +202,15 @@ class Player(Observed):
             action = Action.DoneMoving(self.game_name, self.name)
             self.notify(action)
 
+    def can_exit_fight_phase(self, game):
+        """Return True iff this player can finish the move phase."""
+        return not game.engagement_hexlabels()
+
+    def done_with_engagements(self, game):
+        if self.can_exit_fight_phase(game):
+            action = Action.DoneFighting(self.game_name, self.name)
+            self.notify(action)
+
     def done_with_recruits(self, game):
         action = Action.DoneRecruiting(self.game_name, self.name)
         self.notify(action)
