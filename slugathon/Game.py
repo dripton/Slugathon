@@ -487,7 +487,9 @@ class Game(Observed):
         legion = self.find_legion(markername)
         player = legion.player
         hexlabel = legion.hexlabel
-        enemy_legion = player.enemy_legions(self, hexlabel)[0]
+        for enemy_legion in self.all_legions(hexlabel):
+            if enemy_legion != legion:
+                break
         enemy_markername = enemy_legion.markername
         action = Action.DoNotFlee(self.name, markername, enemy_markername, 
           hexlabel)
