@@ -163,8 +163,6 @@ class MergeLegions(Action):
 pb.setUnjellyableForClass(MergeLegions, MergeLegions)
 
 
-# XXX Do we need a separate DoneWithSplits action?
-
 class RollMovement(Action):
     def __init__(self, game_name, playername, movement_roll):
         """parent_creature_names and child_creature_names are lists of the 

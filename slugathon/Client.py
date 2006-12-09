@@ -146,7 +146,6 @@ class Client(pb.Referenceable, Observed):
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
         player.pick_marker(markername)
-        # XXX Need a more explicit way to note that it's the first time?
         if not player.legions:
             def1 = self.user.callRemote("pick_first_marker", game_name, 
               markername)

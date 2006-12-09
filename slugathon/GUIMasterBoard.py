@@ -159,7 +159,6 @@ class GUIMasterBoard(gtk.Window):
                 return True
         return True
 
-    # XXX Move this.
     def _all_teleports(self, moves):
         """Return True iff all the move tuples in moves are teleports"""
         for move in moves:
