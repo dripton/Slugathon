@@ -107,6 +107,5 @@ if __name__ == "__main__":
     
     flee = Flee(defender_username, attacker_legion, defender_legion, 
       guiutils.die, None)
-    flee.flee_dialog.connect("destroy", guiutils.die)
 
     gtk.main()
