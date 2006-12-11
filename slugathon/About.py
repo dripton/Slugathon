@@ -15,6 +15,7 @@ import icon
 class About(object):
     def __init__(self):
         ad = self.ad = gtk.AboutDialog()
+        ad.set_position(gtk.WIN_POS_MOUSE)
         ad.set_name("Slugathon")
         ad.set_version("")
         ad.set_copyright("Copyright 2003-2005 David Ripton")
@@ -40,6 +41,5 @@ class About(object):
 
 if __name__ == "__main__":
     about = About()
-    about.ad.connect("destroy", guiutils.die)
     about.ad.connect("response", guiutils.die)
     gtk.main()
