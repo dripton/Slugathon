@@ -128,14 +128,26 @@ class Negotiate(object):
         return self.all_dead(self.attacker_chits) or self.all_dead(
           self.defender_chits)
 
+    def surviving_creature_names(self, chits):
+        """Return a list of creature names for the survivors."""
+        li = []
+        for chit in chits:
+            if not chit.dead:
+                li.append(chit.creature.name)
+        return li
+
     # TODO creature lists, response codes
     def cb_response(self, widget, response_id):
         """Calls the callback function, with the attacker, the defender, and
         the response_id."""
         print "Negotiate.cb_response", widget, response_id
         self.negotiate_dialog.destroy()
-        self.callback(self.attacker_legion, self.defender_legion, 
-          response_id)
+        attacker_creature_names = self.surviving_creature_names(
+          self.attacker_chits)
+        defender_creature_names = self.surviving_creature_names(
+          self.defender_chits)
+        self.callback(self.attacker_legion, attacker_creature_names, 
+          self.defender_legion, defender_creature_names, response_id) 
 
 
 if __name__ == "__main__":
@@ -157,9 +169,11 @@ if __name__ == "__main__":
     defender_creatures = Creature.n2c(defender_creature_names)
     defender_legion = Legion.Legion(defender_player, "Rd01", 
       defender_creatures, 1)
-    
-    negotiate = Negotiate(defender_username, attacker_legion, defender_legion,
-      guiutils.die, None)
-    negotiate.negotiate_dialog.connect("destroy", guiutils.die)
 
+    def callback(*args):
+        print "callback", args
+        guiutils.die()
+
+    negotiate = Negotiate(defender_username, attacker_legion, defender_legion,
+      callback, None)
     gtk.main()
