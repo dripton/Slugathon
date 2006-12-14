@@ -1,5 +1,7 @@
 #!/usr/bin/env python 
 
+import time
+
 try:
     import pygtk
     pygtk.require("2.0")
@@ -15,6 +17,7 @@ import Legion
 import Player
 import icon
 import guiutils
+import Game
 
 
 class Flee(object):
@@ -86,10 +89,11 @@ class Flee(object):
 
 
 if __name__ == "__main__":
-    game_name = "Game1"
-
+    now = time.time()
     attacker_username = "Roar!"
-    attacker_player = Player.Player(attacker_username, game_name, 0)
+    game = Game.Game("g1", attacker_username, now, now, 2, 6)
+
+    attacker_player = Player.Player(attacker_username, game, 0)
     attacker_player.color = "Black"
     attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
       "Archangel", "Angel", "Unicorn"]
@@ -98,7 +102,7 @@ if __name__ == "__main__":
       attacker_creatures, 1)
 
     defender_username = "Eek!"
-    defender_player = Player.Player(defender_username, "Game1", 0)
+    defender_player = Player.Player(defender_username, game, 0)
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_creatures = Creature.n2c(defender_creature_names)

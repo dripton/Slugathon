@@ -8,8 +8,10 @@ import Game
 import Caretaker
 
 def test_num_lords():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    player = Player.Player("test", "Game1", 0)
+    player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.num_lords() == 2
     assert not legion.can_flee()
@@ -25,15 +27,19 @@ def test_num_lords():
     assert legion.can_flee()
 
 def test_creature_names():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    player = Player.Player("test", "Game1", 0)
+    player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.creature_names() == ["Angel", "Centaur", "Centaur",
       "Gargoyle", "Gargoyle", "Ogre", "Ogre", "Titan"]
 
 def test_remove_creature_by_name():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    player = Player.Player("test", "Game1", 0)
+    player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert len(legion) == 8
     legion.remove_creature_by_name("Gargoyle")
@@ -50,8 +56,10 @@ def test_remove_creature_by_name():
         raise AssertionError, "should have raised"
 
 def test_add_creature_by_name():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    player = Player.Player("test", "Game1", 0)
+    player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert len(legion) == 8
     try:
@@ -77,8 +85,10 @@ def test_add_creature_by_name():
     assert "Troll" in legion.creature_names()
 
 def test_is_legal_split():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    player = Player.Player("test", "Game1", 0)
+    player = Player.Player("p0", game, 0)
 
     parent = Legion.Legion(player, "Rd01", creatures, 1)
     child1 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
@@ -93,7 +103,7 @@ def test_available_recruits():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    player = Player.Player("p0", "g1", 0)
+    player = Player.Player("p0", game, 0)
     board = game.board
 
     legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
@@ -114,7 +124,9 @@ def test_available_recruits():
       "Gargoyle", "Ogre", "Warlock"]
 
 def test_score():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    player = Player.Player("test", "Game1", 0)
+    player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.score() == 120

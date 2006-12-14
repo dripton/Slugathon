@@ -105,7 +105,7 @@ class Game(Observed):
               playername, self.name)
         print "adding", playername, "to", self.name
         self.num_players_joined += 1
-        player = Player.Player(playername, self.name, self.num_players_joined)
+        player = Player.Player(playername, self, self.num_players_joined)
         self.players.append(player)
         player.add_observer(self)
 
@@ -468,6 +468,26 @@ class Game(Observed):
         for legion in self.all_legions():
             assert legion.markername != markername
 
+    def _concede(self, playername, markername):
+        print "called Game._concede", self, playername, markername
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        hexlabel = legion.hexlabel
+        for legion2 in self.all_legions(hexlabel):
+            if legion2 != legion:
+                break
+        assert legion2 != legion
+        player2 = legion2.player
+        assert player2 != player
+        points = legion.score()
+        for creature in legion.creatures:
+            self.caretaker.kill_one(creature.name)
+        player2.add_points(points)
+        player.remove_legion(markername)
+        assert markername not in player.legions
+        for legion in self.all_legions():
+            assert legion.markername != markername
+
     def flee(self, playername, markername):
         """Called from Server"""
         print "called Game.flee", self, playername, markername
@@ -492,6 +512,20 @@ class Game(Observed):
                 break
         enemy_markername = enemy_legion.markername
         action = Action.DoNotFlee(self.name, markername, enemy_markername, 
+          hexlabel)
+        self.notify(action)
+
+    def concede(self, playername, markername):
+        """Called from Server"""
+        legion = self.find_legion(markername)
+        player = legion.player
+        hexlabel = legion.hexlabel
+        for enemy_legion in self.all_legions(hexlabel):
+            if enemy_legion != legion:
+                break
+        enemy_markername = enemy_legion.markername
+        self._concede(playername, markername)
+        action = Action.Concede(self.name, markername, enemy_markername, 
           hexlabel)
         self.notify(action)
 

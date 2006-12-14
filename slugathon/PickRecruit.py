@@ -92,7 +92,7 @@ if __name__ == "__main__":
     now = time.time()
     username = "p0"
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player = Player.Player(username, "g1", 0)
+    player = Player.Player(username, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000

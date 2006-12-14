@@ -29,6 +29,7 @@ import Flee
 import Inspector
 import Creature
 import Chit
+import Negotiate
 
 
 SQRT3 = math.sqrt(3.0)
@@ -593,6 +594,38 @@ class GUIMasterBoard(gtk.Window):
             def1 = self.user.callRemote("do_not_flee", self.game.name,
               defender.markername)
 
+    def cb_negotiate(self, attacker_legion, attacker_creature_names,
+      defender_legion, defender_creature_names, response_id):
+        """Callback from Negotiate dialog.
+
+        response_ids: 0 - Concede
+                      1 - Make proposal
+                      2 - Done proposing
+                      3 - Fight
+        """
+        print "negotiate", response_id
+        player = self.game.get_player_by_name(self.username)
+        hexlabel = attacker_legion.hexlabel
+        for legion in player.friendly_legions(hexlabel):
+            friendly_legion = legion
+        if attacker_legion == friendly_legion:
+            enemy_legion = defender_legion
+        else:
+            enemy_legion = attacker_legion
+        if response_id == 0:
+            def1 = self.user.callRemote("concede", self.game.name, 
+              friendly_legion.markername, enemy_legion.markername, hexlabel)
+        elif response_id == 1:
+            # TODO
+            pass
+        elif response_id == 2:
+            # TODO
+            pass
+        elif response_id == 3:
+            # TODO
+            pass
+              
+
     def failure(self, arg):
         print "GUIMasterBoard.failure", arg
 
@@ -676,7 +709,14 @@ class GUIMasterBoard(gtk.Window):
                     attacker = legion
             if (defender.player.name == self.username or
               attacker.player.name == self.username):
-                print "TODO negotiate / concede dialog"
+                Negotiate.Negotiate(self.username, attacker, defender,
+                  self.cb_negotiate, self)
+
+        elif isinstance(action, Action.Concede):
+            print "GUIMasterBoard got Concede", action.markername, \
+              action.hexlabel
+            self.update_gui([action.hexlabel])
+            self.highlight_engagements()
 
         elif isinstance(action, Action.DoneFighting):
             self.highlight_recruits()

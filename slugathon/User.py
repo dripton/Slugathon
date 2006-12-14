@@ -107,6 +107,13 @@ class User(pb.Avatar):
         print "perspective_do_not_flee", game_name, markername
         self.server.do_not_flee(self.name, game_name, markername)
 
+    def perspective_concede(self, game_name, markername, enemy_markername,
+          hexlabel):
+        print "perspective_concede", game_name, markername, enemy_markername, \
+          hexlabel
+        self.server.concede(self.name, game_name, markername, 
+          enemy_markername, hexlabel)
+
     def perspective_done_with_engagements(self, game_name):
         print "perspective_done_with_engagements", game_name
         self.server.done_with_engagements(self.name, game_name)

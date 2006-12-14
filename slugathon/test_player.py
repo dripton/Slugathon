@@ -4,7 +4,9 @@ import Player
 import Game
 
 def test_can_exit_split_phase():
-    player = Player.Player("test", "Game1", 0)
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
     player.assign_starting_tower(600)
     player.assign_color("Red")
     assert len(player.markernames) == 12
@@ -20,7 +22,9 @@ def test_can_exit_split_phase():
 
 
 def test_friendly_legions():
-    player = Player.Player("p0", "g1", 0)
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
     player.assign_starting_tower(100)
     player.assign_color("Red")
     player.pick_marker("Rd01")
@@ -46,7 +50,7 @@ def test_friendly_legions():
 def test_can_exit_move_phase():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player = Player.Player("p0", "g1", 0)
+    player = Player.Player("p0", game, 0)
     player.assign_starting_tower(100)
     player.assign_color("Red")
     player.pick_marker("Rd01")
@@ -62,7 +66,9 @@ def test_can_exit_move_phase():
     assert player.can_exit_move_phase(game)
 
 def test_num_creatures():
-    player = Player.Player("test", "Game1", 0)
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
     player.assign_starting_tower(600)
     player.assign_color("Red")
     assert len(player.markernames) == 12

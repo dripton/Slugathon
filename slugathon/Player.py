@@ -29,10 +29,10 @@ class Player(Observed):
 
     zope.interface.implements(IObserver)
 
-    def __init__(self, playername, game_name, join_order):
+    def __init__(self, playername, game, join_order):
         Observed.__init__(self)
         self.name = playername
-        self.game_name = game_name
+        self.game = game
         self.join_order = join_order
         self.starting_tower = None    # a numeric hex label
         self.score = 0
@@ -53,13 +53,13 @@ class Player(Observed):
         """Set this player's starting tower to the (int) tower"""
         assert type(tower) == types.IntType
         self.starting_tower = tower
-        action = Action.AssignTower(self.game_name, self.name, tower)
+        action = Action.AssignTower(self.game.name, self.name, tower)
         self.notify(action)
 
     def assign_color(self, color):
         """Set this player's color"""
         self.color = color
-        action = Action.PickedColor(self.game_name, self.name, color)
+        action = Action.PickedColor(self.game.name, self.name, color)
         abbrev = playercolordata.name_to_abbrev[self.color]
         num_markers = len(markerdata.data[color])
         for ii in xrange(num_markers):
@@ -91,8 +91,11 @@ class Player(Observed):
           self.starting_tower)
         self.legions[markername] = legion
         legion.add_observer(self)
-        action = Action.CreateStartingLegion(self.game_name, self.name,
+        action = Action.CreateStartingLegion(self.game.name, self.name,
           markername)
+        caretaker = self.game.caretaker
+        for creature in creatures:
+            caretaker.take_one(creature.name)
         self.notify(action)
 
     def split_legion(self, parent_markername, child_markername,
@@ -117,7 +120,7 @@ class Player(Observed):
         self.legions[child_markername] = new_legion2
         # TODO One action for our player with creature names, and a 
         # different action for other players without.
-        action = Action.SplitLegion(self.game_name, self.name, 
+        action = Action.SplitLegion(self.game.name, self.name, 
           parent_markername, child_markername, parent_creature_names, 
           child_creature_names)
         self.notify(action)
@@ -132,7 +135,7 @@ class Player(Observed):
         self.markernames.add(child.markername)
         # TODO One action for our player with creature names, and a 
         # different action for other players without.
-        action = Action.UndoSplit(self.game_name, self.name, 
+        action = Action.UndoSplit(self.game.name, self.name, 
           parent_markername, child_markername, parent_creature_names, 
           child_creature_names)
         self.notify(action)
@@ -144,7 +147,7 @@ class Player(Observed):
 
     def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
-        action = Action.RollMovement(self.game_name, self.name, 
+        action = Action.RollMovement(self.game.name, self.name, 
           self.movement_roll)
         self.notify(action)
 
@@ -199,7 +202,7 @@ class Player(Observed):
 
     def done_with_moves(self, game):
         if self.can_exit_move_phase(game):
-            action = Action.DoneMoving(self.game_name, self.name)
+            action = Action.DoneMoving(self.game.name, self.name)
             self.notify(action)
 
     def can_exit_fight_phase(self, game):
@@ -208,11 +211,11 @@ class Player(Observed):
 
     def done_with_engagements(self, game):
         if self.can_exit_fight_phase(game):
-            action = Action.DoneFighting(self.game_name, self.name)
+            action = Action.DoneFighting(self.game.name, self.name)
             self.notify(action)
 
     def done_with_recruits(self, game):
-        action = Action.DoneRecruiting(self.game_name, self.name)
+        action = Action.DoneRecruiting(self.game.name, self.name)
         self.notify(action)
 
     def new_turn(self):

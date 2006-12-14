@@ -160,7 +160,6 @@ class Legion(Observed):
                     result_list.append(name)
         return result_list
 
-    # TODO caretaker
     def recruit(self, creature):
         """Recruit creature, and notify observers."""
         player = self.player
@@ -173,13 +172,16 @@ class Legion(Observed):
         else:
             if len(self) >= 7:
                 raise AssertionError("legion too tall to recruit")
+            caretaker = self.player.game.caretaker
+            if not caretaker.num_left(creature.name):
+                raise AssertionError("none of creature left")
+            caretaker.take_one(creature.name)
             self.creatures.append(creature)
             self.recruited = True
-            action = Action.RecruitCreature(player.game_name, player.name,
+            action = Action.RecruitCreature(player.game.name, player.name,
               self.markername, creature.name)
             self.notify(action)
 
-    # TODO caretaker
     def undo_recruit(self):
         """Undo last recruit, and notify observers."""
         # Avoid double undo
@@ -188,7 +190,9 @@ class Legion(Observed):
         player = self.player
         creature = self.creatures.pop()
         self.recruited = False
-        action = Action.UndoRecruit(player.game_name, player.name,
+        caretaker = self.player.game.caretaker
+        caretaker.put_one_back(creature.name)
+        action = Action.UndoRecruit(player.game.name, player.name,
           self.markername, creature.name)
         self.notify(action)
 

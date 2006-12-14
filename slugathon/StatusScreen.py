@@ -167,13 +167,13 @@ if __name__ == "__main__":
     username = "p0"
     creatures = Creature.n2c(creaturedata.starting_creature_names)
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player0 = Player.Player(username, "g1", 0)
+    player0 = Player.Player(username, game, 0)
     player0.assign_starting_tower(600)
     assert player0.starting_tower == 600
     player0.assign_color("Red")
     assert player0.color == "Red"
     player0.pick_marker("Rd01")
-    player0.create_starting_legion()
+    player0.create_starting_legion(game.caretaker)
     assert len(player0.legions) == 1
 
     status_screen = StatusScreen(game, user, username)

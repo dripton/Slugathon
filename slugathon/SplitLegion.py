@@ -1,5 +1,7 @@
 #!/usr/bin/env python 
 
+import time
+
 try:
     import pygtk
     pygtk.require("2.0")
@@ -15,6 +17,7 @@ import Legion
 import Player
 import icon
 import guiutils
+import Game
 
 
 class SplitLegion(object):
@@ -95,11 +98,12 @@ class SplitLegion(object):
 
 
 if __name__ == "__main__":
+    now = time.time()
     creatures = [Creature.Creature(name) for name in 
       creaturedata.starting_creature_names]
-    
     username = "test"
-    player = Player.Player(username, "Game1", 0)
+    game = Game.Game("g1", username, now, now, 2, 6)
+    player = Player.Player(username, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
