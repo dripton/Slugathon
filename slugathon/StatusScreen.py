@@ -142,7 +142,8 @@ class StatusScreen(gtk.Window):
             self.game_player_label.set_text(self.game.active_player.name)
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
-        elif isinstance(action, Action.Flee):
+        elif (isinstance(action, Action.Flee) or 
+          isinstance(action, Action.Concede)):
             for num, player in enumerate(self.game.players):
                 legions_label = getattr(self, "legions%d_label" % num)
                 legions_label.set_text(str(len(player.legions)))

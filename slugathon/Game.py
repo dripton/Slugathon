@@ -586,24 +586,30 @@ class Game(Observed):
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
                 self.add_player(action.username)
+
         elif isinstance(action, Action.DropFromGame):
             if action.game_name == self.name:
                 self.remove_player(action.username)
+
         elif isinstance(action, Action.AssignTower):
             self.started = True
             player = self.get_player_by_name(action.playername)
             if player.starting_tower is None:
                 player.assign_starting_tower(action.tower_num)
+
         elif isinstance(action, Action.AssignedAllTowers):
             self.sort_players()
+
         elif isinstance(action, Action.PickedColor):
             self.assign_color(action.playername, action.color)
+
         elif isinstance(action, Action.CreateStartingLegion):
             player = self.get_player_by_name(action.playername)
             # Avoid doing twice
             if not player.legions:
                 player.pick_marker(action.markername)
                 player.create_starting_legion()
+
         elif isinstance(action, Action.SplitLegion):
             player = self.get_player_by_name(action.playername)
             # Avoid doing the same split twice.
@@ -611,17 +617,20 @@ class Game(Observed):
                 self.split_legion(action.playername, action.parent_markername,
                   action.child_markername, action.parent_creature_names, 
                   action.child_creature_names)
+
         elif isinstance(action, Action.UndoSplit):
             player = self.get_player_by_name(action.playername)
             # Avoid doing the same split twice.
             if action.child_markername in player.legions:
                 self.undo_split(action.playername, action.parent_markername,
                   action.child_markername)
+
         elif isinstance(action, Action.RollMovement):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.MOVE
             # Possibly redundant, but harmless
             player.movement_roll = action.movement_roll
+
         elif isinstance(action, Action.MoveLegion):
             player = self.get_player_by_name(action.playername)
             markername = action.markername
@@ -632,6 +641,7 @@ class Game(Observed):
                 self.move_legion(action.playername, markername, 
                   action.hexlabel, action.entry_side, action.teleport, 
                   action.teleporting_lord)
+
         elif isinstance(action, Action.UndoMoveLegion):
             player = self.get_player_by_name(action.playername)
             markername = action.markername
@@ -639,23 +649,34 @@ class Game(Observed):
             # Avoid double undo
             if legion.moved:
                 self.undo_move_legion(action.playername, markername)
+
         elif isinstance(action, Action.DoneMoving):
             player = self.get_player_by_name(action.playername)
             if self.engagement_hexlabels():
                 self.phase = Phase.FIGHT
             else:
                 self.phase = Phase.MUSTER
+
         elif isinstance(action, Action.Flee):
             legion = self.find_legion(action.markername)
             playername = legion.player.name
             self._flee(playername, action.markername)
+
+        elif isinstance(action, Action.Concede):
+            legion = self.find_legion(action.markername)
+            playername = legion.player.name
+            self._concede(playername, action.markername)
+
         elif isinstance(action, Action.DoneFighting):
             self.phase = Phase.MUSTER
+
         elif isinstance(action, Action.RecruitCreature):
             self.recruit_creature(action.playername, action.markername, 
               action.creature_name)
+
         elif isinstance(action, Action.UndoRecruit):
             self.undo_recruit(action.playername, action.markername)
+
         elif isinstance(action, Action.DoneRecruiting):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.SPLIT
