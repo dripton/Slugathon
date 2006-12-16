@@ -107,3 +107,23 @@ config-sample.py that gets renamed to config.py.
 If Inspector window is closed, a new one will appear but never show legions.
 
 Mulligan should first undo all moves.
+
+Color code StatusScreen.  Show when it's this user's turn to move.
+
+Add else clause for unhandled actions in update methods.
+
+Does gtk.window_set_default_icon_from_file work?
+
+Highlight player name in status screen when it's this player's turn.
+
+Do not highlight 7-high stacks during the muster phase.
+
+Sort creatures in Inspector / ShowLegion
+
+During movement, after selecting a stack, clicking on a non-highlighted
+   hex should immediately re-highlight eligible stacks.
+
+Names sometimes wrong on StatusScreen.  Join order vs. tower order.
+
+Allowed to exit move phase with split legions in case where recombine
+   should be forced.
