@@ -105,6 +105,7 @@ class GUIMasterBoard(gtk.Window):
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
         self.inspector = Inspector.Inspector(self.username)
+        self.negotiate = None
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -625,6 +626,10 @@ class GUIMasterBoard(gtk.Window):
             # TODO
             pass
               
+    def destroy_negotiate(self):
+        if self.negotiate is not None:
+            self.negotiate.destroy()
+            self.negotiate = None
 
     def failure(self, arg):
         print "GUIMasterBoard.failure", arg
@@ -709,12 +714,13 @@ class GUIMasterBoard(gtk.Window):
                     attacker = legion
             if (defender.player.name == self.username or
               attacker.player.name == self.username):
-                Negotiate.Negotiate(self.username, attacker, defender,
-                  self.cb_negotiate, self)
+                self.negotiate = Negotiate.Negotiate(self.username, attacker, 
+                  defender, self.cb_negotiate, self)
 
         elif isinstance(action, Action.Concede):
             print "GUIMasterBoard got Concede", action.markername, \
               action.hexlabel
+            self.destroy_negotiate()
             self.update_gui([action.hexlabel])
             self.highlight_engagements()
 

@@ -151,6 +151,8 @@ class Negotiate(object):
         self.callback(self.attacker_legion, attacker_creature_names, 
           self.defender_legion, defender_creature_names, response_id) 
 
+    def destroy(self):
+        self.negotiate_dialog.destroy()
 
 if __name__ == "__main__":
     now = time.time()
