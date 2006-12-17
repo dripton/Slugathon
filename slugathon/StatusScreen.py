@@ -39,8 +39,7 @@ class StatusScreen(gtk.Window):
           "game_turn_label", "game_player_label", "game_phase_label",
           "battle_turn_label", "battle_player_label", "battle_phase_label",
         ]
-        num_players = len(self.game.players)
-        for num in xrange(num_players):
+        for num, player in enumerate(self.game.players):
             self.widgets.append("name%d_label" % num)
             self.widgets.append("tower%d_label" % num)
             self.widgets.append("color%d_label" % num)
@@ -53,13 +52,22 @@ class StatusScreen(gtk.Window):
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
+        self._init_turn()
+        self._init_players()
+
+        self.status_screen_window.set_icon(icon.pixbuf)
+        self.status_screen_window.set_title("%s - %s" % (
+          self.status_screen_window.get_title(), self.username))
+        self.status_screen_window.show()
+
+    def _init_turn(self):
         self.game_turn_label.set_text(str(self.game.turn))
         self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
         if self.game.active_player:
             self.game_player_label.set_text(self.game.active_player.name)
 
-        for num in xrange(num_players):
-            player = game.players[num]
+    def _init_players(self):
+        for num, player in enumerate(self.game.players):
             name_label = getattr(self, "name%d_label" % num)
             name_label.set_text(player.name)
             tower_label = getattr(self, "tower%d_label" % num)
@@ -79,18 +87,13 @@ class StatusScreen(gtk.Window):
             score_label = getattr(self, "score%d_label" % num)
             score_label.set_text(str(player.score))
 
-        self.status_screen_window.set_icon(icon.pixbuf)
-        self.status_screen_window.set_title("%s - %s" % (
-          self.status_screen_window.get_title(), self.username))
-        self.status_screen_window.show()
-
     def update(self, observed, action):
         print "StatusScreen.update", self, observed, action
 
         if isinstance(action, Action.AssignedAllTowers):
-            self.game_turn_label.set_text(str(self.game.turn))
-            self.game_player_label.set_text(self.game.active_player.name)
-            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+            # Players got renumbered, so re-init everything.
+            self._init_players()
+            self._init_turn()
 
         elif isinstance(action, Action.PickedColor):
             playername = action.playername
@@ -122,7 +125,6 @@ class StatusScreen(gtk.Window):
             markers_label = getattr(self, "markers%d_label" % player_num)
             markers_label.set_text(str(len(player.markernames)))
 
-        
         elif isinstance(action, Action.RollMovement):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
@@ -138,9 +140,7 @@ class StatusScreen(gtk.Window):
             creatures_label.set_text(str(player.num_creatures()))
 
         elif isinstance(action, Action.DoneRecruiting):
-            self.game_turn_label.set_text(str(self.game.turn))
-            self.game_player_label.set_text(self.game.active_player.name)
-            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+            self._init_turn()
 
         elif (isinstance(action, Action.Flee) or 
           isinstance(action, Action.Concede)):
@@ -157,9 +157,7 @@ class StatusScreen(gtk.Window):
                 score_label.set_text(str(player.score))
 
         elif isinstance(action, Action.DoneFighting):
-            self.game_turn_label.set_text(str(self.game.turn))
-            self.game_player_label.set_text(self.game.active_player.name)
-            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+            self._init_turn()
 
 
 if __name__ == "__main__":
@@ -174,7 +172,7 @@ if __name__ == "__main__":
     player0.assign_color("Red")
     assert player0.color == "Red"
     player0.pick_marker("Rd01")
-    player0.create_starting_legion(game.caretaker)
+    player0.create_starting_legion()
     assert len(player0.legions) == 1
 
     status_screen = StatusScreen(game, user, username)

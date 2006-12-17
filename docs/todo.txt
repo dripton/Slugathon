@@ -123,7 +123,5 @@ Sort creatures in Inspector / ShowLegion
 During movement, after selecting a stack, clicking on a non-highlighted
    hex should immediately re-highlight eligible stacks.
 
-Names sometimes wrong on StatusScreen.  Join order vs. tower order.
-
 Allowed to exit move phase with split legions in case where recombine
    should be forced.
