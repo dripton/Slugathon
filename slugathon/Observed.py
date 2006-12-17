@@ -34,5 +34,5 @@ class Observed(object):
         print "called Observed.notify", self, action, names
         for observer, name in self.observers.items():
             if names is None or name in names:
-                print self, "notifying", observer, "about", action
+                #print self, "notifying", observer, "about", action
                 observer.update(self, action)
