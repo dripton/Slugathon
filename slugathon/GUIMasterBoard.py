@@ -525,6 +525,7 @@ class GUIMasterBoard(gtk.Window):
             for legion in player.legions.values():
                 hexlabel = legion.hexlabel
                 if (legion.moved and not legion.recruited and 
+                  len(legion) < 7 and 
                   legion.available_recruits(self.game.board.hexes[hexlabel],
                     self.game.caretaker)):
                       hexlabels.add(hexlabel)

@@ -116,8 +116,6 @@ Does gtk.window_set_default_icon_from_file work?
 
 Highlight player name in status screen when it's this player's turn.
 
-Do not highlight 7-high stacks during the muster phase.
-
 Sort creatures in Inspector / ShowLegion
 
 During movement, after selecting a stack, clicking on a non-highlighted
