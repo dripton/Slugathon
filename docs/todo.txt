@@ -106,8 +106,6 @@ config-sample.py that gets renamed to config.py.
 
 If Inspector window is closed, a new one will appear but never show legions.
 
-Mulligan should first undo all moves.
-
 Color code StatusScreen.  Show when it's this user's turn to move.
 
 Add else clause for unhandled actions in update methods.

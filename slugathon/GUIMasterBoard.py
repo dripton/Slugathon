@@ -562,8 +562,16 @@ class GUIMasterBoard(gtk.Window):
         print "mulligan", action
         player = self.game.get_player_by_name(self.username)
         if player.can_take_mulligan(self.game):
-            def1 = self.user.callRemote("take_mulligan", self.game.name)
-            def1.addErrback(self.failure)
+            history = self.game.history
+            if history.can_undo(self.username):
+                last_action = history.actions[-1]
+                def1 = self.user.callRemote("apply_action", 
+                  last_action.undo_action())
+                def1.addCallback(self.cb_mulligan)
+                def1.addErrback(self.failure)
+            else:
+                def1 = self.user.callRemote("take_mulligan", self.game.name)
+                def1.addErrback(self.failure)
 
     def cb_about(self, action):
         About.About()
