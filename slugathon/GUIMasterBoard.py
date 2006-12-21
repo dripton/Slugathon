@@ -215,6 +215,7 @@ class GUIMasterBoard(gtk.Window):
                 self.selected_marker = None
                 self.clear_recruitchits()
                 self.unselect_all()
+                self.highlight_unmoved_legions()
             elif phase == Phase.MOVE:
                 self.highlight_unmoved_legions()
             elif phase == Phase.FIGHT:

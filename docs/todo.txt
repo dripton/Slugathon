@@ -116,8 +116,7 @@ Highlight player name in status screen when it's this player's turn.
 
 Sort creatures in Inspector / ShowLegion
 
-During movement, after selecting a stack, clicking on a non-highlighted
-   hex should immediately re-highlight eligible stacks.
-
 Allowed to exit move phase with split legions in case where recombine
    should be forced.
+
+Make all windows remember their last position, by player.
