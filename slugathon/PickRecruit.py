@@ -47,7 +47,7 @@ class PickRecruit(object):
           fill=False)
         self.marker.show()
 
-        for creature in legion.creatures:
+        for creature in legion.sorted_creatures():
             chit = Chit.Chit(creature, player.color, scale=20)
             chit.show()
             self.chits_hbox.pack_start(chit.event_box, expand=False,

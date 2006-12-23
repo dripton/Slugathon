@@ -202,3 +202,10 @@ class Legion(Observed):
         for creature in self.creatures:
             total += creature.score()
         return total
+
+    def sorted_creatures(self):
+        """Return creatures, sorted in descending order of value."""
+        li = [(creature.score(), creature) for creature in self.creatures]
+        li.sort()
+        li.reverse()
+        return [tup[1] for tup in li]

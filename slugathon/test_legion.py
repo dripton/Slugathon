@@ -130,3 +130,14 @@ def test_score():
     player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.score() == 120
+
+def test_sorted_creatures():
+    creatures = Creature.n2c(["Archangel", "Serpent", "Colossus", "Centaur"])
+    legion = Legion.Legion(None, None, creatures, 1)
+    li = legion.sorted_creatures()
+    assert len(li) == len(creatures) == len(legion)
+    assert li[0].name == "Colossus"
+    assert li[1].name in ("Serpent", "Archangel")
+    assert li[2].name in ("Serpent", "Archangel")
+    assert li[1].name != li[2].name
+    assert li[3].name == "Centaur"

@@ -39,7 +39,7 @@ class ShowLegion(object):
             self.marker.show()
 
         # TODO Handle unknown creatures correctly
-        for creature in legion.creatures:
+        for creature in legion.sorted_creatures():
             chit = Chit.Chit(creature, playercolor, scale=20)
             chit.show()
             self.chits_hbox.add(chit.event_box)
