@@ -293,15 +293,44 @@ pb.setUnjellyableForClass(Fight, Fight)
 
 
 class MakeProposal(Action):
-    def __init__(self, game_name, attacker_markername, defender_markername, 
-      hexlabel, attacker_creaturenames, defender_creaturenames):
+    def __init__(self, game_name, playername, other_playername, 
+      attacker_markername, attacker_creature_names, 
+      defender_markername, defender_creature_names):
         self.game_name = game_name
+        self.playername = playername
+        self.other_playername = other_playername
         self.attacker_markername = attacker_markername
         self.defender_markername = defender_markername
-        self.hexlabel = hexlabel
-        self.attacker_creaturenames = tuple(attacker_creaturenames)
-        self.defender_creaturenames = tuple(defender_creaturenames)
+        self.attacker_creature_names = tuple(attacker_creature_names)
+        self.defender_creature_names = tuple(defender_creature_names)
 pb.setUnjellyableForClass(MakeProposal, MakeProposal)
+
+class AcceptProposal(Action):
+    def __init__(self, game_name, playername, other_playername, 
+      attacker_markername, attacker_creature_names, 
+      defender_markername, defender_creature_names, hexlabel):
+        self.game_name = game_name
+        self.playername = playername
+        self.other_playername = other_playername
+        self.attacker_markername = attacker_markername
+        self.defender_markername = defender_markername
+        self.attacker_creature_names = tuple(attacker_creature_names)
+        self.defender_creature_names = tuple(defender_creature_names)
+        self.hexlabel = hexlabel
+pb.setUnjellyableForClass(AcceptProposal, AcceptProposal)
+
+class RejectProposal(Action):
+    def __init__(self, game_name, playername, other_playername, 
+      attacker_markername, attacker_creature_names, 
+      defender_markername, defender_creature_names):
+        self.game_name = game_name
+        self.playername = playername
+        self.other_playername = other_playername
+        self.attacker_markername = attacker_markername
+        self.defender_markername = defender_markername
+        self.attacker_creature_names = tuple(attacker_creature_names)
+        self.defender_creature_names = tuple(defender_creature_names)
+pb.setUnjellyableForClass(RejectProposal, RejectProposal)
 
 
 class DoneFighting(Action):

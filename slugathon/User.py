@@ -108,11 +108,35 @@ class User(pb.Avatar):
         self.server.do_not_flee(self.name, game_name, markername)
 
     def perspective_concede(self, game_name, markername, enemy_markername,
-          hexlabel):
+      hexlabel):
         print "perspective_concede", game_name, markername, enemy_markername, \
           hexlabel
         self.server.concede(self.name, game_name, markername, 
           enemy_markername, hexlabel)
+
+    def perspective_make_proposal(self, game_name, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        print "perspective_make_proposal", game_name, attacker_markername, \
+          attacker_creature_names, defender_markername, defender_creature_names
+        self.server.make_proposal(self.name, game_name, attacker_markername,
+          attacker_creature_names, defender_markername, 
+          defender_creature_names)
+
+    def perspective_accept_proposal(self, game_name, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        print "perspective_accept_proposal", game_name, attacker_markername, \
+          attacker_creature_names, defender_markername, defender_creature_names
+        self.server.accept_proposal(self.name, game_name, attacker_markername,
+          attacker_creature_names, defender_markername, 
+          defender_creature_names)
+
+    def perspective_reject_proposal(self, game_name, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        print "perspective_reject_proposal", game_name, attacker_markername, \
+          attacker_creature_names, defender_markername, defender_creature_names
+        self.server.reject_proposal(self.name, game_name, attacker_markername,
+          attacker_creature_names, defender_markername, 
+          defender_creature_names)
 
     def perspective_done_with_engagements(self, game_name):
         print "perspective_done_with_engagements", game_name

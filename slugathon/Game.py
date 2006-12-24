@@ -15,6 +15,7 @@ import Dice
 import Caretaker
 import Creature
 import History
+from bag import bag
 
 
 # Movement constants
@@ -488,6 +489,47 @@ class Game(Observed):
         for legion in self.all_legions():
             assert legion.markername != markername
 
+    # TODO Legion.die
+    def _accept_proposal_helper(self, winning_legion, losing_legion, 
+      survivors):
+        for creature_name in winning_legion.creature_names():
+            if creature_name in survivors:
+                survivors.remove(creature_name)
+            else:
+                winning_legion.remove_creature_by_name(creature_name)
+                self.caretaker.kill_one(creature_name)
+        winning_legion.player.add_points(losing_legion.score())
+        for creature in losing_legion.creatures:
+            self.caretaker.kill_one(creature.name)
+        losing_legion.player.remove_legion(losing_legion.markername)
+
+    def _accept_proposal(self, attacker_legion, attacker_creature_names, 
+      defender_legion, defender_creature_names):
+        print "called Game._accept_proposal"
+        if not attacker_creature_names and not defender_creature_names:
+            print "mutual elimination"
+            for legion in [attacker_legion, defender_legion]:
+                for creature in legion.creatures:
+                    self.caretaker.kill_one(creature.name)
+                legion.player.remove_legion(legion.markername)
+        elif attacker_creature_names:
+            print "attacker wins"
+            assert not defender_creature_names
+            winning_legion = attacker_legion
+            losing_legion = defender_legion
+            survivors = bag(attacker_creature_names)
+            self._accept_proposal_helper(winning_legion, losing_legion, 
+              survivors)
+        elif defender_creature_names:
+            print "defender wins"
+            assert not attacker_creature_names
+            winning_legion = defender_legion
+            losing_legion = attacker_legion
+            survivors = bag(defender_creature_names)
+            self._accept_proposal_helper(winning_legion, losing_legion, 
+              survivors)
+
+
     def flee(self, playername, markername):
         """Called from Server"""
         print "called Game.flee", self, playername, markername
@@ -527,6 +569,66 @@ class Game(Observed):
         self._concede(playername, markername)
         action = Action.Concede(self.name, markername, enemy_markername, 
           hexlabel)
+        self.notify(action)
+
+    def make_proposal(self, playername, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        """Called from Server"""
+        attacker_legion = self.find_legion(attacker_markername)
+        defender_legion = self.find_legion(defender_markername)
+        if attacker_legion is None or defender_legion is None:
+            print "make_proposal called with legion gone"
+            return
+        attacker_player = attacker_legion.player
+        defender_player = defender_legion.player
+        if attacker_player.name == playername:
+            other_player = defender_legion.player
+        else:
+            other_player = attacker_legion.player
+        action = Action.MakeProposal(self.name, playername, other_player.name,
+          attacker_markername, attacker_creature_names,
+          defender_markername, defender_creature_names)
+        self.notify(action)
+
+    def accept_proposal(self, playername, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        """Called from Server"""
+        attacker_legion = self.find_legion(attacker_markername)
+        defender_legion = self.find_legion(defender_markername)
+        if attacker_legion is None or defender_legion is None:
+            print "accept_proposal called with legion gone"
+            return
+        attacker_player = attacker_legion.player
+        defender_player = defender_legion.player
+        if attacker_player.name == playername:
+            other_player = defender_legion.player
+        else:
+            other_player = attacker_legion.player
+        self._accept_proposal(attacker_legion, attacker_creature_names, 
+          defender_legion, defender_creature_names)
+        action = Action.AcceptProposal(self.name, playername, 
+          other_player.name, attacker_markername, attacker_creature_names,
+          defender_markername, defender_creature_names, 
+          attacker_legion.hexlabel)
+        self.notify(action)
+
+    def reject_proposal(self, playername, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        """Called from Server"""
+        attacker_legion = self.find_legion(attacker_markername)
+        defender_legion = self.find_legion(defender_markername)
+        if attacker_legion is None or defender_legion is None:
+            print "reject_proposal called with legion gone"
+            return
+        attacker_player = attacker_legion.player
+        defender_player = defender_legion.player
+        if attacker_player.name == playername:
+            other_player = defender_legion.player
+        else:
+            other_player = attacker_legion.player
+        action = Action.RejectProposal(self.name, playername, 
+          other_player.name, attacker_markername, attacker_creature_names,
+          defender_markername, defender_creature_names)
         self.notify(action)
 
     def done_with_engagements(self, playername):
@@ -666,6 +768,13 @@ class Game(Observed):
             legion = self.find_legion(action.markername)
             playername = legion.player.name
             self._concede(playername, action.markername)
+
+        elif isinstance(action, Action.AcceptProposal):
+            attacker_legion = self.find_legion(action.attacker_markername)
+            defender_legion = self.find_legion(action.defender_markername)
+            self._accept_proposal(attacker_legion, 
+              action.attacker_creature_names, defender_legion, 
+              action.defender_creature_names)
 
         elif isinstance(action, Action.DoneFighting):
             self.phase = Phase.MUSTER

@@ -22,13 +22,13 @@ class Chit(object):
 
     IMAGE_DIR = "creature"
 
-    def __init__(self, creature, playercolor, scale=15):
+    def __init__(self, creature, playercolor, scale=15, dead=False):
         self.creature = creature
         if creature is None:
             self.name = "QuestionMarkMask"
         else:
             self.name = creature.name
-        self.dead = False
+        self.dead = dead
         self.location = None    # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 

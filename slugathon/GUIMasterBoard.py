@@ -30,6 +30,7 @@ import Inspector
 import Creature
 import Chit
 import Negotiate
+import Proposal
 
 
 SQRT3 = math.sqrt(3.0)
@@ -106,6 +107,7 @@ class GUIMasterBoard(gtk.Window):
         self.selected_marker = None
         self.inspector = Inspector.Inspector(self.username)
         self.negotiate = None
+        self.proposals = set()
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -627,19 +629,48 @@ class GUIMasterBoard(gtk.Window):
             def1 = self.user.callRemote("concede", self.game.name, 
               friendly_legion.markername, enemy_legion.markername, hexlabel)
         elif response_id == 1:
-            # TODO
-            pass
+            def1 = self.user.callRemote("make_proposal", self.game.name,
+              attacker_legion.markername, attacker_creature_names, 
+              defender_legion.markername, defender_creature_names)
         elif response_id == 2:
-            # TODO
+            # TODO no more proposals
             pass
         elif response_id == 3:
-            # TODO
+            # TODO fight
             pass
               
+    def cb_proposal(self, attacker_legion, attacker_creature_names,
+      defender_legion, defender_creature_names, response_id):
+        """Callback from Proposal dialog.
+
+        response_ids: 0 - Accept
+                      1 - Reject
+        """
+        print "proposal", response_id
+        player = self.game.get_player_by_name(self.username)
+        hexlabel = attacker_legion.hexlabel
+        for legion in player.friendly_legions(hexlabel):
+            friendly_legion = legion
+        if attacker_legion == friendly_legion:
+            enemy_legion = defender_legion
+        else:
+            enemy_legion = attacker_legion
+        if response_id == 0:
+            def1 = self.user.callRemote("accept_proposal", self.game.name, 
+              attacker_legion.markername, attacker_creature_names, 
+              defender_legion.markername, defender_creature_names)
+        elif response_id == 1:
+            def1 = self.user.callRemote("reject_proposal", self.game.name,
+              attacker_legion.markername, attacker_creature_names, 
+              defender_legion.markername, defender_creature_names)
+
     def destroy_negotiate(self):
         if self.negotiate is not None:
             self.negotiate.destroy()
             self.negotiate = None
+        for proposal in self.proposals:
+            proposal.destroy()
+        self.proposals.clear()
 
     def failure(self, arg):
         print "GUIMasterBoard.failure", arg
@@ -733,6 +764,23 @@ class GUIMasterBoard(gtk.Window):
             self.destroy_negotiate()
             self.update_gui([action.hexlabel])
             self.highlight_engagements()
+
+        elif isinstance(action, Action.AcceptProposal):
+            print "GUIMasterBoard got AcceptProposal"
+            self.destroy_negotiate()
+            self.update_gui([action.hexlabel])
+            self.highlight_engagements()
+
+        elif isinstance(action, Action.MakeProposal):
+            print "GUIMasterBoard got MakeProposal"
+            attacker_markername = action.attacker_markername
+            attacker = self.game.find_legion(attacker_markername)
+            defender_markername = action.defender_markername
+            defender = self.game.find_legion(defender_markername)
+            if attacker is not None and defender is not None:
+                self.proposals.add(Proposal.Proposal(self.username, attacker, 
+                  action.attacker_creature_names, defender,
+                  action.defender_creature_names, self.cb_proposal, self))
 
         elif isinstance(action, Action.DoneFighting):
             self.highlight_recruits()

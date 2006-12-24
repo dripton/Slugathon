@@ -199,6 +199,30 @@ class Server(Observed):
         if game:
             game.concede(username, markername)
 
+    def make_proposal(self, username, game_name, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        game = self.name_to_game(game_name)
+        if game:
+            game.make_proposal(username, attacker_markername, 
+              attacker_creature_names, defender_markername, 
+              defender_creature_names)
+
+    def accept_proposal(self, username, game_name, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        game = self.name_to_game(game_name)
+        if game:
+            game.accept_proposal(username, attacker_markername,
+              attacker_creature_names, defender_markername,
+              defender_creature_names)
+
+    def reject_proposal(self, username, game_name, attacker_markername,
+      attacker_creature_names, defender_markername, defender_creature_names):
+        game = self.name_to_game(game_name)
+        if game:
+            game.reject_proposal(username, attacker_markername,
+              attacker_creature_names, defender_markername,
+              defender_creature_names)
+
     def done_with_engagements(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
@@ -222,7 +246,10 @@ class Server(Observed):
 
     def update(self, observed, action):
         print "Server.update", observed, action
-        self.notify(action)
+        if isinstance(action, Action.MakeProposal):
+            self.notify(action, [action.other_playername])
+        else:
+            self.notify(action)
 
 
 

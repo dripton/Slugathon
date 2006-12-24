@@ -143,7 +143,8 @@ class StatusScreen(gtk.Window):
             self._init_turn()
 
         elif (isinstance(action, Action.Flee) or 
-          isinstance(action, Action.Concede)):
+          isinstance(action, Action.Concede) or
+          isinstance(action, Action.AcceptProposal)):
             for num, player in enumerate(self.game.players):
                 legions_label = getattr(self, "legions%d_label" % num)
                 legions_label.set_text(str(len(player.legions)))

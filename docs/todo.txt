@@ -108,15 +108,18 @@ If Inspector window is closed, a new one will appear but never show legions.
 
 Color code StatusScreen.  Show when it's this user's turn to move.
 
-Add else clause for unhandled actions in update methods.
-
 Does gtk.window_set_default_icon_from_file work?
 
 Highlight player name in status screen when it's this player's turn.
-
-Sort creatures in Inspector / ShowLegion
 
 Allowed to exit move phase with split legions in case where recombine
    should be forced.
 
 Make all windows remember their last position, by player.
+
+If chits overlap the hex into the black background, the background is not
+   repainted when the chit moves away.  See hex 130.
+
+Cleanup legion elimination code.
+
+Add player elimination code.
