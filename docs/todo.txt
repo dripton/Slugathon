@@ -123,6 +123,3 @@ If chits overlap the hex into the black background, the background is not
 Cleanup legion elimination code.
 
 Add player elimination code.
-
-The non-owning player always gets to pick color first.  Should be the
-   player with the lower tower number.

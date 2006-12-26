@@ -162,12 +162,15 @@ class Game(Observed):
         """Return the name of the player whose turn it is to pick a color."""
         if not self.done_assigning_towers():
             return None
-        rev_players = self.players[:]
-        rev_players.reverse()
-        for player in rev_players:
-            if player.color is None:
-                return player.name
-        return None
+        leader = None
+        for player in self.players:
+            if player.color is None and (leader is None or 
+              player.starting_tower < leader.starting_tower):
+                leader = player
+        if leader is not None:
+            return leader.name
+        else:
+            return None
 
     def colors_left(self):
         """Return a list of player colors that aren't taken yet."""
