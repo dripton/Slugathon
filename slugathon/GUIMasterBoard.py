@@ -765,12 +765,6 @@ class GUIMasterBoard(gtk.Window):
             self.update_gui([action.hexlabel])
             self.highlight_engagements()
 
-        elif isinstance(action, Action.AcceptProposal):
-            print "GUIMasterBoard got AcceptProposal"
-            self.destroy_negotiate()
-            self.update_gui([action.hexlabel])
-            self.highlight_engagements()
-
         elif isinstance(action, Action.MakeProposal):
             print "GUIMasterBoard got MakeProposal"
             attacker_markername = action.attacker_markername
@@ -781,6 +775,22 @@ class GUIMasterBoard(gtk.Window):
                 self.proposals.add(Proposal.Proposal(self.username, attacker, 
                   action.attacker_creature_names, defender,
                   action.defender_creature_names, self.cb_proposal, self))
+
+        elif isinstance(action, Action.AcceptProposal):
+            print "GUIMasterBoard got AcceptProposal"
+            self.destroy_negotiate()
+            self.update_gui([action.hexlabel])
+            self.highlight_engagements()
+
+        elif isinstance(action, Action.RejectProposal):
+            print "GUIMasterBoard got RejectProposal"
+            attacker_markername = action.attacker_markername
+            attacker = self.game.find_legion(attacker_markername)
+            defender_markername = action.defender_markername
+            defender = self.game.find_legion(defender_markername)
+            if (action.other_playername == self.username):
+                self.negotiate = Negotiate.Negotiate(self.username, attacker, 
+                  defender, self.cb_negotiate, self)
 
         elif isinstance(action, Action.DoneFighting):
             self.highlight_recruits()
