@@ -31,6 +31,9 @@ class Inspector(object):
 
         self.legion = None
         self.marker = None
+        self.destroyed = False
+
+        self.show_legion_window.connect("destroy", self.destroy)
 
 
     def show_legion(self, legion):
@@ -54,6 +57,9 @@ class Inspector(object):
             self.chits_hbox.add(chit.event_box)
 
         self.show_legion_window.show()
+
+    def destroy(self, unused):
+        self.destroyed = True
 
 
 if __name__ == "__main__":
