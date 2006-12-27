@@ -159,8 +159,6 @@ class GUIMasterBoard(gtk.Window):
         """Callback for mouse motion."""
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
-                if self.inspector.destroyed:
-                    self.inspector = Inspector.Inspector(self.username)
                 self.inspector.show_legion(marker.legion)
                 return True
         return True

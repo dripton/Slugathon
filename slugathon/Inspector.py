@@ -33,7 +33,7 @@ class Inspector(object):
         self.marker = None
         self.destroyed = False
 
-        self.show_legion_window.connect("destroy", self.destroy)
+        self.show_legion_window.connect("delete-event", self.hide_window)
 
 
     def show_legion(self, legion):
@@ -61,6 +61,10 @@ class Inspector(object):
     def destroy(self, unused):
         self.destroyed = True
 
+    def hide_window(self, event, unused):
+        self.show_legion_window.hide()
+        return True
+
 
 if __name__ == "__main__":
     creatures = [Creature.Creature(name) for name in
@@ -70,7 +74,7 @@ if __name__ == "__main__":
     player = Player.Player(username, None, None)
     player.color = "Red"
     inspector = Inspector(username)
-    inspector.show_legion_window.connect("destroy", guiutils.die)
+    inspector.show_legion_window.connect("delete-event", guiutils.die)
 
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     inspector.show_legion(legion)
