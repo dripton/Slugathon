@@ -9,8 +9,6 @@ Label chat widgets to match others in Anteroom
 
 Persist usernames and server names/ports that have been used in Connect
 
-Add chi-square test to test_dice
-
 distutils setup.py to solve the shebang line problem.
 egg?
 
@@ -23,8 +21,6 @@ When a user drops from the server, drop his player from games.
 If a player kills a WaitingForPlayers dialog, drop him from that game?
 
 Support sending chat messages to one user, or a group excluding some users.
-
-Use Observers to return results from modeless dialogs?
 
 Add a version number somewhere.  svn revision?  date?
 
@@ -49,15 +45,6 @@ Need to figure out a cleaner way.
 We need to document all observer / observed relationships, not just direct
 containment.
 
-Should WaitingForPlayers and Anteroom hold direct Game references?  For now,
-why not?  They're all on the client side.  Both holding a reference to and
-observing the same game is kind of odd, though.
-
-The reference from Legion back up to Player bothers me.
-
-Does Legion need to be Observed and throw off its own Actions, rather than
-making Player do it?
-
 Options for splitting with hidden legion contents:
 1. Send a split message without details to everyone, then a reveal message per
 child legion to just the splitting player.
@@ -76,14 +63,12 @@ stack contents.
 In chat, need to be able to target everyone in the lobby, everyone in one
 game, and any one user.
 
-In Anteroom game list, show tower assignments, resort player names, and show
-colors.  Can we get all the game status we need in there, or do we need a
-separate window?  Anteroom is pretty big, so maybe a separate window is easier
-to use alongside the masterboard.
-
 Make Anteroom always fit on screen.
 
 Use cairo to get antialiasing.
+
+Make all windows remember their last position, by player.
+
 
 ###############################################################################
 
@@ -106,14 +91,9 @@ config-sample.py that gets renamed to config.py.
 
 Color code StatusScreen.  Show when it's this user's turn to move.
 
-Does gtk.window_set_default_icon_from_file work?
-
 Highlight player name in status screen when it's this player's turn.
 
-Allowed to exit move phase with split legions in case where recombine
-   should be forced.
-
-Make all windows remember their last position, by player.
+Force split legions that cannot move to recombine.
 
 If chits overlap the hex into the black background, the background is not
    repainted when the chit moves away.  See hex 130.
