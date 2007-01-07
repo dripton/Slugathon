@@ -15,6 +15,7 @@ import icon
 class About(object):
     def __init__(self):
         ad = self.ad = gtk.AboutDialog()
+        ad.set_icon(icon.pixbuf)
         ad.set_position(gtk.WIN_POS_MOUSE)
         ad.set_name("Slugathon")
         ad.set_version("")
