@@ -69,6 +69,15 @@ Use cairo to get antialiasing.
 
 Make all windows remember their last position, by player.
 
+Need to ignore config.py so it can't get checked in accidentally.  Maybe
+config-sample.py that gets renamed to config.py.
+
+Color code StatusScreen.  Show when it's this user's turn to move.
+Highlight player name in status screen when it's this player's turn.
+
+Add player elimination code.
+
+Show correct power on titans.
 
 ###############################################################################
 
@@ -86,18 +95,8 @@ test_server.py seems somewhat timing-sensitive.  Sometimes throws an exception
 because the username is no longer in the dict?  Is this solvable in py.test,
 or do we need to use twisted.trial?
 
-Need to ignore config.py so it can't get checked in accidentally.  Maybe
-config-sample.py that gets renamed to config.py.
-
-Color code StatusScreen.  Show when it's this user's turn to move.
-
-Highlight player name in status screen when it's this player's turn.
-
 Force split legions that cannot move to recombine.
 
 If chits overlap the hex into the black background, the background is not
-   repainted when the chit moves away.  See hex 130.
+   repainted when the chit moves away.  See hex 130 or 111.
 
-Cleanup legion elimination code.
-
-Add player elimination code.
