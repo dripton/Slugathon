@@ -209,3 +209,14 @@ class Legion(Observed):
         li.sort()
         li.reverse()
         return [tup[1] for tup in li]
+
+    def die(self, scoring_player, fled):
+        if scoring_player is not None:
+            points = self.score()
+            if fled:
+                points //= 2
+            scoring_player.add_points(points)
+        caretaker = self.player.game.caretaker
+        for creature in self.creatures:
+            caretaker.kill_one(creature.name)
+        self.player.remove_legion(self.markername)

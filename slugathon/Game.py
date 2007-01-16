@@ -463,11 +463,7 @@ class Game(Observed):
         assert legion2 != legion
         player2 = legion2.player
         assert player2 != player
-        points = legion.score() // 2
-        for creature in legion.creatures:
-            self.caretaker.kill_one(creature.name)
-        player2.add_points(points)
-        player.remove_legion(markername)
+        legion.die(player2, True)
         assert markername not in player.legions
         for legion in self.all_legions():
             assert legion.markername != markername
@@ -483,16 +479,11 @@ class Game(Observed):
         assert legion2 != legion
         player2 = legion2.player
         assert player2 != player
-        points = legion.score()
-        for creature in legion.creatures:
-            self.caretaker.kill_one(creature.name)
-        player2.add_points(points)
-        player.remove_legion(markername)
+        legion.die(player2, False)
         assert markername not in player.legions
         for legion in self.all_legions():
             assert legion.markername != markername
 
-    # TODO Legion.die
     def _accept_proposal_helper(self, winning_legion, losing_legion, 
       survivors):
         for creature_name in winning_legion.creature_names():
@@ -501,10 +492,7 @@ class Game(Observed):
             else:
                 winning_legion.remove_creature_by_name(creature_name)
                 self.caretaker.kill_one(creature_name)
-        winning_legion.player.add_points(losing_legion.score())
-        for creature in losing_legion.creatures:
-            self.caretaker.kill_one(creature.name)
-        losing_legion.player.remove_legion(losing_legion.markername)
+        losing_legion.die(winning_legion.player, False)
 
     def _accept_proposal(self, attacker_legion, attacker_creature_names, 
       defender_legion, defender_creature_names):
@@ -512,9 +500,7 @@ class Game(Observed):
         if not attacker_creature_names and not defender_creature_names:
             print "mutual elimination"
             for legion in [attacker_legion, defender_legion]:
-                for creature in legion.creatures:
-                    self.caretaker.kill_one(creature.name)
-                legion.player.remove_legion(legion.markername)
+                legion.die(None, False)
         elif attacker_creature_names:
             print "attacker wins"
             assert not defender_creature_names
