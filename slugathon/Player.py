@@ -197,11 +197,32 @@ class Player(Observed):
                 if not legion.moved and game.find_all_moves(legion, 
                   game.board.hexes[legion.hexlabel], self.movement_roll):
                     return False
-            # XXX else will need to recombine
+                # else will need to recombine
         return True
+
+    def recombine(self, game):
+        """Recombine split legions as necessary."""
+        while True:
+            for legion in self.friendly_legions():
+                legions_in_hex = list(self.friendly_legions(legion.hexlabel))
+                if len(legions_in_hex) >= 2:
+                    split_action = game.history.find_last_split(self.name, 
+                      legions_in_hex[0], legions_in_hex[1])
+                    if split_action is not None:
+                        parent_markername = split_action.parent_markername
+                        child_markername = split_action.child_markername
+                    else:
+                        parent_markername = legions_in_hex[0].markername
+                        child_markername = legions_in_hex[1].markername
+                    self.undo_split(parent_markername, child_markername)
+                    # TODO Add an UndoSplit action to history?
+                    break
+            else:
+                return
 
     def done_with_moves(self, game):
         if self.can_exit_move_phase(game):
+            self.recombine(game)
             action = Action.DoneMoving(self.game.name, self.name)
             self.notify(action)
 

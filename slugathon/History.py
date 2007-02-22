@@ -61,3 +61,14 @@ class History(object):
             return False
         action = self.undone[-1]
         return action.playername == playername
+
+    def find_last_split(self, playername, markername1, markername2):
+        """Return the last SplitLegion action for playername involving
+        markername1 or markername2, or None."""
+        for action in reversed(self.actions):
+            if (isinstance(action, Action.SplitLegion) 
+              and action.playername == playername
+              and (action.parent_markername in [markername1, markername2]
+              or action.child_markername in [markername1, markername2])):
+                return action
+        return None
