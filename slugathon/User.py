@@ -138,6 +138,13 @@ class User(pb.Avatar):
           attacker_creature_names, defender_markername, 
           defender_creature_names)
 
+    def perspective_acquire_angel(self, game_name, markername, 
+      angel_name):
+        print "perspective_acquire_angel", game_name, markername, \
+          angel_name
+        self.server.acquire_angel(self.name, game_name, markername, 
+          angel_name)
+
     def perspective_done_with_engagements(self, game_name):
         print "perspective_done_with_engagements", game_name
         self.server.done_with_engagements(self.name, game_name)

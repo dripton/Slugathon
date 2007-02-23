@@ -20,6 +20,8 @@ class Legion(Observed):
         self.entry_side = None
         self.previous_hexlabel = None
         self.recruited = False
+        self.angels_pending = 0
+        self.archangels_pending = 0
 
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
@@ -221,7 +223,8 @@ class Legion(Observed):
             caretaker.kill_one(creature.name)
         self.player.remove_legion(self.markername)
 
-    # TODO finish angels
+    # XXX It would be better to have the client figure out that it can
+    # acquire without passing down an action.
     def add_points(self, points):
         player = self.player
         score0 = player.score
@@ -237,5 +240,33 @@ class Legion(Observed):
           score1 // 100 > score0 // 100):
             angels += 1
             score1 -= 100
+        self.angels_pending = angels
+        self.archangels_pending = archangels
+        if angels + archangels > 0:
+            action = Action.AcquireAngels(self.player.game.name, 
+              self.player.name, self.markername, angels, archangels)
+            self.notify(action)
 
-
+    def acquire(self, angel):
+        """Acquire angel, and notify observers."""
+        player = self.player
+        if angel.name == "Archangel":
+            okay = self.archangels_pending > 0
+        elif angel.name == "Angel":
+            okay = self.archangels_pending > 0 or self.angels_pending > 0
+        if not okay:
+            raise AssertionError("legion tried to acquire illegally")
+        if len(self) >= 7:
+            raise AssertionError("legion too tall to recruit")
+        caretaker = self.player.game.caretaker
+        if not caretaker.num_left(angel.name):
+            raise AssertionError("none of angel left")
+        caretaker.take_one(angel.name)
+        self.creatures.append(angel)
+        if angel.name == "Archangel" or self.angels_pending < 1:
+            self.archangels_pending -= 1
+        else:
+            self.angels_pending -= 1
+        action = Action.AcquireAngel(player.game.name, player.name,
+          self.markername, angel.name)
+        self.notify(action)

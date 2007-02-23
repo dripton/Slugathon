@@ -262,5 +262,9 @@ class Player(Observed):
             legion = self.legions[action.markername]
             creature = Creature.Creature(action.creature_name)
             legion.recruit(creature)
+        elif isinstance(action, Action.AcquireAngel):
+            legion = self.legions[action.markername]
+            angel = Creature.Creature(action.angel_name)
+            legion.acquire(angel)
         self.notify(action)
 

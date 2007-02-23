@@ -223,6 +223,11 @@ class Server(Observed):
               attacker_creature_names, defender_markername,
               defender_creature_names)
 
+    def acquire_angel(self, username, game_name, markername, angel_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.acquire_angel(username, markername, angel_name)
+
     def done_with_engagements(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:

@@ -132,7 +132,8 @@ class StatusScreen(gtk.Window):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
         elif (isinstance(action, Action.RecruitCreature) or 
-          isinstance(action, Action.UndoRecruit)):
+          isinstance(action, Action.UndoRecruit) or
+          isinstance(action, Action.AcquireAngel)):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
             player_num = self.game.players.index(player)

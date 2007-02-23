@@ -618,6 +618,13 @@ class Game(Observed):
           defender_markername, defender_creature_names)
         self.notify(action)
 
+    def acquire_angel(self, playername, markername, angel_name):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        angel = Creature.Creature(angel_name)
+        legion.acquire(angel)
+
     def done_with_engagements(self, playername):
         """Try to end playername's fight phase."""
         player = self.get_player_by_name(playername)
@@ -765,6 +772,10 @@ class Game(Observed):
 
         elif isinstance(action, Action.DoneFighting):
             self.phase = Phase.MUSTER
+
+        elif isinstance(action, Action.AcquireAngel):
+            self.acquire_angel(action.playername, action.markername, 
+              action.angel_name)
 
         elif isinstance(action, Action.RecruitCreature):
             self.recruit_creature(action.playername, action.markername, 

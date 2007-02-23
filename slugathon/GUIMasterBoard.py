@@ -31,6 +31,7 @@ import Creature
 import Chit
 import Negotiate
 import Proposal
+import AcquireAngel
 
 
 SQRT3 = math.sqrt(3.0)
@@ -333,6 +334,12 @@ class GUIMasterBoard(gtk.Window):
         """Callback from PickRecruit"""
         def1 = self.user.callRemote("recruit_creature", self.game.name,
           legion.markername, creature.name)
+        def1.addErrback(self.failure)
+
+    def picked_angel(self, legion, angel):
+        """Callback from AcquireAngel"""
+        def1 = self.user.callRemote("acquire_angel", self.game.name,
+          legion.markername, angel.name)
         def1.addErrback(self.failure)
 
     def compute_scale(self):
@@ -804,6 +811,32 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_tall_legions()
             elif self.game.phase == Phase.MOVE:
                 self.highlight_unmoved_legions()
+
+        elif isinstance(action, Action.AcquireAngels):
+            if action.playername == self.username:
+                markername = action.markername
+                legion = self.game.find_legion(markername)
+                angels = action.angels
+                archangels = action.archangels
+                caretaker = self.game.caretaker
+                while archangels > 0:
+                    possible_angels = ["Archangel", "Angel"]
+                    available_angels = [angel for angel in possible_angels
+                      if caretaker.counts.get(angel) > 0]
+                    if not available_angels:
+                        break
+                    AcquireAngel.AcquireAngel(self.username, legion.player,
+                      legion, available_angels, self.picked_angel, self)
+                    archangels -= 1
+                while angels > 0:
+                    possible_angels = ["Angel"]
+                    available_angels = [angel for angel in possible_angels
+                      if caretaker.counts.get(angel) > 0]
+                    if not available_angels:
+                        break
+                    AcquireAngel.AcquireAngel(self.username, legion.player,
+                      legion, available_angels, self.picked_angel, self)
+                    angels -= 1
 
 
 if __name__ == "__main__":
