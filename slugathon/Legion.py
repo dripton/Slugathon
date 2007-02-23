@@ -210,13 +210,32 @@ class Legion(Observed):
         li.reverse()
         return [tup[1] for tup in li]
 
-    def die(self, scoring_player, fled):
-        if scoring_player is not None:
+    def die(self, scoring_legion, fled):
+        if scoring_legion is not None:
             points = self.score()
             if fled:
                 points //= 2
-            scoring_player.add_points(points)
+            scoring_legion.add_points(points)
         caretaker = self.player.game.caretaker
         for creature in self.creatures:
             caretaker.kill_one(creature.name)
         self.player.remove_legion(self.markername)
+
+    # TODO finish angels
+    def add_points(self, points):
+        player = self.player
+        score0 = player.score
+        score1 = score0 + points
+        player.score = score1
+        angels = 0
+        archangels = 0
+        while (len(self) + archangels + angels < 7 and 
+          score1 // 500 > score0 // 500):
+            archangels += 1
+            score1 -= 100
+        while (len(self) + archangels + angels < 7 and 
+          score1 // 100 > score0 // 100):
+            angels += 1
+            score1 -= 100
+
+

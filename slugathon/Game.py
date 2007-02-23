@@ -461,9 +461,8 @@ class Game(Observed):
             if legion2 != legion:
                 break
         assert legion2 != legion
-        player2 = legion2.player
-        assert player2 != player
-        legion.die(player2, True)
+        assert legion2.player != player
+        legion.die(legion2, True)
         assert markername not in player.legions
         for legion in self.all_legions():
             assert legion.markername != markername
@@ -477,9 +476,8 @@ class Game(Observed):
             if legion2 != legion:
                 break
         assert legion2 != legion
-        player2 = legion2.player
-        assert player2 != player
-        legion.die(player2, False)
+        assert legion2.player != player
+        legion.die(legion2, False)
         assert markername not in player.legions
         for legion in self.all_legions():
             assert legion.markername != markername
@@ -492,7 +490,7 @@ class Game(Observed):
             else:
                 winning_legion.remove_creature_by_name(creature_name)
                 self.caretaker.kill_one(creature_name)
-        losing_legion.die(winning_legion.player, False)
+        losing_legion.die(winning_legion, False)
 
     def _accept_proposal(self, attacker_legion, attacker_creature_names, 
       defender_legion, defender_creature_names):

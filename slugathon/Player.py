@@ -250,10 +250,6 @@ class Player(Observed):
             legion.previous_hexlabel = None
             legion.recruited = False
 
-    # TODO angels
-    def add_points(self, points):
-        self.score += points
-
     def remove_legion(self, markername):
         """Remove the legion, with no side effects."""
         assert markername in self.legions
