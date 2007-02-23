@@ -19,7 +19,7 @@ class About(object):
         ad.set_position(gtk.WIN_POS_MOUSE)
         ad.set_name("Slugathon")
         ad.set_version("")
-        ad.set_copyright("Copyright 2003-2005 David Ripton")
+        ad.set_copyright("Copyright 2003-2007 David Ripton")
         ad.set_comments("""Very very prerelease""")
 
         license_fn = "../docs/gpl.txt"
