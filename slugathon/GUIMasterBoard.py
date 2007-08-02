@@ -186,7 +186,6 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_recruits()
 
     def clicked_on_hex(self, area, event, guihex):
-        repaint_hexlabels = set()
         if not self.game:
             guihex.toggle_selection()
             self.update_gui([guihex.masterhex.label])
@@ -338,6 +337,7 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_angel(self, legion, angel):
         """Callback from AcquireAngel"""
+        print "GUIMasterBoard.picked_angel", legion, angel
         def1 = self.user.callRemote("acquire_angel", self.game.name,
           legion.markername, angel.name)
         def1.addErrback(self.failure)
@@ -608,10 +608,9 @@ class GUIMasterBoard(gtk.Window):
     def cb_maybe_flee(self, attacker, defender, fled):
         print "maybe_flee", attacker, defender, fled
         if fled:
-            def1 = self.user.callRemote("flee", self.game.name, 
-              defender.markername)
+            self.user.callRemote("flee", self.game.name, defender.markername)
         else:
-            def1 = self.user.callRemote("do_not_flee", self.game.name,
+            self.user.callRemote("do_not_flee", self.game.name, 
               defender.markername)
 
     def cb_negotiate(self, attacker_legion, attacker_creature_names,
@@ -633,10 +632,10 @@ class GUIMasterBoard(gtk.Window):
         else:
             enemy_legion = attacker_legion
         if response_id == 0:
-            def1 = self.user.callRemote("concede", self.game.name, 
+            self.user.callRemote("concede", self.game.name, 
               friendly_legion.markername, enemy_legion.markername, hexlabel)
         elif response_id == 1:
-            def1 = self.user.callRemote("make_proposal", self.game.name,
+            self.user.callRemote("make_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names, 
               defender_legion.markername, defender_creature_names)
         elif response_id == 2:
@@ -654,20 +653,12 @@ class GUIMasterBoard(gtk.Window):
                       1 - Reject
         """
         print "proposal", response_id
-        player = self.game.get_player_by_name(self.username)
-        hexlabel = attacker_legion.hexlabel
-        for legion in player.friendly_legions(hexlabel):
-            friendly_legion = legion
-        if attacker_legion == friendly_legion:
-            enemy_legion = defender_legion
-        else:
-            enemy_legion = attacker_legion
         if response_id == 0:
-            def1 = self.user.callRemote("accept_proposal", self.game.name, 
+            self.user.callRemote("accept_proposal", self.game.name, 
               attacker_legion.markername, attacker_creature_names, 
               defender_legion.markername, defender_creature_names)
         elif response_id == 1:
-            def1 = self.user.callRemote("reject_proposal", self.game.name,
+            self.user.callRemote("reject_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names, 
               defender_legion.markername, defender_creature_names)
 
@@ -732,7 +723,6 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.ResolvingEngagement):
             hexlabel = action.hexlabel
             self.highlight_hex(hexlabel)
-            player = self.game.get_player_by_name(self.username)
             for legion in self.game.all_legions(hexlabel):
                 if legion.player == self.game.active_player:
                     attacker = legion
