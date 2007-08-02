@@ -226,16 +226,17 @@ class Legion(Observed):
     # XXX It would be better to have the client figure out that it can
     # acquire without passing down an action.
     def add_points(self, points):
+        print "Legion.add_points", self.markername, points
         player = self.player
         score0 = player.score
         score1 = score0 + points
         player.score = score1
-        angels = 0
         archangels = 0
-        while (len(self) + archangels + angels < 7 and 
+        while (len(self) + archangels < 7 and 
           score1 // 500 > score0 // 500):
             archangels += 1
             score1 -= 100
+        angels = 0
         while (len(self) + archangels + angels < 7 and 
           score1 // 100 > score0 // 100):
             angels += 1
