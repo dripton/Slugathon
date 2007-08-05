@@ -51,7 +51,7 @@ if __name__ == "__main__":
     username = "test user"
     game_name = "test game"
     markers_left = ["Rd%02d" % ii for ii in xrange(1, 12+1)]
-    pickmarker = PickMarker(username, game_name, markers_left, guiutils.die, 
+    pickmarker = PickMarker(username, game_name, markers_left, guiutils.exit, 
       None)
-    pickmarker.pick_marker_dialog.connect("destroy", guiutils.die)
+    pickmarker.pick_marker_dialog.connect("destroy", guiutils.exit)
     gtk.main()

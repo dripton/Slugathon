@@ -61,6 +61,6 @@ if __name__ == "__main__":
     user = NullUser()
     username = "test user"
     newgame = NewGame(user, username, None)
-    newgame.new_game_dialog.connect("destroy", guiutils.die)
+    newgame.new_game_dialog.connect("destroy", guiutils.exit)
     gtk.main()
 

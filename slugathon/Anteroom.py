@@ -34,7 +34,7 @@ class Anteroom(object):
         self.game_store = []
         self.wfps = {}          # game name : WaitingForPlayers
 
-        self.anteroom_window.connect("destroy", guiutils.die)
+        self.anteroom_window.connect("destroy", guiutils.exit)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
         self.new_game_button.connect("button-press-event", self.cb_click)
 

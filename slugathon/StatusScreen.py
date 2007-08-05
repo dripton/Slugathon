@@ -178,6 +178,6 @@ if __name__ == "__main__":
     assert len(player0.legions) == 1
 
     status_screen = StatusScreen(game, user, username)
-    status_screen.status_screen_window.connect("destroy", guiutils.die)
+    status_screen.status_screen_window.connect("destroy", guiutils.exit)
     gtk.main()
 

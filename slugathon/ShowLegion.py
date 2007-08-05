@@ -55,6 +55,6 @@ if __name__ == "__main__":
     username = "test"
     playercolor = "Red"
     showlegion = ShowLegion(username, legion, playercolor, True)
-    showlegion.show_legion_window.connect("destroy", guiutils.die)
+    showlegion.show_legion_window.connect("destroy", guiutils.exit)
 
     gtk.main()

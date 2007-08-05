@@ -74,7 +74,7 @@ if __name__ == "__main__":
     player = Player.Player(username, None, None)
     player.color = "Red"
     inspector = Inspector(username)
-    inspector.show_legion_window.connect("delete-event", guiutils.die)
+    inspector.show_legion_window.connect("delete-event", guiutils.exit)
 
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     inspector.show_legion(legion)

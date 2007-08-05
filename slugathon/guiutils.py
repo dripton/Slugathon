@@ -121,6 +121,6 @@ def roundpoint(point):
     """Return a point with both coordinates rounded to integers."""
     return (int(round(point[0])), int(round(point[1])))
 
-def die(*unused):
+def exit(*unused):
     """Quit the program."""
     sys.exit(0)

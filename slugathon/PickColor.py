@@ -59,5 +59,5 @@ if __name__ == "__main__":
     game_name = "test game"
     colors_left = colors[:]
     pickcolor = PickColor(user, username, game_name, colors_left, None)
-    pickcolor.pick_color_dialog.connect("destroy", guiutils.die)
+    pickcolor.pick_color_dialog.connect("destroy", guiutils.exit)
     gtk.main()

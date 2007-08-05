@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     def callback(*args):
         print "callback", args
-        guiutils.die()
+        guiutils.exit()
 
     proposal = Proposal(defender_username, attacker_legion, defender_legion,
       attacker_survivor_names, defender_survivor_names, callback, None)

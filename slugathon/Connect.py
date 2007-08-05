@@ -33,7 +33,7 @@ class Connect(object):
         self.server_names = None
         self.server_ports = None
         self.init_lists()
-        self.connect_window.connect("destroy", guiutils.die)
+        self.connect_window.connect("destroy", guiutils.exit)
         self.connect_window.set_icon(icon.pixbuf)
         self.connect_window.show()
 
@@ -85,7 +85,7 @@ class Connect(object):
 
     def failure(self, arg):
         print "Connect.failure", arg
-        guiutils.die(None)
+        guiutils.exit(None)
 
 
 if __name__ == "__main__":

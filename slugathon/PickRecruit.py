@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     def callback(legion, creature):
         print legion, "recruited", creature
-        guiutils.die
+        guiutils.exit
    
     now = time.time()
     username = "p0"
@@ -99,6 +99,6 @@ if __name__ == "__main__":
     masterhex = game.board.hexes[legion.hexlabel]
     pickrecruit = PickRecruit(username, player, legion, masterhex, 
       game.caretaker, callback, None)
-    pickrecruit.pick_recruit_dialog.connect("destroy", guiutils.die)
+    pickrecruit.pick_recruit_dialog.connect("destroy", guiutils.exit)
 
     gtk.main()

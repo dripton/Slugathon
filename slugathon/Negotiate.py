@@ -177,7 +177,7 @@ if __name__ == "__main__":
 
     def callback(*args):
         print "callback", args
-        guiutils.die()
+        guiutils.exit()
 
     negotiate = Negotiate(defender_username, attacker_legion, defender_legion,
       callback, None)

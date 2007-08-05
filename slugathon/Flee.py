@@ -110,6 +110,6 @@ if __name__ == "__main__":
       defender_creatures, 1)
     
     flee = Flee(defender_username, attacker_legion, defender_legion, 
-      guiutils.die, None)
+      guiutils.exit, None)
 
     gtk.main()

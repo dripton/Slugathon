@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     def callback(legion, creature):
         print legion, "acquired", creature
-        guiutils.die
+        guiutils.exit
    
     now = time.time()
     username = "p0"
@@ -97,6 +97,6 @@ if __name__ == "__main__":
     available_angels = ["Archangel", "Angel"]
     acquireangel = AcquireAngel(username, player, legion, available_angels,
       callback, None)
-    acquireangel.acquire_angel_dialog.connect("destroy", guiutils.die)
+    acquireangel.acquire_angel_dialog.connect("destroy", guiutils.exit)
 
     gtk.main()

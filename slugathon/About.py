@@ -42,5 +42,5 @@ class About(object):
 
 if __name__ == "__main__":
     about = About()
-    about.ad.connect("response", guiutils.die)
+    about.ad.connect("response", guiutils.exit)
     gtk.main()

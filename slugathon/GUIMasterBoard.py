@@ -79,7 +79,7 @@ class GUIMasterBoard(gtk.Window):
 
         self.set_icon(icon.pixbuf)
         self.set_title("Slugathon - Masterboard - %s" % self.username)
-        self.connect("destroy", guiutils.die)
+        self.connect("destroy", guiutils.exit)
 
         self.vbox = gtk.VBox()
         self.add(self.vbox)
@@ -123,7 +123,7 @@ class GUIMasterBoard(gtk.Window):
         actions = [
           ("GameMenu", None, "_Game"),
           ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
-            guiutils.die),
+            guiutils.exit),
           ("PhaseMenu", None, "_Phase"),
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
           ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),

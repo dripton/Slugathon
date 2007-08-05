@@ -107,7 +107,7 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
-    splitlegion = SplitLegion(username, player, legion, guiutils.die, None)
-    splitlegion.split_legion_dialog.connect("destroy", guiutils.die)
+    splitlegion = SplitLegion(username, player, legion, guiutils.exit, None)
+    splitlegion.split_legion_dialog.connect("destroy", guiutils.exit)
 
     gtk.main()
