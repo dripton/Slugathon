@@ -101,7 +101,7 @@ class Player(Observed):
     def split_legion(self, parent_markername, child_markername,
       parent_creature_names, child_creature_names):
         parent = self.legions[parent_markername]
-        if not child_markername in self.markernames:
+        if child_markername not in self.markernames:
             raise AssertionError("illegal marker")
         if bag(parent.creature_names()) != bag(parent_creature_names).union(
           bag(child_creature_names)):

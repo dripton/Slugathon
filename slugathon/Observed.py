@@ -22,7 +22,7 @@ class Observed(object):
 
     def add_observer(self, observer, name=""):
         print "called Observed.add_observer", self, observer
-        if not observer in self.observers:
+        if observer not in self.observers:
             self.observers[observer] = name
 
     def remove_observer(self, observer):

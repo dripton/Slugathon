@@ -709,7 +709,7 @@ class Game(Observed):
         elif isinstance(action, Action.SplitLegion):
             player = self.get_player_by_name(action.playername)
             # Avoid doing the same split twice.
-            if not action.child_markername in player.legions:
+            if action.child_markername not in player.legions:
                 self.split_legion(action.playername, action.parent_markername,
                   action.child_markername, action.parent_creature_names, 
                   action.child_creature_names)
