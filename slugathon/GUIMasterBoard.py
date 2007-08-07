@@ -173,14 +173,13 @@ class GUIMasterBoard(gtk.Window):
 
     def clicked_on_background(self, area, event):
         """The user clicked on the board outside a hex or marker."""
-        game = self.game
-        if game:
-            if game.phase == Phase.SPLIT:
+        if self.game:
+            if self.game.phase == Phase.SPLIT:
                 self.highlight_tall_legions()
-            elif game.phase == Phase.MOVE:
+            elif self.game.phase == Phase.MOVE:
                 self.selected_marker = None
                 self.highlight_unmoved_legions()
-            elif game.phase == Phase.FIGHT:
+            elif self.game.phase == Phase.FIGHT:
                 self.highlight_engagements()
             elif self.game.phase == Phase.MUSTER:
                 self.highlight_recruits()
