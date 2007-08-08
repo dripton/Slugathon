@@ -437,6 +437,7 @@ class Game(Observed):
                 attacker = legion
             else:
                 defender = legion
+        player.reset_angels_pending()
         # Reveal attacker only to defender
         action = Action.RevealLegion(self.name, attacker.markername, 
           attacker.creature_names())
@@ -521,20 +522,18 @@ class Game(Observed):
         """Called from Server"""
         print "called Game.flee", self, playername, markername
         legion = self.find_legion(markername)
-        player = legion.player
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
                 break
         enemy_markername = enemy_legion.markername
-        self._flee(playername, markername)
         action = Action.Flee(self.name, markername, enemy_markername, hexlabel)
         self.notify(action)
+        self._flee(playername, markername)
 
     def do_not_flee(self, playername, markername):
         """Called from Server"""
         legion = self.find_legion(markername)
-        player = legion.player
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
@@ -547,7 +546,6 @@ class Game(Observed):
     def concede(self, playername, markername):
         """Called from Server"""
         legion = self.find_legion(markername)
-        player = legion.player
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
@@ -567,7 +565,6 @@ class Game(Observed):
             print "make_proposal called with legion gone"
             return
         attacker_player = attacker_legion.player
-        defender_player = defender_legion.player
         if attacker_player.name == playername:
             other_player = defender_legion.player
         else:
@@ -586,7 +583,6 @@ class Game(Observed):
             print "accept_proposal called with legion gone"
             return
         attacker_player = attacker_legion.player
-        defender_player = defender_legion.player
         if attacker_player.name == playername:
             other_player = defender_legion.player
         else:
@@ -608,7 +604,6 @@ class Game(Observed):
             print "reject_proposal called with legion gone"
             return
         attacker_player = attacker_legion.player
-        defender_player = defender_legion.player
         if attacker_player.name == playername:
             other_player = defender_legion.player
         else:
@@ -753,6 +748,10 @@ class Game(Observed):
             else:
                 self.phase = Phase.MUSTER
 
+        elif isinstance(action, Action.ResolvingEngagement):
+            for player in self.players:
+                player.reset_angels_pending()
+
         elif isinstance(action, Action.Flee):
             legion = self.find_legion(action.markername)
             playername = legion.player.name
@@ -770,12 +769,14 @@ class Game(Observed):
               action.attacker_creature_names, defender_legion, 
               action.defender_creature_names)
 
-        elif isinstance(action, Action.DoneFighting):
-            self.phase = Phase.MUSTER
-
         elif isinstance(action, Action.AcquireAngel):
             self.acquire_angel(action.playername, action.markername, 
               action.angel_name)
+
+        elif isinstance(action, Action.DoneFighting):
+            self.phase = Phase.MUSTER
+            for player in self.players:
+                player.reset_angels_pending()
 
         elif isinstance(action, Action.RecruitCreature):
             self.recruit_creature(action.playername, action.markername, 

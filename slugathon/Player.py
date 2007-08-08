@@ -230,6 +230,10 @@ class Player(Observed):
         """Return True iff this player can finish the move phase."""
         return not game.engagement_hexlabels()
 
+    def reset_angels_pending(self):
+        for legion in self.legions.values():
+            legion.reset_angels_pending()
+
     def done_with_engagements(self, game):
         if self.can_exit_fight_phase(game):
             action = Action.DoneFighting(self.game.name, self.name)

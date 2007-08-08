@@ -674,6 +674,7 @@ class GUIMasterBoard(gtk.Window):
 
     def update(self, observed, action):
         print "GUIMasterBoard.update", self, observed, action
+
         if isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
             hexlabels = [legion.hexlabel]
@@ -826,6 +827,13 @@ class GUIMasterBoard(gtk.Window):
                     AcquireAngel.AcquireAngel(self.username, legion.player,
                       legion, available_angels, self.picked_angel, self)
                     angels -= 1
+
+        elif isinstance(action, Action.AcquireAngel):
+            markername = action.markername
+            legion = self.game.find_legion(markername)
+            hexlabel = legion.hexlabel
+            self.update_gui([hexlabel])
+            self.highlight_engagements()
 
 
 if __name__ == "__main__":

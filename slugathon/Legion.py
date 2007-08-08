@@ -223,24 +223,24 @@ class Legion(Observed):
             caretaker.kill_one(creature.name)
         self.player.remove_legion(self.markername)
 
-    # XXX It would be better to have the client figure out that it can
-    # acquire without passing down an action.
     def add_points(self, points):
         print "Legion.add_points", self.markername, points
+        ARCHANGEL_POINTS = 500
+        ANGEL_POINTS = 100
         player = self.player
         score0 = player.score
         score1 = score0 + points
         player.score = score1
         archangels = 0
         while (len(self) + archangels < 7 and 
-          score1 // 500 > score0 // 500):
+          score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
             archangels += 1
-            score1 -= 100
+            score1 -= ANGEL_POINTS
         angels = 0
         while (len(self) + archangels + angels < 7 and 
-          score1 // 100 > score0 // 100):
+          score1 // ANGEL_POINTS > score0 // ANGEL_POINTS):
             angels += 1
-            score1 -= 100
+            score1 -= ANGEL_POINTS
         self.angels_pending = angels
         self.archangels_pending = archangels
         if angels + archangels > 0:
@@ -248,15 +248,16 @@ class Legion(Observed):
               self.player.name, self.markername, angels, archangels)
             self.notify(action)
 
+
     def acquire(self, angel):
         """Acquire angel, and notify observers."""
-        player = self.player
         if angel.name == "Archangel":
             okay = self.archangels_pending > 0
         elif angel.name == "Angel":
             okay = self.archangels_pending > 0 or self.angels_pending > 0
         if not okay:
-            raise AssertionError("legion tried to acquire illegally")
+            print "legion.acquire aborting"
+            return
         if len(self) >= 7:
             raise AssertionError("legion too tall to recruit")
         caretaker = self.player.game.caretaker
@@ -268,6 +269,10 @@ class Legion(Observed):
             self.archangels_pending -= 1
         else:
             self.angels_pending -= 1
-        action = Action.AcquireAngel(player.game.name, player.name,
+        action = Action.AcquireAngel(self.player.game.name, self.player.name,
           self.markername, angel.name)
         self.notify(action)
+
+    def reset_angels_pending(self):
+        self.angels_pending = 0
+        self.archangels_pending = 0
