@@ -1,7 +1,6 @@
 import sys
 import time
 
-from twisted.spread import pb
 import zope.interface
 
 import Player
