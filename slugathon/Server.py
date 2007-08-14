@@ -223,6 +223,12 @@ class Server(Observed):
               attacker_creature_names, defender_markername,
               defender_creature_names)
 
+    def fight(self, username, game_name, attacker_markername, 
+      defender_markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.fight(username, attacker_markername, defender_markername)
+
     def acquire_angel(self, username, game_name, markername, angel_name):
         game = self.name_to_game(game_name)
         if game:

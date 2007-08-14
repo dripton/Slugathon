@@ -612,6 +612,27 @@ class Game(Observed):
           defender_markername, defender_creature_names)
         self.notify(action)
 
+    # TODO
+    def _fight(self, attacker, defender):
+        pass
+
+    def fight(self, playername, attacker_markername, defender_markername):
+        """Called from Server"""
+        attacker_legion = self.find_legion(attacker_markername)
+        defender_legion = self.find_legion(defender_markername)
+        hexlabel = attacker_legion.hexlabel
+        assert defender_legion.hexlabel == hexlabel
+        action = Action.RevealLegion(self.name, attacker_markername,
+          attacker_legion.creature_names())
+        self.notify(action)
+        action = Action.RevealLegion(self.name, defender_markername, 
+          defender_legion.creature_names())
+        self.notify(action)
+        action = Action.Fight(self.name, attacker_markername, 
+          defender_markername, hexlabel)
+        self.notify(action)
+        self._fight(attacker_legion, defender_legion)
+
     def acquire_angel(self, playername, markername, angel_name):
         """Called from Server"""
         player = self.get_player_by_name(playername)

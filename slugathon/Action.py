@@ -284,10 +284,11 @@ pb.setUnjellyableForClass(Concede, Concede)
 
 
 class Fight(Action):
-    def __init__(self, game_name, markername, enemy_markername, hexlabel):
+    def __init__(self, game_name, attacker_markername, defender_markername, 
+      hexlabel):
         self.game_name = game_name
-        self.markername = markername
-        self.enemy_markername = enemy_markername
+        self.attacker_markername = attacker_markername
+        self.defender_markername = defender_markername
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(Fight, Fight)
 

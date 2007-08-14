@@ -641,8 +641,8 @@ class GUIMasterBoard(gtk.Window):
             # TODO no more proposals
             pass
         elif response_id == 3:
-            # TODO fight
-            pass
+            self.user.callRemote("fight", self.game.name,
+              attacker_legion.markername, defender_legion.markername)
               
     def cb_proposal(self, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, response_id):
