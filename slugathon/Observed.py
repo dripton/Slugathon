@@ -32,7 +32,8 @@ class Observed(object):
 
     def notify(self, action, names=None):
         print "called Observed.notify", self, action, names
-        for observer, name in self.observers.iteritems():
+        # Create the list so it can't change size while iterating
+        for observer, name in self.observers.items():
             if names is None or name in names:
                 print self, "notifying", observer, "about", action
                 observer.update(self, action)
