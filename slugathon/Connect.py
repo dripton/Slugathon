@@ -11,6 +11,7 @@ gtk2reactor.install()
 from twisted.internet import reactor
 import gtk
 import gtk.glade
+import gobject
 
 import getpass
 import Server
@@ -23,9 +24,9 @@ class Connect(object):
     """GUI for connecting to a server."""
     def __init__(self):
         self.glade = gtk.glade.XML("../glade/connect.glade")
-        self.widgets = ["connect_window", "playername_combo", 
-          "password_entry", "server_name_combo", "server_port_combo", 
-          "connect_button", "start_server_button"]
+        self.widgets = ["connect_window", "playername_comboboxentry", 
+          "password_entry", "server_name_comboboxentry", 
+          "server_port_comboboxentry", "connect_button", "start_server_button"]
         for widget_name in self.widgets:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.glade.signal_autoconnect(self)
@@ -46,29 +47,38 @@ class Connect(object):
         if not self.playernames:
             self.playernames = set()
         self.playernames.add(getpass.getuser())
+        store = gtk.ListStore(gobject.TYPE_STRING)
         for name in self.playernames:
-            self.playername_combo.insert_text(name)
+            store.append([name])
+        self.playername_comboboxentry.set_model(store)
+        self.playername_comboboxentry.set_text_column(0)
 
     def init_server_names(self):
         if not self.server_names:
             self.server_names = set()
         self.server_names.add("localhost")
+        store = gtk.ListStore(gobject.TYPE_STRING)
         for name in self.server_names:
-            self.server_name_combo.insert_text(name)
+            store.append([name])
+        self.server_name_comboboxentry.set_model(store)
+        self.server_name_comboboxentry.set_text_column(0)
 
     def init_server_ports(self):
         if not self.server_ports:
             self.server_ports = set()
         self.server_ports.add(Server.DEFAULT_PORT)
+        store = gtk.ListStore(gobject.TYPE_STRING)
         for name in self.server_ports:
-            self.server_port_combo.insert_text(str(name))
+            store.append([str(name)])
+        self.server_port_comboboxentry.set_model(store)
+        self.server_port_comboboxentry.set_text_column(0)
 
     def on_connect_button_clicked(self, *args):
         print "Connect button clicked"
-        playername = self.playername_combo.get_text()
+        playername = self.playername_comboboxentry.child.get_text()
         password = self.password_entry.get_text()
-        server_name = self.server_name_combo.get_text()
-        server_port = int(self.server_port_combo.get_text())
+        server_name = self.server_name_comboboxentry.child.get_text()
+        server_port = int(self.server_port_comboboxentry.child.get_text())
         print playername, password, server_name, server_port
         client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
