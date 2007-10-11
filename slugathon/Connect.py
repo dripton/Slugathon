@@ -91,6 +91,3 @@ class Connect(object):
 if __name__ == "__main__":
     connect = Connect()
     reactor.run()
-
-    while True:
-        gtk.main_iteration()
