@@ -26,9 +26,9 @@ class AcquireAngel(object):
         print "AcquireAngel.__init__", username, player, legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/acquireangel.glade")
-        self.widgets = ["acquire_angel_dialog", "marker_hbox", 
+        self.widget_names = ["acquire_angel_dialog", "marker_hbox",
           "chits_hbox", "angels_hbox", "legion_name"]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.acquire_angel_dialog.set_icon(icon.pixbuf)

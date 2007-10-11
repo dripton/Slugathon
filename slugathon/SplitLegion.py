@@ -27,10 +27,10 @@ class SplitLegion(object):
         self.old_legion = legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/splitlegion.glade")
-        self.widgets = ["split_legion_dialog", "old_marker_hbox", 
+        self.widget_names = ["split_legion_dialog", "old_marker_hbox", 
           "old_chits_hbox", "new_marker_hbox", "new_chits_hbox",
           "legion_name"]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.split_legion_dialog.set_icon(icon.pixbuf)

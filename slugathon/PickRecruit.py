@@ -26,9 +26,9 @@ class PickRecruit(object):
         print "PickRecruit.__init__", username, player, legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/pickrecruit.glade")
-        self.widgets = ["pick_recruit_dialog", "marker_hbox", 
+        self.widget_names = ["pick_recruit_dialog", "marker_hbox", 
           "chits_hbox", "recruits_hbox", "legion_name"]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.pick_recruit_dialog.set_icon(icon.pixbuf)

@@ -28,7 +28,7 @@ class Negotiate(object):
         self.defender_legion = defender_legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/negotiate.glade")
-        self.widgets = [
+        self.widget_names = [
           "negotiate_dialog", 
           "legion_name", 
           "attacker_hbox", 
@@ -42,7 +42,7 @@ class Negotiate(object):
           "done_proposing_button",
           "fight_button",
         ]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.proposal_button.set_sensitive(False)

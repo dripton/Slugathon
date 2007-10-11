@@ -32,7 +32,7 @@ class Proposal(object):
         self.defender_creature_names = defender_creature_names
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/proposal.glade")
-        self.widgets = [
+        self.widget_names = [
           "proposal_dialog", 
           "legion_name", 
           "attacker_hbox", 
@@ -44,7 +44,7 @@ class Proposal(object):
           "accept_button", 
           "reject_button", 
         ]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.proposal_dialog.set_icon(icon.pixbuf)

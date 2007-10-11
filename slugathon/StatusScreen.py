@@ -35,21 +35,21 @@ class StatusScreen(gtk.Window):
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML("../glade/statusscreen.glade")
-        self.widgets = ["status_screen_window", "turn_table", "player_table",
+        self.widget_names = ["status_screen_window", "turn_table", "player_table",
           "game_turn_label", "game_player_label", "game_phase_label",
           "battle_turn_label", "battle_player_label", "battle_phase_label",
         ]
         for num, player in enumerate(self.game.players):
-            self.widgets.append("name%d_label" % num)
-            self.widgets.append("tower%d_label" % num)
-            self.widgets.append("color%d_label" % num)
-            self.widgets.append("legions%d_label" % num)
-            self.widgets.append("markers%d_label" % num)
-            self.widgets.append("creatures%d_label" % num)
-            self.widgets.append("titan_power%d_label" % num)
-            self.widgets.append("eliminated%d_label" % num)
-            self.widgets.append("score%d_label" % num)
-        for widget_name in self.widgets:
+            self.widget_names.append("name%d_label" % num)
+            self.widget_names.append("tower%d_label" % num)
+            self.widget_names.append("color%d_label" % num)
+            self.widget_names.append("legions%d_label" % num)
+            self.widget_names.append("markers%d_label" % num)
+            self.widget_names.append("creatures%d_label" % num)
+            self.widget_names.append("titan_power%d_label" % num)
+            self.widget_names.append("eliminated%d_label" % num)
+            self.widget_names.append("score%d_label" % num)
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self._init_turn()

@@ -20,9 +20,9 @@ class ShowLegion(object):
     def __init__(self, username, legion, playercolor, show_marker):
         print "ShowLegion.__init__", username, legion, playercolor
         self.glade = gtk.glade.XML("../glade/showlegion.glade")
-        self.widgets = ["show_legion_window", "marker_hbox", "chits_hbox",
+        self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
           "legion_name"]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.show_legion_window.set_icon(icon.pixbuf)

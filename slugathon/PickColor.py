@@ -22,8 +22,8 @@ class PickColor(object):
         self.username = username
         self.game_name = game_name
         self.glade = gtk.glade.XML("../glade/pickcolor.glade")
-        self.widgets = ["pick_color_dialog", "label1"] + colors
-        for widget_name in self.widgets:
+        self.widget_names = ["pick_color_dialog", "label1"] + colors
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.pick_color_dialog.set_icon(icon.pixbuf)

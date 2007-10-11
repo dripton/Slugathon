@@ -25,9 +25,9 @@ class Anteroom(object):
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML("../glade/anteroom.glade")
-        self.widgets = ["anteroom_window", "chat_entry", "chat_view", 
+        self.widget_names = ["anteroom_window", "chat_entry", "chat_view", 
           "game_list", "user_list", "new_game_button"]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.usernames = None   # set, aliased from Client
         self.games = None       # list, aliased from Client

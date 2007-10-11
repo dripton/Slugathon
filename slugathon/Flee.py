@@ -29,7 +29,7 @@ class Flee(object):
         self.defender_legion = defender_legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/flee.glade")
-        self.widgets = [
+        self.widget_names = [
           "flee_dialog", 
           "legion_name", 
           "attacker_hbox", 
@@ -41,7 +41,7 @@ class Flee(object):
           "flee_button", 
           "do_not_flee_button"
         ]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
         self.flee_dialog.set_icon(icon.pixbuf)

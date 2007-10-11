@@ -32,10 +32,10 @@ class WaitingForPlayers(object):
         self.game = game
         self.game.add_observer(self)
         self.glade = gtk.glade.XML("../glade/waitingforplayers.glade")
-        self.widgets = ["waiting_for_players_window", "game_name_label", 
+        self.widget_names = ["waiting_for_players_window", "game_name_label", 
           "player_list", "created_entry", "starts_by_entry", "countdown_entry",
           "join_button", "drop_button", "start_button"]
-        for widget_name in self.widgets:
+        for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.player_store = gtk.ListStore(str)
         self.update_player_store()
