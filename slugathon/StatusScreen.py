@@ -35,9 +35,10 @@ class StatusScreen(gtk.Window):
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML("../glade/statusscreen.glade")
-        self.widget_names = ["status_screen_window", "turn_table", "player_table",
-          "game_turn_label", "game_player_label", "game_phase_label",
-          "battle_turn_label", "battle_player_label", "battle_phase_label",
+        self.widget_names = ["status_screen_window", "turn_table", 
+          "player_table", "game_turn_label", "game_player_label", 
+          "game_phase_label", "battle_turn_label", "battle_player_label", 
+          "battle_phase_label",
         ]
         for num, player in enumerate(self.game.players):
             self.widget_names.append("name%d_label" % num)

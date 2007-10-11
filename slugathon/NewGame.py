@@ -22,8 +22,8 @@ class NewGame(object):
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML("../glade/newgame.glade")
-        self.widget_names = ["new_game_dialog", "name_entry", "min_players_spin", 
-          "max_players_spin"]
+        self.widget_names = ["new_game_dialog", "name_entry",
+          "min_players_spin", "max_players_spin"]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.new_game_dialog.set_icon(icon.pixbuf)
