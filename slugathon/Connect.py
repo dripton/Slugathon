@@ -52,6 +52,7 @@ class Connect(object):
             store.append([name])
         self.playername_comboboxentry.set_model(store)
         self.playername_comboboxentry.set_text_column(0)
+        self.playername_comboboxentry.set_active(0)
 
     def init_server_names(self):
         if not self.server_names:
@@ -62,6 +63,7 @@ class Connect(object):
             store.append([name])
         self.server_name_comboboxentry.set_model(store)
         self.server_name_comboboxentry.set_text_column(0)
+        self.server_name_comboboxentry.set_active(0)
 
     def init_server_ports(self):
         if not self.server_ports:
@@ -72,6 +74,7 @@ class Connect(object):
             store.append([str(name)])
         self.server_port_comboboxentry.set_model(store)
         self.server_port_comboboxentry.set_text_column(0)
+        self.server_port_comboboxentry.set_active(0)
 
     def on_connect_button_clicked(self, *args):
         print "Connect button clicked"
