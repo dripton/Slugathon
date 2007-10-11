@@ -142,6 +142,7 @@ if __name__ == "__main__":
         print "callback", args
         guiutils.exit()
 
-    proposal = Proposal(defender_username, attacker_legion, defender_legion,
-      attacker_survivor_names, defender_survivor_names, callback, None)
+    proposal = Proposal(defender_username, attacker_legion, 
+      attacker_survivor_names, defender_legion, defender_survivor_names, 
+      callback, None)
     gtk.main()
