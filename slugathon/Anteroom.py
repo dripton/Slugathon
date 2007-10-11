@@ -6,7 +6,7 @@ except (ImportError, AttributeError):
 import gtk
 import gtk.glade
 from twisted.internet import reactor
-import zope.interface
+from zope.interface import implements
 
 import NewGame
 import WaitingForPlayers
@@ -19,7 +19,7 @@ import guiutils
 class Anteroom(object):
     """GUI for a multiplayer chat and game finding lobby."""
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, user, username):
         self.user = user

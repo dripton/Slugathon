@@ -1,10 +1,10 @@
-import zope.interface
+from zope.interface import Interface
 
-class IObserver(zope.interface.Interface):
+class IObserver(Interface):
 
     def update(observed, action):
-        """Inform this observer than action has happened to observed.
+        """Inform this observer that action has happened to observed.
         
-        observed may be None, in which case the action should contain
+        observed may be None, in which case action should contain
         all necessary information.
         """

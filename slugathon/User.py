@@ -1,6 +1,6 @@
 from twisted.spread import pb
 import time
-import zope.interface
+from zope.interface import implements
 
 from Observer import IObserver
 import Action
@@ -8,7 +8,7 @@ import Action
 class User(pb.Avatar):
     """Perspective for a player or spectator."""
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, name, server, client):
         self.name = name

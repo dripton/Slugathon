@@ -8,7 +8,7 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import pango
-import zope.interface
+from zope.interface import implements
 
 from Observer import IObserver
 import BattleMap
@@ -37,7 +37,7 @@ class GUIBattleMap(gtk.Window):
                *
     """
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, battlemap, entry_side, user=None, username=None, 
       scale=None):

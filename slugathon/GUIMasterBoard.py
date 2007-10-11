@@ -8,7 +8,7 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import pango
-import zope.interface
+from zope.interface import implements
 
 import GUIMasterHex
 import MasterBoard
@@ -66,7 +66,7 @@ ui_string = """<ui>
 class GUIMasterBoard(gtk.Window):
     """GUI representation of the masterboard."""
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, board, game=None, user=None, username=None, 
       scale=None):

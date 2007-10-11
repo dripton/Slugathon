@@ -7,7 +7,7 @@ from twisted.spread import pb
 from twisted.cred import checkers, portal
 from twisted.python import usage
 from twisted.internet import reactor
-import zope.interface
+from zope.interface import implements
 
 import Realm
 import Game
@@ -22,7 +22,7 @@ DEFAULT_PORT = 26569
 class Server(Observed):
     """A Slugathon server, which can host multiple games in parallel."""
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self):
         print "Called Server.__init__", self

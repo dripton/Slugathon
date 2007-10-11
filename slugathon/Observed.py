@@ -1,6 +1,6 @@
-import zope.interface
+from zope.interface import Interface, implements
 
-class IObserved(zope.interface.Interface):
+class IObserved(Interface):
     def add_observer(observer, name=None):
         """Add an observer to this object."""
 
@@ -8,14 +8,14 @@ class IObserved(zope.interface.Interface):
         """Remove an observer from this object."""
 
     def notify(action, names=None):
-        """Tell all observers about this action."""
+        """Tell observers about this action."""
 
 
 class Observed(object):
     """Inherit from this mixin and call its __init__ to allow the class 
     to be observed.""" 
 
-    zope.interface.implements(IObserved)
+    implements(IObserved)
 
     def __init__(self):
         self.observers = {}

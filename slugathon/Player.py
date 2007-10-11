@@ -1,6 +1,6 @@
 import types
 
-import zope.interface
+from zope.interface import implements
 
 from Observed import Observed
 from Observer import IObserver
@@ -27,7 +27,7 @@ class Player(Observed):
     another user might take over his player can continue the game.
     """
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, playername, game, join_order):
         Observed.__init__(self)

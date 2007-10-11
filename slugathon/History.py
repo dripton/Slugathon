@@ -1,4 +1,4 @@
-import zope.interface
+from zope.interface import implements
 
 from Observer import IObserver
 import Action
@@ -10,7 +10,7 @@ class History(object):
     go through the server.
     """
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self):
         self.actions = []

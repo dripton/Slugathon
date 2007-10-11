@@ -9,7 +9,7 @@ except (ImportError, AttributeError):
     pass
 import gtk
 import gtk.glade
-import zope.interface
+from zope.interface import implements
 
 import icon
 import guiutils
@@ -26,7 +26,7 @@ import Phase
 class StatusScreen(gtk.Window):
     """Game status window."""
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, game, user, username):
         gtk.Window.__init__(self)

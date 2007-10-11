@@ -8,7 +8,7 @@ except (ImportError, AttributeError):
 import gtk
 import gtk.glade
 from twisted.internet import reactor
-import zope.interface
+from zope.interface import implements
 
 from Observer import IObserver
 import Action
@@ -23,7 +23,7 @@ def format_time(secs):
 class WaitingForPlayers(object):
     """Waiting for players to start game dialog."""
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, user, username, game):
         print "new WaitingForPlayers", self, user, username, game

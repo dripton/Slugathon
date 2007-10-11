@@ -3,7 +3,7 @@
 from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor, defer
-import zope.interface
+from zope.interface import implements
 
 import Server
 import Anteroom
@@ -19,7 +19,7 @@ import StatusScreen
 
 class Client(pb.Referenceable, Observed):
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, username, password, host="localhost", 
           port=Server.DEFAULT_PORT):

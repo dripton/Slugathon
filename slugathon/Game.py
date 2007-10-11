@@ -1,7 +1,7 @@
 import sys
 import time
 
-import zope.interface
+from zope.interface import implements
 
 import Player
 import MasterBoard
@@ -31,7 +31,7 @@ def opposite(direction):
 class Game(Observed):
     """Central class holding information about one game"""
 
-    zope.interface.implements(IObserver)
+    implements(IObserver)
 
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players):
