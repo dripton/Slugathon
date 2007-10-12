@@ -261,7 +261,6 @@ class Player(Observed):
         self.markernames.add(markername)
 
     def update(self, observed, action):
-        print "Player.update", observed, action
         if isinstance(action, Action.RecruitCreature):
             legion = self.legions[action.markername]
             creature = Creature.Creature(action.creature_name)

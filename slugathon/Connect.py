@@ -77,23 +77,19 @@ class Connect(object):
         self.server_port_comboboxentry.set_active(0)
 
     def on_connect_button_clicked(self, *args):
-        print "Connect button clicked"
         playername = self.playername_comboboxentry.child.get_text()
         password = self.password_entry.get_text()
         server_name = self.server_name_comboboxentry.child.get_text()
         server_port = int(self.server_port_comboboxentry.child.get_text())
-        print playername, password, server_name, server_port
         client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
         def1.addCallbacks(self.connected, self.failure)
 
     def on_start_server_button_clicked(self, *args):
-        print "Start server button clicked"
         #XXX Not portable  Use reactor.spawnProcess
         os.system("python Server.py &")
 
     def connected(self, user):
-        print "Connect.connected", user
         self.connect_window.hide()
 
     def failure(self, arg):

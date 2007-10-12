@@ -18,7 +18,6 @@ import guiutils
 class ShowLegion(object):
     """Window to show a legion's contents."""
     def __init__(self, username, legion, playercolor, show_marker):
-        print "ShowLegion.__init__", username, legion, playercolor
         self.glade = gtk.glade.XML("../glade/showlegion.glade")
         self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
           "legion_name"]

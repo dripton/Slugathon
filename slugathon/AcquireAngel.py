@@ -23,7 +23,6 @@ class AcquireAngel(object):
     """Dialog to acquire an angel."""
     def __init__(self, username, player, legion, available_angels, 
       callback, parent):
-        print "AcquireAngel.__init__", username, player, legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/acquireangel.glade")
         self.widget_names = ["acquire_angel_dialog", "marker_hbox",
@@ -74,8 +73,6 @@ class AcquireAngel(object):
 
     def cb_response(self, dialog, response_id):
         """The cancel button was pressed, so exit"""
-        print ("AcquireAngel.cb_response", dialog, response_id, 
-          type(response_id))
         self.acquire_angel_dialog.destroy()
 
 

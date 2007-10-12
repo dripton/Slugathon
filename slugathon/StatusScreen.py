@@ -89,8 +89,6 @@ class StatusScreen(gtk.Window):
             score_label.set_text(str(player.score))
 
     def update(self, observed, action):
-        print "StatusScreen.update", self, observed, action
-
         if isinstance(action, Action.AssignedAllTowers):
             # Players got renumbered, so re-init everything.
             self._init_players()

@@ -25,13 +25,11 @@ class Server(Observed):
     implements(IObserver)
 
     def __init__(self):
-        print "Called Server.__init__", self
         Observed.__init__(self)
         self.games = []
         self.name_to_user = {}
 
     def add_observer(self, user):
-        print "called Server.add_observer", self, user
         username = user.name
         Observed.add_observer(self, user, username)
         self.name_to_user[username] = user
@@ -39,7 +37,6 @@ class Server(Observed):
         self.notify(action)
 
     def remove_observer(self, user):
-        print "called Server.remove_observer", self, user
         Observed.remove_observer(self, user)
         username = user.name
         if username in self.name_to_user:
@@ -53,7 +50,6 @@ class Server(Observed):
         return names
 
     def get_games(self):
-        print "get_games called on", self
         return self.games[:]
 
     def name_to_game(self, game_name):
@@ -68,7 +64,6 @@ class Server(Observed):
         source is a username.  dest is a list of usernames.
         If dest is None, send to all users
         """
-        print "called Server.send_chat_message", source, dest, text
         message = "%s: %s" % (source, text)
         if dest is None:
             dest = self.name_to_user.keys()
@@ -88,7 +83,6 @@ class Server(Observed):
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY, 
           min_players, max_players)
-        print "built Game"
         self.games.append(game)
         game.add_observer(self)
         action = Action.FormGame(username, game.name, game.create_time,
@@ -256,7 +250,6 @@ class Server(Observed):
 
 
     def update(self, observed, action):
-        print "Server.update", observed, action
         if isinstance(action, Action.MakeProposal):
             self.notify(action, [action.other_playername])
         else:

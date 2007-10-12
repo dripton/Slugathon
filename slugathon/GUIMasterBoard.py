@@ -146,7 +146,6 @@ class GUIMasterBoard(gtk.Window):
     def cb_click(self, area, event):
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
-                print "clicked on", marker, "with button", event.button
                 self.clicked_on_marker(area, event, marker)
                 return True
         for guihex in self.guihexes.values():
@@ -336,7 +335,6 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_angel(self, legion, angel):
         """Callback from AcquireAngel"""
-        print "GUIMasterBoard.picked_angel", legion, angel
         def1 = self.user.callRemote("acquire_angel", self.game.name,
           legion.markername, angel.name)
         def1.addErrback(self.failure)
@@ -544,7 +542,6 @@ class GUIMasterBoard(gtk.Window):
             self.update_gui(hexlabels)
 
     def cb_done(self, action):
-        print "done", action, self.game.phase
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
             if self.game.phase == Phase.SPLIT:
@@ -568,7 +565,6 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_mulligan(self, action):
-        print "mulligan", action
         player = self.game.get_player_by_name(self.username)
         if player.can_take_mulligan(self.game):
             history = self.game.history
@@ -586,7 +582,6 @@ class GUIMasterBoard(gtk.Window):
         About.About()
 
     def cb_undo(self, action):
-        print "undo", action
         if self.game:
             history = self.game.history
             if history.can_undo(self.username):
@@ -596,7 +591,6 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_redo(self, action):
-        print "redo", action
         if self.game:
             history = self.game.history
             if history.can_redo(self.username):
@@ -605,7 +599,6 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_maybe_flee(self, attacker, defender, fled):
-        print "maybe_flee", attacker, defender, fled
         if fled:
             self.user.callRemote("flee", self.game.name, defender.markername)
         else:
@@ -621,7 +614,6 @@ class GUIMasterBoard(gtk.Window):
                       2 - Done proposing
                       3 - Fight
         """
-        print "negotiate", response_id
         player = self.game.get_player_by_name(self.username)
         hexlabel = attacker_legion.hexlabel
         for legion in player.friendly_legions(hexlabel):
@@ -651,7 +643,6 @@ class GUIMasterBoard(gtk.Window):
         response_ids: 0 - Accept
                       1 - Reject
         """
-        print "proposal", response_id
         if response_id == 0:
             self.user.callRemote("accept_proposal", self.game.name, 
               attacker_legion.markername, attacker_creature_names, 
@@ -673,8 +664,6 @@ class GUIMasterBoard(gtk.Window):
         print "GUIMasterBoard.failure", arg
 
     def update(self, observed, action):
-        print "GUIMasterBoard.update", self, observed, action
-
         if isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
             hexlabels = [legion.hexlabel]
@@ -738,12 +727,10 @@ class GUIMasterBoard(gtk.Window):
                     self.cb_maybe_flee(attacker, defender, False)
 
         elif isinstance(action, Action.Flee):
-            print "GUIMasterBoard got Flee", action.markername, action.hexlabel
             self.update_gui([action.hexlabel])
             self.highlight_engagements()
 
         elif isinstance(action, Action.DoNotFlee):
-            print "GUIMasterBoard got DoNotFlee", action.markername
             markername = action.markername
             defender = self.game.find_legion(markername)
             hexlabel = defender.hexlabel
@@ -756,14 +743,11 @@ class GUIMasterBoard(gtk.Window):
                   defender, self.cb_negotiate, self)
 
         elif isinstance(action, Action.Concede):
-            print "GUIMasterBoard got Concede", action.markername, \
-              action.hexlabel
             self.destroy_negotiate()
             self.update_gui([action.hexlabel])
             self.highlight_engagements()
 
         elif isinstance(action, Action.MakeProposal):
-            print "GUIMasterBoard got MakeProposal"
             attacker_markername = action.attacker_markername
             attacker = self.game.find_legion(attacker_markername)
             defender_markername = action.defender_markername
@@ -774,13 +758,11 @@ class GUIMasterBoard(gtk.Window):
                   action.defender_creature_names, self.cb_proposal, self))
 
         elif isinstance(action, Action.AcceptProposal):
-            print "GUIMasterBoard got AcceptProposal"
             self.destroy_negotiate()
             self.update_gui([action.hexlabel])
             self.highlight_engagements()
 
         elif isinstance(action, Action.RejectProposal):
-            print "GUIMasterBoard got RejectProposal"
             attacker_markername = action.attacker_markername
             attacker = self.game.find_legion(attacker_markername)
             defender_markername = action.defender_markername

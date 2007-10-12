@@ -36,22 +36,18 @@ class Client(pb.Referenceable, Observed):
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
         self.status_screens = {}   # Maps game to status_screen
-        print "Called Client init:", self
 
     def remote_set_name(self, name):
-        print "remote_set_name(", name, ") called on", self
         self.playername = name
         return name
 
     def remote_ping(self, arg):
-        print "remote_ping(", arg, ") called on", self
         return True
 
     def __repr__(self):
         return "Client " + str(self.username)
 
     def connect(self):
-        print "Client.connect", self
         user_pass = credentials.UsernamePassword(self.username, self.password)
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
@@ -59,7 +55,6 @@ class Client(pb.Referenceable, Observed):
         return def1
 
     def connected(self, user):
-        print "Client.connected", self, user
         if user:
             self.user = user
             self.anteroom = Anteroom.Anteroom(user, self.username)
@@ -124,11 +119,12 @@ class Client(pb.Referenceable, Observed):
         Delegates to update to honor the interface.
         """
         observed = None
-        print "Client.remote_update", self, observed, action
         self.update(observed, action)
 
     def _maybe_pick_color(self, game):
+        print "Client._maybe_pick_color"
         if game.next_playername_to_pick_color() == self.username:
+            print "Client._maybe_pick_color spawning PickColor"
             PickColor.PickColor(self.user, self.username, 
               game.name, game.colors_left(), self.anteroom.anteroom_window)
 
@@ -142,7 +138,6 @@ class Client(pb.Referenceable, Observed):
 
     def pick_marker(self, game_name, username, markername):
         """Callback from PickMarker."""
-        print "Client.pick_marker", self, game_name, username, markername
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
         player.pick_marker(markername)
@@ -152,13 +147,11 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def _init_status_screen(self, game):
-        print "Client._init_status_screen"
         self.status_screens[game] = StatusScreen.StatusScreen(game, self.user,
           self.username)
         game.add_observer(self.status_screens[game])
 
     def _init_guiboard(self, game):
-        print "Client._init_guiboard"
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(game.board, game,
           self.user, self.username)
         game.add_observer(self.guiboards[game])
@@ -166,8 +159,6 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        print "Client.update", self, observed, action
-
         if isinstance(action, Action.AddUsername):
             self.usernames.add(action.username)
         elif isinstance(action, Action.DelUsername):

@@ -24,7 +24,6 @@ class Flee(object):
     """Dialog to choose whether to flee."""
     def __init__(self, username, attacker_legion, defender_legion,
       callback, parent):
-        print "Flee.__init__", username, attacker_legion, defender_legion
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.callback = callback
@@ -80,7 +79,6 @@ class Flee(object):
     def cb_response(self, widget, response_id):
         """Calls the callback function, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""
-        print "Flee.cb_response", widget, response_id
         self.flee_dialog.destroy()
         self.callback(self.attacker_legion, self.defender_legion, 
           response_id == 1)

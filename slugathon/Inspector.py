@@ -19,7 +19,6 @@ import Player
 class Inspector(object):
     """Window to show a legion's contents."""
     def __init__(self, username):
-        print "Inspector.__init__", username
         self.glade = gtk.glade.XML("../glade/showlegion.glade")
         self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
           "legion_name"]

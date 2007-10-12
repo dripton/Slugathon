@@ -23,7 +23,6 @@ class PickRecruit(object):
     """Dialog to pick a recruit."""
     def __init__(self, username, player, legion, masterhex, caretaker, 
       callback, parent):
-        print "PickRecruit.__init__", username, player, legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/pickrecruit.glade")
         self.widget_names = ["pick_recruit_dialog", "marker_hbox", 
@@ -76,8 +75,6 @@ class PickRecruit(object):
 
     def cb_response(self, dialog, response_id):
         """The cancel button was pressed, so exit"""
-        print ("PickRecruit.cb_response", dialog, response_id, 
-          type(response_id))
         self.pick_recruit_dialog.destroy()
 
 

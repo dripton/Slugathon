@@ -14,8 +14,6 @@ import guiutils
 class PickMarker(object):
     """Dialog to pick a legion marker."""
     def __init__(self, username, game_name, markers_left, callback, parent):
-        print "PickMarker.__init__", username, game_name, markers_left, \
-          callback
         self.username = username
         self.game_name = game_name
         self.callback = callback
@@ -42,7 +40,6 @@ class PickMarker(object):
         self.pick_marker_dialog.show()
 
     def cb_click(self, widget, event):
-        print "PickMarker.cb_click", self, widget, event
         markername = widget.tag
         self.callback(self.game_name, self.username, markername)
         self.pick_marker_dialog.destroy()

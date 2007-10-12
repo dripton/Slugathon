@@ -25,7 +25,6 @@ class Proposal(object):
     """Dialog to choose whether to accept an opponent's proposal."""
     def __init__(self, username, attacker_legion, attacker_creature_names, 
       defender_legion, defender_creature_names, callback, parent):
-        print "Proposal.__init__", username, attacker_legion, defender_legion
         self.attacker_legion = attacker_legion
         self.attacker_creature_names = attacker_creature_names
         self.defender_legion = defender_legion
@@ -106,7 +105,6 @@ class Proposal(object):
     def cb_response(self, widget, response_id):
         """Calls the callback function, with the attacker, the defender, and
         the response_id."""
-        print "Proposal.cb_response", widget, response_id
         self.proposal_dialog.destroy()
         self.callback(self.attacker_legion, self.attacker_creature_names,
           self.defender_legion, self.defender_creature_names, response_id)

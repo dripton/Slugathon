@@ -23,7 +23,6 @@ class Negotiate(object):
     """Dialog to choose whether to concede, negotiate, or fight."""
     def __init__(self, username, attacker_legion, defender_legion,
       callback, parent):
-        print "Negotiate.__init__", username, attacker_legion, defender_legion
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.callback = callback
@@ -142,7 +141,6 @@ class Negotiate(object):
     def cb_response(self, widget, response_id):
         """Calls the callback function, with the attacker, the defender, and
         the response_id."""
-        print "Negotiate.cb_response", widget, response_id
         self.negotiate_dialog.destroy()
         attacker_creature_names = self.surviving_creature_names(
           self.attacker_chits)

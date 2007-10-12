@@ -23,7 +23,6 @@ import Game
 class SplitLegion(object):
     """Dialog to split a legion."""
     def __init__(self, username, player, legion, callback, parent):
-        print "SplitLegion.__init__", username, player, legion
         self.old_legion = legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/splitlegion.glade")
@@ -91,7 +90,6 @@ class SplitLegion(object):
         self.okbutton.set_sensitive(legal)
 
     def cb_response(self, widget, response_id):
-        print "SplitLegion.cb_response", widget, response_id
         self.split_legion_dialog.destroy()
         if response_id == gtk.RESPONSE_OK:
             self.callback(self.old_legion, self.new_legion1, self.new_legion2)

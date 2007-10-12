@@ -224,7 +224,6 @@ class Legion(Observed):
         self.player.remove_legion(self.markername)
 
     def add_points(self, points):
-        print "Legion.add_points", self.markername, points
         ARCHANGEL_POINTS = 500
         ANGEL_POINTS = 100
         player = self.player

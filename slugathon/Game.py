@@ -103,7 +103,6 @@ class Game(Observed):
         if len(self.players) >= self.max_players:
             raise AssertionError, "%s tried to join full game %s" % (
               playername, self.name)
-        print "adding", playername, "to", self.name
         self.num_players_joined += 1
         player = Player.Player(playername, self, self.num_players_joined)
         self.players.append(player)
@@ -452,7 +451,6 @@ class Game(Observed):
         # Let clients DTRT: flee, concede, negotiate, fight
 
     def _flee(self, playername, markername):
-        print "called Game._flee", self, playername, markername
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         assert legion.can_flee()
@@ -468,7 +466,6 @@ class Game(Observed):
             assert legion.markername != markername
 
     def _concede(self, playername, markername):
-        print "called Game._concede", self, playername, markername
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         hexlabel = legion.hexlabel
@@ -494,13 +491,10 @@ class Game(Observed):
 
     def _accept_proposal(self, attacker_legion, attacker_creature_names, 
       defender_legion, defender_creature_names):
-        print "called Game._accept_proposal"
         if not attacker_creature_names and not defender_creature_names:
-            print "mutual elimination"
             for legion in [attacker_legion, defender_legion]:
                 legion.die(None, False)
         elif attacker_creature_names:
-            print "attacker wins"
             assert not defender_creature_names
             winning_legion = attacker_legion
             losing_legion = defender_legion
@@ -508,7 +502,6 @@ class Game(Observed):
             self._accept_proposal_helper(winning_legion, losing_legion, 
               survivors)
         elif defender_creature_names:
-            print "defender wins"
             assert not attacker_creature_names
             winning_legion = defender_legion
             losing_legion = attacker_legion
@@ -519,7 +512,6 @@ class Game(Observed):
 
     def flee(self, playername, markername):
         """Called from Server"""
-        print "called Game.flee", self, playername, markername
         legion = self.find_legion(markername)
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
@@ -692,8 +684,6 @@ class Game(Observed):
 
 
     def update(self, observed, action):
-        print "Game.update", observed, action
-
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
                 self.add_player(action.username)

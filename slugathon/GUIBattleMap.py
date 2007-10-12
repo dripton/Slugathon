@@ -110,10 +110,8 @@ class GUIBattleMap(gtk.Window):
         return True
 
     def clicked_on_background(self, area, event):
-        print "clicked on background", area, event
 
     def clicked_on_hex(self, area, event, guihex):
-        print "clicked on hex", area, event, guihex
         guihex.toggle_selection()
         self.update_gui([guihex.battlehex.label])
 

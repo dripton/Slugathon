@@ -135,7 +135,6 @@ class Anteroom(object):
         self.wfps[game.name] = wfp
 
     def add_game(self, game):
-        print "Anteroom.add_game", game.name
         game.add_observer(self, self.username)
         self.update_game_store()
         if self.username in game.get_playernames():
@@ -148,7 +147,6 @@ class Anteroom(object):
             game.remove_observer(self)
 
     def joined_game(self, playername, game_name):
-        print "Anteroom.joined_game", playername, game_name
         self.update_game_store()
 
     def dropped_from_game(self, game_name):
@@ -162,7 +160,6 @@ class Anteroom(object):
         return False
 
     def cb_game_list_select(self, path, unused):
-        print "Anteroom.cb_game_list_select"
         index = path[0]
         game = self.games[index]
         # TODO popup menu
@@ -170,8 +167,6 @@ class Anteroom(object):
         return False
 
     def update(self, observed, action):
-        print "Anteroom.update", self, observed, action
-
         if isinstance(action, Action.AddUsername):
             self.update_user_store()
         elif isinstance(action, Action.DelUsername):
