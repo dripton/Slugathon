@@ -4,7 +4,8 @@ import sys
 import time
 
 from twisted.spread import pb
-from twisted.cred import checkers, portal
+from twisted.cred.checkers import FilePasswordDB
+from twisted.cred.portal import Portal
 from twisted.python import usage
 from twisted.internet import reactor
 from zope.interface import implements
@@ -45,9 +46,7 @@ class Server(Observed):
             self.notify(action)
 
     def get_usernames(self):
-        names = self.name_to_user.keys()
-        names.sort()
-        return names
+        return sorted(self.name_to_user.iterkeys())
 
     def get_games(self):
         return self.games[:]
@@ -265,13 +264,11 @@ class Options(usage.Options):
 
 def main(options):
     port = int(options["port"])
-
     server = Server()
     realm = Realm.Realm(server)
-    checker = checkers.FilePasswordDB("passwd.txt")
-    portal1 = portal.Portal(realm, [checker])
-
-    pbfact = pb.PBServerFactory(portal1)
+    checker = FilePasswordDB("passwd.txt")
+    portal = Portal(realm, [checker])
+    pbfact = pb.PBServerFactory(portal)
     reactor.listenTCP(port, pbfact)
     reactor.run()
 

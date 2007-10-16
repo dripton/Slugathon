@@ -207,9 +207,8 @@ class Legion(Observed):
 
     def sorted_creatures(self):
         """Return creatures, sorted in descending order of value."""
-        li = [(creature.sort_value(), creature) for creature in self.creatures]
-        li.sort()
-        li.reverse()
+        li = reversed(sorted((creature.sort_value(), creature) 
+          for creature in self.creatures))
         return [tup[1] for tup in li]
 
     def die(self, scoring_legion, fled):

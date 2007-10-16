@@ -61,8 +61,10 @@ class Client(pb.Referenceable, Observed):
             self.add_observer(self.anteroom)
             def1 = user.callRemote("get_usernames")
             def1.addCallbacks(self.got_usernames, self.failure)
+            # XXX Why?
             return defer.succeed(user)
         else:
+            # XXX Why?
             return defer.failure(user)
 
     def got_usernames(self, usernames):
@@ -131,8 +133,7 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
             player = game.get_player_by_name(playername)
-            markernames = list(player.markernames.copy())
-            markernames.sort()
+            markernames = sorted(player.markernames.copy())
             PickMarker.PickMarker(self.username, game.name, markernames,
               self.pick_marker, self.anteroom.anteroom_window)
 
@@ -171,11 +172,13 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.AssignedAllTowers):
+            print "Client got AssignedAllTowers", action
             game = self.name_to_game(action.game_name)
             self._maybe_pick_color(game)
             if not self.guiboards.get(game):
                 self._init_status_screen(game)
         elif isinstance(action, Action.PickedColor):
+            print "Client got PickedColor", action
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)

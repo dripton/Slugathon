@@ -80,8 +80,7 @@ class Anteroom(object):
         self.anteroom_window.show_all()
 
     def update_user_store(self):
-        sorted_usernames = list(self.usernames)
-        sorted_usernames.sort()
+        sorted_usernames = sorted(self.usernames)
         leng = len(self.user_store)
         for ii, username in enumerate(sorted_usernames):
             if ii < leng:
