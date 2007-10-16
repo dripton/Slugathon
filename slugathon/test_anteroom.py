@@ -23,7 +23,8 @@ class TestAnteroom(object):
     def test_init(self):
         self.client = Client.Client("unittest", "unittest")
         def1 = self.client.connect()
-        def1.addCallbacks(self.connected, self.failure)
+        def1.addCallback(self.connected)
+        def1.addErrback(self.failure)
 
     def connected(self):
         anteroom = self.client.anteroom

@@ -13,13 +13,16 @@ class TestServer(object):
     
     def test_startup(self):
         self.client = Client.Client(username="unittest", password="unittest")
-        self.client.connect().addCallbacks(self.connected, self.failure)
+        def1 = self.client.connect()
+        def1.addCallback(self.connected)
+        def1.addErrback(self.failure)
         reactor.run()
     
     def connected(self, perspective):
         print "connected", self, perspective
-        perspective.callRemote("get_name", "foo").addCallbacks(self.success,
-          self.failure)
+        def1 = perspective.callRemote("get_name", "foo")
+        def1.addCallback(self.success)
+        def1.addErrback(self.failure)
     
     def success(self, name):
         assert name == "unittest"

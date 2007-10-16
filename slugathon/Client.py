@@ -51,7 +51,8 @@ class Client(pb.Referenceable, Observed):
         user_pass = credentials.UsernamePassword(self.username, self.password)
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
-        def1.addCallbacks(self.connected, self.failure)
+        def1.addCallback(self.connected)
+        def1.addErrback(self.failure)
         return def1
 
     def connected(self, user):
@@ -60,12 +61,8 @@ class Client(pb.Referenceable, Observed):
             self.anteroom = Anteroom.Anteroom(user, self.username)
             self.add_observer(self.anteroom)
             def1 = user.callRemote("get_usernames")
-            def1.addCallbacks(self.got_usernames, self.failure)
-            # XXX Why?
-            return defer.succeed(user)
-        else:
-            # XXX Why?
-            return defer.failure(user)
+            def1.addCallback(self.got_usernames)
+            def1.addErrback(self.failure)
 
     def got_usernames(self, usernames):
         """Only called when the client first connects to the server."""
@@ -74,7 +71,8 @@ class Client(pb.Referenceable, Observed):
             self.usernames.add(username)
         self.anteroom.set_usernames(self.usernames)
         def1 = self.user.callRemote("get_games")
-        def1.addCallbacks(self.got_games, self.failure)
+        def1.addCallback(self.got_games)
+        def1.addErrback(self.failure)
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""

@@ -83,7 +83,8 @@ class Connect(object):
         server_port = int(self.server_port_comboboxentry.child.get_text())
         client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
-        def1.addCallbacks(self.connected, self.failure)
+        def1.addCallback(self.connected)
+        def1.addErrback(self.failure)
 
     def on_start_server_button_clicked(self, *args):
         #XXX Not portable  Use reactor.spawnProcess
