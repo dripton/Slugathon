@@ -36,6 +36,7 @@ class Client(pb.Referenceable, Observed):
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
         self.status_screens = {}   # Maps game to status_screen
+        self.pickcolor = None      # To prevent gc of dialog
 
     def remote_set_name(self, name):
         self.playername = name
@@ -122,10 +123,8 @@ class Client(pb.Referenceable, Observed):
         self.update(observed, action)
 
     def _maybe_pick_color(self, game):
-        print "Client._maybe_pick_color"
         if game.next_playername_to_pick_color() == self.username:
-            print "Client._maybe_pick_color spawning PickColor"
-            PickColor.PickColor(self.user, self.username, 
+            self.pickcolor = PickColor.PickColor(self.user, self.username, 
               game.name, game.colors_left(), self.anteroom.anteroom_window)
 
     def _maybe_pick_first_marker(self, game, playername):
@@ -134,6 +133,7 @@ class Client(pb.Referenceable, Observed):
             markernames = sorted(player.markernames.copy())
             PickMarker.PickMarker(self.username, game.name, markernames,
               self.pick_marker, self.anteroom.anteroom_window)
+            self.pickcolor = None
 
     def pick_marker(self, game_name, username, markername):
         """Callback from PickMarker."""
@@ -170,13 +170,11 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.AssignedAllTowers):
-            print "Client got AssignedAllTowers", action
             game = self.name_to_game(action.game_name)
             self._maybe_pick_color(game)
             if not self.guiboards.get(game):
                 self._init_status_screen(game)
         elif isinstance(action, Action.PickedColor):
-            print "Client got PickedColor", action
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)

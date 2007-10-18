@@ -17,7 +17,6 @@ import guiutils
 class PickColor(object):
     """Dialog to pick a player color."""
     def __init__(self, user, username, game_name, colors_left, parent):
-        print "PickColor.__init__", self, user, username, colors_left
         self.user = user
         self.username = username
         self.game_name = game_name
@@ -25,7 +24,6 @@ class PickColor(object):
         self.widget_names = ["pick_color_dialog", "label1"] + colors
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
-        print("dir(PickColor) is %s" % dir(self))
 
         self.pick_color_dialog.set_icon(icon.pixbuf)
         self.pick_color_dialog.set_title("%s - %s" % (
@@ -40,10 +38,7 @@ class PickColor(object):
                 button.set_label("")
 
     def cb_click(self, widget, event):
-        print "PickColor.cb_click", self, widget, event
-        print("dir(PickColor) is %s" % dir(self))
         color = widget.get_label()
-        print color
         def1 = self.user.callRemote("pick_color", self.game_name, color)
         def1.addErrback(self.failure)
         self.pick_color_dialog.destroy()
