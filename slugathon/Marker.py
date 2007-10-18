@@ -10,10 +10,6 @@ import ImageDraw
 
 import colors
 import guiutils
-try:
-    import config
-except ImportError:
-    pass
 
 CHIT_SCALE_FACTOR = 3
 
@@ -67,10 +63,7 @@ class Marker(object):
         """Add legion height to Image im"""
         if not self.show_height:
             return
-        try:
-            font_path = config.chit_font_path
-        except (NameError, AttributeError):
-            font_path = "/usr/share/fonts/corefonts/courbd.ttf"
+        font_path = "../fonts/VeraSeBd.ttf"
         # TODO Vary font size with scale
         font_size = 20
         font = ImageFont.truetype(font_path, font_size)
