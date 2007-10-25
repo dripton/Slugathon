@@ -216,35 +216,42 @@ class Legion(Observed):
             points = self.score()
             if fled:
                 points //= 2
-            scoring_legion.add_points(points)
+            scoring_legion.add_points(points, True)
         caretaker = self.player.game.caretaker
+        dead_titan = False
         for creature in self.creatures:
             caretaker.kill_one(creature.name)
+            if creature.name == "Titan":
+                dead_titan = True
         self.player.remove_legion(self.markername)
+        if dead_titan:
+            self.player.die(scoring_legion)
 
-    def add_points(self, points):
+    def add_points(self, points, can_acquire):
+        # TODO Move these to a data file
         ARCHANGEL_POINTS = 500
         ANGEL_POINTS = 100
         player = self.player
         score0 = player.score
         score1 = score0 + points
         player.score = score1
-        archangels = 0
-        while (len(self) + archangels < 7 and 
-          score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
-            archangels += 1
-            score1 -= ANGEL_POINTS
-        angels = 0
-        while (len(self) + archangels + angels < 7 and 
-          score1 // ANGEL_POINTS > score0 // ANGEL_POINTS):
-            angels += 1
-            score1 -= ANGEL_POINTS
-        self.angels_pending = angels
-        self.archangels_pending = archangels
-        if angels + archangels > 0:
-            action = Action.AcquireAngels(self.player.game.name, 
-              self.player.name, self.markername, angels, archangels)
-            self.notify(action)
+        if can_acquire:
+            archangels = 0
+            while (len(self) + archangels < 7 and 
+              score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
+                archangels += 1
+                score1 -= ANGEL_POINTS
+            angels = 0
+            while (len(self) + archangels + angels < 7 and 
+              score1 // ANGEL_POINTS > score0 // ANGEL_POINTS):
+                angels += 1
+                score1 -= ANGEL_POINTS
+            self.angels_pending = angels
+            self.archangels_pending = archangels
+            if angels + archangels > 0:
+                action = Action.AcquireAngels(self.player.game.name, 
+                  self.player.name, self.markername, angels, archangels)
+                self.notify(action)
 
 
     def acquire(self, angel):

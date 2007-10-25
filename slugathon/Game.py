@@ -799,6 +799,7 @@ class Game(Observed):
             player = self.get_player_by_name(action.playername)
             self.phase = Phase.SPLIT
             player_num = self.players.index(player)
+            # TODO Skip dead players
             new_player_num = (player_num + 1) % len(self.players)
             if new_player_num == 0:
                 self.turn += 1

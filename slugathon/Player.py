@@ -260,6 +260,14 @@ class Player(Observed):
         del self.legions[markername]
         self.markernames.add(markername)
 
+    def die(self, scoring_legion):
+        points = sum(legion.score() for legion in self.legions.itervalues())
+        half_points = points // 2
+        scoring_legion.add_points(half_points, False)
+        for legion in self.legions.itervalues():
+            remove_legion(legion)
+        # TODO Mark player as dead
+
     def update(self, observed, action):
         if isinstance(action, Action.RecruitCreature):
             legion = self.legions[action.markername]
