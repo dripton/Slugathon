@@ -81,9 +81,8 @@ class Flee(object):
         a boolean which is True iff the user chose to flee."""
         self.flee_dialog.destroy()
         self.callback(self.attacker_legion, self.defender_legion, 
-          response_id == 1)
-        # XXX I want to say response_id == self.flee_button.response_id, 
-        # but I can't find the button's response_id through the button.
+          response_id == self.flee_dialog.get_response_for_widget(
+          self.flee_button))
 
 
 if __name__ == "__main__":
@@ -107,7 +106,11 @@ if __name__ == "__main__":
     defender_legion = Legion.Legion(defender_player, "Rd01", 
       defender_creatures, 1)
     
+    def callback(attacker, defender, fled):
+        print "fled is", fled
+        guiutils.exit()
+
     flee = Flee(defender_username, attacker_legion, defender_legion, 
-      guiutils.exit, None)
+      callback, None)
 
     gtk.main()
