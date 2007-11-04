@@ -22,7 +22,7 @@ class Client(pb.Referenceable, Observed):
     implements(IObserver)
 
     def __init__(self, username, password, host="localhost", 
-          port=Server.DEFAULT_PORT):
+      port=Server.DEFAULT_PORT):
         Observed.__init__(self)
         self.username = username
         self.playername = username # In case the same user logs in twice
