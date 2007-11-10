@@ -256,16 +256,16 @@ class Player(Observed):
 
     def remove_legion(self, markername):
         """Remove the legion, with no side effects."""
-        assert markername in self.legions
-        del self.legions[markername]
-        self.markernames.add(markername)
+        if markername in self.legions:
+            del self.legions[markername]
+            self.markernames.add(markername)
 
     def die(self, scoring_legion):
         points = sum(legion.score() for legion in self.legions.itervalues())
         half_points = points // 2
         scoring_legion.add_points(half_points, False)
         for legion in self.legions.itervalues():
-            remove_legion(legion)
+            self.remove_legion(legion)
         # TODO Mark player as dead
 
     def update(self, observed, action):
