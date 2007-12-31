@@ -1,3 +1,5 @@
+# TODO show titan power
+
 try:
     import pygtk
     pygtk.require("2.0")

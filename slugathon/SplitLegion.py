@@ -1,5 +1,7 @@
 #!/usr/bin/env python 
 
+# TODO Need feedback when a split fails for no markers.
+
 import time
 
 try:

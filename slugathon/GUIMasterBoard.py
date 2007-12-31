@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# TODO GPL blurb on all files
+# TODO When we click on a marker, move it to the top of the z-order
+# XXX Need to un-highlight all legions at end of turn.
+
 import math
 try:
     import pygtk

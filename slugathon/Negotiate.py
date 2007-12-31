@@ -1,5 +1,7 @@
 #!/usr/bin/env python 
 
+# TODO Angel summoning
+
 import time
 
 try:

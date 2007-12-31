@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# TODO This dialog should always be on top.
+
 try:
     import pygtk
     pygtk.require("2.0")
