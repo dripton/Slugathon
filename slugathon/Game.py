@@ -606,7 +606,7 @@ class Game(Observed):
 
     # TODO
     def _fight(self, attacker, defender):
-        pass
+        print "called Game._fight (TODO)"
 
     def fight(self, playername, attacker_markername, defender_markername):
         """Called from Server"""
