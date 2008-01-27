@@ -143,7 +143,7 @@ class Player(Observed):
 
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
-        return max([len(legion) for legion in self.legions.values()]) < 8
+        return max([len(legion) for legion in self.legions.itervalues()]) < 8
 
     def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
@@ -175,13 +175,13 @@ class Player(Observed):
 
     def moved_legions(self):
         """Return a set of this players legions that have moved this turn."""
-        return set([legion for legion in self.legions.values() if 
+        return set([legion for legion in self.legions.itervalues() if 
           legion.moved])
 
     def friendly_legions(self, hexlabel=None):
         """Return a set of this player's legions, in hexlabel if not None."""
-        return set([legion for legion in self.legions.values() if hexlabel in
-          (None, legion.hexlabel)])
+        return set([legion for legion in self.legions.itervalues() 
+          if hexlabel in (None, legion.hexlabel)])
 
     def enemy_legions(self, game, hexlabel=None):
         """Return a set of other players' legions, in hexlabel if not None."""
@@ -231,7 +231,7 @@ class Player(Observed):
         return not game.engagement_hexlabels()
 
     def reset_angels_pending(self):
-        for legion in self.legions.values():
+        for legion in self.legions.itervalues():
             legion.reset_angels_pending()
 
     def done_with_engagements(self, game):
@@ -247,7 +247,7 @@ class Player(Observed):
         self.selected_markername = None
         self.movement_roll = None
         self.teleported = False
-        for legion in self.legions.values():
+        for legion in self.legions.itervalues():
             legion.moved = False
             legion.teleported = False
             legion.entry_side = None

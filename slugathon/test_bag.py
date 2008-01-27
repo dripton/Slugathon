@@ -160,6 +160,14 @@ def test_items():
     b1 = bag({"a":1, "b":0, 1:4})
     assert b1.items() == [("a", 1), (1, 4)]
 
+def test_iteritems():
+    b1 = bag({"a":1, "b":0, 1:4})
+    assert list(b1.iteritems()) == [("a", 1), (1, 4)]
+
 def test_keys():
     b1 = bag({"a":1, "b":0, 1:4})
     assert b1.keys() == ["a", 1]
+
+def test_iterkeys():
+    b1 = bag({"a":1, "b":0, 1:4})
+    assert list(b1.iterkeys()) == ["a", 1]

@@ -65,7 +65,7 @@ class Server(Observed):
         """
         message = "%s: %s" % (source, text)
         if dest is None:
-            dest = self.name_to_user.keys()
+            dest = self.name_to_user.iterkeys()
         for username in dest:
             user = self.name_to_user[username]
             user.receive_chat_message(message)

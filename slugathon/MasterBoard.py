@@ -8,7 +8,7 @@ class MasterBoard(object):
         self.hexes = {}
         for hexdata in boarddata.data:
             self.init_hex(hexdata)
-        for hex1 in self.hexes.values():
+        for hex1 in self.hexes.itervalues():
             hex1.connect_to_neighbors()
 
     def compute_hexes_metadata(self):
@@ -39,5 +39,5 @@ class MasterBoard(object):
 
     def get_tower_labels(self):
         """Return a list of int labels for this board's tower hexes."""
-        return [hex1.label for hex1 in self.hexes.values()
+        return [hex1.label for hex1 in self.hexes.itervalues()
                 if hex1.is_tower()]

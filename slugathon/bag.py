@@ -10,7 +10,7 @@ class bag(object):
     def update(self, iterable):
         """Update this object with items from the iterable."""
         if hasattr(iterable, "items"):
-            for key, val in iterable.items():
+            for key, val in iterable.iteritems():
                 if val > 0:
                     self._dic[key] = val
                 elif val == 0:
@@ -71,7 +71,7 @@ class bag(object):
         if not isinstance(other, bag):
             raise TypeError, "not a bag"
         newbag = bag(self._dic)
-        for key, val in other._dic.items():
+        for key, val in other._dic.iteritems():
             newbag[key] += val
         return newbag
 
@@ -88,7 +88,7 @@ class bag(object):
         if not isinstance(other, bag):
             raise TypeError, "not a bag"
         newbag = bag(self._dic)
-        for key, val in self._dic.items():
+        for key, val in self._dic.iteritems():
             val2 = other[key]
             if val2:
                 newbag[key] = max(val - val2, 0)
@@ -99,7 +99,7 @@ class bag(object):
         if not isinstance(other, bag):
             raise TypeError, "not a bag"
         newbag = bag(self._dic)
-        for key, val in self._dic.items():
+        for key, val in self._dic.iteritems():
             val2 = other[key]
             newbag[key] = min(val, val2)
         return newbag
@@ -108,7 +108,7 @@ class bag(object):
         """Report whether the other bag contains everything in this one."""
         if not isinstance(other, bag):
             raise TypeError, "not a bag"
-        for key, val in self._dic.items():
+        for key, val in self._dic.iteritems():
             val2 = other[key]
             if val2 < val:
                 return False
@@ -118,7 +118,7 @@ class bag(object):
         """Report whether this bag contains everything in the other one."""
         if not isinstance(other, bag):
             raise TypeError, "not a bag"
-        for key, val in other._dic.items():
+        for key, val in other._dic.iteritems():
             val2 = self[key]
             if val2 < val:
                 return False
@@ -132,6 +132,12 @@ class bag(object):
         """Return a list of item, count pairs."""
         return self._dic.items()
 
+    def iteritems(self):
+        return self._dic.iteritems()
+
     def keys(self):
         """Return a list of one of each item in the set."""
         return self._dic.keys()
+
+    def iterkeys(self):
+        return self._dic.iterkeys()

@@ -107,7 +107,7 @@ class GUIMasterBoard(gtk.Window):
         # list of tuples (Chit, hexlabel)
         self.recruitchits = []
         self._splitting_legion = None
-        for hex1 in self.board.hexes.values():
+        for hex1 in self.board.hexes.itervalues():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
         self.inspector = Inspector.Inspector(self.username)
@@ -152,7 +152,7 @@ class GUIMasterBoard(gtk.Window):
             if marker.point_inside((event.x, event.y)):
                 self.clicked_on_marker(area, event, marker)
                 return True
-        for guihex in self.guihexes.values():
+        for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
                 return True
@@ -449,7 +449,7 @@ class GUIMasterBoard(gtk.Window):
     def update_gui(self, hexlabels=None):
         gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
         if hexlabels is None:
-            guihexes = self.guihexes.values()
+            guihexes = self.guihexes.itervalues()
         else:
             # Also redraw neighbors, to clean up chit overdraw.
             guihexes = set()
@@ -468,7 +468,7 @@ class GUIMasterBoard(gtk.Window):
 
     def unselect_all(self):
         repaint_hexlabels = set()
-        for guihex in self.guihexes.values():
+        for guihex in self.guihexes.itervalues():
             if guihex.selected:
                 guihex.selected = False
                 repaint_hexlabels.add(guihex.masterhex.label)
@@ -487,7 +487,7 @@ class GUIMasterBoard(gtk.Window):
         if player == self.game.active_player:
             self.unselect_all()
             hexlabels = set()
-            for legion in player.legions.values():
+            for legion in player.legions.itervalues():
                 if len(legion) >= 7:
                     hexlabels.add(legion.hexlabel)
             for hexlabel in hexlabels:
@@ -503,7 +503,7 @@ class GUIMasterBoard(gtk.Window):
             self.clear_recruitchits()
             self.unselect_all()
             hexlabels = set()
-            for legion in player.legions.values():
+            for legion in player.legions.itervalues():
                 if not legion.moved:
                     hexlabels.add(legion.hexlabel)
             for hexlabel in hexlabels:
@@ -533,7 +533,7 @@ class GUIMasterBoard(gtk.Window):
         if player == self.game.active_player:
             self.unselect_all()
             hexlabels = set()
-            for legion in player.legions.values():
+            for legion in player.legions.itervalues():
                 hexlabel = legion.hexlabel
                 if (legion.moved and not legion.recruited and 
                   len(legion) < 7 and 

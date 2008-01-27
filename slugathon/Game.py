@@ -214,7 +214,7 @@ class Game(Observed):
         game if hexlabel is None"""
         legions = set()
         for player in self.players:
-            for legion in player.legions.values():
+            for legion in player.legions.itervalues():
                 if hexlabel in (None, legion.hexlabel):
                     legions.add(legion)
         return legions
@@ -677,7 +677,7 @@ class Game(Observed):
             else:
                 hexlabels_to_legion_colors[hexlabel] = set([color])
         results = set()
-        for hexlabel, colorset in hexlabels_to_legion_colors.items():
+        for hexlabel, colorset in hexlabels_to_legion_colors.iteritems():
             if len(colorset) >= 2:
                 results.add(hexlabel)
         return results

@@ -68,7 +68,7 @@ class GUIBattleMap(gtk.Window):
         self.area.modify_font(pango.FontDescription("monospace 8"))
         self.vbox.pack_start(self.area)
         self.guihexes = {}
-        for hex1 in self.battlemap.hexes.values():
+        for hex1 in self.battlemap.hexes.itervalues():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -102,7 +102,7 @@ class GUIBattleMap(gtk.Window):
         return True
 
     def cb_click(self, area, event):
-        for guihex in self.guihexes.values():
+        for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
                 return True
@@ -119,7 +119,7 @@ class GUIBattleMap(gtk.Window):
     def update_gui(self, hexlabels=None):
         gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
         if hexlabels is None:
-            guihexes = self.guihexes.values()
+            guihexes = self.guihexes.itervalues()
         else:
             guihexes = set(self.guihexes[hexlabel] for hexlabel in hexlabels)
         for guihex in guihexes:

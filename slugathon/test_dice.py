@@ -199,7 +199,7 @@ class TestDice(object):
 
     def test_chi_square(self):
         chi_square = 0
-        for roll, num in self.bins.items():
+        for roll, num in self.bins.iteritems():
             expected = self.trials / 6.0
             chi_square += (num - expected) ** 2.0 / expected
         chi_square /= self.trials - 1

@@ -118,8 +118,8 @@ class Legion(Observed):
         the same type in this legion."""
         counts = bag(self.creature_names())
         maximum = 0
-        for name, num in counts.items():
-            if (num > maximum and Creature.Creature(name).character_type == 
+        for name, num in counts.iteritems():
+            if (num > maximum and Creature.Creature(name).character_type ==
               "creature"):
                 maximum = num
         return maximum

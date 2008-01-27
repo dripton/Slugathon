@@ -38,8 +38,8 @@ class TestAssignTowers(object):
                 counts[tower] = counts.get(tower, 0) + 1
         assert len(counts) == num_towers, \
           "len(counts) is wrong: %s" % counts
-        assert sum(counts.values()) == trials * num_players
-        for count in counts.values():
+        assert sum(counts.itervalues()) == trials * num_players
+        for count in counts.itervalues():
             # XXX Do real statistical tests.
             mean = 1. * trials * num_players / num_towers
             assert math.floor(mean / 3) <= count <= math.ceil(2 * mean), \
