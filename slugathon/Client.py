@@ -2,7 +2,7 @@
 
 from twisted.spread import pb
 from twisted.cred import credentials
-from twisted.internet import reactor, defer
+from twisted.internet import reactor
 from zope.interface import implements
 
 import Server

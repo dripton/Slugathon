@@ -12,7 +12,6 @@ import gtk.glade
 
 import Chit
 import Marker
-import creaturedata
 import Creature
 import Legion
 import Player

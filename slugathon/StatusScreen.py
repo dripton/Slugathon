@@ -17,7 +17,6 @@ from Observer import IObserver
 import Game
 import Player
 import creaturedata
-import Legion
 import Creature
 import Action
 import Phase
