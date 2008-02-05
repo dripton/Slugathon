@@ -57,8 +57,6 @@ def test_label_to_coords():
             py.test.fail()
 
 def test_midpoint():
-    point1 = (1, 0) 
-    point2 = (6, 3)
     assert guiutils.midpoint((1, 0), (6, 3)) == (3.5, 1.5)
 
 def test_roundpoint():
