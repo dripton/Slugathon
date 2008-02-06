@@ -166,13 +166,17 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1:
         terrain = sys.argv[1].title()
+        if len(sys.argv) > 2:
+            entry_side = int(sys.argv[2])
     else:
         terrain = random.choice(battlemapdata.data.keys())
+        entry_side = None
     battlemap = BattleMap.BattleMap(terrain)
-    if terrain == "Tower":
-        entry_side = 3
-    else:
-        entry_side = random.choice([1, 3, 5])
+    if entry_side is None:
+        if terrain == "Tower":
+            entry_side = 3
+        else:
+            entry_side = random.choice([1, 3, 5])
     guimap = GUIBattleMap(battlemap, entry_side)
     while True:
         gtk.main_iteration()
