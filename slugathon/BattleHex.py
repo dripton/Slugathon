@@ -33,8 +33,8 @@ class BattleHex(object):
     def hexsides_with_border(self, border):
         """Return the set of hexsides with this border."""
         result = set()
-        for hexside in xrange(6):
-            if self.borders[hexside] == border:
+        for hexside, border2 in enumerate(self.borders):
+            if border2 == border:
                 result.add(hexside)
         return result
 
