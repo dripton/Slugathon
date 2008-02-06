@@ -24,17 +24,48 @@ class GUIBattleMap(gtk.Window):
 
     We spin the map so that the attacker's entry side is always on the left.
 
-               *
-            *     *
-    A    *     *     *       D
-    T       *     *     *    E
-    T    *     *     *       F
-    A       *     *     *    E
-    C    *     *     *       N
-    K       *     *     *    D
-    E    *     *     *       E
-    R       *     *          R
-               *
+    entry_side 1:
+
+               D6 
+            E5    C5 
+    A    F4    D5    B4       D
+    T       E4    C4    A3    E
+    T    F3    D4    B3       F
+    A       E3    C3    A2    E
+    C    F2    D3    B2       N
+    K       E2    C2    A1    D
+    E    F1    D2    B1       E
+    R       E1    C1          R
+               D1
+               
+    entry_side 3:
+
+               A1 
+            A2    B1 
+    A    A3    B2    C1       D
+    T       B3    C2    D1    E
+    T    B4    C3    D2       F
+    A       C4    D3    E1    E
+    C    C5    D4    E2       N
+    K       D5    E3    F1    D
+    E    D6    E4    F2       E
+    R       E5    F3          R
+               F4
+               
+    entry_side 5:
+
+               F1 
+            E1    F2 
+    A    D1    E2    F3       D
+    T       D2    E3    F4    E
+    T    C1    D3    E4       F
+    A       C2    D4    E5    E
+    C    B1    C3    D5       N
+    K       B2    C5    D6    D
+    E    A1    B3    C5       E
+    R       A2    B4          R
+               A3
+
     """
 
     implements(IObserver)
