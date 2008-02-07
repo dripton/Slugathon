@@ -3,7 +3,7 @@ import py
 import BattleMap
 import guiutils
 
-map1 = BattleMap.BattleMap("Mountains")
+map1 = BattleMap.BattleMap("Mountains", 1)
 hex1 = map1.hexes["A1"]
 hex2 = map1.hexes["A3"]
 hex3 = map1.hexes["D3"]
@@ -39,18 +39,10 @@ def test_non_default_hex_init():
     assert hex3.borders[5] == "Slope"
 
 def test_label_to_coords():
-    assert BattleMap.label_to_coords("A1") == (0,1)
-    assert BattleMap.label_to_coords("B1") == (1,1)
-    assert BattleMap.label_to_coords("C1") == (2,0)
-    assert BattleMap.label_to_coords("D1") == (3,0)
-    assert BattleMap.label_to_coords("E1") == (4,0)
-    assert BattleMap.label_to_coords("F1") == (5,1)
-    assert BattleMap.label_to_coords("A3") == (0,3)
-    assert BattleMap.label_to_coords("D6") == (3,5)
-    assert BattleMap.label_to_coords("E4") == (4,3)
+    assert BattleMap.label_to_coords("A1", 1) == (5,3)
     for label in ("", "A0", "A4", "A10", "G1"):
         try:
-            BattleMap.label_to_coords(label)
+            BattleMap.label_to_coords(label, 1)
         except KeyError:
             pass
         else:
