@@ -70,7 +70,7 @@ class GUIBattleMap(gtk.Window):
 
     def compute_width(self):
         """Return the width of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_width() * 4)) 
+        return int(math.ceil(self.scale * self.battlemap.hex_width() * 3.2)) 
 
     def compute_height(self):
         """Return the height of the map in pixels."""
