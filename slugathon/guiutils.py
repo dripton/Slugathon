@@ -1,11 +1,7 @@
 import sys
 import math
 import StringIO
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
+
 import gtk
 
 

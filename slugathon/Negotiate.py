@@ -4,13 +4,9 @@
 
 import time
 
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
 import gtk
 import gtk.glade
+
 import Chit
 import Marker
 import Creature

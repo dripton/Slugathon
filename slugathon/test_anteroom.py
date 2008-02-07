@@ -2,12 +2,6 @@ import time
 import subprocess
 
 import py
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
-
 import gtk
 from twisted.internet import reactor
 

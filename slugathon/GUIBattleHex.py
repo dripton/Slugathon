@@ -1,11 +1,7 @@
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
-import gtk
 import os
 import math
+
+import gtk
 
 import guiutils
 import colors

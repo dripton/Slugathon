@@ -5,11 +5,7 @@
 # XXX Need to un-highlight all legions at end of turn.
 
 import math
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
+
 import gtk
 import pango
 from zope.interface import implements

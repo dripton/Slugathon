@@ -2,11 +2,6 @@
 
 # TODO This dialog should always be on top.
 
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
 import gtk
 import gtk.glade
 from twisted.internet import defer

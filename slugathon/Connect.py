@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
 import os
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
+
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor

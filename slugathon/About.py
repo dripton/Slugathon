@@ -2,11 +2,6 @@
 
 """Help/About dialog, wrapped around gtk.AboutDialog"""
 
-try:
-    import pygtk
-    pygtk.require("2.0")
-except (ImportError, AttributeError):
-    pass
 import gtk
 
 import guiutils
