@@ -26,7 +26,7 @@ class BattleHex(object):
         self.borders = []
         for ii in xrange(6):
             self.borders.append(borderdict.get(ii))
-        self.down = (self.x & 1 == 0)
+        self.down = (self.x & 1 == 1)
         self.label_side = 5
         self.terrain_side = 3
 
