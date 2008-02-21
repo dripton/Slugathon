@@ -135,22 +135,20 @@ class GUIBattleHex(object):
         myboxsize = [0.97 * mag for mag in self.bboxsize]
         self.border_pixbuf_x = int(round(self.center[0] - myboxsize[0] / 2.))
         self.border_pixbuf_y = int(round(self.center[1] - myboxsize[1] / 2.))
-        done_border_types = set()
         for hexside, border in enumerate(self.battlehex.borders):
             border_pixbuf = None
-            if border not in done_border_types:
-                overlay_filename = "%s.png" % border
-                image_path = os.path.join(IMAGE_DIR, overlay_filename)
-                if os.path.exists(image_path):
-                    border_filename = "%s-%d.png" % (border, hexside)
-                    border_path = os.path.join(IMAGE_DIR, border_filename)
-                    if not os.path.exists(border_path):
-                        sliceborder.slice_border_image(image_path, border_path,
-                          self.battlehex.hexsides_with_border(border))
-                    pixbuf = gtk.gdk.pixbuf_new_from_file(border_path)
-                    border_pixbuf = pixbuf.scale_simple(
-                      int(round(myboxsize[0])), int(round(myboxsize[1])),
-                      gtk.gdk.INTERP_BILINEAR)
+            overlay_filename = "%s.png" % border
+            image_path = os.path.join(IMAGE_DIR, overlay_filename)
+            if os.path.exists(image_path):
+                border_filename = "%s-%d.png" % (border, hexside)
+                border_path = os.path.join(IMAGE_DIR, border_filename)
+                if not os.path.exists(border_path):
+                    sliceborder.slice_border_image(image_path, border_path,
+                      self.battlehex.hexsides_with_border(border))
+                pixbuf = gtk.gdk.pixbuf_new_from_file(border_path)
+                border_pixbuf = pixbuf.scale_simple(
+                  int(round(myboxsize[0])), int(round(myboxsize[1])),
+                  gtk.gdk.INTERP_BILINEAR)
             self.border_pixbufs.append(border_pixbuf)
 
     def draw_hex_overlay(self, gc):
