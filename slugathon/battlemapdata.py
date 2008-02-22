@@ -107,8 +107,8 @@ data = {
     "Tower": {
         "C3": ("Tower", 1, {3: "Wall", 4: "Wall", 5: "Wall"}),
         "C4": ("Tower", 1, {0: "Wall", 4: "Wall", 5: "Wall"}),
-        "D2": ("Tower", 1, {2: "Wall", 3: "Wall", 4: "Wall"}), 
-        "D3": ("Tower", 2, {0: "Wall", 1: "Wall", 2: "Wall", 3: "Wall", 
+        "D3": ("Tower", 1, {2: "Wall", 3: "Wall", 4: "Wall"}), 
+        "D4": ("Tower", 2, {0: "Wall", 1: "Wall", 2: "Wall", 3: "Wall", 
           4: "Wall", 5: "Wall"}),
         "D5": ("Tower", 1, {0: "Wall", 1: "Wall", 5: "Wall"}),
         "E3": ("Tower", 1, {1: "Wall", 2: "Wall", 3: "Wall"}), 
