@@ -147,9 +147,10 @@ class BattleMap(object):
         return 6
 
     def spin_border_dict(self, border_dict, entry_side):
-        """Return a new dict with the keys (hexsides) rotated by entry_side"""
+        """Return a new dict with the keys (hexsides) rotated by the correct
+        amount for entry_side"""
         spun = {}
-        entry_side_to_delta = {1: 3, 3: 1, 5: 5}
+        entry_side_to_delta = {1: 3, 3: 5, 5: 1}
         delta = entry_side_to_delta[entry_side]
         for key, val in border_dict.iteritems():
             spun[(key + delta) % 6] = val

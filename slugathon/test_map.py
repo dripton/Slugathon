@@ -70,6 +70,6 @@ def test_spin_border_dict():
     assert map1.spin_border_dict({}, 3) == {}
     assert map1.spin_border_dict({}, 5) == {}
     assert map1.spin_border_dict({0: "Slope"}, 1) == {3: "Slope"}
-    assert map1.spin_border_dict({0: "Slope"}, 3) == {1: "Slope"}
-    assert map1.spin_border_dict({0: "Slope"}, 5) == {5: "Slope"}
+    assert map1.spin_border_dict({0: "Slope"}, 3) == {5: "Slope"}
+    assert map1.spin_border_dict({0: "Slope"}, 5) == {1: "Slope"}
 
