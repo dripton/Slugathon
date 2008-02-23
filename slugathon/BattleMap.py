@@ -129,8 +129,11 @@ class BattleMap(object):
         for label in all_labels:
             x, y = label_to_coords(label, entry_side)
             if label in mydata:
+                terrain, elevation, hexside_dict = mydata[label]
+                spun_hexside_dict = self.spin_border_dict(hexside_dict, 
+                  entry_side)
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
-                  *mydata[label])
+                  terrain, elevation, spun_hexside_dict)
             else:
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
                   "Plains", 0, {})
@@ -143,3 +146,11 @@ class BattleMap(object):
         """Height of the map, in hexes."""
         return 6
 
+    def spin_border_dict(self, border_dict, entry_side):
+        """Return a new dict with the keys (hexsides) rotated by entry_side"""
+        spun = {}
+        entry_side_to_delta = {1: 3, 3: 1, 5: 5}
+        delta = entry_side_to_delta[entry_side]
+        for key, val in border_dict.iteritems():
+            spun[(key + delta) % 6] = val
+        return spun

@@ -4,9 +4,9 @@ import BattleMap
 import guiutils
 
 map1 = BattleMap.BattleMap("Mountains", 1)
-hex1 = map1.hexes["A1"]
-hex2 = map1.hexes["A3"]
-hex3 = map1.hexes["D3"]
+hex1 = map1.hexes["A2"]
+hex2 = map1.hexes["A1"]
+hex3 = map1.hexes["D4"]
 
 def test_all_labels():
     assert len(BattleMap.all_labels) == 27
@@ -22,24 +22,24 @@ def test_default_hex_init():
 def test_non_default_hex_init():
     assert hex2.terrain == "Plains"
     assert hex2.elevation == 1
-    assert hex2.borders[0] == "Slope"
+    assert hex2.borders[0] is None
     assert hex2.borders[1] is None
     assert hex2.borders[2] is None
-    assert hex2.borders[3] is None
+    assert hex2.borders[3] == "Slope"
     assert hex2.borders[4] is None
     assert hex2.borders[5] is None
 
     assert hex3.terrain == "Volcano"
     assert hex3.elevation == 2
     assert hex3.borders[0] == "Slope"
-    assert hex3.borders[1] == "Slope"
+    assert hex3.borders[1] == "Cliff"
     assert hex3.borders[2] == "Slope"
     assert hex3.borders[3] == "Slope"
-    assert hex3.borders[4] == "Cliff"
+    assert hex3.borders[4] == "Slope"
     assert hex3.borders[5] == "Slope"
 
 def test_label_to_coords():
-    assert BattleMap.label_to_coords("A1", 1) == (5,3)
+    assert BattleMap.label_to_coords("A1", 1) == (5, 1)
     for label in ("", "A0", "A4", "A10", "G1"):
         try:
             BattleMap.label_to_coords(label, 1)
@@ -61,6 +61,15 @@ def test_hexsides_with_border():
     assert hex1.hexsides_with_border("Slope") == set()
     assert hex1.hexsides_with_border("Cliff") == set()
     assert hex1.hexsides_with_border("Wall") == set()
-    assert hex2.hexsides_with_border("Slope") == set([0])
-    assert hex3.hexsides_with_border("Slope") == set([0, 1, 2, 3, 5])
-    assert hex3.hexsides_with_border("Cliff") == set([4])
+    assert hex2.hexsides_with_border("Slope") == set([3])
+    assert hex3.hexsides_with_border("Slope") == set([0, 2, 3, 4, 5])
+    assert hex3.hexsides_with_border("Cliff") == set([1])
+
+def test_spin_border_dict():
+    assert map1.spin_border_dict({}, 1) == {}
+    assert map1.spin_border_dict({}, 3) == {}
+    assert map1.spin_border_dict({}, 5) == {}
+    assert map1.spin_border_dict({0: "Slope"}, 1) == {3: "Slope"}
+    assert map1.spin_border_dict({0: "Slope"}, 3) == {1: "Slope"}
+    assert map1.spin_border_dict({0: "Slope"}, 5) == {5: "Slope"}
+
