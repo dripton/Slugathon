@@ -8,19 +8,18 @@ class bag(object):
             self.update(iterable)
 
     def update(self, iterable):
-        """Update this object with items from the iterable."""
+        """Update this object with items from iterable."""
         if hasattr(iterable, "items"):
             for key, val in iterable.iteritems():
-                if val > 0:
-                    self._dic[key] = val
-                elif val == 0:
-                    if key in self._dic:
-                        del self._dic[key]
-                else:
-                    raise ValueError, "bag value must be whole number"
+                if val != int(val) or val < 0:
+                    raise ValueError("illegal bag value")
+                combo = self._dic.get(key, 0) + val
+                if combo > 0:
+                    self._dic[key] = combo
         else:
             for item in iterable:
                 self.add(item)
+
 
     def add(self, key):
         """Add one of key."""
@@ -67,7 +66,7 @@ class bag(object):
         return not self.__eq__(other)
 
     def union(self, other):
-        """Add all items from the other bag to this one."""
+        """Return a new bag containing all items in this bag and the other."""
         if not isinstance(other, bag):
             raise TypeError, "not a bag"
         newbag = bag(self._dic)
@@ -141,3 +140,10 @@ class bag(object):
 
     def iterkeys(self):
         return self._dic.iterkeys()
+
+    def values(self):
+        """Return a list of counts for each item in the set."""
+        return self._dic.values()
+
+    def itervalues(self):
+        return self._dic.itervalues()

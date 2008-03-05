@@ -89,10 +89,10 @@ def test_update():
     assert b1 == bag(dict(a=1, b=1, c=1))
 
     b1.update({"c":0})
-    assert b1 == bag(dict(a=1, b=1))
+    assert b1 == bag(dict(a=1, b=1, c=1))
 
     b1.update(["c", "c", "c", "b", "c"])
-    assert b1 == bag(dict(a=1, b=2, c=4))
+    assert b1 == bag(dict(a=1, b=2, c=5))
 
 def test_clear():
     b = bag()
@@ -171,3 +171,11 @@ def test_keys():
 def test_iterkeys():
     b1 = bag({"a":1, "b":0, 1:4})
     assert list(b1.iterkeys()) == ["a", 1]
+
+def test_values():
+    b1 = bag({"a":1, "b":0, 1:4})
+    assert sorted(b1.values()) == [1, 4]
+
+def test_itervalues():
+    b1 = bag({"a":1, "b":0, 1:4})
+    assert sorted(b1.itervalues()) == [1, 4]
