@@ -5,6 +5,7 @@ import os
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor
+from twisted.internet import utils
 import gtk
 import gtk.glade
 import gobject
@@ -83,8 +84,7 @@ class Connect(object):
         def1.addErrback(self.failure)
 
     def on_start_server_button_clicked(self, *args):
-        #XXX Not portable  Use reactor.spawnProcess
-        os.system("python Server.py &")
+        utils.getProcessValue("python", ["Server.py"])
 
     def connected(self, user):
         self.connect_window.hide()
