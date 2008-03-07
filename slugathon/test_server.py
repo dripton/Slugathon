@@ -1,15 +1,12 @@
-import time
-import subprocess
-
 from twisted.internet import reactor
+from twisted.internet import utils
 import py
 
 import Client
 
 class TestServer(object):
     def setup_class(cls):
-        subprocess.Popen("python Server.py &", shell=True)
-        time.sleep(1)
+        utils.getProcessValue("python", ["Server.py"])
     
     def test_startup(self):
         self.client = Client.Client(username="unittest", password="unittest")
@@ -34,4 +31,4 @@ class TestServer(object):
         py.test.fail()
     
     def teardown_class(cls):
-        subprocess.call(["pkill", "-f", "python.*Server.py"])
+        utils.getProcessValue("pkill", ["-f", "python.*Server.py"])

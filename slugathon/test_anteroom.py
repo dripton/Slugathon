@@ -1,9 +1,7 @@
-import time
-import subprocess
-
 import py
 import gtk
 from twisted.internet import reactor
+from twisted.internet import utils
 
 import Anteroom
 import Client
@@ -11,8 +9,7 @@ import Client
 
 class TestAnteroom(object):
     def setup_class(cls):
-        subprocess.Popen("python Server.py &", shell=True)
-        time.sleep(1)
+        utils.getProcessValue("python", ["Server.py"])
 
     def test_init(self):
         self.client = Client.Client("unittest", "unittest")
@@ -31,5 +28,4 @@ class TestAnteroom(object):
         py.test.fail()
 
     def teardown_class(cls):
-        subprocess.call(["pkill", "-f", "python.*Server.py"])
-        time.sleep(1)
+        utils.getProcessValue("pkill", ["-f", "python.*Server.py"])
