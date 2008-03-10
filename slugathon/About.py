@@ -17,7 +17,7 @@ class About(object):
         ad.set_copyright("Copyright 2003-2008 David Ripton")
         ad.set_comments("""Very very prerelease""")
 
-        license_fn = "../docs/gpl.txt"
+        license_fn = "../docs/COPYING.txt"
         fil = open(license_fn)
         st = fil.read()
         fil.close()
