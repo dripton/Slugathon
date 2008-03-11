@@ -1,3 +1,5 @@
+import time
+
 from zope.interface import implements
 
 from Observer import IObserver
@@ -72,3 +74,8 @@ class History(object):
               or action.child_markername in [markername1, markername2])):
                 return action
         return None
+
+    def save(self, fil):
+        """Save history to a file, which should already be open for write."""
+        for action in self.actions:
+            fil.write(repr(action) + "\n")
