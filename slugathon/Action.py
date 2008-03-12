@@ -1,5 +1,16 @@
 from twisted.spread import pb
 
+def fromstring(st):
+    """Construct and return the appropriate Action subclass from the given
+    repr string."""
+    classname, dictstr = st.split(" ", 1)
+    classobj = globals()[classname]
+    # XXX eval is insecure.  Use a safe dict parser.
+    dic = eval(dictstr)
+    obj = classobj(**dic)
+    return obj
+
+
 class Action(pb.Copyable, pb.RemoteCopy):
     def __repr__(self):
         return "%s %s" % (self.__class__.__name__, self.__dict__)

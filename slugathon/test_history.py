@@ -4,6 +4,8 @@ import os
 import History
 import Action
 
+tmp_path = None
+
 def test_history_1():
     game_name = "game"
     playername = "player"
@@ -119,6 +121,7 @@ def test_save():
     history.update(None, action2)
     assert history.actions == [action1, action2]
 
+    global tmp_path
     tmp_fd, tmp_path = tempfile.mkstemp("test_history")
     fil = os.fdopen(tmp_fd, "w")
     history.save(fil)
@@ -128,4 +131,14 @@ def test_save():
     lines = fil.readlines()
     fil.close()
     assert len(lines) == 2
+
+def test_load():
+    history = History.History()
+    assert history.actions == []
+    assert history.undone == []
+    fil = open(tmp_path, "r")
+    history.load(fil)
+    assert len(history.actions) == 2
+    for action in history.actions:
+        assert isinstance(action, Action.MoveLegion)
     os.remove(tmp_path)

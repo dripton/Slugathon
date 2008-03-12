@@ -1,5 +1,3 @@
-import time
-
 from zope.interface import implements
 
 from Observer import IObserver
@@ -79,3 +77,12 @@ class History(object):
         """Save history to a file, which should already be open for write."""
         for action in self.actions:
             fil.write(repr(action) + "\n")
+
+    def load(self, fil):
+        """Load history from a file, which should already be open for read."""
+        self.actions = []
+        self.undone = []
+        for line in fil:
+            line = line.strip()
+            action = Action.fromstring(line)
+            self.actions.append(action)
