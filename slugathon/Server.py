@@ -247,6 +247,11 @@ class Server(Observed):
         if game:
             game.done_with_recruits(username)
 
+    def save(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.save(username)
+
 
     def update(self, observed, action):
         if isinstance(action, Action.MakeProposal):

@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 
 from zope.interface import implements
@@ -681,6 +682,21 @@ class Game(Observed):
             if len(colorset) >= 2:
                 results.add(hexlabel)
         return results
+
+    def save(self, playername):
+        """Save this game to a file on the local disk.
+        
+        Called from Server
+        """
+        # XXX This should be portable and configurable.
+        savedir = os.path.expanduser("~/.slugathon/save")
+        if not os.path.exists(savedir):
+            os.makedirs(savedir)
+        basename = "%s_%d.save" % (self.name, time.time())
+        save_path = os.path.join(savedir, basename)
+        save_file = open(save_path, "w")
+        self.history.save(save_file)
+        save_file.close()
 
 
     def update(self, observed, action):

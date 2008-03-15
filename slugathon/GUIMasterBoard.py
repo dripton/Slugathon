@@ -40,6 +40,7 @@ SQRT3 = math.sqrt(3.0)
 ui_string = """<ui>
   <menubar name="Menubar">
     <menu action="GameMenu">
+      <menuitem action="Save"/>
       <menuitem action="Quit"/>
     </menu>
     <menu action="PhaseMenu">
@@ -122,6 +123,7 @@ class GUIMasterBoard(gtk.Window):
         # TODO confirm quit
         actions = [
           ("GameMenu", None, "_Game"),
+          ("Save", gtk.STOCK_SAVE, "_Save", "s", "Save", self.cb_save),
           ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
             guiutils.exit),
           ("PhaseMenu", None, "_Phase"),
@@ -540,6 +542,10 @@ class GUIMasterBoard(gtk.Window):
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
             self.update_gui(hexlabels)
+
+    def cb_save(self, action):
+        def1 = self.user.callRemote("save", self.game.name)
+        def1.addErrback(self.failure)
 
     def cb_done(self, action):
         player = self.game.get_player_by_name(self.username)

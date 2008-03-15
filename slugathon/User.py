@@ -156,6 +156,9 @@ class User(pb.Avatar):
         elif isinstance(action, Action.DoneRecruiting):
             self.server.done_with_recruits(self.name, action.game_name)
 
+    def perspective_save(self, game_name):
+        self.server.save(self.name, game_name)
+
     def __repr__(self):
         return "User " + self.name
 
