@@ -1,12 +1,13 @@
 from twisted.spread import pb
 
+from reval import reval
+
 def fromstring(st):
     """Construct and return the appropriate Action subclass from the given
     repr string."""
     classname, dictstr = st.split(" ", 1)
     classobj = globals()[classname]
-    # XXX eval is insecure.  Use a safe dict parser.
-    dic = eval(dictstr)
+    dic = reval(dictstr)
     obj = classobj(**dic)
     return obj
 
