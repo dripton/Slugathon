@@ -144,29 +144,48 @@ def test_load():
         assert isinstance(action, Action.MoveLegion)
     os.remove(tmp_path)
 
-savefile_str = """AssignTower {'playername': 'dripton', 'tower_num': 400, 'game_name': 'a'}
+savefile_str = """\
+AssignTower {'playername': 'dripton', 'tower_num': 400, 'game_name': 'a'}
 AssignTower {'playername': 'tchula', 'tower_num': 500, 'game_name': 'a'}
 AssignedAllTowers {'game_name': 'a'}
 PickedColor {'playername': 'dripton', 'color': 'Red', 'game_name': 'a'}
 PickedColor {'playername': 'tchula', 'color': 'Blue', 'game_name': 'a'}
 CreateStartingLegion {'playername': 'tchula', 'markername': 'Bu11', 'game_name': 'a'}
 CreateStartingLegion {'playername': 'dripton', 'markername': 'Rd04', 'game_name': 'a'}
-SplitLegion {'playername': 'tchula', 'child_creature_names': ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', 'child_markername': 'Bu06', 'parent_creature_names': ('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Bu11'}
+SplitLegion {'playername': 'tchula', 'child_creature_names': \
+('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
+'child_markername': 'Bu06', 'parent_creature_names': \
+('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Bu11'}
 RollMovement {'playername': 'tchula', 'game_name': 'a', 'movement_roll': 5}
 RollMovement {'playername': 'tchula', 'game_name': 'a', 'movement_roll': 6}
-MoveLegion {'markername': 'Bu11', 'entry_side': 1, 'teleport': True, 'playername': 'tchula', 'teleporting_lord': 'Titan', 'game_name': 'a', 'hexlabel': 300}
-MoveLegion {'markername': 'Bu06', 'entry_side': 1, 'teleport': False, 'playername': 'tchula', 'teleporting_lord': None, 'game_name': 'a', 'hexlabel': 36}
+MoveLegion {'markername': 'Bu11', 'entry_side': 1, 'teleport': True, \
+'playername': 'tchula', 'teleporting_lord': 'Titan', 'game_name': 'a', \
+'hexlabel': 300}
+MoveLegion {'markername': 'Bu06', 'entry_side': 1, 'teleport': False, \
+'playername': 'tchula', 'teleporting_lord': None, 'game_name': 'a', \
+'hexlabel': 36}
 DoneMoving {'playername': 'tchula', 'game_name': 'a'}
-RecruitCreature {'playername': 'tchula', 'markername': 'Bu06', 'creature_name': 'Ogre', 'game_name': 'a'}
-RecruitCreature {'playername': 'tchula', 'markername': 'Bu11', 'creature_name': 'Warlock', 'game_name': 'a'}
+RecruitCreature {'playername': 'tchula', 'markername': 'Bu06', \
+'creature_name': 'Ogre', 'game_name': 'a'}
+RecruitCreature {'playername': 'tchula', 'markername': 'Bu11', \
+'creature_name': 'Warlock', 'game_name': 'a'}
 DoneRecruiting {'playername': 'tchula', 'game_name': 'a'}
-SplitLegion {'playername': 'dripton', 'child_creature_names': ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', 'child_markername': 'Rd02', 'parent_creature_names': ('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Rd04'}
+SplitLegion {'playername': 'dripton', 'child_creature_names': \
+('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
+'child_markername': 'Rd02', 'parent_creature_names': \
+('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Rd04'}
 RollMovement {'playername': 'dripton', 'game_name': 'a', 'movement_roll': 6}
-MoveLegion {'markername': 'Rd04', 'entry_side': 1, 'teleport': True, 'playername': 'dripton', 'teleporting_lord': 'Titan', 'game_name': 'a', 'hexlabel': 200}
-MoveLegion {'markername': 'Rd02', 'entry_side': 5, 'teleport': False, 'playername': 'dripton', 'teleporting_lord': None, 'game_name': 'a', 'hexlabel': 117}
+MoveLegion {'markername': 'Rd04', 'entry_side': 1, 'teleport': True, \
+'playername': 'dripton', 'teleporting_lord': 'Titan', 'game_name': 'a', \
+'hexlabel': 200}
+MoveLegion {'markername': 'Rd02', 'entry_side': 5, 'teleport': False, \
+'playername': 'dripton', 'teleporting_lord': None, 'game_name': 'a', \
+'hexlabel': 117}
 DoneMoving {'playername': 'dripton', 'game_name': 'a'}
-RecruitCreature {'playername': 'dripton', 'markername': 'Rd02', 'creature_name': 'Ogre', 'game_name': 'a'}
-RecruitCreature {'playername': 'dripton', 'markername': 'Rd04', 'creature_name': 'Warlock', 'game_name': 'a'}
+RecruitCreature {'playername': 'dripton', 'markername': 'Rd02', \
+'creature_name': 'Ogre', 'game_name': 'a'}
+RecruitCreature {'playername': 'dripton', 'markername': 'Rd04', \
+'creature_name': 'Warlock', 'game_name': 'a'}
 """
 
 def test_load2():
