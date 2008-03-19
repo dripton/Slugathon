@@ -3,7 +3,7 @@
 Based on a comp.lang.python post by Fredrik Lundh
 """
 
-import cStringIO
+import cStringIO as StringIO
 import tokenize
 
 def _parse(token, src):
@@ -43,6 +43,6 @@ def _parse(token, src):
         raise SyntaxError("malformed expression %s" % (str(token)))
 
 def reval(source):
-    src = cStringIO.StringIO(source).readline
+    src = StringIO.StringIO(source).readline
     src = tokenize.generate_tokens(src)
     return _parse(src.next(), src)
