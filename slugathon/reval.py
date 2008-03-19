@@ -21,10 +21,14 @@ def _parse(token, src):
             if token[1] == ",":
                 token = src.next()
         return out
-    elif token[1] == "[":
+    elif token[1] == "[" or token[1] == "(":
+        if token[1] == "[":
+            endtoken = "]"
+        else:
+            endtoken = ")"
         out = []
         token = src.next()
-        while token[1] != "]":
+        while token[1] != endtoken:
             out.append(_parse(token, src))
             token = src.next()
             if token[1] == ",":
