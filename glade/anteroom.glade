@@ -232,10 +232,6 @@
       </child>
 
       <child>
-	<placeholder/>
-      </child>
-
-      <child>
 	<widget class="GtkHBox" id="hbox1">
 	  <property name="visible">True</property>
 	  <property name="homogeneous">False</property>
