@@ -4,6 +4,7 @@ from twisted.internet import reactor
 from zope.interface import implements
 
 import NewGame
+import LoadGame
 import WaitingForPlayers
 from Observer import IObserver
 import Action
@@ -21,7 +22,7 @@ class Anteroom(object):
         self.username = username
         self.glade = gtk.glade.XML("../glade/anteroom.glade")
         self.widget_names = ["anteroom_window", "chat_entry", "chat_view", 
-          "game_list", "user_list", "new_game_button"]
+          "game_list", "user_list", "new_game_button", "load_game_button"]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.usernames = None   # set, aliased from Client
@@ -31,7 +32,10 @@ class Anteroom(object):
 
         self.anteroom_window.connect("destroy", guiutils.exit)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
-        self.new_game_button.connect("button-press-event", self.cb_click)
+        self.new_game_button.connect("button-press-event", 
+          self.on_new_game_button_click)
+        self.load_game_button.connect("button-press-event", 
+          self.on_load_game_button_click)
 
         self.anteroom_window.set_icon(icon.pixbuf)
         self.anteroom_window.set_title("%s - %s" % (
@@ -111,8 +115,11 @@ class Anteroom(object):
                 def1.addErrback(self.failure)
                 self.chat_entry.set_text("")
 
-    def cb_click(self, widget, event):
+    def on_new_game_button_click(self, widget, event):
         NewGame.NewGame(self.user, self.username, self.anteroom_window)
+
+    def on_load_game_button_click(self, widget, event):
+        LoadGame.Loadgame(self.user, self.username, self.anteroom_window)
 
     def receive_chat_message(self, message):
         buf = self.chat_view.get_buffer()
