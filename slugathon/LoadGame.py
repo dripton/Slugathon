@@ -29,8 +29,6 @@ class LoadGame(object):
         # TODO Hoist constants somewhere
         file_filter.add_pattern("*.save")
         self.load_game_dialog.set_filter(file_filter)
-        # XXX Needed?
-        self.load_game_dialog.set_transient_for(parent)
 
         response = self.load_game_dialog.run()
         if response == gtk.RESPONSE_OK:
