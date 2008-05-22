@@ -12,6 +12,7 @@ class Legion(Observed):
         assert type(hexlabel) == types.IntType
         self.markername = markername
         self.creatures = creatures
+        # TODO Should we store the actual MasterHex instead?
         self.hexlabel = hexlabel  # an int not a str
         self.player = player
         self.moved = False
