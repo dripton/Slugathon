@@ -828,5 +828,4 @@ if __name__ == "__main__":
     board = MasterBoard.MasterBoard()
     guiboard = GUIMasterBoard(board)
     # Allow exiting with control-C, unlike mainloop()
-    while True:
-        gtk.main_iteration()
+    gtk.main()

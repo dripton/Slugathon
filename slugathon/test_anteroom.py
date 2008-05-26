@@ -20,8 +20,7 @@ class TestAnteroom(object):
     def connected(self):
         anteroom = self.client.anteroom
         assert isinstance(anteroom, Anteroom.Anteroom)
-        while True:
-            gtk.main_iteration()
+        gtk.main()
 
     def failure(self):
         reactor.stop()

@@ -128,5 +128,4 @@ if __name__ == "__main__":
             entry_side = random.choice([1, 3, 5])
     battlemap = BattleMap.BattleMap(terrain, entry_side)
     guimap = GUIBattleMap(battlemap)
-    while True:
-        gtk.main_iteration()
+    gtk.main()
