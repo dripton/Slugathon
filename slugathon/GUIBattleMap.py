@@ -123,7 +123,7 @@ if __name__ == "__main__":
         terrain = random.choice(battlemapdata.data.keys())
     if entry_side is None:
         if terrain == "Tower":
-            entry_side = 3
+            entry_side = 5
         else:
             entry_side = random.choice([1, 3, 5])
     battlemap = BattleMap.BattleMap(terrain, entry_side)
