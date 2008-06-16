@@ -42,8 +42,10 @@ class Flee(object):
         self.flee_dialog.set_title("Flee - %s" % (username))
         self.flee_dialog.set_transient_for(parent)
 
-        self.legion_name.set_text("Flee with legion %s in hex %s?" % (
-          defender_legion.markername, defender_legion.hexlabel))
+        hexlabel = defender_legion.hexlabel
+        masterhex = defender_legion.player.game.board.hexes[hexlabel]
+        self.legion_name.set_text("Flee with legion %s in %s hex %s?" % (
+          defender_legion.markername, masterhex.terrain, hexlabel))
 
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
         self.attacker_marker_hbox.pack_start(self.attacker_marker.event_box,
