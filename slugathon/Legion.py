@@ -262,7 +262,6 @@ class Legion(Observed):
         elif angel.name == "Angel":
             okay = self.archangels_pending > 0 or self.angels_pending > 0
         if not okay:
-            print "legion.acquire aborting"
             return
         if len(self) >= 7:
             raise AssertionError("legion too tall to recruit")
