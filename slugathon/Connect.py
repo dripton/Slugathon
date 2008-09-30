@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import os
-
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor
