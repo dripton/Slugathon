@@ -16,6 +16,7 @@ import Caretaker
 import Creature
 import History
 from bag import bag
+import Battle
 
 
 # Movement constants
@@ -54,6 +55,7 @@ class Game(Observed):
         self.history = History.History()
         self.add_observer(self.history)
         self.current_engagement_hexlabel = None
+        self.battle = None
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -605,10 +607,7 @@ class Game(Observed):
           defender_markername, defender_creature_names)
         self.notify(action)
 
-    # TODO
-    def _fight(self, attacker, defender):
-        print "called Game._fight (TODO)"
-
+    # XXX Need playername?
     def fight(self, playername, attacker_markername, defender_markername):
         """Called from Server"""
         attacker_legion = self.find_legion(attacker_markername)
@@ -623,8 +622,8 @@ class Game(Observed):
         self.notify(action)
         action = Action.Fight(self.name, attacker_markername, 
           defender_markername, hexlabel)
+        self.battle = Battle.Battle(self, attacker_legion, defender_legion)
         self.notify(action)
-        self._fight(attacker_legion, defender_legion)
 
     def acquire_angel(self, playername, markername, angel_name):
         """Called from Server"""
@@ -821,5 +820,10 @@ class Game(Observed):
                 self.turn += 1
             self.active_player = self.players[new_player_num]
             self.active_player.new_turn()
+
+        elif isinstance(action, Action.Fight):
+            attacker_markername = action.attacker_markername
+            defender_markername = action.defender_markername
+            self.fight(None, attacker_markername, defender_markername)
 
         self.notify(action)
