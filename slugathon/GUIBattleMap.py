@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import math
+import random
+import sys
 
 import gtk
 import pango
@@ -11,6 +13,8 @@ import BattleMap
 import icon
 import guiutils
 import GUIBattleHex
+import battlemapdata
+
 
 SQRT3 = math.sqrt(3.0)
 
@@ -110,10 +114,6 @@ class GUIBattleMap(gtk.Window):
 
 
 if __name__ == "__main__":
-    import random
-    import battlemapdata
-    import sys
-
     entry_side = None
     if len(sys.argv) > 1:
         terrain = sys.argv[1].title()
