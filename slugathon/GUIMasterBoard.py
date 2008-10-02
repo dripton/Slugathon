@@ -823,6 +823,10 @@ class GUIMasterBoard(gtk.Window):
             self.update_gui([hexlabel])
             self.highlight_engagements()
 
+        elif isinstance(action, Action.Fight):
+            self.destroy_negotiate()
+            self.unselect_all()
+
 
 if __name__ == "__main__":
     board = MasterBoard.MasterBoard()
