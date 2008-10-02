@@ -96,8 +96,15 @@ def test_is_legal_split():
     child2 = Legion.Legion(player, "Rd03", Creature.n2c(["Angel",
       "Gargoyle", "Centaur", "Centaur"]), 1)
     assert parent.is_legal_split(child1, child2)
-
     assert not parent.is_legal_split(child1, child1)
+
+    parent2 = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
+      "Gargoyle", "Ogre", "Troll", "Centaur"]), 1)
+    child3 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
+      "Gargoyle", "Ogre", "Troll"]), 1)
+    child4 = Legion.Legion(player, "Rd03", Creature.n2c(["Centaur"]), 1)
+    assert not parent2.is_legal_split(child3, child4)
+  
 
 def test_available_recruits():
     now = time.time()

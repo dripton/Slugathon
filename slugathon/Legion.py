@@ -63,11 +63,13 @@ class Legion(Observed):
             return len(self) >= 4
 
     def is_legal_split(self, child1, child2):
-        """Return whether this legion can be split into lgions child1 and
+        """Return whether this legion can be split into legions child1 and
         child2"""
         if len(self) < 4:
             return False
         if len(self) != len(child1) + len(child2):
+            return False
+        if len(child1) < 2 or len(child2) < 2:
             return False
         if not bag(self.creature_names()) == bag(child1.creature_names() +
           child2.creature_names()):
