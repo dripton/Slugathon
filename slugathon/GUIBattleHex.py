@@ -25,7 +25,7 @@ class GUIBattleHex(object):
         self.guimap = guimap
         scale = self.guimap.scale
         # Leftmost point
-        self.cx = battlehex.x * 3 * scale
+        self.cx = (battlehex.x + 1) * 3 * scale
         # Uppermost point
         self.cy = battlehex.y * 2 * SQRT3 * scale
         if battlehex.down:

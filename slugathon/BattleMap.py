@@ -139,8 +139,8 @@ class BattleMap(object):
                   "Plains", 0, {})
 
     def hex_width(self):
-        """Width of the map, in hexes."""
-        return 6
+        """Width of the map, in hexes, including entrances."""
+        return 8
 
     def hex_height(self):
         """Height of the map, in hexes."""
