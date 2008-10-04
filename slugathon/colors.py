@@ -183,7 +183,7 @@ terrain_colors = {
 battle_terrain_colors = {
     "Plains": "light_olive",
     ("Plains", 1): "dark_yellow",
-    ("Plains", 2): "light_yellow",
+    ("Plains", 2): "yellow",
     "Tower": "dim_gray",
     ("Tower", 1): "dark_gray",
     ("Tower", 2): "gray",
