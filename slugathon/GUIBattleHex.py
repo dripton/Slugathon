@@ -90,30 +90,21 @@ class GUIBattleHex(object):
         colormap = self.guimap.area.get_colormap()
 
         if self.selected:
-            # outer portion
-            fg = colormap.alloc_color("white")
-            gc.foreground = fg
-            self.guimap.area.window.draw_polygon(gc, True, self.points)
-
-            # inner hex
-            fg = colormap.alloc_color(*self.fillcolor)
-            gc.foreground = fg
-            self.guimap.area.window.draw_polygon(gc, True, self.inner_vertexes)
-
             # outline
-            fg = colormap.alloc_color("black")
-            gc.foreground = fg
+            gc.foreground = colormap.alloc_color("red")
             self.guimap.area.window.draw_polygon(gc, False, self.points)
-
+            # outer portion
+            gc.foreground = colormap.alloc_color("white")
+            self.guimap.area.window.draw_polygon(gc, True, self.points)
+            # inner hex
+            gc.foreground = colormap.alloc_color(*self.fillcolor)
+            self.guimap.area.window.draw_polygon(gc, True, self.inner_vertexes)
         else:
             # hex
-            fg = colormap.alloc_color(*self.fillcolor)
-            gc.foreground = fg
+            gc.foreground = colormap.alloc_color(*self.fillcolor)
             self.guimap.area.window.draw_polygon(gc, True, self.points)
-
             # outline
-            fg = colormap.alloc_color("white")
-            gc.foreground = fg
+            gc.foreground = colormap.alloc_color("white")
             self.guimap.area.window.draw_polygon(gc, False, self.points)
 
 

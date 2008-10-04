@@ -24,8 +24,7 @@ class GUIBattleMap(gtk.Window):
 
     implements(IObserver)
 
-    def __init__(self, battlemap, user=None, username=None, 
-      scale=None):
+    def __init__(self, battlemap, user=None, username=None, scale=None):
         gtk.Window.__init__(self)
 
         self.battlemap = battlemap
@@ -102,6 +101,7 @@ class GUIBattleMap(gtk.Window):
 
     def update_gui(self, hexlabels=None):
         gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
+        gc.line_width = int(round(0.3 * self.scale))
         if hexlabels is None:
             guihexes = self.guihexes.itervalues()
         else:
