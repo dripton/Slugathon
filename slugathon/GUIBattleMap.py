@@ -101,7 +101,7 @@ class GUIBattleMap(gtk.Window):
 
     def update_gui(self, hexlabels=None):
         gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
-        gc.line_width = int(round(0.3 * self.scale))
+        gc.line_width = int(round(0.2 * self.scale))
         if hexlabels is None:
             guihexes = self.guihexes.itervalues()
         else:
