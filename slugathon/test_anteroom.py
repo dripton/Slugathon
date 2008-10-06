@@ -6,25 +6,26 @@ from twisted.internet import utils
 import Anteroom
 import Client
 
+client = None
 
-class TestAnteroom(object):
-    def setup_class(cls):
-        utils.getProcessValue("python", ["Server.py"])
+def setup_module(module):
+    utils.getProcessValue("python", ["Server.py"])
 
-    def test_init(self):
-        self.client = Client.Client("unittest", "unittest")
-        def1 = self.client.connect()
-        def1.addCallback(self.connected)
-        def1.addErrback(self.failure)
+def test_init():
+    global client
+    client = Client.Client("unittest", "unittest")
+    def1 = client.connect()
+    def1.addCallback(connected)
+    def1.addErrback(failure)
 
-    def connected(self):
-        anteroom = self.client.anteroom
-        assert isinstance(anteroom, Anteroom.Anteroom)
-        gtk.main()
+def connected():
+    anteroom = client.anteroom
+    assert isinstance(anteroom, Anteroom.Anteroom)
+    gtk.main()
 
-    def failure(self):
-        reactor.stop()
-        py.test.fail()
+def failure():
+    reactor.stop()
+    py.test.fail()
 
-    def teardown_class(cls):
-        utils.getProcessValue("pkill", ["-f", "python.*Server.py"])
+def teardown_module(module):
+    utils.getProcessValue("pkill", ["-f", "python.*Server.py"])
