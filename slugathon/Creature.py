@@ -15,6 +15,7 @@ class Creature(object):
         self.rangestrikes = bool(rangestrikes)
         self.magicmissile = (rangestrikes == 2)
         self.acquirable = bool(self.acquirable_every)
+        self.hits = 0
 
     def __repr__(self):
         if self.name == "Titan":
@@ -36,3 +37,6 @@ class Creature(object):
           + 0.15 * (self.skill == 2) 
           + 0.18 * (self.skill == 4) 
           + 100 * (self.name == "Titan"))
+
+    def is_dead(self):
+        return self.hits >= self.power
