@@ -82,6 +82,7 @@ class Legion(Observed):
         return True
 
     def move(self, hexlabel, teleport, teleporting_lord, entry_side):
+        """Move this legion on the masterboard"""
         self.moved = True
         self.previous_hexlabel = self.hexlabel
         self.hexlabel = hexlabel
@@ -90,6 +91,7 @@ class Legion(Observed):
         self.entry_side = entry_side
 
     def undo_move(self):
+        """Undo this legion's last masterboard move"""
         if self.moved:
             self.moved = False
             # XXX This is bogus, but makes repainting the UI easier.
