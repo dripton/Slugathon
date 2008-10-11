@@ -2,16 +2,14 @@ import battlemapdata
 import BattleHex
 
 
-def init_all_labels():
-    """Return a frozen set containing all hex labels mentioned in 
-    battlemapdata"""
-    labelset = set()
-    for v in battlemapdata.data.itervalues():
-        for k in v.iterkeys():
-            labelset.add(k)
-    return frozenset(labelset)
-
-all_labels = init_all_labels()
+all_labels = frozenset([
+    "A1", "A2", "A3", 
+    "B1", "B2", "B3", "B4", 
+    "C1", "C2", "C3", "C4", "C5", 
+    "D1", "D2", "D3", "D4", "D5", "D6", 
+    "E1", "E2", "E3", "E4", "E5", 
+    "F1", "F2", "F3", "F4",
+])
 
 def label_to_coords(label, entry_side):
     """Convert a hex label to a tuple of X and Y coordinates, starting at the
@@ -137,6 +135,7 @@ class BattleMap(object):
             else:
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
                   "Plains", 0, {})
+        self.startlist = battlemapdata.startlist.get(terrain)
 
     def hex_width(self):
         """Width of the map, in hexes, including entrances."""

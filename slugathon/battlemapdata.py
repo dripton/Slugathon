@@ -1,5 +1,6 @@
-"""Static battle map data
+"""Static battle map data"""
 
+"""
 {
     master terrain type: {
         hexlabel: (battle terrain type, elevation, { (hexside: border type) },
@@ -134,4 +135,11 @@ data = {
         "E3": ("Tree", 1, {}),
         "E5": ("Tree", 1, {}),
     },
+}
+
+
+"""{ master terrain type: [start hex labels] }"""
+
+startlist = {
+    "Tower": ["C3", "C4", "D3", "D4", "D5", "E3", "E4"],
 }

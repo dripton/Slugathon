@@ -73,3 +73,7 @@ def test_spin_border_dict():
     assert map1.spin_border_dict({0: "Slope"}, 3) == {5: "Slope"}
     assert map1.spin_border_dict({0: "Slope"}, 5) == {1: "Slope"}
 
+def test_startlist():
+    assert map1.startlist is None
+    map2 = BattleMap.BattleMap("Tower", 1)
+    assert map2.startlist == ["C3", "C4", "D3", "D4", "D5", "E3", "E4"]
