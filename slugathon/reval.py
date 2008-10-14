@@ -1,6 +1,8 @@
 """Read a string dict into a dict, without using eval.
 
 Based on a comp.lang.python post by Fredrik Lundh
+
+TODO: Switch to ast.literal_eval, once Python 2.6 is mainstream.
 """
 
 import cStringIO as StringIO
