@@ -9,9 +9,11 @@ hex2 = map1.hexes["A1"]
 hex3 = map1.hexes["D4"]
 
 def test_all_labels():
-    assert len(BattleMap.all_labels) == 27
+    assert len(BattleMap.all_labels) == 29
     assert "A1" in BattleMap.all_labels
     assert "A4" not in BattleMap.all_labels
+    assert "ATTACKER" in BattleMap.all_labels
+    assert "DEFENDER" in BattleMap.all_labels
 
 def test_default_hex_init():
     assert hex1.terrain == "Plains"

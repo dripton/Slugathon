@@ -178,12 +178,14 @@ class GUIBattleHex(object):
 
 
     def update_gui(self, gc):
-        self.draw_hexagon(gc)
-        self.draw_hex_overlay(gc)
-        self.draw_border_overlays(gc)
-        self.draw_label(gc, self.battlehex.label, self.battlehex.label_side)
-        self.draw_label(gc, self.battlehex.terrain,
-          self.battlehex.terrain_side)
+        if self.battlehex.visible:
+            self.draw_hexagon(gc)
+            self.draw_hex_overlay(gc)
+            self.draw_border_overlays(gc)
+            self.draw_label(gc, self.battlehex.label, 
+              self.battlehex.label_side)
+            self.draw_label(gc, self.battlehex.terrain,
+              self.battlehex.terrain_side)
 
     def toggle_selection(self):
         self.selected = not self.selected

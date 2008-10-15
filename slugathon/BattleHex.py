@@ -29,6 +29,7 @@ class BattleHex(object):
         self.down = (self.x & 1 == 1)
         self.label_side = 5
         self.terrain_side = 3
+        self.visible = (self.label not in ["ATTACKER", "DEFENDER"])
 
     def hexsides_with_border(self, border):
         """Return the set of hexsides with this border."""

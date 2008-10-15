@@ -9,6 +9,7 @@ all_labels = frozenset([
     "D1", "D2", "D3", "D4", "D5", "D6", 
     "E1", "E2", "E3", "E4", "E5", 
     "F1", "F2", "F3", "F4",
+    "ATTACKER", "DEFENDER",
 ])
 
 def label_to_coords(label, entry_side):
@@ -79,6 +80,7 @@ def label_to_coords(label, entry_side):
           "D6": (2, 5),
         "E1": (1, 0), "E2": (1, 1), "E3": (1, 2), "E4": (1, 3), "E5": (1, 4),
         "F1": (0, 1), "F2": (0, 2), "F3": (0, 3), "F4": (0, 4),
+        "ATTACKER": (-1, 2), "DEFENDER": (6, 2),
     }
     l2c[3] = {
         "A1": (2, 5), "A2": (1, 4), "A3": (0, 4),
@@ -88,6 +90,7 @@ def label_to_coords(label, entry_side):
           "D6": (0, 1),
         "E1": (5, 2), "E2": (4, 2), "E3": (3, 1), "E4": (2, 1), "E5": (1, 0),
         "F1": (5, 1), "F2": (4, 1), "F3": (3, 0), "F4": (2, 0),
+        "ATTACKER": (-1, 2), "DEFENDER": (6, 2),
     }
     l2c[5] = {
         "A1": (0, 1), "A2": (1, 0), "A3": (2, 0),
@@ -97,6 +100,7 @@ def label_to_coords(label, entry_side):
           "D6": (5, 1),
         "E1": (1, 4), "E2": (2, 4), "E3": (3, 3), "E4": (4, 3), "E5": (5, 2),
         "F1": (2, 5), "F2": (3, 4), "F3": (4, 4), "F4": (5, 3),
+        "ATTACKER": (-1, 2), "DEFENDER": (6, 2),
     }
     return l2c[entry_side][label]
 
