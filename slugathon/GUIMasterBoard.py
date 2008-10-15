@@ -32,6 +32,7 @@ import Chit
 import Negotiate
 import Proposal
 import AcquireAngel
+import GUIBattleMap
 
 
 SQRT3 = math.sqrt(3.0)
@@ -110,6 +111,7 @@ class GUIMasterBoard(gtk.Window):
         self.inspector = Inspector.Inspector(self.username)
         self.negotiate = None
         self.proposals = set()
+        self.guimap = None
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -826,6 +828,10 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Fight):
             self.destroy_negotiate()
             self.unselect_all()
+            if self.guimap is None:
+                self.guimap = GUIBattleMap.GUIBattleMap(
+                  self.game.battle.battlemap, self.user, self.username)
+                self.game.add_observer(self.guimap)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,6 @@ import PickColor
 import PickMarker
 import GUIMasterBoard
 import StatusScreen
-import GUIBattleMap
 
 
 class Client(pb.Referenceable, Observed):
@@ -36,7 +35,6 @@ class Client(pb.Referenceable, Observed):
         self.usernames = set()
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
-        self.guimaps = {}     # Maps game to guimap
         self.status_screens = {}   # Maps game to status_screen
         self.pickcolor = None      # To prevent gc of dialog
 
@@ -157,15 +155,6 @@ class Client(pb.Referenceable, Observed):
           self.user, self.username)
         game.add_observer(self.guiboards[game])
 
-    def _init_guimap(self, game):
-        try:
-            self.guimaps[game] = GUIBattleMap.GUIBattleMap(
-              game.battle.battlemap, self.user, self.username)
-            game.add_observer(self.guimaps[game])
-        except AttributeError:
-            # XXX notify race
-            reactor.callLater(1, self._init_guimap, game)
-
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
@@ -193,9 +182,6 @@ class Client(pb.Referenceable, Observed):
             self._maybe_pick_first_marker(game, action.playername)
             if not self.guiboards.get(game):
                 self._init_guiboard(game)
-        elif isinstance(action, Action.Fight):
-            game = self.name_to_game(action.game_name)
-            self._init_guimap(game)
 
         self.notify(action)
 
