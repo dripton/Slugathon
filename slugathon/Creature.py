@@ -16,6 +16,7 @@ class Creature(object):
         self.magicmissile = (rangestrikes == 2)
         self.acquirable = bool(self.acquirable_every)
         self.hits = 0
+        self.hexlabel = None
 
     def __repr__(self):
         if self.name == "Titan":

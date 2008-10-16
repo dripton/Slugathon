@@ -285,3 +285,7 @@ class Legion(Observed):
     def reset_angels_pending(self):
         self.angels_pending = 0
         self.archangels_pending = 0
+
+    def enter_battle(self, hexlabel):
+        for creature in self.creatures:
+            creature.hexlabel = hexlabel

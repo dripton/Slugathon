@@ -14,6 +14,7 @@ import icon
 import guiutils
 import GUIBattleHex
 import battlemapdata
+import Chit
 
 
 SQRT3 = math.sqrt(3.0)
@@ -24,12 +25,15 @@ class GUIBattleMap(gtk.Window):
 
     implements(IObserver)
 
-    def __init__(self, battlemap, user=None, username=None, scale=None):
+    def __init__(self, battlemap, game=None, user=None, username=None, 
+      scale=None):
         gtk.Window.__init__(self)
 
         self.battlemap = battlemap
+        self.game = game
         self.user = user
         self.username = username
+        self.chits = []
 
         self.set_icon(icon.pixbuf)
         self.set_title("Slugathon - BattleMap - %s" % self.username)
@@ -85,6 +89,10 @@ class GUIBattleMap(gtk.Window):
         return True
 
     def cb_click(self, area, event):
+        for chit in self.chits:
+            if chit.point_inside((event.x, event.y)):
+                self.clicked_on_chit(chit)
+                return True
         for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
@@ -99,6 +107,87 @@ class GUIBattleMap(gtk.Window):
         guihex.toggle_selection()
         self.update_gui([guihex.battlehex.label])
 
+    def clicked_on_chit(self, chit):
+        print "clicked on chit", chit, chit.creature
+
+    def _add_missing_chits(self):
+        """Add chits for any creatures that lack them."""
+        chit_creatures = set(chit.creature for chit in self.chits)
+        battle = self.game.battle
+        for legion in [battle.attacker_legion, battle.defender_legion]:
+            for creature in legion.creatures:
+                if creature not in chit_creatures:
+                    chit = Chit.Chit(creature, legion.player.color, 
+                      self.scale / 2)
+                    self.chits.append(chit)
+
+    def _compute_chit_locations(self, hexlabel):
+        chits = self.chits_in_hex(hexlabel)
+        num = len(chits)
+        guihex = self.guihexes[hexlabel]
+        chit_scale = self.chits[0].chit_scale
+        bl = (guihex.center[0] - chit_scale / 2, guihex.center[1] - 
+          chit_scale / 2)
+
+        if num == 1:
+            chits[0].location = bl
+        elif num == 2:
+            chits[0].location = (bl[0], bl[1] - chit_scale / 2)
+            chits[1].location = (bl[0], bl[1] + chit_scale / 2)
+        elif num == 3:
+            chits[0].location = (bl[0], bl[1] - chit_scale)
+            chits[1].location = bl
+            chits[2].location = (bl[0], bl[1] + chit_scale)
+        elif num == 4:
+            chits[0].location = (bl[0], bl[1] - 3 * chit_scale / 2)
+            chits[1].location = (bl[0], bl[1] - chit_scale / 2)
+            chits[2].location = (bl[0], bl[1] + chit_scale / 2)
+            chits[3].location = (bl[0], bl[1] + 3 * chit_scale / 2)
+        elif num == 5:
+            chits[0].location = (bl[0], bl[1] - 2 * chit_scale)
+            chits[1].location = (bl[0], bl[1] - chit_scale)
+            chits[2].location = bl
+            chits[3].location = (bl[0], bl[1] + chit_scale)
+            chits[4].location = (bl[0], bl[1] + 2 * chit_scale)
+        elif num == 6:
+            chits[0].location = (bl[0], bl[1] - 5 * chit_scale / 2)
+            chits[1].location = (bl[0], bl[1] - 3 * chit_scale / 2)
+            chits[2].location = (bl[0], bl[1] - chit_scale / 2)
+            chits[3].location = (bl[0], bl[1] + chit_scale / 2)
+            chits[4].location = (bl[0], bl[1] + 3 * chit_scale / 2)
+            chits[5].location = (bl[0], bl[1] + 5 * chit_scale / 2)
+        elif num == 7:
+            chits[0].location = (bl[0], bl[1] - 3 * chit_scale)
+            chits[1].location = (bl[0], bl[1] - 2 * chit_scale)
+            chits[2].location = (bl[0], bl[1] - chit_scale)
+            chits[3].location = bl
+            chits[4].location = (bl[0], bl[1] + chit_scale)
+            chits[5].location = (bl[0], bl[1] + 2 * chit_scale)
+            chits[6].location = (bl[0], bl[1] + 3 * chit_scale)
+        else:
+            raise AssertionError("invalid number of chits in hex")
+
+    def _render_chit(self, chit, gc):
+        drawable = self.area.window
+        drawable.draw_pixbuf(gc, chit.pixbuf, 0, 0,
+          int(round(chit.location[0])), int(round(chit.location[1])),
+          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+
+    def chits_in_hex(self, hexlabel):
+        return [chit for chit in self.chits 
+          if chit.creature.hexlabel == hexlabel]
+
+    def draw_chits(self, gc):
+        if not self.game: 
+            return
+        self._add_missing_chits()
+        hexlabels = set([chit.creature.hexlabel for chit in self.chits])
+        for hexlabel in hexlabels:
+            self._compute_chit_locations(hexlabel)
+            chits = self.chits_in_hex(hexlabel)
+            for chit in chits:
+                self._render_chit(chit, gc)
+
     def update_gui(self, hexlabels=None):
         gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
         gc.line_width = int(round(0.2 * self.scale))
@@ -108,6 +197,7 @@ class GUIBattleMap(gtk.Window):
             guihexes = set(self.guihexes[hexlabel] for hexlabel in hexlabels)
         for guihex in guihexes:
             guihex.update_gui(gc)
+        self.draw_chits(gc)
 
     def update(self, observed, action):
         print "GUIBattleMap.update", observed, action

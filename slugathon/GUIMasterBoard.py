@@ -375,8 +375,8 @@ class GUIMasterBoard(gtk.Window):
 
     def _remove_extra_markers(self):
         """Remove markers for any legions that are no longer there."""
-        all_markernames = [legion.markername for legion in 
-          self.game.all_legions()]
+        all_markernames = set([legion.markername for legion in 
+          self.game.all_legions()])
         hitlist = [marker for marker in self.markers 
           if marker.name not in all_markernames]
         for marker in hitlist:
@@ -830,7 +830,8 @@ class GUIMasterBoard(gtk.Window):
             self.unselect_all()
             if self.guimap is None:
                 self.guimap = GUIBattleMap.GUIBattleMap(
-                  self.game.battle.battlemap, self.user, self.username)
+                  self.game.battle.battlemap, self.game, self.user, 
+                  self.username)
                 self.game.add_observer(self.guimap)
 
 
