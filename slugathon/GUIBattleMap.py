@@ -114,11 +114,13 @@ class GUIBattleMap(gtk.Window):
         """Add chits for any creatures that lack them."""
         chit_creatures = set(chit.creature for chit in self.chits)
         battle = self.game.battle
-        for legion in [battle.attacker_legion, battle.defender_legion]:
+        for (legion, rotate) in [ 
+          (battle.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE), 
+          (battle.defender_legion, gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
             for creature in legion.creatures:
                 if creature not in chit_creatures:
                     chit = Chit.Chit(creature, legion.player.color, 
-                      self.scale / 2)
+                      self.scale / 2, rotate=rotate)
                     self.chits.append(chit)
 
     def _compute_chit_locations(self, hexlabel):

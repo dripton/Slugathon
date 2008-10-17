@@ -13,13 +13,15 @@ class Chit(object):
 
     IMAGE_DIR = "creature"
 
-    def __init__(self, creature, playercolor, scale=15, dead=False):
+    def __init__(self, creature, playercolor, scale=15, dead=False, 
+      rotate=None):
         self.creature = creature
         if creature is None:
             self.name = "QuestionMarkMask"
         else:
             self.name = creature.name
         self.dead = dead
+        self.rotate = rotate
         self.location = None    # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
@@ -58,6 +60,8 @@ class Chit(object):
         raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
           self.chit_scale, gtk.gdk.INTERP_BILINEAR)
+        if self.rotate:
+            self.pixbuf = self.pixbuf.rotate_simple(self.rotate)
         self.image.set_from_pixbuf(self.pixbuf)
 
     def point_inside(self, point):
