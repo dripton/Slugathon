@@ -8,6 +8,9 @@ import colors
 
 CHIT_SCALE_FACTOR = 3
 
+red = colors.rgb_colors["red"]
+white = colors.rgb_colors["white"]
+
 class Chit(object):
     """Clickable GUI creature chit"""
 
@@ -57,6 +60,8 @@ class Chit(object):
         self._render_text(im, self.rgb)
         if self.dead:
             self._render_x(im)
+        elif self.creature and self.creature.hits > 0:
+            self._render_hits(im)
         raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
           self.chit_scale, gtk.gdk.INTERP_BILINEAR)
@@ -111,8 +116,25 @@ class Chit(object):
 
     def _render_x(self, im):
         """Add a big red X through Image im"""
-        rgb = colors.rgb_colors["red"]
         draw = ImageDraw.Draw(im)
-        draw.line((0, 0) + im.size, fill=rgb, width=2)
-        draw.line((0, im.size[1], im.size[0], 0), fill=rgb, width=2)
+        draw.line((0, 0) + im.size, fill=red, width=2)
+        draw.line((0, im.size[1], im.size[0], 0), fill=red, width=2)
 
+    def _render_hits(self, im):
+        """Add the number of hits to Image im"""
+        if not self.creature or not self.creature.hits:
+            return
+        font_path = "../fonts/VeraSeBd.ttf"
+        # TODO Vary font size with scale
+        font_size = 30
+        font = ImageFont.truetype(font_path, font_size)
+        draw = ImageDraw.Draw(im)
+        leng = im.size[0]
+
+        label = str(self.creature.hits)
+        text_width, text_height = draw.textsize(label, font=font)
+        x = 0.5 * leng - 0.5 * text_width
+        y = 0.5 * leng - 0.5 * text_height
+        draw.rectangle(((x + 0.1 * text_width, y + 0.2 * text_height),
+          (x + 0.9 * text_width, y + 0.8 * text_height)), fill=white)
+        draw.text((x, y), label, fill=red, font=font)
