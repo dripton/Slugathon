@@ -70,7 +70,7 @@ class Marker(object):
         label = str(self.height)
         text_width, text_height = draw.textsize(label, font=font)
         x = 0.65 * leng - 0.5 * text_width
-        y = 0.55 * leng - 0.5 * text_width
+        y = 0.55 * leng - 0.5 * text_height
         draw.rectangle(((x + 0.1 * text_width, y + 0.1 * text_height), 
           (x + 0.9 * text_width, y + 0.9 * text_height)), fill=white)
         draw.text((x, y), label, fill=black, font=font)
