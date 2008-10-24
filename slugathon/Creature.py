@@ -16,7 +16,9 @@ class Creature(object):
         self.magicmissile = (rangestrikes == 2)
         self.acquirable = bool(self.acquirable_every)
         self.hits = 0
+        self.moved = False
         self.hexlabel = None
+        self.previous_hexlabel = None
 
     def __repr__(self):
         if self.name == "Titan":
@@ -41,3 +43,18 @@ class Creature(object):
 
     def is_dead(self):
         return self.hits >= self.power
+
+    def is_engaged(self):
+        """Return True iff this creature is engaged with an adjacent enemy"""
+        # TODO
+        return False
+
+    def find_moves(self):
+        """Return a set of all hexlabels to which this creature can move.
+        
+        Its current hex is not included.
+        """
+        result = set()
+        if self.moved or self.is_engaged():
+            return result
+        movement_points = self.skill

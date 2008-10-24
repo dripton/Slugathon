@@ -15,6 +15,7 @@ import guiutils
 import GUIBattleHex
 import battlemapdata
 import Chit
+import Phase
 
 
 SQRT3 = math.sqrt(3.0)
@@ -34,6 +35,7 @@ class GUIBattleMap(gtk.Window):
         self.user = user
         self.username = username
         self.chits = []
+        self.selected_chit = None
 
         self.set_icon(icon.pixbuf)
         self.set_title("Slugathon - BattleMap - %s" % self.username)
@@ -84,6 +86,16 @@ class GUIBattleMap(gtk.Window):
         return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 * 
           SQRT3))
 
+    def unselect_all(self):
+        for guihex in self.guihexes.itervalues():
+            guihex.selected = False
+        self.update_gui()
+
+    def highlight_mobile_chits(self):
+        """Highlight the hexes containing all creatures that can move now."""
+        # TODO
+        pass
+
     def cb_area_expose(self, area, event):
         self.update_gui()
         return True
@@ -91,7 +103,7 @@ class GUIBattleMap(gtk.Window):
     def cb_click(self, area, event):
         for chit in self.chits:
             if chit.point_inside((event.x, event.y)):
-                self.clicked_on_chit(chit)
+                self.clicked_on_chit(area, event, chit)
                 return True
         for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
@@ -107,8 +119,24 @@ class GUIBattleMap(gtk.Window):
         guihex.toggle_selection()
         self.update_gui([guihex.battlehex.label])
 
-    def clicked_on_chit(self, chit):
+    def clicked_on_chit(self, area, event, chit):
         print "clicked on chit", chit, chit.creature
+        phase = self.battle.phase
+        if phase == Phase.MANEUVER:
+            creature = chit.creature
+            legion = creature.legion
+            player = legion.player
+            if player.name != self.username:
+                return
+            elif player != self.battle.active_player:
+                return
+            self.selected_chit = chit
+            self.unselect_all()
+            hexlabels = creature.find_moves()
+            for hexlabel in hexlabels:
+                guihex = self.guihexes[hexlabel]
+                guihex.selected = True
+            self.update_gui(hexlabels)
 
     def _add_missing_chits(self):
         """Add chits for any creatures that lack them."""

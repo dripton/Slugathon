@@ -7,6 +7,8 @@ map1 = BattleMap.BattleMap("Mountains", 1)
 hex1 = map1.hexes["A2"]
 hex2 = map1.hexes["A1"]
 hex3 = map1.hexes["D4"]
+hex4 = map1.hexes["E1"]
+hex5 = map1.hexes["F1"]
 
 def test_all_labels():
     assert len(BattleMap.all_labels) == 29
@@ -79,3 +81,34 @@ def test_startlist():
     assert map1.startlist is None
     map2 = BattleMap.BattleMap("Tower", 1)
     assert map2.startlist == ["C3", "C4", "D3", "D4", "D5", "E3", "E4"]
+
+def test_neighbors():
+    assert len(hex1.neighbors) == 4
+    assert hex1.neighbors[0].label == "A1"
+    assert hex1.neighbors[3].label == "A3"
+    assert hex1.neighbors[4].label == "B3"
+    assert hex1.neighbors[5].label == "B2"
+
+    assert len(hex2.neighbors) == 3
+    assert hex2.neighbors[3].label == "A2"
+    assert hex2.neighbors[4].label == "B2"
+    assert hex2.neighbors[5].label == "B1"
+
+    assert len(hex3.neighbors) == 6
+    assert hex3.neighbors[0].label == "D3"
+    assert hex3.neighbors[1].label == "C3"
+    assert hex3.neighbors[2].label == "C4"
+    assert hex3.neighbors[3].label == "D5"
+    assert hex3.neighbors[4].label == "E4"
+    assert hex3.neighbors[5].label == "E3"
+
+    assert len(hex4.neighbors) == 4
+    assert hex4.neighbors[1].label == "D1"
+    assert hex4.neighbors[2].label == "D2"
+    assert hex4.neighbors[3].label == "E2"
+    assert hex4.neighbors[4].label == "F1"
+
+    assert len(hex5.neighbors) == 3
+    assert hex5.neighbors[1].label == "E1"
+    assert hex5.neighbors[2].label == "E2"
+    assert hex5.neighbors[3].label == "F2"

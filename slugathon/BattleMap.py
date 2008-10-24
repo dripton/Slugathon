@@ -14,17 +14,17 @@ all_labels = frozenset([
 
 def label_to_coords(label, entry_side):
     """Convert a hex label to a tuple of X and Y coordinates, starting at the
-    bottom left.
+    top left.
 
     We spin the map so that the attacker's entry side is always on the left.
     This works on the rotated map.
    
-    5       *   
-    4 *  *  *  *  *   
-    3 *  *  *  *  *  *
-    2 *  *  *  *  *  *
-    1 *  *  *  *  *  *
     0    *  *  *   
+    1 *  *  *  *  *  * 
+    2 *  *  *  *  *  *
+    3 *  *  *  *  *  *
+    4 *  *  *  *  *   
+    5       *      
       0  1  2  3  4  5
 
     entry_side 1:
@@ -109,19 +109,7 @@ def label_to_coords(label, entry_side):
 class BattleMap(object):
     """A logical battle map.  No GUI code.
     
-    Hexes are labeled like:
-
-             D6 
-          C5    E5
-       B4    D5    F4
-    A3    C4    E4
-       B3    D4    F3
-    A2    C3    E3
-       B2    D3    F2
-    A1    C2    E2
-       B1    D2    F1
-          C1    E1
-             D1
+    See label_to_coords for hex labeling docs.
     """
 
     def __init__(self, terrain, entry_side):
@@ -139,6 +127,8 @@ class BattleMap(object):
             else:
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
                   "Plains", 0, {})
+        for hex1 in self.hexes.itervalues():
+            hex1.init_neighbors()
         self.startlist = battlemapdata.startlist.get(terrain)
 
     def hex_width(self):
