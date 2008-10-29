@@ -1,4 +1,52 @@
 import creaturedata
+import recruitdata
+import battlemapdata
+
+
+def _terrain_to_hazards():
+    """Return a dict of masterboard terrain type to a set of all 
+    battle hazards (hex and hexside) found there."""
+    result = {}
+    for mterrain, dic2 in battlemapdata.data.iteritems():
+        for hexlabel, (bterrain, elevation, dic3) in dic2.iteritems():
+            set1 = result.setdefault(mterrain, set())
+            set1.add(bterrain)
+            for hexside, border in dic3.iteritems():
+                if border:
+                    set1.add(border)
+    return result
+
+def _terrain_to_creature_names():
+    """Return a dict of masterboard terrain type to a set of all 
+    Creature names that can be recruited there."""
+    result = {}
+    for terrain, tuples in recruitdata.data.iteritems():
+        set1 = set()
+        result[terrain] = set1
+        for tup in tuples:
+            if tup:
+                creature_name, count = tup
+                if count:
+                    set1.add(creature_name)
+    return result
+
+def _compute_nativity():
+    """Return a dict of creature name to a set of all hazards
+    (battle terrain types and border types) to which it is
+    native."""
+    result = {}
+    terrain_to_creature_names = _terrain_to_creature_names()
+    terrain_to_hazards = _terrain_to_hazards()
+    for terrain, creature_names in terrain_to_creature_names.iteritems():
+        hazards = terrain_to_hazards.get(terrain, set())
+        for creature_name in creature_names:
+            set1 = result.setdefault(creature_name, set())
+            for hazard in hazards:
+                set1.add(hazard)
+    return result
+
+creature_name_to_native_hazards = _compute_nativity()
+
 
 def n2c(names):
     """Make a list of Creatures from a list of creature names"""
@@ -49,12 +97,10 @@ class Creature(object):
         # TODO
         return False
 
-    def find_moves(self):
-        """Return a set of all hexlabels to which this creature can move.
+    def is_native(self, hazard):
+        """Return True iff this creature is native to the named hazard.
         
-        Its current hex is not included.
+        Note that we define nativity even for hazards that don't provide any
+        benefit for being native, like Wall and Plains.
         """
-        result = set()
-        if self.moved or self.is_engaged():
-            return result
-        movement_points = self.skill
+        return hazard in creature_name_to_native_hazards.get(self.name, set())

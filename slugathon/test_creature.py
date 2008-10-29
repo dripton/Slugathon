@@ -29,3 +29,29 @@ def test_score():
     assert creature.score() == 12
     creature = Creature.Creature("Colossus")
     assert creature.score() == 40
+
+def test_native():
+    ogre = Creature.Creature("Ogre")
+    assert ogre.is_native("Bog")
+    assert ogre.is_native("Slope")
+    assert ogre.is_native("Plains")
+    assert ogre.is_native("Tree")
+    assert ogre.is_native("Tower")
+    assert not ogre.is_native("Bramble")
+    assert not ogre.is_native("Volcano")
+    assert not ogre.is_native("Sane")
+    assert not ogre.is_native("Dune")
+    assert not ogre.is_native("Cliff")
+
+    cyclops = Creature.Creature("Cyclops")
+    assert cyclops.is_native("Bramble")
+    assert not cyclops.is_native("Bog")
+
+    warlock = Creature.Creature("Warlock")
+    assert warlock.is_native("Wall")
+    assert not warlock.is_native("Bog")
+
+    titan = Creature.Creature("Titan")
+    assert not titan.is_native("Wall")
+    assert not titan.is_native("Tower")
+    assert not titan.is_native("Bog")
