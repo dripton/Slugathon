@@ -35,7 +35,10 @@ class GUIBattleMap(gtk.Window):
         self.user = user
         self.username = username
 
-        self.battle = self.game.battle
+        try:
+            self.battle = self.game.battle
+        except AttributeError:
+            self.battle = None
         self.chits = []
         self.selected_chit = None
 
