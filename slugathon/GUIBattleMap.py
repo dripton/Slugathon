@@ -34,6 +34,8 @@ class GUIBattleMap(gtk.Window):
         self.game = game
         self.user = user
         self.username = username
+
+        self.battle = self.game.battle
         self.chits = []
         self.selected_chit = None
 
@@ -132,7 +134,8 @@ class GUIBattleMap(gtk.Window):
                 return
             self.selected_chit = chit
             self.unselect_all()
-            hexlabels = creature.find_moves()
+            hexlabels = self.battle.find_moves(creature)
+            print "can move to", hexlabels
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
