@@ -12,6 +12,8 @@ class Legion(Observed):
         assert type(hexlabel) == types.IntType
         self.markername = markername
         self.creatures = creatures
+        for creature in self.creatures:
+            creature.legion = self
         # TODO Should we store the actual MasterHex instead?
         self.hexlabel = hexlabel  # an int not a str
         self.player = player
@@ -47,7 +49,9 @@ class Legion(Observed):
     def add_creature_by_name(self, creature_name):
         if len(self) >= 7:
             raise ValueError, "no room to add another creature"
-        self.creatures.append(Creature.Creature(creature_name))
+        creature = Creature.Creature(creature_name)
+        creature.legion = self
+        self.creatures.append(creature)
 
     def remove_creature_by_name(self, creature_name):
         for creature in self.creatures:
@@ -184,6 +188,7 @@ class Legion(Observed):
                 raise AssertionError("none of creature left")
             caretaker.take_one(creature.name)
             self.creatures.append(creature)
+            creature.legion = self
             self.recruited = True
             action = Action.RecruitCreature(player.game.name, player.name,
               self.markername, creature.name)
@@ -274,6 +279,7 @@ class Legion(Observed):
             raise AssertionError("none of angel left")
         caretaker.take_one(angel.name)
         self.creatures.append(angel)
+        angel.legion = self
         if angel.name == "Archangel" or self.angels_pending < 1:
             self.archangels_pending -= 1
         else:

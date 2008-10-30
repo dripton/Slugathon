@@ -67,6 +67,7 @@ class Creature(object):
         self.moved = False
         self.hexlabel = None
         self.previous_hexlabel = None
+        self.legion = None
 
     def __repr__(self):
         if self.name == "Titan":
