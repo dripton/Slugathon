@@ -42,7 +42,9 @@ def _compute_nativity():
         for creature_name in creature_names:
             set1 = result.setdefault(creature_name, set())
             for hazard in hazards:
-                set1.add(hazard)
+                # Special case: Only Dragon is native to Volcano
+                if hazard != "Volcano" or creature_name == "Dragon":
+                    set1.add(hazard)
     return result
 
 creature_name_to_native_hazards = _compute_nativity()

@@ -83,7 +83,9 @@ class Battle(Observed):
         for hexside, hex2 in hex1.neighbors.iteritems():
             if not self.is_hex_occupied(hex2.label):
                 if hex1.entrance:
-                    # Ignore hexside penalties from entrances.
+                    # Ignore hexside penalties from entrances.  There aren't
+                    # any on the standard boards, and this avoids having to
+                    # properly compute the real hexside.
                     border = None
                 else:
                     reverse_dir = (hexside + 3) % 6
@@ -94,13 +96,12 @@ class Battle(Observed):
                 if creature.flies:
                     flyover_cost = self.hex_flyover_cost(creature, 
                       hex2.terrain)
-                    if flyover_cost < movement_left:
-                        result.update(self._find_moves_inner(creature, 
-                          hex2.label, movement_left - flyover_cost))
                 else:
-                    if cost < movement_left: 
-                        result.update(self._find_moves_inner(creature, 
-                          hex2.label, movement_left - cost))
+                    flyover_cost = sys.maxint
+                min_cost = min(cost, flyover_cost)
+                if min_cost < movement_left:
+                    result.update(self._find_moves_inner(creature, 
+                      hex2.label, movement_left - min_cost))
         result.discard(hexlabel)
         return result
 
@@ -118,4 +119,3 @@ class Battle(Observed):
                     result.add(hexlabel2)
             return result
         return self._find_moves_inner(creature, hexlabel, creature.skill)
-
