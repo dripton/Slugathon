@@ -131,10 +131,13 @@ class GUIBattleHex(object):
             overlay_filename = "%s.png" % border
             image_path = os.path.join(IMAGE_DIR, overlay_filename)
             if os.path.exists(image_path):
-                border_filename = "%s-%d.png" % (border, hexside)
+                hexsides = self.battlehex.hexsides_with_border(border)
+                hexsides_str = "".join(map(str, sorted(hexsides)))
+                border_filename = "%s-%s.png" % (border, hexsides_str)
                 border_path = os.path.join(IMAGE_DIR, border_filename)
-                sliceborder.slice_border_image(image_path, border_path,
-                  self.battlehex.hexsides_with_border(border))
+                if not os.path.exists(border_path):
+                    sliceborder.slice_border_image(image_path, border_path,
+                      hexsides)
                 pixbuf = gtk.gdk.pixbuf_new_from_file(border_path)
                 border_pixbuf = pixbuf.scale_simple(
                   int(round(myboxsize[0])), int(round(myboxsize[1])),
