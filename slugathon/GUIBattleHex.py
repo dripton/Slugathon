@@ -6,6 +6,7 @@ import gtk
 import guiutils
 import colors
 import sliceborder
+import Chit
 
 SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
@@ -179,6 +180,15 @@ class GUIBattleHex(object):
 
         self.guimap.area.window.draw_layout(gc, x, y, layout)
 
+    def cleanup_entrance(self, gc):
+        """Cleanup after any chits that may have moved away from an 
+        entrance."""
+        chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
+        x = self.center[0] - chit_scale / 2
+        y = self.center[1] - chit_scale * 7 / 2
+        width = chit_scale
+        height = 7 * chit_scale
+        self.guimap.area.window.clear_area(x, y, width, height)
 
     def update_gui(self, gc):
         if self.battlehex.visible:
@@ -189,6 +199,8 @@ class GUIBattleHex(object):
               self.battlehex.label_side)
             self.draw_label(gc, self.battlehex.terrain,
               self.battlehex.terrain_side)
+        else:
+            self.cleanup_entrance(gc)
 
     def toggle_selection(self):
         self.selected = not self.selected
