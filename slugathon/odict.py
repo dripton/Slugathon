@@ -64,7 +64,7 @@ class pdict(dict):
 
     def pop(self, key, *args):
         if len(args) > 1:
-            raise TypeError("pop expected at most 2 arguments, got %d" % 
+            raise TypeError("pop expected at most 2 arguments, got %d" %
               len(args))
         try:
             self._list.remove(key)
@@ -157,7 +157,7 @@ class sdict(dict):
 
     def pop(self, key, *args):
         if len(args) > 1:
-            raise TypeError("pop expected at most 2 arguments, got %d" % 
+            raise TypeError("pop expected at most 2 arguments, got %d" %
               len(args))
         try:
             self._list.remove(key)
@@ -183,4 +183,3 @@ class sdict(dict):
         for key in iterable:
             sdic[key] = value
         return sdic
-

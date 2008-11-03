@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 # TODO Angel summoning
 
@@ -25,16 +25,16 @@ class Negotiate(object):
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/negotiate.glade")
         self.widget_names = [
-          "negotiate_dialog", 
-          "legion_name", 
-          "attacker_hbox", 
-          "attacker_marker_hbox", 
-          "attacker_chits_hbox", 
-          "defender_hbox", 
-          "defender_marker_hbox", 
-          "defender_chits_hbox", 
-          "concede_button", 
-          "proposal_button", 
+          "negotiate_dialog",
+          "legion_name",
+          "attacker_hbox",
+          "attacker_marker_hbox",
+          "attacker_chits_hbox",
+          "defender_hbox",
+          "defender_marker_hbox",
+          "defender_chits_hbox",
+          "concede_button",
+          "proposal_button",
           "done_proposing_button",
           "fight_button",
         ]
@@ -48,7 +48,7 @@ class Negotiate(object):
         self.negotiate_dialog.set_transient_for(parent)
 
         self.legion_name.set_text("Legion %s negotiates with %s in hex %s?" % (
-          attacker_legion.markername, defender_legion.markername, 
+          attacker_legion.markername, defender_legion.markername,
           defender_legion.hexlabel))
 
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
@@ -143,8 +143,8 @@ class Negotiate(object):
           self.attacker_chits)
         defender_creature_names = self.surviving_creature_names(
           self.defender_chits)
-        self.callback(self.attacker_legion, attacker_creature_names, 
-          self.defender_legion, defender_creature_names, response_id) 
+        self.callback(self.attacker_legion, attacker_creature_names,
+          self.defender_legion, defender_creature_names, response_id)
 
     def destroy(self):
         self.negotiate_dialog.destroy()
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
       "Archangel", "Angel", "Unicorn"]
     attacker_creatures = Creature.n2c(attacker_creature_names)
-    attacker_legion = Legion.Legion(attacker_player, "Bk01", 
+    attacker_legion = Legion.Legion(attacker_player, "Bk01",
       attacker_creatures, 1)
 
     defender_username = "Eek!"
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_creatures = Creature.n2c(defender_creature_names)
-    defender_legion = Legion.Legion(defender_player, "Rd01", 
+    defender_legion = Legion.Legion(defender_player, "Rd01",
       defender_creatures, 1)
 
     def callback(*args):

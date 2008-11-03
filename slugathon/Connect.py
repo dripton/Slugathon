@@ -19,8 +19,8 @@ class Connect(object):
     """GUI for connecting to a server."""
     def __init__(self):
         self.glade = gtk.glade.XML("../glade/connect.glade")
-        self.widget_names = ["connect_window", "playername_comboboxentry", 
-          "password_entry", "server_name_comboboxentry", 
+        self.widget_names = ["connect_window", "playername_comboboxentry",
+          "password_entry", "server_name_comboboxentry",
           "server_port_comboboxentry", "connect_button", "start_server_button"]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))

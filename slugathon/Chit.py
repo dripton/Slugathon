@@ -16,7 +16,7 @@ class Chit(object):
 
     IMAGE_DIR = "creature"
 
-    def __init__(self, creature, playercolor, scale=15, dead=False, 
+    def __init__(self, creature, playercolor, scale=15, dead=False,
       rotate=None):
         self.creature = creature
         if creature is None:
@@ -56,7 +56,7 @@ class Chit(object):
         im = Image.open(self.paths[0]).convert("RGBA")
         for path in self.paths[1:]:
             mask = Image.open(path).convert("RGBA")
-            im.paste(self.rgb, None, mask) 
+            im.paste(self.rgb, None, mask)
         self._render_text(im, self.rgb)
         if self.dead:
             self._render_x(im)

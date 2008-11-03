@@ -8,7 +8,7 @@ from reval import reval
 
 def test_reval_good():
     assert reval("{'test':'123','hehe':['hooray',0x10]}") == \
-      {'test': '123', 'hehe': ['hooray', 16]} 
+      {'test': '123', 'hehe': ['hooray', 16]}
 
 def test_reval_good2():
     dicstr = "{'markername': 'Rd01', 'entry_side': 1, 'teleport': False, \

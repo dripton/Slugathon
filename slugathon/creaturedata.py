@@ -36,5 +36,5 @@ data = {
 
 }
 
-starting_creature_names = ("Titan", "Angel", "Ogre", "Ogre", "Centaur", 
+starting_creature_names = ("Titan", "Angel", "Ogre", "Ogre", "Centaur",
   "Centaur", "Gargoyle", "Gargoyle")

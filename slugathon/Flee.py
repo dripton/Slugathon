@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 import time
 
@@ -24,15 +24,15 @@ class Flee(object):
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/flee.glade")
         self.widget_names = [
-          "flee_dialog", 
-          "legion_name", 
-          "attacker_hbox", 
-          "attacker_marker_hbox", 
-          "attacker_chits_hbox", 
-          "defender_hbox", 
-          "defender_marker_hbox", 
-          "defender_chits_hbox", 
-          "flee_button", 
+          "flee_dialog",
+          "legion_name",
+          "attacker_hbox",
+          "attacker_marker_hbox",
+          "attacker_chits_hbox",
+          "defender_hbox",
+          "defender_marker_hbox",
+          "defender_chits_hbox",
+          "flee_button",
           "do_not_flee_button"
         ]
         for widget_name in self.widget_names:
@@ -77,7 +77,7 @@ class Flee(object):
         """Calls the callback function, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""
         self.flee_dialog.destroy()
-        self.callback(self.attacker_legion, self.defender_legion, 
+        self.callback(self.attacker_legion, self.defender_legion,
           response_id == self.flee_dialog.get_response_for_widget(
           self.flee_button))
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
       "Archangel", "Angel", "Unicorn"]
     attacker_creatures = Creature.n2c(attacker_creature_names)
-    attacker_legion = Legion.Legion(attacker_player, "Bk01", 
+    attacker_legion = Legion.Legion(attacker_player, "Bk01",
       attacker_creatures, 1)
 
     defender_username = "Eek!"
@@ -100,14 +100,14 @@ if __name__ == "__main__":
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_creatures = Creature.n2c(defender_creature_names)
-    defender_legion = Legion.Legion(defender_player, "Rd01", 
+    defender_legion = Legion.Legion(defender_player, "Rd01",
       defender_creatures, 1)
-    
+
     def callback(attacker, defender, fled):
         print "fled is", fled
         guiutils.exit()
 
-    flee = Flee(defender_username, attacker_legion, defender_legion, 
+    flee = Flee(defender_username, attacker_legion, defender_legion,
       callback, None)
 
     gtk.main()

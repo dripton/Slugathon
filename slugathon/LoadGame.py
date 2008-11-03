@@ -18,8 +18,8 @@ class LoadGame(object):
         self.user = user
         self.username = username
         title = "Load Saved Game - %s" % self.username
-        self.load_game_dialog = gtk.FileChooserDialog(title, parent, 
-          gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL, 
+        self.load_game_dialog = gtk.FileChooserDialog(title, parent,
+          gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,
           gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         self.load_game_dialog.set_icon(icon.pixbuf)
         # TODO Hoist constants somewhere
@@ -36,16 +36,16 @@ class LoadGame(object):
         else:
             self.cancel()
 
-    def ok(self): 
+    def ok(self):
         filename = self.load_game_dialog.get_filename()
         def1 = self.user.callRemote("load_game", filename)
         def1.addErrback(self.failure)
         self.load_game_dialog.destroy()
 
-    def cancel(self): 
+    def cancel(self):
         self.load_game_dialog.destroy()
 
-    def failure(self, error): 
+    def failure(self, error):
         print "LoadGame", error
 
 

@@ -121,9 +121,9 @@ pb.setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)
 
 
 class SplitLegion(Action):
-    def __init__(self, game_name, playername, parent_markername, 
+    def __init__(self, game_name, playername, parent_markername,
       child_markername, parent_creature_names, child_creature_names):
-        """parent_creature_names and child_creature_names are lists of the 
+        """parent_creature_names and child_creature_names are lists of the
         actual creature names if known, or lists of height * None if not known
         """
         self.game_name = game_name
@@ -134,19 +134,19 @@ class SplitLegion(Action):
         self.child_creature_names = tuple(child_creature_names)
 
     def undo_action(self):
-        return UndoSplit(self.game_name, self.playername, 
-          self.parent_markername, self.child_markername, 
+        return UndoSplit(self.game_name, self.playername,
+          self.parent_markername, self.child_markername,
           self.parent_creature_names, self.child_creature_names)
 
 pb.setUnjellyableForClass(SplitLegion, SplitLegion)
 
 
 class UndoSplit(UndoAction):
-    def __init__(self, game_name, playername, parent_markername, 
+    def __init__(self, game_name, playername, parent_markername,
       child_markername, parent_creature_names, child_creature_names):
         """Used for voluntarily undoing a split during the split phase.
-        
-        parent_creature_names and child_creature_names are lists of the 
+
+        parent_creature_names and child_creature_names are lists of the
         actual creature names if known, or lists of height * None if not known
         """
         self.game_name = game_name
@@ -158,12 +158,12 @@ class UndoSplit(UndoAction):
 pb.setUnjellyableForClass(UndoSplit, UndoSplit)
 
 class MergeLegions(Action):
-    def __init__(self, game_name, playername, parent_markername, 
+    def __init__(self, game_name, playername, parent_markername,
       child_markername, parent_creature_names, child_creature_names):
         """Used for involuntarily undoing a split during the movement phase,
         because of a lack of legal non-teleport moves.
-        
-        parent_creature_names and child_creature_names are lists of the 
+
+        parent_creature_names and child_creature_names are lists of the
         actual creature names if known, or lists of height * None if not known
         """
         self.game_name = game_name
@@ -177,7 +177,7 @@ pb.setUnjellyableForClass(MergeLegions, MergeLegions)
 
 class RollMovement(Action):
     def __init__(self, game_name, playername, movement_roll):
-        """parent_creature_names and child_creature_names are lists of the 
+        """parent_creature_names and child_creature_names are lists of the
         actual creature names if known, or lists of height * None if not known
         """
         self.game_name = game_name
@@ -230,7 +230,7 @@ class RecruitCreature(Action):
         self.creature_name = creature_name
 
     def undo_action(self):
-        return UndoRecruit(self.game_name, self.playername, self.markername, 
+        return UndoRecruit(self.game_name, self.playername, self.markername,
           self.creature_name)
 
 pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)
@@ -296,7 +296,7 @@ pb.setUnjellyableForClass(Concede, Concede)
 
 
 class Fight(Action):
-    def __init__(self, game_name, attacker_markername, defender_markername, 
+    def __init__(self, game_name, attacker_markername, defender_markername,
       hexlabel):
         self.game_name = game_name
         self.attacker_markername = attacker_markername
@@ -306,8 +306,8 @@ pb.setUnjellyableForClass(Fight, Fight)
 
 
 class MakeProposal(Action):
-    def __init__(self, game_name, playername, other_playername, 
-      attacker_markername, attacker_creature_names, 
+    def __init__(self, game_name, playername, other_playername,
+      attacker_markername, attacker_creature_names,
       defender_markername, defender_creature_names):
         self.game_name = game_name
         self.playername = playername
@@ -319,8 +319,8 @@ class MakeProposal(Action):
 pb.setUnjellyableForClass(MakeProposal, MakeProposal)
 
 class AcceptProposal(Action):
-    def __init__(self, game_name, playername, other_playername, 
-      attacker_markername, attacker_creature_names, 
+    def __init__(self, game_name, playername, other_playername,
+      attacker_markername, attacker_creature_names,
       defender_markername, defender_creature_names, hexlabel):
         self.game_name = game_name
         self.playername = playername
@@ -333,8 +333,8 @@ class AcceptProposal(Action):
 pb.setUnjellyableForClass(AcceptProposal, AcceptProposal)
 
 class RejectProposal(Action):
-    def __init__(self, game_name, playername, other_playername, 
-      attacker_markername, attacker_creature_names, 
+    def __init__(self, game_name, playername, other_playername,
+      attacker_markername, attacker_creature_names,
       defender_markername, defender_creature_names):
         self.game_name = game_name
         self.playername = playername
@@ -355,7 +355,7 @@ class MoveCreature(Action):
         self.new_hexlabel = new_hexlabel
 
     def undo_action(self):
-        return UndoMoveCreature(self.game_name, self.playername, 
+        return UndoMoveCreature(self.game_name, self.playername,
           self.creature_name, self.old_hexlabel, self.new_hexlabel)
 
 pb.setUnjellyableForClass(MoveCreature, MoveCreature)

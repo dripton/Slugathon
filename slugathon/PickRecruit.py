@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 import time
 
@@ -17,11 +17,11 @@ import Game
 
 class PickRecruit(object):
     """Dialog to pick a recruit."""
-    def __init__(self, username, player, legion, masterhex, caretaker, 
+    def __init__(self, username, player, legion, masterhex, caretaker,
       callback, parent):
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/pickrecruit.glade")
-        self.widget_names = ["pick_recruit_dialog", "marker_hbox", 
+        self.widget_names = ["pick_recruit_dialog", "marker_hbox",
           "chits_hbox", "recruits_hbox", "legion_name"]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     def callback(legion, creature):
         print legion, "recruited", creature
         guiutils.exit
-   
+
     now = time.time()
     username = "p0"
     game = Game.Game("g1", "p0", now, now, 2, 6)
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000
     masterhex = game.board.hexes[legion.hexlabel]
-    pickrecruit = PickRecruit(username, player, legion, masterhex, 
+    pickrecruit = PickRecruit(username, player, legion, masterhex,
       game.caretaker, callback, None)
     pickrecruit.pick_recruit_dialog.connect("destroy", guiutils.exit)
 

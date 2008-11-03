@@ -45,5 +45,5 @@ class Caretaker(object):
 
     def number_in_play(self, creature_name):
         """Return the number of creature_name that are currently onboard."""
-        return (self.max_counts[creature_name] - self.counts[creature_name] - 
+        return (self.max_counts[creature_name] - self.counts[creature_name] -
           self.graveyard[creature_name])

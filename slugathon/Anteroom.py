@@ -21,7 +21,7 @@ class Anteroom(object):
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML("../glade/anteroom.glade")
-        self.widget_names = ["anteroom_window", "chat_entry", "chat_view", 
+        self.widget_names = ["anteroom_window", "chat_entry", "chat_view",
           "game_list", "user_list", "new_game_button", "load_game_button"]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
@@ -32,9 +32,9 @@ class Anteroom(object):
 
         self.anteroom_window.connect("destroy", guiutils.exit)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
-        self.new_game_button.connect("button-press-event", 
+        self.new_game_button.connect("button-press-event",
           self.on_new_game_button_click)
-        self.load_game_button.connect("button-press-event", 
+        self.load_game_button.connect("button-press-event",
           self.on_load_game_button_click)
 
         self.anteroom_window.set_icon(icon.pixbuf)

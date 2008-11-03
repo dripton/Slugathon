@@ -31,7 +31,7 @@ class TestAssignTowers(object):
             self.game.add_player("p%d" % (num+2))
         for unused in xrange(trials):
             self.game.assign_towers()
-            towers = set([player.starting_tower for player in 
+            towers = set([player.starting_tower for player in
               self.game.players])
             assert len(towers) == num_players
             for tower in towers:

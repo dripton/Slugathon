@@ -196,4 +196,3 @@ battle_terrain_colors = {
     "Volcano": "dark_red",
     "Drift": "blue",
 }
-

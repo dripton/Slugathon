@@ -70,7 +70,7 @@ class GUIMasterBoard(gtk.Window):
 
     implements(IObserver)
 
-    def __init__(self, board, game=None, user=None, username=None, 
+    def __init__(self, board, game=None, user=None, username=None,
       scale=None):
         gtk.Window.__init__(self)
 
@@ -132,7 +132,7 @@ class GUIMasterBoard(gtk.Window):
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
           ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
           ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
-          ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan", 
+          ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan",
             self.cb_mulligan),
           ("HelpMenu", None, "_Help"),
           ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
@@ -254,7 +254,7 @@ class GUIMasterBoard(gtk.Window):
                     if not player.markernames:
                         return
                     self._splitting_legion = legion
-                    PickMarker.PickMarker(self.username, self.game.name, 
+                    PickMarker.PickMarker(self.username, self.game.name,
                       player.markernames, self.picked_marker_presplit, self)
 
             elif phase == Phase.MOVE:
@@ -285,7 +285,7 @@ class GUIMasterBoard(gtk.Window):
                         if recruitnames:
                             creaturename = recruitnames[-1]
                             recruit = Creature.Creature(creaturename)
-                            chit = Chit.Chit(recruit, player.color, 
+                            chit = Chit.Chit(recruit, player.color,
                               self.scale / 2)
                             chit_scale = chit.chit_scale
                             chit.location = (guihex.center[0] - chit_scale / 2,
@@ -327,7 +327,7 @@ class GUIMasterBoard(gtk.Window):
 
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
         def1 = self.user.callRemote("split_legion", self.game.name,
-          new_legion1.markername, new_legion2.markername, 
+          new_legion1.markername, new_legion2.markername,
           new_legion1.creature_names(), new_legion2.creature_names())
         def1.addErrback(self.failure)
 
@@ -344,7 +344,7 @@ class GUIMasterBoard(gtk.Window):
         def1.addErrback(self.failure)
 
     def compute_scale(self):
-        """Return the approximate maximum scale that let the board fit on 
+        """Return the approximate maximum scale that let the board fit on
         the screen."""
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
@@ -368,16 +368,16 @@ class GUIMasterBoard(gtk.Window):
     def _add_missing_markers(self):
         """Add markers for any legions that lack them."""
         for legion in self.game.all_legions():
-            if legion.markername not in (marker.name for marker in 
+            if legion.markername not in (marker.name for marker in
               self.markers):
                 marker = Marker.Marker(legion, True, self.scale)
                 self.markers.append(marker)
 
     def _remove_extra_markers(self):
         """Remove markers for any legions that are no longer there."""
-        all_markernames = set([legion.markername for legion in 
+        all_markernames = set([legion.markername for legion in
           self.game.all_legions()])
-        hitlist = [marker for marker in self.markers 
+        hitlist = [marker for marker in self.markers
           if marker.name not in all_markernames]
         for marker in hitlist:
             self.markers.remove(marker)
@@ -510,7 +510,7 @@ class GUIMasterBoard(gtk.Window):
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
             self.update_gui(hexlabels)
-                
+
     def highlight_engagements(self):
         """Highlight all hexes with engagements."""
         self.unselect_all()
@@ -535,8 +535,8 @@ class GUIMasterBoard(gtk.Window):
             hexlabels = set()
             for legion in player.legions.itervalues():
                 hexlabel = legion.hexlabel
-                if (legion.moved and not legion.recruited and 
-                  len(legion) < 7 and 
+                if (legion.moved and not legion.recruited and
+                  len(legion) < 7 and
                   legion.available_recruits(self.game.board.hexes[hexlabel],
                     self.game.caretaker)):
                       hexlabels.add(hexlabel)
@@ -554,7 +554,7 @@ class GUIMasterBoard(gtk.Window):
         if player == self.game.active_player:
             if self.game.phase == Phase.SPLIT:
                 if player.can_exit_split_phase():
-                    def1 = self.user.callRemote("done_with_splits", 
+                    def1 = self.user.callRemote("done_with_splits",
                       self.game.name)
                     def1.addErrback(self.failure)
             elif self.game.phase == Phase.MOVE:
@@ -578,7 +578,7 @@ class GUIMasterBoard(gtk.Window):
             history = self.game.history
             if history.can_undo(self.username):
                 last_action = history.actions[-1]
-                def1 = self.user.callRemote("apply_action", 
+                def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
                 def1.addCallback(self.cb_mulligan)
                 def1.addErrback(self.failure)
@@ -594,7 +594,7 @@ class GUIMasterBoard(gtk.Window):
             history = self.game.history
             if history.can_undo(self.username):
                 last_action = history.actions[-1]
-                def1 = self.user.callRemote("apply_action", 
+                def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
                 def1.addErrback(self.failure)
 
@@ -610,7 +610,7 @@ class GUIMasterBoard(gtk.Window):
         if fled:
             self.user.callRemote("flee", self.game.name, defender.markername)
         else:
-            self.user.callRemote("do_not_flee", self.game.name, 
+            self.user.callRemote("do_not_flee", self.game.name,
               defender.markername)
 
     def cb_negotiate(self, attacker_legion, attacker_creature_names,
@@ -631,11 +631,11 @@ class GUIMasterBoard(gtk.Window):
         else:
             enemy_legion = attacker_legion
         if response_id == 0:
-            self.user.callRemote("concede", self.game.name, 
+            self.user.callRemote("concede", self.game.name,
               friendly_legion.markername, enemy_legion.markername, hexlabel)
         elif response_id == 1:
             self.user.callRemote("make_proposal", self.game.name,
-              attacker_legion.markername, attacker_creature_names, 
+              attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
         elif response_id == 2:
             # TODO no more proposals
@@ -643,7 +643,7 @@ class GUIMasterBoard(gtk.Window):
         elif response_id == 3:
             self.user.callRemote("fight", self.game.name,
               attacker_legion.markername, defender_legion.markername)
-              
+
     def cb_proposal(self, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, response_id):
         """Callback from Proposal dialog.
@@ -652,12 +652,12 @@ class GUIMasterBoard(gtk.Window):
                       1 - Reject
         """
         if response_id == 0:
-            self.user.callRemote("accept_proposal", self.game.name, 
-              attacker_legion.markername, attacker_creature_names, 
+            self.user.callRemote("accept_proposal", self.game.name,
+              attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
         elif response_id == 1:
             self.user.callRemote("reject_proposal", self.game.name,
-              attacker_legion.markername, attacker_creature_names, 
+              attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
 
     def destroy_negotiate(self):
@@ -727,7 +727,7 @@ class GUIMasterBoard(gtk.Window):
                     defender = legion
             if defender.player.name == self.username:
                 if defender.can_flee():
-                    Flee.Flee(self.username, attacker, defender, 
+                    Flee.Flee(self.username, attacker, defender,
                       self.cb_maybe_flee, self)
                 else:
                     # Can't flee, so we always send the do_not_flee.
@@ -747,7 +747,7 @@ class GUIMasterBoard(gtk.Window):
                     attacker = legion
             if (defender.player.name == self.username or
               attacker.player.name == self.username):
-                self.negotiate = Negotiate.Negotiate(self.username, attacker, 
+                self.negotiate = Negotiate.Negotiate(self.username, attacker,
                   defender, self.cb_negotiate, self)
 
         elif isinstance(action, Action.Concede):
@@ -761,7 +761,7 @@ class GUIMasterBoard(gtk.Window):
             defender_markername = action.defender_markername
             defender = self.game.find_legion(defender_markername)
             if attacker is not None and defender is not None:
-                self.proposals.add(Proposal.Proposal(self.username, attacker, 
+                self.proposals.add(Proposal.Proposal(self.username, attacker,
                   action.attacker_creature_names, defender,
                   action.defender_creature_names, self.cb_proposal, self))
 
@@ -776,7 +776,7 @@ class GUIMasterBoard(gtk.Window):
             defender_markername = action.defender_markername
             defender = self.game.find_legion(defender_markername)
             if (action.other_playername == self.username):
-                self.negotiate = Negotiate.Negotiate(self.username, attacker, 
+                self.negotiate = Negotiate.Negotiate(self.username, attacker,
                   defender, self.cb_negotiate, self)
 
         elif isinstance(action, Action.DoneFighting):

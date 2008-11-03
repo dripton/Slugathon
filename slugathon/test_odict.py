@@ -58,7 +58,7 @@ class TestPdict(object):
         pdic["a"] = 1
         assert pdic.keys() == list(pdic.iterkeys()) == ["c", "b", "a"]
         assert pdic.values() == list(pdic.itervalues()) == [3, 2, 1]
-        assert pdic.items() == list(pdic.iteritems()) == [("c", 3), ("b", 2), 
+        assert pdic.items() == list(pdic.iteritems()) == [("c", 3), ("b", 2),
           ("a", 1)]
 
     def test_pop(self):
@@ -155,7 +155,7 @@ class TestSdict(object):
         sdic["a"] = 1
         assert sdic.keys() == list(sdic.iterkeys()) == ["a", "b", "c"]
         assert sdic.values() == list(sdic.itervalues()) == [1, 2, 3]
-        assert sdic.items() == list(sdic.iteritems()) == [("a", 1), ("b", 2), 
+        assert sdic.items() == list(sdic.iteritems()) == [("a", 1), ("b", 2),
           ("c", 3)]
 
     def test_pop(self):

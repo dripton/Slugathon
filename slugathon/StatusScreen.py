@@ -29,9 +29,9 @@ class StatusScreen(gtk.Window):
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML("../glade/statusscreen.glade")
-        self.widget_names = ["status_screen_window", "turn_table", 
-          "player_table", "game_turn_label", "game_player_label", 
-          "game_phase_label", "battle_turn_label", "battle_player_label", 
+        self.widget_names = ["status_screen_window", "turn_table",
+          "player_table", "game_turn_label", "game_player_label",
+          "game_phase_label", "battle_turn_label", "battle_player_label",
           "battle_phase_label",
         ]
         for num, player in enumerate(self.game.players):
@@ -124,7 +124,7 @@ class StatusScreen(gtk.Window):
         elif isinstance(action, Action.DoneMoving):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
-        elif (isinstance(action, Action.RecruitCreature) or 
+        elif (isinstance(action, Action.RecruitCreature) or
           isinstance(action, Action.UndoRecruit) or
           isinstance(action, Action.AcquireAngel)):
             playername = action.playername
@@ -136,7 +136,7 @@ class StatusScreen(gtk.Window):
         elif isinstance(action, Action.DoneRecruiting):
             self._init_turn()
 
-        elif (isinstance(action, Action.Flee) or 
+        elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal)):
             for num, player in enumerate(self.game.players):
@@ -173,4 +173,3 @@ if __name__ == "__main__":
     status_screen = StatusScreen(game, user, username)
     status_screen.status_screen_window.connect("destroy", guiutils.exit)
     gtk.main()
-

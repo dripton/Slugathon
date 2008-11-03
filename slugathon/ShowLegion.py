@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 import gtk
 import gtk.glade
@@ -43,9 +43,9 @@ class ShowLegion(object):
 
 
 if __name__ == "__main__":
-    creatures = [Creature.Creature(name) for name in 
+    creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
-    
+
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     username = "test"
     playercolor = "Red"

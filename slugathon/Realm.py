@@ -15,4 +15,3 @@ class Realm(object):
         avatar = User.User(avatarId, self.server, mind)
         avatar.attached(mind)
         return pb.IPerspective, avatar, avatar.logout
-

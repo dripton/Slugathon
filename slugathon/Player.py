@@ -85,7 +85,7 @@ class Player(Observed):
             raise AssertionError("create_starting_legion with bad marker")
         if self.legions:
             raise AssertionError("create_starting_legion but have a legion")
-        creatures = [Creature.Creature(name) for name in 
+        creatures = [Creature.Creature(name) for name in
           creaturedata.starting_creature_names]
         legion = Legion.Legion(self, self.take_marker(markername), creatures,
           self.starting_tower)
@@ -106,10 +106,10 @@ class Player(Observed):
         if bag(parent.creature_names()) != bag(parent_creature_names).union(
           bag(child_creature_names)):
             raise AssertionError("wrong creatures")
-        new_legion1 = Legion.Legion(self, parent_markername, 
+        new_legion1 = Legion.Legion(self, parent_markername,
           Creature.n2c(parent_creature_names), parent.hexlabel)
         new_legion1.add_observer(self)
-        new_legion2 = Legion.Legion(self, child_markername, 
+        new_legion2 = Legion.Legion(self, child_markername,
           Creature.n2c(child_creature_names), parent.hexlabel)
         new_legion2.add_observer(self)
         if not parent.is_legal_split(new_legion1, new_legion2):
@@ -118,10 +118,10 @@ class Player(Observed):
         for creature_name in child_creature_names:
             parent.remove_creature_by_name(creature_name)
         self.legions[child_markername] = new_legion2
-        # TODO One action for our player with creature names, and a 
+        # TODO One action for our player with creature names, and a
         # different action for other players without.
-        action = Action.SplitLegion(self.game.name, self.name, 
-          parent_markername, child_markername, parent_creature_names, 
+        action = Action.SplitLegion(self.game.name, self.name,
+          parent_markername, child_markername, parent_creature_names,
           child_creature_names)
         self.notify(action)
 
@@ -133,10 +133,10 @@ class Player(Observed):
         parent.creatures += child.creatures
         del self.legions[child_markername]
         self.markernames.add(child.markername)
-        # TODO One action for our player with creature names, and a 
+        # TODO One action for our player with creature names, and a
         # different action for other players without.
-        action = Action.UndoSplit(self.game.name, self.name, 
-          parent_markername, child_markername, parent_creature_names, 
+        action = Action.UndoSplit(self.game.name, self.name,
+          parent_markername, child_markername, parent_creature_names,
           child_creature_names)
         self.notify(action)
 
@@ -147,7 +147,7 @@ class Player(Observed):
 
     def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
-        action = Action.RollMovement(self.game.name, self.name, 
+        action = Action.RollMovement(self.game.name, self.name,
           self.movement_roll)
         self.notify(action)
 
@@ -157,7 +157,7 @@ class Player(Observed):
 
     def can_take_mulligan(self, game):
         """Return True iff this player can take a mulligan"""
-        return bool(self is game.active_player and game.turn == 1 
+        return bool(self is game.active_player and game.turn == 1
           and game.phase == Phase.MOVE and self.mulligans_left)
 
     def take_mulligan(self):
@@ -175,17 +175,17 @@ class Player(Observed):
 
     def moved_legions(self):
         """Return a set of this players legions that have moved this turn."""
-        return set([legion for legion in self.legions.itervalues() if 
+        return set([legion for legion in self.legions.itervalues() if
           legion.moved])
 
     def friendly_legions(self, hexlabel=None):
         """Return a set of this player's legions, in hexlabel if not None."""
-        return set([legion for legion in self.legions.itervalues() 
+        return set([legion for legion in self.legions.itervalues()
           if hexlabel in (None, legion.hexlabel)])
 
     def enemy_legions(self, game, hexlabel=None):
         """Return a set of other players' legions, in hexlabel if not None."""
-        return set([legion for legion in game.all_legions(hexlabel) 
+        return set([legion for legion in game.all_legions(hexlabel)
           if legion.player is not self])
 
     def can_exit_move_phase(self, game):
@@ -194,7 +194,7 @@ class Player(Observed):
             return False
         for legion in self.friendly_legions():
             if len(self.friendly_legions(legion.hexlabel)) >= 2:
-                if not legion.moved and game.find_all_moves(legion, 
+                if not legion.moved and game.find_all_moves(legion,
                   game.board.hexes[legion.hexlabel], self.movement_roll):
                     return False
                 # else will need to recombine
@@ -206,7 +206,7 @@ class Player(Observed):
             for legion in self.friendly_legions():
                 legions_in_hex = list(self.friendly_legions(legion.hexlabel))
                 if len(legions_in_hex) >= 2:
-                    split_action = game.history.find_last_split(self.name, 
+                    split_action = game.history.find_last_split(self.name,
                       legions_in_hex[0], legions_in_hex[1])
                     if split_action is not None:
                         parent_markername = split_action.parent_markername
@@ -278,4 +278,3 @@ class Player(Observed):
             angel = Creature.Creature(action.angel_name)
             legion.acquire(angel)
         self.notify(action)
-

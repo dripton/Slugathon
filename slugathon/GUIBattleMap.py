@@ -27,7 +27,7 @@ class GUIBattleMap(gtk.Window):
 
     implements(IObserver)
 
-    def __init__(self, battlemap, game=None, user=None, username=None, 
+    def __init__(self, battlemap, game=None, user=None, username=None,
       scale=None):
         gtk.Window.__init__(self)
 
@@ -75,17 +75,17 @@ class GUIBattleMap(gtk.Window):
         # The -2 is a fudge factor to leave room on the sides.
         xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 2
         # The -3 is a fudge factor for menus and toolbars.
-        yscale = math.floor(height / (2 * SQRT3 * 
+        yscale = math.floor(height / (2 * SQRT3 *
           self.battlemap.hex_height())) - 3
         return int(min(xscale, yscale))
 
     def compute_width(self):
         """Return the width of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_width() * 3.2)) 
+        return int(math.ceil(self.scale * self.battlemap.hex_width() * 3.2))
 
     def compute_height(self):
         """Return the height of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 * 
+        return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 *
           SQRT3))
 
     def unselect_all(self):
@@ -123,8 +123,8 @@ class GUIBattleMap(gtk.Window):
         if phase == Phase.MANEUVER:
             if self.selected_chit is not None and guihex.selected:
                 creature = self.selected_chit.creature
-                def1 = self.user.callRemote("move_creature", 
-                  self.game.name, creature.name, creature.hexlabel, 
+                def1 = self.user.callRemote("move_creature",
+                  self.game.name, creature.name, creature.hexlabel,
                   guihex.battlehex.label)
                 def1.addErrback(self.failure)
         self.selected_chit = None
@@ -153,12 +153,12 @@ class GUIBattleMap(gtk.Window):
     def _add_missing_chits(self):
         """Add chits for any creatures that lack them."""
         chit_creatures = set(chit.creature for chit in self.chits)
-        for (legion, rotate) in [ 
-          (self.game.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE), 
+        for (legion, rotate) in [
+          (self.game.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE),
           (self.game.defender_legion, gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
             for creature in legion.creatures:
                 if creature not in chit_creatures:
-                    chit = Chit.Chit(creature, legion.player.color, 
+                    chit = Chit.Chit(creature, legion.player.color,
                       self.scale / 2, rotate=rotate)
                     self.chits.append(chit)
 
@@ -167,7 +167,7 @@ class GUIBattleMap(gtk.Window):
         num = len(chits)
         guihex = self.guihexes[hexlabel]
         chit_scale = self.chits[0].chit_scale
-        bl = (guihex.center[0] - chit_scale / 2, guihex.center[1] - 
+        bl = (guihex.center[0] - chit_scale / 2, guihex.center[1] -
           chit_scale / 2)
 
         if num == 1:
@@ -215,11 +215,11 @@ class GUIBattleMap(gtk.Window):
           -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
     def chits_in_hex(self, hexlabel):
-        return [chit for chit in self.chits 
+        return [chit for chit in self.chits
           if chit.creature.hexlabel == hexlabel]
 
     def draw_chits(self, gc):
-        if not self.game: 
+        if not self.game:
             return
         self._add_missing_chits()
         hexlabels = set([chit.creature.hexlabel for chit in self.chits])
@@ -242,7 +242,7 @@ class GUIBattleMap(gtk.Window):
 
     def update(self, observed, action):
         print "GUIBattleMap.update", observed, action
-        if isinstance(action, Action.MoveCreature or isinstance(action, 
+        if isinstance(action, Action.MoveCreature or isinstance(action,
           Action.UndoMoveCreature)):
             repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]
             self.update_gui(repaint_hexlabels)

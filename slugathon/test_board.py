@@ -7,7 +7,7 @@ hex1 = board.hexes[1]
 hex2 = board.hexes[2]
 
 def test_init_hex():
-    assert hex1.terrain == "Plains" 
+    assert hex1.terrain == "Plains"
     assert hex1.x == 7
     assert hex1.y == 5
 

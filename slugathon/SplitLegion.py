@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 # TODO Need feedback when a split fails for no markers.
 
@@ -24,7 +24,7 @@ class SplitLegion(object):
         self.old_legion = legion
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/splitlegion.glade")
-        self.widget_names = ["split_legion_dialog", "old_marker_hbox", 
+        self.widget_names = ["split_legion_dialog", "old_marker_hbox",
           "old_chits_hbox", "new_marker_hbox", "new_chits_hbox",
           "legion_name"]
         for widget_name in self.widget_names:
@@ -44,7 +44,7 @@ class SplitLegion(object):
 
         self.new_legion1 = Legion.Legion(player, legion.markername,
           legion.sorted_creatures(), legion.hexlabel)
-        self.new_legion2 = Legion.Legion(player, player.selected_markername, 
+        self.new_legion2 = Legion.Legion(player, player.selected_markername,
           [], legion.hexlabel)
         self.new_marker = Marker.Marker(self.new_legion2, False, scale=20)
         self.new_marker_hbox.pack_start(self.new_marker.event_box,
@@ -95,7 +95,7 @@ class SplitLegion(object):
 
 if __name__ == "__main__":
     now = time.time()
-    creatures = [Creature.Creature(name) for name in 
+    creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
     username = "test"
     game = Game.Game("g1", username, now, now, 2, 6)

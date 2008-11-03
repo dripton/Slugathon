@@ -4,7 +4,7 @@ import battlemapdata
 
 
 def _terrain_to_hazards():
-    """Return a dict of masterboard terrain type to a set of all 
+    """Return a dict of masterboard terrain type to a set of all
     battle hazards (hex and hexside) found there."""
     result = {}
     for mterrain, dic2 in battlemapdata.data.iteritems():
@@ -17,7 +17,7 @@ def _terrain_to_hazards():
     return result
 
 def _terrain_to_creature_names():
-    """Return a dict of masterboard terrain type to a set of all 
+    """Return a dict of masterboard terrain type to a set of all
     Creature names that can be recruited there."""
     result = {}
     for terrain, tuples in recruitdata.data.iteritems():
@@ -60,7 +60,7 @@ class Creature(object):
     def __init__(self, name):
         self.name = name
         (self.plural_name, self.power, self.skill, rangestrikes, self.flies,
-          self.character_type, self.summonable, self.acquirable_every, 
+          self.character_type, self.summonable, self.acquirable_every,
           self.max_count, self.color_name) = creaturedata.data[name]
         self.rangestrikes = bool(rangestrikes)
         self.magicmissile = (rangestrikes == 2)
@@ -83,13 +83,13 @@ class Creature(object):
 
     def sort_value(self):
         """Return a rough indication of creature value, for sorting."""
-        return (self.score() 
-          + 0.2 * self.acquirable 
-          + 0.3 * self.flies 
+        return (self.score()
+          + 0.2 * self.acquirable
+          + 0.3 * self.flies
           + 0.25 * self.rangestrikes
-          + 0.1 * self.magicmissile 
-          + 0.15 * (self.skill == 2) 
-          + 0.18 * (self.skill == 4) 
+          + 0.1 * self.magicmissile
+          + 0.15 * (self.skill == 2)
+          + 0.18 * (self.skill == 4)
           + 100 * (self.name == "Titan"))
 
     def is_dead(self):
@@ -102,7 +102,7 @@ class Creature(object):
 
     def is_native(self, hazard):
         """Return True iff this creature is native to the named hazard.
-        
+
         Note that we define nativity even for hazards that don't provide any
         benefit for being native, like Wall and Plains.
         """

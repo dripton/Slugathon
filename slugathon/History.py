@@ -8,8 +8,8 @@ import Action
 
 class History(object):
     """Event history tracker, for one game.
-    
-    Lacks direct undo or redo methods because we need those operations to 
+
+    Lacks direct undo or redo methods because we need those operations to
     go through the server.
     """
 
@@ -33,18 +33,18 @@ class History(object):
 
     def update(self, observed, action):
         """Update history with a new action.
-        
+
         observed is part of the interface, but we don't need it.
         """
         if (isinstance(action, Action.UndoSplit) or
           isinstance(action, Action.UndoMoveLegion) or
           isinstance(action, Action.UndoRecruit)):
-            self._undo(action) 
+            self._undo(action)
         else:
             self.actions.append(action)
             # Anything but a redo should clear the whole undone list.
             # A redo only removes the last item, regardless of whether it
-            # was accomplished using the redo interface, or by repeating 
+            # was accomplished using the redo interface, or by repeating
             # the the last action that was undone.
             if self.undone:
                 prev = self.undone.pop()
@@ -69,7 +69,7 @@ class History(object):
         """Return the last SplitLegion action for playername involving
         markername1 or markername2, or None."""
         for action in reversed(self.actions):
-            if (isinstance(action, Action.SplitLegion) 
+            if (isinstance(action, Action.SplitLegion)
               and action.playername == playername
               and (action.parent_markername in [markername1, markername2]
               or action.child_markername in [markername1, markername2])):

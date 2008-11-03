@@ -57,7 +57,7 @@ class User(pb.Avatar):
     def perspective_pick_first_marker(self, game_name, markername):
         self.server.pick_first_marker(self.name, game_name, markername)
 
-    def perspective_split_legion(self, game_name, parent_markername, 
+    def perspective_split_legion(self, game_name, parent_markername,
       child_markername, parent_creature_names, child_creature_names):
         self.server.split_legion(self.name, game_name, parent_markername,
           child_markername, parent_creature_names, child_creature_names)
@@ -68,7 +68,7 @@ class User(pb.Avatar):
     def perspective_take_mulligan(self, game_name):
         self.server.take_mulligan(self.name, game_name)
 
-    def perspective_move_legion(self, game_name, markername, hexlabel, 
+    def perspective_move_legion(self, game_name, markername, hexlabel,
       entry_side, teleport, teleporting_lord):
         self.server.move_legion(self.name, game_name, markername, hexlabel,
           entry_side, teleport, teleporting_lord)
@@ -87,28 +87,28 @@ class User(pb.Avatar):
 
     def perspective_concede(self, game_name, markername, enemy_markername,
       hexlabel):
-        self.server.concede(self.name, game_name, markername, 
+        self.server.concede(self.name, game_name, markername,
           enemy_markername, hexlabel)
 
     def perspective_make_proposal(self, game_name, attacker_markername,
       attacker_creature_names, defender_markername, defender_creature_names):
         self.server.make_proposal(self.name, game_name, attacker_markername,
-          attacker_creature_names, defender_markername, 
+          attacker_creature_names, defender_markername,
           defender_creature_names)
 
     def perspective_accept_proposal(self, game_name, attacker_markername,
       attacker_creature_names, defender_markername, defender_creature_names):
         self.server.accept_proposal(self.name, game_name, attacker_markername,
-          attacker_creature_names, defender_markername, 
+          attacker_creature_names, defender_markername,
           defender_creature_names)
 
     def perspective_reject_proposal(self, game_name, attacker_markername,
       attacker_creature_names, defender_markername, defender_creature_names):
         self.server.reject_proposal(self.name, game_name, attacker_markername,
-          attacker_creature_names, defender_markername, 
+          attacker_creature_names, defender_markername,
           defender_creature_names)
 
-    def perspective_fight(self, game_name, attacker_markername, 
+    def perspective_fight(self, game_name, attacker_markername,
       defender_markername):
         self.server.fight(self.name, game_name, attacker_markername,
           defender_markername)
@@ -118,17 +118,17 @@ class User(pb.Avatar):
         self.server.move_creature(self.name, game_name, creature_name,
           old_hexlabel, new_hexlabel)
 
-    def perspective_acquire_angel(self, game_name, markername, 
+    def perspective_acquire_angel(self, game_name, markername,
       angel_name):
-        self.server.acquire_angel(self.name, game_name, markername, 
+        self.server.acquire_angel(self.name, game_name, markername,
           angel_name)
 
     def perspective_done_with_engagements(self, game_name):
         self.server.done_with_engagements(self.name, game_name)
 
-    def perspective_recruit_creature(self, game_name, markername, 
+    def perspective_recruit_creature(self, game_name, markername,
       creature_name):
-        self.server.recruit_creature(self.name, game_name, markername, 
+        self.server.recruit_creature(self.name, game_name, markername,
           creature_name)
 
     def perspective_done_with_recruits(self, game_name):
@@ -137,26 +137,26 @@ class User(pb.Avatar):
     def perspective_apply_action(self, action):
         """Pull the exact method and args out of the Action."""
         if isinstance(action, Action.UndoSplit):
-            self.server.undo_split(self.name, action.game_name, 
+            self.server.undo_split(self.name, action.game_name,
               action.parent_markername, action.child_markername)
         elif isinstance(action, Action.UndoMoveLegion):
-            self.server.undo_move_legion(self.name, action.game_name, 
+            self.server.undo_move_legion(self.name, action.game_name,
               action.markername)
         elif isinstance(action, Action.UndoRecruit):
             self.server.undo_recruit(self.name, action.game_name,
               action.markername)
         elif isinstance(action, Action.SplitLegion):
-            self.server.split_legion(self.name, action.game_name, 
-              action.parent_markername, action.child_markername, 
+            self.server.split_legion(self.name, action.game_name,
+              action.parent_markername, action.child_markername,
               action.parent_creature_names, action.child_creature_names)
         elif isinstance(action, Action.MoveLegion):
-            self.server.move_legion(self.name, action.game_name, 
-              action.markername, action.hexlabel, action.entry_side, 
+            self.server.move_legion(self.name, action.game_name,
+              action.markername, action.hexlabel, action.entry_side,
               action.teleport, action.teleporting_lord)
         elif isinstance(action, Action.DoneMoving):
             self.server.done_with_moves(self.name, action.game_name)
         elif isinstance(action, Action.RecruitCreature):
-            self.server.recruit_creature(self.name, action.game_name, 
+            self.server.recruit_creature(self.name, action.game_name,
               action.markername, action.creature_name)
         elif isinstance(action, Action.DoneRecruiting):
             self.server.done_with_recruits(self.name, action.game_name)

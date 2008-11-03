@@ -26,7 +26,7 @@ class About(object):
         ad.set_authors(["David Ripton",])
         ad.set_artists(["Chris Byler", "Keith Carter", "Chris Howe",
           "Klint Hull", "David Lum", "John Lum", "Agustin Martin",
-          "Tchula Ripton", "Jerry Reiger", "Josh Smith", 
+          "Tchula Ripton", "Jerry Reiger", "Josh Smith",
           "Sakis Spyropoulos", "D. U. Thibault",])
 
         ad.set_logo(icon.pixbuf)

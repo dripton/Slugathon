@@ -34,7 +34,7 @@ class Legion(Observed):
         return len(self.creatures)
 
     def num_lords(self):
-        return sum(creature.character_type == "lord" for creature in 
+        return sum(creature.character_type == "lord" for creature in
           self.creatures)
 
     def first_lord_name(self):
@@ -153,7 +153,7 @@ class Legion(Observed):
                     prev = names[ii - 1]
                 else:
                     prev = None
-                if ((counts[name] and num) or (counts[prev] >= num) or 
+                if ((counts[name] and num) or (counts[prev] >= num) or
                   prev == recruitdata.ANYTHING or (prev == recruitdata.CREATURE
                   and self._max_creatures_of_one_type() >= num)):
                     for jj in xrange(0, ii+1):
@@ -174,7 +174,7 @@ class Legion(Observed):
     def recruit(self, creature):
         """Recruit creature, and notify observers."""
         player = self.player
-        if self.recruited: 
+        if self.recruited:
             if self.creatures[-1].name == creature.name:
                 # okay, don't do it twice
                 pass
@@ -217,7 +217,7 @@ class Legion(Observed):
 
     def sorted_creatures(self):
         """Return creatures, sorted in descending order of value."""
-        li = reversed(sorted((creature.sort_value(), creature) 
+        li = reversed(sorted((creature.sort_value(), creature)
           for creature in self.creatures))
         return [tup[1] for tup in li]
 
@@ -247,19 +247,19 @@ class Legion(Observed):
         player.score = score1
         if can_acquire:
             archangels = 0
-            while (len(self) + archangels < 7 and 
+            while (len(self) + archangels < 7 and
               score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
                 archangels += 1
                 score1 -= ANGEL_POINTS
             angels = 0
-            while (len(self) + archangels + angels < 7 and 
+            while (len(self) + archangels + angels < 7 and
               score1 // ANGEL_POINTS > score0 // ANGEL_POINTS):
                 angels += 1
                 score1 -= ANGEL_POINTS
             self.angels_pending = angels
             self.archangels_pending = archangels
             if angels + archangels > 0:
-                action = Action.AcquireAngels(self.player.game.name, 
+                action = Action.AcquireAngels(self.player.game.name,
                   self.player.name, self.markername, angels, archangels)
                 self.notify(action)
 

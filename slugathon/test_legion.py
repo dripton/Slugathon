@@ -104,7 +104,7 @@ def test_is_legal_split():
       "Gargoyle", "Ogre", "Troll"]), 1)
     child4 = Legion.Legion(player, "Rd03", Creature.n2c(["Centaur"]), 1)
     assert not parent2.is_legal_split(child3, child4)
-  
+
 
 def test_available_recruits():
     now = time.time()
@@ -139,11 +139,11 @@ def test_score():
     assert legion.score() == 120
 
 def test_sorted_creatures():
-    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle", 
+    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Minotaur"])
     legion = Legion.Legion(None, None, creatures, 1)
     li = legion.sorted_creatures()
     assert len(li) == len(creatures) == len(legion)
     names = [creature.name for creature in li]
-    assert names == ["Archangel", "Serpent", "Ranger", "Minotaur", 
+    assert names == ["Archangel", "Serpent", "Ranger", "Minotaur",
       "Gargoyle", "Centaur", "Ogre"]

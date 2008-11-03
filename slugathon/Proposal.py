@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 import time
 
@@ -17,7 +17,7 @@ from bag import bag
 
 class Proposal(object):
     """Dialog to choose whether to accept an opponent's proposal."""
-    def __init__(self, username, attacker_legion, attacker_creature_names, 
+    def __init__(self, username, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, callback, parent):
         self.attacker_legion = attacker_legion
         self.attacker_creature_names = attacker_creature_names
@@ -26,16 +26,16 @@ class Proposal(object):
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/proposal.glade")
         self.widget_names = [
-          "proposal_dialog", 
-          "legion_name", 
-          "attacker_hbox", 
-          "attacker_marker_hbox", 
-          "attacker_chits_hbox", 
-          "defender_hbox", 
-          "defender_marker_hbox", 
-          "defender_chits_hbox", 
-          "accept_button", 
-          "reject_button", 
+          "proposal_dialog",
+          "legion_name",
+          "attacker_hbox",
+          "attacker_marker_hbox",
+          "attacker_chits_hbox",
+          "defender_hbox",
+          "defender_marker_hbox",
+          "defender_chits_hbox",
+          "accept_button",
+          "reject_button",
         ]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
@@ -45,7 +45,7 @@ class Proposal(object):
         self.proposal_dialog.set_transient_for(parent)
 
         self.legion_name.set_text("Legion %s negotiates with %s in hex %s?" % (
-          attacker_legion.markername, defender_legion.markername, 
+          attacker_legion.markername, defender_legion.markername,
           defender_legion.hexlabel))
 
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     attacker_survivor_names = ["Titan", "Colossus", "Serpent", "Hydra",
       "Archangel", "Angel"]
     attacker_creatures = Creature.n2c(attacker_creature_names)
-    attacker_legion = Legion.Legion(attacker_player, "Bk01", 
+    attacker_legion = Legion.Legion(attacker_player, "Bk01",
       attacker_creatures, 1)
 
     defender_username = "Eek!"
@@ -127,14 +127,14 @@ if __name__ == "__main__":
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_survivor_names = []
     defender_creatures = Creature.n2c(defender_creature_names)
-    defender_legion = Legion.Legion(defender_player, "Rd01", 
+    defender_legion = Legion.Legion(defender_player, "Rd01",
       defender_creatures, 1)
 
     def callback(*args):
         print "callback", args
         guiutils.exit()
 
-    proposal = Proposal(defender_username, attacker_legion, 
-      attacker_survivor_names, defender_legion, defender_survivor_names, 
+    proposal = Proposal(defender_username, attacker_legion,
+      attacker_survivor_names, defender_legion, defender_survivor_names,
       callback, None)
     gtk.main()

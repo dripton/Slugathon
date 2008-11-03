@@ -189,7 +189,7 @@ class TestBattle(object):
         assert self.game.find_battle_moves(centaur) == set1
         gargoyle = defender.creatures[3]
         assert gargoyle.name == "Gargoyle"
-        set3 = set(["D1", "E1", "F1", "C1", "D2", "E2", "F2", "B1", "C2", 
+        set3 = set(["D1", "E1", "F1", "C1", "D2", "E2", "F2", "B1", "C2",
           "E3"])
         assert self.game.find_battle_moves(gargoyle) == set3
 

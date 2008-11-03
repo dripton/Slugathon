@@ -2,7 +2,7 @@ class BattleHex(object):
     """A logical hex on a battle map.  No GUI logic.
 
     Hex vertexes are numbered like:
-     
+
         0        1
          --------
         /        \
@@ -87,4 +87,3 @@ class BattleHex(object):
             if border2 == border:
                 result.add(hexside)
         return result
-

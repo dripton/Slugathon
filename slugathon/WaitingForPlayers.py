@@ -13,7 +13,7 @@ import icon
 def format_time(secs):
     tup = time.localtime(secs)
     return time.strftime("%H:%M:%S", tup)
-    
+
 
 class WaitingForPlayers(object):
     """Waiting for players to start game dialog."""
@@ -26,7 +26,7 @@ class WaitingForPlayers(object):
         self.game = game
         self.game.add_observer(self)
         self.glade = gtk.glade.XML("../glade/waitingforplayers.glade")
-        self.widget_names = ["waiting_for_players_window", "game_name_label", 
+        self.widget_names = ["waiting_for_players_window", "game_name_label",
           "player_list", "created_entry", "starts_by_entry", "countdown_entry",
           "join_button", "drop_button", "start_button"]
         for widget_name in self.widget_names:
@@ -41,7 +41,7 @@ class WaitingForPlayers(object):
         self.join_button.connect("button-press-event", self.cb_click_join)
         self.drop_button.connect("button-press-event", self.cb_click_drop)
         self.start_button.connect("button-press-event", self.cb_click_start)
-        self.start_button.set_sensitive(self.username == 
+        self.start_button.set_sensitive(self.username ==
           self.game.get_owner().name)
         # TODO Start button should automatically be triggered when max
         # players have joined, or min players have joined and time is up.
@@ -94,7 +94,7 @@ class WaitingForPlayers(object):
         leng = len(self.game.get_playernames())
         while len(self.player_store) > leng:
             del self.player_store[leng]
-        self.start_button.set_sensitive(self.username == 
+        self.start_button.set_sensitive(self.username ==
           self.game.get_owner().name)
 
     def destroy(self):

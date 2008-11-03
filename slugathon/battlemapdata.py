@@ -20,7 +20,7 @@ data = {
         "D5": ("Bramble", 0, {}),
         "E3": ("Bramble", 0, {}),
         "F4": ("Bramble", 0, {}),
-    }, 
+    },
 
     "Desert": {
         "A1": ("Sand", 0, {}),
@@ -38,11 +38,11 @@ data = {
 
     "Hills": {
         "B1": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 5: "Slope"}),
-        "B3": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope", 
+        "B3": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
           4: "Slope", 5: "Slope"}),
         "C2": ("Tree", 1, {}),
         "C4": ("Tree", 1, {}),
-        "D2": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope", 
+        "D2": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
           4: "Slope", 5: "Slope"}),
         "D6": ("Plains", 1, {2: "Slope", 3: "Slope", 4: "Slope"}),
         "F2": ("Tree", 1, {}),
@@ -79,7 +79,7 @@ data = {
         "C4": ("Plains", 1, {3: "Slope", 4: "Slope"}),
         "C5": ("Plains", 2, {2: "Slope", 3: "Slope", 4: "Slope"}),
         "D3": ("Plains", 1, {2: "Slope", 3: "Slope", 4: "Slope", 5: "Slope"}),
-        "D4": ("Volcano", 2, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope", 
+        "D4": ("Volcano", 2, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
           4: "Cliff", 5: "Slope"}),
         "D5": ("Plains", 1, {}),
         "D6": ("Plains", 2, {2: "Slope", 3: "Slope"}),
@@ -108,12 +108,12 @@ data = {
     "Tower": {
         "C3": ("Tower", 1, {3: "Wall", 4: "Wall", 5: "Wall"}),
         "C4": ("Tower", 1, {0: "Wall", 4: "Wall", 5: "Wall"}),
-        "D3": ("Tower", 1, {2: "Wall", 3: "Wall", 4: "Wall"}), 
-        "D4": ("Tower", 2, {0: "Wall", 1: "Wall", 2: "Wall", 3: "Wall", 
+        "D3": ("Tower", 1, {2: "Wall", 3: "Wall", 4: "Wall"}),
+        "D4": ("Tower", 2, {0: "Wall", 1: "Wall", 2: "Wall", 3: "Wall",
           4: "Wall", 5: "Wall"}),
         "D5": ("Tower", 1, {0: "Wall", 1: "Wall", 5: "Wall"}),
-        "E3": ("Tower", 1, {1: "Wall", 2: "Wall", 3: "Wall"}), 
-        "E4": ("Tower", 1, {0: "Wall", 1: "Wall", 2: "Wall"}), 
+        "E3": ("Tower", 1, {1: "Wall", 2: "Wall", 3: "Wall"}),
+        "E4": ("Tower", 1, {0: "Wall", 1: "Wall", 2: "Wall"}),
     },
 
     "Tundra": {

@@ -158,8 +158,8 @@ class GUIBattleHex(object):
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
                 drawable = self.guimap.area.window
-                drawable.draw_pixbuf(gc, self.border_pixbufs[hexside], 0, 0, 
-                  self.border_pixbuf_x, self.border_pixbuf_y, -1, -1, 
+                drawable.draw_pixbuf(gc, self.border_pixbufs[hexside], 0, 0,
+                  self.border_pixbuf_x, self.border_pixbuf_y, -1, -1,
                   gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
     def draw_label(self, gc, label, side):
@@ -181,7 +181,7 @@ class GUIBattleHex(object):
         self.guimap.area.window.draw_layout(gc, x, y, layout)
 
     def cleanup_entrance(self, gc):
-        """Cleanup after any chits that may have moved away from an 
+        """Cleanup after any chits that may have moved away from an
         entrance."""
         chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
         x = self.center[0] - chit_scale / 2
@@ -195,7 +195,7 @@ class GUIBattleHex(object):
             self.draw_hexagon(gc)
             self.draw_hex_overlay(gc)
             self.draw_border_overlays(gc)
-            self.draw_label(gc, self.battlehex.label, 
+            self.draw_label(gc, self.battlehex.label,
               self.battlehex.label_side)
             self.draw_label(gc, self.battlehex.terrain,
               self.battlehex.terrain_side)

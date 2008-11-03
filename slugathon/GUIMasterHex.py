@@ -162,7 +162,7 @@ class GUIMasterHex(object):
         self.dest_x = int(round(self.center[0] - myboxsize[0] / 2.))
         self.dest_y = int(round(self.center[1] - myboxsize[1] / 2.))
 
-        image_filename = os.path.join("../images/masterhex", 
+        image_filename = os.path.join("../images/masterhex",
           self.masterhex.overlay_filename)
         pixbuf = gtk.gdk.pixbuf_new_from_file(image_filename)
         self.pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),

@@ -18,7 +18,7 @@ class TestMovement(object):
         game.assign_first_marker("p0", "Rd01")
         game.assign_first_marker("p1", "Bu01")
         player0.pick_marker("Rd02")
-        player0.split_legion("Rd01", "Rd02", 
+        player0.split_legion("Rd01", "Rd02",
           ["Titan", "Centaur", "Centaur", "Gargoyle"],
           ["Angel", "Ogre", "Ogre", "Gargoyle"])
         player0.done_with_splits()
@@ -41,7 +41,7 @@ class TestMovement(object):
         moves = self.game.find_normal_moves(legion, masterhex, 1)
         assert moves == set([(6, 5), (10, 1), (108, 3)])
 
-        moves = self.game.find_normal_moves(legion, masterhex, 2) 
+        moves = self.game.find_normal_moves(legion, masterhex, 2)
         assert moves == set([(7, 3), (11, 5), (107, 1)])
 
         moves = self.game.find_normal_moves(legion, masterhex, 3)

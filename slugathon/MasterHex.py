@@ -94,7 +94,7 @@ class MasterHex(object):
         the center of the board, or the one farthest away from it.
         """
         delta_x = self.x - self.board.mid_x
-        delta_y = (1.0 * (self.y - self.board.mid_y) * self.board.width / 
+        delta_y = (1.0 * (self.y - self.board.mid_y) * self.board.width /
           self.board.height)
         try:
             ratio = delta_x / delta_y

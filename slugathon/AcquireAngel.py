@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 import time
 
@@ -17,7 +17,7 @@ import Game
 
 class AcquireAngel(object):
     """Dialog to acquire an angel."""
-    def __init__(self, username, player, legion, available_angels, 
+    def __init__(self, username, player, legion, available_angels,
       callback, parent):
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/acquireangel.glade")
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     def callback(legion, creature):
         print legion, "acquired", creature
         guiutils.exit
-   
+
     now = time.time()
     username = "p0"
     game = Game.Game("g1", "p0", now, now, 2, 6)

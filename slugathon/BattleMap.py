@@ -3,11 +3,11 @@ import BattleHex
 
 
 all_labels = frozenset([
-    "A1", "A2", "A3", 
-    "B1", "B2", "B3", "B4", 
-    "C1", "C2", "C3", "C4", "C5", 
-    "D1", "D2", "D3", "D4", "D5", "D6", 
-    "E1", "E2", "E3", "E4", "E5", 
+    "A1", "A2", "A3",
+    "B1", "B2", "B3", "B4",
+    "C1", "C2", "C3", "C4", "C5",
+    "D1", "D2", "D3", "D4", "D5", "D6",
+    "E1", "E2", "E3", "E4", "E5",
     "F1", "F2", "F3", "F4",
     "ATTACKER", "DEFENDER",
 ])
@@ -18,19 +18,19 @@ def label_to_coords(label, entry_side):
 
     We spin the map so that the attacker's entry side is always on the left.
     This works on the rotated map.
-   
-    0    *  *  *   
-    1 *  *  *  *  *  * 
+
+    0    *  *  *
+    1 *  *  *  *  *  *
     2 *  *  *  *  *  *
     3 *  *  *  *  *  *
-    4 *  *  *  *  *   
-    5       *      
+    4 *  *  *  *  *
+    5       *
       0  1  2  3  4  5
 
     entry_side 1:
 
-               D1 
-            E1    C1 
+               D1
+            E1    C1
     A    F1    D2    B1       D
     T       E2    C2    A1    E
     T    F2    D3    B2       F
@@ -43,8 +43,8 @@ def label_to_coords(label, entry_side):
 
     entry_side 3:
 
-               A3 
-            A2    B4 
+               A3
+            A2    B4
     A    A1    B3    C1       D
     T       B2    C4    D6    E
     T    B1    C3    D5       F
@@ -57,8 +57,8 @@ def label_to_coords(label, entry_side):
 
     entry_side 5:
 
-               F4 
-            E5    F3 
+               F4
+            E5    F3
     A    D6    E4    F2       D
     T       D5    E3    F1    E
     T    C5    D4    E2       F
@@ -76,7 +76,7 @@ def label_to_coords(label, entry_side):
         "A1": (5, 1), "A2": (5, 2), "A3": (5, 3),
         "B1": (4, 1), "B2": (4, 2), "B3": (4, 3), "B4": (4, 4),
         "C1": (3, 0), "C2": (3, 1), "C3": (3, 2), "C4": (3, 3), "C5": (3, 4),
-        "D1": (2, 0), "D2": (2, 1), "D3": (2, 2), "D4": (2, 3), "D5": (2, 4), 
+        "D1": (2, 0), "D2": (2, 1), "D3": (2, 2), "D4": (2, 3), "D5": (2, 4),
           "D6": (2, 5),
         "E1": (1, 0), "E2": (1, 1), "E3": (1, 2), "E4": (1, 3), "E5": (1, 4),
         "F1": (0, 1), "F2": (0, 2), "F3": (0, 3), "F4": (0, 4),
@@ -86,7 +86,7 @@ def label_to_coords(label, entry_side):
         "A1": (2, 5), "A2": (1, 4), "A3": (0, 4),
         "B1": (3, 4), "B2": (2, 4), "B3": (1, 3), "B4": (0, 3),
         "C1": (4, 4), "C2": (3, 3), "C3": (2, 3), "C4": (1, 2), "C5": (0, 2),
-        "D1": (5, 3), "D2": (4, 3), "D3": (3, 2), "D4": (2, 2), "D5": (1, 1), 
+        "D1": (5, 3), "D2": (4, 3), "D3": (3, 2), "D4": (2, 2), "D5": (1, 1),
           "D6": (0, 1),
         "E1": (5, 2), "E2": (4, 2), "E3": (3, 1), "E4": (2, 1), "E5": (1, 0),
         "F1": (5, 1), "F2": (4, 1), "F3": (3, 0), "F4": (2, 0),
@@ -96,7 +96,7 @@ def label_to_coords(label, entry_side):
         "A1": (0, 1), "A2": (1, 0), "A3": (2, 0),
         "B1": (0, 2), "B2": (1, 1), "B3": (2, 1), "B4": (3, 0),
         "C1": (0, 3), "C2": (1, 2), "C3": (2, 2), "C4": (3, 1), "C5": (4, 1),
-        "D1": (0, 4), "D2": (1, 3), "D3": (2, 3), "D4": (3, 2), "D5": (4, 2), 
+        "D1": (0, 4), "D2": (1, 3), "D3": (2, 3), "D4": (3, 2), "D5": (4, 2),
           "D6": (5, 1),
         "E1": (1, 4), "E2": (2, 4), "E3": (3, 3), "E4": (4, 3), "E5": (5, 2),
         "F1": (2, 5), "F2": (3, 4), "F3": (4, 4), "F4": (5, 3),
@@ -108,7 +108,7 @@ def label_to_coords(label, entry_side):
 
 class BattleMap(object):
     """A logical battle map.  No GUI code.
-    
+
     See label_to_coords for hex labeling docs.
     """
 
@@ -120,12 +120,12 @@ class BattleMap(object):
             x, y = label_to_coords(label, entry_side)
             if label in mydata:
                 terrain, elevation, hexside_dict = mydata[label]
-                spun_hexside_dict = self.spin_border_dict(hexside_dict, 
+                spun_hexside_dict = self.spin_border_dict(hexside_dict,
                   entry_side)
-                self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
+                self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
                   terrain, elevation, spun_hexside_dict)
             else:
-                self.hexes[label] = BattleHex.BattleHex(self, label, x, y, 
+                self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
                   "Plains", 0, {})
         for hex1 in self.hexes.itervalues():
             hex1.init_neighbors()

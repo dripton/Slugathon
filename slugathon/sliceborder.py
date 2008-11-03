@@ -11,10 +11,10 @@ import Image
 def slice_border_image(input_path, output_path, hexsides):
     """Copy only the specified hexsides from a battlehex border image into
     a new image, leaving the rest transparent.
-    
+
     input_path is the path to the input border image.
     output_path is the path to the output border image.
-    hexsides is a non-empty set of border hexsides to copy, each in the 
+    hexsides is a non-empty set of border hexsides to copy, each in the
     range 0 (north) through 5 (northwest), counting clockwise.
     """
     input_im = Image.open(input_path)
@@ -41,7 +41,7 @@ def slice_border_image(input_path, output_path, hexsides):
             # hex has an adjacent border of the same type.  But that would
             # require passing more information.
 
-            # A side has the same length as the circumradius, so the 
+            # A side has the same length as the circumradius, so the
             # vertexes are 1/4 and 3/4 of the way across.  We fudge this a
             # bit, because our border lines have nonzero thickness.
             fudge = 0.03

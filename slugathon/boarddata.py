@@ -109,4 +109,3 @@ data = [
 (6000, 6, 4, "Tundra", 36, "BLOCK", 1000, "ARROW", 5000, "ARROW"),
 
 ]
-

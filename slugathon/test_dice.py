@@ -136,7 +136,7 @@ class TestDice(object):
         null hypothesis, mean and variance of M in n observations are about
         mean_M = 2*r*(n-r)/n + 1
         variance_M = 2*r*(n-r)*(2*r*(n-r)-n)/(n*n*(n-1))
-        for large samples Z_M = (M - mean_M) / standard_dev_M is standard 
+        for large samples Z_M = (M - mean_M) / standard_dev_M is standard
         normal
         prob (M <= val) = Pr((M-meanM)/sd_M = Pr(Z)
         """
@@ -206,4 +206,3 @@ class TestDice(object):
         print "chi_square is", chi_square
         # degrees of freedom = 5, 99.5% chance of randomness
         assert chi_square < 0.4117
-

@@ -21,7 +21,7 @@ class Client(pb.Referenceable, Observed):
 
     implements(IObserver)
 
-    def __init__(self, username, password, host="localhost", 
+    def __init__(self, username, password, host="localhost",
       port=Server.DEFAULT_PORT):
         Observed.__init__(self)
         self.username = username
@@ -124,7 +124,7 @@ class Client(pb.Referenceable, Observed):
 
     def _maybe_pick_color(self, game):
         if game.next_playername_to_pick_color() == self.username:
-            self.pickcolor = PickColor.PickColor(self.user, self.username, 
+            self.pickcolor = PickColor.PickColor(self.user, self.username,
               game.name, game.colors_left(), self.anteroom.anteroom_window)
 
     def _maybe_pick_first_marker(self, game, playername):
@@ -141,7 +141,7 @@ class Client(pb.Referenceable, Observed):
         player = game.get_player_by_name(username)
         player.pick_marker(markername)
         if not player.legions:
-            def1 = self.user.callRemote("pick_first_marker", game_name, 
+            def1 = self.user.callRemote("pick_first_marker", game_name,
               markername)
             def1.addErrback(self.failure)
 
@@ -184,4 +184,3 @@ class Client(pb.Referenceable, Observed):
                 self._init_guiboard(game)
 
         self.notify(action)
-

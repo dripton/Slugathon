@@ -29,7 +29,7 @@ class PickColor(object):
 
         for button_name in colors:
             button = getattr(self, button_name)
-            if button_name in colors_left: 
+            if button_name in colors_left:
                 button.connect("button-press-event", self.cb_click)
             else:
                 button.set_label("")

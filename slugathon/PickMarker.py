@@ -22,7 +22,7 @@ class PickMarker(object):
         for ii, button_name in enumerate(markers_left):
             button = gtk.Button()
             button.tag = button_name
-            pixbuf = gtk.gdk.pixbuf_new_from_file("../images/legion/%s.png" % 
+            pixbuf = gtk.gdk.pixbuf_new_from_file("../images/legion/%s.png" %
               button_name)
             image = gtk.Image()
             image.set_from_pixbuf(pixbuf)
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     username = "test user"
     game_name = "test game"
     markers_left = ["Rd%02d" % ii for ii in xrange(1, 12+1)]
-    pickmarker = PickMarker(username, game_name, markers_left, guiutils.exit, 
+    pickmarker = PickMarker(username, game_name, markers_left, guiutils.exit,
       None)
     pickmarker.pick_marker_dialog.connect("destroy", guiutils.exit)
     gtk.main()

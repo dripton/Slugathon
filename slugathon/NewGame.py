@@ -32,7 +32,7 @@ class NewGame(object):
         else:
             self.cancel()
 
-    def ok(self): 
+    def ok(self):
         self.name = self.name_entry.get_text()
         self.min_players = self.min_players_spin.get_value_as_int()
         self.max_players = self.max_players_spin.get_value_as_int()
@@ -41,10 +41,10 @@ class NewGame(object):
         def1.addErrback(self.failure)
         self.new_game_dialog.destroy()
 
-    def cancel(self): 
+    def cancel(self):
         self.new_game_dialog.destroy()
 
-    def failure(self, error): 
+    def failure(self, error):
         print "NewGame", error
 
 
@@ -58,4 +58,3 @@ if __name__ == "__main__":
     newgame = NewGame(user, username, None)
     newgame.new_game_dialog.connect("destroy", guiutils.exit)
     gtk.main()
-

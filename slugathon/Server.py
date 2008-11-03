@@ -74,13 +74,13 @@ class Server(Observed):
         if not game_name:
             raise ValueError("Games must be named")
         if game_name in [game.name for game in self.games]:
-            raise ValueError('The game name "%s" is already in use' 
+            raise ValueError('The game name "%s" is already in use'
               % game_name)
         if min_players > max_players:
             raise ValueError("min_players must be <= max_players")
         now = time.time()
         GAME_START_DELAY = 5 * 60
-        game = Game.Game(game_name, username, now, now + GAME_START_DELAY, 
+        game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
           min_players, max_players)
         self.games.append(game)
         game.add_observer(self)
@@ -138,7 +138,7 @@ class Server(Observed):
             game.split_legion(username, parent_markername, child_markername,
               parent_creaturenames, child_creaturenames)
 
-    def undo_split(self, username, game_name, parent_markername, 
+    def undo_split(self, username, game_name, parent_markername,
       child_markername):
         game = self.name_to_game(game_name)
         if game:
@@ -154,7 +154,7 @@ class Server(Observed):
         if game:
             game.take_mulligan(username)
 
-    def move_legion(self, username, game_name, markername, hexlabel, 
+    def move_legion(self, username, game_name, markername, hexlabel,
       entry_side, teleport, teleporting_lord):
         game = self.name_to_game(game_name)
         if game:
@@ -196,8 +196,8 @@ class Server(Observed):
       attacker_creature_names, defender_markername, defender_creature_names):
         game = self.name_to_game(game_name)
         if game:
-            game.make_proposal(username, attacker_markername, 
-              attacker_creature_names, defender_markername, 
+            game.make_proposal(username, attacker_markername,
+              attacker_creature_names, defender_markername,
               defender_creature_names)
 
     def accept_proposal(self, username, game_name, attacker_markername,
@@ -216,7 +216,7 @@ class Server(Observed):
               attacker_creature_names, defender_markername,
               defender_creature_names)
 
-    def fight(self, username, game_name, attacker_markername, 
+    def fight(self, username, game_name, attacker_markername,
       defender_markername):
         game = self.name_to_game(game_name)
         if game:
@@ -225,7 +225,7 @@ class Server(Observed):
     def move_creature(self, username, game_name, creature_name, old_hexlabel,
       new_hexlabel):
         game = self.name_to_game(game_name)
-        if game: 
+        if game:
             game.move_creature(username, creature_name, old_hexlabel,
               new_hexlabel)
 
