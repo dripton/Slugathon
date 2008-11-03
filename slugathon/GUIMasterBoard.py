@@ -296,7 +296,7 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.FIGHT:
                 legion = marker.legion
                 guihex = self.guihexes[legion.hexlabel]
-                if guihex.selected and self.game.battle is None:
+                if guihex.selected and self.game.battle_masterhex is None:
                     self.user.callRemote("resolve_engagement", self.game.name,
                       guihex.masterhex.label)
 
@@ -830,8 +830,7 @@ class GUIMasterBoard(gtk.Window):
             self.unselect_all()
             if self.guimap is None:
                 self.guimap = GUIBattleMap.GUIBattleMap(
-                  self.game.battle.battlemap, self.game, self.user, 
-                  self.username)
+                  self.game.battlemap, self.game, self.user, self.username)
                 self.game.add_observer(self.guimap)
 
 

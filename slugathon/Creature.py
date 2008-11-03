@@ -107,3 +107,9 @@ class Creature(object):
         benefit for being native, like Wall and Plains.
         """
         return hazard in creature_name_to_native_hazards.get(self.name, set())
+
+    def move(self, hexlabel):
+        """Move this creature to a new battle hex"""
+        self.previous_hexlabel = self.hexlabel
+        self.hexlabel = hexlabel
+        self.moved = True

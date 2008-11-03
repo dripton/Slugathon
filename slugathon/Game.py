@@ -16,7 +16,7 @@ import Caretaker
 import Creature
 import History
 from bag import bag
-import Battle
+import BattleMap
 
 
 # Movement constants
@@ -37,7 +37,7 @@ class Game(Observed):
 
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players):
-        Observed.__init__(self) 
+        Observed.__init__(self)
         self.name = name
         self.create_time = create_time
         self.start_time = start_time
@@ -55,7 +55,32 @@ class Game(Observed):
         self.history = History.History()
         self.add_observer(self.history)
         self.current_engagement_hexlabel = None
-        self.battle = None
+        self.attacker_legion = None
+        self.defender_legion = None
+        self.battle_masterhex = None
+        self.battle_entry_side = None
+        self.battlemap = None
+        self.battleturn = None
+        self.battlephase = None
+        self.battle_active_legion = None
+        self.battle_active_player = None
+        self.battle_legions = []
+
+    def _init_battle(self, attacker_legion, defender_legion):
+        self.attacker_legion = attacker_legion
+        self.defender_legion = defender_legion
+        assert defender_legion.hexlabel == attacker_legion.hexlabel
+        self.battle_masterhex = self.board.hexes[attacker_legion.hexlabel]
+        self.battle_entry_side = attacker_legion.entry_side
+        self.battlemap = BattleMap.BattleMap(self.battle_masterhex.terrain,
+          self.battle_entry_side)
+        self.battle_turn = 1
+        self.battle_phase = Phase.MANEUVER
+        self.battle_active_legion = self.defender_legion
+        self.battle_active_player = self.battle_active_legion.player
+        self.defender_legion.enter_battle("DEFENDER")
+        self.attacker_legion.enter_battle("ATTACKER")
+        self.battle_legions = [self.defender_legion, self.attacker_legion]
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -93,7 +118,7 @@ class Game(Observed):
 
     def to_info_tuple(self):
         """Return state as a tuple of strings for passing to client."""
-        return (self.name, self.create_time, self.start_time, 
+        return (self.name, self.create_time, self.start_time,
           self.min_players, self.max_players, self.get_playernames()[:])
 
     def add_player(self, playername):
@@ -113,7 +138,7 @@ class Game(Observed):
 
     def remove_player(self, playername):
         """Remove a player from this game.
-        
+
         Not allowed after the game has started.
         """
         if self.started:
@@ -131,7 +156,7 @@ class Game(Observed):
 
     def start(self, playername):
         """Begin the game.
-        
+
         Called only on server side, and only by game owner."""
         if playername != self.get_owner().name:
             raise AssertionError, "Game.start %s called by non-owner %s" % (
@@ -144,7 +169,7 @@ class Game(Observed):
 
     def sort_players(self):
         """Sort players into descending order of tower number.
-        
+
         Only call this after towers are assigned.
         """
         def starting_tower_desc(a, b):
@@ -165,7 +190,7 @@ class Game(Observed):
             return None
         leader = None
         for player in self.players:
-            if player.color is None and (leader is None or 
+            if player.color is None and (leader is None or
               player.starting_tower < leader.starting_tower):
                 leader = player
         if leader is not None:
@@ -201,7 +226,7 @@ class Game(Observed):
 
     def assign_first_marker(self, playername, markername):
         """Use markername for playername's first legion marker.
-        
+
         Once all players have done this, create the starting legions.
         """
         player = self.get_player_by_name(playername)
@@ -236,7 +261,7 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("splitting out of turn")
-        player.split_legion(parent_markername, child_markername, 
+        player.split_legion(parent_markername, child_markername,
           parent_creature_names, child_creature_names)
 
     def undo_split(self, playername, parent_markername, child_markername):
@@ -264,9 +289,9 @@ class Game(Observed):
       came_from=None):
         """Recursively find non-teleport moves for legion from masterhex.
 
-        If block >= 0, go only that way.  
-        If block == ARCHES_AND_ARROWS, use arches and arrows.  
-        If block == ARROWS_ONLY, use only arrows.  
+        If block >= 0, go only that way.
+        If block == ARCHES_AND_ARROWS, use arches and arrows.
+        If block == ARROWS_ONLY, use only arrows.
         Return a set of (hexlabel, entry_side) tuples.
         """
         if block is None:
@@ -278,7 +303,7 @@ class Game(Observed):
         player = legion.player
         # If there is an enemy legion and no friendly legion, mark the hex
         # as a legal move, and stop.
-        if player.enemy_legions(self, hexlabel): 
+        if player.enemy_legions(self, hexlabel):
             if not player.friendly_legions(hexlabel):
                 moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif roll == 0:
@@ -290,15 +315,15 @@ class Game(Observed):
             if not allies:
                 moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif block >= 0:
-            moves.update(self.find_normal_moves(legion, 
-              masterhex.neighbors[block], roll - 1, ARROWS_ONLY, 
+            moves.update(self.find_normal_moves(legion,
+              masterhex.neighbors[block], roll - 1, ARROWS_ONLY,
               opposite(block)))
         elif block == ARCHES_AND_ARROWS:
             for direction, gate in enumerate(masterhex.exits):
-                if gate in ("ARCH", "ARROW", "ARROWS") and (direction != 
+                if gate in ("ARCH", "ARROW", "ARROWS") and (direction !=
                   came_from):
-                    moves.update(self.find_normal_moves(legion, 
-                      masterhex.neighbors[direction], roll - 1, ARROWS_ONLY, 
+                    moves.update(self.find_normal_moves(legion,
+                      masterhex.neighbors[direction], roll - 1, ARROWS_ONLY,
                       opposite(direction)))
         elif block == ARROWS_ONLY:
             for direction, gate in enumerate(masterhex.exits):
@@ -309,7 +334,7 @@ class Game(Observed):
         return moves
 
     def find_nearby_empty_hexes(self, legion, masterhex, roll, came_from):
-        """Recursively find empty hexes within roll hexes, for tower 
+        """Recursively find empty hexes within roll hexes, for tower
         teleport"""
         hexlabel = masterhex.label
         moves = set()
@@ -317,16 +342,16 @@ class Game(Observed):
             moves.add((hexlabel, TELEPORT))
         if roll > 0:
             for direction, gate in enumerate(masterhex.exits):
-                if direction != came_from: 
+                if direction != came_from:
                     neighbor = masterhex.neighbors[direction]
-                    if neighbor and (gate != "NONE" or 
+                    if neighbor and (gate != "NONE" or
                       neighbor.exits[opposite(direction)] != "NONE"):
                         moves.update(self.find_nearby_empty_hexes(legion,
                           neighbor, roll - 1, opposite(direction)))
         return moves
 
     def find_tower_teleport_moves(self, legion, masterhex):
-        """Return set of hexlabels describing where legion can tower 
+        """Return set of hexlabels describing where legion can tower
         teleport."""
         moves = set()
         if masterhex.is_tower() and legion.num_lords():
@@ -339,7 +364,7 @@ class Game(Observed):
         return moves
 
     def find_titan_teleport_moves(self, legion):
-        """Return set of hexlabels describing where legion can titan 
+        """Return set of hexlabels describing where legion can titan
         teleport."""
         player = legion.player
         moves = set()
@@ -366,7 +391,7 @@ class Game(Observed):
         moves.update(self.find_all_teleport_moves(legion, masterhex, roll))
         return moves
 
-    def can_move_legion(self, player, legion, hexlabel, entry_side, teleport, 
+    def can_move_legion(self, player, legion, hexlabel, entry_side, teleport,
       teleporting_lord):
         """Return True iff player can legally move this legion."""
         if player is not self.active_player or player is not legion.player:
@@ -378,14 +403,14 @@ class Game(Observed):
             if (player.teleported or teleporting_lord not in
               legion.creature_names()):
                 return False
-            moves = self.find_all_teleport_moves(legion, masterhex, 
+            moves = self.find_all_teleport_moves(legion, masterhex,
               player.movement_roll)
             if (hexlabel, TELEPORT) not in moves:
                 return False
             if entry_side not in (1, 3, 5):
                 return False
         else:
-            moves = self.find_normal_moves(legion, masterhex, 
+            moves = self.find_normal_moves(legion, masterhex,
               player.movement_roll)
             if (hexlabel, entry_side) not in moves:
                 return False
@@ -403,15 +428,15 @@ class Game(Observed):
         legion.move(hexlabel, teleport, teleporting_lord, entry_side)
         if teleport:
             player.teleported = True
-        action = Action.MoveLegion(self.name, playername, markername, 
+        action = Action.MoveLegion(self.name, playername, markername,
           hexlabel, entry_side, teleport, teleporting_lord)
         self.notify(action)
 
     def undo_move_legion(self, playername, markername):
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
-        action = Action.UndoMoveLegion(self.name, playername, markername, 
-          legion.hexlabel, legion.entry_side, legion.teleported, 
+        action = Action.UndoMoveLegion(self.name, playername, markername,
+          legion.hexlabel, legion.entry_side, legion.teleported,
           legion.teleporting_lord)
         legion.undo_move()
         self.notify(action)
@@ -440,11 +465,11 @@ class Game(Observed):
                 defender = legion
         player.reset_angels_pending()
         # Reveal attacker only to defender
-        action = Action.RevealLegion(self.name, attacker.markername, 
+        action = Action.RevealLegion(self.name, attacker.markername,
           attacker.creature_names())
         self.notify(action, defender.player.name)
         # Reveal defender only to attacker
-        action = Action.RevealLegion(self.name, defender.markername, 
+        action = Action.RevealLegion(self.name, defender.markername,
           defender.creature_names())
         self.notify(action, attacker.player.name)
         self.current_engagement_hexlabel = hexlabel
@@ -482,7 +507,7 @@ class Game(Observed):
         for legion in self.all_legions():
             assert legion.markername != markername
 
-    def _accept_proposal_helper(self, winning_legion, losing_legion, 
+    def _accept_proposal_helper(self, winning_legion, losing_legion,
       survivors):
         for creature_name in winning_legion.creature_names():
             if creature_name in survivors:
@@ -492,7 +517,7 @@ class Game(Observed):
                 self.caretaker.kill_one(creature_name)
         losing_legion.die(winning_legion, False)
 
-    def _accept_proposal(self, attacker_legion, attacker_creature_names, 
+    def _accept_proposal(self, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names):
         if not attacker_creature_names and not defender_creature_names:
             for legion in [attacker_legion, defender_legion]:
@@ -502,14 +527,14 @@ class Game(Observed):
             winning_legion = attacker_legion
             losing_legion = defender_legion
             survivors = bag(attacker_creature_names)
-            self._accept_proposal_helper(winning_legion, losing_legion, 
+            self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
         elif defender_creature_names:
             assert not attacker_creature_names
             winning_legion = defender_legion
             losing_legion = attacker_legion
             survivors = bag(defender_creature_names)
-            self._accept_proposal_helper(winning_legion, losing_legion, 
+            self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
 
 
@@ -533,7 +558,7 @@ class Game(Observed):
             if enemy_legion != legion:
                 break
         enemy_markername = enemy_legion.markername
-        action = Action.DoNotFlee(self.name, markername, enemy_markername, 
+        action = Action.DoNotFlee(self.name, markername, enemy_markername,
           hexlabel)
         self.notify(action)
 
@@ -546,7 +571,7 @@ class Game(Observed):
                 break
         enemy_markername = enemy_legion.markername
         self._concede(playername, markername)
-        action = Action.Concede(self.name, markername, enemy_markername, 
+        action = Action.Concede(self.name, markername, enemy_markername,
           hexlabel)
         self.notify(action)
 
@@ -581,11 +606,11 @@ class Game(Observed):
             other_player = defender_legion.player
         else:
             other_player = attacker_legion.player
-        self._accept_proposal(attacker_legion, attacker_creature_names, 
+        self._accept_proposal(attacker_legion, attacker_creature_names,
           defender_legion, defender_creature_names)
-        action = Action.AcceptProposal(self.name, playername, 
+        action = Action.AcceptProposal(self.name, playername,
           other_player.name, attacker_markername, attacker_creature_names,
-          defender_markername, defender_creature_names, 
+          defender_markername, defender_creature_names,
           attacker_legion.hexlabel)
         self.notify(action)
 
@@ -602,7 +627,7 @@ class Game(Observed):
             other_player = defender_legion.player
         else:
             other_player = attacker_legion.player
-        action = Action.RejectProposal(self.name, playername, 
+        action = Action.RejectProposal(self.name, playername,
           other_player.name, attacker_markername, attacker_creature_names,
           defender_markername, defender_creature_names)
         self.notify(action)
@@ -617,12 +642,12 @@ class Game(Observed):
         action = Action.RevealLegion(self.name, attacker_markername,
           attacker_legion.creature_names())
         self.notify(action)
-        action = Action.RevealLegion(self.name, defender_markername, 
+        action = Action.RevealLegion(self.name, defender_markername,
           defender_legion.creature_names())
         self.notify(action)
-        action = Action.Fight(self.name, attacker_markername, 
+        self._init_battle(attacker_legion, defender_legion)
+        action = Action.Fight(self.name, attacker_markername,
           defender_markername, hexlabel)
-        self.battle = Battle.Battle(self, attacker_legion, defender_legion)
         self.notify(action)
 
     def acquire_angel(self, playername, markername, angel_name):
@@ -684,7 +709,7 @@ class Game(Observed):
 
     def save(self, playername):
         """Save this game to a file on the local disk.
-        
+
         Called from Server
         """
         # XXX This should be portable and configurable.
@@ -696,6 +721,124 @@ class Game(Observed):
         save_file = open(save_path, "w")
         self.history.save(save_file)
         save_file.close()
+
+    # Battle
+
+    def is_battle_hex_occupied(self, hexlabel):
+        """Return True iff there's a creature in the hex with hexlabel."""
+        for legion in self.battle_legions:
+            for creature in legion.creatures:
+                if creature.hexlabel == hexlabel:
+                    return True
+        return False
+
+    def battle_hex_entry_cost(self, creature, terrain, border):
+        """Return the cost for creature to enter a battle hex with terrain,
+        crossing border.  For fliers, this means landing in the hex, not
+        just flying over it.
+
+        If the creature cannot enter the hex, return sys.maxint.
+
+        This does not take other creatures in the hex into account.
+        """
+        cost = 1
+        if terrain in ["Tree"]:
+            return sys.maxint
+        elif terrain in ["Bog", "Volcano"]:
+            if not creature.is_native(terrain):
+                return sys.maxint
+        elif terrain in ["Bramble", "Drift", "Sand"]:
+            if not creature.is_native(terrain):
+                cost += 1
+        if border in ["Slope", "Wall"]:
+            if not creature.is_native(border) and not creature.flies:
+                cost += 1
+        elif border in ["Cliff"]:
+            if not creature.flies:
+                return sys.maxint
+        return cost
+
+    def battle_hex_flyover_cost(self, creature, terrain):
+        """Return the cost for creature to fly over the hex with terrain.
+        This does not include landing in the hex.
+
+        If the creature cannot fly over the hex, return sys.maxint.
+        """
+        if not creature.flies:
+            return sys.maxint
+        if terrain in ["Volcano"]:
+            if not creature.is_native(terrain):
+                return sys.maxint
+        return 1
+
+    def _find_battle_moves_inner(self, creature, hexlabel, movement_left):
+        """Return a set of all hexlabels to which creature can move,
+        starting from hexlabel, with movement_left.
+
+        Do not include hexlabel itself.
+        """
+        result = set()
+        if movement_left <= 0:
+            return result
+        hex1 = self.battlemap.hexes[hexlabel]
+        for hexside, hex2 in hex1.neighbors.iteritems():
+            if not self.is_battle_hex_occupied(hex2.label):
+                if hex1.entrance:
+                    # Ignore hexside penalties from entrances.  There aren't
+                    # any on the standard boards, and this avoids having to
+                    # properly compute the real hexside.
+                    border = None
+                else:
+                    reverse_dir = (hexside + 3) % 6
+                    border = hex2.borders[reverse_dir]
+                cost = self.battle_hex_entry_cost(creature, hex2.terrain,
+                  border)
+                if cost <= movement_left:
+                    result.add(hex2.label)
+                if creature.flies:
+                    flyover_cost = self.battle_hex_flyover_cost(creature,
+                      hex2.terrain)
+                else:
+                    flyover_cost = sys.maxint
+                min_cost = min(cost, flyover_cost)
+                if min_cost < movement_left:
+                    result.update(self._find_battle_moves_inner(creature,
+                      hex2.label, movement_left - min_cost))
+        result.discard(hexlabel)
+        return result
+
+    def find_battle_moves(self, creature):
+        """Return a set of all hexlabels to which creature can move,
+        excluding its current hex"""
+        result = set()
+        if creature.moved or creature.is_engaged():
+            return result
+        hexlabel = creature.hexlabel
+        if (self.turn == 1 and creature.legion == self.defender_legion
+          and self.battlemap.startlist):
+            for hexlabel2 in self.battlemap.startlist:
+                if not self.is_battle_hex_occupied(hexlabel2):
+                    result.add(hexlabel2)
+            return result
+        return self._find_battle_moves_inner(creature, hexlabel,
+          creature.skill)
+
+    def move_creature(self, playername, creature_name, old_hexlabel,
+      new_hexlabel):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        if player != self.battle_active_player:
+            raise AssertionError("wrong player tried to move")
+        for creature in self.battle_active_legion.creatures:
+            if (creature.name == creature_name and creature.hexlabel ==
+              old_hexlabel):
+                break
+        else:
+            raise AssertionError("no %s in %s" %(creature_name, old_hexlabel))
+        creature.move(new_hexlabel)
+        action = Action.MoveCreature(self.name, playername, creature_name,
+          old_hexlabel, new_hexlabel)
+        self.notify(action)
 
 
     def update(self, observed, action):
@@ -731,7 +874,7 @@ class Game(Observed):
             # Avoid doing the same split twice.
             if action.child_markername not in player.legions:
                 self.split_legion(action.playername, action.parent_markername,
-                  action.child_markername, action.parent_creature_names, 
+                  action.child_markername, action.parent_creature_names,
                   action.child_creature_names)
 
         elif isinstance(action, Action.UndoSplit):
@@ -754,8 +897,8 @@ class Game(Observed):
             hexlabel = action.hexlabel
             # Avoid double move
             if not (legion.moved and legion.hexlabel == hexlabel):
-                self.move_legion(action.playername, markername, 
-                  action.hexlabel, action.entry_side, action.teleport, 
+                self.move_legion(action.playername, markername,
+                  action.hexlabel, action.entry_side, action.teleport,
                   action.teleporting_lord)
 
         elif isinstance(action, Action.UndoMoveLegion):
@@ -790,12 +933,12 @@ class Game(Observed):
         elif isinstance(action, Action.AcceptProposal):
             attacker_legion = self.find_legion(action.attacker_markername)
             defender_legion = self.find_legion(action.defender_markername)
-            self._accept_proposal(attacker_legion, 
-              action.attacker_creature_names, defender_legion, 
+            self._accept_proposal(attacker_legion,
+              action.attacker_creature_names, defender_legion,
               action.defender_creature_names)
 
         elif isinstance(action, Action.AcquireAngel):
-            self.acquire_angel(action.playername, action.markername, 
+            self.acquire_angel(action.playername, action.markername,
               action.angel_name)
 
         elif isinstance(action, Action.DoneFighting):
@@ -804,7 +947,7 @@ class Game(Observed):
                 player.reset_angels_pending()
 
         elif isinstance(action, Action.RecruitCreature):
-            self.recruit_creature(action.playername, action.markername, 
+            self.recruit_creature(action.playername, action.markername,
               action.creature_name)
 
         elif isinstance(action, Action.UndoRecruit):
@@ -825,5 +968,15 @@ class Game(Observed):
             attacker_markername = action.attacker_markername
             defender_markername = action.defender_markername
             self.fight(None, attacker_markername, defender_markername)
+
+        elif isinstance(action, Action.MoveCreature):
+            for creature in self.battle_active_legion.creatures:
+                if (creature.name == action.creature_name and
+                  creature.hexlabel == action.old_hexlabel):
+                    break
+            else:
+                raise AssertionError("no %s in %s" %(action.creature_name,
+                  action.old_hexlabel))
+            creature.move(action.new_hexlabel)
 
         self.notify(action)

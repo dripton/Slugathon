@@ -16,6 +16,7 @@ import GUIBattleHex
 import battlemapdata
 import Chit
 import Phase
+import Action
 
 
 SQRT3 = math.sqrt(3.0)
@@ -35,10 +36,6 @@ class GUIBattleMap(gtk.Window):
         self.user = user
         self.username = username
 
-        try:
-            self.battle = self.game.battle
-        except AttributeError:
-            self.battle = None
         self.chits = []
         self.selected_chit = None
 
@@ -118,26 +115,35 @@ class GUIBattleMap(gtk.Window):
         return True
 
     def clicked_on_background(self, area, event):
-        pass
+        self.selected_chit = None
+        self.unselect_all()
 
     def clicked_on_hex(self, area, event, guihex):
-        guihex.toggle_selection()
-        self.update_gui([guihex.battlehex.label])
+        phase = self.game.battle_phase
+        if phase == Phase.MANEUVER:
+            if self.selected_chit is not None and guihex.selected:
+                creature = self.selected_chit.creature
+                def1 = self.user.callRemote("move_creature", 
+                  self.game.name, creature.name, creature.hexlabel, 
+                  guihex.battlehex.label)
+                def1.addErrback(self.failure)
+        self.selected_chit = None
+        self.unselect_all()
 
     def clicked_on_chit(self, area, event, chit):
         print "clicked on chit", chit, chit.creature
-        phase = self.battle.phase
+        phase = self.game.battle_phase
         if phase == Phase.MANEUVER:
             creature = chit.creature
             legion = creature.legion
             player = legion.player
             if player.name != self.username:
                 return
-            elif player != self.battle.active_player:
+            elif player != self.game.battle_active_player:
                 return
             self.selected_chit = chit
             self.unselect_all()
-            hexlabels = self.battle.find_moves(creature)
+            hexlabels = self.game.find_battle_moves(creature)
             print "can move to", hexlabels
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
@@ -147,10 +153,9 @@ class GUIBattleMap(gtk.Window):
     def _add_missing_chits(self):
         """Add chits for any creatures that lack them."""
         chit_creatures = set(chit.creature for chit in self.chits)
-        battle = self.game.battle
         for (legion, rotate) in [ 
-          (battle.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE), 
-          (battle.defender_legion, gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
+          (self.game.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE), 
+          (self.game.defender_legion, gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
             for creature in legion.creatures:
                 if creature not in chit_creatures:
                     chit = Chit.Chit(creature, legion.player.color, 
@@ -237,6 +242,15 @@ class GUIBattleMap(gtk.Window):
 
     def update(self, observed, action):
         print "GUIBattleMap.update", observed, action
+        if isinstance(action, Action.MoveCreature or isinstance(action, 
+          Action.UndoMoveCreature)):
+            repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]
+            self.update_gui(repaint_hexlabels)
+            if action.playername == self.username:
+                self.highlight_mobile_chits()
+
+    def failure(self, arg):
+        print "GUIBattleMap.failure", arg
 
 
 if __name__ == "__main__":

@@ -345,6 +345,30 @@ class RejectProposal(Action):
         self.defender_creature_names = tuple(defender_creature_names)
 pb.setUnjellyableForClass(RejectProposal, RejectProposal)
 
+class MoveCreature(Action):
+    def __init__(self, game_name, playername, creature_name, old_hexlabel,
+      new_hexlabel):
+        self.game_name = game_name
+        self.playername = playername
+        self.creature_name = creature_name
+        self.old_hexlabel = old_hexlabel
+        self.new_hexlabel = new_hexlabel
+
+    def undo_action(self):
+        return UndoMoveCreature(self.game_name, self.playername, 
+          self.creature_name, self.old_hexlabel, self.new_hexlabel)
+
+pb.setUnjellyableForClass(MoveCreature, MoveCreature)
+
+class UndoMoveCreature(UndoAction):
+    def __init__(self, game_name, playername, creature_name, old_hexlabel,
+      new_hexlabel):
+        self.game_name = game_name
+        self.playername = playername
+        self.creature_name = creature_name
+        self.old_hexlabel = old_hexlabel
+        self.new_hexlabel = new_hexlabel
+pb.setUnjellyableForClass(UndoMoveCreature, UndoMoveCreature)
 
 class DoneFighting(Action):
     def __init__(self, game_name, playername):

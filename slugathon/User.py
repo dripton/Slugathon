@@ -69,7 +69,7 @@ class User(pb.Avatar):
         self.server.take_mulligan(self.name, game_name)
 
     def perspective_move_legion(self, game_name, markername, hexlabel, 
-          entry_side, teleport, teleporting_lord):
+      entry_side, teleport, teleporting_lord):
         self.server.move_legion(self.name, game_name, markername, hexlabel,
           entry_side, teleport, teleporting_lord)
 
@@ -112,6 +112,11 @@ class User(pb.Avatar):
       defender_markername):
         self.server.fight(self.name, game_name, attacker_markername,
           defender_markername)
+
+    def perspective_move_creature(self, game_name, creature_name,
+      old_hexlabel, new_hexlabel):
+        self.server.move_creature(self.name, game_name, creature_name,
+          old_hexlabel, new_hexlabel)
 
     def perspective_acquire_angel(self, game_name, markername, 
       angel_name):

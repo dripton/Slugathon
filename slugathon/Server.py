@@ -222,6 +222,13 @@ class Server(Observed):
         if game:
             game.fight(username, attacker_markername, defender_markername)
 
+    def move_creature(self, username, game_name, creature_name, old_hexlabel,
+      new_hexlabel):
+        game = self.name_to_game(game_name)
+        if game: 
+            game.move_creature(username, creature_name, old_hexlabel,
+              new_hexlabel)
+
     def acquire_angel(self, username, game_name, markername, angel_name):
         game = self.name_to_game(game_name)
         if game:
