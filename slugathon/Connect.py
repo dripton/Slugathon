@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor

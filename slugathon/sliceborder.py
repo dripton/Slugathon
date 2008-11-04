@@ -3,6 +3,10 @@
 """Copy only the specified hexsides from a battlehex border image into
 a new image, leaving the rest transparent."""
 
+__copyright__ = "Copyright (c) 2005 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 import sys
 
 import Image

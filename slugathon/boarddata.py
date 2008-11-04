@@ -3,6 +3,10 @@
 (label, x, y, terrain, neighbor1, gate1, neighbor2, gate2, neighbor3, gate3)
 """
 
+__copyright__ = "Copyright (c) 2003-2005 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 data = [
 
 (1, 7, 5, "Plains", 2, "ARROWS", 1000, "ARCH"),

@@ -1,3 +1,7 @@
+__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 class BattleHex(object):
     """A logical hex on a battle map.  No GUI logic.
 

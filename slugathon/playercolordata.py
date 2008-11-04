@@ -1,5 +1,9 @@
 """Raw data about player colors."""
 
+__copyright__ = "Copyright (c) 2004-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 name_to_abbrev = {
     "Black": "Bk",
     "Blue":  "Bu",

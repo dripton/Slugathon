@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
+__copyright__ = "Copyright (c) 2006-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
 # TODO Angel summoning
+
 
 import time
 

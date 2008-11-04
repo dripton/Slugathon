@@ -1,3 +1,7 @@
+__copyright__ = "Copyright (c) 2005 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 import Caretaker
 
 def test_init():

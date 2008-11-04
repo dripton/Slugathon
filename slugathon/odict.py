@@ -1,5 +1,9 @@
 """Ordered dictionaries"""
 
+__copyright__ = "Copyright (c) 2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 class pdict(dict):
     """Preserves the order in which items were added."""
     def __init__(self, dict=None, **kwargs):

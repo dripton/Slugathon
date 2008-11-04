@@ -1,8 +1,13 @@
+__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 from twisted.internet import reactor
 from twisted.internet import utils
 import py
 
 import Client
+
 
 def setup_class(cls):
     utils.getProcessValue("python", ["Server.py"])

@@ -1,5 +1,9 @@
 """A multiset, built on a dictionary."""
 
+__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 class bag(object):
     """A multiset, built on a dictionary."""
     def __init__(self, iterable=None):

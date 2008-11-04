@@ -1,5 +1,9 @@
 """Legion marker names by player color"""
 
+__copyright__ = "Copyright (c) 2004-2005 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 data = {
 
   "Black": [

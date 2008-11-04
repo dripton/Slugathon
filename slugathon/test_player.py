@@ -1,3 +1,7 @@
+__copyright__ = "Copyright (c) 2005-2006 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 import time
 
 import Player

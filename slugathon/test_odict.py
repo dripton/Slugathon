@@ -1,3 +1,7 @@
+__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 from odict import pdict, sdict
 
 class TestPdict(object):

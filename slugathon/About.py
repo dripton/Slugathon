@@ -2,6 +2,9 @@
 
 """Help/About dialog, wrapped around gtk.AboutDialog"""
 
+__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
 import gtk
 
 import guiutils

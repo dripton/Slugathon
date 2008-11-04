@@ -14,6 +14,10 @@ An empty tuple in the list is a break.  Neither up- or
 down-recruiting can cross a break.
 """
 
+__copyright__ = "Copyright (c) 2005 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 # TODO First-class functions rather than magic constants?
 ANYTHING = "anything"
 CREATURE = "creature"

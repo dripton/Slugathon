@@ -1,5 +1,9 @@
 """Constants for colors, in decimal RGB format"""
 
+__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 rgb_colors = {
     # Defined in the HTML standard
     "alice_blue": (240, 248, 255),

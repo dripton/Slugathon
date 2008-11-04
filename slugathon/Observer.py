@@ -1,4 +1,9 @@
+__copyright__ = "Copyright (c) 2004-2007 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 from zope.interface import Interface
+
 
 class IObserver(Interface):
 
