@@ -25,6 +25,23 @@ import Action
 
 SQRT3 = math.sqrt(3.0)
 
+ui_string = """<ui>
+  <menubar name="Menubar">
+    <menu action="PhaseMenu">
+      <menuitem action="Done"/>
+      <menuitem action="Undo"/>
+      <menuitem action="Redo"/>
+      <separator/>
+      <menuitem action="Concede Battle"/>
+    </menu>
+  </menubar>
+  <toolbar name="Toolbar">
+    <toolitem action="Done"/>
+    <toolitem action="Undo"/>
+    <toolitem action="Redo"/>
+  </toolbar>
+</ui>"""
+
 
 class GUIBattleMap(gtk.Window):
     """GUI representation of a battlemap."""
@@ -61,7 +78,12 @@ class GUIBattleMap(gtk.Window):
         self.area.set_size_request(self.compute_width(), self.compute_height())
         # TODO Vary font size with scale
         self.area.modify_font(pango.FontDescription("monospace 8"))
+
+        self.create_ui()
+        self.vbox.pack_start(self.ui.get_widget("/Menubar"), False, False, 0)
+        self.vbox.pack_start(self.ui.get_widget("/Toolbar"), False, False, 0)
         self.vbox.pack_start(self.area)
+
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.itervalues():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
@@ -70,6 +92,22 @@ class GUIBattleMap(gtk.Window):
         self.area.connect("button_press_event", self.cb_click)
         self.show_all()
 
+    def create_ui(self):
+        ag = gtk.ActionGroup("BattleActions")
+        # TODO confirm concession
+        actions = [
+          ("PhaseMenu", None, "_Phase"),
+          ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
+          ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
+          ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
+          ("Concede Battle", None, "_Concede Battle", "c", "Concede Battle",
+            self.cb_concede),
+        ]
+        ag.add_actions(actions)
+        self.ui = gtk.UIManager()
+        self.ui.insert_action_group(ag, 0)
+        self.ui.add_ui_from_string(ui_string)
+        self.add_accel_group(self.ui.get_accel_group())
 
     def compute_scale(self):
         """Return the approximate maximum scale that lets the map fit on the
@@ -78,9 +116,9 @@ class GUIBattleMap(gtk.Window):
         height = gtk.gdk.screen_height()
         # The -2 is a fudge factor to leave room on the sides.
         xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 2
-        # The -3 is a fudge factor for menus and toolbars.
+        # The -7 is a fudge factor for menus and toolbars.
         yscale = math.floor(height / (2 * SQRT3 *
-          self.battlemap.hex_height())) - 3
+          self.battlemap.hex_height())) - 7
         return int(min(xscale, yscale))
 
     def compute_width(self):
@@ -123,6 +161,8 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
 
     def clicked_on_hex(self, area, event, guihex):
+        if not self.game:
+            return
         phase = self.game.battle_phase
         if phase == Phase.MANEUVER:
             if self.selected_chit is not None and guihex.selected:
@@ -232,6 +272,22 @@ class GUIBattleMap(gtk.Window):
             chits = self.chits_in_hex(hexlabel)
             for chit in chits:
                 self._render_chit(chit, gc)
+
+    # TODO
+    def cb_undo(self, action):
+        pass
+
+    # TODO
+    def cb_redo(self, action):
+        pass
+
+    # TODO
+    def cb_done(self, action):
+        pass
+
+    # TODO
+    def cb_concede(self, action):
+        pass
 
     def update_gui(self, hexlabels=None):
         gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
