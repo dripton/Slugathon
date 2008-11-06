@@ -175,7 +175,6 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
 
     def clicked_on_chit(self, area, event, chit):
-        print "clicked on chit", chit, chit.creature
         phase = self.game.battle_phase
         if phase == Phase.MANEUVER:
             creature = chit.creature
@@ -188,7 +187,6 @@ class GUIBattleMap(gtk.Window):
             self.selected_chit = chit
             self.unselect_all()
             hexlabels = self.game.find_battle_moves(creature)
-            print "can move to", hexlabels
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
@@ -273,13 +271,22 @@ class GUIBattleMap(gtk.Window):
             for chit in chits:
                 self._render_chit(chit, gc)
 
-    # TODO
     def cb_undo(self, action):
-        pass
+        if self.game:
+            history = self.game.history
+            if history.can_undo(self.username):
+                last_action = history.actions[-1]
+                def1 = self.user.callRemote("apply_action",
+                  last_action.undo_action())
+                def1.addErrback(self.failure)
 
-    # TODO
     def cb_redo(self, action):
-        pass
+        if self.game:
+            history = self.game.history
+            if history.can_redo(self.username):
+                action = history.undone[-1]
+                def1 = self.user.callRemote("apply_action", action)
+                def1.addErrback(self.failure)
 
     # TODO
     def cb_done(self, action):
@@ -302,8 +309,8 @@ class GUIBattleMap(gtk.Window):
 
     def update(self, observed, action):
         print "GUIBattleMap.update", observed, action
-        if isinstance(action, Action.MoveCreature or isinstance(action,
-          Action.UndoMoveCreature)):
+        if isinstance(action, Action.MoveCreature) or isinstance(action,
+          Action.UndoMoveCreature):
             repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]
             self.update_gui(repaint_hexlabels)
             if action.playername == self.username:

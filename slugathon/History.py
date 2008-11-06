@@ -40,9 +40,7 @@ class History(object):
 
         observed is part of the interface, but we don't need it.
         """
-        if (isinstance(action, Action.UndoSplit) or
-          isinstance(action, Action.UndoMoveLegion) or
-          isinstance(action, Action.UndoRecruit)):
+        if action.__class__.__name__.startswith("Undo"):
             self._undo(action)
         else:
             self.actions.append(action)

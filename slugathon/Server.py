@@ -233,6 +233,13 @@ class Server(Observed):
             game.move_creature(username, creature_name, old_hexlabel,
               new_hexlabel)
 
+    def undo_move_creature(self, username, game_name, creature_name,
+      new_hexlabel):
+        print "Server.undo_move_creature"
+        game = self.name_to_game(game_name)
+        if game:
+            game.undo_move_creature(username, creature_name, new_hexlabel)
+
     def acquire_angel(self, username, game_name, markername, angel_name):
         game = self.name_to_game(game_name)
         if game:

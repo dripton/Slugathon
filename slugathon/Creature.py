@@ -117,3 +117,10 @@ class Creature(object):
         self.previous_hexlabel = self.hexlabel
         self.hexlabel = hexlabel
         self.moved = True
+
+    def undo_move(self):
+        """Undo this creature's last battle move."""
+        assert self.moved and self.previous_hexlabel
+        self.hexlabel = self.previous_hexlabel
+        self.previous_hexlabel = None
+        self.moved = False

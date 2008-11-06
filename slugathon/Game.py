@@ -64,8 +64,8 @@ class Game(Observed):
         self.battle_masterhex = None
         self.battle_entry_side = None
         self.battlemap = None
-        self.battleturn = None
-        self.battlephase = None
+        self.battle_turn = None
+        self.battle_phase = None
         self.battle_active_legion = None
         self.battle_active_player = None
         self.battle_legions = []
@@ -85,6 +85,18 @@ class Game(Observed):
         self.defender_legion.enter_battle("DEFENDER")
         self.attacker_legion.enter_battle("ATTACKER")
         self.battle_legions = [self.defender_legion, self.attacker_legion]
+
+    def _cleanup_battle(self):
+        self.attacker_legion = None
+        self.defender_legion = None
+        self.battle_masterhex = None
+        self.battle_entry_side = None
+        self.battlemap = None
+        self.battle_turn = None
+        self.battle_phase = None
+        self.battle_active_legion = None
+        self.battle_active_player = None
+        self.battle_legions = []
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -437,6 +449,7 @@ class Game(Observed):
         self.notify(action)
 
     def undo_move_legion(self, playername, markername):
+        """Called from Server"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         action = Action.UndoMoveLegion(self.name, playername, markername,
@@ -549,6 +562,7 @@ class Game(Observed):
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
                 break
+        assert enemy_legion != legion
         enemy_markername = enemy_legion.markername
         action = Action.Flee(self.name, markername, enemy_markername, hexlabel)
         self.notify(action)
@@ -711,6 +725,7 @@ class Game(Observed):
                 results.add(hexlabel)
         return results
 
+    # XXX Need playername?
     def save(self, playername):
         """Save this game to a file on the local disk.
 
@@ -838,10 +853,30 @@ class Game(Observed):
               old_hexlabel):
                 break
         else:
-            raise AssertionError("no %s in %s" %(creature_name, old_hexlabel))
+            raise AssertionError("no %s in %s" % (creature_name, old_hexlabel))
         creature.move(new_hexlabel)
         action = Action.MoveCreature(self.name, playername, creature_name,
           old_hexlabel, new_hexlabel)
+        self.notify(action)
+
+    def undo_move_creature(self, playername, creature_name, new_hexlabel):
+        """Called from Server"""
+        print "Game.undo_move_creature"
+        player = self.get_player_by_name(playername)
+        for legion in self.battle_legions:
+            if legion.player == player:
+                break
+        else:
+            legion = None
+        for creature in legion.creatures:
+            if (creature.name == creature_name and creature.hexlabel ==
+              new_hexlabel):
+                break
+        else:
+            creature = None
+        action = Action.UndoMoveCreature(self.name, playername, creature_name,
+          creature.previous_hexlabel, new_hexlabel)
+        creature.undo_move()
         self.notify(action)
 
 
@@ -979,8 +1014,20 @@ class Game(Observed):
                   creature.hexlabel == action.old_hexlabel):
                     break
             else:
-                raise AssertionError("no %s in %s" %(action.creature_name,
+                raise AssertionError("no %s in %s" % (action.creature_name,
                   action.old_hexlabel))
             creature.move(action.new_hexlabel)
+
+        elif isinstance(action, Action.UndoMoveCreature):
+            for creature in self.battle_active_legion.creatures:
+                if (creature.name == action.creature_name and
+                  creature.hexlabel == action.new_hexlabel):
+                    break
+            else:
+                raise AssertionError("no %s in %s" % (action.creature_name,
+                  action.old_hexlabel))
+            # XXX Avoid double undo
+            if creature.moved:
+                creature.undo_move()
 
         self.notify(action)
