@@ -235,7 +235,6 @@ class Server(Observed):
 
     def undo_move_creature(self, username, game_name, creature_name,
       new_hexlabel):
-        print "Server.undo_move_creature"
         game = self.name_to_game(game_name)
         if game:
             game.undo_move_creature(username, creature_name, new_hexlabel)

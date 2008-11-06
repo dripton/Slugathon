@@ -599,7 +599,6 @@ class Game(Observed):
         attacker_legion = self.find_legion(attacker_markername)
         defender_legion = self.find_legion(defender_markername)
         if attacker_legion is None or defender_legion is None:
-            print "make_proposal called with legion gone"
             return
         attacker_player = attacker_legion.player
         if attacker_player.name == playername:
@@ -617,7 +616,6 @@ class Game(Observed):
         attacker_legion = self.find_legion(attacker_markername)
         defender_legion = self.find_legion(defender_markername)
         if attacker_legion is None or defender_legion is None:
-            print "accept_proposal called with legion gone"
             return
         attacker_player = attacker_legion.player
         if attacker_player.name == playername:
@@ -638,7 +636,6 @@ class Game(Observed):
         attacker_legion = self.find_legion(attacker_markername)
         defender_legion = self.find_legion(defender_markername)
         if attacker_legion is None or defender_legion is None:
-            print "reject_proposal called with legion gone"
             return
         attacker_player = attacker_legion.player
         if attacker_player.name == playername:
@@ -860,7 +857,6 @@ class Game(Observed):
 
     def undo_move_creature(self, playername, creature_name, new_hexlabel):
         """Called from Server"""
-        print "Game.undo_move_creature"
         player = self.get_player_by_name(playername)
         for legion in self.battle_legions:
             if legion.player == player:

@@ -150,7 +150,6 @@ class User(pb.Avatar):
             self.server.undo_recruit(self.name, action.game_name,
               action.markername)
         elif isinstance(action, Action.UndoMoveCreature):
-            print "User UndoMoveCreature"
             self.server.undo_move_creature(self.name, action.game_name,
               action.creature_name, action.new_hexlabel)
         elif isinstance(action, Action.SplitLegion):
