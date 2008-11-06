@@ -832,14 +832,13 @@ class Game(Observed):
         result = set()
         if creature.moved or creature.is_engaged():
             return result
-        hexlabel = creature.hexlabel
-        if (self.turn == 1 and creature.legion == self.defender_legion
+        if (self.battle_turn == 1 and creature.legion == self.defender_legion
           and self.battlemap.startlist):
             for hexlabel2 in self.battlemap.startlist:
                 if not self.is_battle_hex_occupied(hexlabel2):
                     result.add(hexlabel2)
             return result
-        return self._find_battle_moves_inner(creature, hexlabel,
+        return self._find_battle_moves_inner(creature, creature.hexlabel,
           creature.skill)
 
     def move_creature(self, playername, creature_name, old_hexlabel,

@@ -37,6 +37,9 @@ class Legion(Observed):
     def __len__(self):
         return len(self.creatures)
 
+    def __eq__(self, other):
+        return self.markername == other.markername
+
     def num_lords(self):
         return sum(creature.character_type == "lord" for creature in
           self.creatures)
