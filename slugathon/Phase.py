@@ -15,10 +15,13 @@ phase_names = {
     MOVE:   "Move",
     FIGHT:  "Fight",
     MUSTER: "Muster",
+}
+
+battle_phase_names = {
     REINFORCE: "Reinforce",
     MANEUVER: "Maneuver",
-    STRIKE: "Strike",
     DRIFTDAMAGE: "Drift damage",
+    STRIKE: "Strike",
     COUNTERSTRIKE: "Counterstrike",
     CLEANUP: "Cleanup",
 }
