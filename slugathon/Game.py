@@ -798,7 +798,7 @@ class Game(Observed):
             return result
         hex1 = self.battlemap.hexes[hexlabel]
         for hexside, hex2 in hex1.neighbors.iteritems():
-            if not self.is_battle_hex_occupied(hex2.label):
+            if creature.flies or not self.is_battle_hex_occupied(hex2.label):
                 if hex1.entrance:
                     # Ignore hexside penalties from entrances.  There aren't
                     # any on the standard boards, and this avoids having to
@@ -810,7 +810,8 @@ class Game(Observed):
                 cost = self.battle_hex_entry_cost(creature, hex2.terrain,
                   border)
                 if cost <= movement_left:
-                    result.add(hex2.label)
+                    if not self.is_battle_hex_occupied(hex2.label):
+                        result.add(hex2.label)
                 if creature.flies:
                     flyover_cost = self.battle_hex_flyover_cost(creature,
                       hex2.terrain)
