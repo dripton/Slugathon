@@ -247,6 +247,10 @@ class Player(Observed):
         action = Action.DoneRecruiting(self.game.name, self.name)
         self.notify(action)
 
+    def done_with_maneuvers(self):
+        action = Action.DoneManeuvering(self.game.name, self.name)
+        self.notify(action)
+
     def new_turn(self):
         self.selected_markername = None
         self.movement_roll = None

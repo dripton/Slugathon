@@ -288,9 +288,13 @@ class GUIBattleMap(gtk.Window):
                 def1 = self.user.callRemote("apply_action", action)
                 def1.addErrback(self.failure)
 
-    # TODO
     def cb_done(self, action):
-        pass
+        player = self.game.get_player_by_name(self.username)
+        if player == self.game.battle_active_player:
+            if self.game.battle_phase == Phase.MANEUVER:
+                def1 = self.user.callRemote("done_with_maneuvers",
+                  self.game.name)
+                def1.addErrback(self.failure)
 
     # TODO
     def cb_concede(self, action):
@@ -309,6 +313,7 @@ class GUIBattleMap(gtk.Window):
 
     def update(self, observed, action):
         print "GUIBattleMap.update", observed, action
+
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
             repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]

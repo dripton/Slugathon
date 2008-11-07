@@ -287,7 +287,10 @@ class Game(Observed):
         player.undo_split(parent_markername, child_markername)
 
     def done_with_splits(self, playername):
-        """Try to end playername's split phase."""
+        """Try to end playername's split phase.
+
+        Called from Server.
+        """
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("ending split phase out of turn")
@@ -881,6 +884,18 @@ class Game(Observed):
         self.notify(action)
 
 
+    def done_with_maneuvers(self, playername):
+        """Try to end playername's maneuver battle phase.
+
+        Called from Server
+        """
+        player = self.get_player_by_name(playername)
+        if player is not self.battle_active_player:
+            raise AssertionError("ending maneuver phase out of turn")
+        if self.battle_phase == Phase.MANEUVER:
+            player.done_with_maneuvers()
+
+
     def update(self, observed, action):
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
@@ -1030,5 +1045,20 @@ class Game(Observed):
             # XXX Avoid double undo
             if creature.moved:
                 creature.undo_move()
+
+        elif isinstance(action, Action.DoneManeuvering):
+            # XXX temporary until ready for strike phase
+            if action.playername == self.defender_legion.player.name:
+                self.battle_active_legion = self.attacker_legion
+                self.battle_active_player = self.battle_active_legion.player
+            else:
+                self.battle_active_legion = self.defender_legion
+                self.battle_active_player = self.battle_active_legion.player
+                self.battle_turn += 1
+                if self.battle_turn > 7:
+                    raise Exception("TODO time loss")
+            for creature in self.battle_active_legion.creatures:
+                creature.moved = False
+                creature.previous_hexlabel = None
 
         self.notify(action)

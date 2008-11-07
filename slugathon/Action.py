@@ -374,6 +374,13 @@ class UndoMoveCreature(UndoAction):
         self.new_hexlabel = new_hexlabel
 pb.setUnjellyableForClass(UndoMoveCreature, UndoMoveCreature)
 
+class DoneManeuvering(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(DoneManeuvering, DoneManeuvering)
+
+
 class DoneFighting(Action):
     def __init__(self, game_name, playername):
         self.game_name = game_name
