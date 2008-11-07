@@ -47,20 +47,6 @@ def label_to_coords(label, entry_side):
 
     entry_side 3:
 
-               A3
-            A2    B4
-    A    A1    B3    C1       D
-    T       B2    C4    D6    E
-    T    B1    C3    D5       F
-    A       C2    D4    E5    E
-    C    C1    D3    E4       N
-    K       D2    E3    F4    D
-    E    D1    E2    F3       E
-    R       E1    F2          R
-               F1
-
-    entry_side 5:
-
                F4
             E5    F3
     A    D6    E4    F2       D
@@ -72,6 +58,20 @@ def label_to_coords(label, entry_side):
     E    A3    B2    C1       E
     R       A2    B1          R
                A1
+
+    entry_side 5:
+
+               A3
+            A2    B4
+    A    A1    B3    C1       D
+    T       B2    C4    D6    E
+    T    B1    C3    D5       F
+    A       C2    D4    E5    E
+    C    C1    D3    E4       N
+    K       D2    E3    F4    D
+    E    D1    E2    F3       E
+    R       E1    F2          R
+               F1
     """
     if label not in all_labels:
         raise KeyError, "bad battle hex label"
