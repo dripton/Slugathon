@@ -758,6 +758,7 @@ class Game(Observed):
         This does not take other creatures in the hex into account.
         """
         cost = 1
+        # terrains
         if terrain in ["Tree"]:
             return sys.maxint
         elif terrain in ["Bog", "Volcano"]:
@@ -766,8 +767,12 @@ class Game(Observed):
         elif terrain in ["Bramble", "Drift", "Sand"]:
             if not creature.is_native(terrain):
                 cost += 1
-        if border in ["Slope", "Wall"]:
+        # borders
+        if border in ["Slope"]:
             if not creature.is_native(border) and not creature.flies:
+                cost += 1
+        elif border in ["Wall"]:
+            if not creature.flies:
                 cost += 1
         elif border in ["Cliff"]:
             if not creature.flies:
