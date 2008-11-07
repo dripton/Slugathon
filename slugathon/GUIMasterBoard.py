@@ -561,12 +561,12 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
             elif self.game.phase == Phase.MOVE:
-                if player.can_exit_move_phase(self.game):
+                if player.can_exit_move_phase():
                     def1 = self.user.callRemote("done_with_moves",
                       self.game.name)
                     def1.addErrback(self.failure)
             elif self.game.phase == Phase.FIGHT:
-                if player.can_exit_fight_phase(self.game):
+                if player.can_exit_fight_phase():
                     def1 = self.user.callRemote("done_with_engagements",
                       self.game.name)
                     def1.addErrback(self.failure)
@@ -577,7 +577,7 @@ class GUIMasterBoard(gtk.Window):
 
     def cb_mulligan(self, action):
         player = self.game.get_player_by_name(self.username)
-        if player.can_take_mulligan(self.game):
+        if player.can_take_mulligan():
             history = self.game.history
             if history.can_undo(self.username):
                 last_action = history.actions[-1]

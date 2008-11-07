@@ -63,11 +63,11 @@ def test_can_exit_move_phase():
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Gargoyle", "Centaur", "Centaur"])
     legion2 = player.legions["Rd02"]
-    assert not player.can_exit_move_phase(game)
+    assert not player.can_exit_move_phase()
     legion1.move(8, False, 1, None)
-    assert player.can_exit_move_phase(game)
+    assert player.can_exit_move_phase()
     legion2.move(200, True, 3, "Angel")
-    assert player.can_exit_move_phase(game)
+    assert player.can_exit_move_phase()
 
 def test_num_creatures():
     now = time.time()

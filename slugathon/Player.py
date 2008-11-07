@@ -159,10 +159,10 @@ class Player(Observed):
         if self.can_exit_split_phase():
             self._roll_movement()
 
-    def can_take_mulligan(self, game):
+    def can_take_mulligan(self):
         """Return True iff this player can take a mulligan"""
-        return bool(self is game.active_player and game.turn == 1
-          and game.phase == Phase.MOVE and self.mulligans_left)
+        return bool(self is self.game.active_player and self.game.turn == 1
+          and self.game.phase == Phase.MOVE and self.mulligans_left)
 
     def take_mulligan(self):
         self.mulligans_left -= 1
@@ -192,25 +192,25 @@ class Player(Observed):
         return set([legion for legion in game.all_legions(hexlabel)
           if legion.player is not self])
 
-    def can_exit_move_phase(self, game):
+    def can_exit_move_phase(self):
         """Return True iff this player can finish the move phase."""
         if not self.moved_legions():
             return False
         for legion in self.friendly_legions():
             if len(self.friendly_legions(legion.hexlabel)) >= 2:
-                if not legion.moved and game.find_all_moves(legion,
-                  game.board.hexes[legion.hexlabel], self.movement_roll):
+                if not legion.moved and self.game.find_all_moves(legion,
+                  self.game.board.hexes[legion.hexlabel], self.movement_roll):
                     return False
                 # else will need to recombine
         return True
 
-    def recombine(self, game):
+    def recombine(self):
         """Recombine split legions as necessary."""
         while True:
             for legion in self.friendly_legions():
                 legions_in_hex = list(self.friendly_legions(legion.hexlabel))
                 if len(legions_in_hex) >= 2:
-                    split_action = game.history.find_last_split(self.name,
+                    split_action = self.game.history.find_last_split(self.name,
                       legions_in_hex[0], legions_in_hex[1])
                     if split_action is not None:
                         parent_markername = split_action.parent_markername
@@ -224,26 +224,26 @@ class Player(Observed):
             else:
                 return
 
-    def done_with_moves(self, game):
-        if self.can_exit_move_phase(game):
-            self.recombine(game)
+    def done_with_moves(self):
+        if self.can_exit_move_phase():
+            self.recombine()
             action = Action.DoneMoving(self.game.name, self.name)
             self.notify(action)
 
-    def can_exit_fight_phase(self, game):
+    def can_exit_fight_phase(self):
         """Return True iff this player can finish the move phase."""
-        return not game.engagement_hexlabels()
+        return not self.game.engagement_hexlabels()
 
     def reset_angels_pending(self):
         for legion in self.legions.itervalues():
             legion.reset_angels_pending()
 
-    def done_with_engagements(self, game):
-        if self.can_exit_fight_phase(game):
+    def done_with_engagements(self):
+        if self.can_exit_fight_phase():
             action = Action.DoneFighting(self.game.name, self.name)
             self.notify(action)
 
-    def done_with_recruits(self, game):
+    def done_with_recruits(self):
         action = Action.DoneRecruiting(self.game.name, self.name)
         self.notify(action)
 

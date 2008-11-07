@@ -300,7 +300,7 @@ class Game(Observed):
     def take_mulligan(self, playername):
         """playername tries to take a mulligan."""
         player = self.get_player_by_name(playername)
-        if not player.can_take_mulligan(self):
+        if not player.can_take_mulligan():
             raise AssertionError("illegal mulligan attempt")
         player.take_mulligan()
 
@@ -467,7 +467,7 @@ class Game(Observed):
         if player is not self.active_player:
             raise AssertionError("ending move phase out of turn")
         if self.phase == Phase.MOVE:
-            player.done_with_moves(self)
+            player.done_with_moves()
 
     def resolve_engagement(self, playername, hexlabel):
         """Called from Server"""
@@ -681,7 +681,7 @@ class Game(Observed):
         if player is not self.active_player:
             raise AssertionError("ending fight phase out of turn")
         if self.phase == Phase.FIGHT:
-            player.done_with_engagements(self)
+            player.done_with_engagements()
 
     def recruit_creature(self, playername, markername, creature_name):
         """Called from Server"""
@@ -707,7 +707,7 @@ class Game(Observed):
         if player is not self.active_player:
             raise AssertionError("ending muster phase out of turn")
         if self.phase == Phase.MUSTER:
-            player.done_with_recruits(self)
+            player.done_with_recruits()
 
     def engagement_hexlabels(self):
         """Return a set of all hexlabels with engagements"""
