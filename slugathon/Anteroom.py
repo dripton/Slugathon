@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2003-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import gtk
 import gtk.glade
 from twisted.internet import reactor
 from zope.interface import implements

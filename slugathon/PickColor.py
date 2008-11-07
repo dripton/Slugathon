@@ -6,7 +6,6 @@ __license__ = "GNU GPL v2"
 
 # TODO This dialog should always be on top.
 
-import gtk
 import gtk.glade
 from twisted.internet import defer
 

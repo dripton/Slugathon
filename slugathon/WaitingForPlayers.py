@@ -4,7 +4,6 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk
 import gtk.glade
 from twisted.internet import reactor
 from zope.interface import implements

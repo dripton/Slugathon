@@ -8,7 +8,6 @@ from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor
 from twisted.internet import utils
-import gtk
 import gtk.glade
 import gobject
 

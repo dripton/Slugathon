@@ -6,7 +6,6 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk
 import gtk.glade
 from zope.interface import implements
 
