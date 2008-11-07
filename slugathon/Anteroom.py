@@ -111,8 +111,7 @@ class Anteroom(object):
         reactor.stop()
 
     def cb_keypress(self, entry, event):
-        ENTER_KEY = 65293  # XXX Find a cleaner way to do this.
-        if event.keyval == ENTER_KEY:
+        if event.keyval == gtk.keysyms.Return:
             text = self.chat_entry.get_text()
             if text:
                 def1 = self.user.callRemote("send_chat_message", text)
