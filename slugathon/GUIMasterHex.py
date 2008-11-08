@@ -205,9 +205,6 @@ class GUIMasterHex(object):
         self.draw_overlay(gc)
         self.draw_label(gc)
 
-    def toggle_selection(self):
-        self.selected = not self.selected
-
 
 def _init_block(x0, y0, x1, y1, theta, unit):
     """Return a list of points to make a block."""

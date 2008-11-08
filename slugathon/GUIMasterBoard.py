@@ -192,9 +192,8 @@ class GUIMasterBoard(gtk.Window):
 
     def clicked_on_hex(self, area, event, guihex):
         if not self.game:
-            guihex.toggle_selection()
-            self.update_gui([guihex.masterhex.label])
-        elif event.button == 1:
+            return
+        if event.button == 1:
             phase = self.game.phase
             if phase == Phase.SPLIT:
                 self.highlight_tall_legions()

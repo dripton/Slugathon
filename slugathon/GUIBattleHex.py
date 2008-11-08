@@ -228,8 +228,5 @@ class GUIBattleHex(object):
             self.cleanup_entrance(gc)
             self.highlight_entrance(gc)
 
-    def toggle_selection(self):
-        self.selected = not self.selected
-
     def __repr__(self):
         return "GUIBattleHex %s" % self.battlehex.label
