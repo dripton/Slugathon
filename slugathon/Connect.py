@@ -86,7 +86,7 @@ class Connect(object):
         def1.addErrback(self.connection_failed)
 
     def on_start_server_button_clicked(self, *args):
-        utils.getProcessValue("python", ["python", "Server.py"])
+        utils.getProcessValue("python", ["Server.py"])
 
     def connected(self, user):
         self.connect_window.hide()
