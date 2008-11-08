@@ -32,6 +32,7 @@ class Anteroom(object):
         self.games = None       # list, aliased from Client
         self.game_store = []
         self.wfps = {}          # game name : WaitingForPlayers
+        self.selected_names = set()
 
         self.anteroom_window.connect("destroy", guiutils.exit)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
@@ -63,7 +64,9 @@ class Anteroom(object):
         self.update_user_store()
         self.user_list.set_model(self.user_store)
         selection = self.user_list.get_selection()
-        selection.set_select_function(self.cb_user_list_select, None)
+        selection.set_mode(gtk.SELECTION_MULTIPLE)
+        selection.set_select_function(self.cb_user_list_select, data=None,
+          full=True)
         column = gtk.TreeViewColumn("User Name", gtk.CellRendererText(),
           text=0)
         self.user_list.append_column(column)
@@ -113,7 +116,11 @@ class Anteroom(object):
         if event.keyval == gtk.keysyms.Return:
             text = self.chat_entry.get_text()
             if text:
-                def1 = self.user.callRemote("send_chat_message", text)
+                if not self.selected_names:
+                    dest = None
+                else:
+                    dest = self.selected_names
+                def1 = self.user.callRemote("send_chat_message", dest, text)
                 def1.addErrback(self.failure)
                 self.chat_entry.set_text("")
 
@@ -155,12 +162,15 @@ class Anteroom(object):
     def dropped_from_game(self, game_name):
         self.update_game_store()
 
-    # TODO Actually save marked user for private chats, user info, etc.
-    def cb_user_list_select(self, path, unused):
+    def cb_user_list_select(self, selection, model, path, is_selected, unused):
         index = path[0]
         row = self.user_store[index, 0]
         name = row[0]
-        return False
+        if is_selected:
+            self.selected_names.remove(name)
+        else:
+            self.selected_names.add(name)
+        return True
 
     def cb_game_list_select(self, path, unused):
         index = path[0]

@@ -36,8 +36,12 @@ class User(pb.Avatar):
         games = self.server.get_games()
         return [game.to_info_tuple() for game in games]
 
-    def perspective_send_chat_message(self, text):
-        self.server.send_chat_message(self.name, None, text)
+    def perspective_send_chat_message(self, dest, text):
+        """Send chat text to dest, a set of usernames.
+
+        If dest is None, send to everyone.
+        """
+        self.server.send_chat_message(self.name, dest, text)
 
     def receive_chat_message(self, text):
         def1 = self.client.callRemote("receive_chat_message", text)
