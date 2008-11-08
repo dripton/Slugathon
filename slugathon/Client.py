@@ -57,7 +57,7 @@ class Client(pb.Referenceable, Observed):
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
-        def1.addErrback(self.failure)
+        # No errback here; let Connect's errback handle failed login.
         return def1
 
     def connected(self, user):
@@ -111,7 +111,6 @@ class Client(pb.Referenceable, Observed):
 
     def failure(self, error):
         print "Client.failure", self, error
-        reactor.stop()
 
     # TODO Make this an Action, after adding a filter on Observed.notify
     def remote_receive_chat_message(self, text):

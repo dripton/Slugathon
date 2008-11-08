@@ -24,7 +24,8 @@ class Connect(object):
         self.glade = gtk.glade.XML("../glade/connect.glade")
         self.widget_names = ["connect_window", "playername_comboboxentry",
           "password_entry", "server_name_comboboxentry",
-          "server_port_comboboxentry", "connect_button", "start_server_button"]
+          "server_port_comboboxentry", "connect_button",
+          "start_server_button", "status_textview"]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.glade.signal_autoconnect(self)
@@ -82,17 +83,18 @@ class Connect(object):
         client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
         def1.addCallback(self.connected)
-        def1.addErrback(self.failure)
+        def1.addErrback(self.connection_failed)
 
     def on_start_server_button_clicked(self, *args):
-        utils.getProcessValue("python", ["Server.py"])
+        utils.getProcessValue("python", ["python", "Server.py"])
 
     def connected(self, user):
         self.connect_window.hide()
 
-    def failure(self, arg):
-        print "Connect.failure", arg
-        guiutils.exit(None)
+    def connection_failed(self, arg):
+        self.status_textview.modify_text(gtk.STATE_NORMAL,
+          gtk.gdk.color_parse("red"))
+        self.status_textview.get_buffer().set_text("Login failed")
 
 
 if __name__ == "__main__":
