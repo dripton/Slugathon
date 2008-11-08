@@ -91,7 +91,7 @@ class GUIBattleMap(gtk.Window):
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.cb_click)
         self.show_all()
-        if self.game.battle_active_player.name == self.username:
+        if self.game and self.game.battle_active_player.name == self.username:
             self.highlight_mobile_chits()
 
     def create_ui(self):
