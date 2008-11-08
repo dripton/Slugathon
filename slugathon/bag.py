@@ -43,30 +43,37 @@ class bag(object):
         self.remove(key)
 
     def __getitem__(self, key):
+        """Return the count for key."""
         return self._dic.get(key, 0)
 
     def __setitem__(self, key, value):
+        """Set the count for key to value."""
         if value >= 1:
             self._dic[key] = value
         else:
             del self._dic[key]
 
     def __contains__(self, item):
+        """Return True iff item is in the bag."""
         return item in self._dic
 
     def __repr__(self):
+        """Return a string representation of the bag."""
         return "bag(%s)" % str(self._dic)
 
     def __len__(self):
+        """Return the number of keys."""
         return len(self._dic)
 
     def __eq__(self, other):
+        """Return True iff other is equal to this bag."""
         if isinstance(other, bag):
             return self._dic == other._dic
         else:
             return False
 
     def __ne__(self, other):
+        """Return True iff other is not equal to this bag."""
         return not self.__eq__(other)
 
     def union(self, other):
@@ -136,6 +143,7 @@ class bag(object):
         return self._dic.items()
 
     def iteritems(self):
+        """Yield item, count pairs."""
         return self._dic.iteritems()
 
     def keys(self):
@@ -143,6 +151,7 @@ class bag(object):
         return self._dic.keys()
 
     def iterkeys(self):
+        """Yield each item in the set."""
         return self._dic.iterkeys()
 
     def values(self):
@@ -150,4 +159,5 @@ class bag(object):
         return self._dic.values()
 
     def itervalues(self):
+        """Yield counts for each item in the set."""
         return self._dic.itervalues()
