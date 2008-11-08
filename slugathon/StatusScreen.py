@@ -85,6 +85,18 @@ class StatusScreen(gtk.Window):
             score_label = getattr(self, "score%d_label" % num)
             score_label.set_text(str(player.score))
 
+    def _init_battle(self):
+        if self.game.battle_turn is not None:
+            self.battle_turn_label.set_text(str(self.game.battle_turn))
+            self.battle_player_label.set_text(
+              self.game.battle_active_player.name)
+            self.battle_phase_label.set_text(str(
+              self.game.battle_phase))
+        else:
+            self.battle_turn_label.set_text("")
+            self.battle_player_label.set_text("")
+            self.battle_phase_label.set_text("")
+
     def update(self, observed, action):
         if isinstance(action, Action.AssignedAllTowers):
             # Players got renumbered, so re-init everything.
@@ -156,6 +168,14 @@ class StatusScreen(gtk.Window):
 
         elif isinstance(action, Action.DoneFighting):
             self._init_turn()
+
+        elif (isinstance(action, Action.Fight) or
+          isinstance(action, Action.DoneManeuvering)):
+            self.battle_turn_label.set_text(str(self.game.battle_turn))
+            self.battle_player_label.set_text(
+              self.game.battle_active_player.name)
+            self.battle_phase_label.set_text(str(
+              self.game.battle_phase))
 
 
 if __name__ == "__main__":
