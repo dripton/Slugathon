@@ -78,12 +78,10 @@ class GUIBattleHex(object):
         self.vertexes[4] = rp((cx + scale, cy + 2 * SQRT3 * scale))
         self.vertexes[5] = rp((cx, cy + SQRT3 * scale))
 
-        self.inner_vertexes = []
+        self.points = []
         iv = guiutils.scale_polygon(self.vertexes, 0.9)
         for point in iv:
-            self.inner_vertexes.append(rp(point))
-
-        self.points = self.inner_vertexes[:]
+            self.points.append(rp(point))
 
 
     def draw_hexagon(self, gc):
@@ -103,7 +101,7 @@ class GUIBattleHex(object):
             self.guimap.area.window.draw_polygon(gc, True, self.points)
             # inner hex
             gc.foreground = colormap.alloc_color(*self.fillcolor)
-            self.guimap.area.window.draw_polygon(gc, True, self.inner_vertexes)
+            self.guimap.area.window.draw_polygon(gc, True, self.points)
         else:
             # hex
             gc.foreground = colormap.alloc_color(*self.fillcolor)
