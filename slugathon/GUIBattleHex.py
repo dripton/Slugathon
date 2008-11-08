@@ -184,6 +184,29 @@ class GUIBattleHex(object):
 
         self.guimap.area.window.draw_layout(gc, x, y, layout)
 
+    # TODO save computations
+    def highlight_entrance(self, gc):
+        """Highlight this entrance hex, if selected"""
+        chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
+        x = self.center[0] - chit_scale / 4
+        y = self.center[1] - chit_scale * 7 / 4
+        width = chit_scale / 2
+        height = 7 * chit_scale / 2
+        x1 = x + width
+        y1 = y + height
+        points = [(x, y), (x1, y), (x1, y1), (x, y1)]
+        colormap = self.guimap.area.get_colormap()
+        if self.selected:
+            # outline
+            gc.foreground = colormap.alloc_color("red")
+            self.guimap.area.window.draw_polygon(gc, False, points)
+            # outer portion
+            gc.foreground = colormap.alloc_color("white")
+            self.guimap.area.window.draw_polygon(gc, True, points)
+            # inner hex
+            gc.foreground = colormap.alloc_color(*self.fillcolor)
+            self.guimap.area.window.draw_polygon(gc, True, points)
+
     def cleanup_entrance(self, gc):
         """Cleanup after any chits that may have moved away from an
         entrance."""
@@ -205,6 +228,7 @@ class GUIBattleHex(object):
               self.battlehex.terrain_side)
         else:
             self.cleanup_entrance(gc)
+            self.highlight_entrance(gc)
 
     def toggle_selection(self):
         self.selected = not self.selected

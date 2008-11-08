@@ -91,6 +91,8 @@ class GUIBattleMap(gtk.Window):
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.cb_click)
         self.show_all()
+        if self.game.battle_active_player.name == self.username:
+            self.highlight_mobile_chits()
 
     def create_ui(self):
         ag = gtk.ActionGroup("BattleActions")
@@ -131,14 +133,23 @@ class GUIBattleMap(gtk.Window):
           SQRT3))
 
     def unselect_all(self):
+        """Unselect all guihexes."""
         for guihex in self.guihexes.itervalues():
             guihex.selected = False
         self.update_gui()
 
     def highlight_mobile_chits(self):
         """Highlight the hexes containing all creatures that can move now."""
-        # TODO
-        pass
+        if not self.game:
+            return
+        hexlabels = set()
+        for creature in self.game.battle_active_legion.creatures:
+            if creature.is_mobile():
+                hexlabels.add(creature.hexlabel)
+        self.unselect_all()
+        for hexlabel in hexlabels:
+            self.guihexes[hexlabel].selected = True
+        self.update_gui(hexlabels)
 
     def cb_area_expose(self, area, event):
         self.update_gui()
@@ -159,6 +170,9 @@ class GUIBattleMap(gtk.Window):
     def clicked_on_background(self, area, event):
         self.selected_chit = None
         self.unselect_all()
+        if self.game and self.game.battle_phase == Phase.MANEUVER:
+            if self.game.battle_active_player.name == self.username:
+                self.highlight_mobile_chits()
 
     def clicked_on_hex(self, area, event, guihex):
         if not self.game:
@@ -173,6 +187,9 @@ class GUIBattleMap(gtk.Window):
                 def1.addErrback(self.failure)
         self.selected_chit = None
         self.unselect_all()
+        if phase == Phase.MANEUVER:
+            if self.game.battle_active_player.name == self.username:
+                self.highlight_mobile_chits()
 
     def clicked_on_chit(self, area, event, chit):
         phase = self.game.battle_phase
@@ -312,13 +329,16 @@ class GUIBattleMap(gtk.Window):
         self.draw_chits(gc)
 
     def update(self, observed, action):
-        print "GUIBattleMap.update", observed, action
-
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
             repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]
             self.update_gui(repaint_hexlabels)
             if action.playername == self.username:
+                self.highlight_mobile_chits()
+
+        elif isinstance(action, Action.DoneManeuvering):
+            # XXX temporary
+            if self.game.battle_active_player.name == self.username:
                 self.highlight_mobile_chits()
 
     def failure(self, arg):

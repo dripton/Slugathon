@@ -104,6 +104,10 @@ class Creature(object):
         # TODO
         return False
 
+    def is_mobile(self):
+        """Return True iff this creature can move."""
+        return not self.moved and not self.is_dead() and not self.is_engaged()
+
     def is_native(self, hazard):
         """Return True iff this creature is native to the named hazard.
 
