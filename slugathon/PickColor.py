@@ -34,6 +34,13 @@ class PickColor(object):
             button = getattr(self, button_name)
             if button_name in colors_left:
                 button.connect("button-press-event", self.cb_click)
+                color = button_name.lower()
+                gtk_color = button.get_colormap().alloc_color(color)
+                button.modify_bg(gtk.STATE_NORMAL, gtk_color)
+                if color in ["black", "blue", "brown", "red"]:
+                    white = button.get_colormap().alloc_color("white")
+                    label = button.get_child()
+                    label.modify_fg(gtk.STATE_NORMAL, white)
             else:
                 button.set_label("")
 
