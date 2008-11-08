@@ -743,6 +743,11 @@ class Game(Observed):
 
     # Battle
 
+    def other_battle_legion(self, legion):
+        for legion2 in self.battle_legions:
+            if legion2 != legion:
+                return legion2
+
     def is_battle_hex_occupied(self, hexlabel):
         """Return True iff there's a creature in the hex with hexlabel."""
         for legion in self.battle_legions:

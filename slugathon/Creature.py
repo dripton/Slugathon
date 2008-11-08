@@ -101,8 +101,23 @@ class Creature(object):
 
     def is_engaged(self):
         """Return True iff this creature is engaged with an adjacent enemy"""
-        # TODO
+        enemy_hexlabels = set()
+        game = self.legion.player.game
+        legion2 = game.other_battle_legion(self.legion)
+        for creature in legion2.creatures:
+            if not creature.is_dead():
+                enemy_hexlabels.add(creature.hexlabel)
+        enemy_hexlabels.discard("ATTACKER")
+        enemy_hexlabels.discard("DEFENDER")
+        hex1 = game.battlemap.hexes[self.hexlabel]
+        for hexside, hex2 in hex1.neighbors.iteritems():
+            hexlabel = hex2.label
+            if hexlabel in enemy_hexlabels:
+                if (hex1.borders[hexside] != "Cliff" and
+                  hex2.borders[(hexside + 3) % 6] != "Cliff"):
+                    return True
         return False
+
 
     def is_mobile(self):
         """Return True iff this creature can move."""
