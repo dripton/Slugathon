@@ -181,9 +181,6 @@ pb.setUnjellyableForClass(MergeLegions, MergeLegions)
 
 class RollMovement(Action):
     def __init__(self, game_name, playername, movement_roll):
-        """parent_creature_names and child_creature_names are lists of the
-        actual creature names if known, or lists of height * None if not known
-        """
         self.game_name = game_name
         self.playername = playername
         self.movement_roll = movement_roll
@@ -380,6 +377,72 @@ class DoneManeuvering(Action):
         self.playername = playername
 pb.setUnjellyableForClass(DoneManeuvering, DoneManeuvering)
 
+class DriftDamage(Action):
+    def __init__(self, game_name, creature_name, hexlabel,
+      target_creature_name, target_hexlabel, hits):
+        self.game_name = game_name
+        self.target_creature_name = target_creature_name
+        self.target_hexlabel = target_hexlabel
+        self.hits = hits
+pb.setUnjellyableForClass(DriftDamage, DriftDamage)
+
+class Strike(Action):
+    def __init__(self, game_name, playername, creature_name, hexlabel,
+      target_creature_name, target_hexlabel, num_dice, strike_number,
+      rolls, hits, carries):
+        """hits is the total number of hits, including excess
+        carries is the number of carries available
+        """
+        self.game_name = game_name
+        self.playername = playername
+        self.creature_name = creature_name
+        self.hexlabel = hexlabel
+        self.target_creature_name = target_creature_name
+        self.target_hexlabel = target_hexlabel
+        self.num_dice = num_dice
+        self.strike_number = strike_number
+        self.rolls = rolls
+        self.hits = hits
+        self.carries = carries
+pb.setUnjellyableForClass(Strike, Strike)
+
+class Carry(Action):
+    def __init__(self, game_name, playername, creature_name, hexlabel,
+      target_creature_name, target_hexlabel, hits, carries):
+        """hits is the number of carries that were applied.
+        carries is the number of carries left over for another target.
+        """
+        self.game_name = game_name
+        self.playername = playername
+        self.creature_name = creature_name
+        self.hexlabel = hexlabel
+        self.target_creature_name = target_creature_name
+        self.target_hexlabel = target_hexlabel
+        self.hits = hits
+        self.carries = carries
+pb.setUnjellyableForClass(Carry, Carry)
+
+class DoNotCarry(Action):
+    def __init__(self, game_name, playername, creature_name, hexlabel,
+      target_creature_name, target_hexlabel, hits):
+        """creature_name and hexlabel refer to the striker"""
+        self.game_name = game_name
+        self.playername = playername
+        self.creature_name = creature_name
+        self.hexlabel = hexlabel
+pb.setUnjellyableForClass(DoNotCarry, DoNotCarry)
+
+class DoneStriking(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(DoneStriking, DoneStriking)
+
+class DoneStrikingBack(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(DoneStrikingBack, DoneStrikingBack)
 
 class DoneFighting(Action):
     def __init__(self, game_name, playername):
