@@ -71,6 +71,7 @@ class Creature(object):
         self.acquirable = bool(self.acquirable_every)
         self.hits = 0
         self.moved = False
+        self.struck = False
         self.hexlabel = None
         self.previous_hexlabel = None
         self.legion = None
@@ -143,3 +144,13 @@ class Creature(object):
         self.hexlabel = self.previous_hexlabel
         self.previous_hexlabel = None
         self.moved = False
+
+    def can_strike(self):
+        """Return True iff this creature can strike."""
+        return not self.struck and not self.is_dead() and (self.is_engaged()
+          or self.can_rangestrike())
+
+    # TODO
+    def can_rangestrike(self):
+        """Return True iff this creature can rangestrike an enemy."""
+        return False

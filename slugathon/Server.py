@@ -246,6 +246,16 @@ class Server(Observed):
         if game:
             game.done_with_maneuvers(username)
 
+    def done_with_strikes(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.done_with_strikes(username)
+
+    def done_with_counterstrikes(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.done_with_counterstrikes(username)
+
     def acquire_angel(self, username, game_name, markername, angel_name):
         game = self.name_to_game(game_name)
         if game:

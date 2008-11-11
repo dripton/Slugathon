@@ -251,6 +251,14 @@ class Player(Observed):
         action = Action.DoneManeuvering(self.game.name, self.name)
         self.notify(action)
 
+    def done_with_strikes(self):
+        action = Action.DoneStriking(self.game.name, self.name)
+        self.notify(action)
+
+    def done_with_counterstrikes(self):
+        action = Action.DoneStrikingBack(self.game.name, self.name)
+        self.notify(action)
+
     def new_turn(self):
         self.selected_markername = None
         self.movement_roll = None

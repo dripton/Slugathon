@@ -90,8 +90,8 @@ class StatusScreen(gtk.Window):
             self.battle_turn_label.set_text(str(self.game.battle_turn))
             self.battle_player_label.set_text(
               self.game.battle_active_player.name)
-            self.battle_phase_label.set_text(str(
-              self.game.battle_phase))
+            self.battle_phase_label.set_text(Phase.battle_phase_names[
+              self.game.battle_phase])
         else:
             self.battle_turn_label.set_text("")
             self.battle_player_label.set_text("")
@@ -170,12 +170,14 @@ class StatusScreen(gtk.Window):
             self._init_turn()
 
         elif (isinstance(action, Action.Fight) or
-          isinstance(action, Action.DoneManeuvering)):
+          isinstance(action, Action.DoneManeuvering) or
+          isinstance(action, Action.DoneStriking) or
+          isinstance(action, Action.DoneStrikingBack)):
             self.battle_turn_label.set_text(str(self.game.battle_turn))
             self.battle_player_label.set_text(
               self.game.battle_active_player.name)
-            self.battle_phase_label.set_text(str(
-              self.game.battle_phase))
+            self.battle_phase_label.set_text(Phase.battle_phase_names[
+              self.game.battle_phase])
 
 
 if __name__ == "__main__":

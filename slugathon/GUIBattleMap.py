@@ -151,6 +151,19 @@ class GUIBattleMap(gtk.Window):
             self.guihexes[hexlabel].selected = True
         self.update_gui(hexlabels)
 
+    def highlight_strikers(self):
+        """Highlight the hexes containing creatures that can strike now."""
+        if not self.game:
+            return
+        hexlabels = set()
+        for creature in self.game.battle_active_legion.creatures:
+            if creature.can_strike():
+                hexlabels.add(creature.hexlabel)
+        self.unselect_all()
+        for hexlabel in hexlabels:
+            self.guihexes[hexlabel].selected = True
+        self.update_gui(hexlabels)
+
     def cb_area_expose(self, area, event):
         self.update_gui()
         return True
@@ -170,9 +183,17 @@ class GUIBattleMap(gtk.Window):
     def clicked_on_background(self, area, event):
         self.selected_chit = None
         self.unselect_all()
-        if self.game and self.game.battle_phase == Phase.MANEUVER:
+        if not self.game:
+            return
+        if self.game.battle_phase == Phase.MANEUVER:
             if self.game.battle_active_player.name == self.username:
                 self.highlight_mobile_chits()
+        elif self.game.battle_phase == Phase.STRIKE:
+            if self.game.battle_active_player.name == self.username:
+                self.highlight_strikers()
+        elif self.game.battle_phase == Phase.COUNTERSTRIKE:
+            if self.game.battle_active_player.name == self.username:
+                self.highlight_strikers()
 
     def clicked_on_hex(self, area, event, guihex):
         if not self.game:
@@ -312,6 +333,16 @@ class GUIBattleMap(gtk.Window):
                 def1 = self.user.callRemote("done_with_maneuvers",
                   self.game.name)
                 def1.addErrback(self.failure)
+            elif self.game.battle_phase == Phase.STRIKE:
+                # TODO Check to see if strikes remain
+                def1 = self.user.callRemote("done_with_strikes",
+                  self.game.name)
+                def1.addErrback(self.failure)
+            elif self.game.battle_phase == Phase.COUNTERSTRIKE:
+                # TODO Check to see if strikes remain
+                def1 = self.user.callRemote("done_with_counterstrikes",
+                  self.game.name)
+                def1.addErrback(self.failure)
 
     # TODO
     def cb_concede(self, action):
@@ -337,9 +368,12 @@ class GUIBattleMap(gtk.Window):
                 self.highlight_mobile_chits()
 
         elif isinstance(action, Action.DoneManeuvering):
-            # XXX temporary
             if self.game.battle_active_player.name == self.username:
-                self.highlight_mobile_chits()
+                self.highlight_strikers()
+
+        elif isinstance(action, Action.DoneStriking):
+            if self.game.battle_active_player.name == self.username:
+                self.highlight_strikers()
 
     def failure(self, arg):
         print "GUIBattleMap.failure", arg

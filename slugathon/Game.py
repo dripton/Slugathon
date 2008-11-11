@@ -900,6 +900,28 @@ class Game(Observed):
         if self.battle_phase == Phase.MANEUVER:
             player.done_with_maneuvers()
 
+    def done_with_strikes(self, playername):
+        """Try to end playername's strike battle phase.
+
+        Called from Server
+        """
+        player = self.get_player_by_name(playername)
+        if player is not self.battle_active_player:
+            raise AssertionError("ending maneuver phase out of turn")
+        if self.battle_phase == Phase.STRIKE:
+            player.done_with_strikes()
+
+    def done_with_counterstrikes(self, playername):
+        """Try to end playername's counterstrike battle phase.
+
+        Called from Server
+        """
+        player = self.get_player_by_name(playername)
+        if player is not self.battle_active_player:
+            raise AssertionError("ending maneuver phase out of turn")
+        if self.battle_phase == Phase.COUNTERSTRIKE:
+            player.done_with_counterstrikes()
+
 
     def update(self, observed, action):
         if isinstance(action, Action.JoinGame):
@@ -1052,18 +1074,27 @@ class Game(Observed):
                 creature.undo_move()
 
         elif isinstance(action, Action.DoneManeuvering):
-            # XXX temporary until ready for strike phase
+            self.battle_phase = Phase.STRIKE
+
+        elif isinstance(action, Action.DoneStriking):
+            self.battle_phase = Phase.COUNTERSTRIKE
+            # Switch active players before the counterstrike phase.
             if action.playername == self.defender_legion.player.name:
                 self.battle_active_legion = self.attacker_legion
-                self.battle_active_player = self.battle_active_legion.player
             else:
                 self.battle_active_legion = self.defender_legion
-                self.battle_active_player = self.battle_active_legion.player
+            self.battle_active_player = self.battle_active_legion.player
+
+        elif isinstance(action, Action.DoneStrikingBack):
+            if action.playername == self.defender_legion.player.name:
                 self.battle_turn += 1
                 if self.battle_turn > 7:
                     raise Exception("TODO time loss")
-            for creature in self.battle_active_legion.creatures:
-                creature.moved = False
-                creature.previous_hexlabel = None
+            for legion in self.battle_legions:
+                for creature in legion.creatures:
+                    creature.moved = False
+                    creature.previous_hexlabel = None
+                    creature.struck = False
+            self.battle_phase = Phase.MANEUVER
 
         self.notify(action)

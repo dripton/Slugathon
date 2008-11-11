@@ -129,6 +129,12 @@ class User(pb.Avatar):
     def perspective_done_with_maneuvers(self, game_name):
         self.server.done_with_maneuvers(self.name, game_name)
 
+    def perspective_done_with_strikes(self, game_name):
+        self.server.done_with_strikes(self.name, game_name)
+
+    def perspective_done_with_counterstrikes(self, game_name):
+        self.server.done_with_counterstrikes(self.name, game_name)
+
     def perspective_acquire_angel(self, game_name, markername,
       angel_name):
         self.server.acquire_angel(self.name, game_name, markername,
