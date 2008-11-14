@@ -100,25 +100,27 @@ class Creature(object):
     def is_dead(self):
         return self.hits >= self.power
 
-    def is_engaged(self):
-        """Return True iff this creature is engaged with an adjacent enemy"""
-        enemy_hexlabels = set()
+    def engaged_enemies(self):
+        """Return a set of enemy Creatures this Creature is engaged with."""
+        enemies = set()
+        hexlabel_to_enemy = {}
         game = self.legion.player.game
         legion2 = game.other_battle_legion(self.legion)
         for creature in legion2.creatures:
             if not creature.is_dead():
-                enemy_hexlabels.add(creature.hexlabel)
-        enemy_hexlabels.discard("ATTACKER")
-        enemy_hexlabels.discard("DEFENDER")
+                hexlabel_to_enemy[creature.hexlabel] = creature
         hex1 = game.battlemap.hexes[self.hexlabel]
         for hexside, hex2 in hex1.neighbors.iteritems():
             hexlabel = hex2.label
-            if hexlabel in enemy_hexlabels:
+            if hexlabel in hexlabel_to_enemy:
                 if (hex1.borders[hexside] != "Cliff" and
                   hex2.borders[(hexside + 3) % 6] != "Cliff"):
-                    return True
-        return False
+                    enemies.add(hexlabel_to_enemy[hexlabel])
+        return enemies
 
+    def is_engaged(self):
+        """Return True iff this creature is engaged with an adjacent enemy."""
+        return bool(self.engaged_enemies())
 
     def is_mobile(self):
         """Return True iff this creature can move."""
