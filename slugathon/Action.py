@@ -387,17 +387,17 @@ class DriftDamage(Action):
 pb.setUnjellyableForClass(DriftDamage, DriftDamage)
 
 class Strike(Action):
-    def __init__(self, game_name, playername, creature_name, hexlabel,
-      target_creature_name, target_hexlabel, num_dice, strike_number,
+    def __init__(self, game_name, playername, striker_name, striker_hexlabel,
+      target_name, target_hexlabel, num_dice, strike_number,
       rolls, hits, carries):
         """hits is the total number of hits, including excess
         carries is the number of carries available
         """
         self.game_name = game_name
         self.playername = playername
-        self.creature_name = creature_name
-        self.hexlabel = hexlabel
-        self.target_creature_name = target_creature_name
+        self.striker_name = striker_name
+        self.striker_hexlabel = striker_hexlabel
+        self.target_name = target_name
         self.target_hexlabel = target_hexlabel
         self.num_dice = num_dice
         self.strike_number = strike_number

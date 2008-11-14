@@ -744,17 +744,23 @@ class Game(Observed):
     # Battle
 
     def other_battle_legion(self, legion):
+        """Return the other legion in the battle."""
         for legion2 in self.battle_legions:
             if legion2 != legion:
                 return legion2
 
-    def is_battle_hex_occupied(self, hexlabel):
-        """Return True iff there's a creature in the hex with hexlabel."""
+    def creatures_in_battle_hex(self, hexlabel):
+        """Return a set of all creatures in the battlehex with hexlabel."""
+        creatures = set()
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.hexlabel == hexlabel:
-                    return True
-        return False
+                    creatures.add(creature)
+        return creatures
+
+    def is_battle_hex_occupied(self, hexlabel):
+        """Return True iff there's a creature in the hex with hexlabel."""
+        return bool(self.creatures_in_battle_hex(hexlabel))
 
     def battle_hex_entry_cost(self, creature, terrain, border):
         """Return the cost for creature to enter a battle hex with terrain,
@@ -888,7 +894,6 @@ class Game(Observed):
         creature.undo_move()
         self.notify(action)
 
-
     def done_with_maneuvers(self, playername):
         """Try to end playername's maneuver battle phase.
 
@@ -899,6 +904,43 @@ class Game(Observed):
             raise AssertionError("ending maneuver phase out of turn")
         if self.battle_phase == Phase.MANEUVER:
             player.done_with_maneuvers()
+
+    # TODO
+    def find_target_hexlabels(self, creature):
+        """Return a set of hexlabels containing creatures that creature
+        can strike or rangestrike."""
+        return set()
+
+    def strike(self, playername, striker_name, striker_hexlabel, target_name,
+      target_hexlabel, num_dice, strike_number):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        assert player == self.battle_active_player, "striking out of turn"
+        assert self.battle_phase in [Phase.STRIKE, Phase.COUNTERSTRIKE], \
+          "striking out of phase"
+        strikers = self.creatures_in_battle_hex(striker_hexlabel)
+        assert len(strikers) == 1
+        striker = strikers.pop()
+        assert striker.name == striker_name
+        targets = self.creatures_in_battle_hex(target_hexlabel)
+        assert len(targets) == 1
+        target = targets.pop()
+        assert target.name == target_name
+        assert num_dice == striker.number_of_dice(target)
+        assert strike_number == striker.strike_number(target)
+        rolls = Dice.roll(num_dice)
+        hits = 0
+        for roll in rolls:
+            if roll >= strike_number:
+                hits += 1
+        target.hits += hits
+        target.hits = min(target.hits, target.power)
+        # TODO carries
+        carries = 0
+        action = Action.Strike(self.name, playername, striker_name,
+          striker_hexlabel, target_name, target_hexlabel, num_dice,
+          strike_number, rolls, hits, carries)
+        self.notify(action)
 
     def done_with_strikes(self, playername):
         """Try to end playername's strike battle phase.
@@ -1076,6 +1118,14 @@ class Game(Observed):
         elif isinstance(action, Action.DoneManeuvering):
             self.battle_phase = Phase.STRIKE
 
+        # TODO carries
+        elif isinstance(action, Action.Strike):
+            target = self.creatures_in_hex(action.target_hexlabel).pop()
+            target.hits += action.hits
+            target.hits = min(target.hits, target.power)
+            striker = self.creatures_in_hex(action.striker_hexlabel).pop()
+            striker.struck = True
+
         elif isinstance(action, Action.DoneStriking):
             self.battle_phase = Phase.COUNTERSTRIKE
             # Switch active players before the counterstrike phase.
@@ -1096,5 +1146,6 @@ class Game(Observed):
                     creature.previous_hexlabel = None
                     creature.struck = False
             self.battle_phase = Phase.MANEUVER
+
 
         self.notify(action)

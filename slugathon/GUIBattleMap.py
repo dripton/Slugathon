@@ -164,6 +164,14 @@ class GUIBattleMap(gtk.Window):
             self.guihexes[hexlabel].selected = True
         self.update_gui(hexlabels)
 
+    def strike(self, striker, target):
+        """Have striker strike target, at full strength and skill."""
+        num_dice = striker.number_of_dice(target)
+        strike_number = striker.striker_number(target)
+        def1 = self.user.callRemote("strike", self.game.name, striker.name,
+          striker.hexlabel, target.name, target.hexlabel, num_dice,
+          strike_number)
+
     def cb_area_expose(self, area, event):
         self.update_gui()
         return True
@@ -188,10 +196,8 @@ class GUIBattleMap(gtk.Window):
         if self.game.battle_phase == Phase.MANEUVER:
             if self.game.battle_active_player.name == self.username:
                 self.highlight_mobile_chits()
-        elif self.game.battle_phase == Phase.STRIKE:
-            if self.game.battle_active_player.name == self.username:
-                self.highlight_strikers()
-        elif self.game.battle_phase == Phase.COUNTERSTRIKE:
+        elif (self.game.battle_phase == Phase.STRIKE
+          or self.game.battle_phase == Phase.COUNTERSTRIKE):
             if self.game.battle_active_player.name == self.username:
                 self.highlight_strikers()
 
@@ -206,11 +212,15 @@ class GUIBattleMap(gtk.Window):
                   self.game.name, creature.name, creature.hexlabel,
                   guihex.battlehex.label)
                 def1.addErrback(self.failure)
-        self.selected_chit = None
-        self.unselect_all()
-        if phase == Phase.MANEUVER:
+            self.selected_chit = None
+            self.unselect_all()
             if self.game.battle_active_player.name == self.username:
                 self.highlight_mobile_chits()
+
+        elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
+            # TODO Allow striking by clicking hex not just chit?
+            pass
+
 
     def clicked_on_chit(self, area, event, chit):
         phase = self.game.battle_phase
@@ -229,6 +239,34 @@ class GUIBattleMap(gtk.Window):
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
             self.update_gui(hexlabels)
+
+        elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
+            creature = chit.creature
+            legion = creature.legion
+            player = legion.player
+            guihex = self.guihexes[creature.hexlabel]
+
+            if (self.selected_chit is not None and player.name != self.username
+              and guihex.selected):
+                # striking enemy creature
+                target = creature
+                striker = self.selected_chit.creature
+                # TODO choose strike penalty in order to carry
+                self.strike(creature, target)
+
+            else:
+                # picking a striker
+                if player.name != self.username:
+                    return
+                if player != self.game.battle_active_player:
+                    return
+                self.selected_chit = chit
+                self.unselect_all()
+                hexlabels = self.game.find_target_hexlabels(creature)
+                for hexlabel in hexlabels:
+                    guihex = self.guihexes[hexlabel]
+                    guihex.selected = True
+                self.update_gui(hexlabels)
 
     def _add_missing_chits(self):
         """Add chits for any creatures that lack them."""
@@ -334,12 +372,12 @@ class GUIBattleMap(gtk.Window):
                   self.game.name)
                 def1.addErrback(self.failure)
             elif self.game.battle_phase == Phase.STRIKE:
-                # TODO Check to see if strikes remain
+                # TODO Check to see if forced strikes remain
                 def1 = self.user.callRemote("done_with_strikes",
                   self.game.name)
                 def1.addErrback(self.failure)
             elif self.game.battle_phase == Phase.COUNTERSTRIKE:
-                # TODO Check to see if strikes remain
+                # TODO Check to see if forced strikes remain
                 def1 = self.user.callRemote("done_with_counterstrikes",
                   self.game.name)
                 def1.addErrback(self.failure)
@@ -368,6 +406,11 @@ class GUIBattleMap(gtk.Window):
                 self.highlight_mobile_chits()
 
         elif isinstance(action, Action.DoneManeuvering):
+            if self.game.battle_active_player.name == self.username:
+                self.highlight_strikers()
+
+        elif isinstance(action, Action.Strike):
+            self.update_gui([action.target_hexlabel])
             if self.game.battle_active_player.name == self.username:
                 self.highlight_strikers()
 

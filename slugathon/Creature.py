@@ -156,3 +156,16 @@ class Creature(object):
     def can_rangestrike(self):
         """Return True iff this creature can rangestrike an enemy."""
         return False
+
+    # TODO strike penalties to carry
+    # TODO terrain bonuses and penalties
+    # TODO rangestrike
+    def number_of_dice(self, target):
+        """Return the number of dice to use if striking target."""
+        return self.power
+
+    # TODO strike penalties to carry
+    # TODO terrain bonuses and penalties
+    def strike_number(self, target):
+        """Return the strike number to use if striking target."""
+        return min(4 - self.skill + target.skill, 6)

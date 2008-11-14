@@ -246,6 +246,14 @@ class Server(Observed):
         if game:
             game.done_with_maneuvers(username)
 
+    def strike(self, username, game_name, striker_name, striker_hexlabel,
+      target_name, target_hexlabel, num_dice, strike_number):
+        game = self.name_to_game(game_name)
+        if game:
+            game.strike(username, striker_name, striker_hexlabel,
+              target_name, target_hexlabel, num_dice, strike_number)
+
+
     def done_with_strikes(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:

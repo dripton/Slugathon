@@ -135,6 +135,11 @@ class User(pb.Avatar):
     def perspective_done_with_counterstrikes(self, game_name):
         self.server.done_with_counterstrikes(self.name, game_name)
 
+    def perspective_strike(self, game_name, creature_name, hexlabel,
+      target_creature_name, target_hexlabel, num_dice, strike_number):
+        self.server.strike(self.name, game_name, creature_name, hexlabel,
+          target_creature_name, target_hexlabel, num_dice, strike_number)
+
     def perspective_acquire_angel(self, game_name, markername,
       angel_name):
         self.server.acquire_angel(self.name, game_name, markername,
