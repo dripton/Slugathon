@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __copyright__ = "Copyright (c) 2005-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
@@ -9,6 +11,7 @@ import ImageDraw
 
 import guiutils
 import colors
+import Creature
 
 CHIT_SCALE_FACTOR = 3
 
@@ -142,3 +145,13 @@ class Chit(object):
         draw.rectangle(((x + 0.1 * text_width, y + 0.2 * text_height),
           (x + 0.9 * text_width, y + 0.8 * text_height)), fill=white)
         draw.text((x, y), label, fill=red, font=font)
+
+if __name__ == "__main__":
+    creature = Creature.Creature("Ogre")
+    creature.hits = 3
+    chit = Chit(creature, "Red", scale=45)
+    window = gtk.Window()
+    window.add(chit.event_box)
+    window.show()
+    chit.show()
+    gtk.main()
