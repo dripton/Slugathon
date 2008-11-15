@@ -167,7 +167,7 @@ class GUIBattleMap(gtk.Window):
     def strike(self, striker, target):
         """Have striker strike target, at full strength and skill."""
         num_dice = striker.number_of_dice(target)
-        strike_number = striker.striker_number(target)
+        strike_number = striker.strike_number(target)
         def1 = self.user.callRemote("strike", self.game.name, striker.name,
           striker.hexlabel, target.name, target.hexlabel, num_dice,
           strike_number)
@@ -249,13 +249,15 @@ class GUIBattleMap(gtk.Window):
             if (self.selected_chit is not None and player.name != self.username
               and guihex.selected):
                 # striking enemy creature
+                print "striking enemy creature"
                 target = creature
                 striker = self.selected_chit.creature
                 # TODO choose strike penalty in order to carry
-                self.strike(creature, target)
+                self.strike(striker, target)
 
             else:
                 # picking a striker
+                print "picking a striker"
                 if player.name != self.username:
                     return
                 if player != self.game.battle_active_player:
@@ -410,6 +412,11 @@ class GUIBattleMap(gtk.Window):
                 self.highlight_strikers()
 
         elif isinstance(action, Action.Strike):
+            # XXX clean this up
+            if action.hits > 0:
+                for chit in self.chits:
+                    if chit.creature.hexlabel == action.target_hexlabel:
+                        chit._build_image()
             self.update_gui([action.target_hexlabel])
             if self.game.battle_active_player.name == self.username:
                 self.highlight_strikers()

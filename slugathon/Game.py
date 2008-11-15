@@ -905,15 +905,19 @@ class Game(Observed):
         if self.battle_phase == Phase.MANEUVER:
             player.done_with_maneuvers()
 
-    # TODO
+    # TODO rangestrikes
     def find_target_hexlabels(self, creature):
         """Return a set of hexlabels containing creatures that creature
         can strike or rangestrike."""
-        return set()
+        hexlabels = set()
+        for target in creature.engaged_enemies():
+            hexlabels.add(target.hexlabel)
+        return hexlabels
 
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
         """Called from Server"""
+        print "Game.strike"
         player = self.get_player_by_name(playername)
         assert player == self.battle_active_player, "striking out of turn"
         assert self.battle_phase in [Phase.STRIKE, Phase.COUNTERSTRIKE], \
@@ -921,18 +925,24 @@ class Game(Observed):
         strikers = self.creatures_in_battle_hex(striker_hexlabel)
         assert len(strikers) == 1
         striker = strikers.pop()
+        print "striker", striker
         assert striker.name == striker_name
         targets = self.creatures_in_battle_hex(target_hexlabel)
         assert len(targets) == 1
         target = targets.pop()
         assert target.name == target_name
+        print "target", target
         assert num_dice == striker.number_of_dice(target)
+        print "num_dice", num_dice
         assert strike_number == striker.strike_number(target)
+        print "strike_number", strike_number
         rolls = Dice.roll(num_dice)
+        print "rolls", rolls
         hits = 0
         for roll in rolls:
             if roll >= strike_number:
                 hits += 1
+        print "hits", hits
         target.hits += hits
         target.hits = min(target.hits, target.power)
         # TODO carries
@@ -940,6 +950,7 @@ class Game(Observed):
         action = Action.Strike(self.name, playername, striker_name,
           striker_hexlabel, target_name, target_hexlabel, num_dice,
           strike_number, rolls, hits, carries)
+        print "action", action
         self.notify(action)
 
     def done_with_strikes(self, playername):
@@ -1120,10 +1131,11 @@ class Game(Observed):
 
         # TODO carries
         elif isinstance(action, Action.Strike):
-            target = self.creatures_in_hex(action.target_hexlabel).pop()
+            target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
             target.hits += action.hits
             target.hits = min(target.hits, target.power)
-            striker = self.creatures_in_hex(action.striker_hexlabel).pop()
+            striker = self.creatures_in_battle_hex(
+              action.striker_hexlabel).pop()
             striker.struck = True
 
         elif isinstance(action, Action.DoneStriking):
