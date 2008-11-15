@@ -20,14 +20,12 @@ import Action
 import Phase
 
 
-class StatusScreen(gtk.Window):
+class StatusScreen(object):
     """Game status window."""
 
     implements(IObserver)
 
     def __init__(self, game, user, username):
-        gtk.Window.__init__(self)
-
         self.game = game
         self.user = user
         self.username = username
