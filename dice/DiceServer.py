@@ -16,8 +16,8 @@ class DiceServer:
     def perspective_login(self, arg):
         print "called perspective_login", arg
 
-    def perspective_next_roll(self, sides=6, numrolls=1):
-        return Dice.roll(sides, numrolls)
+    def perspective_next_roll(self, numrolls=1, sides=6):
+        return Dice.roll(numrolls, sides)
 
 class MyPerspective(pb.Avatar):
     def __init__(self, name, server):

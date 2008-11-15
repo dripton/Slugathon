@@ -11,7 +11,7 @@ Runs only on the server side, for security.
 
 _rand = random.Random()
 
-def roll(sides=6, numrolls=1):
+def roll(numrolls=1, sides=6):
     """Return a list of numrolls random integers from 1..sides"""
     return [_rand.randint(1, sides) for unused in xrange(numrolls)]
 
