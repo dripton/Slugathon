@@ -151,6 +151,7 @@ if __name__ == "__main__":
     creature.hits = 3
     chit = Chit(creature, "Red", scale=45)
     window = gtk.Window()
+    window.connect("destroy", gtk.main_quit)
     window.add(chit.event_box)
     window.show()
     chit.show()
