@@ -21,6 +21,7 @@ import Creature
 import History
 from bag import bag
 import BattleMap
+import prefs
 
 
 # Movement constants
@@ -731,12 +732,10 @@ class Game(Observed):
 
         Called from Server
         """
-        # XXX This should be portable and configurable.
-        savedir = os.path.expanduser("~/.slugathon/save")
-        if not os.path.exists(savedir):
-            os.makedirs(savedir)
+        if not os.path.exists(prefs.SAVE_DIR):
+            os.makedirs(prefs.SAVE_DIR)
         basename = "%s_%d.save" % (self.name, time.time())
-        save_path = os.path.join(savedir, basename)
+        save_path = os.path.join(prefs.SAVE_DIR, basename)
         save_file = open(save_path, "w")
         self.history.save(save_file)
         save_file.close()

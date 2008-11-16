@@ -4,13 +4,12 @@ __copyright__ = "Copyright (c) 2008 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import os
-
 import gtk
 from twisted.internet import defer
 
 import icon
 import guiutils
+import prefs
 
 
 class LoadGame(object):
@@ -26,9 +25,7 @@ class LoadGame(object):
           gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,
           gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         self.load_game_dialog.set_icon(icon.pixbuf)
-        # TODO Hoist constants somewhere
-        savedir = os.path.expanduser("~/.slugathon/save")
-        self.load_game_dialog.set_current_folder(savedir)
+        self.load_game_dialog.set_current_folder(prefs.SAVE_DIR)
         file_filter = gtk.FileFilter()
         # TODO Hoist constants somewhere
         file_filter.add_pattern("*.save")
