@@ -34,6 +34,7 @@ class Client(pb.Referenceable, Observed):
         self.host = host
         self.port = port
         self.factory = pb.PBClientFactory()
+        self.factory.unsafeTracebacks = True
         self.user = None
         self.anteroom = None
         self.usernames = set()

@@ -315,7 +315,7 @@ def main(options):
     realm = Realm.Realm(server)
     checker = FilePasswordDB("../config/passwd.txt")
     portal = Portal(realm, [checker])
-    pbfact = pb.PBServerFactory(portal)
+    pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
     reactor.run()
 
