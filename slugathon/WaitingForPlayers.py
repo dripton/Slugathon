@@ -119,10 +119,12 @@ class WaitingForPlayers(object):
 
     def update(self, observed, action):
         if isinstance(action, Action.RemoveGame):
-            self.shutdown()
+            if action.game_name == self.game.name:
+                self.shutdown()
         elif isinstance(action, Action.JoinGame):
             self.update_player_store()
         elif isinstance(action, Action.DropFromGame):
             self.update_player_store()
         elif isinstance(action, Action.AssignTower):
-            self.shutdown()
+            if action.game_name == self.game.name:
+                self.shutdown()

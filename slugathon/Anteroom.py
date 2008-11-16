@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2003-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
-
 import gtk.glade
 from twisted.internet import reactor
 from zope.interface import implements
@@ -161,18 +160,29 @@ class Anteroom(object):
         buf.insert(it, message)
         self.chat_view.scroll_to_mark(buf.get_insert(), 0)
 
-    def _add_or_replace_wfp(self, game):
-        if game.name in self.wfps:
-            self.wfps[game.name].shutdown()
-        wfp = WaitingForPlayers.WaitingForPlayers(self.user,
-          self.username, game)
+    def _add_wfp(self, game):
+        wfp = self.wfps.get(game.name)
+        if wfp is not None:
+            if wfp.waiting_for_players_window.has_user_ref_count:
+                # has not been destroyed
+                return
+            else:
+                del wfp
+        wfp = WaitingForPlayers.WaitingForPlayers(self.user, self.username,
+          game)
         self.wfps[game.name] = wfp
+
+    def _remove_wfp(self, game_name):
+        if game_name in self.wfps:
+            wfp = self.wfps[game_name]
+            wfp.destroy()
+            del self.wfps[game_name]
 
     def add_game(self, game):
         game.add_observer(self, self.username)
         self.update_game_store()
         if self.username in game.get_playernames():
-            self._add_or_replace_wfp(game)
+            self._add_wfp(game)
 
     def remove_game(self, game_name):
         self.update_game_store()
@@ -183,7 +193,9 @@ class Anteroom(object):
     def joined_game(self, playername, game_name):
         self.update_game_store()
 
-    def dropped_from_game(self, game_name):
+    def dropped_from_game(self, game_name, username):
+        if username == self.username:
+            self._remove_wfp(game_name)
         self.update_game_store()
 
     def cb_user_list_select(self, selection, model, path, is_selected, unused):
@@ -200,7 +212,7 @@ class Anteroom(object):
         index = path[0]
         game = self.games[index]
         # TODO popup menu
-        self._add_or_replace_wfp(game)
+        self._add_wfp(game)
         return False
 
     def update(self, observed, action):
@@ -217,7 +229,7 @@ class Anteroom(object):
         elif isinstance(action, Action.JoinGame):
             self.joined_game(action.username, action.game_name)
         elif isinstance(action, Action.DropFromGame):
-            self.dropped_from_game(action.game_name)
+            self.dropped_from_game(action.game_name, action.username)
         elif isinstance(action, Action.AssignTower):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
