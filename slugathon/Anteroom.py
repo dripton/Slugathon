@@ -13,6 +13,7 @@ from Observer import IObserver
 import Action
 import icon
 import guiutils
+import prefs
 
 
 class Anteroom(object):
@@ -35,6 +36,8 @@ class Anteroom(object):
         self.selected_names = set()
 
         self.anteroom_window.connect("destroy", guiutils.exit)
+        self.anteroom_window.connect("configure-event",
+          self.cb_configure_event)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
         self.new_game_button.connect("button-press-event",
           self.on_new_game_button_click)
@@ -44,6 +47,19 @@ class Anteroom(object):
         self.anteroom_window.set_icon(icon.pixbuf)
         self.anteroom_window.set_title("%s - %s" % (
           self.anteroom_window.get_title(), self.username))
+
+        if self.username:
+            tup = prefs.load_window_position(self.username,
+              self.__class__.__name__)
+            if tup:
+                x, y = tup
+                self.anteroom_window.move(x, y)
+            tup = prefs.load_window_size(self.username,
+              self.__class__.__name__)
+            if tup:
+                width, height = tup
+                self.anteroom_window.resize(width, height)
+
 
     def set_usernames(self, usernames):
         """Only called when the client first connects to the server."""
@@ -111,6 +127,16 @@ class Anteroom(object):
     def failure(self, error):
         print "Anteroom.failure", self, error
         reactor.stop()
+
+    def cb_configure_event(self, event, unused):
+        if self.username:
+            x, y = self.anteroom_window.get_position()
+            prefs.save_window_position(self.username, self.__class__.__name__,
+              x, y)
+            width, height = self.anteroom_window.get_size()
+            prefs.save_window_size(self.username, self.__class__.__name__,
+              width, height)
+        return False
 
     def cb_keypress(self, entry, event):
         if event.keyval == gtk.keysyms.Return:

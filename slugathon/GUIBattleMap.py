@@ -21,6 +21,7 @@ import battlemapdata
 import Chit
 import Phase
 import Action
+import prefs
 
 
 SQRT3 = math.sqrt(3.0)
@@ -63,6 +64,7 @@ class GUIBattleMap(gtk.Window):
         self.set_icon(icon.pixbuf)
         self.set_title("BattleMap - Slugathon - %s" % self.username)
         self.connect("destroy", guiutils.exit)
+        self.connect("configure-event", self.cb_configure_event)
 
         self.vbox = gtk.VBox()
         self.add(self.vbox)
@@ -78,6 +80,18 @@ class GUIBattleMap(gtk.Window):
         self.area.set_size_request(self.compute_width(), self.compute_height())
         # TODO Vary font size with scale
         self.area.modify_font(pango.FontDescription("monospace 8"))
+
+        if self.username:
+            tup = prefs.load_window_position(self.username,
+              self.__class__.__name__)
+            if tup:
+                x, y = tup
+                self.move(x, y)
+            tup = prefs.load_window_size(self.username,
+              self.__class__.__name__)
+            if tup:
+                width, height = tup
+                self.resize(width, height)
 
         self.create_ui()
         self.vbox.pack_start(self.ui.get_widget("/Menubar"), False, False, 0)
@@ -171,6 +185,16 @@ class GUIBattleMap(gtk.Window):
         def1 = self.user.callRemote("strike", self.game.name, striker.name,
           striker.hexlabel, target.name, target.hexlabel, num_dice,
           strike_number)
+
+    def cb_configure_event(self, event, unused):
+        if self.username:
+            x, y = self.get_position()
+            prefs.save_window_position(self.username, self.__class__.__name__,
+              x, y)
+            width, height = self.get_size()
+            prefs.save_window_size(self.username, self.__class__.__name__,
+              width, height)
+        return False
 
     def cb_area_expose(self, area, event):
         self.update_gui()

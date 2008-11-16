@@ -36,6 +36,7 @@ import Negotiate
 import Proposal
 import AcquireAngel
 import GUIBattleMap
+import prefs
 
 
 SQRT3 = math.sqrt(3.0)
@@ -85,6 +86,7 @@ class GUIMasterBoard(gtk.Window):
         self.set_icon(icon.pixbuf)
         self.set_title("Masterboard - Slugathon - %s" % self.username)
         self.connect("destroy", guiutils.exit)
+        self.connect("configure-event", self.cb_configure_event)
 
         self.vbox = gtk.VBox()
         self.add(self.vbox)
@@ -116,6 +118,18 @@ class GUIMasterBoard(gtk.Window):
         self.proposals = set()
         self.guimap = None
 
+        if self.username:
+            tup = prefs.load_window_position(self.username,
+              self.__class__.__name__)
+            if tup:
+                x, y = tup
+                self.move(x, y)
+            tup = prefs.load_window_size(self.username,
+              self.__class__.__name__)
+            if tup:
+                width, height = tup
+                self.resize(width, height)
+
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.cb_click)
@@ -145,6 +159,16 @@ class GUIMasterBoard(gtk.Window):
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
         self.add_accel_group(self.ui.get_accel_group())
+
+    def cb_configure_event(self, event, unused):
+        if self.username:
+            x, y = self.get_position()
+            prefs.save_window_position(self.username, self.__class__.__name__,
+              x, y)
+            width, height = self.get_size()
+            prefs.save_window_size(self.username, self.__class__.__name__,
+              width, height)
+        return False
 
     def cb_area_expose(self, area, event):
         self.update_gui()

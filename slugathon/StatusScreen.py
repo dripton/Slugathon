@@ -18,6 +18,7 @@ import creaturedata
 import Creature
 import Action
 import Phase
+import prefs
 
 
 class StatusScreen(object):
@@ -48,6 +49,21 @@ class StatusScreen(object):
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
 
+        self.status_screen_window.connect("configure-event",
+          self.cb_configure_event)
+
+        if self.username:
+            tup = prefs.load_window_position(self.username,
+              self.__class__.__name__)
+            if tup:
+                x, y = tup
+                self.status_screen_window.move(x, y)
+            tup = prefs.load_window_size(self.username,
+              self.__class__.__name__)
+            if tup:
+                width, height = tup
+                self.status_screen_window.resize(width, height)
+
         self._init_turn()
         self._init_players()
 
@@ -55,6 +71,17 @@ class StatusScreen(object):
         self.status_screen_window.set_title("%s - %s" % (
           self.status_screen_window.get_title(), self.username))
         self.status_screen_window.show()
+
+
+    def cb_configure_event(self, event, unused):
+        if self.username:
+            x, y = self.status_screen_window.get_position()
+            prefs.save_window_position(self.username, self.__class__.__name__,
+              x, y)
+            width, height = self.status_screen_window.get_size()
+            prefs.save_window_size(self.username, self.__class__.__name__,
+              width, height)
+        return False
 
     def _init_turn(self):
         self.game_turn_label.set_text(str(self.game.turn))
