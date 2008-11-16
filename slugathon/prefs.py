@@ -35,7 +35,7 @@ def load_window_position(playername, window_name):
         x = int(tokens[0])
         y = int(tokens[1])
         return x, y
-    except (OSError, ValueError):
+    except (OSError, IOError, ValueError):
         return None
 
 def window_size_path(playername, window_name):
@@ -57,5 +57,5 @@ def load_window_size(playername, window_name):
         x = int(tokens[0])
         y = int(tokens[1])
         return x, y
-    except (OSError, ValueError):
+    except (OSError, IOError, ValueError):
         return None
