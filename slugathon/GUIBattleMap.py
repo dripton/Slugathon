@@ -61,7 +61,7 @@ class GUIBattleMap(gtk.Window):
         self.selected_chit = None
 
         self.set_icon(icon.pixbuf)
-        self.set_title("Slugathon - BattleMap - %s" % self.username)
+        self.set_title("BattleMap - Slugathon - %s" % self.username)
         self.connect("destroy", guiutils.exit)
 
         self.vbox = gtk.VBox()

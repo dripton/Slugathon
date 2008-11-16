@@ -83,7 +83,7 @@ class GUIMasterBoard(gtk.Window):
         self.game = game
 
         self.set_icon(icon.pixbuf)
-        self.set_title("Slugathon - Masterboard - %s" % self.username)
+        self.set_title("Masterboard - Slugathon - %s" % self.username)
         self.connect("destroy", guiutils.exit)
 
         self.vbox = gtk.VBox()
