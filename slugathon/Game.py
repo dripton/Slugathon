@@ -160,9 +160,14 @@ class Game(Observed):
         """
         if self.started:
             raise AssertionError, "remove_player on started game"
-        player = self.get_player_by_name(playername)
-        player.remove_observer(self)
-        self.players.remove(player)
+        try:
+            player = self.get_player_by_name(playername)
+        except KeyError:
+            # already removed, okay
+            pass
+        else:
+            player.remove_observer(self)
+            self.players.remove(player)
 
     def assign_towers(self):
         """Randomly assign a tower to each player."""
