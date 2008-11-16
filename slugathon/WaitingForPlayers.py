@@ -41,6 +41,7 @@ class WaitingForPlayers(object):
         self.waiting_for_players_window.set_title("%s - %s" % (
           self.waiting_for_players_window.get_title(), self.username))
 
+        self.waiting_for_players_window.connect("destroy", self.cb_destroy)
         self.join_button.connect("button-press-event", self.cb_click_join)
         self.drop_button.connect("button-press-event", self.cb_click_drop)
         self.start_button.connect("button-press-event", self.cb_click_start)
@@ -63,9 +64,15 @@ class WaitingForPlayers(object):
         def1 = self.user.callRemote("join_game", self.game.name)
         def1.addErrback(self.failure)
 
+    def cb_destroy(self, unused):
+        if self.game:
+            def1 = self.user.callRemote("drop_from_game", self.game.name)
+            def1.addErrback(self.failure)
+
     def cb_click_drop(self, widget, event):
         def1 = self.user.callRemote("drop_from_game", self.game.name)
         def1.addErrback(self.failure)
+        self.destroy()
 
     def cb_click_start(self, widget, event):
         def1 = self.user.callRemote("start_game", self.game.name)
