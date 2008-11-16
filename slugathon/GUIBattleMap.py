@@ -130,11 +130,11 @@ class GUIBattleMap(gtk.Window):
         screen."""
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
-        # The -2 is a fudge factor to leave room on the sides.
-        xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 2
-        # The -7 is a fudge factor for menus and toolbars.
+        # Fudge factor to leave room on the sides.
+        xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 5
+        # Fudge factor for menus and toolbars.
         yscale = math.floor(height / (2 * SQRT3 *
-          self.battlemap.hex_height())) - 7
+          self.battlemap.hex_height())) - 11
         return int(min(xscale, yscale))
 
     def compute_width(self):
