@@ -21,7 +21,7 @@ class Anteroom(object):
 
     implements(IObserver)
 
-    def __init__(self, user, username):
+    def __init__(self, user, username, usernames, games):
         self.user = user
         self.username = username
         self.glade = gtk.glade.XML("../glade/anteroom.glade")
@@ -29,11 +29,14 @@ class Anteroom(object):
           "game_list", "user_list", "new_game_button", "load_game_button"]
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
-        self.usernames = None   # set, aliased from Client
-        self.games = None       # list, aliased from Client
-        self.game_store = []
-        self.wfps = {}          # game name : WaitingForPlayers
+        self.usernames = usernames   # set, aliased from Client
+        self.games = games           # list, aliased from Client
+        self.wfps = {}               # game name : WaitingForPlayers
         self.selected_names = set()
+
+        self.user_store = None       # ListStore
+        self.game_store = None       # ListStore
+        self._init_liststores()
 
         self.anteroom_window.connect("destroy", guiutils.exit)
         self.anteroom_window.connect("configure-event",
@@ -60,10 +63,8 @@ class Anteroom(object):
                 width, height = tup
                 self.anteroom_window.resize(width, height)
 
+        self.anteroom_window.show_all()
 
-    def set_usernames(self, usernames):
-        """Only called when the client first connects to the server."""
-        self.usernames = usernames
 
     def name_to_game(self, game_name):
         for game in self.games:
@@ -71,11 +72,7 @@ class Anteroom(object):
                 return game
         return None
 
-    def set_games(self, games):
-        """Only called when the client first connects to the server."""
-        self.games = games
-        for game in self.games:
-            self.add_game(game)
+    def _init_liststores(self):
         self.user_store = gtk.ListStore(str)
         self.update_user_store()
         self.user_list.set_model(self.user_store)
@@ -98,7 +95,8 @@ class Anteroom(object):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
               text=ii)
             self.game_list.append_column(column)
-        self.anteroom_window.show_all()
+        for game in self.games:
+            self.add_game(game)
 
     def update_user_store(self):
         sorted_usernames = sorted(self.usernames)

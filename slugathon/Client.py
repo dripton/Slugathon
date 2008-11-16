@@ -64,8 +64,6 @@ class Client(pb.Referenceable, Observed):
     def connected(self, user):
         if user:
             self.user = user
-            self.anteroom = Anteroom.Anteroom(user, self.username)
-            self.add_observer(self.anteroom)
             def1 = user.callRemote("get_usernames")
             def1.addCallback(self.got_usernames)
             def1.addErrback(self.failure)
@@ -75,7 +73,6 @@ class Client(pb.Referenceable, Observed):
         self.usernames.clear()
         for username in usernames:
             self.usernames.add(username)
-        self.anteroom.set_usernames(self.usernames)
         def1 = self.user.callRemote("get_games")
         def1.addCallback(self.got_games)
         def1.addErrback(self.failure)
@@ -85,7 +82,9 @@ class Client(pb.Referenceable, Observed):
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
-        self.anteroom.set_games(self.games)
+        self.anteroom = Anteroom.Anteroom(self.user, self.username,
+          self.usernames, self.games)
+        self.add_observer(self.anteroom)
 
     def name_to_game(self, game_name):
         for game in self.games:
