@@ -96,7 +96,7 @@ class Negotiate(object):
             chit = event_box.chit
             chit.dead = not chit.dead
             # XXX What's the right way to force a repaint?
-            chit._build_image()
+            chit.build_image()
         else:
             marker = event_box.marker
             if marker == self.attacker_marker:
@@ -113,7 +113,7 @@ class Negotiate(object):
             dead = num_alive >= num_dead
             for chit in chits:
                 chit.dead = dead
-                chit._build_image()
+                chit.build_image()
         legal = self.is_legal_proposal()
         self.proposal_button.set_sensitive(legal)
 

@@ -440,7 +440,7 @@ class GUIBattleMap(gtk.Window):
             if action.hits > 0:
                 for chit in self.chits:
                     if chit.creature.hexlabel == action.target_hexlabel:
-                        chit._build_image()
+                        chit.build_image()
             self.update_gui([action.target_hexlabel])
             if self.game.battle_active_player.name == self.username:
                 self.highlight_strikers()

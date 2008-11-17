@@ -57,9 +57,9 @@ class Chit(object):
         self.event_box.chit = self
         self.image = gtk.Image()
         self.event_box.add(self.image)
-        self._build_image()
+        self.build_image()
 
-    def _build_image(self):
+    def build_image(self):
         im = Image.open(self.paths[0]).convert("RGBA")
         for path in self.paths[1:]:
             mask = Image.open(path).convert("RGBA")
