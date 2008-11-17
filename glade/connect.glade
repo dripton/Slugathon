@@ -36,6 +36,7 @@
                   <widget class="GtkEntry" id="comboboxentry-entry2">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                   </widget>
                 </child>
@@ -161,6 +162,8 @@
           <widget class="GtkButton" id="connect_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="can_default">True</property>
+            <property name="receives_default">True</property>
             <property name="label" translatable="yes">Connect to server</property>
             <property name="use_underline">True</property>
             <property name="response_id">0</property>
@@ -186,6 +189,8 @@
           <widget class="GtkButton" id="start_server_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="can_default">True</property>
+            <property name="receives_default">True</property>
             <property name="label" translatable="yes">Start local server</property>
             <property name="use_underline">True</property>
             <property name="response_id">0</property>
