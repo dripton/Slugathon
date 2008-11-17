@@ -8,7 +8,6 @@ import sys
 import time
 
 from twisted.spread import pb
-from twisted.cred.checkers import FilePasswordDB
 from twisted.cred.portal import Portal
 from twisted.python import usage
 from twisted.internet import reactor
@@ -19,6 +18,7 @@ import Game
 import Action
 from Observed import Observed
 from Observer import IObserver
+from UniqueFilePasswordDB import UniqueFilePasswordDB
 
 
 DEFAULT_PORT = 26569
@@ -313,7 +313,7 @@ def main(options):
     port = int(options["port"])
     server = Server()
     realm = Realm.Realm(server)
-    checker = FilePasswordDB("../config/passwd.txt")
+    checker = UniqueFilePasswordDB("../config/passwd.txt", server=server)
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
