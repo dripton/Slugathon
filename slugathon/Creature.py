@@ -103,6 +103,8 @@ class Creature(object):
     def engaged_enemies(self):
         """Return a set of enemy Creatures this Creature is engaged with."""
         enemies = set()
+        if self.is_offboard():
+            return enemies
         hexlabel_to_enemy = {}
         game = self.legion.player.game
         legion2 = game.other_battle_legion(self.legion)
@@ -149,8 +151,8 @@ class Creature(object):
 
     def can_strike(self):
         """Return True iff this creature can strike."""
-        return not self.struck and not self.is_dead() and (self.is_engaged()
-          or self.can_rangestrike())
+        return not self.struck and (self.is_engaged() or
+          self.can_rangestrike())
 
     # TODO
     def can_rangestrike(self):
@@ -169,3 +171,6 @@ class Creature(object):
     def strike_number(self, target):
         """Return the strike number to use if striking target."""
         return min(4 - self.skill + target.skill, 6)
+
+    def is_offboard(self):
+        return self.hexlabel == "ATTACKER" or self.hexlabel == "DEFENDER"

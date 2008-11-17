@@ -914,8 +914,9 @@ class Game(Observed):
         """Return a set of hexlabels containing creatures that creature
         can strike or rangestrike."""
         hexlabels = set()
-        for target in creature.engaged_enemies():
-            hexlabels.add(target.hexlabel)
+        if not creature.struck:
+            for target in creature.engaged_enemies():
+                hexlabels.add(target.hexlabel)
         return hexlabels
 
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
