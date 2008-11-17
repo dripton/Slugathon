@@ -11,11 +11,10 @@ from twisted.internet import utils
 import gtk.glade
 import gobject
 
-import getpass
-import Server
 import Client
 import icon
 import guiutils
+import prefs
 
 
 class Connect(object):
@@ -29,49 +28,41 @@ class Connect(object):
         for widget_name in self.widget_names:
             setattr(self, widget_name, self.glade.get_widget(widget_name))
         self.glade.signal_autoconnect(self)
-        self.playernames = None
-        self.server_names = None
-        self.server_ports = None
-        self.init_lists()
+        self.playernames = set()
+        self.server_names = set()
+        self.server_ports = set()
+        self._init_playernames()
+        self._init_server_names_and_ports()
         self.connect_window.connect("destroy", guiutils.exit)
         self.connect_window.set_icon(icon.pixbuf)
         self.connect_window.show()
 
-    def init_lists(self):
-        self.init_playernames()
-        self.init_server_names()
-        self.init_server_ports()
-
-    def init_playernames(self):
-        if not self.playernames:
-            self.playernames = set()
-        self.playernames.add(getpass.getuser())
+    def _init_playernames(self):
+        self.playernames.update(prefs.load_playernames())
         store = gtk.ListStore(gobject.TYPE_STRING)
-        for name in self.playernames:
+        for name in sorted(self.playernames):
             store.append([name])
         self.playername_comboboxentry.set_model(store)
         self.playername_comboboxentry.set_text_column(0)
         self.playername_comboboxentry.set_active(0)
 
-    def init_server_names(self):
-        if not self.server_names:
-            self.server_names = set()
-        self.server_names.add("localhost")
-        store = gtk.ListStore(gobject.TYPE_STRING)
-        for name in self.server_names:
-            store.append([name])
-        self.server_name_comboboxentry.set_model(store)
+    def _init_server_names_and_ports(self):
+        server_entries = prefs.load_servers()
+        for name, port in server_entries:
+            self.server_names.add(name)
+            self.server_ports.add(port)
+
+        namestore = gtk.ListStore(gobject.TYPE_STRING)
+        for name in sorted(self.server_names):
+            namestore.append([name])
+        self.server_name_comboboxentry.set_model(namestore)
         self.server_name_comboboxentry.set_text_column(0)
         self.server_name_comboboxentry.set_active(0)
 
-    def init_server_ports(self):
-        if not self.server_ports:
-            self.server_ports = set()
-        self.server_ports.add(Server.DEFAULT_PORT)
-        store = gtk.ListStore(gobject.TYPE_STRING)
-        for name in self.server_ports:
-            store.append([str(name)])
-        self.server_port_comboboxentry.set_model(store)
+        portstore = gtk.ListStore(gobject.TYPE_STRING)
+        for port in sorted(self.server_ports):
+            portstore.append([str(port)])
+        self.server_port_comboboxentry.set_model(portstore)
         self.server_port_comboboxentry.set_text_column(0)
         self.server_port_comboboxentry.set_active(0)
 
@@ -80,6 +71,7 @@ class Connect(object):
         password = self.password_entry.get_text()
         server_name = self.server_name_comboboxentry.child.get_text()
         server_port = int(self.server_port_comboboxentry.child.get_text())
+        prefs.save_server(server_name, server_port)
         client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
         def1.addCallback(self.connected)
