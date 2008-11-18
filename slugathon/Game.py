@@ -985,6 +985,13 @@ class Game(Observed):
         if self.battle_phase == Phase.COUNTERSTRIKE:
             player.done_with_counterstrikes()
 
+    def clear_battle_flags(self):
+        """Reset all per-turn battle creature flags, for a battle turn."""
+        for legion in self.battle_legions:
+            for creature in legion.creatures:
+                creature.moved = False
+                creature.previous_hexlabel = None
+                creature.struck = False
 
     def update(self, observed, action):
         if isinstance(action, Action.JoinGame):
@@ -1161,11 +1168,7 @@ class Game(Observed):
                 self.battle_turn += 1
                 if self.battle_turn > 7:
                     raise Exception("TODO time loss")
-            for legion in self.battle_legions:
-                for creature in legion.creatures:
-                    creature.moved = False
-                    creature.previous_hexlabel = None
-                    creature.struck = False
+            self.clear_battle_flags()
             self.battle_phase = Phase.MANEUVER
 
 

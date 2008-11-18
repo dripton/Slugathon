@@ -245,3 +245,95 @@ class TestBattle(object):
         assert gargoyle.name == "Gargoyle"
         set4 = set(["C1", "D2", "E2", "F2", "B1", "C2", "D3", "E3", "F3"])
         assert self.game.find_battle_moves(gargoyle) == set4
+
+    def test_strikes_plains(self):
+        self.rd01.move(6, False, None, 3)
+        self.bu01.move(6, False, None, 3)
+        game = self.game
+        game._init_battle(self.bu01, self.rd01)
+        defender = self.game.defender_legion
+        titan1 = defender.creatures[0]
+        titan1.move("F2")
+        ogre1 = defender.creatures[1]
+        ogre1.move("E2")
+        centaur1 = defender.creatures[2]
+        centaur1.move("D2")
+        gargoyle1 = defender.creatures[3]
+        gargoyle1.move("C1")
+        attacker = self.game.attacker_legion
+        game.battle_active_legion = attacker
+        titan2 = attacker.creatures[0]
+        titan2.move("B1")
+        ogre2 = attacker.creatures[1]
+        ogre2.move("B3")
+        centaur2 = attacker.creatures[2]
+        centaur2.move("C2")
+        gargoyle2 = attacker.creatures[3]
+        gargoyle2.move("C3")
+        game.battle_phase = Phase.STRIKE
+        assert game.find_target_hexlabels(titan2) == set(["C1"])
+        assert titan2.number_of_dice(gargoyle1) == 6
+        assert titan2.strike_number(gargoyle1) == 3
+        assert game.find_target_hexlabels(ogre2) == set([])
+        assert game.find_target_hexlabels(centaur2) == set(["C1", "D2"])
+        assert centaur2.number_of_dice(gargoyle1) == 3
+        assert centaur2.strike_number(gargoyle1) == 3
+        assert centaur2.number_of_dice(centaur1) == 3
+        assert centaur2.strike_number(centaur1) == 4
+        assert game.find_target_hexlabels(gargoyle2) == set([])
+        game.battle_active_legion = defender
+        game.battle_phase = Phase.COUNTERSTRIKE
+        assert game.find_target_hexlabels(titan1) == set([])
+        assert game.find_target_hexlabels(ogre1) == set([])
+        assert game.find_target_hexlabels(centaur1) == set(["C2"])
+        assert centaur1.number_of_dice(gargoyle2) == 3
+        assert centaur1.strike_number(gargoyle2) == 3
+        assert game.find_target_hexlabels(gargoyle1) == set(["B1", "C2"])
+        assert gargoyle1.number_of_dice(titan2) == 4
+        assert gargoyle1.strike_number(titan2) == 5
+        assert gargoyle1.number_of_dice(centaur2) == 4
+        assert gargoyle1.strike_number(centaur2) == 5
+        game.clear_battle_flags()
+        game.battle_turn = 2
+        game.battle_phase = Phase.MANEUVER
+        assert game.find_battle_moves(titan1)
+        assert game.find_battle_moves(ogre1)
+        assert not game.find_battle_moves(centaur1)
+        assert not game.find_battle_moves(gargoyle1)
+        titan1.move("D4")
+        ogre1.move("D3")
+        game.battle_phase = Phase.STRIKE
+        assert game.find_target_hexlabels(titan1) == set(["C3"])
+        assert titan1.number_of_dice(gargoyle2) == 6
+        assert titan1.strike_number(gargoyle2) == 3
+        assert game.find_target_hexlabels(ogre1) == set(["C2", "C3"])
+        assert ogre1.number_of_dice(gargoyle2) == 6
+        assert ogre1.strike_number(gargoyle2) == 5
+        assert ogre1.number_of_dice(centaur2) == 6
+        assert ogre1.strike_number(centaur2) == 6
+        assert game.find_target_hexlabels(centaur1) == set(["C2"])
+        assert centaur1.number_of_dice(centaur2) == 3
+        assert centaur1.strike_number(centaur2) == 4
+        assert game.find_target_hexlabels(gargoyle1) == set(["B1", "C2"])
+        assert gargoyle1.number_of_dice(centaur2) == 4
+        assert gargoyle1.strike_number(centaur2) == 5
+        assert gargoyle1.number_of_dice(titan2) == 4
+        assert gargoyle1.strike_number(titan2) == 5
+        game.battle_active_legion = attacker
+        game.battle_phase = Phase.COUNTERSTRIKE
+        assert game.find_target_hexlabels(titan2) == set(["C1"])
+        assert titan2.number_of_dice(gargoyle1) == 6
+        assert titan2.strike_number(gargoyle1) == 3
+        assert game.find_target_hexlabels(ogre2) == set([])
+        assert game.find_target_hexlabels(centaur2) == set(["C1", "D2", "D3"])
+        assert centaur2.number_of_dice(gargoyle1) == 3
+        assert centaur2.strike_number(gargoyle1) == 3
+        assert centaur2.number_of_dice(centaur1) == 3
+        assert centaur2.strike_number(centaur1) == 4
+        assert centaur2.number_of_dice(ogre1) == 3
+        assert centaur2.strike_number(ogre1) == 2
+        assert game.find_target_hexlabels(gargoyle2) == set(["D3", "D4"])
+        assert gargoyle2.number_of_dice(titan1) == 4
+        assert gargoyle2.strike_number(titan1) == 5
+        assert gargoyle2.number_of_dice(ogre1) == 4
+        assert gargoyle2.strike_number(ogre1) == 3
