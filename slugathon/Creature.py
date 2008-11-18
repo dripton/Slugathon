@@ -109,7 +109,7 @@ class Creature(object):
         game = self.legion.player.game
         legion2 = game.other_battle_legion(self.legion)
         for creature in legion2.creatures:
-            if not creature.is_dead():
+            if not creature.is_dead() and not creature.is_offboard():
                 hexlabel_to_enemy[creature.hexlabel] = creature
         hex1 = game.battlemap.hexes[self.hexlabel]
         for hexside, hex2 in hex1.neighbors.iteritems():
