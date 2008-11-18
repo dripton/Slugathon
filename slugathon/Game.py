@@ -68,8 +68,15 @@ class Game(Observed):
         self.battle_turn = None
         self.battle_phase = None
         self.battle_active_legion = None
-        self.battle_active_player = None
         self.battle_legions = []
+
+    @property
+    def battle_active_player(self):
+        """Return the active player in the current battle, or None."""
+        try:
+            return self.battle_active_legion.player
+        except AttributeError:
+            return None
 
     def _init_battle(self, attacker_legion, defender_legion):
         self.attacker_legion = attacker_legion
@@ -82,7 +89,6 @@ class Game(Observed):
         self.battle_turn = 1
         self.battle_phase = Phase.MANEUVER
         self.battle_active_legion = self.defender_legion
-        self.battle_active_player = self.battle_active_legion.player
         self.defender_legion.enter_battle("DEFENDER")
         self.attacker_legion.enter_battle("ATTACKER")
         self.battle_legions = [self.defender_legion, self.attacker_legion]
@@ -96,7 +102,6 @@ class Game(Observed):
         self.battle_turn = None
         self.battle_phase = None
         self.battle_active_legion = None
-        self.battle_active_player = None
         self.battle_legions = []
 
     def __eq__(self, other):
@@ -1150,7 +1155,6 @@ class Game(Observed):
                 self.battle_active_legion = self.attacker_legion
             else:
                 self.battle_active_legion = self.defender_legion
-            self.battle_active_player = self.battle_active_legion.player
 
         elif isinstance(action, Action.DoneStrikingBack):
             if action.playername == self.defender_legion.player.name:
