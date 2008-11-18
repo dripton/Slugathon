@@ -154,6 +154,7 @@ class GUIBattleMap(gtk.Window):
 
     def highlight_mobile_chits(self):
         """Highlight the hexes containing all creatures that can move now."""
+        print "GUIBattleMap.highlight_mobile_chits"
         if not self.game:
             return
         hexlabels = set()
@@ -167,6 +168,7 @@ class GUIBattleMap(gtk.Window):
 
     def highlight_strikers(self):
         """Highlight the hexes containing creatures that can strike now."""
+        print "GUIBattleMap.highlight_strikers"
         if not self.game:
             return
         hexlabels = set()
@@ -243,7 +245,7 @@ class GUIBattleMap(gtk.Window):
 
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
             # TODO Allow striking by clicking hex not just chit?
-            pass
+            self.highlight_strikers()
 
 
     def clicked_on_chit(self, area, event, chit):
