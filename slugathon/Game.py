@@ -856,7 +856,7 @@ class Game(Observed):
         """Return a set of all hexlabels to which creature can move,
         excluding its current hex"""
         result = set()
-        if creature.moved or creature.is_engaged():
+        if creature.moved or creature.engaged:
             return result
         if (self.battle_turn == 1 and creature.legion == self.defender_legion
           and self.battlemap.startlist):
@@ -992,6 +992,12 @@ class Game(Observed):
                 creature.moved = False
                 creature.previous_hexlabel = None
                 creature.struck = False
+
+    def cleanup_dead_creatures(self):
+        for legion in self.battle_legions:
+            for creature in legion.creatures:
+                if creature.dead:
+                    creature.hexlabel = None
 
     def update(self, observed, action):
         if isinstance(action, Action.JoinGame):
@@ -1164,11 +1170,12 @@ class Game(Observed):
                 self.battle_active_legion = self.defender_legion
 
         elif isinstance(action, Action.DoneStrikingBack):
+            self.clear_battle_flags()
+            self.cleanup_dead_creatures()
             if action.playername == self.defender_legion.player.name:
                 self.battle_turn += 1
                 if self.battle_turn > 7:
                     raise Exception("TODO time loss")
-            self.clear_battle_flags()
             self.battle_phase = Phase.MANEUVER
 
 

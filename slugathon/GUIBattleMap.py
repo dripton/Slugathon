@@ -159,7 +159,7 @@ class GUIBattleMap(gtk.Window):
             return
         hexlabels = set()
         for creature in self.game.battle_active_legion.creatures:
-            if creature.is_mobile():
+            if creature.mobile:
                 hexlabels.add(creature.hexlabel)
         self.unselect_all()
         for hexlabel in hexlabels:
@@ -302,11 +302,17 @@ class GUIBattleMap(gtk.Window):
         for (legion, rotate) in [
           (self.game.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE),
           (self.game.defender_legion, gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
-            for creature in legion.creatures:
-                if creature not in chit_creatures:
+            for creature in legion.creatures :
+                if creature not in chit_creatures and not creature.dead:
                     chit = Chit.Chit(creature, legion.player.color,
                       self.scale / 2, rotate=rotate)
                     self.chits.append(chit)
+
+    # TODO Move to graveyard area rather than removing.
+    def _remove_dead_chits(self):
+        for chit in reversed(self.chits):
+            if chit.creature.dead:
+                self.chits.remove(chit)
 
     def _compute_chit_locations(self, hexlabel):
         chits = self.chits_in_hex(hexlabel)
@@ -370,10 +376,11 @@ class GUIBattleMap(gtk.Window):
         self._add_missing_chits()
         hexlabels = set([chit.creature.hexlabel for chit in self.chits])
         for hexlabel in hexlabels:
-            self._compute_chit_locations(hexlabel)
-            chits = self.chits_in_hex(hexlabel)
-            for chit in chits:
-                self._render_chit(chit, gc)
+            if hexlabel is not None:
+                self._compute_chit_locations(hexlabel)
+                chits = self.chits_in_hex(hexlabel)
+                for chit in chits:
+                    self._render_chit(chit, gc)
 
     def cb_undo(self, action):
         if self.game:
@@ -450,6 +457,9 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.DoneStriking):
             if self.game.battle_active_player.name == self.username:
                 self.highlight_strikers()
+
+        elif isinstance(action, Action.DoneStrikingBack):
+            self._remove_dead_chits()
 
     def failure(self, arg):
         print "GUIBattleMap.failure", arg

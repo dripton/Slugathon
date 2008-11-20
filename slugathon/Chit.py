@@ -65,7 +65,7 @@ class Chit(object):
             mask = Image.open(path).convert("RGBA")
             im.paste(self.rgb, None, mask)
         self._render_text(im, self.rgb)
-        if self.dead or (self.creature and self.creature.is_dead()):
+        if self.dead or (self.creature and self.creature.dead):
             self._render_x(im)
         elif self.creature and self.creature.hits > 0:
             self._render_hits(im)

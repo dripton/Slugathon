@@ -76,6 +76,10 @@ class Creature(object):
         self.previous_hexlabel = None
         self.legion = None
 
+    @property
+    def dead(self):
+        return self.hits >= self.power
+
     def __repr__(self):
         if self.name == "Titan":
             return "%s(%d)" % (self.name, self.power)
@@ -97,19 +101,16 @@ class Creature(object):
           + 0.18 * (self.skill == 4)
           + 100 * (self.name == "Titan"))
 
-    def is_dead(self):
-        return self.hits >= self.power
-
     def engaged_enemies(self):
         """Return a set of enemy Creatures this Creature is engaged with."""
         enemies = set()
-        if self.is_offboard():
+        if self.offboard or self.hexlabel is None:
             return enemies
         hexlabel_to_enemy = {}
         game = self.legion.player.game
         legion2 = game.other_battle_legion(self.legion)
         for creature in legion2.creatures:
-            if not creature.is_dead() and not creature.is_offboard():
+            if not creature.dead and not creature.offboard:
                 hexlabel_to_enemy[creature.hexlabel] = creature
         hex1 = game.battlemap.hexes[self.hexlabel]
         for hexside, hex2 in hex1.neighbors.iteritems():
@@ -119,13 +120,15 @@ class Creature(object):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
 
-    def is_engaged(self):
+    @property
+    def engaged(self):
         """Return True iff this creature is engaged with an adjacent enemy."""
         return bool(self.engaged_enemies())
 
-    def is_mobile(self):
+    @property
+    def mobile(self):
         """Return True iff this creature can move."""
-        return not self.moved and not self.is_dead() and not self.is_engaged()
+        return not self.moved and not self.dead and not self.engaged
 
     def is_native(self, hazard):
         """Return True iff this creature is native to the named hazard.
@@ -150,8 +153,7 @@ class Creature(object):
 
     def can_strike(self):
         """Return True iff this creature can strike."""
-        return not self.struck and (self.is_engaged() or
-          self.can_rangestrike())
+        return not self.struck and (self.engaged or self.can_rangestrike())
 
     # TODO
     def can_rangestrike(self):
@@ -171,5 +173,6 @@ class Creature(object):
         """Return the strike number to use if striking target."""
         return min(4 - self.skill + target.skill, 6)
 
-    def is_offboard(self):
+    @property
+    def offboard(self):
         return self.hexlabel == "ATTACKER" or self.hexlabel == "DEFENDER"
