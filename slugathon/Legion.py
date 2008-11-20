@@ -30,6 +30,18 @@ class Legion(Observed):
         self.angels_pending = 0
         self.archangels_pending = 0
 
+    @property
+    def dead(self):
+        """Return True iff this legion has been eliminated from battle."""
+        alive = False
+        for creature in self.creatures:
+            if creature.dead:
+                if creature.name == "Titan":
+                    return True
+            else:
+                alive = True
+        return not alive
+
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
           self.creatures)
