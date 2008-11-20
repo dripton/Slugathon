@@ -154,8 +154,10 @@ class GUIBattleMap(gtk.Window):
 
     def highlight_mobile_chits(self):
         """Highlight the hexes containing all creatures that can move now."""
-        print "GUIBattleMap.highlight_mobile_chits"
         if not self.game:
+            return
+        if self.game.battle_active_player.name != self.username:
+            self.unselect_all()
             return
         hexlabels = set()
         for creature in self.game.battle_active_legion.creatures:
@@ -168,8 +170,10 @@ class GUIBattleMap(gtk.Window):
 
     def highlight_strikers(self):
         """Highlight the hexes containing creatures that can strike now."""
-        print "GUIBattleMap.highlight_strikers"
         if not self.game:
+            return
+        if self.game.battle_active_player.name != self.username:
+            self.unselect_all()
             return
         hexlabels = set()
         for creature in self.game.battle_active_legion.creatures:
@@ -275,7 +279,6 @@ class GUIBattleMap(gtk.Window):
             if (self.selected_chit is not None and player.name != self.username
               and guihex.selected):
                 # striking enemy creature
-                print "striking enemy creature"
                 target = creature
                 striker = self.selected_chit.creature
                 # TODO choose strike penalty in order to carry
@@ -283,7 +286,6 @@ class GUIBattleMap(gtk.Window):
 
             else:
                 # picking a striker
-                print "picking a striker"
                 if player.name != self.username:
                     return
                 if player != self.game.battle_active_player:
@@ -437,12 +439,10 @@ class GUIBattleMap(gtk.Window):
           Action.UndoMoveCreature):
             repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]
             self.update_gui(repaint_hexlabels)
-            if action.playername == self.username:
-                self.highlight_mobile_chits()
+            self.highlight_mobile_chits()
 
         elif isinstance(action, Action.DoneManeuvering):
-            if self.game.battle_active_player.name == self.username:
-                self.highlight_strikers()
+            self.highlight_strikers()
 
         elif isinstance(action, Action.Strike):
             # XXX clean this up
@@ -451,15 +451,14 @@ class GUIBattleMap(gtk.Window):
                     if chit.creature.hexlabel == action.target_hexlabel:
                         chit.build_image()
             self.update_gui([action.target_hexlabel])
-            if self.game.battle_active_player.name == self.username:
-                self.highlight_strikers()
+            self.highlight_strikers()
 
         elif isinstance(action, Action.DoneStriking):
-            if self.game.battle_active_player.name == self.username:
-                self.highlight_strikers()
+            self.highlight_strikers()
 
         elif isinstance(action, Action.DoneStrikingBack):
             self._remove_dead_chits()
+            self.highlight_mobile_chits()
 
     def failure(self, arg):
         print "GUIBattleMap.failure", arg
