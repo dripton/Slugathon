@@ -384,7 +384,7 @@ class Game(Observed):
         """Return set of hexlabels describing where legion can tower
         teleport."""
         moves = set()
-        if masterhex.is_tower() and legion.num_lords():
+        if masterhex.tower and legion.num_lords():
             moves.update(self.find_nearby_empty_hexes(legion, masterhex, 6,
               None))
             for hexlabel in self.board.get_tower_labels():

@@ -43,5 +43,4 @@ class MasterBoard(object):
 
     def get_tower_labels(self):
         """Return a list of int labels for this board's tower hexes."""
-        return [hex1.label for hex1 in self.hexes.itervalues()
-                if hex1.is_tower()]
+        return [hex1.label for hex1 in self.hexes.itervalues() if hex1.tower]

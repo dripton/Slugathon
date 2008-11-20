@@ -124,13 +124,14 @@ class MasterHex(object):
                 else:
                     return 4
 
-    def is_tower(self):
+    @property
+    def tower(self):
         """Return True iff this hex is a tower."""
         return self.terrain == "Tower"
 
     def find_entry_side(self, came_from):
         """Find the entry side, relative to the hex label."""
-        if self.terrain == "Tower":
+        if self.tower:
             return 5
         else:
             return (6 + came_from - self.find_label_side()) % 6
