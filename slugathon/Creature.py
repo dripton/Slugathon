@@ -113,11 +113,10 @@ class Creature(object):
                 hexlabel_to_enemy[creature.hexlabel] = creature
         hex1 = game.battlemap.hexes[self.hexlabel]
         for hexside, hex2 in hex1.neighbors.iteritems():
-            hexlabel = hex2.label
-            if hexlabel in hexlabel_to_enemy:
+            if hex2.label in hexlabel_to_enemy:
                 if (hex1.borders[hexside] != "Cliff" and
                   hex2.borders[(hexside + 3) % 6] != "Cliff"):
-                    enemies.add(hexlabel_to_enemy[hexlabel])
+                    enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
 
     def is_engaged(self):
