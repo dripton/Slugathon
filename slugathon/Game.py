@@ -49,7 +49,9 @@ class Game(Observed):
         self.min_players = min_players
         self.max_players = max_players
         self.started = False
+        self.over = False
         self.players = []
+        self.players_left = []  # Used to track co-winners in a draw
         self.num_players_joined = 0
         self.add_player(owner)
         self.board = MasterBoard.MasterBoard()
@@ -173,6 +175,11 @@ class Game(Observed):
         else:
             player.remove_observer(self)
             self.players.remove(player)
+
+    @property
+    def living_players(self):
+        """Return a list of Players still in the game."""
+        return [player for player in self.players if not player.dead]
 
     def assign_towers(self):
         """Randomly assign a tower to each player."""
@@ -750,7 +757,25 @@ class Game(Observed):
         self.history.save(save_file)
         save_file.close()
 
-    # Battle
+    def check_for_victory(self):
+        living = self.living_players
+        if len(living) >= 2:
+            # game still going
+            self.players_left = living[:]
+            return
+        elif len(living) == 1:
+            # sole winner
+            self.players_left = living[:]
+            winner_names = [living[0].name]
+        else:
+            # draw
+            winner_names = [player.name for player in self.players_left]
+        print "game over", winner_names
+        action = Action.GameOver(self.name, winner_names)
+        self.notify(action)
+
+
+    # Battle methods
 
     def other_battle_legion(self, legion):
         """Return the other legion in the battle."""

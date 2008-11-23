@@ -85,6 +85,7 @@ class GUIMasterBoard(gtk.Window):
 
         self.set_icon(icon.pixbuf)
         self.set_title("Masterboard - Slugathon - %s" % self.username)
+        # TODO Rethink this, especially if the game is over.
         self.connect("destroy", guiutils.exit)
         self.connect("configure-event", self.cb_configure_event)
 
@@ -858,6 +859,10 @@ class GUIMasterBoard(gtk.Window):
                 self.guimap = GUIBattleMap.GUIBattleMap(
                   self.game.battlemap, self.game, self.user, self.username)
                 self.game.add_observer(self.guimap)
+
+        elif isinstance(action, Action.RemoveLegion):
+            self._remove_extra_markers()
+            self.update_gui()
 
 
 if __name__ == "__main__":

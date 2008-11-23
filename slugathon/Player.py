@@ -50,6 +50,10 @@ class Player(Observed):
         self.movement_roll = None
         self.teleported = False
 
+    @property
+    def dead(self):
+        return not self.legions
+
     def __repr__(self):
         return "Player " + self.name
 
@@ -271,18 +275,22 @@ class Player(Observed):
             legion.recruited = False
 
     def remove_legion(self, markername):
-        """Remove the legion, with no side effects."""
+        """Remove the legion with markername."""
+        assert type(markername) == str
         if markername in self.legions:
             del self.legions[markername]
             self.markernames.add(markername)
+        action = Action.RemoveLegion(self.game.name, markername)
+        self.notify(action)
 
     def die(self, scoring_legion):
         points = sum(legion.score() for legion in self.legions.itervalues())
         half_points = points // 2
         scoring_legion.add_points(half_points, False)
-        for legion in self.legions.itervalues():
-            self.remove_legion(legion)
-        # TODO Mark player as dead
+        # Make a list to avoid changing size while iterating.
+        for legion in self.legions.values():
+            self.remove_legion(legion.markername)
+        self.game.check_for_victory()
 
     def update(self, observed, action):
         if isinstance(action, Action.RecruitCreature):

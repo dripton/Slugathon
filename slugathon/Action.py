@@ -466,3 +466,15 @@ class AcquireAngel(Action):
         self.markername = markername
         self.angel_name = angel_name
 pb.setUnjellyableForClass(AcquireAngel, AcquireAngel)
+
+class RemoveLegion(Action):
+    def __init__(self, game_name, markername):
+        self.game_name = game_name
+        self.markername = markername
+pb.setUnjellyableForClass(RemoveLegion, RemoveLegion)
+
+class GameOver(Action):
+    def __init__(self, game_name, winner_names):
+        self.game_name = game_name
+        self.winner_names = winner_names
+pb.setUnjellyableForClass(GameOver, GameOver)

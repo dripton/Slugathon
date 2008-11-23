@@ -185,5 +185,9 @@ class Client(pb.Referenceable, Observed):
             self._maybe_pick_first_marker(game, action.playername)
             if not self.guiboards.get(game):
                 self._init_guiboard(game)
+        elif isinstance(action, Action.GameOver):
+            # TODO Destroy windows and dialogs?
+            print "Game %s over, won by %s" % (action.game_name,
+              " and ".join(action.winner_names))
 
         self.notify(action)
