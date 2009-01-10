@@ -6,6 +6,7 @@ import os
 import math
 
 import gtk
+import cairo
 
 import guiutils
 import colors
@@ -15,7 +16,7 @@ RAD_TO_DEG = 180. / math.pi
 
 # Where to place the label, by hexside.  Derived experimentally.
 x_font_position = [0.5, 0.75, 0.75, 0.5, 0.25, 0.25]
-y_font_position = [0.1, 0.125, 0.875, 0.95, 0.875, 0.125]
+y_font_position = [0.1, 0.2, 0.85, 0.95, 0.85, 0.2]
 
 rp = guiutils.roundpoint
 
@@ -28,8 +29,8 @@ class GUIMasterHex(object):
         self.cy = masterhex.y * 4 * SQRT3 * scale
         if not masterhex.inverted:
             self.cy += SQRT3 * scale
-        self.fillcolor = guiutils.rgb_to_gtk(colors.rgb_colors[
-                colors.terrain_colors[self.masterhex.terrain]])
+        self.fillcolor = guiutils.rgb_to_float(colors.rgb_colors[
+          colors.terrain_colors[self.masterhex.terrain]])
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False
 
@@ -69,42 +70,42 @@ class GUIMasterHex(object):
             self.vertexes[4] = rp((cx + scale, cy + 3 * SQRT3 * scale))
             self.vertexes[5] = rp((cx, cy + 2 * SQRT3 * scale))
 
+    def _draw_polygon(self, cr, points):
+        cr.move_to(*points[0])
+        for point in self.points[1:]:
+            cr.line_to(*point)
+        cr.close_path()
 
-    def draw_hexagon(self, gc):
+    def draw_hexagon(self, cr):
         """Create the polygon, filled with the terrain color."""
-
-        # TODO Fix random black/white edge color on border between selected
-        # and unselected hexes.
-
-        colormap = self.guiboard.area.get_colormap()
 
         if self.selected:
             # outer portion
-            fg = colormap.alloc_color("white")
-            gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, True, self.points)
+            cr.set_source_rgb(1, 1, 1)
+            self._draw_polygon(cr, self.points)
+            cr.fill()
 
             # inner hex
-            fg = colormap.alloc_color(*self.fillcolor)
-            gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, True,
-                self.inner_vertexes)
+            cr.set_source_rgb(*self.fillcolor)
+            self._draw_polygon(cr, self.inner_vertexes)
+            cr.fill()
 
-            # outline
-            fg = colormap.alloc_color("black")
-            gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, False, self.points)
+            # black outline
+            cr.set_source_rgb(0, 0, 0)
+            self._draw_polygon(cr, self.points)
+            cr.stroke()
 
         else:
             # hex
-            fg = colormap.alloc_color(*self.fillcolor)
-            gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, True, self.points)
+            cr.set_source_rgb(*self.fillcolor)
+            self._draw_polygon(cr, self.points)
+            cr.fill()
 
             # outline
-            fg = colormap.alloc_color("white")
-            gc.foreground = fg
-            self.guiboard.area.window.draw_polygon(gc, False, self.points)
+            cr.set_source_rgb(1, 1, 1)
+            self._draw_polygon(cr, self.points)
+            cr.stroke()
+
 
 
     def init_gates(self):
@@ -173,37 +174,38 @@ class GUIMasterHex(object):
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
 
-    def draw_overlay(self, gc):
-        drawable = self.guiboard.area.window
-        drawable.draw_pixbuf(gc, self.pixbuf, 0, 0, self.dest_x, self.dest_y,
-          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+    def draw_overlay(self, cr):
+        cr.set_source_pixbuf(self.pixbuf, self.dest_x, self.dest_y)
+        cr.paint()
 
 
-    def draw_label(self, gc):
+    def draw_label(self, cr):
         """Display the hex label."""
         label = str(self.masterhex.label)
-        layout = self.guiboard.area.create_pango_layout(label)
-        text_width, text_height = layout.get_pixel_size()
+        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+          cairo.FONT_WEIGHT_NORMAL)
+        # XXX Vary font size with scale
+        cr.set_font_size(8)
+        x_bearing, y_bearing, text_width, text_height = cr.text_extents(
+          label)[:4]
         half_text_width = 0.5 * text_width
         half_text_height = 0.5 * text_height
         side = self.masterhex.label_side
 
         x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
-                half_text_width)))
+          half_text_width - x_bearing)))
         y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
-                half_text_height)))
+          half_text_height - y_bearing)))
 
-        colormap = self.guiboard.area.get_colormap()
-        fg = colormap.alloc_color("black")
-        gc.foreground = fg
-
-        self.guiboard.area.window.draw_layout(gc, x, y, layout)
+        cr.set_source_rgb(0, 0, 0)
+        cr.move_to(x, y)
+        cr.show_text(label)
 
 
-    def update_gui(self, gc):
-        self.draw_hexagon(gc)
-        self.draw_overlay(gc)
-        self.draw_label(gc)
+    def update_gui(self, cr):
+        self.draw_hexagon(cr)
+        self.draw_overlay(cr)
+        self.draw_label(cr)
 
 
 def _init_block(x0, y0, x1, y1, theta, unit):

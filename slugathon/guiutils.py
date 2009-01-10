@@ -18,8 +18,13 @@ def flatten_point_list(points):
     return tuple(li)
 
 def rgb_to_gtk(rgb):
-    """Convert a tuple of 8-bit decimal RGB color values 16-bit."""
+    """Convert a tuple of 8-bit decimal RGB color values to 16-bit."""
     li = [256 * value for value in rgb]
+    return tuple(li)
+
+def rgb_to_float(rgb):
+    """Convert a tuple of 8-bit decimal RGB color values to 0.0 - 1.0."""
+    li = [value / 256.0 for value in rgb]
     return tuple(li)
 
 def pil_image_to_gdk_pixbuf(image):

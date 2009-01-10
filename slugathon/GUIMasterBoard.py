@@ -10,7 +10,6 @@ __license__ = "GNU GPL v2"
 import math
 
 import gtk
-import pango
 from zope.interface import implements
 
 import GUIMasterHex
@@ -100,11 +99,9 @@ class GUIMasterBoard(gtk.Window):
         else:
             self.scale = scale
         self.area = gtk.DrawingArea()
-        black = self.area.get_colormap().alloc_color("black")
-        self.area.modify_bg(gtk.STATE_NORMAL, black)
         self.area.set_size_request(self.compute_width(), self.compute_height())
         # TODO Vary font size with scale
-        self.area.modify_font(pango.FontDescription("monospace 8"))
+        # self.area.modify_font(pango.FontDescription("monospace 8"))
         self.vbox.pack_start(self.area)
         self.markers = []
         self.guihexes = {}
@@ -433,13 +430,12 @@ class GUIMasterBoard(gtk.Window):
         else:
             raise AssertionError("invalid number of markers in hex")
 
-    def _render_marker(self, marker, gc):
-        drawable = self.area.window
-        drawable.draw_pixbuf(gc, marker.pixbuf, 0, 0,
-          int(round(marker.location[0])), int(round(marker.location[1])),
-          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+    def _render_marker(self, marker, cr):
+        cr.set_source_pixbuf(marker.pixbuf, int(round(marker.location[0])),
+          int(round(marker.location[1])))
+        cr.paint()
 
-    def draw_markers(self, gc):
+    def draw_markers(self, cr):
         if not self.game:
             return
         self._add_missing_markers()
@@ -452,15 +448,15 @@ class GUIMasterBoard(gtk.Window):
             # in self.markers are on top.
             for marker in reversed(mih):
                 marker.update_height()
-                self._render_marker(marker, gc)
+                self._render_marker(marker, cr)
 
-    def draw_recruitchits(self, gc):
+    def draw_recruitchits(self, cr):
         if not self.game:
             return
         for (chit, unused) in self.recruitchits:
-            self._render_marker(chit, gc)
+            self._render_marker(chit, cr)
 
-    def draw_movement_die(self, gc):
+    def draw_movement_die(self, cr):
         try:
             roll = self.game.active_player.movement_roll
         except AttributeError:
@@ -468,13 +464,16 @@ class GUIMasterBoard(gtk.Window):
         if not roll:
             return
         die = Die.Die(roll, scale=self.scale)
-        drawable = self.area.window
-        drawable.draw_pixbuf(gc, die.pixbuf, 0, 0, 0, 0,
-          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
-
+        cr.set_source_pixbuf(die.pixbuf, 0, 0)
+        cr.paint()
 
     def update_gui(self, hexlabels=None):
-        gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
+        cr = self.area.window.cairo_create()
+        # black background
+        cr.set_source_rgb(0, 0, 0)
+        width, height = self.area.size_request()
+        cr.rectangle(0, 0, width, height)
+        cr.fill()
         if hexlabels is None:
             guihexes = self.guihexes.itervalues()
         else:
@@ -488,10 +487,10 @@ class GUIMasterBoard(gtk.Window):
                         if neighbor:
                             guihexes.add(self.guihexes[neighbor.label])
         for guihex in guihexes:
-            guihex.update_gui(gc)
-        self.draw_markers(gc)
-        self.draw_recruitchits(gc)
-        self.draw_movement_die(gc)
+            guihex.update_gui(cr)
+        self.draw_markers(cr)
+        self.draw_recruitchits(cr)
+        self.draw_movement_die(cr)
 
     def unselect_all(self):
         repaint_hexlabels = set()
