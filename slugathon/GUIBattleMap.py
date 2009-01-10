@@ -9,7 +9,6 @@ import random
 import sys
 
 import gtk
-import pango
 from zope.interface import implements
 
 from Observer import IObserver
@@ -74,12 +73,7 @@ class GUIBattleMap(gtk.Window):
         else:
             self.scale = scale
         self.area = gtk.DrawingArea()
-        # TODO Vary background color by terrain type?
-        white = self.area.get_colormap().alloc_color("white")
-        self.area.modify_bg(gtk.STATE_NORMAL, white)
         self.area.set_size_request(self.compute_width(), self.compute_height())
-        # TODO Vary font size with scale
-        self.area.modify_font(pango.FontDescription("monospace 8"))
 
         if self.username:
             tup = prefs.load_window_position(self.username,
@@ -362,17 +356,16 @@ class GUIBattleMap(gtk.Window):
         else:
             raise AssertionError("invalid number of chits in hex")
 
-    def _render_chit(self, chit, gc):
-        drawable = self.area.window
-        drawable.draw_pixbuf(gc, chit.pixbuf, 0, 0,
-          int(round(chit.location[0])), int(round(chit.location[1])),
-          -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+    def _render_chit(self, chit, cr):
+        cr.set_source_pixbuf(chit.pixbuf, int(round(chit.location[0])),
+          int(round(chit.location[1])))
+        cr.paint()
 
     def chits_in_hex(self, hexlabel):
         return [chit for chit in self.chits
           if chit.creature.hexlabel == hexlabel]
 
-    def draw_chits(self, gc):
+    def draw_chits(self, cr):
         if not self.game:
             return
         self._add_missing_chits()
@@ -382,7 +375,7 @@ class GUIBattleMap(gtk.Window):
                 self._compute_chit_locations(hexlabel)
                 chits = self.chits_in_hex(hexlabel)
                 for chit in chits:
-                    self._render_chit(chit, gc)
+                    self._render_chit(chit, cr)
 
     def cb_undo(self, action):
         if self.game:
@@ -424,15 +417,20 @@ class GUIBattleMap(gtk.Window):
         pass
 
     def update_gui(self, hexlabels=None):
-        gc = self.area.get_style().fg_gc[gtk.STATE_NORMAL]
-        gc.line_width = int(round(0.2 * self.scale))
+        cr = self.area.window.cairo_create()
+        cr.set_line_width(round(0.2 * self.scale))
+        # TODO Vary background color by terrain type?
+        cr.set_source_rgb(1, 1, 1)
+        width, height = self.area.size_request()
+        cr.rectangle(0, 0, width, height)
+        cr.fill()
         if hexlabels is None:
             guihexes = self.guihexes.itervalues()
         else:
             guihexes = set(self.guihexes[hexlabel] for hexlabel in hexlabels)
         for guihex in guihexes:
-            guihex.update_gui(gc)
-        self.draw_chits(gc)
+            guihex.update_gui(cr)
+        self.draw_chits(cr)
 
     def update(self, observed, action):
         if isinstance(action, Action.MoveCreature) or isinstance(action,

@@ -6,6 +6,7 @@ import os
 import math
 
 import gtk
+import cairo
 
 import guiutils
 import colors
@@ -57,7 +58,7 @@ class GUIBattleHex(object):
           self.battlehex.elevation), None)
         if not color:
             color = colors.battle_terrain_colors.get(terrain)
-        return guiutils.rgb_to_gtk(colors.rgb_colors[color])
+        return guiutils.rgb_to_float(colors.rgb_colors[color])
 
     def init_vertexes(self):
         """Setup the hex vertexes.
@@ -84,31 +85,31 @@ class GUIBattleHex(object):
             self.points.append(rp(point))
 
 
-    def draw_hexagon(self, gc):
+    def draw_hexagon(self, cr):
         """Create the polygon, filled with the terrain color."""
-
-        # TODO Fix random black/white edge color on border between selected
-        # and unselected hexes.
-
-        colormap = self.guimap.area.get_colormap()
 
         if self.selected:
             # outline
-            gc.foreground = colormap.alloc_color("red")
-            self.guimap.area.window.draw_polygon(gc, False, self.points)
+            cr.set_source_rgb(1, 0, 0)
+            guiutils.draw_polygon(cr, self.points)
+            cr.stroke()
             # outer portion
-            gc.foreground = colormap.alloc_color("white")
-            self.guimap.area.window.draw_polygon(gc, True, self.points)
+            cr.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(cr, self.points)
+            cr.fill()
             # inner hex
-            gc.foreground = colormap.alloc_color(*self.fillcolor)
-            self.guimap.area.window.draw_polygon(gc, True, self.points)
+            cr.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(cr, self.points)
+            cr.fill()
         else:
             # hex
-            gc.foreground = colormap.alloc_color(*self.fillcolor)
-            self.guimap.area.window.draw_polygon(gc, True, self.points)
+            cr.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(cr, self.points)
+            cr.fill()
             # outline
-            gc.foreground = colormap.alloc_color("white")
-            self.guimap.area.window.draw_polygon(gc, False, self.points)
+            cr.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(cr, self.points)
+            cr.stroke()
 
 
     def init_hex_overlay(self):
@@ -147,43 +148,46 @@ class GUIBattleHex(object):
                   gtk.gdk.INTERP_BILINEAR)
             self.border_pixbufs.append(border_pixbuf)
 
-    def draw_hex_overlay(self, gc):
+    def draw_hex_overlay(self, cr):
         """Draw the main terrain overlay for the hex."""
         if self.hex_pixbuf is None:
             return
-        drawable = self.guimap.area.window
-        drawable.draw_pixbuf(gc, self.hex_pixbuf, 0, 0, self.hex_pixbuf_x,
-          self.hex_pixbuf_y, -1, -1, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+        cr.set_source_pixbuf(self.hex_pixbuf, self.hex_pixbuf_x,
+          self.hex_pixbuf_y)
+        cr.paint()
 
-    def draw_border_overlays(self, gc):
+    def draw_border_overlays(self, cr):
         """Draw the overlays for all borders that have them."""
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
-                drawable = self.guimap.area.window
-                drawable.draw_pixbuf(gc, self.border_pixbufs[hexside], 0, 0,
-                  self.border_pixbuf_x, self.border_pixbuf_y, -1, -1,
-                  gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+                cr.set_source_pixbuf(self.border_pixbufs[hexside],
+                  self.border_pixbuf_x, self.border_pixbuf_y)
+                cr.paint()
 
-    def draw_label(self, gc, label, side):
+    def draw_label(self, cr, label, side):
         """Display the hex label."""
-        layout = self.guimap.area.create_pango_layout(label)
-        text_width, text_height = layout.get_pixel_size()
+        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+          cairo.FONT_WEIGHT_NORMAL)
+        # TODO Vary font size with scale
+        cr.set_font_size(8)
+
+        x_bearing, y_bearing, text_width, text_height = cr.text_extents(
+          label)[:4]
         half_text_width = 0.5 * text_width
         half_text_height = 0.5 * text_height
 
         x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
-                half_text_width)))
+                half_text_width - x_bearing)))
         y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
-                half_text_height)))
+                half_text_height - y_bearing)))
 
-        colormap = self.guimap.area.get_colormap()
-        fg = colormap.alloc_color("black")
-        gc.foreground = fg
+        cr.set_source_rgb(0, 0, 0)
+        cr.move_to(x, y)
+        cr.show_text(label)
 
-        self.guimap.area.window.draw_layout(gc, x, y, layout)
 
     # TODO save computations
-    def highlight_entrance(self, gc):
+    def highlight_entrance(self, cr):
         """Highlight this entrance hex, if selected"""
         chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
         x = self.center[0] - chit_scale / 4
@@ -196,16 +200,19 @@ class GUIBattleHex(object):
         colormap = self.guimap.area.get_colormap()
         if self.selected:
             # outline
-            gc.foreground = colormap.alloc_color("red")
-            self.guimap.area.window.draw_polygon(gc, False, points)
+            cr.set_source_rgb(1, 0, 0)
+            guiutils.draw_polygon(cr, points)
+            cr.stroke()
             # outer portion
-            gc.foreground = colormap.alloc_color("white")
-            self.guimap.area.window.draw_polygon(gc, True, points)
+            cr.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(cr, points)
+            cr.fill()
             # inner hex
-            gc.foreground = colormap.alloc_color(*self.fillcolor)
-            self.guimap.area.window.draw_polygon(gc, True, points)
+            cr.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(cr, points)
+            cr.fill()
 
-    def cleanup_entrance(self, gc):
+    def cleanup_entrance(self, cr):
         """Cleanup after any chits that may have moved away from an
         entrance."""
         chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
@@ -213,20 +220,22 @@ class GUIBattleHex(object):
         y = self.center[1] - chit_scale * 7 / 2
         width = chit_scale
         height = 7 * chit_scale
-        self.guimap.area.window.clear_area(x, y, width, height)
+        cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(x, y, width, height)
+        cr.fill()
 
-    def update_gui(self, gc):
+    def update_gui(self, cr):
         if self.battlehex.visible:
-            self.draw_hexagon(gc)
-            self.draw_hex_overlay(gc)
-            self.draw_border_overlays(gc)
-            self.draw_label(gc, self.battlehex.label,
+            self.draw_hexagon(cr)
+            self.draw_hex_overlay(cr)
+            self.draw_border_overlays(cr)
+            self.draw_label(cr, self.battlehex.label,
               self.battlehex.label_side)
-            self.draw_label(gc, self.battlehex.terrain,
+            self.draw_label(cr, self.battlehex.terrain,
               self.battlehex.terrain_side)
         else:
-            self.cleanup_entrance(gc)
-            self.highlight_entrance(gc)
+            self.cleanup_entrance(cr)
+            self.highlight_entrance(cr)
 
     def __repr__(self):
         return "GUIBattleHex %s" % self.battlehex.label
