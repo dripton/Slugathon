@@ -70,11 +70,6 @@ class GUIMasterHex(object):
             self.vertexes[4] = rp((cx + scale, cy + 3 * SQRT3 * scale))
             self.vertexes[5] = rp((cx, cy + 2 * SQRT3 * scale))
 
-    def _draw_polygon(self, cr, points):
-        cr.move_to(*points[0])
-        for point in self.points[1:]:
-            cr.line_to(*point)
-        cr.close_path()
 
     def draw_hexagon(self, cr):
         """Create the polygon, filled with the terrain color."""
@@ -82,28 +77,28 @@ class GUIMasterHex(object):
         if self.selected:
             # outer portion
             cr.set_source_rgb(1, 1, 1)
-            self._draw_polygon(cr, self.points)
+            guiutils.draw_polygon(cr, self.points)
             cr.fill()
 
             # inner hex
             cr.set_source_rgb(*self.fillcolor)
-            self._draw_polygon(cr, self.inner_vertexes)
+            guiutils.draw_polygon(cr, self.inner_vertexes)
             cr.fill()
 
             # black outline
             cr.set_source_rgb(0, 0, 0)
-            self._draw_polygon(cr, self.points)
+            guiutils.draw_polygon(cr, self.points)
             cr.stroke()
 
         else:
             # hex
             cr.set_source_rgb(*self.fillcolor)
-            self._draw_polygon(cr, self.points)
+            guiutils.draw_polygon(cr, self.points)
             cr.fill()
 
             # outline
             cr.set_source_rgb(1, 1, 1)
-            self._draw_polygon(cr, self.points)
+            guiutils.draw_polygon(cr, self.points)
             cr.stroke()
 
 
