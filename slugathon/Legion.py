@@ -42,6 +42,14 @@ class Legion(Observed):
                 alive = True
         return not alive
 
+    @property
+    def living_creatures(self):
+        return [creature for creature in self.creatures if not creature.dead]
+
+    @property
+    def dead_creatures(self):
+        return [creature for creature in self.creatures if creature.dead]
+
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
           self.creatures)

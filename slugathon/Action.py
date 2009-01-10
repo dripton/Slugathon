@@ -473,6 +473,20 @@ class RemoveLegion(Action):
         self.markername = markername
 pb.setUnjellyableForClass(RemoveLegion, RemoveLegion)
 
+class BattleOver(Action):
+    def __init__(self, game_name, winner_markername, winner_survivors,
+      winner_losses, loser_markername, loser_survivors, loser_losses,
+      time_loss):
+        self.game_name = game_name
+        self.winner_markername = winner_markername
+        self.winner_survivors = winner_survivors
+        self.winner_losses = winner_losses
+        self.loser_markername = loser_markername
+        self.loser_survivors = loser_survivors
+        self.loser_losses = loser_losses
+        self.time_loss = time_loss
+pb.setUnjellyableForClass(BattleOver, BattleOver)
+
 class GameOver(Action):
     def __init__(self, game_name, winner_names):
         self.game_name = game_name

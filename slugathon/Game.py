@@ -70,7 +70,15 @@ class Game(Observed):
         self.battle_turn = None
         self.battle_phase = None
         self.battle_active_legion = None
-        self.battle_legions = []
+
+
+    @property
+    def battle_legions(self):
+        """Return a list of the legions involved in battle, or []."""
+        if self.defender_legion is not None:
+            return [self.defender_legion, self.attacker_legion]
+        else:
+            return []
 
     @property
     def battle_active_player(self):
@@ -93,7 +101,6 @@ class Game(Observed):
         self.battle_active_legion = self.defender_legion
         self.defender_legion.enter_battle("DEFENDER")
         self.attacker_legion.enter_battle("ATTACKER")
-        self.battle_legions = [self.defender_legion, self.attacker_legion]
 
     def _cleanup_battle(self):
         self.attacker_legion = None
@@ -104,7 +111,6 @@ class Game(Observed):
         self.battle_turn = None
         self.battle_phase = None
         self.battle_active_legion = None
-        self.battle_legions = []
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -999,6 +1005,19 @@ class Game(Observed):
         if self.battle_phase == Phase.STRIKE:
             player.done_with_strikes()
 
+    def is_battle_over(self):
+        """Return True iff the battle is over."""
+        for legion in self.battle_legions:
+            if legion.dead:
+                return True
+        if self.battle_turn > 7:
+            return True
+        return False
+
+    def _end_battle(self):
+        # TODO
+        pass
+
     def done_with_counterstrikes(self, playername):
         """Try to end playername's counterstrike battle phase.
 
@@ -1007,7 +1026,25 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             raise AssertionError("ending maneuver phase out of turn")
-        if self.battle_phase == Phase.COUNTERSTRIKE:
+        if self.battle_phase != Phase.COUNTERSTRIKE:
+            return
+        if (playername == self.defender_legion.player.name and not
+          self.is_battle_over()):
+            self.battle_turn += 1
+        if self.is_battle_over():
+            time_loss = self.battle_turn > 7
+            # If it's a draw, arbitrarily call the defender the "winner"
+            if time_loss or self.attacker_legion.dead:
+                winner = self.defender_legion
+            else:
+                winner = self.attacker_legion
+            loser = self.other_battle_legion(winner)
+            action = Action.BattleOver(self.name, winner.markername,
+              winner.living_creatures, winner.dead_creatures, loser.markername,
+              loser.living_creatures, loser.dead_creatures, time_loss)
+            self.notify(action)
+            self._end_battle()
+        else:
             player.done_with_counterstrikes()
 
     def clear_battle_flags(self):
@@ -1200,7 +1237,7 @@ class Game(Observed):
             if action.playername == self.defender_legion.player.name:
                 self.battle_turn += 1
                 if self.battle_turn > 7:
-                    raise Exception("TODO time loss")
+                    raise Exception("should have ended on time loss")
             self.battle_phase = Phase.MANEUVER
 
 
