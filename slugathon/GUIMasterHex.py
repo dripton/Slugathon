@@ -179,7 +179,7 @@ class GUIMasterHex(object):
         label = str(self.masterhex.label)
         cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
           cairo.FONT_WEIGHT_NORMAL)
-        # XXX Vary font size with scale
+        # TODO Vary font size with scale
         cr.set_font_size(8)
         x_bearing, y_bearing, text_width, text_height = cr.text_extents(
           label)[:4]

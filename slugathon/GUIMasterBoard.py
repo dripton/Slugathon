@@ -100,8 +100,6 @@ class GUIMasterBoard(gtk.Window):
             self.scale = scale
         self.area = gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
-        # TODO Vary font size with scale
-        # self.area.modify_font(pango.FontDescription("monospace 8"))
         self.vbox.pack_start(self.area)
         self.markers = []
         self.guihexes = {}
