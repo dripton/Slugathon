@@ -1,9 +1,10 @@
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 import os
 import math
+import sys
 
 import gtk
 import cairo
@@ -84,6 +85,20 @@ class GUIBattleHex(object):
         for point in iv:
             self.points.append(rp(point))
 
+    @property
+    def bounding_rect(self):
+        """Return the bounding rectangle (x, y, width, height) of this hex."""
+        scale = self.guimap.scale
+        min_x = sys.maxint
+        max_x = -sys.maxint
+        min_y = sys.maxint
+        max_y = -sys.maxint
+        for x, y in self.vertexes:
+            min_x = min(min_x, x)
+            min_y = min(min_y, y)
+            max_x = max(max_x, x)
+            max_y = max(max_y, y)
+        return min_x, min_y, max_x - min_x, max_y - min_y
 
     def draw_hexagon(self, cr):
         """Create the polygon, filled with the terrain color."""

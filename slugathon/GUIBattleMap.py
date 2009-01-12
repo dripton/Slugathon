@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -142,9 +142,12 @@ class GUIBattleMap(gtk.Window):
 
     def unselect_all(self):
         """Unselect all guihexes."""
-        for guihex in self.guihexes.itervalues():
-            guihex.selected = False
-        self.update_gui()
+        hexlabels = set()
+        for hexlabel, guihex in self.guihexes.iteritems():
+            if guihex.selected:
+                guihex.selected = False
+                hexlabels.add(hexlabel)
+        self.update_gui(hexlabels=hexlabels)
 
     def highlight_mobile_chits(self):
         """Highlight the hexes containing all creatures that can move now."""
@@ -160,7 +163,7 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
-        self.update_gui(hexlabels)
+        self.update_gui(hexlabels=hexlabels)
 
     def highlight_strikers(self):
         """Highlight the hexes containing creatures that can strike now."""
@@ -176,7 +179,7 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
-        self.update_gui(hexlabels)
+        self.update_gui(hexlabels=hexlabels)
 
     def strike(self, striker, target):
         """Have striker strike target, at full strength and skill."""
@@ -197,7 +200,7 @@ class GUIBattleMap(gtk.Window):
         return False
 
     def cb_area_expose(self, area, event):
-        self.update_gui()
+        self.update_gui(event=event)
         return True
 
     def cb_click(self, area, event):
@@ -262,7 +265,7 @@ class GUIBattleMap(gtk.Window):
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
-            self.update_gui(hexlabels)
+            self.update_gui(hexlabels=hexlabels)
 
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
             creature = chit.creature
@@ -290,7 +293,7 @@ class GUIBattleMap(gtk.Window):
                 for hexlabel in hexlabels:
                     guihex = self.guihexes[hexlabel]
                     guihex.selected = True
-                self.update_gui(hexlabels)
+                self.update_gui(hexlabels=hexlabels)
 
     def _add_missing_chits(self):
         """Add chits for any creatures that lack them."""
@@ -395,6 +398,8 @@ class GUIBattleMap(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_done(self, action):
+        if not self.game:
+            return
         player = self.game.get_player_by_name(self.username)
         if player == self.game.battle_active_player:
             if self.game.battle_phase == Phase.MANEUVER:
@@ -416,20 +421,52 @@ class GUIBattleMap(gtk.Window):
     def cb_concede(self, action):
         pass
 
-    def update_gui(self, hexlabels=None):
+    def bounding_rect_for_hexlabels(self, hexlabels):
+        """Return the minimum bounding rectangle that encloses all
+        GUIMasterHexes whose hexlabels are given, as a tuple
+        (x, y, width, height)
+        """
+        min_x = sys.maxint
+        max_x = -sys.maxint
+        min_y = sys.maxint
+        max_y = -sys.maxint
+        for hexlabel in hexlabels:
+            try:
+                guihex = self.guihexes[hexlabel]
+                x, y, width, height = guihex.bounding_rect
+                min_x = min(min_x, x)
+                min_y = min(min_y, y)
+                max_x = max(max_x, x + width)
+                max_y = max(max_y, y + height)
+            except KeyError:   # None check
+                pass
+        width = max_x - min_x
+        height = max_y - min_y
+        return min_x, min_y, width, height
+
+    def update_gui(self, event=None, hexlabels=None):
         cr = self.area.window.cairo_create()
         cr.set_line_width(round(0.2 * self.scale))
-        # TODO Vary background color by terrain type?
-        cr.set_source_rgb(1, 1, 1)
-        width, height = self.area.size_request()
-        cr.rectangle(0, 0, width, height)
-        cr.fill()
-        if hexlabels is None:
-            guihexes = self.guihexes.itervalues()
+        if event is not None:
+            clip_rect = event.area
+            cr.rectangle(*clip_rect)
+            cr.clip()
+        elif hexlabels is not None:
+            clip_rect = self.bounding_rect_for_hexlabels(hexlabels)
+            cr.rectangle(*clip_rect)
+            cr.clip()
         else:
-            guihexes = set(self.guihexes[hexlabel] for hexlabel in hexlabels)
-        for guihex in guihexes:
-            guihex.update_gui(cr)
+            width, height = self.area.size_request()
+            clip_rect = (0, 0, width, height)
+        # white background, only when we get an event
+        if event is not None:
+            cr.set_source_rgb(1, 1, 1)
+            width, height = self.area.size_request()
+            cr.rectangle(0, 0, width, height)
+            cr.fill()
+        for guihex in self.guihexes.itervalues():
+            if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
+                guihex.update_gui(cr)
         self.draw_chits(cr)
 
     def update(self, observed, action):
