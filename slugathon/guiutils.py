@@ -136,3 +136,13 @@ def draw_polygon(cr, points):
     for point in points[1:]:
         cr.line_to(*point)
     cr.close_path()
+
+def rectangles_intersect(rect1, rect2):
+    """Return True iff the two rectangles intersect"""
+    x1, y1, width1, height1 = rect1
+    x2, y2, width2, height2 = rect2
+    if x1 + width1 < x2 or x2 + width2 < x1:
+        return False
+    if y1 + height1 < y2 or y2 + height2 < y1:
+        return False
+    return True
