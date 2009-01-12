@@ -18,8 +18,8 @@ SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
 
 # Where to place the label, by hexside.  Derived experimentally.
-x_font_position = [0.5, 0.7, 0.7, 0.5, 0.3, 0.3]
-y_font_position = [0.2, 0.2, 0.8, 0.85, 0.8, 0.2]
+x_font_position = [0.5, 0.7, 0.7, 0.5, 0.35, 0.35]
+y_font_position = [0.2, 0.2, 0.8, 0.8, 0.8, 0.2]
 
 rp = guiutils.roundpoint
 
@@ -182,9 +182,9 @@ class GUIBattleHex(object):
     def draw_label(self, cr, label, side):
         """Display the hex label."""
         cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
-          cairo.FONT_WEIGHT_NORMAL)
+          cairo.FONT_WEIGHT_BOLD)
         # TODO Vary font size with scale
-        cr.set_font_size(8)
+        cr.set_font_size(14)
 
         x_bearing, y_bearing, text_width, text_height = cr.text_extents(
           label)[:4]
