@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 import os
 import math
+import sys
 
 import gtk
 import cairo
@@ -42,7 +43,6 @@ class GUIMasterHex(object):
             self.inner_vertexes.append(rp(point))
         self.init_overlay()
 
-
     def init_vertexes(self):
         """Setup the hex vertexes.
 
@@ -70,6 +70,26 @@ class GUIMasterHex(object):
             self.vertexes[4] = rp((cx + scale, cy + 3 * SQRT3 * scale))
             self.vertexes[5] = rp((cx, cy + 2 * SQRT3 * scale))
 
+
+    @property
+    def bounding_rect(self):
+        """Return the bounding rectangle (x, y, width, height) of this hex."""
+        scale = self.guiboard.scale
+        min_x = sys.maxint
+        max_x = -sys.maxint
+        min_y = sys.maxint
+        max_y = -sys.maxint
+        for x, y in self.vertexes:
+            min_x = min(min_x, x)
+            min_y = min(min_y, y)
+            max_x = max(max_x, x)
+            max_y = max(max_y, y)
+        # estimate a bit of gate overlap into the adjacent hexes
+        min_x -= scale
+        max_x += scale
+        min_y -= scale
+        max_y += scale
+        return min_x, min_y, max_x - min_x, max_y - min_y
 
     def draw_hexagon(self, cr):
         """Create the polygon, filled with the terrain color."""

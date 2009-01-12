@@ -8,6 +8,7 @@ __license__ = "GNU GPL v2"
 
 
 import math
+import sys
 
 import gtk
 from zope.interface import implements
@@ -167,7 +168,7 @@ class GUIMasterBoard(gtk.Window):
         return False
 
     def cb_area_expose(self, area, event):
-        self.update_gui()
+        self.update_gui(event=event)
         return True
 
     def cb_click(self, area, event):
@@ -313,7 +314,7 @@ class GUIMasterBoard(gtk.Window):
                             chit.location = (guihex.center[0] - chit_scale / 2,
                               guihex.center[1] - chit_scale / 2)
                             self.recruitchits.append((chit, hexlabel))
-                self.update_gui(repaint_hexlabels)
+                self.update_gui(hexlabels=repaint_hexlabels)
 
             elif phase == Phase.FIGHT:
                 legion = marker.legion
@@ -465,27 +466,55 @@ class GUIMasterBoard(gtk.Window):
         cr.set_source_pixbuf(die.pixbuf, 0, 0)
         cr.paint()
 
-    def update_gui(self, hexlabels=None):
+    def bounding_rect_for_hexlabels(self, hexlabels):
+        """Return the minimum bounding rectangle that encloses all
+        GUIMasterHexes whose hexlabels are given, as a tuple
+        (x, y, width, height)
+        """
+        min_x = sys.maxint
+        max_x = -sys.maxint
+        min_y = sys.maxint
+        max_y = -sys.maxint
+        for hexlabel in hexlabels:
+            try:
+                guihex = self.guihexes[hexlabel]
+                x, y, width, height = guihex.bounding_rect
+                min_x = min(min_x, x)
+                min_y = min(min_y, y)
+                max_x = max(max_x, x + width)
+                max_y = max(max_y, y + height)
+            except KeyError:   # None check
+                pass
+        width = max_x - min_x
+        height = max_y - min_y
+        return min_x, min_y, width, height
+
+    def update_gui(self, event=None, hexlabels=None):
         cr = self.area.window.cairo_create()
-        # black background
-        cr.set_source_rgb(0, 0, 0)
-        width, height = self.area.size_request()
-        cr.rectangle(0, 0, width, height)
-        cr.fill()
-        if hexlabels is None:
-            guihexes = self.guihexes.itervalues()
+        clip_rect = None
+        if event is not None:
+            clip_rect = event.area
+            cr.rectangle(*clip_rect)
+            cr.clip()
+        elif hexlabels is not None:
+            if not hexlabels:
+                return
+            clip_rect = self.bounding_rect_for_hexlabels(hexlabels)
+            cr.rectangle(*clip_rect)
+            cr.clip()
         else:
-            # Also redraw neighbors, to clean up chit overdraw.
-            guihexes = set()
-            for hexlabel in hexlabels:
-                if hexlabel in self.guihexes:
-                    guihexes.add(self.guihexes[hexlabel])
-                    masterhex = self.board.hexes[hexlabel]
-                    for neighbor in masterhex.neighbors:
-                        if neighbor:
-                            guihexes.add(self.guihexes[neighbor.label])
-        for guihex in guihexes:
-            guihex.update_gui(cr)
+            width, height = self.area.size_request()
+            clip_rect = (0, 0, width, height)
+
+        # black background, only when we get an event
+        if event is not None:
+            cr.set_source_rgb(0, 0, 0)
+            width, height = self.area.size_request()
+            cr.rectangle(0, 0, width, height)
+            cr.fill()
+        for guihex in self.guihexes.itervalues():
+            if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
+                guihex.update_gui(cr)
         self.draw_markers(cr)
         self.draw_recruitchits(cr)
         self.draw_movement_die(cr)
@@ -496,13 +525,13 @@ class GUIMasterBoard(gtk.Window):
             if guihex.selected:
                 guihex.selected = False
                 repaint_hexlabels.add(guihex.masterhex.label)
-        self.update_gui(repaint_hexlabels)
+        self.update_gui(hexlabels=repaint_hexlabels)
 
     def clear_recruitchits(self):
         if self.recruitchits:
             hexlabels = set((tup[1] for tup in self.recruitchits))
             self.recruitchits = []
-            self.update_gui(hexlabels)
+            self.update_gui(hexlabels=hexlabels)
 
     def highlight_tall_legions(self):
         """Highlight all hexes containing a legion of height 7 or more
@@ -514,10 +543,9 @@ class GUIMasterBoard(gtk.Window):
             for legion in player.legions.itervalues():
                 if len(legion) >= 7:
                     hexlabels.add(legion.hexlabel)
-            for hexlabel in hexlabels:
-                guihex = self.guihexes[hexlabel]
-                guihex.selected = True
-            self.update_gui(hexlabels)
+                    guihex = self.guihexes[legion.hexlabel]
+                    guihex.selected = True
+            self.update_gui(hexlabels=hexlabels)
 
     def highlight_unmoved_legions(self):
         """Highlight all hexes containing an unmoved legion belonging to the
@@ -533,7 +561,7 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
-            self.update_gui(hexlabels)
+            self.update_gui(hexlabels=hexlabels)
 
     def highlight_engagements(self):
         """Highlight all hexes with engagements."""
@@ -542,14 +570,14 @@ class GUIMasterBoard(gtk.Window):
         for hexlabel in hexlabels:
             guihex = self.guihexes[hexlabel]
             guihex.selected = True
-        self.update_gui(hexlabels)
+        self.update_gui(hexlabels=hexlabels)
 
     def highlight_hex(self, hexlabel):
         """Highlight one hex."""
         self.unselect_all()
         guihex = self.guihexes[hexlabel]
         guihex.selected = True
-        self.update_gui([hexlabel])
+        self.update_gui(hexlabels=[hexlabel])
 
     def highlight_recruits(self):
         """Highlight all hexes in which the active player can recruit."""
@@ -567,13 +595,15 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
-            self.update_gui(hexlabels)
+            self.update_gui(hexlabels=hexlabels)
 
     def cb_save(self, action):
         def1 = self.user.callRemote("save", self.game.name)
         def1.addErrback(self.failure)
 
     def cb_done(self, action):
+        if not self.game:
+            return
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
             if self.game.phase == Phase.SPLIT:
@@ -597,6 +627,8 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_mulligan(self, action):
+        if not self.game:
+            return
         player = self.game.get_player_by_name(self.username)
         if player.can_take_mulligan():
             history = self.game.history
@@ -699,14 +731,14 @@ class GUIMasterBoard(gtk.Window):
         if isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
             hexlabels = [legion.hexlabel]
-            self.update_gui(hexlabels)
+            self.update_gui(hexlabels=hexlabels)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.SplitLegion):
             self._splitting_legion = None
             legion = self.game.find_legion(action.parent_markername)
             hexlabels = [legion.hexlabel]
-            self.update_gui(hexlabels)
+            self.update_gui(hexlabels=hexlabels)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.UndoSplit):
@@ -714,14 +746,15 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(action.parent_markername)
             repaint_hexlabels = set([legion.hexlabel,
               legion.previous_hexlabel])
-            self.update_gui(repaint_hexlabels)
+            repaint_hexlabels.discard(None)
+            self.update_gui(hexlabels=repaint_hexlabels)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.RollMovement):
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
             else:
-                self.update_gui([])
+                self.update_gui()
 
         elif isinstance(action, Action.MoveLegion) or isinstance(action,
           Action.UndoMoveLegion):
@@ -730,7 +763,8 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(action.markername)
             repaint_hexlabels = set([legion.hexlabel,
               legion.previous_hexlabel])
-            self.update_gui(repaint_hexlabels)
+            repaint_hexlabels.discard(None)
+            self.update_gui(hexlabels=repaint_hexlabels)
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
 
@@ -759,7 +793,7 @@ class GUIMasterBoard(gtk.Window):
                     self.cb_maybe_flee(attacker, defender, False)
 
         elif isinstance(action, Action.Flee):
-            self.update_gui([action.hexlabel])
+            self.update_gui(hexlabels=[action.hexlabel])
             self.highlight_engagements()
 
         elif isinstance(action, Action.DoNotFlee):
@@ -776,7 +810,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.Concede):
             self.destroy_negotiate()
-            self.update_gui([action.hexlabel])
+            self.update_gui(hexlabels=[action.hexlabel])
             self.highlight_engagements()
 
         elif isinstance(action, Action.MakeProposal):
@@ -791,7 +825,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.AcceptProposal):
             self.destroy_negotiate()
-            self.update_gui([action.hexlabel])
+            self.update_gui(hexlabels=[action.hexlabel])
             self.highlight_engagements()
 
         elif isinstance(action, Action.RejectProposal):
@@ -845,8 +879,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.AcquireAngel):
             markername = action.markername
             legion = self.game.find_legion(markername)
-            hexlabel = legion.hexlabel
-            self.update_gui([hexlabel])
+            self.update_gui(hexlabels=[legion.hexlabel])
             self.highlight_engagements()
 
         elif isinstance(action, Action.Fight):
@@ -862,8 +895,11 @@ class GUIMasterBoard(gtk.Window):
             self.update_gui()
 
 
-if __name__ == "__main__":
+def main():
     board = MasterBoard.MasterBoard()
     guiboard = GUIMasterBoard(board)
     # Allow exiting with control-C, unlike mainloop()
     gtk.main()
+
+if __name__ == "__main__":
+    main()
