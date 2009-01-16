@@ -4,9 +4,6 @@ __license__ = "GNU GPL v2"
 
 import sys
 import math
-import StringIO
-
-import gtk
 
 
 def flatten_point_list(points):
@@ -26,19 +23,6 @@ def rgb_to_float(rgb):
     """Convert a tuple of 8-bit decimal RGB color values to 0.0 - 1.0."""
     li = [value / 256.0 for value in rgb]
     return tuple(li)
-
-def pil_image_to_gdk_pixbuf(image):
-    """Convert a PIL Image to a gtk.gdk.Pixbuf"""
-    file1 = StringIO.StringIO()
-    image.save(file1, "ppm")
-    contents = file1.getvalue()
-    file1.close()
-    loader = gtk.gdk.PixbufLoader("pnm")
-    loader.write(contents, len(contents))
-    pixbuf = loader.get_pixbuf()
-    loader.close()
-    return pixbuf
-
 
 def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     """Return a list of integer 2-tuple points along the semicircle that

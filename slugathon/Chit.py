@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+import tempfile
+import os
 
 import gtk
-import Image
-import ImageFont
-import ImageDraw
+import cairo
 
 import guiutils
 import colors
@@ -48,7 +48,7 @@ class Chit(object):
             color_name = "black"
         if color_name == "by_player":
             color_name = "titan_%s" % playercolor.lower()
-        self.rgb = colors.rgb_colors[color_name]
+        self.rgb = guiutils.rgb_to_float(colors.rgb_colors[color_name])
 
         self.paths = ["../images/%s/%s.png" % (self.IMAGE_DIR, base)
           for base in self.bases]
@@ -60,21 +60,29 @@ class Chit(object):
         self.build_image()
 
     def build_image(self):
-        im = Image.open(self.paths[0]).convert("RGBA")
+        path = self.paths[0]
+        surface = cairo.ImageSurface.create_from_png(path)
+        cr = cairo.Context(surface)
         for path in self.paths[1:]:
-            mask = Image.open(path).convert("RGBA")
-            im.paste(self.rgb, None, mask)
-        self._render_text(im, self.rgb)
+            mask = cairo.ImageSurface.create_from_png(path)
+            cr.set_source_rgb(*self.rgb)
+            cr.mask_surface(mask, 0, 0)
+        self._render_text(surface)
         if self.dead or (self.creature and self.creature.dead):
-            self._render_x(im)
+            self._render_x(surface)
         elif self.creature and self.creature.hits > 0:
-            self._render_hits(im)
-        raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
+            self._render_hits(surface)
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="slugathon", suffix=".png")
+        tmp_file = os.fdopen(tmp_fd, "wb")
+        tmp_file.close()
+        surface.write_to_png(tmp_path)
+        raw_pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
           self.chit_scale, gtk.gdk.INTERP_BILINEAR)
         if self.rotate:
             self.pixbuf = self.pixbuf.rotate_simple(self.rotate)
         self.image.set_from_pixbuf(self.pixbuf)
+        os.remove(tmp_path)
 
     def point_inside(self, point):
         assert self.location
@@ -87,64 +95,90 @@ class Chit(object):
     def connect(self, event, method):
         self.event_box.connect(event, method)
 
-    def _render_text(self, im, rgb):
-        """Add creature name, power, and toughness to Image im"""
+    def _render_text(self, surface):
+        """Add creature name, power, and toughness to a Cairo surface"""
         if not self.creature:
             return
-        font_path = "../fonts/VeraSeBd.ttf"
+        font_options = surface.get_font_options()
+        cr = cairo.Context(surface)
+        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+          cairo.FONT_WEIGHT_NORMAL)
         # TODO Vary font size with scale
-        font_size = 9
-        font = ImageFont.truetype(font_path, font_size)
-        draw = ImageDraw.Draw(im)
-        leng = im.size[0]
+        cr.set_font_size(9)
+        cr.set_source_rgb(*self.rgb)
+        cr.set_line_width(1)
+        size = surface.get_width()
 
         # Name
         if self.name != "Titan":
             label = self.name.upper()
-            text_width, text_height = draw.textsize(label, font=font)
-            # TODO If text_width is too big, try a smaller font
-            x = 0.5 * leng - 0.5 * text_width
-            y = 0.125 * leng - 0.5 * text_height
-            draw.text((x, y), label, fill=rgb, font=font)
+            x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+            # TODO If width is too big, try a smaller font
+            x = 0.5 * size - 0.5 * width
+            y = 0.125 * size - 0.5 * height
+            cr.move_to(x - x_bearing, y - y_bearing)
+            cr.text_path(label)
+            cr.stroke_preserve()
+            cr.fill()
 
         # Power
         label = str(self.creature.power)
-        text_width, text_height = draw.textsize(label, font=font)
-        x = 0.1 * leng - 0.5 * text_width
-        y = 0.9 * leng - 0.5 * text_height
-        draw.text((x, y), label, fill=rgb, font=font)
+        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x = 0.1 * size - 0.5 * width
+        y = 0.9 * size - 0.5 * height
+        cr.move_to(x - x_bearing, y - y_bearing)
+        cr.text_path(label)
+        cr.stroke_preserve()
+        cr.fill()
 
         # Skill
         label = str(self.creature.skill)
-        text_width, text_height = draw.textsize(label, font=font)
-        x = 0.9 * leng - 0.5 * text_width
-        y = 0.9 * leng - 0.5 * text_height
-        draw.text((x, y), label, fill=rgb, font=font)
+        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x = 0.9 * size - 0.5 * width
+        y = 0.9 * size - 0.5 * height
+        cr.move_to(x - x_bearing, y - y_bearing)
+        cr.text_path(label)
+        cr.stroke_preserve()
+        cr.fill()
 
-    def _render_x(self, im):
-        """Add a big red X through Image im"""
-        draw = ImageDraw.Draw(im)
-        draw.line((0, 0) + im.size, fill=red, width=2)
-        draw.line((0, im.size[1], im.size[0], 0), fill=red, width=2)
+    def _render_x(self, surface):
+        """Add a big red X through a Cairo surface"""
+        cr = cairo.Context(surface)
+        size = surface.get_width()
+        cr.set_source_rgb(1, 0, 0)
+        cr.set_line_width(2)
+        cr.move_to(0, 0)
+        cr.line_to(size, size)
+        cr.move_to(0, size)
+        cr.line_to(size, 0)
 
-    def _render_hits(self, im):
-        """Add the number of hits to Image im"""
+    def _render_hits(self, surface):
+        """Add the number of hits to a Cairo surface"""
         if not self.creature or not self.creature.hits:
             return
-        font_path = "../fonts/VeraSeBd.ttf"
+        font_options = surface.get_font_options()
+        cr = cairo.Context(surface)
+        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+          cairo.FONT_WEIGHT_NORMAL)
         # TODO Vary font size with scale
-        font_size = 30
-        font = ImageFont.truetype(font_path, font_size)
-        draw = ImageDraw.Draw(im)
-        leng = im.size[0]
+        cr.set_font_size(30)
+        size = surface.get_width()
+        cr.set_source_rgb(1, 0, 0)
 
         label = str(self.creature.hits)
-        text_width, text_height = draw.textsize(label, font=font)
-        x = 0.5 * leng - 0.5 * text_width
-        y = 0.5 * leng - 0.5 * text_height
-        draw.rectangle(((x + 0.1 * text_width, y + 0.2 * text_height),
-          (x + 0.9 * text_width, y + 0.8 * text_height)), fill=white)
-        draw.text((x, y), label, fill=red, font=font)
+        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x = 0.5 * size - 0.5 * width - x_bearing
+        y = 0.5 * size - 0.5 * height - y_bearing
+        cr.set_source_rgb(1, 1, 1)
+        cr.set_line_width(1)
+        cr.rectangle(x - 0.1 * width, y - 1.1 * height, 1.2 * width, 1.2 * height)
+        cr.fill()
+
+        cr.set_source_rgb(1, 0, 0)
+        cr.move_to(x, y)
+        cr.text_path(label)
+        cr.stroke_preserve()
+        cr.fill()
 
 if __name__ == "__main__":
     creature = Creature.Creature("Ogre")

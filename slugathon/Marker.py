@@ -1,21 +1,17 @@
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 # TODO show titan power
 
+import tempfile
+import os
 
 import gtk
-import Image
-import ImageFont
-import ImageDraw
+import cairo
 
-import colors
 import guiutils
 
 CHIT_SCALE_FACTOR = 3
-
-black = colors.rgb_colors["black"]
-white = colors.rgb_colors["white"]
 
 
 class Marker(object):
@@ -31,9 +27,13 @@ class Marker(object):
 
     def build_image(self):
         self.height = len(self.legion)
-        im = Image.open(self.image_path).convert("RGBA")
-        self._render_text(im)
-        raw_pixbuf = guiutils.pil_image_to_gdk_pixbuf(im)
+        surface = cairo.ImageSurface.create_from_png(self.image_path)
+        self._render_text(surface)
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="slugathon", suffix=".png")
+        tmp_file = os.fdopen(tmp_fd, "wb")
+        tmp_file.close()
+        surface.write_to_png(tmp_path)
+        raw_pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
           self.chit_scale, gtk.gdk.INTERP_BILINEAR)
         self.event_box = gtk.EventBox()
@@ -41,6 +41,7 @@ class Marker(object):
         self.image = gtk.Image()
         self.image.set_from_pixbuf(self.pixbuf)
         self.event_box.add(self.image)
+        os.remove(tmp_path)
 
     def __repr__(self):
         return "Marker %s in %s" % (self.name, self.legion.hexlabel)
@@ -60,21 +61,28 @@ class Marker(object):
     def connect(self, event, method):
         self.event_box.connect(event, method)
 
-    def _render_text(self, im):
-        """Add legion height to Image im"""
+    def _render_text(self, surface):
+        """Add legion height to a Cairo surface."""
         if not self.show_height:
             return
-        font_path = "../fonts/VeraSeBd.ttf"
+        cr = cairo.Context(surface)
+        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+          cairo.FONT_WEIGHT_NORMAL)
         # TODO Vary font size with scale
-        font_size = 20
-        font = ImageFont.truetype(font_path, font_size)
-        draw = ImageDraw.Draw(im)
-        leng = im.size[0]
+        cr.set_font_size(20)
+        size = surface.get_width()
 
         label = str(self.height)
-        text_width, text_height = draw.textsize(label, font=font)
-        x = 0.65 * leng - 0.5 * text_width
-        y = 0.55 * leng - 0.5 * text_height
-        draw.rectangle(((x + 0.1 * text_width, y + 0.1 * text_height),
-          (x + 0.9 * text_width, y + 0.9 * text_height)), fill=white)
-        draw.text((x, y), label, fill=black, font=font)
+        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x = 0.65 * size - width - x_bearing
+        y = 0.55 * size - height - y_bearing
+        cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(x - 0.1 * width, y - 0.1 * height, 1.2 * width,
+          1.2 * height)
+        cr.fill()
+
+        cr.set_source_rgb(0, 0, 0)
+        cr.move_to(x, y + height)
+        cr.text_path(label)
+        cr.stroke_preserve()
+        cr.fill()
