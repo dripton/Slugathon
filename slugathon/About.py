@@ -2,7 +2,7 @@
 
 """Help/About dialog, wrapped around gtk.AboutDialog"""
 
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 import gtk
@@ -17,7 +17,7 @@ class About(object):
         ad.set_position(gtk.WIN_POS_MOUSE)
         ad.set_name("Slugathon")
         ad.set_version("")
-        ad.set_copyright("Copyright 2003-2008 David Ripton")
+        ad.set_copyright(__copyright__)
         ad.set_comments("""Very very prerelease""")
 
         license_fn = "../docs/COPYING.txt"
