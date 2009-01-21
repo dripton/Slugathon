@@ -473,7 +473,7 @@ class GUIBattleMap(gtk.Window):
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
             repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]
-            self.update_gui(repaint_hexlabels)
+            self.update_gui(hexlabels=repaint_hexlabels)
             self.highlight_mobile_chits()
 
         elif isinstance(action, Action.DoneManeuvering):
@@ -485,7 +485,7 @@ class GUIBattleMap(gtk.Window):
                 for chit in self.chits:
                     if chit.creature.hexlabel == action.target_hexlabel:
                         chit.build_image()
-            self.update_gui([action.target_hexlabel])
+            self.update_gui(hexlabels=[action.target_hexlabel])
             self.highlight_strikers()
 
         elif isinstance(action, Action.DoneStriking):
