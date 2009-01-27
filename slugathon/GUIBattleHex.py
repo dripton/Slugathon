@@ -7,7 +7,8 @@ import math
 import sys
 
 import gtk
-import cairo
+import pango
+import pangocairo
 
 import guiutils
 import colors
@@ -181,24 +182,21 @@ class GUIBattleHex(object):
 
     def draw_label(self, ctx, label, side):
         """Display the hex label."""
-        ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
-          cairo.FONT_WEIGHT_BOLD)
+        pctx = pangocairo.CairoContext(ctx)
+        layout = pctx.create_layout()
         # TODO Vary font size with scale
-        ctx.set_font_size(14)
-
-        x_bearing, y_bearing, text_width, text_height = ctx.text_extents(
-          label)[:4]
-        half_text_width = 0.5 * text_width
-        half_text_height = 0.5 * text_height
-
+        desc = pango.FontDescription("Monospace 14")
+        layout.set_font_description(desc)
+        layout.set_alignment(pango.ALIGN_CENTER)
+        layout.set_text(label)
+        width, height = layout.get_pixel_size()
         x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
-                half_text_width - x_bearing)))
+          width / 2.0)))
         y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
-                half_text_height - y_bearing)))
-
+          height / 2.0)))
         ctx.set_source_rgb(0, 0, 0)
         ctx.move_to(x, y)
-        ctx.show_text(label)
+        pctx.show_layout(layout)
 
 
     # TODO save computations

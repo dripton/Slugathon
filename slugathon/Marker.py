@@ -8,6 +8,8 @@ import os
 
 import gtk
 import cairo
+import pango
+import pangocairo
 
 import guiutils
 
@@ -66,23 +68,23 @@ class Marker(object):
         if not self.show_height:
             return
         ctx = cairo.Context(surface)
-        ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
-          cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
+        pctx = pangocairo.CairoContext(ctx)
+        layout = pctx.create_layout()
         # TODO Vary font size with scale
-        ctx.set_font_size(20)
+        desc = pango.FontDescription("Monospace 18")
+        layout.set_font_description(desc)
+        layout.set_alignment(pango.ALIGN_CENTER)
         size = surface.get_width()
 
-        label = str(self.height)
-        x_bearing, y_bearing, width, height = ctx.text_extents(label)[:4]
-        x = 0.65 * size - width - x_bearing
-        y = 0.55 * size - height - y_bearing
-        ctx.set_source_rgb(1, 1, 1)
-        ctx.rectangle(x - 0.1 * width, y - 0.1 * height, 1.2 * width,
-          1.2 * height)
-        ctx.fill()
+        layout.set_text(str(self.height))
+        width, height = layout.get_pixel_size()
+        x = 0.65 * size
+        y = 0.55 * size
+        pctx.set_source_rgb(1, 1, 1)
+        pctx.rectangle(x, y, width, height)
+        pctx.fill()
 
-        ctx.set_source_rgb(0, 0, 0)
-        ctx.move_to(x, y + height)
-        ctx.text_path(label)
-        ctx.stroke_preserve()
-        ctx.fill()
+        pctx.set_source_rgb(0, 0, 0)
+        pctx.move_to(x, y)
+        pctx.show_layout(layout)
