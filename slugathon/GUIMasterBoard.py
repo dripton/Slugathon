@@ -429,12 +429,12 @@ class GUIMasterBoard(gtk.Window):
         else:
             raise AssertionError("invalid number of markers in hex")
 
-    def _render_marker(self, marker, cr):
-        cr.set_source_pixbuf(marker.pixbuf, int(round(marker.location[0])),
+    def _render_marker(self, marker, ctx):
+        ctx.set_source_pixbuf(marker.pixbuf, int(round(marker.location[0])),
           int(round(marker.location[1])))
-        cr.paint()
+        ctx.paint()
 
-    def draw_markers(self, cr):
+    def draw_markers(self, ctx):
         if not self.game:
             return
         self._add_missing_markers()
@@ -447,15 +447,15 @@ class GUIMasterBoard(gtk.Window):
             # in self.markers are on top.
             for marker in reversed(mih):
                 marker.update_height()
-                self._render_marker(marker, cr)
+                self._render_marker(marker, ctx)
 
-    def draw_recruitchits(self, cr):
+    def draw_recruitchits(self, ctx):
         if not self.game:
             return
         for (chit, unused) in self.recruitchits:
-            self._render_marker(chit, cr)
+            self._render_marker(chit, ctx)
 
-    def draw_movement_die(self, cr):
+    def draw_movement_die(self, ctx):
         try:
             roll = self.game.active_player.movement_roll
         except AttributeError:
@@ -463,8 +463,8 @@ class GUIMasterBoard(gtk.Window):
         if not roll:
             return
         die = Die.Die(roll, scale=self.scale)
-        cr.set_source_pixbuf(die.pixbuf, 0, 0)
-        cr.paint()
+        ctx.set_source_pixbuf(die.pixbuf, 0, 0)
+        ctx.paint()
 
     def bounding_rect_for_hexlabels(self, hexlabels):
         """Return the minimum bounding rectangle that encloses all
@@ -490,34 +490,34 @@ class GUIMasterBoard(gtk.Window):
         return min_x, min_y, width, height
 
     def update_gui(self, event=None, hexlabels=None):
-        cr = self.area.window.cairo_create()
+        ctx = self.area.window.cairo_create()
         clip_rect = None
         if event is not None:
             clip_rect = event.area
-            cr.rectangle(*clip_rect)
-            cr.clip()
+            ctx.rectangle(*clip_rect)
+            ctx.clip()
         elif hexlabels is not None:
             if not hexlabels:
                 return
             clip_rect = self.bounding_rect_for_hexlabels(hexlabels)
-            cr.rectangle(*clip_rect)
-            cr.clip()
+            ctx.rectangle(*clip_rect)
+            ctx.clip()
         else:
             width, height = self.area.size_request()
             clip_rect = (0, 0, width, height)
 
         # black background, only when we get an event
         if event is not None:
-            cr.set_source_rgb(0, 0, 0)
+            ctx.set_source_rgb(0, 0, 0)
             width, height = self.area.size_request()
-            cr.rectangle(0, 0, width, height)
-            cr.fill()
+            ctx.rectangle(0, 0, width, height)
+            ctx.fill()
         for guihex in self.guihexes.itervalues():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
-                guihex.update_gui(cr)
-        self.draw_markers(cr)
-        self.draw_recruitchits(cr)
-        self.draw_movement_die(cr)
+                guihex.update_gui(ctx)
+        self.draw_markers(ctx)
+        self.draw_recruitchits(ctx)
+        self.draw_movement_die(ctx)
 
     def unselect_all(self):
         repaint_hexlabels = set()

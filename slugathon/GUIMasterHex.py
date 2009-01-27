@@ -91,35 +91,35 @@ class GUIMasterHex(object):
         max_y += scale
         return min_x, min_y, max_x - min_x, max_y - min_y
 
-    def draw_hexagon(self, cr):
+    def draw_hexagon(self, ctx):
         """Create the polygon, filled with the terrain color."""
 
         if self.selected:
             # outer portion
-            cr.set_source_rgb(1, 1, 1)
-            guiutils.draw_polygon(cr, self.points)
-            cr.fill()
+            ctx.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.fill()
 
             # inner hex
-            cr.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(cr, self.inner_vertexes)
-            cr.fill()
+            ctx.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(ctx, self.inner_vertexes)
+            ctx.fill()
 
             # black outline
-            cr.set_source_rgb(0, 0, 0)
-            guiutils.draw_polygon(cr, self.points)
-            cr.stroke()
+            ctx.set_source_rgb(0, 0, 0)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.stroke()
 
         else:
             # hex
-            cr.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(cr, self.points)
-            cr.fill()
+            ctx.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.fill()
 
             # outline
-            cr.set_source_rgb(1, 1, 1)
-            guiutils.draw_polygon(cr, self.points)
-            cr.stroke()
+            ctx.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.stroke()
 
 
 
@@ -189,19 +189,19 @@ class GUIMasterHex(object):
             int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
 
 
-    def draw_overlay(self, cr):
-        cr.set_source_pixbuf(self.pixbuf, self.dest_x, self.dest_y)
-        cr.paint()
+    def draw_overlay(self, ctx):
+        ctx.set_source_pixbuf(self.pixbuf, self.dest_x, self.dest_y)
+        ctx.paint()
 
 
-    def draw_label(self, cr):
+    def draw_label(self, ctx):
         """Display the hex label."""
         label = str(self.masterhex.label)
-        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+        ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
           cairo.FONT_WEIGHT_NORMAL)
         # TODO Vary font size with scale
-        cr.set_font_size(8)
-        x_bearing, y_bearing, text_width, text_height = cr.text_extents(
+        ctx.set_font_size(8)
+        x_bearing, y_bearing, text_width, text_height = ctx.text_extents(
           label)[:4]
         half_text_width = 0.5 * text_width
         half_text_height = 0.5 * text_height
@@ -212,15 +212,15 @@ class GUIMasterHex(object):
         y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
           half_text_height - y_bearing)))
 
-        cr.set_source_rgb(0, 0, 0)
-        cr.move_to(x, y)
-        cr.show_text(label)
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.move_to(x, y)
+        ctx.show_text(label)
 
 
-    def update_gui(self, cr):
-        self.draw_hexagon(cr)
-        self.draw_overlay(cr)
-        self.draw_label(cr)
+    def update_gui(self, ctx):
+        self.draw_hexagon(ctx)
+        self.draw_overlay(ctx)
+        self.draw_label(ctx)
 
 
 def _init_block(x0, y0, x1, y1, theta, unit):

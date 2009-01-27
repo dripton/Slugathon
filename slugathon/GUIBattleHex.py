@@ -100,31 +100,31 @@ class GUIBattleHex(object):
             max_y = max(max_y, y)
         return min_x, min_y, max_x - min_x, max_y - min_y
 
-    def draw_hexagon(self, cr):
+    def draw_hexagon(self, ctx):
         """Create the polygon, filled with the terrain color."""
 
         if self.selected:
             # outline
-            cr.set_source_rgb(1, 0, 0)
-            guiutils.draw_polygon(cr, self.points)
-            cr.stroke()
+            ctx.set_source_rgb(1, 0, 0)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.stroke()
             # outer portion
-            cr.set_source_rgb(1, 1, 1)
-            guiutils.draw_polygon(cr, self.points)
-            cr.fill()
+            ctx.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.fill()
             # inner hex
-            cr.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(cr, self.points)
-            cr.fill()
+            ctx.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.fill()
         else:
             # hex
-            cr.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(cr, self.points)
-            cr.fill()
+            ctx.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.fill()
             # outline
-            cr.set_source_rgb(1, 1, 1)
-            guiutils.draw_polygon(cr, self.points)
-            cr.stroke()
+            ctx.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(ctx, self.points)
+            ctx.stroke()
 
 
     def init_hex_overlay(self):
@@ -163,30 +163,30 @@ class GUIBattleHex(object):
                   gtk.gdk.INTERP_BILINEAR)
             self.border_pixbufs.append(border_pixbuf)
 
-    def draw_hex_overlay(self, cr):
+    def draw_hex_overlay(self, ctx):
         """Draw the main terrain overlay for the hex."""
         if self.hex_pixbuf is None:
             return
-        cr.set_source_pixbuf(self.hex_pixbuf, self.hex_pixbuf_x,
+        ctx.set_source_pixbuf(self.hex_pixbuf, self.hex_pixbuf_x,
           self.hex_pixbuf_y)
-        cr.paint()
+        ctx.paint()
 
-    def draw_border_overlays(self, cr):
+    def draw_border_overlays(self, ctx):
         """Draw the overlays for all borders that have them."""
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
-                cr.set_source_pixbuf(self.border_pixbufs[hexside],
+                ctx.set_source_pixbuf(self.border_pixbufs[hexside],
                   self.border_pixbuf_x, self.border_pixbuf_y)
-                cr.paint()
+                ctx.paint()
 
-    def draw_label(self, cr, label, side):
+    def draw_label(self, ctx, label, side):
         """Display the hex label."""
-        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+        ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
           cairo.FONT_WEIGHT_BOLD)
         # TODO Vary font size with scale
-        cr.set_font_size(14)
+        ctx.set_font_size(14)
 
-        x_bearing, y_bearing, text_width, text_height = cr.text_extents(
+        x_bearing, y_bearing, text_width, text_height = ctx.text_extents(
           label)[:4]
         half_text_width = 0.5 * text_width
         half_text_height = 0.5 * text_height
@@ -196,13 +196,13 @@ class GUIBattleHex(object):
         y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
                 half_text_height - y_bearing)))
 
-        cr.set_source_rgb(0, 0, 0)
-        cr.move_to(x, y)
-        cr.show_text(label)
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.move_to(x, y)
+        ctx.show_text(label)
 
 
     # TODO save computations
-    def highlight_entrance(self, cr):
+    def highlight_entrance(self, ctx):
         """Highlight this entrance hex, if selected"""
         chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
         x = self.center[0] - chit_scale / 4
@@ -215,19 +215,19 @@ class GUIBattleHex(object):
         colormap = self.guimap.area.get_colormap()
         if self.selected:
             # outline
-            cr.set_source_rgb(1, 0, 0)
-            guiutils.draw_polygon(cr, points)
-            cr.stroke()
+            ctx.set_source_rgb(1, 0, 0)
+            guiutils.draw_polygon(ctx, points)
+            ctx.stroke()
             # outer portion
-            cr.set_source_rgb(1, 1, 1)
-            guiutils.draw_polygon(cr, points)
-            cr.fill()
+            ctx.set_source_rgb(1, 1, 1)
+            guiutils.draw_polygon(ctx, points)
+            ctx.fill()
             # inner hex
-            cr.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(cr, points)
-            cr.fill()
+            ctx.set_source_rgb(*self.fillcolor)
+            guiutils.draw_polygon(ctx, points)
+            ctx.fill()
 
-    def cleanup_entrance(self, cr):
+    def cleanup_entrance(self, ctx):
         """Cleanup after any chits that may have moved away from an
         entrance."""
         chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
@@ -235,22 +235,22 @@ class GUIBattleHex(object):
         y = self.center[1] - chit_scale * 7 / 2
         width = chit_scale
         height = 7 * chit_scale
-        cr.set_source_rgb(1, 1, 1)
-        cr.rectangle(x, y, width, height)
-        cr.fill()
+        ctx.set_source_rgb(1, 1, 1)
+        ctx.rectangle(x, y, width, height)
+        ctx.fill()
 
-    def update_gui(self, cr):
+    def update_gui(self, ctx):
         if self.battlehex.visible:
-            self.draw_hexagon(cr)
-            self.draw_hex_overlay(cr)
-            self.draw_border_overlays(cr)
-            self.draw_label(cr, self.battlehex.label,
+            self.draw_hexagon(ctx)
+            self.draw_hex_overlay(ctx)
+            self.draw_border_overlays(ctx)
+            self.draw_label(ctx, self.battlehex.label,
               self.battlehex.label_side)
-            self.draw_label(cr, self.battlehex.terrain,
+            self.draw_label(ctx, self.battlehex.terrain,
               self.battlehex.terrain_side)
         else:
-            self.cleanup_entrance(cr)
-            self.highlight_entrance(cr)
+            self.cleanup_entrance(ctx)
+            self.highlight_entrance(ctx)
 
     def __repr__(self):
         return "GUIBattleHex %s" % self.battlehex.label

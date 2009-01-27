@@ -359,16 +359,16 @@ class GUIBattleMap(gtk.Window):
         else:
             raise AssertionError("invalid number of chits in hex")
 
-    def _render_chit(self, chit, cr):
-        cr.set_source_pixbuf(chit.pixbuf, int(round(chit.location[0])),
+    def _render_chit(self, chit, ctx):
+        ctx.set_source_pixbuf(chit.pixbuf, int(round(chit.location[0])),
           int(round(chit.location[1])))
-        cr.paint()
+        ctx.paint()
 
     def chits_in_hex(self, hexlabel):
         return [chit for chit in self.chits
           if chit.creature.hexlabel == hexlabel]
 
-    def draw_chits(self, cr):
+    def draw_chits(self, ctx):
         if not self.game:
             return
         self._add_missing_chits()
@@ -378,7 +378,7 @@ class GUIBattleMap(gtk.Window):
                 self._compute_chit_locations(hexlabel)
                 chits = self.chits_in_hex(hexlabel)
                 for chit in chits:
-                    self._render_chit(chit, cr)
+                    self._render_chit(chit, ctx)
 
     def cb_undo(self, action):
         if self.game:
@@ -445,29 +445,29 @@ class GUIBattleMap(gtk.Window):
         return min_x, min_y, width, height
 
     def update_gui(self, event=None, hexlabels=None):
-        cr = self.area.window.cairo_create()
-        cr.set_line_width(round(0.2 * self.scale))
+        ctx = self.area.window.cairo_create()
+        ctx.set_line_width(round(0.2 * self.scale))
         if event is not None:
             clip_rect = event.area
-            cr.rectangle(*clip_rect)
-            cr.clip()
+            ctx.rectangle(*clip_rect)
+            ctx.clip()
         elif hexlabels is not None:
             clip_rect = self.bounding_rect_for_hexlabels(hexlabels)
-            cr.rectangle(*clip_rect)
-            cr.clip()
+            ctx.rectangle(*clip_rect)
+            ctx.clip()
         else:
             width, height = self.area.size_request()
             clip_rect = (0, 0, width, height)
         # white background, only when we get an event
         if event is not None:
-            cr.set_source_rgb(1, 1, 1)
+            ctx.set_source_rgb(1, 1, 1)
             width, height = self.area.size_request()
-            cr.rectangle(0, 0, width, height)
-            cr.fill()
+            ctx.rectangle(0, 0, width, height)
+            ctx.fill()
         for guihex in self.guihexes.itervalues():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
-                guihex.update_gui(cr)
-        self.draw_chits(cr)
+                guihex.update_gui(ctx)
+        self.draw_chits(ctx)
 
     def update(self, observed, action):
         if isinstance(action, Action.MoveCreature) or isinstance(action,

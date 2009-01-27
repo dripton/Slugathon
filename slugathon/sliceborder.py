@@ -36,18 +36,18 @@ def slice_border_image(input_path, output_path, hexsides):
 
     color = (0, 0, 0)
     output_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, x_size, y_size)
-    output_cr = cairo.Context(output_surface)
+    output_ctx = cairo.Context(output_surface)
 
     for hexside in hexsides:
-        output_cr.move_to(*center)
-        output_cr.line_to(*vertexes[hexside])
-        output_cr.line_to(*vertexes[(hexside + 1) % 6])
-        output_cr.close_path()
-    output_cr.clip()
+        output_ctx.move_to(*center)
+        output_ctx.line_to(*vertexes[hexside])
+        output_ctx.line_to(*vertexes[(hexside + 1) % 6])
+        output_ctx.close_path()
+    output_ctx.clip()
 
-    output_cr.move_to(0, 0)
-    output_cr.set_source_surface(input_surface)
-    output_cr.paint()
+    output_ctx.move_to(0, 0)
+    output_ctx.set_source_surface(input_surface)
+    output_ctx.paint()
     output_surface.write_to_png(output_path)
 
 

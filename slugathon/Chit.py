@@ -62,11 +62,11 @@ class Chit(object):
     def build_image(self):
         path = self.paths[0]
         surface = cairo.ImageSurface.create_from_png(path)
-        cr = cairo.Context(surface)
+        ctx = cairo.Context(surface)
         for path in self.paths[1:]:
             mask = cairo.ImageSurface.create_from_png(path)
-            cr.set_source_rgb(*self.rgb)
-            cr.mask_surface(mask, 0, 0)
+            ctx.set_source_rgb(*self.rgb)
+            ctx.mask_surface(mask, 0, 0)
         self._render_text(surface)
         if self.dead or (self.creature and self.creature.dead):
             self._render_x(surface)
@@ -100,85 +100,86 @@ class Chit(object):
         if not self.creature:
             return
         font_options = surface.get_font_options()
-        cr = cairo.Context(surface)
-        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+        ctx = cairo.Context(surface)
+        ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
           cairo.FONT_WEIGHT_NORMAL)
         # TODO Vary font size with scale
-        cr.set_font_size(9)
-        cr.set_source_rgb(*self.rgb)
-        cr.set_line_width(1)
+        ctx.set_font_size(9)
+        ctx.set_source_rgb(*self.rgb)
+        ctx.set_line_width(1)
         size = surface.get_width()
 
         # Name
         if self.name != "Titan":
             label = self.name.upper()
-            x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+            x_bearing, y_bearing, width, height = ctx.text_extents(label)[:4]
             # TODO If width is too big, try a smaller font
             x = 0.5 * size - 0.5 * width
             y = 0.125 * size - 0.5 * height
-            cr.move_to(x - x_bearing, y - y_bearing)
-            cr.text_path(label)
-            cr.stroke_preserve()
-            cr.fill()
+            ctx.move_to(x - x_bearing, y - y_bearing)
+            ctx.text_path(label)
+            ctx.stroke_preserve()
+            ctx.fill()
 
         # Power
         label = str(self.creature.power)
-        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x_bearing, y_bearing, width, height = ctx.text_extents(label)[:4]
         x = 0.1 * size - 0.5 * width
         y = 0.9 * size - 0.5 * height
-        cr.move_to(x - x_bearing, y - y_bearing)
-        cr.text_path(label)
-        cr.stroke_preserve()
-        cr.fill()
+        ctx.move_to(x - x_bearing, y - y_bearing)
+        ctx.text_path(label)
+        ctx.stroke_preserve()
+        ctx.fill()
 
         # Skill
         label = str(self.creature.skill)
-        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x_bearing, y_bearing, width, height = ctx.text_extents(label)[:4]
         x = 0.9 * size - 0.5 * width
         y = 0.9 * size - 0.5 * height
-        cr.move_to(x - x_bearing, y - y_bearing)
-        cr.text_path(label)
-        cr.stroke_preserve()
-        cr.fill()
+        ctx.move_to(x - x_bearing, y - y_bearing)
+        ctx.text_path(label)
+        ctx.stroke_preserve()
+        ctx.fill()
 
     def _render_x(self, surface):
         """Add a big red X through a Cairo surface"""
-        cr = cairo.Context(surface)
+        ctx = cairo.Context(surface)
         size = surface.get_width()
-        cr.set_source_rgb(1, 0, 0)
-        cr.set_line_width(2)
-        cr.move_to(0, 0)
-        cr.line_to(size, size)
-        cr.move_to(0, size)
-        cr.line_to(size, 0)
+        ctx.set_source_rgb(1, 0, 0)
+        ctx.set_line_width(2)
+        ctx.move_to(0, 0)
+        ctx.line_to(size, size)
+        ctx.move_to(0, size)
+        ctx.line_to(size, 0)
 
     def _render_hits(self, surface):
         """Add the number of hits to a Cairo surface"""
         if not self.creature or not self.creature.hits:
             return
         font_options = surface.get_font_options()
-        cr = cairo.Context(surface)
-        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+        ctx = cairo.Context(surface)
+        ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL,
           cairo.FONT_WEIGHT_NORMAL)
         # TODO Vary font size with scale
-        cr.set_font_size(30)
+        ctx.set_font_size(30)
         size = surface.get_width()
-        cr.set_source_rgb(1, 0, 0)
+        ctx.set_source_rgb(1, 0, 0)
 
         label = str(self.creature.hits)
-        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x_bearing, y_bearing, width, height = ctx.text_extents(label)[:4]
         x = 0.5 * size - 0.5 * width - x_bearing
         y = 0.5 * size - 0.5 * height - y_bearing
-        cr.set_source_rgb(1, 1, 1)
-        cr.set_line_width(1)
-        cr.rectangle(x - 0.1 * width, y - 1.1 * height, 1.2 * width, 1.2 * height)
-        cr.fill()
+        ctx.set_source_rgb(1, 1, 1)
+        ctx.set_line_width(1)
+        ctx.rectangle(x - 0.1 * width, y - 1.1 * height, 1.2 * width,
+          1.2 * height)
+        ctx.fill()
 
-        cr.set_source_rgb(1, 0, 0)
-        cr.move_to(x, y)
-        cr.text_path(label)
-        cr.stroke_preserve()
-        cr.fill()
+        ctx.set_source_rgb(1, 0, 0)
+        ctx.move_to(x, y)
+        ctx.text_path(label)
+        ctx.stroke_preserve()
+        ctx.fill()
 
 if __name__ == "__main__":
     creature = Creature.Creature("Ogre")

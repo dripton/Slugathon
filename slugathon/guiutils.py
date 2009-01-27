@@ -114,12 +114,12 @@ def exit(*unused):
     """Quit the program."""
     sys.exit(0)
 
-def draw_polygon(cr, points):
+def draw_polygon(ctx, points):
     """Draw a polygon using Cairo"""
-    cr.move_to(*points[0])
+    ctx.move_to(*points[0])
     for point in points[1:]:
-        cr.line_to(*point)
-    cr.close_path()
+        ctx.line_to(*point)
+    ctx.close_path()
 
 def rectangles_intersect(rect1, rect2):
     """Return True iff the two rectangles intersect"""

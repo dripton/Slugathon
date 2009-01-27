@@ -65,24 +65,24 @@ class Marker(object):
         """Add legion height to a Cairo surface."""
         if not self.show_height:
             return
-        cr = cairo.Context(surface)
-        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
+        ctx = cairo.Context(surface)
+        ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL,
           cairo.FONT_WEIGHT_NORMAL)
         # TODO Vary font size with scale
-        cr.set_font_size(20)
+        ctx.set_font_size(20)
         size = surface.get_width()
 
         label = str(self.height)
-        x_bearing, y_bearing, width, height = cr.text_extents(label)[:4]
+        x_bearing, y_bearing, width, height = ctx.text_extents(label)[:4]
         x = 0.65 * size - width - x_bearing
         y = 0.55 * size - height - y_bearing
-        cr.set_source_rgb(1, 1, 1)
-        cr.rectangle(x - 0.1 * width, y - 0.1 * height, 1.2 * width,
+        ctx.set_source_rgb(1, 1, 1)
+        ctx.rectangle(x - 0.1 * width, y - 0.1 * height, 1.2 * width,
           1.2 * height)
-        cr.fill()
+        ctx.fill()
 
-        cr.set_source_rgb(0, 0, 0)
-        cr.move_to(x, y + height)
-        cr.text_path(label)
-        cr.stroke_preserve()
-        cr.fill()
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.move_to(x, y + height)
+        ctx.text_path(label)
+        ctx.stroke_preserve()
+        ctx.fill()
