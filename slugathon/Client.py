@@ -128,14 +128,14 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_color(self, game):
         if game.next_playername_to_pick_color() == self.username:
             self.pickcolor = PickColor.PickColor(self.user, self.username,
-              game.name, game.colors_left(), self.anteroom.anteroom_window)
+              game.name, game.colors_left(), self.guiboards[game])
 
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
             player = game.get_player_by_name(playername)
             markernames = sorted(player.markernames.copy())
             PickMarker.PickMarker(self.username, game.name, markernames,
-              self.pick_marker, self.anteroom.anteroom_window)
+              self.pick_marker, self.guiboards[game])
             self.pickcolor = None
 
     def pick_marker(self, game_name, username, markername):
@@ -174,17 +174,15 @@ class Client(pb.Referenceable, Observed):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
+            self._init_guiboard(game)
             self._maybe_pick_color(game)
-            if not self.guiboards.get(game):
-                self._init_status_screen(game)
+            self._init_status_screen(game)
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
             self._maybe_pick_color(game)
             self._maybe_pick_first_marker(game, action.playername)
-            if not self.guiboards.get(game):
-                self._init_guiboard(game)
         elif isinstance(action, Action.GameOver):
             # TODO Destroy windows and dialogs?
             print "Game %s over, won by %s" % (action.game_name,
