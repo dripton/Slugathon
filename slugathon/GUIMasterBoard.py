@@ -753,8 +753,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.RollMovement):
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
-            else:
-                self.update_gui()
+            self.update_gui()
 
         elif isinstance(action, Action.MoveLegion) or isinstance(action,
           Action.UndoMoveLegion):
