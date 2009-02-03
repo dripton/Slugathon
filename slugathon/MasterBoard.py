@@ -9,6 +9,7 @@ class MasterBoard(object):
     """Model of the Titan MasterBoard.  No GUI logic allowed."""
     def __init__(self):
         self.compute_hexes_metadata()
+        # str hexlabel to MasterHex
         self.hexes = {}
         for hexdata in boarddata.data:
             self.init_hex(hexdata)
