@@ -3,6 +3,7 @@
 __copyright__ = "Copyright (c) 2006-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
+import random
 
 import gtk.glade
 
@@ -14,6 +15,7 @@ import Marker
 import icon
 import guiutils
 import Player
+import playercolordata
 
 class Inspector(object):
     """Window to show a legion's contents."""
@@ -70,16 +72,17 @@ if __name__ == "__main__":
 
     username = "test"
     player = Player.Player(username, None, None)
-    player.color = "Red"
+    player.color = random.choice(playercolordata.colors)
+    abbrev = playercolordata.name_to_abbrev[player.color]
     inspector = Inspector(username)
     inspector.show_legion_window.connect("delete-event", guiutils.exit)
 
-    legion = Legion.Legion(player, "Rd01", creatures, 1)
+    legion = Legion.Legion(player, "%s01" % abbrev, creatures, 1)
     inspector.show_legion(legion)
 
     creatures2 = [Creature.Creature(name) for name in
       ["Angel", "Giant", "Warbear", "Unicorn"]]
-    legion2 = Legion.Legion(player, "Rd02", creatures2, 2)
+    legion2 = Legion.Legion(player, "%s02" % abbrev, creatures2, 2)
     inspector.show_legion(legion2)
 
     gtk.main()
