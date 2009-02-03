@@ -8,6 +8,13 @@ import math
 import random
 import sys
 
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
+from twisted.internet import reactor
+
 import gtk
 from zope.interface import implements
 
@@ -95,6 +102,8 @@ class GUIBattleMap(gtk.Window):
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.itervalues():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
+        self.repaint_hexlabels = set()
+
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.area.connect("button_press_event", self.cb_click)
@@ -142,12 +151,11 @@ class GUIBattleMap(gtk.Window):
 
     def unselect_all(self):
         """Unselect all guihexes."""
-        hexlabels = set()
         for hexlabel, guihex in self.guihexes.iteritems():
             if guihex.selected:
                 guihex.selected = False
-                hexlabels.add(hexlabel)
-        self.update_gui(hexlabels=hexlabels)
+                self.repaint_hexlabels.add(hexlabel)
+        reactor.callLater(0, self.update_gui)
 
     def highlight_mobile_chits(self):
         """Highlight the hexes containing all creatures that can move now."""
@@ -163,7 +171,8 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
-        self.update_gui(hexlabels=hexlabels)
+        self.repaint_hexlabels.update(hexlabels)
+        reactor.callLater(0, self.update_gui)
 
     def highlight_strikers(self):
         """Highlight the hexes containing creatures that can strike now."""
@@ -179,7 +188,8 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
-        self.update_gui(hexlabels=hexlabels)
+        self.repaint_hexlabels.update(hexlabels)
+        reactor.callLater(0, self.update_gui)
 
     def strike(self, striker, target):
         """Have striker strike target, at full strength and skill."""
@@ -265,7 +275,8 @@ class GUIBattleMap(gtk.Window):
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
-            self.update_gui(hexlabels=hexlabels)
+            self.repaint_hexlabels.update(hexlabels)
+            reactor.callLater(0, self.update_gui)
 
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
             creature = chit.creature
@@ -293,7 +304,8 @@ class GUIBattleMap(gtk.Window):
                 for hexlabel in hexlabels:
                     guihex = self.guihexes[hexlabel]
                     guihex.selected = True
-                self.update_gui(hexlabels=hexlabels)
+                self.repaint_hexlabels.update(hexlabels)
+                reactor.callLater(0, self.update_gui)
 
     def _add_missing_chits(self):
         """Add chits for any creatures that lack them."""
@@ -444,20 +456,18 @@ class GUIBattleMap(gtk.Window):
         height = max_y - min_y
         return min_x, min_y, width, height
 
-    def update_gui(self, event=None, hexlabels=None):
+    def update_gui(self, event=None):
+        if event is None:
+            if not self.repaint_hexlabels:
+                return
+            clip_rect = self.bounding_rect_for_hexlabels(
+              self.repaint_hexlabels)
+        else:
+            clip_rect = event.area
         ctx = self.area.window.cairo_create()
         ctx.set_line_width(round(0.2 * self.scale))
-        if event is not None:
-            clip_rect = event.area
-            ctx.rectangle(*clip_rect)
-            ctx.clip()
-        elif hexlabels is not None:
-            clip_rect = self.bounding_rect_for_hexlabels(hexlabels)
-            ctx.rectangle(*clip_rect)
-            ctx.clip()
-        else:
-            width, height = self.area.size_request()
-            clip_rect = (0, 0, width, height)
+        ctx.rectangle(*clip_rect)
+        ctx.clip()
         # white background, only when we get an event
         if event is not None:
             ctx.set_source_rgb(1, 1, 1)
@@ -468,13 +478,15 @@ class GUIBattleMap(gtk.Window):
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
         self.draw_chits(ctx)
+        self.repaint_hexlabels.clear()
 
     def update(self, observed, action):
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
-            repaint_hexlabels = [action.old_hexlabel, action.new_hexlabel]
-            self.update_gui(hexlabels=repaint_hexlabels)
+            self.repaint_hexlabels.add(action.old_hexlabel)
+            self.repaint_hexlabels.add(action.new_hexlabel)
             self.highlight_mobile_chits()
+            reactor.callLater(0, self.update_gui)
 
         elif isinstance(action, Action.DoneManeuvering):
             self.highlight_strikers()
@@ -485,8 +497,9 @@ class GUIBattleMap(gtk.Window):
                 for chit in self.chits:
                     if chit.creature.hexlabel == action.target_hexlabel:
                         chit.build_image()
-            self.update_gui(hexlabels=[action.target_hexlabel])
+            self.repaint_hexlabels.add(action.target_hexlabel)
             self.highlight_strikers()
+            reactor.callLater(0, self.update_gui)
 
         elif isinstance(action, Action.DoneStriking):
             self.highlight_strikers()
@@ -514,4 +527,4 @@ if __name__ == "__main__":
             entry_side = random.choice([1, 3, 5])
     battlemap = BattleMap.BattleMap(terrain, entry_side)
     guimap = GUIBattleMap(battlemap)
-    gtk.main()
+    reactor.run()
