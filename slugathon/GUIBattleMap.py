@@ -155,7 +155,7 @@ class GUIBattleMap(gtk.Window):
             if guihex.selected:
                 guihex.selected = False
                 self.repaint_hexlabels.add(hexlabel)
-        reactor.callLater(0, self.update_gui)
+        self.repaint()
 
     def highlight_mobile_chits(self):
         """Highlight the hexes containing all creatures that can move now."""
@@ -171,8 +171,7 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
-        self.repaint_hexlabels.update(hexlabels)
-        reactor.callLater(0, self.update_gui)
+        self.repaint(hexlabels)
 
     def highlight_strikers(self):
         """Highlight the hexes containing creatures that can strike now."""
@@ -188,8 +187,7 @@ class GUIBattleMap(gtk.Window):
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
-        self.repaint_hexlabels.update(hexlabels)
-        reactor.callLater(0, self.update_gui)
+        self.repaint(hexlabels)
 
     def strike(self, striker, target):
         """Have striker strike target, at full strength and skill."""
@@ -275,8 +273,7 @@ class GUIBattleMap(gtk.Window):
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
-            self.repaint_hexlabels.update(hexlabels)
-            reactor.callLater(0, self.update_gui)
+            self.repaint(hexlabels)
 
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
             creature = chit.creature
@@ -304,8 +301,7 @@ class GUIBattleMap(gtk.Window):
                 for hexlabel in hexlabels:
                     guihex = self.guihexes[hexlabel]
                     guihex.selected = True
-                self.repaint_hexlabels.update(hexlabels)
-                reactor.callLater(0, self.update_gui)
+                self.repaint(hexlabels)
 
     def _add_missing_chits(self):
         """Add chits for any creatures that lack them."""
@@ -480,13 +476,16 @@ class GUIBattleMap(gtk.Window):
         self.draw_chits(ctx)
         self.repaint_hexlabels.clear()
 
+    def repaint(self, hexlabels=None):
+        if hexlabels:
+            self.repaint_hexlabels.update(hexlabels)
+        reactor.callLater(1, self.update_gui)
+
     def update(self, observed, action):
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
-            self.repaint_hexlabels.add(action.old_hexlabel)
-            self.repaint_hexlabels.add(action.new_hexlabel)
             self.highlight_mobile_chits()
-            reactor.callLater(0, self.update_gui)
+            self.repaint([action.old_hexlabel, action.new_hexlabel])
 
         elif isinstance(action, Action.DoneManeuvering):
             self.highlight_strikers()
@@ -497,9 +496,8 @@ class GUIBattleMap(gtk.Window):
                 for chit in self.chits:
                     if chit.creature.hexlabel == action.target_hexlabel:
                         chit.build_image()
-            self.repaint_hexlabels.add(action.target_hexlabel)
             self.highlight_strikers()
-            reactor.callLater(0, self.update_gui)
+            self.repaint([action.target_hexlabel])
 
         elif isinstance(action, Action.DoneStriking):
             self.highlight_strikers()
