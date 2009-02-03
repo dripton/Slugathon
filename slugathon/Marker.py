@@ -72,7 +72,7 @@ class Marker(object):
         pctx = pangocairo.CairoContext(ctx)
         layout = pctx.create_layout()
         # TODO Vary font size with scale
-        desc = pango.FontDescription("Monospace 18")
+        desc = pango.FontDescription("Monospace 17")
         layout.set_font_description(desc)
         layout.set_alignment(pango.ALIGN_CENTER)
         size = surface.get_width()
@@ -82,7 +82,7 @@ class Marker(object):
         x = 0.65 * size
         y = 0.55 * size
         pctx.set_source_rgb(1, 1, 1)
-        pctx.rectangle(x, y, width, height)
+        pctx.rectangle(x, y + 0.15 * height, 0.9 * width, 0.7 * height)
         pctx.fill()
 
         pctx.set_source_rgb(0, 0, 0)
