@@ -126,7 +126,6 @@ class Chit(object):
 
         # Power
         label = str(self.creature.power)
-        width, height = layout.get_pixel_size()
         x = 0.07 * size
         y = 0.77 * size
         pctx.move_to(x , y)
@@ -135,7 +134,6 @@ class Chit(object):
 
         # Skill
         label = str(self.creature.skill)
-        width, height = layout.get_pixel_size()
         x = 0.9 * size
         y = 0.77 * size
         pctx.move_to(x, y)
