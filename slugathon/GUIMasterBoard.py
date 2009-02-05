@@ -124,6 +124,9 @@ class GUIMasterBoard(gtk.Window):
         # If set to all hexlabels then we redraw the whole window.
         # Used to combine nearly simultaneous redraws into one.
         self.repaint_hexlabels = set()
+        # Hexes that need their bounding rectangles cleared, too.
+        # This fixes markers that overlap the edge of the map.
+        self.clear_hexlabels = set()
 
         if self.username:
             tup = prefs.load_window_position(self.username,
@@ -523,6 +526,12 @@ class GUIMasterBoard(gtk.Window):
             width, height = self.area.size_request()
             ctx.rectangle(0, 0, width, height)
             ctx.fill()
+        for hexlabel in self.clear_hexlabels:
+            ctx.set_source_rgb(0, 0, 0)
+            guihex = self.guihexes[hexlabel]
+            x, y, width, height = guihex.bounding_rect
+            ctx.rectangle(x, y, width, height)
+            ctx.fill()
         for guihex in self.guihexes.itervalues():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
@@ -531,6 +540,7 @@ class GUIMasterBoard(gtk.Window):
         self.draw_recruitchits(ctx)
         self.draw_movement_die(ctx)
         self.repaint_hexlabels.clear()
+        self.clear_hexlabels.clear()
 
     def repaint(self, hexlabels=None):
         if hexlabels:
@@ -778,6 +788,7 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
+                    self.clear_hexlabels.add(hexlabel)
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
             self.repaint()
