@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+import sys
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
@@ -19,7 +20,7 @@ import prefs
 
 class Connect(object):
     """GUI for connecting to a server."""
-    def __init__(self):
+    def __init__(self, playername, password, server_name, server_port):
         self.glade = gtk.glade.XML("../glade/connect.glade")
         self.widget_names = ["connect_window", "playername_comboboxentry",
           "password_entry", "server_name_comboboxentry",
@@ -31,40 +32,60 @@ class Connect(object):
         self.playernames = set()
         self.server_names = set()
         self.server_ports = set()
-        self._init_playernames()
-        self._init_server_names_and_ports()
+        self._init_playernames(playername)
+        self._init_password(password)
+        self._init_server_names_and_ports(server_name, server_port)
         self.connect_window.connect("destroy", guiutils.exit)
         self.connect_window.set_icon(icon.pixbuf)
         self.connect_window.show()
 
-    def _init_playernames(self):
+    def _init_playernames(self, playername):
         self.playernames.update(prefs.load_playernames())
+        if playername:
+            self.playernames.add(playername)
         store = gtk.ListStore(gobject.TYPE_STRING)
-        for name in sorted(self.playernames):
+        active_index = 0
+        for index, name in enumerate(sorted(self.playernames)):
             store.append([name])
+            if name == playername:
+                active_index = index
         self.playername_comboboxentry.set_model(store)
         self.playername_comboboxentry.set_text_column(0)
-        self.playername_comboboxentry.set_active(0)
+        self.playername_comboboxentry.set_active(active_index)
 
-    def _init_server_names_and_ports(self):
+    def _init_password(self, password):
+        if password:
+            self.password_entry.set_text(password)
+
+    def _init_server_names_and_ports(self, server_name, server_port):
         server_entries = prefs.load_servers()
         for name, port in server_entries:
             self.server_names.add(name)
             self.server_ports.add(port)
+        if server_name:
+            self.server_names.add(server_name)
+        if server_port:
+            self.server_ports.add(server_port)
 
         namestore = gtk.ListStore(gobject.TYPE_STRING)
-        for name in sorted(self.server_names):
+        active_index = 0
+        for index, name in enumerate(sorted(self.server_names)):
             namestore.append([name])
+            if name == server_name:
+                active_index = index
         self.server_name_comboboxentry.set_model(namestore)
         self.server_name_comboboxentry.set_text_column(0)
-        self.server_name_comboboxentry.set_active(0)
+        self.server_name_comboboxentry.set_active(active_index)
 
+        active_index = 0
         portstore = gtk.ListStore(gobject.TYPE_STRING)
-        for port in sorted(self.server_ports):
+        for index, port in enumerate(sorted(self.server_ports)):
             portstore.append([str(port)])
+            if port == server_port:
+                active_index = index
         self.server_port_comboboxentry.set_model(portstore)
         self.server_port_comboboxentry.set_text_column(0)
-        self.server_port_comboboxentry.set_active(0)
+        self.server_port_comboboxentry.set_active(active_index)
 
     def on_connect_button_clicked(self, *args):
         playername = self.playername_comboboxentry.child.get_text()
@@ -90,5 +111,13 @@ class Connect(object):
 
 
 if __name__ == "__main__":
-    connect = Connect()
+    playername = password = server_name = server_port = None
+    try:
+        playername = sys.argv[1]
+        password = sys.argv[2]
+        server_name = sys.argv[3]
+        server_port = int(sys.argv[4])
+    except (IndexError, ValueError):
+        pass
+    connect = Connect(playername, password, server_name, server_port)
     reactor.run()
