@@ -106,7 +106,7 @@ class GUIBattleMap(gtk.Window):
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.area.connect("button_press_event", self.cb_click)
+        self.area.connect("button-press-event", self.cb_click)
         self.show_all()
         if self.game and self.game.battle_active_player.name == self.username:
             self.highlight_mobile_chits()

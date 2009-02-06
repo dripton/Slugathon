@@ -57,13 +57,13 @@ class Negotiate(object):
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
         self.attacker_marker_hbox.pack_start(self.attacker_marker.event_box,
           expand=False, fill=False)
-        self.attacker_marker.connect("button_press_event", self.cb_click)
+        self.attacker_marker.connect("button-press-event", self.cb_click)
         self.attacker_marker.show()
 
         self.defender_marker = Marker.Marker(defender_legion, True, scale=20)
         self.defender_marker_hbox.pack_start(self.defender_marker.event_box,
           expand=False, fill=False)
-        self.defender_marker.connect("button_press_event", self.cb_click)
+        self.defender_marker.connect("button-press-event", self.cb_click)
         self.defender_marker.show()
 
         self.attacker_chits = []
@@ -73,7 +73,7 @@ class Negotiate(object):
             chit.show()
             self.attacker_chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
-            chit.connect("button_press_event", self.cb_click)
+            chit.connect("button-press-event", self.cb_click)
             self.attacker_chits.append(chit)
 
         self.defender_chits = []
@@ -83,7 +83,7 @@ class Negotiate(object):
             chit.show()
             self.defender_chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
-            chit.connect("button_press_event", self.cb_click)
+            chit.connect("button-press-event", self.cb_click)
             self.defender_chits.append(chit)
 
         self.negotiate_dialog.connect("response", self.cb_response)

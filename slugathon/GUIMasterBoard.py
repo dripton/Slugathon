@@ -142,9 +142,9 @@ class GUIMasterBoard(gtk.Window):
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.area.connect("button_press_event", self.cb_click)
+        self.area.connect("button-press-event", self.cb_click)
         self.area.add_events(gtk.gdk.POINTER_MOTION_MASK)
-        self.area.connect("motion_notify_event", self.cb_motion)
+        self.area.connect("motion-notify-event", self.cb_motion)
         self.show_all()
 
     def create_ui(self):

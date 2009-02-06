@@ -56,7 +56,7 @@ class AcquireAngel(object):
             chit.show()
             self.angels_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
-            chit.connect("button_press_event", self.cb_click)
+            chit.connect("button-press-event", self.cb_click)
 
         self.acquire_angel_dialog.connect("response", self.cb_response)
         self.acquire_angel_dialog.show()

@@ -58,7 +58,7 @@ class PickRecruit(object):
             chit.show()
             self.recruits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
-            chit.connect("button_press_event", self.cb_click)
+            chit.connect("button-press-event", self.cb_click)
 
         self.pick_recruit_dialog.connect("response", self.cb_response)
         self.pick_recruit_dialog.show()

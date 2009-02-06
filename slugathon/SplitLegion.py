@@ -59,7 +59,7 @@ class SplitLegion(object):
             chit.show()
             self.old_chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
-            chit.connect("button_press_event", self.cb_click)
+            chit.connect("button-press-event", self.cb_click)
 
         self.okbutton = self.split_legion_dialog.action_area.get_children()[0]
         self.okbutton.set_sensitive(False)
