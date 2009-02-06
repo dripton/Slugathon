@@ -772,6 +772,7 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
+                    self.clear_hexlabels.add(hexlabel)
             self.highlight_tall_legions()
             self.repaint()
 
