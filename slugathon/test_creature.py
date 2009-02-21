@@ -1,10 +1,13 @@
-__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+import time
 
 import py
 
 import Creature
+import Game
+import Player
 
 def test_non_existent_creature():
     try:
@@ -84,3 +87,27 @@ def test_native():
     assert not dragon.is_native("Dune")
     assert dragon.is_native("Cliff")
     assert dragon.is_native("Volcano")
+
+def test_titan_power():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markernames) == 12
+    player.pick_marker("Rd01")
+    assert player.selected_markername == "Rd01"
+    player.create_starting_legion()
+    legion = player.legions["Rd01"]
+    for creature in legion.creatures:
+        if creature.name == "Titan":
+            titan = creature
+    assert player.score == 0
+    assert titan.power == 6
+    player.score = 99
+    assert titan.power == 6
+    player.score = 100
+    assert titan.power == 7
+    player.score = 10000
+    assert titan.power == 106
+

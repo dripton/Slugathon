@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -63,7 +63,7 @@ class Creature(object):
     """One instance of one Creature, Lord, or Demi-Lord."""
     def __init__(self, name):
         self.name = name
-        (self.plural_name, self.power, self.skill, rangestrikes, self.flies,
+        (self.plural_name, self._power, self.skill, rangestrikes, self.flies,
           self.character_type, self.summonable, self.acquirable_every,
           self.max_count, self.color_name) = creaturedata.data[name]
         self.rangestrikes = bool(rangestrikes)
@@ -75,6 +75,13 @@ class Creature(object):
         self.hexlabel = None
         self.previous_hexlabel = None
         self.legion = None
+
+    @property
+    def power(self):
+        if self.name == "Titan" and self.legion is not None:
+            return self.legion.player.titan_power()
+        else:
+            return self._power
 
     @property
     def dead(self):
