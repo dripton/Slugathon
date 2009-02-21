@@ -150,6 +150,7 @@ class Chit(object):
         ctx.line_to(size, size)
         ctx.move_to(0, size)
         ctx.line_to(size, 0)
+        ctx.stroke()
 
     def _render_hits(self, surface):
         """Add the number of hits to a Cairo surface"""
