@@ -37,7 +37,10 @@ class Chit(object):
         self.location = None    # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
-        self.bases = [self.name]
+        if creature and creature.name in ["Titan", "Angel"]:
+            self.bases = [self.name + playercolor]
+        else:
+            self.bases = [self.name]
         if creature:
             color_name = creature.color_name
             if creature.flies and creature.rangestrikes:
