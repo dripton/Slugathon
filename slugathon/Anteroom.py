@@ -181,7 +181,7 @@ class Anteroom(object):
     def add_game(self, game):
         game.add_observer(self, self.username)
         self.update_game_store()
-        if self.username in game.get_playernames():
+        if not game.started and self.username in game.get_playernames():
             self._add_wfp(game)
 
     def remove_game(self, game_name):
@@ -212,7 +212,8 @@ class Anteroom(object):
         index = path[0]
         game = self.games[index]
         # TODO popup menu
-        self._add_wfp(game)
+        if not game.started:
+            self._add_wfp(game)
         return False
 
     def update(self, observed, action):
