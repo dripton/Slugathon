@@ -479,7 +479,7 @@ class GUIBattleMap(gtk.Window):
     def repaint(self, hexlabels=None):
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
-        reactor.callLater(1, self.update_gui)
+        reactor.callLater(0, self.update_gui)
 
     def update(self, observed, action):
         if isinstance(action, Action.MoveCreature) or isinstance(action,
