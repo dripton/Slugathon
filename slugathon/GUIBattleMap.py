@@ -453,6 +453,12 @@ class GUIBattleMap(gtk.Window):
         return min_x, min_y, width, height
 
     def update_gui(self, event=None):
+        """Repaint the amount of the GUI that needs repainting.
+
+        If event is not None, then that's the dirty rectangle.
+        If event is None, then we compute the dirty rectangle from
+        self.repaint_hexlabels.
+        """
         if event is None:
             if not self.repaint_hexlabels:
                 return
