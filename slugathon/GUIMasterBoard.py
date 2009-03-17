@@ -820,6 +820,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.Flee):
             self.highlight_engagements()
+            self.clear_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
         elif isinstance(action, Action.DoNotFlee):
@@ -837,6 +838,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Concede):
             self.destroy_negotiate()
             self.highlight_engagements()
+            self.clear_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
         elif isinstance(action, Action.MakeProposal):
@@ -852,6 +854,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.AcceptProposal):
             self.destroy_negotiate()
             self.highlight_engagements()
+            self.clear_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
         elif isinstance(action, Action.RejectProposal):
@@ -919,6 +922,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.RemoveLegion):
             self._remove_extra_markers()
+            self.clear_hexlabels.add(action.hexlabel)
             self.repaint(self.board.hexes.keys())
 
 

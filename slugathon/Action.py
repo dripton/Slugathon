@@ -468,9 +468,10 @@ class AcquireAngel(Action):
 pb.setUnjellyableForClass(AcquireAngel, AcquireAngel)
 
 class RemoveLegion(Action):
-    def __init__(self, game_name, markername):
+    def __init__(self, game_name, markername, hexlabel):
         self.game_name = game_name
         self.markername = markername
+        self.hexlabel = hexlabel
 pb.setUnjellyableForClass(RemoveLegion, RemoveLegion)
 
 class BattleOver(Action):
