@@ -103,6 +103,9 @@ class GUIBattleMap(gtk.Window):
         for hex1 in self.battlemap.hexes.itervalues():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
         self.repaint_hexlabels = set()
+        # Hexes that need their bounding rectangles cleared, too.
+        # This fixes chits.
+        self.clear_hexlabels = set()
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -155,6 +158,7 @@ class GUIBattleMap(gtk.Window):
             if guihex.selected:
                 guihex.selected = False
                 self.repaint_hexlabels.add(hexlabel)
+                self.clear_hexlabels.add(hexlabel)
         self.repaint()
 
     def highlight_mobile_chits(self):
@@ -319,6 +323,9 @@ class GUIBattleMap(gtk.Window):
     def _remove_dead_chits(self):
         for chit in reversed(self.chits):
             if chit.creature.dead:
+                hexlabel = chit.creature.hexlabel
+                self.clear_hexlabels.add(hexlabel)
+                self.repaint([hexlabel])
                 self.chits.remove(chit)
 
     def _compute_chit_locations(self, hexlabel):
@@ -476,11 +483,18 @@ class GUIBattleMap(gtk.Window):
             width, height = self.area.size_request()
             ctx.rectangle(0, 0, width, height)
             ctx.fill()
+        for hexlabel in self.clear_hexlabels:
+            ctx.set_source_rgb(1, 1, 1)
+            guihex = self.guihexes[hexlabel]
+            x, y, width, height = guihex.bounding_rect
+            ctx.rectangle(x, y, width, height)
+            ctx.fill()
         for guihex in self.guihexes.itervalues():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
         self.draw_chits(ctx)
         self.repaint_hexlabels.clear()
+        self.clear_hexlabels.clear()
 
     def repaint(self, hexlabels=None):
         if hexlabels:
@@ -490,8 +504,10 @@ class GUIBattleMap(gtk.Window):
     def update(self, observed, action):
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
-            self.highlight_mobile_chits()
+            for hexlabel in [action.old_hexlabel, action.new_hexlabel]:
+                self.clear_hexlabels.add(hexlabel)
             self.repaint([action.old_hexlabel, action.new_hexlabel])
+            self.highlight_mobile_chits()
 
         elif isinstance(action, Action.DoneManeuvering):
             self.highlight_strikers()
