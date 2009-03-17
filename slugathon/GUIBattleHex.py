@@ -202,16 +202,16 @@ class GUIBattleHex(object):
     # TODO save computations
     def highlight_entrance(self, ctx):
         """Highlight this entrance hex, if selected"""
-        chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
-        x = self.center[0] - chit_scale / 4
-        y = self.center[1] - chit_scale * 7 / 4
-        width = chit_scale / 2
-        height = 7 * chit_scale / 2
-        x1 = x + width
-        y1 = y + height
-        points = [(x, y), (x1, y), (x1, y1), (x, y1)]
-        colormap = self.guimap.area.get_colormap()
         if self.selected:
+            chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
+            x = self.center[0] - chit_scale / 4
+            y = self.center[1] - chit_scale * 7 / 4
+            width = chit_scale / 2
+            height = 7 * chit_scale / 2
+            x1 = x + width
+            y1 = y + height
+            points = [(x, y), (x1, y), (x1, y1), (x, y1)]
+            colormap = self.guimap.area.get_colormap()
             # outline
             ctx.set_source_rgb(1, 0, 0)
             guiutils.draw_polygon(ctx, points)
