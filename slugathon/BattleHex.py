@@ -34,7 +34,6 @@ class BattleHex(object):
         self.label_side = 5
         self.terrain_side = 3
         self.entrance = (self.label in ["ATTACKER", "DEFENDER"])
-        self.visible = not self.entrance
         self.neighbors = {}   # hexside : BattleHex
 
     def __repr__(self):

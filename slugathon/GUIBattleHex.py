@@ -238,7 +238,10 @@ class GUIBattleHex(object):
         ctx.fill()
 
     def update_gui(self, ctx):
-        if self.battlehex.visible:
+        if self.battlehex.entrance:
+            self.cleanup_entrance(ctx)
+            self.highlight_entrance(ctx)
+        else:
             self.draw_hexagon(ctx)
             self.draw_hex_overlay(ctx)
             self.draw_border_overlays(ctx)
@@ -246,9 +249,6 @@ class GUIBattleHex(object):
               self.battlehex.label_side)
             self.draw_label(ctx, self.battlehex.terrain,
               self.battlehex.terrain_side)
-        else:
-            self.cleanup_entrance(ctx)
-            self.highlight_entrance(ctx)
 
     def __repr__(self):
         return "GUIBattleHex %s" % self.battlehex.label
