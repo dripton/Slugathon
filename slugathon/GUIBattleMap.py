@@ -323,7 +323,8 @@ class GUIBattleMap(gtk.Window):
     def _remove_dead_chits(self):
         for chit in reversed(self.chits):
             if chit.creature.dead:
-                hexlabel = chit.creature.hexlabel
+                hexlabel = (chit.creature.hexlabel or
+                  chit.creature.previous_hexlabel)
                 self.clear_hexlabels.add(hexlabel)
                 self.repaint([hexlabel])
                 self.chits.remove(chit)

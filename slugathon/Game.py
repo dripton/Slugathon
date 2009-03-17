@@ -1064,7 +1064,9 @@ class Game(Observed):
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.dead:
+                    creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = None
+                    # TODO Move to graveyard instead
 
     def update(self, observed, action):
         if isinstance(action, Action.JoinGame):
