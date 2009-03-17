@@ -74,12 +74,21 @@ class GUIBattleHex(object):
         cx = self.cx
         cy = self.cy
         scale = self.guimap.scale
-        self.vertexes[0] = rp((cx + scale, cy))
-        self.vertexes[1] = rp((cx + 3 * scale, cy))
-        self.vertexes[2] = rp((cx + 4 * scale, cy + SQRT3 * scale))
-        self.vertexes[3] = rp((cx + 3 * scale, cy + 2 * SQRT3 * scale))
-        self.vertexes[4] = rp((cx + scale, cy + 2 * SQRT3 * scale))
-        self.vertexes[5] = rp((cx, cy + SQRT3 * scale))
+
+        if self.battlehex.entrance:
+            self.vertexes[0] = rp((cx + 1.5 * scale, cy - scale))
+            self.vertexes[1] = rp((cx + 3 * scale, cy - scale))
+            self.vertexes[2] = rp((cx + 3 * scale, cy + 3 * scale))
+            self.vertexes[3] = rp((cx + 3 * scale, cy + 7 * scale))
+            self.vertexes[4] = rp((cx + 1.5 * scale, cy + 7 * scale))
+            self.vertexes[5] = rp((cx + 1.5 * scale, cy + 3 * scale))
+        else:
+            self.vertexes[0] = rp((cx + scale, cy))
+            self.vertexes[1] = rp((cx + 3 * scale, cy))
+            self.vertexes[2] = rp((cx + 4 * scale, cy + SQRT3 * scale))
+            self.vertexes[3] = rp((cx + 3 * scale, cy + 2 * SQRT3 * scale))
+            self.vertexes[4] = rp((cx + scale, cy + 2 * SQRT3 * scale))
+            self.vertexes[5] = rp((cx, cy + SQRT3 * scale))
 
         self.points = []
         iv = guiutils.scale_polygon(self.vertexes, 0.9)
@@ -238,11 +247,8 @@ class GUIBattleHex(object):
         ctx.fill()
 
     def update_gui(self, ctx):
-        if self.battlehex.entrance:
-            self.cleanup_entrance(ctx)
-            self.highlight_entrance(ctx)
-        else:
-            self.draw_hexagon(ctx)
+        self.draw_hexagon(ctx)
+        if not self.battlehex.entrance:
             self.draw_hex_overlay(ctx)
             self.draw_border_overlays(ctx)
             self.draw_label(ctx, self.battlehex.label,
