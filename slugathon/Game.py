@@ -1023,6 +1023,7 @@ class Game(Observed):
 
         Called from Server
         """
+        print "Game.done_with_counterstrikes", playername
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             raise AssertionError("ending maneuver phase out of turn")
@@ -1031,14 +1032,18 @@ class Game(Observed):
         if (playername == self.defender_legion.player.name and not
           self.is_battle_over()):
             self.battle_turn += 1
+            print "bumped battle_turn to", self.battle_turn
         if self.is_battle_over():
+            print "battle over"
             time_loss = self.battle_turn > 7
+            print "time_loss is", time_loss
             # If it's a draw, arbitrarily call the defender the "winner"
             if time_loss or self.attacker_legion.dead:
                 winner = self.defender_legion
             else:
                 winner = self.attacker_legion
             loser = self.other_battle_legion(winner)
+            print "winner", winner, "loser", loser
             action = Action.BattleOver(self.name, winner.markername,
               winner.living_creatures, winner.dead_creatures, loser.markername,
               loser.living_creatures, loser.dead_creatures, time_loss)
