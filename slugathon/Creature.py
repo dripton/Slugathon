@@ -127,6 +127,16 @@ class Creature(object):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
 
+    # TODO rangestrikes
+    def find_target_hexlabels(self):
+        """Return a set of hexlabels containing creatures that this creature
+        can strike or rangestrike."""
+        hexlabels = set()
+        if not self.struck:
+            for target in self.engaged_enemies():
+                hexlabels.add(target.hexlabel)
+        return hexlabels
+
     @property
     def engaged(self):
         """Return True iff this creature is engaged with an adjacent enemy."""

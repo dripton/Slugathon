@@ -301,7 +301,7 @@ class GUIBattleMap(gtk.Window):
                     return
                 self.selected_chit = chit
                 self.unselect_all()
-                hexlabels = self.game.find_target_hexlabels(creature)
+                hexlabels = creature.find_target_hexlabels()
                 for hexlabel in hexlabels:
                     guihex = self.guihexes[hexlabel]
                     guihex.selected = True

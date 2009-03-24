@@ -946,16 +946,6 @@ class Game(Observed):
         if self.battle_phase == Phase.MANEUVER:
             player.done_with_maneuvers()
 
-    # TODO rangestrikes
-    def find_target_hexlabels(self, creature):
-        """Return a set of hexlabels containing creatures that creature
-        can strike or rangestrike."""
-        hexlabels = set()
-        if not creature.struck:
-            for target in creature.engaged_enemies():
-                hexlabels.add(target.hexlabel)
-        return hexlabels
-
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
         """Called from Server"""
