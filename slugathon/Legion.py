@@ -238,6 +238,7 @@ class Legion(Observed):
           self.markername, creature.name)
         self.notify(action)
 
+    @property
     def score(self):
         """Return the point value of this legion."""
         total = 0
@@ -253,7 +254,7 @@ class Legion(Observed):
 
     def die(self, scoring_legion, fled, no_points):
         if scoring_legion is not None and not no_points:
-            points = self.score()
+            points = self.score
             if fled:
                 points //= 2
             scoring_legion.add_points(points, True)

@@ -140,7 +140,7 @@ def test_score():
     creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    assert legion.score() == 120
+    assert legion.score == 120
 
 def test_sorted_creatures():
     creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",

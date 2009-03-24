@@ -284,7 +284,7 @@ class Player(Observed):
         self.notify(action)
 
     def die(self, scoring_legion):
-        points = sum(legion.score() for legion in self.legions.itervalues())
+        points = sum(legion.score for legion in self.legions.itervalues())
         half_points = points // 2
         scoring_legion.add_points(half_points, False)
         # Make a list to avoid changing size while iterating.
