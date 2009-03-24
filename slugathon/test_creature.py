@@ -3,8 +3,6 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import py
-
 import Creature
 import Game
 import Player
@@ -15,7 +13,7 @@ def test_non_existent_creature():
     except KeyError:
         pass
     else:
-        py.test.fail("Should have raised")
+        assert False, "Should have raised"
 
 def test_init():
     creature = Creature.Creature("Ogre")

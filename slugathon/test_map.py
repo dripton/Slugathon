@@ -2,8 +2,6 @@ __copyright__ = "Copyright (c) 2005-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import py
-
 import BattleMap
 import guiutils
 
@@ -54,7 +52,7 @@ def test_label_to_coords():
         except KeyError:
             pass
         else:
-            py.test.fail()
+            assert False
 
 def test_midpoint():
     assert guiutils.midpoint((1, 0), (6, 3)) == (3.5, 1.5)

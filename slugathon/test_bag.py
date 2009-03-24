@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2005-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import py
 from bag import bag
 
 def test_add():
@@ -27,7 +26,7 @@ def test_remove():
     except KeyError:
         pass
     else:
-        py.test.fail("should have raised")
+        assert False, "should have raised"
 
 def test_discard():
     b = bag()
@@ -61,7 +60,7 @@ def test_init():
     except ValueError:
         pass
     else:
-        py.test.fail("should have raised")
+        assert False, "should have raised"
 
 def test_setitem():
     b = bag()

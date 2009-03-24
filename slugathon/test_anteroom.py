@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2003-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import py
 import gtk
 from twisted.internet import reactor
 from twisted.internet import utils
@@ -29,7 +28,7 @@ def connected():
 
 def failure():
     reactor.stop()
-    py.test.fail()
+    assert False
 
 def teardown_module(module):
     utils.getProcessValue("pkill", ["-f", "python.*Server.py"])

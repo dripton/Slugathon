@@ -4,7 +4,6 @@ __license__ = "GNU GPL v2"
 
 from twisted.internet import reactor
 from twisted.internet import utils
-import py
 
 import Client
 
@@ -32,7 +31,7 @@ def success(name):
 def failure(error):
     print error
     reactor.stop()
-    py.test.fail()
+    assert False
 
 def teardown_class(cls):
     utils.getProcessValue("pkill", ["-f", "python.*Server.py"])

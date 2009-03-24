@@ -2,8 +2,6 @@
 Fredrik Lundh, comp.lang.python, 2005-11-22
 """
 
-import py
-
 from reval import reval
 
 def test_reval_good():
@@ -22,4 +20,4 @@ def test_reval_error():
     except SyntaxError:
         pass
     else:
-        py.test.fail("should have raised")
+        assert False, "should have raised"
