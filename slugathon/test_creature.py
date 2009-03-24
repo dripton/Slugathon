@@ -33,9 +33,9 @@ def test_init():
 
 def test_score():
     creature = Creature.Creature("Ogre")
-    assert creature.score() == 12
+    assert creature.score == 12
     creature = Creature.Creature("Colossus")
-    assert creature.score() == 40
+    assert creature.score == 40
 
 def test_native():
     ogre = Creature.Creature("Ogre")

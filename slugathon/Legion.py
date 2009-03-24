@@ -242,7 +242,7 @@ class Legion(Observed):
         """Return the point value of this legion."""
         total = 0
         for creature in self.creatures:
-            total += creature.score()
+            total += creature.score
         return total
 
     def sorted_creatures(self):

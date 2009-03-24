@@ -93,13 +93,14 @@ class Creature(object):
         else:
             return self.name
 
+    @property
     def score(self):
         """Return the point value of this creature."""
         return self.power * self.skill
 
     def sort_value(self):
         """Return a rough indication of creature value, for sorting."""
-        return (self.score()
+        return (self.score
           + 0.2 * self.acquirable
           + 0.3 * self.flies
           + 0.25 * self.rangestrikes
