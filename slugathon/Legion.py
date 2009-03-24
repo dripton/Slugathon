@@ -251,8 +251,8 @@ class Legion(Observed):
           for creature in self.creatures))
         return [tup[1] for tup in li]
 
-    def die(self, scoring_legion, fled):
-        if scoring_legion is not None:
+    def die(self, scoring_legion, fled, no_points):
+        if scoring_legion is not None and not no_points:
             points = self.score()
             if fled:
                 points //= 2
