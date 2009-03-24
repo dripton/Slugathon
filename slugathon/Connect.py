@@ -3,7 +3,7 @@
 __copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-import sys
+from optparse import OptionParser
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
@@ -110,14 +110,16 @@ class Connect(object):
         self.status_textview.get_buffer().set_text("Login failed")
 
 
-if __name__ == "__main__":
-    playername = password = server_name = server_port = None
-    try:
-        playername = sys.argv[1]
-        password = sys.argv[2]
-        server_name = sys.argv[3]
-        server_port = int(sys.argv[4])
-    except (IndexError, ValueError):
-        pass
-    connect = Connect(playername, password, server_name, server_port)
+def main():
+    op = OptionParser()
+    op.add_option("-n", "--playername", action="store", type="str")
+    op.add_option("-a", "--password", action="store", type="str")
+    op.add_option("-s", "--server", action="store", type="str")
+    op.add_option("-p", "--port", action="store", type="int")
+    opts, args = op.parse_args()
+    connect = Connect(opts.playername, opts.password, opts.server, opts.port)
     reactor.run()
+
+if __name__ == "__main__":
+    main()
+

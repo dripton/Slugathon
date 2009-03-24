@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import sys
 import time
+from optparse import OptionParser
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
-from twisted.python import usage
 from twisted.internet import reactor
 from zope.interface import implements
 
@@ -301,16 +300,12 @@ class Server(Observed):
         else:
             self.notify(action)
 
-
-
-class Options(usage.Options):
-    optParameters = [
-      ["port", "p", DEFAULT_PORT, "Port number"],
-    ]
-
-
-def main(options):
-    port = int(options["port"])
+def main():
+    op = OptionParser()
+    op.add_option("-p", "--port", action="store", type="int",
+      default=DEFAULT_PORT)
+    opts, args = op.parse_args()
+    port = opts.port
     server = Server()
     realm = Realm.Realm(server)
     checker = UniqueFilePasswordDB("../config/passwd.txt", server=server)
@@ -321,11 +316,4 @@ def main(options):
 
 
 if __name__ == "__main__":
-    options = Options()
-    try:
-        options.parseOptions()
-    except usage.UsageError, errortext:
-        print "%s: %s" % (sys.argv[0], errortext)
-        print "%s: Try --help for usage details." % (sys.argv[0])
-        sys.exit(1)
-    main(options)
+    main()

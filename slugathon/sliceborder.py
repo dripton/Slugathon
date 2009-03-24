@@ -6,8 +6,7 @@ a new image, leaving the rest transparent."""
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-
-import sys
+from optparse import OptionParser
 
 import cairo
 
@@ -52,15 +51,19 @@ def slice_border_image(input_path, output_path, hexsides):
 
 
 def main():
-    assert len(sys.argv) >= 4
-    input_path = sys.argv[1]
-    output_path = sys.argv[2]
+    usage = "%prog [options] hexsides"
+    op = OptionParser(usage)
+    op.add_option("-i", "--input-path", action="store", type="str")
+    op.add_option("-o", "--output-path", action="store", type="str")
+    opts, args = op.parse_args()
+    if not opts.input_path or not opts.output_path or not args:
+        op.error("Must provide input_path, output_path and hexsides")
     hexsides = set()
-    for arg in sys.argv[3:]:
+    for arg in args:
         hexside = int(arg)
         assert 0 <= hexside <= 5
         hexsides.add(hexside)
-    slice_border_image(input_path, output_path, hexsides)
+    slice_border_image(opts.input_path, opts.output_path, hexsides)
 
 if __name__ == "__main__":
     main()
