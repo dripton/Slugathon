@@ -4,7 +4,6 @@ __copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 # TODO When we click on a marker, move it to the top of the z-order
-# XXX Need to un-highlight all legions at end of turn.
 
 
 import math
