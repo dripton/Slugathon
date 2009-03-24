@@ -61,6 +61,7 @@ class Game(Observed):
         self.caretaker = Caretaker.Caretaker()
         self.history = History.History()
         self.add_observer(self.history)
+        # XXX Needed?
         self.current_engagement_hexlabel = None
         self.attacker_legion = None
         self.defender_legion = None
@@ -1015,8 +1016,19 @@ class Game(Observed):
         return False
 
     def _end_battle(self):
-        # TODO
-        pass
+        if self.battle_turn > 7:
+            self.attacker_legion.die(self.defender_legion, False, True)
+        elif self.attacker_legion.dead and self.defender_legion.dead:
+            self.attacker_legion.die(self.defender_legion, False, True)
+            self.defender_legion.die(self.attacker_legion, False, True)
+        elif self.attacker_legion.dead:
+            self.attacker_legion.die(self.defender_legion, False, False)
+        elif self.defender_legion.dead:
+            self.defender_legion.die(self.attacker_legion, False, True)
+        else:
+            assert False, "bug in Game._end_battle"
+        self.current_engagement_hexlabel = None
+
 
     def done_with_counterstrikes(self, playername):
         """Try to end playername's counterstrike battle phase.
@@ -1046,7 +1058,8 @@ class Game(Observed):
             print "winner", winner, "loser", loser
             action = Action.BattleOver(self.name, winner.markername,
               winner.living_creatures, winner.dead_creatures, loser.markername,
-              loser.living_creatures, loser.dead_creatures, time_loss)
+              loser.living_creatures, loser.dead_creatures, time_loss,
+              self.current_engagement_hexlabel)
             self.notify(action)
             self._end_battle()
         else:

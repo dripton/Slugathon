@@ -924,6 +924,11 @@ class GUIMasterBoard(gtk.Window):
             self.clear_hexlabels.add(action.hexlabel)
             self.repaint(self.board.hexes.keys())
 
+        elif isinstance(action, Action.BattleOver):
+            self.highlight_engagements()
+            self.clear_hexlabels.add(action.hexlabel)
+            self.repaint([action.hexlabel])
+
 
 def main():
     board = MasterBoard.MasterBoard()

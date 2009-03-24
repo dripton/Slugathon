@@ -529,6 +529,9 @@ class GUIBattleMap(gtk.Window):
             self._remove_dead_chits()
             self.highlight_mobile_chits()
 
+        elif isinstance(action, Action.BattleOver):
+            self.destroy()
+
     def failure(self, arg):
         print "GUIBattleMap.failure", arg
 

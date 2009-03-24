@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2006-2008 David Ripton"
+__copyright__ = "Copyright (c) 2006-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -179,7 +179,8 @@ class StatusScreen(object):
         elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal) or
-          isinstance(action, Action.RemoveLegion)):
+          isinstance(action, Action.RemoveLegion) or
+          isinstance(action, Action.BattleOver)):
             for num, player in enumerate(self.game.players):
                 legions_label = getattr(self, "legions%d_label" % num)
                 legions_label.set_text(str(len(player.legions)))
