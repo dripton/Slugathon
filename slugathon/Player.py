@@ -260,7 +260,8 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_counterstrikes(self):
-        action = Action.DoneStrikingBack(self.game.name, self.name)
+        action = Action.DoneStrikingBack(self.game.name, self.name,
+          self.game.battle_turn)
         self.notify(action)
 
     def new_turn(self):
@@ -278,9 +279,13 @@ class Player(Observed):
         """Remove the legion with markername."""
         assert type(markername) == str
         if markername in self.legions:
+            legion = self.legions[markername]
+            hexlabel = legion.hexlabel
             del self.legions[markername]
             self.markernames.add(markername)
-        action = Action.RemoveLegion(self.game.name, markername)
+        else:
+            hexlabel = None
+        action = Action.RemoveLegion(self.game.name, markername, hexlabel)
         self.notify(action)
 
     def die(self, scoring_legion):

@@ -1244,10 +1244,9 @@ class Game(Observed):
         elif isinstance(action, Action.DoneStrikingBack):
             self.clear_battle_flags()
             self.cleanup_dead_creatures()
-            if action.playername == self.defender_legion.player.name:
-                self.battle_turn += 1
-                if self.battle_turn > 7:
-                    raise Exception("should have ended on time loss")
+            self.battle_turn = action.battle_turn
+            if self.battle_turn > 7:
+                raise Exception("should have ended on time loss")
             self.battle_phase = Phase.MANEUVER
 
 

@@ -439,9 +439,10 @@ class DoneStriking(Action):
 pb.setUnjellyableForClass(DoneStriking, DoneStriking)
 
 class DoneStrikingBack(Action):
-    def __init__(self, game_name, playername):
+    def __init__(self, game_name, playername, battle_turn):
         self.game_name = game_name
         self.playername = playername
+        self.battle_turn = battle_turn
 pb.setUnjellyableForClass(DoneStrikingBack, DoneStrikingBack)
 
 class DoneFighting(Action):
