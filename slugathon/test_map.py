@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2005-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
+import sys
 
 import BattleMap
 import guiutils
@@ -114,3 +115,38 @@ def test_neighbors():
     assert hex5.neighbors[1].label == "E1"
     assert hex5.neighbors[2].label == "E2"
     assert hex5.neighbors[3].label == "F2"
+
+def test_range():
+    assert map1.range("A1", "A1") == 1
+    assert map1.range("A1", "A2") == 2
+    assert map1.range("A2", "A1") == 2
+    assert map1.range("A1", "B1") == 2
+    assert map1.range("A1", "B2") == 2
+    assert map1.range("ATTACKER", "A1") == sys.maxint
+    assert map1.range("A1", "ATTACKER") == sys.maxint
+    assert map1.range("A1", "A3") == 3
+    assert map1.range("A1", "B3") == 3
+    assert map1.range("A1", "C1") == 3
+    assert map1.range("A1", "C2") == 3
+    assert map1.range("A1", "C3") == 3
+    assert map1.range("A1", "D1") == 4
+    assert map1.range("A1", "D2") == 4
+    assert map1.range("A1", "D3") == 4
+    assert map1.range("A1", "D4") == 4
+    assert map1.range("A1", "C4") == 4
+    assert map1.range("A1", "B4") == 4
+    assert map1.range("A1", "E1") == 5
+    assert map1.range("A1", "E2") == 5
+    assert map1.range("A1", "E3") == 5
+    assert map1.range("A1", "E4") == 5
+    assert map1.range("A1", "E4") == 5
+    assert map1.range("A1", "D5") == 5
+    assert map1.range("A1", "C5") == 5
+    assert map1.range("A1", "F1") == 6
+    assert map1.range("A1", "F2") == 6
+    assert map1.range("A1", "F3") == 6
+    assert map1.range("A1", "F4") == 6
+    assert map1.range("A1", "E5") == 6
+    assert map1.range("A1", "D6") == 6
+    assert map1.range("A1", "DEFENDER") == sys.maxint
+    assert map1.range("DEFENDER", "A1") == sys.maxint

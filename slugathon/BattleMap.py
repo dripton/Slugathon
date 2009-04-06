@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2005-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
+import sys
 
 import battlemapdata
 import BattleHex
@@ -152,3 +153,32 @@ class BattleMap(object):
         for key, val in border_dict.iteritems():
             spun[(key + delta) % 6] = val
         return spun
+
+    def range(self, hexlabel1, hexlabel2):
+        """Return the range from hexlabel1 to hexlabel2.
+
+        Titan ranges are inclusive on both ends, so one more than
+        you'd expect.
+
+        If either hex is an entrance, return a huge number.
+        """
+        assert hexlabel1 in self.hexes and hexlabel2 in self.hexes
+        if hexlabel1 == hexlabel2:
+            return 1
+        hex1 = self.hexes[hexlabel1]
+        hex2 = self.hexes[hexlabel2]
+        if hex1.entrance or hex2.entrance:
+            return sys.maxint
+        result = 2
+        prev = set([hex1])
+        ignore = set()
+        while True:
+            neighbors = set()
+            for hex3 in prev:
+                neighbors.update(hex3.neighbors.itervalues())
+            if hex2 in neighbors:
+                return result
+            neighbors -= ignore
+            result += 1
+            ignore = prev
+            prev = neighbors
