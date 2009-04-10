@@ -23,6 +23,7 @@ def test_init():
     assert creature.skill == 2
     assert not creature.flies
     assert not creature.rangestrikes
+    assert not creature.magicmissile
     assert creature.character_type == "creature"
     assert not creature.summonable
     assert not creature.acquirable
@@ -108,4 +109,3 @@ def test_titan_power():
     assert titan.power == 7
     player.score = 10000
     assert titan.power == 106
-
