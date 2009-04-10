@@ -73,6 +73,7 @@ class Legion(Observed):
                 return creature.name
         return None
 
+    @property
     def creature_names(self):
         return sorted(creature.name for creature in self.creatures)
 
@@ -105,8 +106,8 @@ class Legion(Observed):
             return False
         if len(child1) < 2 or len(child2) < 2:
             return False
-        if not bag(self.creature_names()) == bag(child1.creature_names() +
-          child2.creature_names()):
+        if not bag(self.creature_names) == bag(child1.creature_names +
+          child2.creature_names):
             return False
         if len(self) == 8:
             if len(child1) != 4 or len(child2) != 4:
@@ -155,7 +156,7 @@ class Legion(Observed):
     def _max_creatures_of_one_type(self):
         """Return the maximum number of creatures (not lords or demi-lords) of
         the same type in this legion."""
-        counts = bag(self.creature_names())
+        counts = bag(self.creature_names)
         maximum = 0
         for name, num in counts.iteritems():
             if (num > maximum and Creature.Creature(name).character_type ==
@@ -170,7 +171,7 @@ class Legion(Observed):
         The list is sorted in the same order as within recruitdata.
         """
         result_set = set()
-        counts = bag(self.creature_names())
+        counts = bag(self.creature_names)
         recruits = recruitdata.data[masterhex.terrain]
         for sublist in self._gen_sublists(recruits):
             names = [tup[0] for tup in sublist]

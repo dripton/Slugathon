@@ -412,7 +412,7 @@ class Game(Observed):
         teleport."""
         player = legion.player
         moves = set()
-        if player.can_titan_teleport() and "Titan" in legion.creature_names():
+        if player.can_titan_teleport() and "Titan" in legion.creature_names:
             for legion in player.enemy_legions():
                 hexlabel = legion.hexlabel
                 if not player.friendly_legions(hexlabel):
@@ -445,7 +445,7 @@ class Game(Observed):
         masterhex = self.board.hexes[legion.hexlabel]
         if teleport:
             if (player.teleported or teleporting_lord not in
-              legion.creature_names()):
+              legion.creature_names):
                 return False
             moves = self.find_all_teleport_moves(legion, masterhex,
               player.movement_roll)
@@ -511,11 +511,11 @@ class Game(Observed):
         player.reset_angels_pending()
         # Reveal attacker only to defender
         action = Action.RevealLegion(self.name, attacker.markername,
-          attacker.creature_names())
+          attacker.creature_names)
         self.notify(action, defender.player.name)
         # Reveal defender only to attacker
         action = Action.RevealLegion(self.name, defender.markername,
-          defender.creature_names())
+          defender.creature_names)
         self.notify(action, attacker.player.name)
         self.current_engagement_hexlabel = hexlabel
         # Notify everyone that we're currently resolving this engagement
@@ -554,7 +554,7 @@ class Game(Observed):
 
     def _accept_proposal_helper(self, winning_legion, losing_legion,
       survivors):
-        for creature_name in winning_legion.creature_names():
+        for creature_name in winning_legion.creature_names:
             if creature_name in survivors:
                 survivors.remove(creature_name)
             else:
@@ -683,10 +683,10 @@ class Game(Observed):
         hexlabel = attacker_legion.hexlabel
         assert defender_legion.hexlabel == hexlabel
         action = Action.RevealLegion(self.name, attacker_markername,
-          attacker_legion.creature_names())
+          attacker_legion.creature_names)
         self.notify(action)
         action = Action.RevealLegion(self.name, defender_markername,
-          defender_legion.creature_names())
+          defender_legion.creature_names)
         self.notify(action)
         self._init_battle(attacker_legion, defender_legion)
         action = Action.Fight(self.name, attacker_markername,

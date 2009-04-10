@@ -362,7 +362,7 @@ class GUIMasterBoard(gtk.Window):
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
         def1 = self.user.callRemote("split_legion", self.game.name,
           new_legion1.markername, new_legion2.markername,
-          new_legion1.creature_names(), new_legion2.creature_names())
+          new_legion1.creature_names, new_legion2.creature_names)
         def1.addErrback(self.failure)
 
     def picked_recruit(self, legion, creature):

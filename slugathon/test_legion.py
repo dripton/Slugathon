@@ -36,7 +36,7 @@ def test_creature_names():
     creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    assert legion.creature_names() == ["Angel", "Centaur", "Centaur",
+    assert legion.creature_names == ["Angel", "Centaur", "Centaur",
       "Gargoyle", "Gargoyle", "Ogre", "Ogre", "Titan"]
 
 def test_remove_creature_by_name():
@@ -48,10 +48,10 @@ def test_remove_creature_by_name():
     assert len(legion) == 8
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 7
-    assert "Gargoyle" in legion.creature_names()
+    assert "Gargoyle" in legion.creature_names
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 6
-    assert "Gargoyle" not in legion.creature_names()
+    assert "Gargoyle" not in legion.creature_names
     try:
         legion.remove_creature_by_name("Gargoyle")
     except ValueError:
@@ -80,13 +80,13 @@ def test_add_creature_by_name():
         pass
     else:
         raise AssertionError, "should have raised"
-    assert "Gargoyle" in legion.creature_names()
+    assert "Gargoyle" in legion.creature_names
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 6
-    assert "Gargoyle" not in legion.creature_names()
+    assert "Gargoyle" not in legion.creature_names
     legion.add_creature_by_name("Troll")
     assert len(legion) == 7
-    assert "Troll" in legion.creature_names()
+    assert "Troll" in legion.creature_names
 
 def test_is_legal_split():
     now = time.time()

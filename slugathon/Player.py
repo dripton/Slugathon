@@ -111,7 +111,7 @@ class Player(Observed):
         parent = self.legions[parent_markername]
         if child_markername not in self.markernames:
             raise AssertionError("illegal marker")
-        if bag(parent.creature_names()) != bag(parent_creature_names).union(
+        if bag(parent.creature_names) != bag(parent_creature_names).union(
           bag(child_creature_names)):
             raise AssertionError("wrong creatures")
         new_legion1 = Legion.Legion(self, parent_markername,
@@ -136,8 +136,8 @@ class Player(Observed):
     def undo_split(self, parent_markername, child_markername):
         parent = self.legions[parent_markername]
         child = self.legions[child_markername]
-        parent_creature_names = parent.creature_names()
-        child_creature_names = child.creature_names()
+        parent_creature_names = parent.creature_names
+        child_creature_names = child.creature_names
         parent.creatures += child.creatures
         del self.legions[child_markername]
         self.markernames.add(child.markername)
