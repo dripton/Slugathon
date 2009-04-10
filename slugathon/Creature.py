@@ -110,6 +110,7 @@ class Creature(object):
           + 0.18 * (self.skill == 4)
           + 100 * (self.name == "Titan"))
 
+    @property
     def engaged_enemies(self):
         """Return a set of enemy Creatures this Creature is engaged with."""
         enemies = set()
@@ -135,14 +136,14 @@ class Creature(object):
         can strike or rangestrike."""
         hexlabels = set()
         if not self.struck:
-            for target in self.engaged_enemies():
+            for target in self.engaged_enemies:
                 hexlabels.add(target.hexlabel)
         return hexlabels
 
     @property
     def engaged(self):
         """Return True iff this creature is engaged with an adjacent enemy."""
-        return bool(self.engaged_enemies())
+        return bool(self.engaged_enemies)
 
     @property
     def mobile(self):
