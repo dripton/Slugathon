@@ -979,6 +979,7 @@ class Game(Observed):
         target.hits = min(target.hits, target.power)
         # TODO carries
         carries = 0
+        striker.struck = True
         action = Action.Strike(self.name, playername, striker_name,
           striker_hexlabel, target_name, target_hexlabel, num_dice,
           strike_number, rolls, hits, carries)
@@ -992,7 +993,7 @@ class Game(Observed):
         """
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
-            raise AssertionError("ending maneuver phase out of turn")
+            raise AssertionError("ending strike phase out of turn")
         if self.battle_phase == Phase.STRIKE:
             player.done_with_strikes()
 
@@ -1028,7 +1029,7 @@ class Game(Observed):
         print "Game.done_with_counterstrikes", playername
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
-            raise AssertionError("ending maneuver phase out of turn")
+            raise AssertionError("ending counterstrike phase out of turn")
         if self.battle_phase != Phase.COUNTERSTRIKE:
             return
         if (playername == self.defender_legion.player.name and not
