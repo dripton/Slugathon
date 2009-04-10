@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 import creaturedata
 import recruitdata
 import battlemapdata
+import Phase
 
 
 def _terrain_to_hazards():
@@ -130,14 +131,49 @@ class Creature(object):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
 
-    # TODO rangestrikes
+    def has_los_to(self, hexlabel):
+        """Return True iff this creature has line of sight to the
+        hex with hexlabel."""
+        game = self.legion.player.game
+        map1 = game.battlemap
+        return map1.is_los_blocked(self.hexlabel, hexlabel, game)
+
+    # TODO
+    # XXX duplicated code
+    @property
+    def rangestrike_targets(self):
+        """Return a set of Creatures that this Creature can rangestrike."""
+        enemies = set()
+        if self.offboard or self.hexlabel is None or not self.rangestrikes:
+            return enemies
+        hexlabel_to_enemy = {}
+        game = self.legion.player.game
+        legion2 = game.other_battle_legion(self.legion)
+        for creature in legion2.creatures:
+            if not creature.dead and not creature.offboard:
+                hexlabel_to_enemy[creature.hexlabel] = creature
+        map1 = game.battlemap
+        hex1 = map1.hexes[self.hexlabel]
+        for hexlabel, enemy in hexlabel_to_enemy.iteritems():
+            if (map1.range(self.hexlabel, hexlabel) <= self.skill and
+              (self.magicmissile or self.has_los_to(hexlabel))):
+                enemies.add(enemy)
+        return enemies
+
     def find_target_hexlabels(self):
         """Return a set of hexlabels containing creatures that this creature
         can strike or rangestrike."""
         hexlabels = set()
+        legion = self.legion
+        player = legion.player
+        game = player.game
         if not self.struck:
             for target in self.engaged_enemies:
                 hexlabels.add(target.hexlabel)
+            if (not hexlabels and self.rangestrikes and
+              game.battle_phase == Phase.STRIKE):
+                for target in self.rangestrike_targets:
+                    hexlabels.add(target.hexlabel)
         return hexlabels
 
     @property
@@ -173,25 +209,34 @@ class Creature(object):
 
     def can_strike(self):
         """Return True iff this creature can strike."""
-        return not self.struck and (self.engaged or self.can_rangestrike())
+        return not self.struck and (self.engaged or self.can_rangestrike)
 
-    # TODO
+    @property
     def can_rangestrike(self):
         """Return True iff this creature can rangestrike an enemy."""
-        return False
+        return bool(self.rangestrike_targets)
 
     # TODO strike penalties to carry
     # TODO terrain bonuses and penalties
-    # TODO rangestrike
     def number_of_dice(self, target):
         """Return the number of dice to use if striking target."""
-        return self.power
+        if target in self.engaged_enemies:
+            return self.power
+        elif target in self.rangestrike_targets:
+            return int(self.power / 2)
+        else:
+            return 0
 
     # TODO strike penalties to carry
     # TODO terrain bonuses and penalties
     def strike_number(self, target):
         """Return the strike number to use if striking target."""
-        return min(4 - self.skill + target.skill, 6)
+        map1 = self.legion.player.game.battlemap
+        strike_number = min(4 - self.skill + target.skill, 6)
+        if (strike_number < 6 and not self.magicmissile and
+          map1.range(self.hexlabel, target.hexlabel) >= 4):
+            strike_number += 1
+        return strike_number
 
     @property
     def offboard(self):

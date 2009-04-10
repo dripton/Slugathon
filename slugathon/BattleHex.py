@@ -90,3 +90,11 @@ class BattleHex(object):
             if border2 == border:
                 result.add(hexside)
         return result
+
+    def opposite_border(self, hexside):
+        """Return the border type of the adjacent hex in direction hexside.
+
+        Raise if there's no hex there.
+        """
+        neighbor = self.neighbors[hexside]
+        return neighbor.borders[(hexside + 3) % 6]

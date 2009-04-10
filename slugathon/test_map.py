@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 import sys
@@ -47,6 +47,9 @@ def test_non_default_hex_init():
 
 def test_label_to_coords():
     assert BattleMap.label_to_coords("A1", 1) == (5, 1)
+    assert BattleMap.label_to_coords("A1", 1, True) == (5, 1.5)
+    assert BattleMap.label_to_coords("B2", 1) == (4, 2)
+    assert BattleMap.label_to_coords("B2", 1, True) == (4, 2)
     for label in ("", "A0", "A4", "A10", "G1"):
         try:
             BattleMap.label_to_coords(label, 1)
@@ -150,3 +153,11 @@ def test_range():
     assert map1.range("A1", "D6") == 6
     assert map1.range("A1", "DEFENDER") == sys.maxint
     assert map1.range("DEFENDER", "A1") == sys.maxint
+
+# TODO
+def test_opposite_hexside():
+    assert False
+
+# TODO
+def test_is_los_blocked():
+    assert False

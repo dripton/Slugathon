@@ -256,7 +256,7 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_strikes(self):
-        for creature in self.creatures:
+        for creature in self.game.battle_active_legion.creatures:
             if not creature.struck and creature.engaged:
                 print "Forced strikes remain"
                 return
@@ -264,7 +264,7 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_counterstrikes(self):
-        for creature in self.creatures:
+        for creature in self.game.battle_active_legion.creatures:
             if not creature.struck and creature.engaged:
                 print "Forced strikes remain"
                 return

@@ -17,12 +17,15 @@ all_labels = frozenset([
     "ATTACKER", "DEFENDER",
 ])
 
-def label_to_coords(label, entry_side):
+def label_to_coords(label, entry_side, down=False):
     """Convert a hex label to a tuple of X and Y coordinates, starting at the
     top left.
 
     We spin the map so that the attacker's entry side is always on the left.
     This works on the rotated map.
+
+    If down is True, then increase the Y coordinate by 0.5 if the X coordinate
+    is odd, reflecting the way hexes are shifted.
 
     0    *  *  *
     1 *  *  *  *  *  *
@@ -107,8 +110,24 @@ def label_to_coords(label, entry_side):
         "F1": (2, 5), "F2": (3, 4), "F3": (4, 4), "F4": (5, 3),
         "ATTACKER": (-1, 2), "DEFENDER": (6, 2),
     }
-    return l2c[entry_side][label]
+    result = l2c[entry_side][label]
+    if down:
+        x, y = result
+        if x & 1:
+            result = (x, y + 0.5)
+    return result
 
+
+
+EPSILON = 0.000001
+
+def close(x, y):
+    """Return True iff x and y are within EPSILON."""
+    return abs(x - y) <= EPSILON
+
+def is_obstacle(border):
+    """Return True iff the border feature is an obstacle."""
+    return bool(border)
 
 
 class BattleMap(object):
@@ -182,3 +201,194 @@ class BattleMap(object):
             result += 1
             ignore = prev
             prev = neighbors
+
+    def _to_left(self, delta_x, delta_y):
+        """Return True iff the path of displacement (delta_x, delta_y)
+        passes to the left of the hexspine.
+
+        delta_y must be nonzero.
+        """
+        ratio = delta_x / delta_y;
+        return (ratio >= 1.5 or (ratio >= 0 and ratio <= 0.75)
+            or (ratio >= -1.5 and ratio <= -0.75))
+
+    def _get_direction(self, hex1, hex2, left):
+        """Return the hexside direction of the path from hex1 to hex2.
+
+        Sometimes two directions are possible.  If the left parameter
+        is set, the direction further left will be given.  Otherwise,
+        the direction further right will be given.
+
+        Return -1 on error.
+        """
+        if hex1 == hex2:
+            return -1
+        # Offboard creatures are not allowed.
+        if hex1.entrance or hex1.entrance:
+            return -1
+        x1 = hex1.x
+        y1 = hex1.y
+        x2 = hex2.x
+        y2 = hex2.y
+        # Hexes with odd X coordinates are pushed down half a hex.
+        if (x1 & 1) == 1:
+            y1 += 0.5
+        if (x2 & 1) == 1:
+            y2 += 0.5
+        delta_x = x2 - x1
+        delta_y = y2 - y1
+        delta_x_times_one_point_five = 1.5 * delta_x
+        if delta_x >= 0:
+            if delta_y > delta_x_times_one_point_five:
+                return 3
+            elif close(delta_y, delta_x_times_one_point_five):
+                if left:
+                    return 2
+                else:
+                    return 3
+            elif delta_y < -delta_x_times_one_point_five:
+                return 0
+            elif close(delta_y, -delta_x_times_one_point_five):
+                if left:
+                    return 0
+                else:
+                    return 1
+            elif delta_y > 0:
+                return 2
+            elif delta_y < 0:
+                return 1
+            else:
+                if left:
+                    return 1
+                else:
+                    return 2
+        else:
+            if delta_y < delta_x_times_one_point_five:
+                return 0
+            elif close(delta_y, delta_x_times_one_point_five):
+                if left:
+                    return 5
+                else:
+                    return 0
+            elif delta_y > -delta_x_times_one_point_five:
+                return 3
+            elif close(delta_y, -delta_x_times_one_point_five):
+                if left:
+                    return 3
+                else:
+                    return 4
+            elif delta_y > 0:
+                return 4
+            elif delta_y < 0:
+                return 5
+            else:
+                if left:
+                    return 4
+                else:
+                    return 5
+
+    def _is_los_blocked_dir(self, initial_hex, current_hex, final_hex, left,
+      strike_elevation, striker_atop, striker_atop_cliff, mid_obstacle,
+      mid_cliff, mid_chit, total_obstacles, game=None):
+        """Return True iff the line of sight from hexlabel1 to
+        hexlabel2 is blocked by terrain or creatures, going to the left of
+        hexspines if left is True.
+        """
+        target_atop = False
+        target_atop_cliff = False
+        if current_hex == final_hex:
+            return False
+        # Offboard hexes are not allowed.
+        if current_hex.entrance or final_hex.entrance:
+            return True
+        direction = self._get_direction(current_hex, final_hex, left)
+        nextHex = current_hex.neighbors.get(direction)
+        if nextHex is None:
+            return True
+        border = current_hex.borders[direction]
+        border2 = current_hex.opposite_border(direction)
+        if current_hex == initial_hex:
+            if is_obstacle(border):
+                striker_atop = True
+                total_obstacles += 1
+                if border == "Cliff":
+                    striker_atop_cliff = True
+            if is_obstacle(border2):
+                mid_obstacle = True
+                total_obstacles += 1
+                if border2 == "Cliff":
+                    mid_cliff = True
+                if border2 == "Wall":
+                    return True
+        elif nextHex == final_hex:
+            if is_obstacle(border):
+                mid_obstacle = True
+                total_obstacles += 1
+                if border == "Cliff":
+                    mid_cliff = True
+                if border == "Wall":
+                    return True
+            if is_obstacle(border2):
+                target_atop = True
+                total_obstacles += 1
+                if border2 == "Cliff":
+                    target_atop_cliff = True
+            if mid_chit and not target_atop_cliff:
+                return True
+            if mid_cliff and not striker_atop_cliff and not target_atop_cliff:
+                return True
+            if mid_obstacle and not striker_atop and not target_atop:
+                return True
+            if (total_obstacles >= 3 and (not striker_atop or not target_atop)
+                and (not striker_atop_cliff and not target_atop_cliff)):
+                return True
+            return False
+        else:
+            if mid_chit:
+                # We're not in the initial or final hex, and we have already
+                # marked an mid chit, so it's not adjacent to the base of a
+                # cliff that the target is atop.
+                return True
+            if is_obstacle(border) or is_obstacle(border2):
+                mid_obstacle = True
+                total_obstacles += 1
+                if border == "Cliff" or border2 == "Cliff":
+                    mid_cliff = True
+        if nextHex.blocksLineOfSight():
+            return True
+        # Creatures block LOS, unless both striker and target are at higher
+        # elevation than the creature, or unless the creature is at
+        # the base of a cliff and the striker or target is atop it.
+        if (game is not None and game.is_battle_hex_occupied(nextHex) and
+            nextHex.getElevation() >= strike_elevation and
+            (not striker_atop_cliff or current_hex != initial_hex)):
+            mid_chit = True
+        return self._is_los_blocked_dir(initial_hex, nextHex, final_hex,
+          left, strike_elevation, striker_atop, striker_atop_cliff,
+          mid_obstacle, mid_cliff, mid_chit, total_obstacles, game)
+
+    def is_los_blocked(self, hexlabel1, hexlabel2, game):
+        """Return True iff the line of sight from hexlabel1 to
+        hexlabel2 is blocked by terrain or creatures.
+
+        game is optional, but needed to check creatures.
+        """
+        assert hexlabel1 in self.hexes and hexlabel2 in self.hexes
+        if hexlabel1 == hexlabel2:
+            return [[hexlabel1, hexlabel2]]
+        x1, y1 = label_to_coords(hexlabel1, self.entry_side, True)
+        x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)
+        delta_x = x2 - x1
+        delta_y = y2 - y1
+        hex1 = self.hexes(hexlabel1)
+        hex2 = self.hexes(hexlabel2)
+        strike_elevation = min(hex1.elevation, hex2.elevation)
+        if close(delta_y, 0) or close(delta_y, 1.5 * abs(delta_x)):
+            return (self._is_los_blocked_dir(hex1, hex1, hex2, True,
+              strike_elevation, False, False, False, False, False, 0, game) and
+              self._is_los_blocked_dir(hex1, hex1, hex2, False,
+                strike_elevation, False, False, False, False, False, 0, game))
+        else:
+            return (self._is_los_blocked_dir(hex1, hex1, hex2,
+              self._to_left(delta_x, delta_y), strike_elevation, False,
+              False, False, False, False, 0, game))
