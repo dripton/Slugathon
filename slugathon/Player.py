@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -256,10 +256,18 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_strikes(self):
+        for creature in self.creatures:
+            if not creature.struck and creature.engaged:
+                print "Forced strikes remain"
+                return
         action = Action.DoneStriking(self.game.name, self.name)
         self.notify(action)
 
     def done_with_counterstrikes(self):
+        for creature in self.creatures:
+            if not creature.struck and creature.engaged:
+                print "Forced strikes remain"
+                return
         action = Action.DoneStrikingBack(self.game.name, self.name,
           self.game.battle_turn)
         self.notify(action)
