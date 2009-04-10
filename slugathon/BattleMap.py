@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 import sys
@@ -117,24 +117,24 @@ class BattleMap(object):
     See label_to_coords for hex labeling docs.
     """
 
-    def __init__(self, terrain, entry_side):
+    def __init__(self, mterrain, entry_side):
         self.hexes = {}
         self.entry_side = entry_side
-        mydata = battlemapdata.data[terrain]
+        mydata = battlemapdata.data[mterrain]
         for label in all_labels:
             x, y = label_to_coords(label, entry_side)
             if label in mydata:
-                terrain, elevation, hexside_dict = mydata[label]
+                bterrain, elevation, hexside_dict = mydata[label]
                 spun_hexside_dict = self.spin_border_dict(hexside_dict,
                   entry_side)
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
-                  terrain, elevation, spun_hexside_dict)
+                  bterrain, elevation, spun_hexside_dict)
             else:
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
                   "Plains", 0, {})
         for hex1 in self.hexes.itervalues():
             hex1.init_neighbors()
-        self.startlist = battlemapdata.startlist.get(terrain)
+        self.startlist = battlemapdata.startlist.get(mterrain)
 
     def hex_width(self):
         """Width of the map, in hexes, including entrances."""
