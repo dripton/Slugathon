@@ -1048,8 +1048,9 @@ class Game(Observed):
             loser = self.other_battle_legion(winner)
             print "winner", winner, "loser", loser
             action = Action.BattleOver(self.name, winner.markername,
-              winner.living_creatures, winner.dead_creatures, loser.markername,
-              loser.living_creatures, loser.dead_creatures, time_loss,
+              winner.living_creature_names, winner.dead_creature_names,
+              loser.markername, loser.living_creature_names,
+              loser.dead_creature_names, time_loss,
               self.current_engagement_hexlabel)
             self.notify(action)
             self._end_battle()
