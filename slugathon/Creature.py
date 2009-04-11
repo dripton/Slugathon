@@ -143,11 +143,12 @@ class Creature(object):
     @property
     def rangestrike_targets(self):
         """Return a set of Creatures that this Creature can rangestrike."""
+        game = self.legion.player.game
         enemies = set()
-        if self.offboard or self.hexlabel is None or not self.rangestrikes:
+        if (self.offboard or self.hexlabel is None or not self.rangestrikes
+          or game.battle_phase != Phase.STRIKE):
             return enemies
         hexlabel_to_enemy = {}
-        game = self.legion.player.game
         legion2 = game.other_battle_legion(self.legion)
         for creature in legion2.creatures:
             if not creature.dead and not creature.offboard:
