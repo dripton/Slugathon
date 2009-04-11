@@ -242,3 +242,6 @@ class Creature(object):
     @property
     def offboard(self):
         return self.hexlabel == "ATTACKER" or self.hexlabel == "DEFENDER"
+
+    def heal(self):
+        self.hits = 0

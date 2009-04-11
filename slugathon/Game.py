@@ -1018,7 +1018,22 @@ class Game(Observed):
             self.defender_legion.die(self.attacker_legion, False, True)
         else:
             assert False, "bug in Game._end_battle"
+        for legion in [self.attacker_legion, self.defender_legion]:
+            if not legion.dead:
+                creature_names_to_remove = []
+                # Avoid modifying list while iterating over it.
+                for creature in legion.creatures:
+                    if creature.dead:
+                        creature_names_to_remove.append(creature.name)
+                    else:
+                        creature.heal()
+                for creature_name in creature_names_to_remove:
+                    legion.remove_creature_by_name(creature_name)
+                    self.caretaker.kill_one(creature_name)
+                self.caretaker.kill_one(creature_name)
+
         self.current_engagement_hexlabel = None
+        self._cleanup_battle()
 
 
     def done_with_counterstrikes(self, playername):
@@ -1251,5 +1266,7 @@ class Game(Observed):
                 raise Exception("should have ended on time loss")
             self.battle_phase = Phase.MANEUVER
 
+        elif isinstance(action, Action.BattleOver):
+            self._end_battle()
 
         self.notify(action)
