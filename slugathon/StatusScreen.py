@@ -199,12 +199,9 @@ class StatusScreen(object):
         elif (isinstance(action, Action.Fight) or
           isinstance(action, Action.DoneManeuvering) or
           isinstance(action, Action.DoneStriking) or
-          isinstance(action, Action.DoneStrikingBack)):
-            self.battle_turn_label.set_text(str(self.game.battle_turn))
-            self.battle_player_label.set_text(
-              self.game.battle_active_player.name)
-            self.battle_phase_label.set_text(Phase.battle_phase_names[
-              self.game.battle_phase])
+          isinstance(action, Action.DoneStrikingBack) or
+          isinstance(action, Action.BattleOver)):
+            self._init_battle()
 
 
 if __name__ == "__main__":
