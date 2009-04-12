@@ -1015,7 +1015,7 @@ class Game(Observed):
         elif self.attacker_legion.dead:
             self.attacker_legion.die(self.defender_legion, False, False)
         elif self.defender_legion.dead:
-            self.defender_legion.die(self.attacker_legion, False, True)
+            self.defender_legion.die(self.attacker_legion, False, False)
         else:
             assert False, "bug in Game._end_battle"
         for legion in self.battle_legions:
