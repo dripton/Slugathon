@@ -1275,6 +1275,8 @@ class Game(Observed):
             self.battle_phase = Phase.MANEUVER
 
         elif isinstance(action, Action.BattleOver):
+            if action.time_loss:
+                self.battle_turn = 8
             self._end_battle()
 
         self.notify(action)
