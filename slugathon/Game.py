@@ -61,7 +61,6 @@ class Game(Observed):
         self.caretaker = Caretaker.Caretaker()
         self.history = History.History()
         self.add_observer(self.history)
-        # XXX Needed?
         self.current_engagement_hexlabel = None
         self.attacker_legion = None
         self.defender_legion = None
