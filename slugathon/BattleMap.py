@@ -380,8 +380,8 @@ class BattleMap(object):
         x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)
         delta_x = x2 - x1
         delta_y = y2 - y1
-        hex1 = self.hexes(hexlabel1)
-        hex2 = self.hexes(hexlabel2)
+        hex1 = self.hexes[hexlabel1]
+        hex2 = self.hexes[hexlabel2]
         strike_elevation = min(hex1.elevation, hex2.elevation)
         if close(delta_y, 0) or close(delta_y, 1.5 * abs(delta_x)):
             return (self._is_los_blocked_dir(hex1, hex1, hex2, True,
