@@ -154,10 +154,33 @@ def test_range():
     assert map1.range("A1", "DEFENDER") == sys.maxint
     assert map1.range("DEFENDER", "A1") == sys.maxint
 
-# TODO
-def test_opposite_hexside():
-    assert False
+def test_opposite_border():
+    hex1 = map1.hexes["D3"]
+    assert hex1.opposite_border(0) is None
+    assert hex1.opposite_border(1) is None
+    assert hex1.opposite_border(2) is None
+    assert hex1.opposite_border(3) == "Slope"
+    assert hex1.opposite_border(4) is None
+    assert hex1.opposite_border(5) is None
+    hex1 = map1.hexes["C2"]
+    assert hex1.opposite_border(0) == "Slope"
+    assert hex1.opposite_border(1) == "Cliff"
+    assert hex1.opposite_border(2) == "Slope"
+    assert hex1.opposite_border(3) is None
+    assert hex1.opposite_border(4) == "Slope"
+    assert hex1.opposite_border(5) is None
 
-# TODO
 def test_is_los_blocked():
-    assert False
+    assert map1.is_los_blocked("D5", "D3", None)
+    assert not map1.is_los_blocked("D5", "E3", None)
+    assert not map1.is_los_blocked("D5", "E4", None)
+    assert not map1.is_los_blocked("D5", "E5", None)
+    assert not map1.is_los_blocked("D5", "D6", None)
+    assert not map1.is_los_blocked("D5", "C5", None)
+    assert not map1.is_los_blocked("D5", "C4", None)
+    assert not map1.is_los_blocked("D5", "B4", None)
+    assert map1.is_los_blocked("D5", "B3", None)
+    assert map1.is_los_blocked("D5", "A2", None)
+    assert not map1.is_los_blocked("D5", "F2", None)
+    assert map1.is_los_blocked("D5", "E2", None)
+    assert not map1.is_los_blocked("D5", "F1", None)
