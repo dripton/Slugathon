@@ -871,6 +871,8 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.RecruitCreature) or isinstance(action,
           Action.UndoRecruit):
             self.highlight_recruits()
+            legion = self.game.find_legion(action.markername)
+            self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.DoneRecruiting):
             if self.game.phase == Phase.SPLIT:
