@@ -98,3 +98,8 @@ class BattleHex(object):
         """
         neighbor = self.neighbors[hexside]
         return neighbor.borders[(hexside + 3) % 6]
+
+    @property
+    def blocks_line_of_sight(self):
+        """Return True if this hex's terrain type blocks LOS."""
+        return self.terrain == "Tree"

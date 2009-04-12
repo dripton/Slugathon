@@ -302,8 +302,8 @@ class BattleMap(object):
         if current_hex.entrance or final_hex.entrance:
             return True
         direction = self._get_direction(current_hex, final_hex, left)
-        nextHex = current_hex.neighbors.get(direction)
-        if nextHex is None:
+        next_hex = current_hex.neighbors.get(direction)
+        if next_hex is None:
             return True
         border = current_hex.borders[direction]
         border2 = current_hex.opposite_border(direction)
@@ -320,7 +320,7 @@ class BattleMap(object):
                     mid_cliff = True
                 if border2 == "Wall":
                     return True
-        elif nextHex == final_hex:
+        elif next_hex == final_hex:
             if is_obstacle(border):
                 mid_obstacle = True
                 total_obstacles += 1
@@ -354,16 +354,16 @@ class BattleMap(object):
                 total_obstacles += 1
                 if border == "Cliff" or border2 == "Cliff":
                     mid_cliff = True
-        if nextHex.blocksLineOfSight():
+        if next_hex.blocks_line_of_sight:
             return True
         # Creatures block LOS, unless both striker and target are at higher
         # elevation than the creature, or unless the creature is at
         # the base of a cliff and the striker or target is atop it.
-        if (game is not None and game.is_battle_hex_occupied(nextHex) and
-            nextHex.getElevation() >= strike_elevation and
+        if (game is not None and game.is_battle_hex_occupied(next_hex) and
+            next_hex.elevation >= strike_elevation and
             (not striker_atop_cliff or current_hex != initial_hex)):
             mid_chit = True
-        return self._is_los_blocked_dir(initial_hex, nextHex, final_hex,
+        return self._is_los_blocked_dir(initial_hex, next_hex, final_hex,
           left, strike_elevation, striker_atop, striker_atop_cliff,
           mid_obstacle, mid_cliff, mid_chit, total_obstacles, game)
 
