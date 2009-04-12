@@ -245,3 +245,6 @@ class Creature(object):
 
     def heal(self):
         self.hits = 0
+
+    def kill(self):
+        self.hits = self.power

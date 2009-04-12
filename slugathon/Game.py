@@ -1018,7 +1018,7 @@ class Game(Observed):
             self.defender_legion.die(self.attacker_legion, False, True)
         else:
             assert False, "bug in Game._end_battle"
-        for legion in [self.attacker_legion, self.defender_legion]:
+        for legion in self.battle_legions:
             if not legion.dead:
                 creature_names_to_remove = []
                 # Avoid modifying list while iterating over it.
@@ -1077,6 +1077,16 @@ class Game(Observed):
                 creature.moved = False
                 creature.previous_hexlabel = None
                 creature.struck = False
+
+    def cleanup_offboard_creatures(self):
+        for legion in self.battle_legions:
+            if legion != self.battle_active_legion:
+                for creature in legion.creatures:
+                    if not creature.dead:
+                        hex1 = self.battlemap.hexes[creature.hexlabel]
+                        if hex1.entrance:
+                            # TODO Unsummon / unrecruit instead if needed
+                            creature.kill()
 
     def cleanup_dead_creatures(self):
         for legion in self.battle_legions:
@@ -1258,6 +1268,7 @@ class Game(Observed):
 
         elif isinstance(action, Action.DoneStrikingBack):
             self.clear_battle_flags()
+            self.cleanup_offboard_creatures()
             self.cleanup_dead_creatures()
             self.battle_turn = action.battle_turn
             if self.battle_turn > 7:
