@@ -117,6 +117,8 @@ def main():
     op.add_option("-s", "--server", action="store", type="str")
     op.add_option("-p", "--port", action="store", type="int")
     opts, args = op.parse_args()
+    if args:
+        op.error("got illegal argument")
     connect = Connect(opts.playername, opts.password, opts.server, opts.port)
     reactor.run()
 
