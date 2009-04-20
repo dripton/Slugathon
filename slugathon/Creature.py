@@ -136,7 +136,7 @@ class Creature(object):
         hex with hexlabel."""
         game = self.legion.player.game
         map1 = game.battlemap
-        return map1.is_los_blocked(self.hexlabel, hexlabel, game)
+        return not map1.is_los_blocked(self.hexlabel, hexlabel, game)
 
     # TODO
     # XXX duplicated code
