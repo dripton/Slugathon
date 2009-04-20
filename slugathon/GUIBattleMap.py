@@ -473,6 +473,8 @@ class GUIBattleMap(gtk.Window):
               self.repaint_hexlabels)
         else:
             clip_rect = event.area
+        if not self.area or not self.area.window:
+            return
         ctx = self.area.window.cairo_create()
         ctx.set_line_width(round(0.2 * self.scale))
         ctx.rectangle(*clip_rect)
