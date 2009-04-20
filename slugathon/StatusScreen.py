@@ -88,6 +88,7 @@ class StatusScreen(object):
         self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
         if self.game.active_player:
             self.game_player_label.set_text(self.game.active_player.name)
+        self._clear_battle()
 
     def _init_players(self):
         for num, player in enumerate(self.game.players):
@@ -118,9 +119,12 @@ class StatusScreen(object):
             self.battle_phase_label.set_text(Phase.battle_phase_names[
               self.game.battle_phase])
         else:
-            self.battle_turn_label.set_text("")
-            self.battle_player_label.set_text("")
-            self.battle_phase_label.set_text("")
+            self._clear_battle()
+
+    def _clear_battle(self):
+        self.battle_turn_label.set_text("")
+        self.battle_player_label.set_text("")
+        self.battle_phase_label.set_text("")
 
     def update(self, observed, action):
         if isinstance(action, Action.AssignedAllTowers):
@@ -179,8 +183,7 @@ class StatusScreen(object):
         elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal) or
-          isinstance(action, Action.RemoveLegion) or
-          isinstance(action, Action.BattleOver)):
+          isinstance(action, Action.RemoveLegion)):
             for num, player in enumerate(self.game.players):
                 legions_label = getattr(self, "legions%d_label" % num)
                 legions_label.set_text(str(len(player.legions)))
@@ -193,15 +196,17 @@ class StatusScreen(object):
                 score_label = getattr(self, "score%d_label" % num)
                 score_label.set_text(str(player.score))
 
-        elif isinstance(action, Action.DoneFighting):
-            self._init_turn()
-
         elif (isinstance(action, Action.Fight) or
           isinstance(action, Action.DoneManeuvering) or
           isinstance(action, Action.DoneStriking) or
-          isinstance(action, Action.DoneStrikingBack) or
-          isinstance(action, Action.BattleOver)):
+          isinstance(action, Action.DoneStrikingBack)):
             self._init_battle()
+
+        elif (isinstance(action, Action.DoneFighting) or
+          isinstance(action, Action.BattleOver)):
+            self._clear_battle()
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+
 
 
 if __name__ == "__main__":
