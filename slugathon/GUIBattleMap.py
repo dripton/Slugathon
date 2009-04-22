@@ -324,8 +324,9 @@ class GUIBattleMap(gtk.Window):
             if chit.creature.dead:
                 hexlabel = (chit.creature.hexlabel or
                   chit.creature.previous_hexlabel)
-                self.clear_hexlabels.add(hexlabel)
-                self.repaint([hexlabel])
+                if hexlabel is not None:
+                    self.clear_hexlabels.add(hexlabel)
+                    self.repaint([hexlabel])
                 self.chits.remove(chit)
 
     def _compute_chit_locations(self, hexlabel):
@@ -507,7 +508,8 @@ class GUIBattleMap(gtk.Window):
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
             for hexlabel in [action.old_hexlabel, action.new_hexlabel]:
-                self.clear_hexlabels.add(hexlabel)
+                if hexlabel is not None:
+                    self.clear_hexlabels.add(hexlabel)
             self.repaint([action.old_hexlabel, action.new_hexlabel])
             self.highlight_mobile_chits()
 
