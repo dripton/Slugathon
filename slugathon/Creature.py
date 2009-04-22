@@ -157,7 +157,8 @@ class Creature(object):
         hex1 = map1.hexes[self.hexlabel]
         for hexlabel, enemy in hexlabel_to_enemy.iteritems():
             if (map1.range(self.hexlabel, hexlabel) <= self.skill and
-              (self.magicmissile or self.has_los_to(hexlabel))):
+              (self.magicmissile or self.has_los_to(hexlabel)) and
+              (self.magicmissile or enemy.character_type != "lord")):
                 enemies.add(enemy)
         return enemies
 
