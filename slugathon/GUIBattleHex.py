@@ -13,7 +13,7 @@ import pangocairo
 import guiutils
 import colors
 import sliceborder
-import Chit
+
 
 SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
@@ -112,7 +112,6 @@ class GUIBattleHex(object):
 
     def draw_hexagon(self, ctx):
         """Create the polygon, filled with the terrain color."""
-
         if self.selected:
             # outline
             ctx.set_source_rgb(1, 0, 0)
@@ -206,45 +205,6 @@ class GUIBattleHex(object):
         ctx.set_source_rgb(0, 0, 0)
         ctx.move_to(x, y)
         pctx.show_layout(layout)
-
-
-    # TODO save computations
-    def highlight_entrance(self, ctx):
-        """Highlight this entrance hex, if selected"""
-        if self.selected:
-            chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
-            x = self.center[0] - chit_scale / 4
-            y = self.center[1] - chit_scale * 7 / 4
-            width = chit_scale / 2
-            height = 7 * chit_scale / 2
-            x1 = x + width
-            y1 = y + height
-            points = [(x, y), (x1, y), (x1, y1), (x, y1)]
-            colormap = self.guimap.area.get_colormap()
-            # outline
-            ctx.set_source_rgb(1, 0, 0)
-            guiutils.draw_polygon(ctx, points)
-            ctx.stroke()
-            # outer portion
-            ctx.set_source_rgb(1, 1, 1)
-            guiutils.draw_polygon(ctx, points)
-            ctx.fill()
-            # inner hex
-            ctx.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(ctx, points)
-            ctx.fill()
-
-    def cleanup_entrance(self, ctx):
-        """Cleanup after any chits that may have moved away from an
-        entrance."""
-        chit_scale = self.guimap.scale * Chit.CHIT_SCALE_FACTOR
-        x = self.center[0] - chit_scale / 2
-        y = self.center[1] - chit_scale * 7 / 2
-        width = chit_scale
-        height = 7 * chit_scale
-        ctx.set_source_rgb(1, 1, 1)
-        ctx.rectangle(x, y, width, height)
-        ctx.fill()
 
     def update_gui(self, ctx):
         self.draw_hexagon(ctx)
