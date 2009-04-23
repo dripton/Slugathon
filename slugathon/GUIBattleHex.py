@@ -76,11 +76,11 @@ class GUIBattleHex(object):
         scale = self.guimap.scale
 
         if self.battlehex.entrance:
-            self.vertexes[0] = rp((cx + 1.5 * scale, cy - scale))
-            self.vertexes[1] = rp((cx + 3 * scale, cy - scale))
+            self.vertexes[0] = rp((cx + 1.5 * scale, cy - 3 * scale))
+            self.vertexes[1] = rp((cx + 3 * scale, cy - 3 * scale))
             self.vertexes[2] = rp((cx + 3 * scale, cy + 3 * scale))
-            self.vertexes[3] = rp((cx + 3 * scale, cy + 7 * scale))
-            self.vertexes[4] = rp((cx + 1.5 * scale, cy + 7 * scale))
+            self.vertexes[3] = rp((cx + 3 * scale, cy + 9 * scale))
+            self.vertexes[4] = rp((cx + 1.5 * scale, cy + 9 * scale))
             self.vertexes[5] = rp((cx + 1.5 * scale, cy + 3 * scale))
         else:
             self.vertexes[0] = rp((cx + scale, cy))
