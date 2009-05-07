@@ -192,7 +192,7 @@ class Creature(object):
         """Return True iff this creature is native to the named hazard.
 
         Note that we define nativity even for hazards that don't provide any
-        benefit for being native, like Wall and Plains.
+        benefit for being native, like Wall and Plain.
         """
         return hazard in creature_name_to_native_hazards.get(self.name, set())
 

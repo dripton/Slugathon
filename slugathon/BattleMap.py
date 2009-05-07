@@ -150,7 +150,7 @@ class BattleMap(object):
                   bterrain, elevation, spun_hexside_dict)
             else:
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
-                  "Plains", 0, {})
+                  "Plain", 0, {})
         for hex1 in self.hexes.itervalues():
             hex1.init_neighbors()
         self.startlist = battlemapdata.startlist.get(mterrain)

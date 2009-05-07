@@ -11,7 +11,7 @@ __license__ = "GNU GPL v2"
     }
 }
 
-Omitted hexes default to Plains, elevation 0, no borders
+Omitted hexes default to Plain, elevation 0, no borders
 """
 
 data = {
@@ -41,14 +41,14 @@ data = {
     },
 
     "Hills": {
-        "B1": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 5: "Slope"}),
-        "B3": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
+        "B1": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 5: "Slope"}),
+        "B3": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
           4: "Slope", 5: "Slope"}),
         "C2": ("Tree", 1, {}),
         "C4": ("Tree", 1, {}),
-        "D2": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
+        "D2": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
           4: "Slope", 5: "Slope"}),
-        "D6": ("Plains", 1, {2: "Slope", 3: "Slope", 4: "Slope"}),
+        "D6": ("Plain", 1, {2: "Slope", 3: "Slope", 4: "Slope"}),
         "F2": ("Tree", 1, {}),
     },
 
@@ -75,27 +75,27 @@ data = {
     },
 
     "Mountains": {
-        "A1": ("Plains", 1, {0: "Slope"}),
-        "B1": ("Plains", 2, {0: "Slope", 1: "Cliff", 2: "Slope", 5: "Slope"}),
-        "B2": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope", 5: "Slope"}),
-        "B4": ("Plains", 1, {3: "Slope", 4: "Slope"}),
-        "C1": ("Plains", 1, {0: "Slope", 1: "Slope", 2: "Slope"}),
-        "C4": ("Plains", 1, {3: "Slope", 4: "Slope"}),
-        "C5": ("Plains", 2, {2: "Slope", 3: "Slope", 4: "Slope"}),
-        "D3": ("Plains", 1, {2: "Slope", 3: "Slope", 4: "Slope", 5: "Slope"}),
+        "A1": ("Plain", 1, {0: "Slope"}),
+        "B1": ("Plain", 2, {0: "Slope", 1: "Cliff", 2: "Slope", 5: "Slope"}),
+        "B2": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 5: "Slope"}),
+        "B4": ("Plain", 1, {3: "Slope", 4: "Slope"}),
+        "C1": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope"}),
+        "C4": ("Plain", 1, {3: "Slope", 4: "Slope"}),
+        "C5": ("Plain", 2, {2: "Slope", 3: "Slope", 4: "Slope"}),
+        "D3": ("Plain", 1, {2: "Slope", 3: "Slope", 4: "Slope", 5: "Slope"}),
         "D4": ("Volcano", 2, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
           4: "Cliff", 5: "Slope"}),
-        "D5": ("Plains", 1, {}),
-        "D6": ("Plains", 2, {2: "Slope", 3: "Slope"}),
-        "E3": ("Plains", 1, {3: "Slope"}),
-        "E4": ("Plains", 1, {}),
-        "E5": ("Plains", 1, {}),
-        "F1": ("Plains", 1, {4: "Slope", 5: "Slope"}),
-        "F3": ("Plains", 1, {}),
-        "F4": ("Plains", 2, {3: "Slope", 4: "Slope", 5: "Slope"}),
+        "D5": ("Plain", 1, {}),
+        "D6": ("Plain", 2, {2: "Slope", 3: "Slope"}),
+        "E3": ("Plain", 1, {3: "Slope"}),
+        "E4": ("Plain", 1, {}),
+        "E5": ("Plain", 1, {}),
+        "F1": ("Plain", 1, {4: "Slope", 5: "Slope"}),
+        "F3": ("Plain", 1, {}),
+        "F4": ("Plain", 2, {3: "Slope", 4: "Slope", 5: "Slope"}),
     },
 
-    "Plains": {
+    "Plain": {
     },
 
     "Swamp": {

@@ -49,7 +49,7 @@ class TestBattle(object):
     def test_hex_entry_cost(self):
         titan = Creature.Creature("Titan")
         assert self.game.battle_hex_entry_cost(titan, "Bramble", None) == 2
-        assert self.game.battle_hex_entry_cost(titan, "Plains", None) == 1
+        assert self.game.battle_hex_entry_cost(titan, "Plain", None) == 1
         assert self.game.battle_hex_entry_cost(titan, "Sand", None) == 2
         assert self.game.battle_hex_entry_cost(titan, "Sand", "Dune") == 2
         assert self.game.battle_hex_entry_cost(titan, "Tower", None) == 1
@@ -59,7 +59,7 @@ class TestBattle(object):
           sys.maxint
         lion = Creature.Creature("Lion")
         assert self.game.battle_hex_entry_cost(lion, "Bramble", None) == 2
-        assert self.game.battle_hex_entry_cost(lion, "Plains", None) == 1
+        assert self.game.battle_hex_entry_cost(lion, "Plain", None) == 1
         assert self.game.battle_hex_entry_cost(lion, "Sand", None) == 1
         assert self.game.battle_hex_entry_cost(lion, "Sand", "Dune") == 1
         assert self.game.battle_hex_entry_cost(lion, "Tower", None) == 1
@@ -69,7 +69,7 @@ class TestBattle(object):
           sys.maxint
         giant = Creature.Creature("Giant")
         assert self.game.battle_hex_entry_cost(giant, "Bramble", None) == 2
-        assert self.game.battle_hex_entry_cost(giant, "Plains", None) == 1
+        assert self.game.battle_hex_entry_cost(giant, "Plain", None) == 1
         assert self.game.battle_hex_entry_cost(giant, "Sand", None) == 2
         assert self.game.battle_hex_entry_cost(giant, "Sand", "Dune") == 2
         assert self.game.battle_hex_entry_cost(giant, "Tower", None) == 1
@@ -79,7 +79,7 @@ class TestBattle(object):
           sys.maxint
         dragon = Creature.Creature("Dragon")
         assert self.game.battle_hex_entry_cost(dragon, "Bramble", None) == 2
-        assert self.game.battle_hex_entry_cost(dragon, "Plains", None) == 1
+        assert self.game.battle_hex_entry_cost(dragon, "Plain", None) == 1
         assert self.game.battle_hex_entry_cost(dragon, "Sand", None) == 2
         assert self.game.battle_hex_entry_cost(dragon, "Sand", "Dune") == 2
         assert self.game.battle_hex_entry_cost(dragon, "Tower", None) == 1
@@ -87,7 +87,7 @@ class TestBattle(object):
         assert self.game.battle_hex_entry_cost(dragon, "Drift", None) == 2
         assert self.game.battle_hex_entry_cost(dragon, "Volcano", None) == 1
 
-    def test_find_moves_plains(self):
+    def test_find_moves_plain(self):
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -246,7 +246,7 @@ class TestBattle(object):
         set4 = set(["C1", "D2", "E2", "F2", "B1", "C2", "D3", "E3", "F3"])
         assert self.game.find_battle_moves(gargoyle) == set4
 
-    def test_strikes_plains(self):
+    def test_strikes_plain(self):
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
         game = self.game

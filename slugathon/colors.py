@@ -177,7 +177,7 @@ terrain_colors = {
     "Jungle": "dark_green",
     "Marsh": "sienna",
     "Mountains": "red",
-    "Plains": "yellow",
+    "Plain": "yellow",
     "Swamp": "blue",
     "Tower": "gray",
     "Tundra": "sky_blue",
@@ -185,9 +185,9 @@ terrain_colors = {
 }
 
 battle_terrain_colors = {
-    "Plains": "light_olive",
-    ("Plains", 1): "dark_yellow",
-    ("Plains", 2): "yellow",
+    "Plain": "light_olive",
+    ("Plain", 1): "dark_yellow",
+    ("Plain", 2): "yellow",
     "Tower": "dim_gray",
     ("Tower", 1): "dark_gray",
     ("Tower", 2): "gray",

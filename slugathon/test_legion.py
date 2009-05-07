@@ -125,7 +125,7 @@ def test_available_recruits():
     assert legion.available_recruits(masterhex, caretaker) == []
     masterhex = board.hexes[139] # Desert
     assert legion.available_recruits(masterhex, caretaker) == []
-    masterhex = board.hexes[138] # Plains
+    masterhex = board.hexes[138] # Plain
     assert legion.available_recruits(masterhex, caretaker) == ["Centaur",
       "Lion"]
     masterhex = board.hexes[137] # Brush

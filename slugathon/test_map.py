@@ -21,13 +21,13 @@ def test_all_labels():
     assert "DEFENDER" in BattleMap.all_labels
 
 def test_default_hex_init():
-    assert hex1.terrain == "Plains"
+    assert hex1.terrain == "Plain"
     assert hex1.elevation == 0
     for ii in xrange(6):
         assert hex1.borders[ii] is None
 
 def test_non_default_hex_init():
-    assert hex2.terrain == "Plains"
+    assert hex2.terrain == "Plain"
     assert hex2.elevation == 1
     assert hex2.borders[0] is None
     assert hex2.borders[1] is None
