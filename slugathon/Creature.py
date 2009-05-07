@@ -111,19 +111,25 @@ class Creature(object):
           + 0.18 * (self.skill == 4)
           + 100 * (self.name == "Titan"))
 
-    @property
-    def engaged_enemies(self):
-        """Return a set of enemy Creatures this Creature is engaged with."""
-        enemies = set()
-        if self.offboard or self.hexlabel is None:
-            return enemies
+    def _hexlabel_to_enemy(self):
+        """Return a dict of hexlabel: enemy Creature"""
         hexlabel_to_enemy = {}
         game = self.legion.player.game
         legion2 = game.other_battle_legion(self.legion)
         for creature in legion2.creatures:
             if not creature.dead and not creature.offboard:
                 hexlabel_to_enemy[creature.hexlabel] = creature
+        return hexlabel_to_enemy
+
+    @property
+    def engaged_enemies(self):
+        """Return a set of enemy Creatures this Creature is engaged with."""
+        enemies = set()
+        if self.offboard or self.hexlabel is None:
+            return enemies
+        game = self.legion.player.game
         hex1 = game.battlemap.hexes[self.hexlabel]
+        hexlabel_to_enemy = self._hexlabel_to_enemy()
         for hexside, hex2 in hex1.neighbors.iteritems():
             if hex2.label in hexlabel_to_enemy:
                 if (hex1.borders[hexside] != "Cliff" and
@@ -138,8 +144,6 @@ class Creature(object):
         map1 = game.battlemap
         return not map1.is_los_blocked(self.hexlabel, hexlabel, game)
 
-    # TODO
-    # XXX duplicated code
     @property
     def rangestrike_targets(self):
         """Return a set of Creatures that this Creature can rangestrike."""
@@ -148,13 +152,8 @@ class Creature(object):
         if (self.offboard or self.hexlabel is None or not self.rangestrikes
           or game.battle_phase != Phase.STRIKE):
             return enemies
-        hexlabel_to_enemy = {}
-        legion2 = game.other_battle_legion(self.legion)
-        for creature in legion2.creatures:
-            if not creature.dead and not creature.offboard:
-                hexlabel_to_enemy[creature.hexlabel] = creature
+        hexlabel_to_enemy = self._hexlabel_to_enemy()
         map1 = game.battlemap
-        hex1 = map1.hexes[self.hexlabel]
         for hexlabel, enemy in hexlabel_to_enemy.iteritems():
             if (map1.range(self.hexlabel, hexlabel) <= self.skill and
               (self.magicmissile or self.has_los_to(hexlabel)) and
