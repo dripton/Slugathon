@@ -43,17 +43,9 @@ class Legion(Observed):
         return not alive
 
     @property
-    def living_creatures(self):
-        return [creature for creature in self.creatures if not creature.dead]
-
-    @property
     def living_creature_names(self):
         return [creature.name for creature in self.creatures if not
           creature.dead]
-
-    @property
-    def dead_creatures(self):
-        return [creature for creature in self.creatures if creature.dead]
 
     @property
     def dead_creature_names(self):
