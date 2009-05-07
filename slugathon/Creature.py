@@ -218,25 +218,67 @@ class Creature(object):
         return bool(self.rangestrike_targets)
 
     # TODO strike penalties to carry
-    # TODO terrain bonuses and penalties
     def number_of_dice(self, target):
         """Return the number of dice to use if striking target."""
+        map1 = self.legion.player.game.battlemap
+        hex1 = map1.hexes[self.hexlabel]
+        hex2 = map1.hexes[target.hexlabel]
         if target in self.engaged_enemies:
-            return self.power
+            dice = self.power
+            if hex1.terrain == "Volcano" and self.is_native(hex1.terrain):
+                dice += 2
+            hexside = hex1.neighbor_to_hexside(hex2)
+            border = hex1.borders[hexside]
+            if border == "Slope" and self.is_native(border):
+                dice += 1
+            elif border == "Dune" and self.is_native(border):
+                dice += 2
+            border2 = hex1.opposite_border(hexside)
+            if border2 == "Dune" and not self.is_native(border):
+                dice -= 1
         elif target in self.rangestrike_targets:
-            return int(self.power / 2)
+            dice = int(self.power / 2)
+            if hex1.terrain == "Volcano" and self.is_native(hex1.terrain):
+                dice += 2
         else:
-            return 0
+            dice = 0
+        return dice
 
     # TODO strike penalties to carry
-    # TODO terrain bonuses and penalties
+    # TODO intervening bramble penalty
+    # TODO intervening wall penalty
     def strike_number(self, target):
         """Return the strike number to use if striking target."""
         map1 = self.legion.player.game.battlemap
-        strike_number = min(4 - self.skill + target.skill, 6)
-        if (strike_number < 6 and not self.magicmissile and
-          map1.range(self.hexlabel, target.hexlabel) >= 4):
-            strike_number += 1
+        hex1 = map1.hexes[self.hexlabel]
+        hex2 = map1.hexes[target.hexlabel]
+        skill1 = self.skill
+        skill2 = target.skill
+        if target in self.engaged_enemies:
+            hexside = hex1.neighbor_to_hexside(hex2)
+            border = hex1.borders[hexside]
+            border2 = hex1.opposite_border(hexside)
+            if hex1.terrain == "Bramble" and not self.is_native(hex1.terrain):
+                skill1 -= 1
+            elif border == "Wall":
+                skill1 += 1
+            elif border2 == "Slope" and not self.is_native(border):
+                skill1 -= 1
+            elif border2 == "Wall":
+                skill1 -= 1
+        else:
+            # Long range rangestrike penalty
+            if (not self.magicmissile and map1.range(self.hexlabel,
+              target.hexlabel) >= 4):
+                skill1 -= 1
+        strike_number = 4 - skill1 + skill2
+        if target in self.engaged_enemies:
+            if (hex2.terrain == "Bramble" and not self.is_native(hex2.terrain)
+              and target.is_native(hex2.terrain)):
+                strike_number += 1
+        else:
+            pass
+        strike_number = min(strike_number, 6)
         return strike_number
 
     @property

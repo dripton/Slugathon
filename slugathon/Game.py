@@ -864,8 +864,7 @@ class Game(Observed):
                     # properly compute the real hexside.
                     border = None
                 else:
-                    reverse_dir = (hexside + 3) % 6
-                    border = hex2.borders[reverse_dir]
+                    border = hex1.opposite_border(hexside)
                 cost = self.battle_hex_entry_cost(creature, hex2.terrain,
                   border)
                 if cost <= movement_left:

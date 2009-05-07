@@ -26,7 +26,6 @@ class BattleHex(object):
         self.y = y
         self.terrain = terrain
         self.elevation = elevation
-        # TODO Perhaps borders should be objects rather than strings?
         self.borders = []
         for ii in xrange(6):
             self.borders.append(borderdict.get(ii))
@@ -103,3 +102,10 @@ class BattleHex(object):
     def blocks_line_of_sight(self):
         """Return True if this hex's terrain type blocks LOS."""
         return self.terrain == "Tree"
+
+    def neighbor_to_hexside(self, neighbor):
+        """Return the adjacent to neighbor, or None."""
+        for hexside, neighbor2 in self.neighbors.iteritems():
+            if neighbor2 == neighbor:
+                return hexside
+        return None
