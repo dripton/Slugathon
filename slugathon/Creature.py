@@ -249,7 +249,8 @@ class Creature(object):
     # TODO intervening wall penalty
     def strike_number(self, target):
         """Return the strike number to use if striking target."""
-        map1 = self.legion.player.game.battlemap
+        game = self.legion.player.game
+        map1 = game.battlemap
         hex1 = map1.hexes[self.hexlabel]
         hex2 = map1.hexes[target.hexlabel]
         skill1 = self.skill
@@ -271,6 +272,12 @@ class Creature(object):
             if (not self.magicmissile and map1.range(self.hexlabel,
               target.hexlabel) >= 4):
                 skill1 -= 1
+            if not self.magicmissile and not self.is_native("Bramble"):
+                skill1 -= map1.count_bramble_hexes(self.hexlabel,
+                  target.hexlabel, game)
+            if not self.magicmissile:
+                skill1 -= map1.count_walls(self.hexlabel, target.hexlabel,
+                  game)
         strike_number = 4 - skill1 + skill2
         if target in self.engaged_enemies:
             if (hex2.terrain == "Bramble" and not self.is_native(hex2.terrain)

@@ -139,6 +139,7 @@ class BattleMap(object):
     def __init__(self, mterrain, entry_side):
         self.hexes = {}
         self.entry_side = entry_side
+        self.mterrain = mterrain
         mydata = battlemapdata.data[mterrain]
         for label in all_labels:
             x, y = label_to_coords(label, entry_side)
@@ -208,7 +209,7 @@ class BattleMap(object):
 
         delta_y must be nonzero.
         """
-        ratio = delta_x / delta_y;
+        ratio = delta_x / delta_y
         return (ratio >= 1.5 or (ratio >= 0 and ratio <= 0.75)
             or (ratio >= -1.5 and ratio <= -0.75))
 
@@ -375,7 +376,7 @@ class BattleMap(object):
         """
         assert hexlabel1 in self.hexes and hexlabel2 in self.hexes
         if hexlabel1 == hexlabel2:
-            return [[hexlabel1, hexlabel2]]
+            return False
         x1, y1 = label_to_coords(hexlabel1, self.entry_side, True)
         x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)
         delta_x = x2 - x1
@@ -392,3 +393,70 @@ class BattleMap(object):
             return (self._is_los_blocked_dir(hex1, hex1, hex2,
               self._to_left(delta_x, delta_y), strike_elevation, False,
               False, False, False, False, 0, game))
+
+
+    def _count_bramble_hexes_dir(self, hex1, hex2, left, count):
+        """Return the number of intervening bramble hexes.
+
+        If LOS is along a hexspine, go left if argument left is True, right
+        otherwise.   If LOS is blocked, return a large number.
+        """
+        if hex1.entrance or hex2.entrance:
+            return sys.maxint
+        direction = self._get_direction(hex1, hex2, left)
+        next_hex = hex1.neighbors.get(direction)
+        if next_hex is None:
+            return sys.maxint
+        if next_hex == hex2:
+            return count
+        if next_hex.terrain == "Bramble":
+            count += 1
+        return self._count_bramble_hexes_dir(next_hex, hex2, left, count)
+
+    def count_bramble_hexes(self, hexlabel1, hexlabel2, game):
+        """Return the minimum number of intervening bramble hexes along a valid
+        line of sight between hexlabel1 and hexlabel2.
+
+        game is optional, but needed to check creatures.
+        """
+        assert not self.is_los_blocked(hexlabel1, hexlabel2, game)
+        hex1 = self.hexes[hexlabel1]
+        hex2 = self.hexes[hexlabel2]
+        if hex1 == hex2:
+            return 0
+        if hex1.entrance or hex2.entrance:
+            return sys.maxint
+        x1, y1 = label_to_coords(hexlabel1, self.entry_side, True)
+        x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)
+        delta_x = x2 - x1
+        delta_y = y2 - y1
+
+        if close(delta_y, 0) or close(delta_y, 1.5 * abs(delta_x)):
+            strike_elevation = min(hex1.elevation, hex2.elevation)
+            # Hexspine try unblocked side(s).
+            if self._is_los_blocked_dir(hex1, hex1, hex2, True,
+              strike_elevation, False, False, False, False, False, 0):
+                return self._count_bramble_hexes_dir(hex1, hex2, False, 0)
+            elif self._is_los_blocked_dir(hex1, hex1, hex2, False,
+              strike_elevation, False, False, False, False, False, 0):
+                return self._count_bramble_hexes_dir(hex1, hex2, True, 0)
+            else:
+                return min(self._count_bramble_hexes_dir(hex1, hex2, True, 0),
+                  self._count_bramble_hexes_dir(hex1, hex2, False, 0))
+        else:
+            return self._count_bramble_hexes_dir(hex1, hex2,
+              self._to_left(delta_x, delta_y), 0)
+
+
+    # XXX Implementation hardcoded to default Tower map
+    def count_walls(self, hexlabel1, hexlabel2, game):
+        """Return the number of uphill wall hazards between hexlabel1 and
+        hexlabel2.
+
+        game is optional, but needed to check creatures.
+        """
+        if self.mterrain != "Tower":
+            return 0
+        hex1 = self.hexes[hexlabel1]
+        hex2 = self.hexes[hexlabel2]
+        return min(hex2.elevation - hex1.elevation, 0)
