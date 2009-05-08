@@ -277,7 +277,8 @@ class Creature(object):
               and target.is_native(hex2.terrain)):
                 strike_number += 1
         else:
-            pass
+            if (hex2.terrain == "Volcano" and target.is_native(hex2.terrain)):
+                strike_number += 1
         strike_number = min(strike_number, 6)
         return strike_number
 
