@@ -249,8 +249,6 @@ class Creature(object):
         return dice
 
     # TODO strike penalties to carry
-    # TODO intervening bramble penalty
-    # TODO intervening wall penalty
     def strike_number(self, target):
         """Return the strike number to use if striking target."""
         game = self.legion.player.game
@@ -288,7 +286,11 @@ class Creature(object):
               and target.is_native(hex2.terrain)):
                 strike_number += 1
         else:
-            if (hex2.terrain == "Volcano" and target.is_native(hex2.terrain)):
+            if (hex2.terrain == "Bramble" and target.is_native(hex2.terrain)
+              and not self.is_native(hex2.terrain)):
+                strike_number += 1
+            elif (hex2.terrain == "Volcano" and target.is_native(
+              hex2.terrain)):
                 strike_number += 1
         strike_number = min(strike_number, 6)
         return strike_number
