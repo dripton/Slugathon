@@ -187,3 +187,11 @@ def test_is_los_blocked():
 
     map3 = BattleMap.BattleMap("Brush", 1)
     assert not map3.is_los_blocked("C4", "D6", None)
+
+def test_battlehex_repr():
+    assert repr(hex1) == "BattleHex A2 (5, 2)"
+
+def test_neighbor_to_hexside():
+    assert hex1.neighbor_to_hexside(hex2) == 0
+    assert hex2.neighbor_to_hexside(hex1) == 3
+    assert hex1.neighbor_to_hexside(hex3) == None

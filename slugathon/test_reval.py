@@ -14,9 +14,21 @@ def test_reval_good2():
 'hexlabel': 1}"
     assert reval(dicstr) == eval(dicstr)
 
+def test_reval_good_float():
+    assert reval("{'test':'123.5','hehe':['hooray',0x10]}") == \
+      {'test': '123.5', 'hehe': ['hooray', 16]}
+
 def test_reval_error():
     try:
         reval("{'test':'123','hehe':['hooray',0x10 ** 20 ** 30]}")
+    except SyntaxError:
+        pass
+    else:
+        assert False, "should have raised"
+
+def test_reval_error2():
+    try:
+        reval("{'test','123','hehe':['hooray',0x10 ** 20 ** 30]}")
     except SyntaxError:
         pass
     else:

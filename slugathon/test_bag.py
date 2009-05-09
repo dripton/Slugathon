@@ -72,6 +72,7 @@ def test_equal():
     b1 = bag(dict(a=1, b=1, c=2))
     b2 = bag(dict(c=2, b=1, a=1))
     assert b1 == b2
+    assert b1 != "a string"
 
 def test_not_equal():
     b1 = bag(dict(a=1, b=1, c=2))
@@ -79,12 +80,19 @@ def test_not_equal():
     assert not (b1 != b2)
     b3 = bag(dict(c=3, b=1, a=1))
     assert b1 != b3
+    assert b1 != "a string"
 
 def test_union():
     b1 = bag(dict(a=1, b=1))
     b2 = bag(dict(a=2, c=1))
     b3 = b1.union(b2)
     assert b3 == bag(dict(a=3, b=1, c=1))
+    try:
+        b1.union("a string")
+    except TypeError:
+        pass
+    else:
+        assert False
 
 def test_update():
     b1 = bag(dict(a=1, b=1))
@@ -116,11 +124,23 @@ def test_difference():
     b1 = bag({"a":1, "b":0, 1:2})
     b2 = bag({"a":1, "b":1, 1:1})
     assert b1.difference(b2) == bag({1:1})
+    try:
+        b1.difference("a string")
+    except TypeError:
+        pass
+    else:
+        assert False
 
 def test_intersection():
     b1 = bag({"a":1, "b":0, 1:4})
     b2 = bag({"a":1, "b":1, 1:2})
     assert b1.intersection(b2) == b2.intersection(b1) == bag({"a":1, 1:2})
+    try:
+        b1.intersection("a string")
+    except TypeError:
+        pass
+    else:
+        assert False
 
 def test_issubset():
     b1 = bag({"a":1, "b":0, 1:4})
@@ -135,6 +155,12 @@ def test_issubset():
     assert b2.issubset(b3)
     assert not b3.issubset(b1)
     assert not b3.issubset(b2)
+    try:
+        b1.issubset("a string")
+    except TypeError:
+        pass
+    else:
+        assert False
 
 def test_issuperset():
     b1 = bag({"a":1, "b":0, 1:4})
@@ -149,6 +175,12 @@ def test_issuperset():
     assert not b2.issuperset(b3)
     assert b3.issuperset(b1)
     assert b3.issuperset(b2)
+    try:
+        b1.issuperset("a string")
+    except TypeError:
+        pass
+    else:
+        assert False
 
 def test_iter():
     b1 = bag({"a":1, "b":0, 1:4})
