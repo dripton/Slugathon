@@ -494,10 +494,9 @@ class TestBattle(object):
         ranger2.legion = attacker
         ranger2.move("C2")
         assert ranger2.find_target_hexlabels() == set(["C4", "D4"])
-        assert ranger2.engaged_enemies == set([ranger1, gargoyle1])
+        assert ranger2.engaged_enemies == set([])
         gorgon2 = attacker.creatures[5]
         gorgon2.legion = attacker
         gorgon2.move("D2")
         assert gorgon2.find_target_hexlabels() == set(["E3"])
-        assert gorgon2.engaged_enemies == set(gorgon1)
-
+        assert gorgon2.engaged_enemies == set([])
