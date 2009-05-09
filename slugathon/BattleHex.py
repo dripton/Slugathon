@@ -104,7 +104,7 @@ class BattleHex(object):
         return self.terrain == "Tree"
 
     def neighbor_to_hexside(self, neighbor):
-        """Return the adjacent to neighbor, or None."""
+        """Return the hexside adjacent to neighbor, or None."""
         for hexside, neighbor2 in self.neighbors.iteritems():
             if neighbor2 == neighbor:
                 return hexside
