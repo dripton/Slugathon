@@ -90,9 +90,13 @@ class Creature(object):
 
     def __repr__(self):
         if self.name == "Titan":
-            return "%s(%d)" % (self.name, self.power)
+            base = "%s(%d)" % (self.name, self.power)
         else:
-            return self.name
+            base = self.name
+        if self.hexlabel is not None:
+            return "%s in %s" % (base, self.hexlabel)
+        else:
+            return base
 
     @property
     def score(self):
