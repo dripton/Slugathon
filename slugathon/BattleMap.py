@@ -360,9 +360,9 @@ class BattleMap(object):
         # Creatures block LOS, unless both striker and target are at higher
         # elevation than the creature, or unless the creature is at
         # the base of a cliff and the striker or target is atop it.
-        if (game is not None and game.is_battle_hex_occupied(next_hex) and
-            next_hex.elevation >= strike_elevation and
-            (not striker_atop_cliff or current_hex != initial_hex)):
+        if (game is not None and game.is_battle_hex_occupied(next_hex.label)
+          and next_hex.elevation >= strike_elevation and
+          (not striker_atop_cliff or current_hex != initial_hex)):
             mid_chit = True
         return self._is_los_blocked_dir(initial_hex, next_hex, final_hex,
           left, strike_elevation, striker_atop, striker_atop_cliff,
