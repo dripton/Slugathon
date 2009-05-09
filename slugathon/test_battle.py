@@ -478,12 +478,18 @@ class TestBattle(object):
         centaur2.move("D3")
         assert centaur2.find_target_hexlabels() == set(["D4", "E3"])
         assert centaur2.engaged_enemies == set([ranger1, gorgon1])
+        assert centaur2.number_of_dice(ranger1) == 3
+        assert centaur2.strike_number(ranger1) == 4
+        assert centaur2.number_of_dice(gorgon1) == 3
+        assert centaur2.strike_number(gorgon1) == 4
         gargoyle2 = attacker.creatures[3]
         assert gargoyle2.find_target_hexlabels() == set()
         assert gargoyle2.engaged_enemies == set()
         gargoyle2.move("B3")
         assert gargoyle2.find_target_hexlabels() == set(["C4"])
         assert gargoyle2.engaged_enemies == set([gargoyle1])
+        assert gargoyle2.number_of_dice(gargoyle1) == 4
+        assert gargoyle2.strike_number(gargoyle1) == 4
         titan2 = attacker.creatures[0]
         assert titan2.find_target_hexlabels() == set()
         assert titan2.engaged_enemies == set()
@@ -495,8 +501,48 @@ class TestBattle(object):
         ranger2.move("C2")
         assert ranger2.find_target_hexlabels() == set(["C4", "D4"])
         assert ranger2.engaged_enemies == set([])
+        assert ranger2.number_of_dice(gargoyle1) == 2
+        assert ranger2.strike_number(gargoyle1) == 4
+        assert ranger2.number_of_dice(ranger1) == 2
+        assert ranger2.strike_number(ranger1) == 4
         gorgon2 = attacker.creatures[5]
         gorgon2.legion = attacker
         gorgon2.move("D2")
         assert gorgon2.find_target_hexlabels() == set(["E3"])
         assert gorgon2.engaged_enemies == set([])
+        assert gorgon2.number_of_dice(gorgon1) == 3
+        assert gorgon2.strike_number(gorgon1) == 4
+
+        game.battle_active_legion = defender
+        game.battle_phase = Phase.COUNTERSTRIKE
+        assert gargoyle1.engaged_enemies == set([gargoyle2])
+        assert gargoyle1.number_of_dice(gargoyle2) == 4
+        assert gargoyle1.strike_number(gargoyle2) == 4
+        assert ranger1.engaged_enemies == set([centaur2])
+        assert ranger1.number_of_dice(centaur2) == 4
+        assert ranger1.strike_number(centaur2) == 4
+        assert gorgon1.engaged_enemies == set([centaur2])
+        assert gorgon1.number_of_dice(centaur2) == 6
+        assert gorgon1.strike_number(centaur2) == 5
+
+        centaur1.move("A3")
+        titan1.move("F2")
+        game.battle_phase = Phase.STRIKE
+        assert centaur1.engaged_enemies == set([ogre2, gargoyle2])
+        assert centaur1.number_of_dice(ogre2) == 3
+        assert centaur1.strike_number(ogre2) == 3
+        assert centaur1.number_of_dice(gargoyle2) == 3
+        assert centaur1.strike_number(gargoyle2) == 4
+
+        game.battle_active_legion = attacker
+        assert gorgon2.find_target_hexlabels() == set(["E3"])
+        ranger2.move("D6")
+        assert ranger2.find_target_hexlabels() == set(["E4", "D4", "C4", "A3"])
+        assert ranger2.number_of_dice(gargoyle1) == 2
+        assert ranger2.strike_number(gargoyle1) == 4
+        assert ranger2.number_of_dice(ranger1) == 2
+        assert ranger2.strike_number(ranger1) == 5
+        assert ranger2.number_of_dice(ogre1) == 2
+        assert ranger2.strike_number(ogre1) == 2
+        assert ranger2.number_of_dice(centaur1) == 2
+        assert ranger2.strike_number(centaur1) == 5
