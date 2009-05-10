@@ -13,6 +13,11 @@ hex3 = map1.hexes["D4"]
 hex4 = map1.hexes["E1"]
 hex5 = map1.hexes["F1"]
 
+map2 = BattleMap.BattleMap("Tower", 5)
+hex6 = map2.hexes["B2"]
+hex7 = map2.hexes["C3"]
+
+
 def test_all_labels():
     assert len(BattleMap.all_labels) == 29
     assert "A1" in BattleMap.all_labels
@@ -25,6 +30,7 @@ def test_default_hex_init():
     assert hex1.elevation == 0
     for ii in xrange(6):
         assert hex1.borders[ii] is None
+        assert hex6.borders[ii] is None
 
 def test_non_default_hex_init():
     assert hex2.terrain == "Plain"
@@ -44,6 +50,15 @@ def test_non_default_hex_init():
     assert hex3.borders[3] == "Slope"
     assert hex3.borders[4] == "Slope"
     assert hex3.borders[5] == "Slope"
+
+    assert hex7.terrain == "Tower"
+    assert hex7.elevation == 1
+    assert hex7.borders[0] == "Wall"
+    assert hex7.borders[1] == None
+    assert hex7.borders[2] == None
+    assert hex7.borders[3] == None
+    assert hex7.borders[4] == "Wall"
+    assert hex7.borders[5] == "Wall"
 
 def test_label_to_coords():
     assert BattleMap.label_to_coords("A1", 1) == (5, 1)
