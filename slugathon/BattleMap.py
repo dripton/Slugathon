@@ -459,4 +459,4 @@ class BattleMap(object):
             return 0
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
-        return min(hex2.elevation - hex1.elevation, 0)
+        return max(hex2.elevation - hex1.elevation, 0)
