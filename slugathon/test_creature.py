@@ -87,6 +87,9 @@ def test_native():
     assert dragon.is_native("Cliff")
     assert dragon.is_native("Volcano")
 
+    unicorn = Creature.Creature("Unicorn")
+    assert unicorn.is_native("Slope")
+
 def test_titan_power():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)

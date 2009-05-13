@@ -265,7 +265,7 @@ class Creature(object):
                 skill1 -= 1
             elif border == "Wall":
                 skill1 += 1
-            elif border2 == "Slope" and not self.is_native(border):
+            elif border2 == "Slope" and not self.is_native(border2):
                 skill1 -= 1
             elif border2 == "Wall":
                 skill1 -= 1
