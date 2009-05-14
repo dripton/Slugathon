@@ -238,7 +238,7 @@ class Creature(object):
             elif border == "Dune" and self.is_native(border):
                 dice += 2
             border2 = hex1.opposite_border(hexside)
-            if border2 == "Dune" and not self.is_native(border):
+            if border2 == "Dune" and not self.is_native(border2):
                 dice -= 1
         elif target in self.rangestrike_targets:
             dice = int(self.power / 2)

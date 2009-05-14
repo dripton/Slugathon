@@ -314,11 +314,15 @@ class BattleMap(object):
                 total_obstacles += 1
                 if border == "Cliff":
                     striker_atop_cliff = True
+                    if next_hex == final_hex:
+                        return True
             if is_obstacle(border2):
                 mid_obstacle = True
                 total_obstacles += 1
                 if border2 == "Cliff":
                     mid_cliff = True
+                    if next_hex == final_hex:
+                        return True
                 if border2 == "Wall":
                     return True
         elif next_hex == final_hex:

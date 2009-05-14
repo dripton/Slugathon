@@ -17,6 +17,8 @@ map2 = BattleMap.BattleMap("Tower", 5)
 hex6 = map2.hexes["B2"]
 hex7 = map2.hexes["C3"]
 
+map3 = BattleMap.BattleMap("Brush", 1)
+map4 = BattleMap.BattleMap("Desert", 5)
 
 def test_all_labels():
     assert len(BattleMap.all_labels) == 29
@@ -199,9 +201,10 @@ def test_is_los_blocked():
     assert not map1.is_los_blocked("D5", "F2", None)
     assert map1.is_los_blocked("D5", "E2", None)
     assert not map1.is_los_blocked("D5", "F1", None)
-
-    map3 = BattleMap.BattleMap("Brush", 1)
     assert not map3.is_los_blocked("C4", "D6", None)
+    assert map4.is_los_blocked("D4", "D3", None)
+    assert map4.is_los_blocked("D3", "D4", None)
+    assert not map4.is_los_blocked("D4", "C4", None)
 
 def test_battlehex_repr():
     assert repr(hex1) == "BattleHex A2 (5, 2)"
