@@ -111,7 +111,11 @@ def roundpoint(point):
     return (int(round(point[0])), int(round(point[1])))
 
 def exit(*unused):
-    """Quit the program."""
+    """Quit the program with return status 0.
+
+    Used because sys.exit takes an argument, but it's not always
+    convenient to pass one through a callback.
+    """
     sys.exit(0)
 
 def draw_polygon(ctx, points):

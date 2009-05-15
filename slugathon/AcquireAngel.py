@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     def callback(legion, creature):
         print legion, "acquired", creature
-        guiutils.exit
+        guiutils.exit()
 
     now = time.time()
     username = "p0"
