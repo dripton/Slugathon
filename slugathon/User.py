@@ -220,7 +220,7 @@ class User(pb.Avatar):
 
     def update(self, observed, action):
         """Defers updates to its client, dropping the observed reference."""
-        # XXX Don't pass the AcquireAngels event from server to client
-        if not isinstance(action, Action.AcquireAngels):
+        if not (isinstance(action, Action.AcquireAngels) or
+          isinstance(action, Action.DriftDamage)):
             def1 = self.client.callRemote("update", action)
             def1.addErrback(self.failure)

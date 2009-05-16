@@ -944,6 +944,16 @@ class Game(Observed):
         if self.battle_phase == Phase.MANEUVER:
             player.done_with_maneuvers()
 
+    def apply_drift_damage(self):
+        """Apply drift damage to any non-natives in drift."""
+        for legion in self.battle_legions:
+            for creature in legion.creatures:
+                if not creature.dead:
+                    hex1 = self.battlemap.hexes[creature.hexlabel]
+                    if hex1.terrain == "Drift" and not creature.is_native(
+                      hex1.terrain):
+                        creature.hits += 1
+
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
         """Called from Server"""
@@ -1245,6 +1255,8 @@ class Game(Observed):
                 creature.undo_move()
 
         elif isinstance(action, Action.DoneManeuvering):
+            self.battle_phase = Phase.DRIFTDAMAGE
+            self.apply_drift_damage()
             self.battle_phase = Phase.STRIKE
 
         # TODO carries
