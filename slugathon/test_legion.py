@@ -121,17 +121,11 @@ def test_available_recruits():
       "Gargoyle", "Centaur", "Centaur"]), 1)
     caretaker = Caretaker.Caretaker()
 
-    masterhex = board.hexes[140] # Marsh
-    assert legion.available_recruits(masterhex, caretaker) == []
-    masterhex = board.hexes[139] # Desert
-    assert legion.available_recruits(masterhex, caretaker) == []
-    masterhex = board.hexes[138] # Plain
-    assert legion.available_recruits(masterhex, caretaker) == ["Centaur",
-      "Lion"]
-    masterhex = board.hexes[137] # Brush
-    assert legion.available_recruits(masterhex, caretaker) == ["Gargoyle"]
-    masterhex = board.hexes[600] # Tower
-    assert legion.available_recruits(masterhex, caretaker) == ["Centaur",
+    assert legion.available_recruits("Marsh", caretaker) == []
+    assert legion.available_recruits("Desert", caretaker) == []
+    assert legion.available_recruits("Plain", caretaker) == ["Centaur", "Lion"]
+    assert legion.available_recruits("Brush", caretaker) == ["Gargoyle"]
+    assert legion.available_recruits("Tower", caretaker) == ["Centaur",
       "Gargoyle", "Ogre", "Warlock"]
 
 def test_score():

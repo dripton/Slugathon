@@ -315,7 +315,8 @@ class GUIMasterBoard(gtk.Window):
                         guihex.selected = True
                         self.repaint_hexlabels.add(hexlabel)
                         recruitnames = legion.available_recruits(
-                          self.board.hexes[hexlabel], self.game.caretaker)
+                          self.board.hexes[hexlabel].terrain,
+                          self.game.caretaker)
                         if recruitnames:
                             creaturename = recruitnames[-1]
                             recruit = Creature.Creature(creaturename)
@@ -339,12 +340,13 @@ class GUIMasterBoard(gtk.Window):
                 legion = marker.legion
                 if legion.moved and not legion.recruited and len(legion) < 7:
                     masterhex = self.board.hexes[legion.hexlabel]
+                    mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
-                    recruit_names = legion.available_recruits(masterhex,
+                    recruit_names = legion.available_recruits(mterrain,
                       caretaker)
                     if recruit_names:
                         PickRecruit.PickRecruit(self.username, legion.player,
-                          legion, masterhex, caretaker, self.picked_recruit,
+                          legion, mterrain, caretaker, self.picked_recruit,
                           self)
                 self.highlight_recruits()
 
@@ -614,7 +616,8 @@ class GUIMasterBoard(gtk.Window):
                 hexlabel = legion.hexlabel
                 if (legion.moved and not legion.recruited and
                   len(legion) < 7 and
-                  legion.available_recruits(self.game.board.hexes[hexlabel],
+                  legion.available_recruits(
+                    self.game.board.hexes[hexlabel].terrain,
                     self.game.caretaker)):
                       hexlabels.add(hexlabel)
             for hexlabel in hexlabels:

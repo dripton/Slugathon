@@ -165,15 +165,15 @@ class Legion(Observed):
                 maximum = num
         return maximum
 
-    def available_recruits(self, masterhex, caretaker):
+    def available_recruits(self, mterrain, caretaker):
         """Return a list of the creature names that this legion could
-        recruit in masterhex, if it moved there.
+        recruit in a masterhex with terrain type mterrain, if it moved there.
 
         The list is sorted in the same order as within recruitdata.
         """
         result_set = set()
         counts = bag(self.creature_names)
-        recruits = recruitdata.data[masterhex.terrain]
+        recruits = recruitdata.data[mterrain]
         for sublist in self._gen_sublists(recruits):
             names = [tup[0] for tup in sublist]
             nums = [tup[1] for tup in sublist]

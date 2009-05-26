@@ -20,7 +20,7 @@ import Game
 
 class PickRecruit(object):
     """Dialog to pick a recruit."""
-    def __init__(self, username, player, legion, masterhex, caretaker,
+    def __init__(self, username, player, legion, mterrain, caretaker,
       callback, parent):
         self.callback = callback
         self.glade = gtk.glade.XML("../glade/pickrecruit.glade")
@@ -38,7 +38,6 @@ class PickRecruit(object):
 
         self.player = player
         self.legion = legion
-        self.masterhex = masterhex
 
         self.marker = Marker.Marker(legion, True, scale=20)
         self.marker_hbox.pack_start(self.marker.event_box, expand=False,
@@ -51,7 +50,7 @@ class PickRecruit(object):
             self.chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
 
-        recruit_names = legion.available_recruits(masterhex, caretaker)
+        recruit_names = legion.available_recruits(mterrain, caretaker)
         recruits = Creature.n2c(recruit_names)
         for recruit in recruits:
             chit = Chit.Chit(recruit, player.color, scale=20)
@@ -93,7 +92,8 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000
     masterhex = game.board.hexes[legion.hexlabel]
-    pickrecruit = PickRecruit(username, player, legion, masterhex,
+    mterrain = masterhex.terrain
+    pickrecruit = PickRecruit(username, player, legion, mterrain,
       game.caretaker, callback, None)
     pickrecruit.pick_recruit_dialog.connect("destroy", guiutils.exit)
 
