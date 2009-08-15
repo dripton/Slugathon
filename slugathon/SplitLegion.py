@@ -8,7 +8,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk.glade
+import gtk
 
 import Chit
 import Marker
@@ -26,12 +26,13 @@ class SplitLegion(object):
     def __init__(self, username, player, legion, callback, parent):
         self.old_legion = legion
         self.callback = callback
-        self.glade = gtk.glade.XML("../glade/splitlegion.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/splitlegion.ui")
         self.widget_names = ["split_legion_dialog", "old_marker_hbox",
           "old_chits_hbox", "new_marker_hbox", "new_chits_hbox",
           "legion_name"]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.split_legion_dialog.set_icon(icon.pixbuf)
         self.split_legion_dialog.set_title("SplitLegion - %s" % (username))

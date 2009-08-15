@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<?xml version="1.0"?>
 <!--Generated with glade3 3.0.2 on Sat Dec  2 21:23:42 2006 by dripton@al-->
-<glade-interface>
-  <widget class="GtkWindow" id="status_screen_window">
+<interface>
+  <object class="GtkWindow" id="status_screen_window">
     <property name="title" translatable="yes">Game Status</property>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
         <child>
-          <widget class="GtkTable" id="turn_table">
+          <object class="GtkTable" id="turn_table">
             <property name="visible">True</property>
             <property name="n_rows">4</property>
             <property name="n_columns">3</property>
@@ -16,59 +15,59 @@
               <placeholder/>
             </child>
             <child>
-              <widget class="GtkLabel" id="label1">
+              <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Game</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label2">
+              <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Battle</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label3">
+              <object class="GtkLabel" id="label3">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Turn</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">1</property>
                 <property name="bottom_attach">2</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label4">
+              <object class="GtkLabel" id="label4">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Player</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">2</property>
                 <property name="bottom_attach">3</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label5">
+              <object class="GtkLabel" id="label5">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Phase</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">3</property>
                 <property name="bottom_attach">4</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="game_turn_label">
+              <object class="GtkLabel" id="game_turn_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -77,9 +76,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="battle_turn_label">
+              <object class="GtkLabel" id="battle_turn_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -88,9 +87,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="game_player_label">
+              <object class="GtkLabel" id="game_player_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -99,9 +98,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="battle_player_label">
+              <object class="GtkLabel" id="battle_player_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -110,9 +109,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="game_phase_label">
+              <object class="GtkLabel" id="game_phase_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -121,9 +120,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="battle_phase_label">
+              <object class="GtkLabel" id="battle_phase_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -131,26 +130,26 @@
                 <property name="bottom_attach">4</property>
               </packing>
             </child>
-          </widget>
+          </object>
         </child>
         <child>
-          <widget class="GtkHSeparator" id="hseparator1">
+          <object class="GtkHSeparator" id="hseparator1">
             <property name="visible">True</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkTable" id="player_table">
+          <object class="GtkTable" id="player_table">
             <property name="visible">True</property>
             <property name="n_rows">9</property>
             <property name="n_columns">7</property>
             <child>
-              <widget class="GtkLabel" id="eliminated5_label">
+              <object class="GtkLabel" id="eliminated5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -159,9 +158,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="eliminated4_label">
+              <object class="GtkLabel" id="eliminated4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -170,9 +169,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="eliminated3_label">
+              <object class="GtkLabel" id="eliminated3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -181,9 +180,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="eliminated2_label">
+              <object class="GtkLabel" id="eliminated2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -192,9 +191,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="eliminated1_label">
+              <object class="GtkLabel" id="eliminated1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -203,9 +202,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="eliminated0_label">
+              <object class="GtkLabel" id="eliminated0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -214,19 +213,19 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label8">
+              <object class="GtkLabel" id="label8">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Eliminated</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">7</property>
                 <property name="bottom_attach">8</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="color5_label">
+              <object class="GtkLabel" id="color5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -235,9 +234,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="color4_label">
+              <object class="GtkLabel" id="color4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -246,9 +245,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="color3_label">
+              <object class="GtkLabel" id="color3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -257,9 +256,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="color2_label">
+              <object class="GtkLabel" id="color2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -268,9 +267,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="color1_label">
+              <object class="GtkLabel" id="color1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -279,9 +278,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="color0_label">
+              <object class="GtkLabel" id="color0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -290,19 +289,19 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label67">
+              <object class="GtkLabel" id="label67">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Color</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">2</property>
                 <property name="bottom_attach">3</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="titan_power5_label">
+              <object class="GtkLabel" id="titan_power5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -311,9 +310,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="creatures5_label">
+              <object class="GtkLabel" id="creatures5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -322,9 +321,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="markers5_label">
+              <object class="GtkLabel" id="markers5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -333,9 +332,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="legions5_label">
+              <object class="GtkLabel" id="legions5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -344,9 +343,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="tower5_label">
+              <object class="GtkLabel" id="tower5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -355,18 +354,18 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="name5_label">
+              <object class="GtkLabel" id="name5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="titan_power4_label">
+              <object class="GtkLabel" id="titan_power4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -375,9 +374,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="creatures4_label">
+              <object class="GtkLabel" id="creatures4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -386,9 +385,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="markers4_label">
+              <object class="GtkLabel" id="markers4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -397,9 +396,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="legions4_label">
+              <object class="GtkLabel" id="legions4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -408,9 +407,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="tower4_label">
+              <object class="GtkLabel" id="tower4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -419,18 +418,18 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="name4_label">
+              <object class="GtkLabel" id="name4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="titan_power3_label">
+              <object class="GtkLabel" id="titan_power3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -439,9 +438,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="creatures3_label">
+              <object class="GtkLabel" id="creatures3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -450,9 +449,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="markers3_label">
+              <object class="GtkLabel" id="markers3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -461,9 +460,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="legions3_label">
+              <object class="GtkLabel" id="legions3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -472,9 +471,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="tower3_label">
+              <object class="GtkLabel" id="tower3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -483,18 +482,18 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="name3_label">
+              <object class="GtkLabel" id="name3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="titan_power2_label">
+              <object class="GtkLabel" id="titan_power2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -503,9 +502,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="creatures2_label">
+              <object class="GtkLabel" id="creatures2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -514,9 +513,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="markers2_label">
+              <object class="GtkLabel" id="markers2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -525,9 +524,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="legions2_label">
+              <object class="GtkLabel" id="legions2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -536,9 +535,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="tower2_label">
+              <object class="GtkLabel" id="tower2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -547,18 +546,18 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="name2_label">
+              <object class="GtkLabel" id="name2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="titan_power1_label">
+              <object class="GtkLabel" id="titan_power1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -567,9 +566,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="creatures1_label">
+              <object class="GtkLabel" id="creatures1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -578,9 +577,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="markers1_label">
+              <object class="GtkLabel" id="markers1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -589,9 +588,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="legions1_label">
+              <object class="GtkLabel" id="legions1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -600,9 +599,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="tower1_label">
+              <object class="GtkLabel" id="tower1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -611,18 +610,18 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="name1_label">
+              <object class="GtkLabel" id="name1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="titan_power0_label">
+              <object class="GtkLabel" id="titan_power0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -631,9 +630,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="creatures0_label">
+              <object class="GtkLabel" id="creatures0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -642,9 +641,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="markers0_label">
+              <object class="GtkLabel" id="markers0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -653,74 +652,74 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label6">
+              <object class="GtkLabel" id="label6">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Name</property>
-              </widget>
+              </object>
             </child>
             <child>
-              <widget class="GtkLabel" id="label7">
+              <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Tower</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">1</property>
                 <property name="bottom_attach">2</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label9">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Legions</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">3</property>
                 <property name="bottom_attach">4</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label10">
+              <object class="GtkLabel" id="label10">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Markers</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">4</property>
                 <property name="bottom_attach">5</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label11">
+              <object class="GtkLabel" id="label11">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Creatures</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">5</property>
                 <property name="bottom_attach">6</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label12">
+              <object class="GtkLabel" id="label12">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Titan Power</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">6</property>
                 <property name="bottom_attach">7</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="name0_label">
+              <object class="GtkLabel" id="name0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="tower0_label">
+              <object class="GtkLabel" id="tower0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -729,9 +728,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="legions0_label">
+              <object class="GtkLabel" id="legions0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -740,19 +739,19 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label13">
+              <object class="GtkLabel" id="label13">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Score</property>
-              </widget>
+              </object>
               <packing>
                 <property name="top_attach">8</property>
                 <property name="bottom_attach">9</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="score0_label">
+              <object class="GtkLabel" id="score0_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
@@ -761,9 +760,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="score1_label">
+              <object class="GtkLabel" id="score1_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
@@ -772,9 +771,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="score2_label">
+              <object class="GtkLabel" id="score2_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">3</property>
                 <property name="right_attach">4</property>
@@ -783,9 +782,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="score3_label">
+              <object class="GtkLabel" id="score3_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">4</property>
                 <property name="right_attach">5</property>
@@ -794,9 +793,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="score4_label">
+              <object class="GtkLabel" id="score4_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
@@ -805,9 +804,9 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="score5_label">
+              <object class="GtkLabel" id="score5_label">
                 <property name="visible">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="left_attach">6</property>
                 <property name="right_attach">7</property>
@@ -815,12 +814,12 @@
                 <property name="bottom_attach">9</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="position">2</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

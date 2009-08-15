@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<?xml version="1.0"?>
 <!--*- mode: xml -*-->
-<glade-interface>
-  <widget class="GtkWindow" id="connect_window">
+<interface>
+  <object class="GtkWindow" id="connect_window">
     <property name="width_request">300</property>
     <property name="visible">True</property>
     <property name="can_focus">True</property>
@@ -12,40 +11,40 @@
     <property name="title" translatable="yes">Slugathon - Connect</property>
     <property name="window_position">GTK_WIN_POS_MOUSE</property>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
         <child>
-          <widget class="GtkHBox" id="hbox1">
+          <object class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
             <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkLabel" id="label1">
+              <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Player name</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkComboBoxEntry" id="playername_comboboxentry">
+              <object class="GtkComboBoxEntry" id="playername_comboboxentry">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child internal-child="entry">
-                  <widget class="GtkEntry" id="comboboxentry-entry2">
+                  <object class="GtkEntry" id="comboboxentry-entry2">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="has_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                  </widget>
+                  </object>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -53,30 +52,30 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHBox" id="hbox3">
+          <object class="GtkHBox" id="hbox3">
             <property name="visible">True</property>
             <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkLabel" id="label3">
+              <object class="GtkLabel" id="label3">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Password</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="password_entry">
+              <object class="GtkEntry" id="password_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="visibility">False</property>
-              </widget>
+              </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -84,36 +83,36 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHBox" id="hbox2">
+          <object class="GtkHBox" id="hbox2">
             <property name="visible">True</property>
             <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkLabel" id="label2">
+              <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Server name</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkComboBoxEntry" id="server_name_comboboxentry">
+              <object class="GtkComboBoxEntry" id="server_name_comboboxentry">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child internal-child="entry">
-                  <widget class="GtkEntry" id="comboboxentry-entry3">
+                  <object class="GtkEntry" id="comboboxentry-entry3">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                  </widget>
+                  </object>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="fill">False</property>
             <property name="padding">2</property>
@@ -121,36 +120,36 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHBox" id="hbox4">
+          <object class="GtkHBox" id="hbox4">
             <property name="visible">True</property>
             <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkLabel" id="label4">
+              <object class="GtkLabel" id="label4">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Server port</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkComboBoxEntry" id="server_port_comboboxentry">
+              <object class="GtkComboBoxEntry" id="server_port_comboboxentry">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child internal-child="entry">
-                  <widget class="GtkEntry" id="comboboxentry-entry1">
+                  <object class="GtkEntry" id="comboboxentry-entry1">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                  </widget>
+                  </object>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -159,16 +158,15 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkButton" id="connect_button">
+          <object class="GtkButton" id="connect_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="can_default">True</property>
             <property name="receives_default">True</property>
             <property name="label" translatable="yes">Connect to server</property>
             <property name="use_underline">True</property>
-            <property name="response_id">0</property>
-            <signal name="clicked" handler="on_connect_button_clicked"/>
-          </widget>
+            <signal handler="on_connect_button_clicked" name="clicked"/>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -177,25 +175,24 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHSeparator" id="hseparator1">
+          <object class="GtkHSeparator" id="hseparator1">
             <property name="visible">True</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">5</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkButton" id="start_server_button">
+          <object class="GtkButton" id="start_server_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="can_default">True</property>
             <property name="receives_default">True</property>
             <property name="label" translatable="yes">Start local server</property>
             <property name="use_underline">True</property>
-            <property name="response_id">0</property>
-            <signal name="clicked" handler="on_start_server_button_clicked"/>
-          </widget>
+            <signal handler="on_start_server_button_clicked" name="clicked"/>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -203,25 +200,25 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHSeparator" id="hseparator2">
+          <object class="GtkHSeparator" id="hseparator2">
             <property name="visible">True</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">7</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkTextView" id="status_textview">
+          <object class="GtkTextView" id="status_textview">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="editable">False</property>
-          </widget>
+          </object>
           <packing>
             <property name="position">8</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

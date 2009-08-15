@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-import gtk.glade
+import gtk
 from twisted.internet import reactor
 from zope.interface import implements
 
@@ -23,11 +23,12 @@ class Anteroom(object):
     def __init__(self, user, username, usernames, games):
         self.user = user
         self.username = username
-        self.glade = gtk.glade.XML("../glade/anteroom.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/anteroom.ui")
         self.widget_names = ["anteroom_window", "chat_entry", "chat_view",
           "game_list", "user_list", "new_game_button", "load_game_button"]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
         self.usernames = usernames   # set, aliased from Client
         self.games = games           # list, aliased from Client
         self.wfps = {}               # game name : WaitingForPlayers

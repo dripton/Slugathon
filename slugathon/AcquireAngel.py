@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk.glade
+import gtk
 
 import Chit
 import Marker
@@ -23,11 +23,12 @@ class AcquireAngel(object):
     def __init__(self, username, player, legion, available_angels,
       callback, parent):
         self.callback = callback
-        self.glade = gtk.glade.XML("../glade/acquireangel.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/acquireangel.ui")
         self.widget_names = ["acquire_angel_dialog", "marker_hbox",
           "chits_hbox", "angels_hbox", "legion_name"]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.acquire_angel_dialog.set_icon(icon.pixbuf)
         self.acquire_angel_dialog.set_title("AcquireAngel - %s" % (username))

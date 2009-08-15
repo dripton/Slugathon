@@ -9,7 +9,7 @@ from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor
 from twisted.internet import utils
-import gtk.glade
+import gtk
 import gobject
 
 import Client
@@ -21,14 +21,15 @@ import prefs
 class Connect(object):
     """GUI for connecting to a server."""
     def __init__(self, playername, password, server_name, server_port):
-        self.glade = gtk.glade.XML("../glade/connect.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/connect.ui")
         self.widget_names = ["connect_window", "playername_comboboxentry",
           "password_entry", "server_name_comboboxentry",
           "server_port_comboboxentry", "connect_button",
           "start_server_button", "status_textview"]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
-        self.glade.signal_autoconnect(self)
+            setattr(self, widget_name, self.builder.get_object(widget_name))
+        self.builder.connect_signals(self)
         self.playernames = set()
         self.server_names = set()
         self.server_ports = set()

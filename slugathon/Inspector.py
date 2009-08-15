@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 
 import random
 
-import gtk.glade
+import gtk
 
 import Chit
 import creaturedata
@@ -20,11 +20,12 @@ import playercolordata
 class Inspector(object):
     """Window to show a legion's contents."""
     def __init__(self, username):
-        self.glade = gtk.glade.XML("../glade/showlegion.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/showlegion.ui")
         self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
           "legion_name"]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.show_legion_window.set_icon(icon.pixbuf)
         self.show_legion_window.set_title("Inspector - %s" % (username))

@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk.glade
+import gtk
 
 import Chit
 import Marker
@@ -27,7 +27,8 @@ class Proposal(object):
         self.defender_legion = defender_legion
         self.defender_creature_names = defender_creature_names
         self.callback = callback
-        self.glade = gtk.glade.XML("../glade/proposal.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/proposal.ui")
         self.widget_names = [
           "proposal_dialog",
           "legion_name",
@@ -41,7 +42,7 @@ class Proposal(object):
           "reject_button",
         ]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.proposal_dialog.set_icon(icon.pixbuf)
         self.proposal_dialog.set_title("Proposal - %s" % (username))

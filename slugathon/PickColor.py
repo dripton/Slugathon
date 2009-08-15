@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 # TODO This dialog should always be on top.
 
-import gtk.glade
+import gtk
 from twisted.internet import defer
 
 from playercolordata import colors
@@ -20,10 +20,11 @@ class PickColor(object):
         self.user = user
         self.username = username
         self.game_name = game_name
-        self.glade = gtk.glade.XML("../glade/pickcolor.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/pickcolor.ui")
         self.widget_names = ["pick_color_dialog", "label1"] + colors
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.pick_color_dialog.set_icon(icon.pixbuf)
         self.pick_color_dialog.set_title("%s - %s" % (

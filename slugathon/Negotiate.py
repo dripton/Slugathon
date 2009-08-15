@@ -8,7 +8,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk.glade
+import gtk
 
 import Chit
 import Marker
@@ -26,7 +26,8 @@ class Negotiate(object):
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.callback = callback
-        self.glade = gtk.glade.XML("../glade/negotiate.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/negotiate.ui")
         self.widget_names = [
           "negotiate_dialog",
           "legion_name",
@@ -42,7 +43,7 @@ class Negotiate(object):
           "fight_button",
         ]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.proposal_button.set_sensitive(False)
 

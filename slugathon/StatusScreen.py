@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk.glade
+import gtk
 from zope.interface import implements
 
 import icon
@@ -30,7 +30,8 @@ class StatusScreen(object):
         self.game = game
         self.user = user
         self.username = username
-        self.glade = gtk.glade.XML("../glade/statusscreen.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/statusscreen.ui")
         self.widget_names = ["status_screen_window", "turn_table",
           "player_table", "game_turn_label", "game_player_label",
           "game_phase_label", "battle_turn_label", "battle_player_label",
@@ -47,7 +48,7 @@ class StatusScreen(object):
             self.widget_names.append("eliminated%d_label" % num)
             self.widget_names.append("score%d_label" % num)
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.status_screen_window.connect("configure-event",
           self.cb_configure_event)

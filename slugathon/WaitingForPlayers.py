@@ -4,7 +4,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk.glade
+import gtk
 from twisted.internet import reactor
 from zope.interface import implements
 
@@ -28,12 +28,13 @@ class WaitingForPlayers(object):
         self.username = username
         self.game = game
         self.game.add_observer(self)
-        self.glade = gtk.glade.XML("../glade/waitingforplayers.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/waitingforplayers.ui")
         self.widget_names = ["waiting_for_players_window", "game_name_label",
           "player_list", "created_entry", "starts_by_entry", "countdown_entry",
           "join_button", "drop_button", "start_button"]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
         self.player_store = gtk.ListStore(str)
         self.update_player_store()
 

@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk.glade
+import gtk
 
 import Chit
 import Marker
@@ -25,7 +25,8 @@ class Flee(object):
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.callback = callback
-        self.glade = gtk.glade.XML("../glade/flee.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/flee.ui")
         self.widget_names = [
           "flee_dialog",
           "legion_name",
@@ -39,7 +40,7 @@ class Flee(object):
           "do_not_flee_button"
         ]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
 
         self.flee_dialog.set_icon(icon.pixbuf)
         self.flee_dialog.set_title("Flee - %s" % (username))

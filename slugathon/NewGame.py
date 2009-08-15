@@ -4,7 +4,7 @@ __copyright__ = "Copyright (c) 2003-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import gtk.glade
+import gtk
 from twisted.internet import defer
 
 import icon
@@ -19,11 +19,12 @@ class NewGame(object):
         self.max_players = None
         self.user = user
         self.username = username
-        self.glade = gtk.glade.XML("../glade/newgame.glade")
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("../ui/newgame.ui")
         self.widget_names = ["new_game_dialog", "name_entry",
           "min_players_spin", "max_players_spin"]
         for widget_name in self.widget_names:
-            setattr(self, widget_name, self.glade.get_widget(widget_name))
+            setattr(self, widget_name, self.builder.get_object(widget_name))
         self.new_game_dialog.set_icon(icon.pixbuf)
         self.new_game_dialog.set_title("%s - %s" % (
           self.new_game_dialog.get_title(), self.username))
