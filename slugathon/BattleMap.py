@@ -312,14 +312,14 @@ class BattleMap(object):
             if is_obstacle(border):
                 striker_atop = True
                 total_obstacles += 1
-                if border == "Cliff":
+                if border == "Cliff" or border == "Dune":
                     striker_atop_cliff = True
                     if next_hex == final_hex:
                         return True
             if is_obstacle(border2):
                 mid_obstacle = True
                 total_obstacles += 1
-                if border2 == "Cliff":
+                if border2 == "Cliff" or border2 == "Dune":
                     mid_cliff = True
                     if next_hex == final_hex:
                         return True
@@ -329,18 +329,18 @@ class BattleMap(object):
             if is_obstacle(border):
                 mid_obstacle = True
                 total_obstacles += 1
-                if border == "Cliff":
+                if border == "Cliff" or border == "Dune":
                     mid_cliff = True
                 if border == "Wall":
                     return True
             if is_obstacle(border2):
                 target_atop = True
                 total_obstacles += 1
-                if border2 == "Cliff":
+                if border2 == "Cliff" or border2 == "Dune":
                     target_atop_cliff = True
             if mid_chit and not target_atop_cliff:
                 return True
-            if mid_cliff and not striker_atop_cliff and not target_atop_cliff:
+            if mid_cliff and (not striker_atop_cliff or not target_atop_cliff):
                 return True
             if mid_obstacle and not striker_atop and not target_atop:
                 return True
@@ -357,7 +357,8 @@ class BattleMap(object):
             if is_obstacle(border) or is_obstacle(border2):
                 mid_obstacle = True
                 total_obstacles += 1
-                if border == "Cliff" or border2 == "Cliff":
+                if (border == "Cliff" or border2 == "Cliff" or
+                  border == "Dune" or border2 == "Dune"):
                     mid_cliff = True
         if next_hex.blocks_line_of_sight:
             return True
