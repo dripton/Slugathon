@@ -204,7 +204,7 @@ def test_is_los_blocked():
     assert not map3.is_los_blocked("C4", "D6", None)
     assert map4.is_los_blocked("D4", "D3", None)
     assert map4.is_los_blocked("D3", "D4", None)
-    assert map4.is_los_blocked("D4", "C4", None)
+    assert not map4.is_los_blocked("D4", "C4", None)
 
 def test_battlehex_repr():
     assert repr(hex1) == "BattleHex A2 (5, 2)"

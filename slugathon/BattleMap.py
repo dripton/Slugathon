@@ -312,7 +312,7 @@ class BattleMap(object):
             if is_obstacle(border):
                 striker_atop = True
                 total_obstacles += 1
-                if border == "Cliff" or border == "Dune":
+                if border == "Cliff":
                     striker_atop_cliff = True
                     if next_hex == final_hex:
                         return True
@@ -336,7 +336,7 @@ class BattleMap(object):
             if is_obstacle(border2):
                 target_atop = True
                 total_obstacles += 1
-                if border2 == "Cliff" or border2 == "Dune":
+                if border2 == "Cliff":
                     target_atop_cliff = True
             if mid_chit and not target_atop_cliff:
                 return True
