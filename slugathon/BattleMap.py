@@ -289,14 +289,18 @@ class BattleMap(object):
                     return 5
 
     def _is_los_blocked_dir(self, initial_hex, current_hex, final_hex, left,
-      strike_elevation, striker_atop, striker_atop_cliff, mid_obstacle,
-      mid_cliff, mid_chit, total_obstacles, game=None):
+      strike_elevation, striker_atop=False, striker_atop_cliff=False,
+      striker_atop_wall=False, striker_beneath_wall=False, mid_obstacle=False,
+      mid_cliff=False, mid_chit=False, total_obstacles=0, total_walls=0,
+      game=None):
         """Return True iff the line of sight from hexlabel1 to
         hexlabel2 is blocked by terrain or creatures, going to the left of
         hexspines if left is True.
         """
         target_atop = False
         target_atop_cliff = False
+        target_atop_wall = False
+        target_beneath_wall = False
         if current_hex == final_hex:
             return False
         # Offboard hexes are not allowed.
@@ -316,6 +320,9 @@ class BattleMap(object):
                     striker_atop_cliff = True
                     if next_hex == final_hex:
                         return True
+                elif border == "Wall":
+                    striker_atop_wall = True
+                    total_walls += 1
             if is_obstacle(border2):
                 mid_obstacle = True
                 total_obstacles += 1
@@ -323,21 +330,26 @@ class BattleMap(object):
                     mid_cliff = True
                     if next_hex == final_hex:
                         return True
-                if border2 == "Wall":
-                    return True
+                elif border2 == "Wall":
+                    striker_beneath_wall = True
+                    total_walls += 1
         elif next_hex == final_hex:
             if is_obstacle(border):
                 mid_obstacle = True
                 total_obstacles += 1
                 if border == "Cliff" or border == "Dune":
                     mid_cliff = True
-                if border == "Wall":
-                    return True
+                elif border == "Wall":
+                    total_walls += 1
+                    target_beneath_wall = True
             if is_obstacle(border2):
                 target_atop = True
                 total_obstacles += 1
                 if border2 == "Cliff":
                     target_atop_cliff = True
+                elif border2 == "Wall":
+                    total_walls += 1
+                    target_atop_wall = True
             if mid_chit and not target_atop_cliff:
                 return True
             if mid_cliff and (not striker_atop_cliff or not target_atop_cliff):
@@ -347,11 +359,19 @@ class BattleMap(object):
             if (total_obstacles >= 3 and (not striker_atop or not target_atop)
                 and (not striker_atop_cliff and not target_atop_cliff)):
                 return True
+            if total_walls >= 2:
+                if not (striker_atop_wall or target_atop_wall):
+                    return True
+                if striker_beneath_wall or target_beneath_wall:
+                    return True
+            elif total_walls == 1 and not (striker_atop_wall or
+              target_atop_wall or striker_beneath_wall or target_beneath_wall):
+                return True
             return False
         else:
             if mid_chit:
                 # We're not in the initial or final hex, and we have already
-                # marked an mid chit, so it's not adjacent to the base of a
+                # marked a mid chit, so it's not adjacent to the base of a
                 # cliff that the target is atop.
                 return True
             if is_obstacle(border) or is_obstacle(border2):
@@ -371,7 +391,8 @@ class BattleMap(object):
             mid_chit = True
         return self._is_los_blocked_dir(initial_hex, next_hex, final_hex,
           left, strike_elevation, striker_atop, striker_atop_cliff,
-          mid_obstacle, mid_cliff, mid_chit, total_obstacles, game)
+          striker_atop_wall, striker_beneath_wall, mid_obstacle, mid_cliff,
+          mid_chit, total_obstacles, total_walls, game)
 
     def is_los_blocked(self, hexlabel1, hexlabel2, game):
         """Return True iff the line of sight from hexlabel1 to
@@ -391,13 +412,11 @@ class BattleMap(object):
         strike_elevation = min(hex1.elevation, hex2.elevation)
         if close(delta_y, 0) or close(delta_y, 1.5 * abs(delta_x)):
             return (self._is_los_blocked_dir(hex1, hex1, hex2, True,
-              strike_elevation, False, False, False, False, False, 0, game) and
-              self._is_los_blocked_dir(hex1, hex1, hex2, False,
-                strike_elevation, False, False, False, False, False, 0, game))
+              strike_elevation, game=game) and self._is_los_blocked_dir(hex1,
+                hex1, hex2, False, strike_elevation, game=game))
         else:
-            return (self._is_los_blocked_dir(hex1, hex1, hex2,
-              self._to_left(delta_x, delta_y), strike_elevation, False,
-              False, False, False, False, 0, game))
+            return self._is_los_blocked_dir(hex1, hex1, hex2,
+              self._to_left(delta_x, delta_y), strike_elevation, game=game)
 
 
     def _count_bramble_hexes_dir(self, hex1, hex2, left, count):
