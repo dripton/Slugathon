@@ -659,7 +659,6 @@ class TestBattle(object):
 
     def test_strikes_tower2(self):
         self.rd01.creatures.append(Creature.Creature("Ranger"))
-        self.rd01.creatures.append(Creature.Creature("Gorgon"))
         self.bu01.creatures.append(Creature.Creature("Ranger"))
         self.bu01.creatures.append(Creature.Creature("Gorgon"))
         self.rd01.move(100, False, None, 5)
@@ -676,7 +675,7 @@ class TestBattle(object):
         centaur1 = defender.creatures[2]
         assert centaur1.find_target_hexlabels() == set()
         assert centaur1.engaged_enemies == set()
-        centaur1.move("D3")
+        centaur1.move("D5")
         assert centaur1.find_target_hexlabels() == set()
         assert centaur1.engaged_enemies == set()
         gargoyle1 = defender.creatures[3]
@@ -696,11 +695,6 @@ class TestBattle(object):
         ranger1.move("D4")
         assert ranger1.find_target_hexlabels() == set()
         assert ranger1.engaged_enemies == set()
-        gorgon1 = defender.creatures[5]
-        gorgon1.legion = defender
-        gorgon1.move("D5")
-        assert gorgon1.find_target_hexlabels() == set()
-        assert gorgon1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
         game.battle_active_legion = attacker
@@ -709,12 +703,10 @@ class TestBattle(object):
         assert ogre2.find_target_hexlabels() == set()
         assert ogre2.engaged_enemies == set()
         ogre2.move("C2")
-        assert ogre2.find_target_hexlabels() == set(["C3", "D3"])
-        assert ogre2.engaged_enemies == set([ogre1, centaur1])
+        assert ogre2.find_target_hexlabels() == set(["C3"])
+        assert ogre2.engaged_enemies == set([ogre1])
         assert ogre2.number_of_dice(ogre1) == 6
         assert ogre2.strike_number(ogre1) == 5
-        assert ogre2.number_of_dice(centaur1) == 6
-        assert ogre2.strike_number(centaur1) == 6
         centaur2 = attacker.creatures[2]
         assert centaur2.find_target_hexlabels() == set()
         assert centaur2.engaged_enemies == set()
@@ -739,23 +731,18 @@ class TestBattle(object):
         ranger2.legion = attacker
         ranger2.move("F1")
         assert ranger2.engaged_enemies == set()
-        assert ranger2.find_target_hexlabels() == set(["D3", "D4"])
-        assert ranger2.number_of_dice(centaur1) == 2
-        assert ranger2.strike_number(centaur1) == 5
+        assert ranger2.find_target_hexlabels() == set(["D4"])
         assert ranger2.number_of_dice(ranger1) == 2
         assert ranger2.strike_number(ranger1) == 6
         gorgon2 = attacker.creatures[5]
         gorgon2.legion = attacker
         gorgon2.move("D2")
-        assert gorgon2.find_target_hexlabels() == set(["D3"])
-        assert gorgon2.engaged_enemies == set([centaur1])
-        assert gorgon2.number_of_dice(centaur1) == 6
-        assert gorgon2.strike_number(centaur1) == 6
+        assert gorgon2.find_target_hexlabels() == set()
+        assert gorgon2.engaged_enemies == set()
 
         game.battle_active_legion = defender
         game.battle_phase = Phase.COUNTERSTRIKE
         assert gargoyle1.engaged_enemies == set()
-        assert gorgon1.engaged_enemies == set()
         assert ranger1.engaged_enemies == set()
         assert ranger1.find_target_hexlabels() == set()
         assert ogre1.engaged_enemies == set([gargoyle2, ogre2])
@@ -765,7 +752,9 @@ class TestBattle(object):
         assert ogre1.strike_number(ogre2) == 3
 
         game.battle_phase = Phase.STRIKE
-        assert ranger1.find_target_hexlabels() == set(["F1"])
+        assert ranger1.find_target_hexlabels() == set(["E1", "F1"])
+        assert ranger1.number_of_dice(centaur2) == 2
+        assert ranger1.strike_number(centaur2) == 5
         assert ranger1.number_of_dice(ranger2) == 2
         assert ranger1.strike_number(ranger2) == 5
 
