@@ -205,6 +205,18 @@ def test_is_los_blocked():
     assert map4.is_los_blocked("D4", "D3", None)
     assert map4.is_los_blocked("D3", "D4", None)
     assert not map4.is_los_blocked("D4", "C4", None)
+    assert map2.is_los_blocked("D4", "B4", None)
+    assert map2.is_los_blocked("B4", "D4", None)
+    assert map2.is_los_blocked("D4", "B3", None)
+    assert map2.is_los_blocked("B3", "D4", None)
+    assert map2.is_los_blocked("D4", "B2", None)
+    assert map2.is_los_blocked("B2", "D4", None)
+    assert map2.is_los_blocked("D4", "C2", None)
+    assert map2.is_los_blocked("C2", "D4", None)
+    assert not map2.is_los_blocked("D4", "E1", None)
+    assert not map2.is_los_blocked("E1", "D4", None)
+    assert not map2.is_los_blocked("D4", "A1", None)
+    assert not map2.is_los_blocked("A1", "D4", None)
 
 def test_battlehex_repr():
     assert repr(hex1) == "BattleHex A2 (5, 2)"
