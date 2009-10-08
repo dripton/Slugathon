@@ -40,12 +40,12 @@ def test_friendly_legions():
     assert player.friendly_legions() == set([legion1, legion2])
     assert player.friendly_legions(100) == set([legion1, legion2])
     assert player.friendly_legions(200) == set()
-    legion1.move(8, False, 1, None)
+    legion1.move(8, False, None, 1)
     assert player.friendly_legions() == set([legion1, legion2])
     assert player.friendly_legions(100) == set([legion2])
     assert player.friendly_legions(8) == set([legion1])
     assert player.friendly_legions(200) == set()
-    legion2.move(200, True, 3, "Angel")
+    legion2.move(200, True, "Angel", 3)
     assert player.friendly_legions() == set([legion1, legion2])
     assert player.friendly_legions(100) == set()
     assert player.friendly_legions(8) == set([legion1])
@@ -64,9 +64,9 @@ def test_can_exit_move_phase():
       ["Angel", "Gargoyle", "Centaur", "Centaur"])
     legion2 = player.legions["Rd02"]
     assert not player.can_exit_move_phase()
-    legion1.move(8, False, 1, None)
+    legion1.move(8, False, None, 1)
     assert player.can_exit_move_phase()
-    legion2.move(200, True, 3, "Angel")
+    legion2.move(200, True, "Angel", 3)
     assert player.can_exit_move_phase()
 
 def test_num_creatures():
