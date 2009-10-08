@@ -759,9 +759,8 @@ class Game(Observed):
             os.makedirs(prefs.SAVE_DIR)
         basename = "%s_%d.save" % (self.name, time.time())
         save_path = os.path.join(prefs.SAVE_DIR, basename)
-        save_file = open(save_path, "w")
-        self.history.save(save_file)
-        save_file.close()
+        with open(save_path, "w") as save_file:
+            self.history.save(save_file)
 
     def check_for_victory(self):
         living = self.living_players

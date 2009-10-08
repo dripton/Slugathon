@@ -31,9 +31,9 @@ class Marker(object):
         self.height = len(self.legion)
         surface = cairo.ImageSurface.create_from_png(self.image_path)
         self._render_text(surface)
-        tmp_fd, tmp_path = tempfile.mkstemp(prefix="slugathon", suffix=".png")
-        tmp_file = os.fdopen(tmp_fd, "wb")
-        tmp_file.close()
+        with tempfile.NamedTemporaryFile(prefix="slugathon",
+          suffix=".png", delete=False) as tmp_file:
+            tmp_path = tmp_file.name
         surface.write_to_png(tmp_path)
         raw_pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
         self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,

@@ -29,17 +29,15 @@ def save_window_position(playername, window_name, x, y):
     """Save (x, y) as a preferred window position."""
     if not os.path.exists(player_prefs_dir(playername)):
         os.makedirs(player_prefs_dir(playername))
-    fil = open(window_position_path(playername, window_name), "w")
-    fil.write("%d\n" % x)
-    fil.write("%d\n" % y)
-    fil.close()
+    with open(window_position_path(playername, window_name), "w") as fil:
+        fil.write("%d\n" % x)
+        fil.write("%d\n" % y)
 
 def load_window_position(playername, window_name):
     """Return a preferred window position as (x, y)."""
     try:
-        fil = open(window_position_path(playername, window_name))
-        tokens = fil.read().split()
-        fil.close()
+        with open(window_position_path(playername, window_name)) as fil:
+            tokens = fil.read().split()
         x = int(tokens[0])
         y = int(tokens[1])
         return x, y
@@ -54,17 +52,15 @@ def save_window_size(playername, window_name, width, height):
     """Save (width, height) as a preferred window size."""
     if not os.path.exists(player_prefs_dir(playername)):
         os.makedirs(player_prefs_dir(playername))
-    fil = open(window_size_path(playername, window_name), "w")
-    fil.write("%d\n" % width)
-    fil.write("%d\n" % height)
-    fil.close()
+    with open(window_size_path(playername, window_name), "w") as fil:
+        fil.write("%d\n" % width)
+        fil.write("%d\n" % height)
 
 def load_window_size(playername, window_name):
     """Return a preferred window size as (width, height)."""
     try:
-        fil = open(window_size_path(playername, window_name))
-        tokens = fil.read().split()
-        fil.close()
+        with open(window_size_path(playername, window_name)) as fil:
+            tokens = fil.read().split()
         width = int(tokens[0])
         height = int(tokens[1])
         return width, height
@@ -81,9 +77,8 @@ def load_servers():
     server_entries.add(("localhost", Server.DEFAULT_PORT))
     if not os.path.exists(server_path()):
         return sorted(server_entries)
-    fil = open(server_path())
-    st = fil.read()
-    fil.close()
+    with open(server_path()) as fil:
+        st = fil.read()
     lines = st.strip().split("\n")
     for line in lines:
         line = line.strip()
@@ -98,10 +93,9 @@ def save_server(server_name, server_port):
         os.makedirs(GLOBAL_PREFS_DIR)
     server_entries = set(load_servers())
     server_entries.add((server_name, int(server_port)))
-    fil = open(server_path(), "w")
-    for host, port in sorted(server_entries):
-        fil.write("%s:%d\n" % (host, port))
-    fil.close()
+    with open(server_path(), "w") as fil:
+        for host, port in sorted(server_entries):
+            fil.write("%s:%d\n" % (host, port))
 
 def load_playernames():
     """Return a sorted list of known player names."""

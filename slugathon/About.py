@@ -21,9 +21,8 @@ class About(object):
         ad.set_comments("""Very very prerelease""")
 
         license_fn = "../docs/COPYING.txt"
-        fil = open(license_fn)
-        st = fil.read()
-        fil.close()
+        with open(license_fn) as fil:
+            st = fil.read()
         ad.set_license(st)
 
         ad.set_authors(["David Ripton",])

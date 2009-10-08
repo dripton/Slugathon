@@ -127,22 +127,21 @@ def test_save():
     assert history.actions == [action1, action2]
 
     global tmp_path
-    tmp_fd, tmp_path = tempfile.mkstemp("test_history")
-    fil = os.fdopen(tmp_fd, "w")
-    history.save(fil)
-    fil.close()
+    with tempfile.NamedTemporaryFile(prefix="test_history",
+      delete=False) as fil:
+        tmp_path = fil.name
+        history.save(fil)
 
-    fil = open(tmp_path)
-    lines = fil.readlines()
-    fil.close()
+    with open(tmp_path) as fil:
+        lines = fil.readlines()
     assert len(lines) == 2
 
 def test_load():
     history = History.History()
     assert history.actions == []
     assert history.undone == []
-    fil = open(tmp_path, "r")
-    history.load(fil)
+    with open(tmp_path) as fil:
+        history.load(fil)
     assert len(history.actions) == 2
     for action in history.actions:
         assert isinstance(action, Action.MoveLegion)
