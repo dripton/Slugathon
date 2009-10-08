@@ -711,12 +711,14 @@ class Game(Observed):
         """Called from Server"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
-        if player is not self.active_player:
+        if player not in [self.active_player, self.battle_active_player]:
             raise AssertionError("recruiting out of turn")
         # Avoid double recruit
         if not legion.recruited:
             creature = Creature.Creature(creature_name)
             legion.recruit(creature)
+            if self.phase == Phase.FIGHT:
+                creature.hexlabel = "DEFENDER"
 
     def undo_recruit(self, playername, markername):
         player = self.get_player_by_name(playername)
@@ -932,6 +934,17 @@ class Game(Observed):
           creature.previous_hexlabel, new_hexlabel)
         creature.undo_move()
         self.notify(action)
+
+    def done_with_reinforcements(self, playername):
+        """Try to end playername's reinforce battle phase.
+
+        Called from Server
+        """
+        player = self.get_player_by_name(playername)
+        if player is not self.battle_active_player:
+            raise AssertionError("ending maneuver phase out of turn")
+        if self.battle_phase == Phase.REINFORCE:
+            player.done_with_reinforcements()
 
     def done_with_maneuvers(self, playername):
         """Try to end playername's maneuver battle phase.
@@ -1225,7 +1238,8 @@ class Game(Observed):
             if new_player_num == 0:
                 self.turn += 1
             self.active_player = self.players[new_player_num]
-            self.active_player.new_turn()
+            for player in self.players:
+                player.new_turn()
 
         elif isinstance(action, Action.Fight):
             attacker_markername = action.attacker_markername
@@ -1253,6 +1267,9 @@ class Game(Observed):
             # XXX Avoid double undo
             if creature.moved:
                 creature.undo_move()
+
+        elif isinstance(action, Action.DoneReinforcing):
+            self.battle_phase = Phase.MANEUVER
 
         elif isinstance(action, Action.DoneManeuvering):
             self.battle_phase = Phase.DRIFTDAMAGE
@@ -1283,7 +1300,7 @@ class Game(Observed):
             self.battle_turn = action.battle_turn
             if self.battle_turn > 7:
                 raise Exception("should have ended on time loss")
-            self.battle_phase = Phase.MANEUVER
+            self.battle_phase = Phase.REINFORCE
 
         elif isinstance(action, Action.BattleOver):
             if action.time_loss:

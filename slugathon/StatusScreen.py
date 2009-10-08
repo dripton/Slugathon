@@ -198,6 +198,7 @@ class StatusScreen(object):
                 score_label.set_text(str(player.score))
 
         elif (isinstance(action, Action.Fight) or
+          isinstance(action, Action.DoneReinforcing) or
           isinstance(action, Action.DoneManeuvering) or
           isinstance(action, Action.DoneStriking) or
           isinstance(action, Action.DoneStrikingBack)):

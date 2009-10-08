@@ -213,7 +213,7 @@ class Legion(Observed):
             else:
                 raise AssertionError("legion tried to recruit twice")
         else:
-            if len(self) >= 7:
+            if len(self.living_creature_names) >= 7:
                 raise AssertionError("legion too tall to recruit")
             caretaker = self.player.game.caretaker
             if not caretaker.num_left(creature.name):

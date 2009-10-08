@@ -240,6 +240,11 @@ class Server(Observed):
         if game:
             game.undo_move_creature(username, creature_name, new_hexlabel)
 
+    def done_with_reinforcements(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.done_with_reinforcements(username)
+
     def done_with_maneuvers(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:

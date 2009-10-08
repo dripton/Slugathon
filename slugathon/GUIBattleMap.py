@@ -28,6 +28,7 @@ import Chit
 import Phase
 import Action
 import prefs
+import PickRecruit
 
 
 SQRT3 = math.sqrt(3.0)
@@ -418,7 +419,11 @@ class GUIBattleMap(gtk.Window):
             return
         player = self.game.get_player_by_name(self.username)
         if player == self.game.battle_active_player:
-            if self.game.battle_phase == Phase.MANEUVER:
+            if self.game.battle_phase == Phase.REINFORCE:
+                def1 = self.user.callRemote("done_with_reinforcements",
+                  self.game.name)
+                def1.addErrback(self.failure)
+            elif self.game.battle_phase == Phase.MANEUVER:
                 def1 = self.user.callRemote("done_with_maneuvers",
                   self.game.name)
                 def1.addErrback(self.failure)
@@ -513,6 +518,9 @@ class GUIBattleMap(gtk.Window):
             self.repaint([action.old_hexlabel, action.new_hexlabel])
             self.highlight_mobile_chits()
 
+        elif isinstance(action, Action.DoneReinforcing):
+            self.highlight_mobile_chits()
+
         elif isinstance(action, Action.DoneManeuvering):
             self.highlight_strikers()
 
@@ -530,10 +538,33 @@ class GUIBattleMap(gtk.Window):
 
         elif isinstance(action, Action.DoneStrikingBack):
             self._remove_dead_chits()
-            self.highlight_mobile_chits()
+            if (self.game.battle_turn == 4 and
+              self.game.battle_active_player.name == self.username and
+              self.game.battle_active_legion == self.game.defender_legion):
+                legion = self.game.defender_legion
+                if len(legion.living_creature_names) < 7:
+                    masterhex = self.game.board.hexes[legion.hexlabel]
+                    caretaker = self.game.caretaker
+                    mterrain = self.battlemap.mterrain
+                    recruit_names = legion.available_recruits(mterrain,
+                      caretaker)
+                    if recruit_names:
+                        PickRecruit.PickRecruit(self.username, legion.player,
+                          legion, mterrain, caretaker,
+                          self.picked_reinforcement, self)
 
         elif isinstance(action, Action.BattleOver):
             self.destroy()
+
+        elif isinstance(action, Action.RecruitCreature):
+            self.game.defender_legion.creatures[-1].hexlabel = "DEFENDER"
+            self.repaint(["DEFENDER"])
+
+
+    def picked_reinforcement(self, legion, creature):
+        def1 = self.user.callRemote("recruit_creature", self.game.name,
+          legion.markername, creature.name)
+        def1.addErrback(self.failure)
 
     def failure(self, arg):
         print "GUIBattleMap.failure", arg

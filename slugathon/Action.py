@@ -377,6 +377,12 @@ class DoneManeuvering(Action):
         self.playername = playername
 pb.setUnjellyableForClass(DoneManeuvering, DoneManeuvering)
 
+class DoneReinforcing(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(DoneReinforcing, DoneReinforcing)
+
 class DriftDamage(Action):
     def __init__(self, game_name, creature_name, hexlabel,
       target_creature_name, target_hexlabel, hits):

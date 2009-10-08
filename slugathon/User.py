@@ -126,6 +126,9 @@ class User(pb.Avatar):
         self.server.move_creature(self.name, game_name, creature_name,
           old_hexlabel, new_hexlabel)
 
+    def perspective_done_with_reinforcements(self, game_name):
+        self.server.done_with_reinforcements(self.name, game_name)
+
     def perspective_done_with_maneuvers(self, game_name):
         self.server.done_with_maneuvers(self.name, game_name)
 

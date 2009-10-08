@@ -251,6 +251,10 @@ class Player(Observed):
         action = Action.DoneRecruiting(self.game.name, self.name)
         self.notify(action)
 
+    def done_with_reinforcements(self):
+        action = Action.DoneReinforcing(self.game.name, self.name)
+        self.notify(action)
+
     def done_with_maneuvers(self):
         action = Action.DoneManeuvering(self.game.name, self.name)
         self.notify(action)
