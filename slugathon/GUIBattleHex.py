@@ -4,7 +4,7 @@ __license__ = "GNU GPL v2"
 
 import os
 import math
-import sys
+from sys import maxint
 
 import gtk
 import pango
@@ -99,10 +99,10 @@ class GUIBattleHex(object):
     def bounding_rect(self):
         """Return the bounding rectangle (x, y, width, height) of this hex."""
         scale = self.guimap.scale
-        min_x = sys.maxint
-        max_x = -sys.maxint
-        min_y = sys.maxint
-        max_y = -sys.maxint
+        min_x = maxint
+        max_x = -maxint
+        min_y = maxint
+        max_y = -maxint
         for x, y in self.vertexes:
             min_x = min(min_x, x)
             min_y = min(min_y, y)

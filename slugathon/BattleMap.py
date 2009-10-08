@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-import sys
+from sys import maxint
 
 import battlemapdata
 import BattleHex
@@ -188,7 +188,7 @@ class BattleMap(object):
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
         if hex1.entrance or hex2.entrance:
-            return sys.maxint
+            return maxint
         result = 2
         prev = set([hex1])
         ignore = set()
@@ -420,11 +420,11 @@ class BattleMap(object):
         otherwise.   If LOS is blocked, return a large number.
         """
         if hex1.entrance or hex2.entrance:
-            return sys.maxint
+            return maxint
         direction = self._get_direction(hex1, hex2, left)
         next_hex = hex1.neighbors.get(direction)
         if next_hex is None:
-            return sys.maxint
+            return maxint
         if next_hex == hex2:
             return count
         if next_hex.terrain == "Bramble":
@@ -443,7 +443,7 @@ class BattleMap(object):
         if hex1 == hex2:
             return 0
         if hex1.entrance or hex2.entrance:
-            return sys.maxint
+            return maxint
         x1, y1 = label_to_coords(hexlabel1, self.entry_side, True)
         x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)
         delta_x = x2 - x1

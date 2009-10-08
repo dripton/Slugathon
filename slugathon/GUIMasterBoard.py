@@ -7,7 +7,7 @@ __license__ = "GNU GPL v2"
 
 
 import math
-import sys
+from sys import maxint
 
 from twisted.internet import gtk2reactor
 try:
@@ -484,10 +484,10 @@ class GUIMasterBoard(gtk.Window):
         GUIMasterHexes whose hexlabels are given, as a tuple
         (x, y, width, height)
         """
-        min_x = sys.maxint
-        max_x = -sys.maxint
-        min_y = sys.maxint
-        max_y = -sys.maxint
+        min_x = maxint
+        max_x = -maxint
+        min_y = maxint
+        max_y = -maxint
         for hexlabel in hexlabels:
             try:
                 guihex = self.guihexes[hexlabel]

@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 import math
 import random
-import sys
+from sys import maxint, argv
 
 from twisted.internet import gtk2reactor
 try:
@@ -447,10 +447,10 @@ class GUIBattleMap(gtk.Window):
         GUIMasterHexes whose hexlabels are given, as a tuple
         (x, y, width, height)
         """
-        min_x = sys.maxint
-        max_x = -sys.maxint
-        min_y = sys.maxint
-        max_y = -sys.maxint
+        min_x = maxint
+        max_x = -maxint
+        min_y = maxint
+        max_y = -maxint
         for hexlabel in hexlabels:
             try:
                 guihex = self.guihexes[hexlabel]
@@ -572,10 +572,10 @@ class GUIBattleMap(gtk.Window):
 
 if __name__ == "__main__":
     entry_side = None
-    if len(sys.argv) > 1:
-        terrain = sys.argv[1].title()
-        if len(sys.argv) > 2:
-            entry_side = int(sys.argv[2])
+    if len(argv) > 1:
+        terrain = argv[1].title()
+        if len(argv) > 2:
+            entry_side = int(argv[2])
     else:
         terrain = random.choice(battlemapdata.data.keys())
     if entry_side is None:
