@@ -14,7 +14,7 @@ An empty tuple in the list is a break.  Neither up- or
 down-recruiting can cross a break.
 """
 
-__copyright__ = "Copyright (c) 2005 David Ripton"
+__copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 

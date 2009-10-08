@@ -1,6 +1,6 @@
 """Constants for colors, in decimal RGB format"""
 
-__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 

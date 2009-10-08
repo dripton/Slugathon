@@ -1,6 +1,6 @@
 """Saving and loading preferences."""
 
-__copyright__ = "Copyright (c) 2008 David Ripton"
+__copyright__ = "Copyright (c) 2008-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
