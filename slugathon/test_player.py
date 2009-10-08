@@ -80,3 +80,26 @@ def test_num_creatures():
     assert player.selected_markername == "Rd01"
     player.create_starting_legion()
     assert player.num_creatures() == 8
+
+def test_teleported():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markernames) == 12
+    player.pick_marker("Rd01")
+    assert player.selected_markername == "Rd01"
+    player.create_starting_legion()
+    assert player.num_creatures() == 8
+    assert not player.teleported
+    player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
+      ["Angel", "Gargoyle", "Centaur", "Centaur"])
+    legion1 = player.legions["Rd01"]
+    legion2 = player.legions["Rd02"]
+    legion1.move(8, False, None, 1)
+    assert not player.teleported
+    legion2.move(200, True, "Angel", 3)
+    assert player.teleported
+    legion2.undo_move()
+    assert not player.teleported

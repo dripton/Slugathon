@@ -48,11 +48,19 @@ class Player(Observed):
         self.legions = {}
         self.mulligans_left = 1
         self.movement_roll = None
-        self.teleported = False
 
     @property
     def dead(self):
         return not self.legions
+
+    @property
+    def teleported(self):
+        """Return True iff any of this player's legions have teleported
+        this turn."""
+        for legion in self.legions.itervalues():
+            if legion.teleported:
+                return True
+        return False
 
     def __repr__(self):
         return "Player " + self.name
@@ -279,7 +287,6 @@ class Player(Observed):
     def new_turn(self):
         self.selected_markername = None
         self.movement_roll = None
-        self.teleported = False
         for legion in self.legions.itervalues():
             legion.moved = False
             legion.teleported = False

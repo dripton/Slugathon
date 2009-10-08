@@ -135,7 +135,6 @@ class Legion(Observed):
               self.hexlabel)
             if self.teleported:
                 self.teleported = False
-                self.player.teleported = False
                 self.teleporting_lord = None
             self.entry_side = None
 
