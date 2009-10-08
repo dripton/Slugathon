@@ -1,17 +1,17 @@
 __copyright__ = "Copyright (c) 2004-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+import ast
 
 from twisted.spread import pb
 
-from reval import reval
 
 def fromstring(st):
     """Construct and return the appropriate Action subclass from the given
     repr string."""
     classname, dictstr = st.split(" ", 1)
     classobj = globals()[classname]
-    dic = reval(dictstr)
+    dic = ast.literal_eval(dictstr)
     obj = classobj(**dic)
     return obj
 
