@@ -103,6 +103,7 @@ class Game(Observed):
         self.attacker_legion.enter_battle("ATTACKER")
 
     def _cleanup_battle(self):
+        self.current_engagement_hexlabel = None
         self.attacker_legion = None
         self.defender_legion = None
         self.battle_masterhex = None
@@ -1047,8 +1048,6 @@ class Game(Observed):
                 for creature_name in creature_names_to_remove:
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
-
-        self.current_engagement_hexlabel = None
         self._cleanup_battle()
 
 
