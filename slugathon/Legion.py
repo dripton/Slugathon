@@ -171,7 +171,7 @@ class Legion(Observed):
         The list is sorted in the same order as within recruitdata.
         """
         result_set = set()
-        counts = bag(self.creature_names)
+        counts = bag(self.living_creature_names)
         recruits = recruitdata.data[mterrain]
         for sublist in self._gen_sublists(recruits):
             names = [tup[0] for tup in sublist]

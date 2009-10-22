@@ -930,6 +930,20 @@ class GUIMasterBoard(gtk.Window):
             self.repaint(self.board.hexes.keys())
 
         elif isinstance(action, Action.BattleOver):
+            legion = self.game.find_legion(action.winner_markername)
+            # XXX Post-battle reinforcing should be done a bit earlier
+            if legion and not legion.recruited:
+                player = legion.player
+                if player.name == self.username:
+                    masterhex = self.game.board.hexes[legion.hexlabel]
+                    caretaker = self.game.caretaker
+                    terrain = masterhex.terrain
+                    recruit_names = legion.available_recruits(terrain,
+                      caretaker)
+                    if recruit_names:
+                        PickRecruit.PickRecruit(self.username, player,
+                          legion, terrain, caretaker, self.picked_recruit,
+                          self)
             self.guimap = None
             self.highlight_engagements()
             self.clear_hexlabels.add(action.hexlabel)

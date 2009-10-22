@@ -46,10 +46,11 @@ class PickRecruit(object):
         self.marker.show()
 
         for creature in legion.sorted_creatures():
-            chit = Chit.Chit(creature, player.color, scale=20)
-            chit.show()
-            self.chits_hbox.pack_start(chit.event_box, expand=False,
-              fill=False)
+            if not creature.dead:
+                chit = Chit.Chit(creature, player.color, scale=20)
+                chit.show()
+                self.chits_hbox.pack_start(chit.event_box, expand=False,
+                  fill=False)
 
         recruit_names = legion.available_recruits(mterrain, caretaker)
         recruits = Creature.n2c(recruit_names)

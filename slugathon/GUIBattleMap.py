@@ -557,8 +557,10 @@ class GUIBattleMap(gtk.Window):
             self.destroy()
 
         elif isinstance(action, Action.RecruitCreature):
-            self.game.defender_legion.creatures[-1].hexlabel = "DEFENDER"
-            self.repaint(["DEFENDER"])
+            if (self.game.defender_legion and
+              self.game.defender_legion.creatures):
+                self.game.defender_legion.creatures[-1].hexlabel = "DEFENDER"
+                self.repaint(["DEFENDER"])
 
 
     def picked_reinforcement(self, legion, creature):
