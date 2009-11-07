@@ -710,8 +710,6 @@ class Game(Observed):
         """Called from Server"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
-        if player not in [self.active_player, self.battle_active_player]:
-            raise AssertionError("recruiting out of turn")
         # Avoid double recruit
         if not legion.recruited:
             creature = Creature.Creature(creature_name)
