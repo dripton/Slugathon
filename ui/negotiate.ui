@@ -141,13 +141,18 @@
               <object class="GtkButton" id="concede_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="label">Concede</property>
                 <property name="use_underline">True</property>
+                <property name="label" translatable="yes">Concede</property>
               </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <object class="GtkButton" id="proposal_button">
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
                 <property name="label" translatable="yes">Make proposal</property>
               </object>
               <packing>
@@ -157,6 +162,8 @@
             <child>
               <object class="GtkButton" id="done_proposing_button">
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
                 <property name="label" translatable="yes">No more proposals</property>
               </object>
               <packing>
@@ -184,6 +191,7 @@
       </object>
     </child>
     <action-widgets>
+      <action-widget response="0">concede_button</action-widget>
       <action-widget response="1">proposal_button</action-widget>
       <action-widget response="2">done_proposing_button</action-widget>
       <action-widget response="3">fight_button</action-widget>
