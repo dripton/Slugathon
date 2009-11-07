@@ -165,6 +165,7 @@
       </object>
     </child>
     <action-widgets>
+      <action-widget response="0">accept_button</action-widget>
       <action-widget response="1">reject_button</action-widget>
     </action-widgets>
   </object>
