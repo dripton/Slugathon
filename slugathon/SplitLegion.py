@@ -62,7 +62,7 @@ class SplitLegion(object):
               fill=False)
             chit.connect("button-press-event", self.cb_click)
 
-        self.okbutton = self.split_legion_dialog.action_area.get_children()[0]
+        self.okbutton = self.split_legion_dialog.action_area.get_children()[1]
         self.okbutton.set_sensitive(False)
 
         self.split_legion_dialog.connect("response", self.cb_response)
