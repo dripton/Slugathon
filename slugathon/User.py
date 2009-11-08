@@ -159,6 +159,11 @@ class User(pb.Avatar):
     def perspective_done_with_recruits(self, game_name):
         self.server.done_with_recruits(self.name, game_name)
 
+    def perspective_summon_angel(self, game_name, markername,
+      donor_markername, creature_name):
+        self.server.summon_angel(self.name, game_name, markername,
+          donor_markername, creature_name)
+
     def perspective_apply_action(self, action):
         """Pull the exact method and args out of the Action."""
         if isinstance(action, Action.UndoSplit):

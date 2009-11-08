@@ -48,6 +48,7 @@ class Player(Observed):
         self.legions = {}
         self.mulligans_left = 1
         self.movement_roll = None
+        self.summoned = False
 
     @property
     def dead(self):
@@ -284,9 +285,24 @@ class Player(Observed):
           self.game.battle_turn)
         self.notify(action)
 
+    def summon(self, legion, donor, creature_name):
+        """Summon an angel from donor to legion."""
+        assert not self.summoned, "player tried to summon twice"
+        assert len(legion.living_creature_names) < 7,\
+          "legion too tall to summon"
+        donor.remove_creature_by_name(creature_name)
+        legion.add_creature_by_name(creature_name)
+        creature = legion.creatures[-1]
+        creature.legion = legion
+        self.summoned = True
+        action = Action.SummonAngel(self.game.name, self.name,
+          legion.markername, donor.markername, creature.name)
+        self.notify(action)
+
     def new_turn(self):
         self.selected_markername = None
         self.movement_roll = None
+        self.summoned = False
         for legion in self.legions.itervalues():
             legion.moved = False
             legion.teleported = False

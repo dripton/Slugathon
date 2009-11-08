@@ -43,6 +43,7 @@ import Proposal
 import AcquireAngel
 import GUIBattleMap
 import prefs
+import SummonAngel
 
 
 SQRT3 = math.sqrt(3.0)
@@ -371,6 +372,12 @@ class GUIMasterBoard(gtk.Window):
         """Callback from PickRecruit"""
         def1 = self.user.callRemote("recruit_creature", self.game.name,
           legion.markername, creature.name)
+        def1.addErrback(self.failure)
+
+    def picked_summon(self, legion, donor, creature):
+        """Callback from SummonAngel"""
+        def1 = self.user.callRemote("summon_angel", self.game.name,
+          legion.markername, donor.markername, creature.name)
         def1.addErrback(self.failure)
 
     def picked_angel(self, legion, angel):
@@ -883,6 +890,11 @@ class GUIMasterBoard(gtk.Window):
             elif self.game.phase == Phase.MOVE:
                 self.highlight_unmoved_legions()
 
+        elif isinstance(action, Action.SummonAngel):
+            legion = self.game.find_legion(action.markername)
+            donor = self.game.find_legion(action.donor_markername)
+            self.repaint([legion.hexlabel, donor.hexlabel])
+
         elif isinstance(action, Action.AcquireAngels):
             if action.playername == self.username:
                 markername = action.markername
@@ -931,19 +943,26 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.BattleOver):
             legion = self.game.find_legion(action.winner_markername)
-            # XXX Post-battle reinforcing should be done a bit earlier
-            if legion and not legion.recruited:
+            if legion:
+                # XXX Post-battle summoning and reinforcing should be earlier
                 player = legion.player
-                if player.name == self.username:
-                    masterhex = self.game.board.hexes[legion.hexlabel]
-                    caretaker = self.game.caretaker
-                    terrain = masterhex.terrain
-                    recruit_names = legion.available_recruits(terrain,
-                      caretaker)
-                    if recruit_names:
-                        PickRecruit.PickRecruit(self.username, player,
-                          legion, terrain, caretaker, self.picked_recruit,
-                          self)
+                if legion.player == self.game.active_player:
+                    # attacker can summon
+                    if legion.can_summon:
+                        SummonAngel.SummonAngel(self.username, player,
+                          legion, self.picked_summon, self)
+                elif not legion.recruited:
+                    # defender can reinforce
+                    if player.name == self.username:
+                        masterhex = self.game.board.hexes[legion.hexlabel]
+                        caretaker = self.game.caretaker
+                        terrain = masterhex.terrain
+                        recruit_names = legion.available_recruits(terrain,
+                          caretaker)
+                        if recruit_names:
+                            PickRecruit.PickRecruit(self.username, player,
+                              legion, terrain, caretaker, self.picked_recruit,
+                              self)
             self.guimap = None
             self.highlight_engagements()
             self.clear_hexlabels.add(action.hexlabel)

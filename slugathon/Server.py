@@ -293,6 +293,13 @@ class Server(Observed):
         if game:
             game.done_with_recruits(username)
 
+    def summon_angel(self, username, game_name, markername, donor_markername,
+      creature_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.summon_angel(username, markername, donor_markername,
+              creature_name)
+
     def save(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:

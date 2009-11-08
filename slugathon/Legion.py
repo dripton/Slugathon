@@ -58,6 +58,23 @@ class Legion(Observed):
                 return True
         return False
 
+    @property
+    def can_summon(self):
+        """Return True if this legion's player has not already summoned this
+        turn and any of this player's other unengaged legions has a summonable.
+        """
+        if self.player.summoned:
+            return False
+        for legion in self.player.legions.itervalues():
+            if legion != self and not legion.engaged and legion.any_summonable:
+                return True
+        return False
+
+    @property
+    def engaged(self):
+        """Return True iff this legion is engaged with an enemy legion."""
+        return self.hexlabel in self.player.game.engagement_hexlabels()
+
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
           self.creatures)
@@ -86,7 +103,7 @@ class Legion(Observed):
         return sorted(creature.name for creature in self.creatures)
 
     def add_creature_by_name(self, creature_name):
-        if len(self) >= 7:
+        if len(self.living_creature_names) >= 7:
             raise ValueError, "no room to add another creature"
         creature = Creature.Creature(creature_name)
         creature.legion = self

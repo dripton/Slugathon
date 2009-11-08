@@ -29,6 +29,7 @@ import Phase
 import Action
 import prefs
 import PickRecruit
+import SummonAngel
 
 
 SQRT3 = math.sqrt(3.0)
@@ -553,6 +554,15 @@ class GUIBattleMap(gtk.Window):
                           legion, mterrain, caretaker,
                           self.picked_reinforcement, self)
 
+            elif (self.game.battle_active_player.name == self.username and
+              self.game.battle_active_legion == self.game.attacker_legion):
+                legion = self.game.attacker_legion
+                if len(legion.living_creature_names) < 7:
+                    if (legion.can_summon and self.game.first_attacker_kill in
+                      [self.game.battle_turn - 1, self.game.battle_turn]):
+                        SummonAngel.SummonAngel(self.username, legion.player,
+                          legion, self.picked_summon, self)
+
         elif isinstance(action, Action.BattleOver):
             self.destroy()
 
@@ -562,10 +572,20 @@ class GUIBattleMap(gtk.Window):
                 self.game.defender_legion.creatures[-1].hexlabel = "DEFENDER"
                 self.repaint(["DEFENDER"])
 
+        elif isinstance(action, Action.SummonAngel):
+            if (self.game.attacker_legion and
+              self.game.attacker_legion.creatures):
+                self.game.attacker_legion.creatures[-1].hexlabel = "ATTACKER"
+                self.repaint(["ATTACKER"])
 
     def picked_reinforcement(self, legion, creature):
         def1 = self.user.callRemote("recruit_creature", self.game.name,
           legion.markername, creature.name)
+        def1.addErrback(self.failure)
+
+    def picked_summon(self, legion, donor, creature):
+        def1 = self.user.callRemote("summon_angel", self.game.name,
+          legion.markername, donor.markername, creature.name)
         def1.addErrback(self.failure)
 
     def failure(self, arg):

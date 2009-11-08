@@ -70,6 +70,7 @@ class Game(Observed):
         self.battle_turn = None
         self.battle_phase = None
         self.battle_active_legion = None
+        self.first_attacker_kill = None
 
 
     @property
@@ -101,6 +102,7 @@ class Game(Observed):
         self.battle_active_legion = self.defender_legion
         self.defender_legion.enter_battle("DEFENDER")
         self.attacker_legion.enter_battle("ATTACKER")
+        self.first_attacker_kill = None
 
     def _cleanup_battle(self):
         self.current_engagement_hexlabel = None
@@ -112,6 +114,7 @@ class Game(Observed):
         self.battle_turn = None
         self.battle_phase = None
         self.battle_active_legion = None
+        self.first_attacker_kill = None
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -732,16 +735,26 @@ class Game(Observed):
         if self.phase == Phase.MUSTER:
             player.done_with_recruits()
 
+    def summon_angel(self, playername, markername, donor_markername,
+      creature_name):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        donor = player.legions[donor_markername]
+        # Avoid double summon
+        if not player.summoned:
+            player.summon(legion, donor, creature_name)
+            if self.phase == Phase.FIGHT:
+                creature = legion.creatures[-1]
+                creature.hexlabel = "ATTACKER"
+
     def engagement_hexlabels(self):
         """Return a set of all hexlabels with engagements"""
         hexlabels_to_legion_colors = {}
         for legion in self.all_legions():
             hexlabel = legion.hexlabel
             color = legion.player.color
-            if hexlabel in hexlabels_to_legion_colors:
-                hexlabels_to_legion_colors[hexlabel].add(color)
-            else:
-                hexlabels_to_legion_colors[hexlabel] = set([color])
+            hexlabels_to_legion_colors.setdefault(hexlabel, set()).add(color)
         results = set()
         for hexlabel, colorset in hexlabels_to_legion_colors.iteritems():
             if len(colorset) >= 2:
@@ -1107,6 +1120,10 @@ class Game(Observed):
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.dead:
+                    if (self.first_attacker_kill is None
+                      and creature.legion is self.defender_legion
+                      and creature.hexlabel != "DEFENDER"):
+                        self.first_attacker_kill = self.battle_turn
                     creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = None
                     # TODO Move to graveyard instead
@@ -1234,6 +1251,10 @@ class Game(Observed):
             self.active_player = self.players[new_player_num]
             for player in self.players:
                 player.new_turn()
+
+        elif isinstance(action, Action.SummonAngel):
+            self.summon_angel(action.playername, action.markername,
+              action.donor_markername, action.creature_name)
 
         elif isinstance(action, Action.Fight):
             attacker_markername = action.attacker_markername

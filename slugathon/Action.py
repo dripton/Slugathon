@@ -457,6 +457,16 @@ class DoneFighting(Action):
         self.playername = playername
 pb.setUnjellyableForClass(DoneFighting, DoneFighting)
 
+class SummonAngel(Action):
+    def __init__(self, game_name, playername, markername, donor_markername,
+      creature_name):
+        self.game_name = game_name
+        self.playername = playername
+        self.markername = markername
+        self.donor_markername = donor_markername
+        self.creature_name = creature_name
+pb.setUnjellyableForClass(SummonAngel, SummonAngel)
+
 class AcquireAngels(Action):
     def __init__(self, game_name, playername, markername, angels, archangels):
         self.game_name = game_name

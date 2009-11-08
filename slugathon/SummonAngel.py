@@ -69,6 +69,7 @@ class SummonAngel(object):
         chit = eventbox.chit
         creature = chit.creature
         donor = creature.legion
+        self.summon_angel_dialog.destroy()
         self.callback(self.legion, donor, creature)
 
     def cb_response(self, widget, response_id):
