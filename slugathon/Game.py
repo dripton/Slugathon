@@ -829,8 +829,11 @@ class Game(Observed):
         elif terrain in ["Bog", "Volcano"]:
             if not creature.is_native(terrain):
                 return maxint
-        elif terrain in ["Bramble", "Drift", "Sand"]:
+        elif terrain in ["Bramble", "Drift"]:
             if not creature.is_native(terrain):
+                cost += 1
+        elif terrain in ["Sand"]:
+            if not creature.is_native(terrain) and not creature.flies:
                 cost += 1
         # borders
         if border in ["Slope"]:

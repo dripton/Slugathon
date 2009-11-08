@@ -80,8 +80,8 @@ class TestBattle(object):
         dragon = Creature.Creature("Dragon")
         assert self.game.battle_hex_entry_cost(dragon, "Bramble", None) == 2
         assert self.game.battle_hex_entry_cost(dragon, "Plain", None) == 1
-        assert self.game.battle_hex_entry_cost(dragon, "Sand", None) == 2
-        assert self.game.battle_hex_entry_cost(dragon, "Sand", "Dune") == 2
+        assert self.game.battle_hex_entry_cost(dragon, "Sand", None) == 1
+        assert self.game.battle_hex_entry_cost(dragon, "Sand", "Dune") == 1
         assert self.game.battle_hex_entry_cost(dragon, "Tower", None) == 1
         assert self.game.battle_hex_entry_cost(dragon, "Tower", "Wall") == 1
         assert self.game.battle_hex_entry_cost(dragon, "Drift", None) == 2
@@ -214,9 +214,11 @@ class TestBattle(object):
         centaur = defender.creatures[2]
         assert centaur.name == "Centaur"
         assert self.game.find_battle_moves(centaur) == set1
+        set3 = set(["F4", "E5", "D6", "F3", "E4", "D5", "C5", "F2", "E3", "C4",
+          "B4", "D4"])
         gargoyle = defender.creatures[3]
         assert gargoyle.name == "Gargoyle"
-        assert self.game.find_battle_moves(gargoyle) == set1
+        assert self.game.find_battle_moves(gargoyle) == set3
 
     def test_find_moves_flyover(self):
         self.rd01.move(6, False, None, 3)
