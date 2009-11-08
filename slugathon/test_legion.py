@@ -145,3 +145,17 @@ def test_sorted_creatures():
     names = [creature.name for creature in li]
     assert names == ["Archangel", "Serpent", "Ranger", "Minotaur",
       "Gargoyle", "Centaur", "Ogre"]
+
+def test_any_summonable():
+    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
+      "Ogre", "Ranger", "Minotaur"])
+    legion = Legion.Legion(None, None, creatures, 1)
+    assert legion.any_summonable
+    creatures = Creature.n2c(["Angel", "Serpent", "Centaur", "Gargoyle",
+      "Ogre", "Ranger", "Minotaur"])
+    legion = Legion.Legion(None, None, creatures, 1)
+    assert legion.any_summonable
+    creatures = Creature.n2c(["Serpent", "Centaur", "Gargoyle",
+      "Ogre", "Ranger", "Minotaur"])
+    legion = Legion.Legion(None, None, creatures, 1)
+    assert not legion.any_summonable

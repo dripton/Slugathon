@@ -26,7 +26,7 @@ class Chit(object):
     IMAGE_DIR = "creature"
 
     def __init__(self, creature, playercolor, scale=15, dead=False,
-      rotate=None):
+      rotate=None, outlined=False):
         self.creature = creature
         if creature is None:
             self.name = "QuestionMarkMask"
@@ -34,6 +34,7 @@ class Chit(object):
             self.name = creature.name
         self.dead = dead
         self.rotate = rotate
+        self.outlined = outlined
         self.location = None    # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
@@ -77,6 +78,8 @@ class Chit(object):
             self._render_x(surface)
         elif self.creature and self.creature.hits > 0:
             self._render_hits(surface)
+        if self.outlined:
+            self._render_outline(surface)
         with tempfile.NamedTemporaryFile(prefix="slugathon",
           suffix=".png", delete=False) as tmp_file:
             tmp_path = tmp_file.name
@@ -153,6 +156,19 @@ class Chit(object):
         ctx.line_to(size, size)
         ctx.move_to(0, size)
         ctx.line_to(size, 0)
+        ctx.stroke()
+
+    def _render_outline(self, surface):
+        """Add a red rectangle around a Cairo surface"""
+        ctx = cairo.Context(surface)
+        size = surface.get_width()
+        ctx.set_source_rgb(1, 0, 0)
+        ctx.set_line_width(4)
+        ctx.move_to(0, 0)
+        ctx.line_to(size, 0)
+        ctx.line_to(size, size)
+        ctx.line_to(0, size)
+        ctx.line_to(0, 0)
         ctx.stroke()
 
     def _render_hits(self, surface):

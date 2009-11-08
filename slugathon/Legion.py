@@ -51,6 +51,13 @@ class Legion(Observed):
     def dead_creature_names(self):
         return [creature.name for creature in self.creatures if creature.dead]
 
+    @property
+    def any_summonable(self):
+        for creature in self.creatures:
+            if creature.summonable:
+                return True
+        return False
+
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
           self.creatures)
