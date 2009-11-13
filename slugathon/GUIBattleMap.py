@@ -30,6 +30,7 @@ import Action
 import prefs
 import PickRecruit
 import SummonAngel
+import PickCarry
 
 
 SQRT3 = math.sqrt(3.0)
@@ -114,6 +115,7 @@ class GUIBattleMap(gtk.Window):
         self.show_all()
         if self.game and self.game.battle_active_player.name == self.username:
             self.highlight_mobile_chits()
+        self.pickcarry = None
 
     def create_ui(self):
         ag = gtk.ActionGroup("BattleActions")
@@ -526,6 +528,7 @@ class GUIBattleMap(gtk.Window):
             self.highlight_strikers()
 
         elif isinstance(action, Action.Strike):
+            print "GUIBattleMap.update got Strike", action
             # XXX clean this up
             if action.hits > 0:
                 for chit in self.chits:
@@ -533,6 +536,48 @@ class GUIBattleMap(gtk.Window):
                         chit.build_image()
             self.highlight_strikers()
             self.repaint([action.target_hexlabel])
+            if (action.carries and self.game.battle_active_player.name ==
+              self.username):
+                striker = self.game.creatures_in_battle_hex(
+                  action.striker_hexlabel).pop()
+                assert striker.name == action.striker_name
+                target = self.game.creatures_in_battle_hex(
+                  action.target_hexlabel).pop()
+                assert target.name == action.target_name
+                num_dice = action.num_dice
+                strike_number = action.strike_number
+                carries = action.carries
+                if self.pickcarry is not None:
+                    self.pickcarry.pick_carry_dialog.destroy()
+                self.pickcarry = PickCarry.PickCarry(self.username,
+                  self.game.name, striker, target, num_dice, strike_number,
+                  carries, self.picked_carry, self)
+
+        elif isinstance(action, Action.Carry):
+            print "GUIBattleMap.update got Carry", action
+            # XXX clean this up
+            if action.carries > 0:
+                for chit in self.chits:
+                    if chit.creature.hexlabel == action.carry_target_hexlabel:
+                        chit.build_image()
+            self.highlight_strikers()
+            self.repaint([action.carry_target_hexlabel])
+            if (action.carries_left and self.game.battle_active_player.name ==
+              self.username):
+                striker = self.game.creatures_in_battle_hex(
+                  action.striker_hexlabel).pop()
+                assert striker.name == action.striker_name
+                carry_target = self.game.creatures_in_battle_hex(
+                  action.carry_target_hexlabel).pop()
+                assert target.name == action.target_name
+                num_dice = action.num_dice
+                strike_number = action.strike_number
+                carries_left = action.carries_left
+                if self.pickcarry is not None:
+                    self.pickcarry.pick_carry_dialog.destroy()
+                self.pickcarry = PickCarry.PickCarry(self.username,
+                  self.game.name, striker, target, num_dice, strike_number,
+                  carries_left, self.picked_carry, self)
 
         elif isinstance(action, Action.DoneStriking):
             self.highlight_strikers()
@@ -586,6 +631,13 @@ class GUIBattleMap(gtk.Window):
     def picked_summon(self, legion, donor, creature):
         def1 = self.user.callRemote("summon_angel", self.game.name,
           legion.markername, donor.markername, creature.name)
+        def1.addErrback(self.failure)
+
+    def picked_carry(self, carry_target, carries):
+        print "picked_carry", carry_target, carries
+        self.pickcarry = None
+        def1 = self.user.callRemote("carry", self.game.name,
+          carry_target.name, carry_target.hexlabel, carries)
         def1.addErrback(self.failure)
 
     def failure(self, arg):

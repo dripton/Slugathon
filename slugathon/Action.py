@@ -413,30 +413,25 @@ class Strike(Action):
 pb.setUnjellyableForClass(Strike, Strike)
 
 class Carry(Action):
-    def __init__(self, game_name, playername, creature_name, hexlabel,
-      target_creature_name, target_hexlabel, hits, carries):
-        """hits is the number of carries that were applied.
-        carries is the number of carries left over for another target.
+    def __init__(self, game_name, playername, striker_name, striker_hexlabel,
+      target_name, target_hexlabel, carry_target_name, carry_target_hexlabel,
+      num_dice, strike_number, carries, carries_left):
+        """carries is the number of carries that were applied.
+        carries_left is the number of carries left over for another target.
         """
         self.game_name = game_name
         self.playername = playername
-        self.creature_name = creature_name
-        self.hexlabel = hexlabel
-        self.target_creature_name = target_creature_name
+        self.striker_name = striker_name
+        self.striker_hexlabel = striker_hexlabel
+        self.target_name = target_name
         self.target_hexlabel = target_hexlabel
-        self.hits = hits
+        self.carry_target_name = carry_target_name
+        self.carry_target_hexlabel = carry_target_hexlabel
+        self.num_dice = num_dice
+        self.strike_number = strike_number
         self.carries = carries
+        self.carries_left = carries_left
 pb.setUnjellyableForClass(Carry, Carry)
-
-class DoNotCarry(Action):
-    def __init__(self, game_name, playername, creature_name, hexlabel,
-      target_creature_name, target_hexlabel, hits):
-        """creature_name and hexlabel refer to the striker"""
-        self.game_name = game_name
-        self.playername = playername
-        self.creature_name = creature_name
-        self.hexlabel = hexlabel
-pb.setUnjellyableForClass(DoNotCarry, DoNotCarry)
 
 class DoneStriking(Action):
     def __init__(self, game_name, playername):

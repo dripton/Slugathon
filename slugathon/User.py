@@ -164,6 +164,13 @@ class User(pb.Avatar):
         self.server.summon_angel(self.name, game_name, markername,
           donor_markername, creature_name)
 
+    def perspective_carry(self, game_name, carry_target_name,
+      carry_target_hexlabel, carries):
+        print "perspective_carry", carry_target_name, carry_target_hexlabel, \
+          carries
+        self.server.carry(self.name, game_name, carry_target_name,
+          carry_target_hexlabel, carries)
+
     def perspective_apply_action(self, action):
         """Pull the exact method and args out of the Action."""
         if isinstance(action, Action.UndoSplit):

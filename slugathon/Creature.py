@@ -295,6 +295,28 @@ class Creature(object):
         strike_number = min(strike_number, 6)
         return strike_number
 
+    # TODO Handle special case for natives striking up dune hexside
+    def can_carry_to(self, carry_target, original_target, num_dice,
+      strike_number):
+        """Return whether a strike at original_target using num_dice and
+        strike number can carry to carry_target"""
+        return (carry_target is not original_target and
+          carry_target in self.engaged_enemies and
+          self.number_of_dice(carry_target) >= num_dice and
+          self.strike_number(carry_target) <= strike_number)
+
+    def max_possible_carries(self, target, num_dice, strike_number):
+        """Return the maximum number of useful carries for the given target,
+        number of dice, and strike_number.
+
+        It will be zero if there are no other adjacent living enemies.
+        """
+        max_carries = 0
+        for creature in self.engaged_enemies:
+            if self.can_carry_to(creature, target, num_dice, strike_number):
+                max_carries += creature.power - creature.hits
+        return max_carries
+
     @property
     def offboard(self):
         return self.hexlabel == "ATTACKER" or self.hexlabel == "DEFENDER"

@@ -300,6 +300,14 @@ class Server(Observed):
             game.summon_angel(username, markername, donor_markername,
               creature_name)
 
+    def carry(self, username, game_name, carry_target_name,
+      carry_target_hexlabel, carries):
+        print "Server.carry", carry_target_name, carry_target_hexlabel, carries
+        game = self.name_to_game(game_name)
+        if game:
+            game.carry(username, carry_target_name, carry_target_hexlabel,
+              carries)
+
     def save(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:

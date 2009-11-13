@@ -71,6 +71,7 @@ class Game(Observed):
         self.battle_phase = None
         self.battle_active_legion = None
         self.first_attacker_kill = None
+        self.pending_carry = None
 
 
     @property
@@ -103,6 +104,7 @@ class Game(Observed):
         self.defender_legion.enter_battle("DEFENDER")
         self.attacker_legion.enter_battle("ATTACKER")
         self.first_attacker_kill = None
+        self.pending_carry = None
 
     def _cleanup_battle(self):
         self.current_engagement_hexlabel = None
@@ -115,6 +117,7 @@ class Game(Observed):
         self.battle_phase = None
         self.battle_active_legion = None
         self.first_attacker_kill = None
+        self.pending_carry = None
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -748,6 +751,35 @@ class Game(Observed):
                 creature = legion.creatures[-1]
                 creature.hexlabel = "ATTACKER"
 
+    def carry(self, playername, carry_target_name, carry_target_hexlabel,
+      carries):
+        """Called from Server"""
+        print "Game.carry", playername, carry_target_name, \
+          carry_target_hexlabel, carries
+        action = self.pending_carry
+        self.pending_carry = None
+        assert action
+        assert action.playername == playername
+        assert carries <= action.carries
+        striker = self.creatures_in_battle_hex(action.striker_hexlabel).pop()
+        target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
+        carry_target = self.creatures_in_battle_hex(
+          carry_target_hexlabel).pop()
+        assert carry_target in striker.engaged_enemies
+        assert striker.number_of_dice(carry_target) >= action.num_dice
+        assert striker.strike_number(carry_target) <= action.strike_number
+        carry_target.hits += carries
+        if carry_target.hits > carry_target.power:
+            carries_left = carry_target.hits - carry_target.power
+            carry_target.hits -= carries_left
+        else:
+            carries_left = 0
+        action2 = Action.Carry(self.name, playername, striker.name,
+          striker.hexlabel, target.name, target.hexlabel, carry_target.name,
+          carry_target.hexlabel, action.num_dice, action.strike_number,
+          carries, carries_left)
+        self.notify(action2)
+
     def engagement_hexlabels(self):
         """Return a set of all hexlabels with engagements"""
         hexlabels_to_legion_colors = {}
@@ -1009,14 +1041,21 @@ class Game(Observed):
                 hits += 1
         print "hits", hits
         target.hits += hits
-        target.hits = min(target.hits, target.power)
-        # TODO carries
-        carries = 0
+        if target.hits > target.power:
+            carries = target.hits - target.power
+            target.hits -= carries
+            max_carries = striker.max_possible_carries(target, num_dice,
+              strike_number)
+            carries = min(carries, max_carries)
+        else:
+            carries = 0
         striker.struck = True
         action = Action.Strike(self.name, playername, striker_name,
           striker_hexlabel, target_name, target_hexlabel, num_dice,
           strike_number, rolls, hits, carries)
         print "action", action
+        if carries:
+            self.pending_carry = action
         self.notify(action)
 
     def done_with_strikes(self, playername):
@@ -1294,14 +1333,29 @@ class Game(Observed):
             self.apply_drift_damage()
             self.battle_phase = Phase.STRIKE
 
-        # TODO carries
         elif isinstance(action, Action.Strike):
+            print "Game.update got Strike", action
             target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
             target.hits += action.hits
             target.hits = min(target.hits, target.power)
             striker = self.creatures_in_battle_hex(
               action.striker_hexlabel).pop()
             striker.struck = True
+            if action.carries:
+                self.pending_carry = action
+            else:
+                self.pending_carry = None
+
+        elif isinstance(action, Action.Carry):
+            print "Game.update got Carry", action
+            carry_target = self.creatures_in_battle_hex(
+              action.carry_target_hexlabel).pop()
+            carry_target.hits += action.carries
+            carry_target.hits = min(carry_target.hits, carry_target.power)
+            if action.carries_left:
+                self.pending_carry = action
+            else:
+                self.pending_carry = None
 
         elif isinstance(action, Action.DoneStriking):
             self.battle_phase = Phase.COUNTERSTRIKE
