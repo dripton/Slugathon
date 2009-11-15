@@ -1,1 +1,1 @@
-For documentation, see the Wiki at http://slugathon.python-hosting.com
+For documentation, see the Wiki at http://wiki.github.com/dripton/Slugathon
