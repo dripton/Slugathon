@@ -31,8 +31,8 @@ class PickCarry(object):
         label = gtk.Label("%r strikes %r and may carry over %d hit%s." %
           (striker, target, carries, "" if carries == 1 else "s"))
         label.show()
-        # XXX get_content_area requires PyGTK 2.14
-        self.pick_carry_dialog.get_content_area().add(label)
+        # We could use get_content_area() instead of vbox, in PyGTK 2.14+
+        self.pick_carry_dialog.vbox.add(label)
 
         for ii, creature in enumerate(striker.engaged_enemies):
             if striker.can_carry_to(creature, target, num_dice, strike_number):
