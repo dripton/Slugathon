@@ -946,9 +946,9 @@ class GUIMasterBoard(gtk.Window):
             if legion:
                 # XXX Post-battle summoning and reinforcing should be earlier
                 player = legion.player
-                if legion.player == self.game.active_player:
+                if player == self.game.active_player:
                     # attacker can summon
-                    if legion.can_summon:
+                    if (player.name == self.username and legion.can_summon):
                         SummonAngel.SummonAngel(self.username, player,
                           legion, self.picked_summon, self)
                 elif not legion.recruited:
