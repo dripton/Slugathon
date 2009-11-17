@@ -31,6 +31,7 @@ import prefs
 import PickRecruit
 import SummonAngel
 import PickCarry
+import PickStrikePenalty
 
 
 SQRT3 = math.sqrt(3.0)
@@ -196,10 +197,8 @@ class GUIBattleMap(gtk.Window):
             self.guihexes[hexlabel].selected = True
         self.repaint(hexlabels)
 
-    def strike(self, striker, target):
-        """Have striker strike target, at full strength and skill."""
-        num_dice = striker.number_of_dice(target)
-        strike_number = striker.strike_number(target)
+    def strike(self, striker, target, num_dice, strike_number):
+        """Have striker strike target."""
         def1 = self.user.callRemote("strike", self.game.name, striker.name,
           striker.hexlabel, target.name, target.hexlabel, num_dice,
           strike_number)
@@ -293,8 +292,14 @@ class GUIBattleMap(gtk.Window):
                 # striking enemy creature
                 target = creature
                 striker = self.selected_chit.creature
-                # TODO choose strike penalty in order to carry
-                self.strike(striker, target)
+                if striker.can_take_strike_penalty(target):
+                    PickStrikePenalty.PickStrikePenalty(self.username, 
+                      self.game.name, striker, target, 
+                      self.picked_strike_penalty, self)
+                else:
+                    num_dice = striker.number_of_dice(target)
+                    strike_number = striker.strike_number(target)
+                    self.strike(striker, target, num_dice, strike_number)
 
             else:
                 # picking a striker
@@ -635,10 +640,23 @@ class GUIBattleMap(gtk.Window):
 
     def picked_carry(self, carry_target, carries):
         print "picked_carry", carry_target, carries
+        if self.pickcarry is not None:
+            self.pickcarry.pick_carry_dialog.destroy()
         self.pickcarry = None
         def1 = self.user.callRemote("carry", self.game.name,
           carry_target.name, carry_target.hexlabel, carries)
         def1.addErrback(self.failure)
+
+    def picked_strike_penalty(self, striker, target, num_dice, strike_number):
+        print "picked_strike_penalty", striker, target, num_dice, strike_number
+        if striker is None: 
+            # User cancelled the strike.
+            self.highlight_strikers()
+        else:
+            def1 = self.user.callRemote("strike", self.game.name, striker.name,
+              striker.hexlabel, target.name, target.hexlabel, num_dice,
+              strike_number)
+            def1.addErrback(self.failure)
 
     def failure(self, arg):
         print "GUIBattleMap.failure", arg

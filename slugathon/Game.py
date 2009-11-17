@@ -1029,9 +1029,10 @@ class Game(Observed):
         target = targets.pop()
         assert target.name == target_name
         print "target", target
-        assert num_dice == striker.number_of_dice(target)
+        # TODO check for valid strike penalty if not equal
+        assert num_dice <= striker.number_of_dice(target)
         print "num_dice", num_dice
-        assert strike_number == striker.strike_number(target)
+        assert strike_number >= striker.strike_number(target)
         print "strike_number", strike_number
         rolls = Dice.roll(num_dice)
         print "rolls", rolls

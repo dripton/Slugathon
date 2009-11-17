@@ -317,6 +317,20 @@ class Creature(object):
                 max_carries += creature.power - creature.hits
         return max_carries
 
+    def can_take_strike_penalty(self, target):
+        """Return True if it's legal to take a strike penalty when striking
+        target."""
+        num_dice = self.number_of_dice(target)
+        strike_number = self.strike_number(target)
+        for creature in self.engaged_enemies:
+            if creature is not target: 
+                num_dice2 = self.number_of_dice(creature)
+                strike_number2 = self.strike_number(creature)
+                if num_dice2 < num_dice or strike_number2 > strike_number:
+                    if num_dice2 > target.power - target.hits:
+                        return True
+        return False
+
     @property
     def offboard(self):
         return self.hexlabel == "ATTACKER" or self.hexlabel == "DEFENDER"
