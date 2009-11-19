@@ -46,11 +46,12 @@ hexlabel_to_entry_side = {
 class PickEntrySide(gtk.Window):
     """Dialog to pick a masterhex entry side."""
 
-    def __init__(self, battlemap, entry_sides, callback, username=None, 
+    def __init__(self, terrain, entry_sides, callback, username=None, 
       scale=None):
         gtk.Window.__init__(self)
 
-        self.battlemap = battlemap
+        # We always orient the map as if for entry side 5.
+        self.battlemap = BattleMap.BattleMap(terrain, 5)
         self.entry_sides = entry_sides
         self.callback = callback
         self.username = username
@@ -141,6 +142,7 @@ class PickEntrySide(gtk.Window):
         if guihex.selected:
             entry_side = hexlabel_to_entry_side[guihex.battlehex.label]
             self.callback(entry_side)
+            self.destroy()
 
     def bounding_rect_for_hexlabels(self, hexlabels):
         """Return the minimum bounding rectangle that encloses all
@@ -219,12 +221,10 @@ if __name__ == "__main__":
         terrain = argv[1].title()
     else:
         terrain = random.choice(battlemapdata.data.keys())
-    entry_side = 5
-    battlemap = BattleMap.BattleMap(terrain, entry_side)
 
     def my_callback(choice):
         print "chose entry side", choice
         guiutils.exit()
 
-    pick_entry_side = PickEntrySide(battlemap, set([1, 3, 5]), my_callback)
+    pick_entry_side = PickEntrySide(terrain, set([1, 3, 5]), my_callback)
     reactor.run()
