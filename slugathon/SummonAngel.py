@@ -56,7 +56,6 @@ class SummonAngel(object):
                     chit.show()
                     hbox.pack_start(chit.event_box, expand=False, fill=False)
                     if creature.summonable:
-                        # TODO red border
                         chit.connect("button-press-event", self.cb_click)
 
         self.summon_angel_dialog.connect("response", self.cb_response)
