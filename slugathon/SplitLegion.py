@@ -47,7 +47,7 @@ class SplitLegion(object):
         self.old_marker.show()
 
         self.new_legion1 = Legion.Legion(player, legion.markername,
-          legion.sorted_creatures(), legion.hexlabel)
+          legion.sorted_creatures, legion.hexlabel)
         self.new_legion2 = Legion.Legion(player, player.selected_markername,
           [], legion.hexlabel)
         self.new_marker = Marker.Marker(self.new_legion2, False, scale=20)
@@ -55,7 +55,7 @@ class SplitLegion(object):
           expand=False, fill=False)
         self.new_marker.show()
 
-        for creature in legion.sorted_creatures():
+        for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
             chit.show()
             self.old_chits_hbox.pack_start(chit.event_box, expand=False,

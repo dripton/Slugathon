@@ -50,7 +50,7 @@ class SummonAngel(object):
                 marker = Marker.Marker(legion2, False, scale=20)
                 hbox.pack_start(marker.event_box, expand=False, fill=False)
                 marker.show()
-                for creature in legion2.sorted_creatures():
+                for creature in legion2.sorted_creatures:
                     chit = Chit.Chit(creature, self.player.color, scale=20,
                       outlined=creature.summonable)
                     chit.show()

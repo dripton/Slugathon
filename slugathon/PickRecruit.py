@@ -45,7 +45,7 @@ class PickRecruit(object):
           fill=False)
         self.marker.show()
 
-        for creature in legion.sorted_creatures():
+        for creature in legion.sorted_creatures:
             if not creature.dead:
                 chit = Chit.Chit(creature, player.color, scale=20)
                 chit.show()

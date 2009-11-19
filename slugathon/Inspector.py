@@ -52,7 +52,7 @@ class Inspector(object):
 
         # TODO Handle unknown creatures correctly
         playercolor = legion.player.color
-        for creature in legion.sorted_creatures():
+        for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)
             chit.show()
             self.chits_hbox.add(chit.event_box)

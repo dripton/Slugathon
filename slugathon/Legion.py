@@ -290,6 +290,7 @@ class Legion(Observed):
             total += creature.score
         return total
 
+    @property
     def sorted_creatures(self):
         """Return creatures, sorted in descending order of value."""
         li = reversed(sorted((creature.sort_value, creature)

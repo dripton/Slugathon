@@ -46,7 +46,7 @@ class PickTeleportingLord(object):
         hbox.pack_start(marker.event_box, expand=False, fill=False)
         marker.show()
         player = self.legion.player
-        for creature in legion.sorted_creatures():
+        for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, player.color, scale=20,
               outlined=creature.is_lord)
             chit.show()

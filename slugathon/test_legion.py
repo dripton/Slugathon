@@ -140,7 +140,7 @@ def test_sorted_creatures():
     creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Minotaur"])
     legion = Legion.Legion(None, None, creatures, 1)
-    li = legion.sorted_creatures()
+    li = legion.sorted_creatures
     assert len(li) == len(creatures) == len(legion)
     names = [creature.name for creature in li]
     assert names == ["Archangel", "Serpent", "Ranger", "Minotaur",
