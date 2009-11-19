@@ -16,11 +16,11 @@ http://wiki.github.com/dripton/Slugathon/dependencies.
 3. In one terminal, cd to slugathon and run "python Server.py" 
 
 4. In a second terminal (on the same or a different computer), cd to slugathon
-and run "Connect.py"
+and run "python Connect.py"
 
 5. In a third terminal, (on the same or a different computer), cd to slugathon
-and run "Connect.py", picking a different player.  You can add up to a total
-of 6 players.
+and run "python Connect.py", picking a different player.  You can add up to a 
+total of 6 players.
 
 6. Chat with each other in the Anteroom window.
 
