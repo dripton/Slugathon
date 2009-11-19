@@ -353,7 +353,7 @@ class Game(Observed):
         player = legion.player
         # If there is an enemy legion and no friendly legion, mark the hex
         # as a legal move, and stop.
-        if player.enemy_legions(self, hexlabel):
+        if player.enemy_legions(hexlabel):
             if not player.friendly_legions(hexlabel):
                 moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif roll == 0:
@@ -404,7 +404,7 @@ class Game(Observed):
         """Return set of hexlabels describing where legion can tower
         teleport."""
         moves = set()
-        if masterhex.tower and legion.num_lords():
+        if masterhex.tower and legion.num_lords:
             moves.update(self.find_nearby_empty_hexes(legion, masterhex, 6,
               None))
             for hexlabel in self.board.get_tower_labels():
@@ -530,7 +530,7 @@ class Game(Observed):
     def _flee(self, playername, markername):
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
-        assert legion.can_flee()
+        assert legion.can_flee
         hexlabel = legion.hexlabel
         for legion2 in self.all_legions(hexlabel):
             if legion2 != legion:
