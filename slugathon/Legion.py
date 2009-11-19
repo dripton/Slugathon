@@ -88,15 +88,33 @@ class Legion(Observed):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    @property
     def num_lords(self):
         return sum(creature.character_type == "lord" for creature in
           self.creatures)
 
+    @property
     def first_lord_name(self):
         for creature in self.creatures:
             if creature.character_type == "lord":
                 return creature.name
         return None
+
+    @property
+    def has_titan(self):
+        for creature in self.creatures:
+            if creature.name == "Titan":
+                return True
+        return False
+
+    @property
+    def lord_types(self):
+        """Return a set of names of all lords in this legion."""
+        types = set()
+        for creature in self.creatures:
+            if creature.character_type == "lord":
+                types.add(creature.name)
+        return types
 
     @property
     def creature_names(self):
@@ -137,7 +155,7 @@ class Legion(Observed):
         if len(self) == 8:
             if len(child1) != 4 or len(child2) != 4:
                 return False
-            if child1.num_lords() != 1 or child2.num_lords() != 1:
+            if child1.num_lords != 1 or child2.num_lords != 1:
                 return False
         return True
 
@@ -162,8 +180,9 @@ class Legion(Observed):
                 self.teleporting_lord = None
             self.entry_side = None
 
+    @property
     def can_flee(self):
-        return self.num_lords() == 0
+        return self.num_lords == 0
 
     def _gen_sublists(self, recruits):
         """Generate a sublist of recruits, within which up- and down-recruiting
