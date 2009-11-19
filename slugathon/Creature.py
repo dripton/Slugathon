@@ -115,6 +115,10 @@ class Creature(object):
           + 0.18 * (self.skill == 4)
           + 100 * (self.name == "Titan"))
 
+    @property
+    def is_lord(self):
+        return self.character_type == "lord"
+
     def _hexlabel_to_enemy(self):
         """Return a dict of hexlabel: enemy Creature"""
         hexlabel_to_enemy = {}
