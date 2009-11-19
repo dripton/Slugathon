@@ -200,9 +200,9 @@ class Player(Observed):
         return set([legion for legion in self.legions.itervalues()
           if hexlabel in (None, legion.hexlabel)])
 
-    def enemy_legions(self, game, hexlabel=None):
+    def enemy_legions(self, hexlabel=None):
         """Return a set of other players' legions, in hexlabel if not None."""
-        return set([legion for legion in game.all_legions(hexlabel)
+        return set([legion for legion in self.game.all_legions(hexlabel)
           if legion.player is not self])
 
     def can_exit_move_phase(self):
