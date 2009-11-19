@@ -24,7 +24,7 @@ TELEPORT = 1
 
 class PickMoveType(object):
     """Dialog to choose whether to teleport."""
-    def __init__(self, username, player, legion, hexlabel, callback, parent):
+    def __init__(self, username, legion, hexlabel, callback, parent):
         self.callback = callback
         self.builder = gtk.Builder()
         self.builder.add_from_file("../ui/pickmovetype.ui")
@@ -42,8 +42,8 @@ class PickMoveType(object):
           "Pick move type for legion %s in hex %s moving to hex %s" % (
           legion.markername, legion.hexlabel, hexlabel))
 
-        self.player = player
         self.legion = legion
+        player = legion.player
 
         self.marker = Marker.Marker(legion, True, scale=20)
         self.marker_hbox.pack_start(self.marker.event_box, expand=False,
@@ -95,8 +95,7 @@ if __name__ == "__main__":
     hexlabel = 101
     masterhex = game.board.hexes[legion.hexlabel]
     mterrain = masterhex.terrain
-    pickmovetype = PickMoveType(username, player, legion, hexlabel, mycallback,
-      None)
+    pickmovetype = PickMoveType(username, legion, hexlabel, mycallback, None)
     pickmovetype.pick_move_type_dialog.connect("destroy", guiutils.exit)
 
     gtk.main()

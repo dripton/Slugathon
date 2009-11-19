@@ -20,8 +20,7 @@ import Game
 
 class PickTeleportingLord(object):
     """Dialog to pick a lord to reveal for tower teleport."""
-    def __init__(self, username, player, legion, callback, parent):
-        self.player = player
+    def __init__(self, username, legion, callback, parent):
         self.legion = legion
         self.callback = callback
         self.builder = gtk.Builder()
@@ -46,8 +45,9 @@ class PickTeleportingLord(object):
         marker = Marker.Marker(legion, False, scale=20)
         hbox.pack_start(marker.event_box, expand=False, fill=False)
         marker.show()
+        player = self.legion.player
         for creature in legion.sorted_creatures():
-            chit = Chit.Chit(creature, self.player.color, scale=20,
+            chit = Chit.Chit(creature, player.color, scale=20,
               outlined=creature.is_lord)
             chit.show()
             hbox.pack_start(chit.event_box, expand=False, fill=False)
@@ -85,8 +85,8 @@ if __name__ == "__main__":
         print "Picked", creature
         guiutils.exit()
 
-    pick_teleporting_lord = PickTeleportingLord(username, player, legion, 
-      my_callback, None)
+    pick_teleporting_lord = PickTeleportingLord(username, legion, my_callback,
+      None)
     pick_teleporting_lord.pick_teleporting_lord_dialog.connect("destroy",
       guiutils.exit)
 
