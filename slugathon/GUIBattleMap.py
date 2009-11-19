@@ -534,6 +534,9 @@ class GUIBattleMap(gtk.Window):
 
         elif isinstance(action, Action.Strike):
             print "GUIBattleMap.update got Strike", action
+            if self.pickcarry is not None:
+                self.pickcarry.pick_carry_dialog.destroy()
+                self.pickcarry = None
             # XXX clean this up
             if action.hits > 0:
                 for chit in self.chits:
@@ -552,14 +555,15 @@ class GUIBattleMap(gtk.Window):
                 num_dice = action.num_dice
                 strike_number = action.strike_number
                 carries = action.carries
-                if self.pickcarry is not None:
-                    self.pickcarry.pick_carry_dialog.destroy()
                 self.pickcarry = PickCarry.PickCarry(self.username,
                   self.game.name, striker, target, num_dice, strike_number,
                   carries, self.picked_carry, self)
 
         elif isinstance(action, Action.Carry):
             print "GUIBattleMap.update got Carry", action
+            if self.pickcarry is not None:
+                self.pickcarry.pick_carry_dialog.destroy()
+                self.pickcarry = None
             # XXX clean this up
             if action.carries > 0:
                 for chit in self.chits:
@@ -578,8 +582,6 @@ class GUIBattleMap(gtk.Window):
                 num_dice = action.num_dice
                 strike_number = action.strike_number
                 carries_left = action.carries_left
-                if self.pickcarry is not None:
-                    self.pickcarry.pick_carry_dialog.destroy()
                 self.pickcarry = PickCarry.PickCarry(self.username,
                   self.game.name, striker, target, num_dice, strike_number,
                   carries_left, self.picked_carry, self)
