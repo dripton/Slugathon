@@ -50,8 +50,11 @@ class PickCarry(object):
 
     def cb_click(self, widget, event):
         creature = widget.creature
-        self.callback(creature, self.carries)
         self.pick_carry_dialog.destroy()
+        if creature:
+            self.callback(creature, self.carries)
+        else:
+            self.callback(None, 0)
 
 
 if __name__ == "__main__":
@@ -106,7 +109,10 @@ if __name__ == "__main__":
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
+    def my_callback(creature, carries):
+        print "carry %d hits to %s" % (carries, creature)
+        guiutils.exit()
+
     pickcarry = PickCarry(username, game_name, titan2, centaur1, 6, 4, 1,
-      guiutils.exit, None)
-    pickcarry.pick_carry_dialog.connect("destroy", guiutils.exit)
+      my_callback, None)
     gtk.main()
