@@ -44,6 +44,9 @@ import AcquireAngel
 import GUIBattleMap
 import prefs
 import SummonAngel
+import PickEntrySide
+import PickMoveType
+import PickTeleportingLord
 
 
 SQRT3 = math.sqrt(3.0)
@@ -128,6 +131,12 @@ class GUIMasterBoard(gtk.Window):
         # This fixes markers that overlap the edge of the map.
         self.clear_hexlabels = set()
 
+        self.moving_legion = None
+        # List of move tuples
+        self.moves = []
+        self.teleport = False
+        self.entry_side = None
+
         if self.username:
             tup = prefs.load_window_position(self.username,
               self.__class__.__name__)
@@ -211,6 +220,13 @@ class GUIMasterBoard(gtk.Window):
                 return False
         return True
 
+    def _no_teleports(self, moves):
+        """Return True iff none of the move tuples in moves are teleports"""
+        for move in moves:
+            if move[1] == Game.TELEPORT:
+                return False
+        return True
+
     def clicked_on_background(self, area, event):
         """The user clicked on the board outside a hex or marker."""
         if self.game:
@@ -235,23 +251,12 @@ class GUIMasterBoard(gtk.Window):
                 if guihex.selected:
                     legion = self.selected_marker.legion
                     hexlabel = guihex.masterhex.label
-                    moves = self.game.find_all_moves(legion, self.board.hexes[
-                      legion.hexlabel], legion.player.movement_roll)
-                    hexmoves = [m for m in moves if m[0] == hexlabel]
-                    # TODO if choice between titan teleport and normal, pick
-                    teleport = self._all_teleports(hexmoves)
-                    # TODO if >1 entry side and enemy in hex, pick
-                    if teleport:
-                        entry_side = 1
-                        # TODO if >1 lord type and tower teleport, pick
-                        teleporting_lord = legion.first_lord_name()
-                    else:
-                        entry_side = hexmoves[0][1]
-                        teleporting_lord = None
-                    def1 = self.user.callRemote("move_legion", self.game.name,
-                      legion.markername, guihex.masterhex.label, entry_side,
-                      teleport, teleporting_lord)
-                    def1.addErrback(self.failure)
+                    all_moves = self.game.find_all_moves(legion, 
+                      self.board.hexes[legion.hexlabel], 
+                      legion.player.movement_roll)
+                    moves = [m for m in all_moves if m[0] == 
+                      guihex.masterhex.label]
+                    self._pick_move_type(legion, moves)
                 self.selected_marker = None
                 self.clear_recruitchits()
                 self.unselect_all()
@@ -264,6 +269,85 @@ class GUIMasterBoard(gtk.Window):
                       guihex.masterhex.label)
             elif phase == Phase.MUSTER:
                 self.highlight_recruits()
+
+
+    # XXX This is kind of gross.  Maybe deferreds and inlineCallbacks?
+ 
+    def _pick_move_type(self, legion, moves):
+        """Figure out whether to teleport, then call _pick_entry_side."""
+        self.moving_legion = legion
+        self.moves = moves
+        if self._all_teleports(moves):
+            self._pick_entry_side(True)
+        elif self._no_teleports(moves):
+            self._pick_entry_side(False)
+        else:
+            hexlabel = moves[0][0]
+            PickMoveType.PickMoveType(self.username, legion, hexlabel,
+              self._pick_entry_side, self)
+
+    def _pick_entry_side(self, teleport):
+        """Pick an entry side, then call _pick_teleporting_lord.
+        
+        teleport can be True, False, or None (cancel the move).
+        """
+        self.teleport = teleport
+        if teleport is None:
+            self.highlight_unmoved_legions()
+            return
+        moves = self.moves
+        legion = self.moving_legion
+        if teleport:
+            entry_sides = set([1, 3, 5])
+        else:
+            entry_sides = set((m[1] for m in moves))
+        hexlabel = moves[0][0]
+        if len(entry_sides) == 1 or not legion.player.enemy_legions(hexlabel):
+            self._pick_teleporting_lord(entry_sides.pop())
+        else:
+            battlehex = self.game.board.hexes[hexlabel]
+            terrain = battlehex.terrain
+            if teleport:
+                entry_sides = set([1, 3, 5])
+            else:
+                entry_sides = set((move[1] for move in moves))
+            PickEntrySide.PickEntrySide(terrain, entry_sides, 
+              self._pick_teleporting_lord)
+
+    def _pick_teleporting_lord(self, entry_side):
+        """Pick a teleporting lord, then call _do_move_legion."""
+        self.entry_side = entry_side
+        if entry_side is None:
+            self.highlight_unmoved_legions()
+            return
+        teleport = self.teleport
+        legion = self.moving_legion
+        hexlabel = self.moves[0][0]
+        if teleport:
+            if legion.player.enemy_legions(hexlabel):
+                assert legion.has_titan
+                teleporting_lord = "Titan"
+            else:
+                lord_types = legion.lord_types
+                if len(lord_types) == 1:
+                    teleporting_lord = lord_types.pop()
+                else:
+                    PickTeleportingLord.PickTeleportingLord(self.username,
+                      legion, self._do_move_legion, self)
+                    return
+        else:
+            teleporting_lord = None
+        self._do_move_legion(teleporting_lord)
+
+    def _do_move_legion(self, teleporting_lord):
+        """Call the server to request a legion move."""
+        legion = self.moving_legion
+        hexlabel = self.moves[0][0]
+        entry_side = self.entry_side
+        teleport = self.teleport
+        def1 = self.user.callRemote("move_legion", self.game.name,
+          legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
+        def1.addErrback(self.failure)
 
 
     def clicked_on_marker(self, area, event, marker):
@@ -819,7 +903,7 @@ class GUIMasterBoard(gtk.Window):
                 else:
                     defender = legion
             if defender.player.name == self.username:
-                if defender.can_flee():
+                if defender.can_flee:
                     Flee.Flee(self.username, attacker, defender,
                       self.cb_maybe_flee, self)
                 else:
