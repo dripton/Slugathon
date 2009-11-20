@@ -399,11 +399,11 @@ class GUIMasterBoard(gtk.Window):
                         guihex = self.guihexes[hexlabel]
                         guihex.selected = True
                         self.repaint_hexlabels.add(hexlabel)
-                        recruitnames = legion.available_recruits(
+                        recruit_names = legion.available_recruits(
                           self.board.hexes[hexlabel].terrain,
                           self.game.caretaker)
-                        if recruitnames:
-                            creaturename = recruitnames[-1]
+                        if recruit_names:
+                            creaturename = recruit_names[-1]
                             recruit = Creature.Creature(creaturename)
                             chit = Chit.Chit(recruit, player.color,
                               self.scale / 2)
@@ -427,9 +427,7 @@ class GUIMasterBoard(gtk.Window):
                     masterhex = self.board.hexes[legion.hexlabel]
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
-                    recruit_names = legion.available_recruits(mterrain,
-                      caretaker)
-                    if recruit_names:
+                    if legion.can_recruit(mterrain, caretaker):
                         PickRecruit.PickRecruit(self.username, legion.player,
                           legion, mterrain, caretaker, self.picked_recruit,
                           self)
@@ -452,10 +450,10 @@ class GUIMasterBoard(gtk.Window):
           new_legion1.creature_names, new_legion2.creature_names)
         def1.addErrback(self.failure)
 
-    def picked_recruit(self, legion, creature):
+    def picked_recruit(self, legion, creature, recruiter_names):
         """Callback from PickRecruit"""
         def1 = self.user.callRemote("recruit_creature", self.game.name,
-          legion.markername, creature.name)
+          legion.markername, creature.name, recruiter_names)
         def1.addErrback(self.failure)
 
     def picked_summon(self, legion, donor, creature):
@@ -707,8 +705,7 @@ class GUIMasterBoard(gtk.Window):
                 hexlabel = legion.hexlabel
                 if (legion.moved and not legion.recruited and
                   len(legion) < 7 and
-                  legion.available_recruits(
-                    self.game.board.hexes[hexlabel].terrain,
+                  legion.can_recruit(self.game.board.hexes[hexlabel].terrain,
                     self.game.caretaker)):
                       hexlabels.add(hexlabel)
             for hexlabel in hexlabels:
@@ -1041,9 +1038,7 @@ class GUIMasterBoard(gtk.Window):
                         masterhex = self.game.board.hexes[legion.hexlabel]
                         caretaker = self.game.caretaker
                         terrain = masterhex.terrain
-                        recruit_names = legion.available_recruits(terrain,
-                          caretaker)
-                        if recruit_names:
+                        if legion.can_recruit(terrain, caretaker):
                             PickRecruit.PickRecruit(self.username, player,
                               legion, terrain, caretaker, self.picked_recruit,
                               self)

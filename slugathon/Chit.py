@@ -26,10 +26,13 @@ class Chit(object):
     IMAGE_DIR = "creature"
 
     def __init__(self, creature, playercolor, scale=15, dead=False,
-      rotate=None, outlined=False):
+      rotate=None, outlined=False, name=None):
         self.creature = creature
         if creature is None:
-            self.name = "QuestionMarkMask"
+            if name is None:
+                self.name = "QuestionMarkMask"
+            else:
+                self.name = name
         else:
             self.name = creature.name
         self.dead = dead

@@ -278,10 +278,12 @@ class Server(Observed):
         if game:
             game.done_with_engagements(username)
 
-    def recruit_creature(self, username, game_name, markername, creature_name):
+    def recruit_creature(self, username, game_name, markername, creature_name,
+      recruiter_names):
         game = self.name_to_game(game_name)
         if game:
-            game.recruit_creature(username, markername, creature_name)
+            game.recruit_creature(username, markername, creature_name,
+              recruiter_names)
 
     def undo_recruit(self, username, game_name, markername):
         game = self.name_to_game(game_name)

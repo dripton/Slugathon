@@ -222,27 +222,30 @@ class DoneMoving(Action):
 pb.setUnjellyableForClass(DoneMoving, DoneMoving)
 
 
-# TODO recruiters
 class RecruitCreature(Action):
-    def __init__(self, game_name, playername, markername, creature_name):
+    def __init__(self, game_name, playername, markername, creature_name,
+      recruiter_names):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
         self.creature_name = creature_name
+        self.recruiter_names = recruiter_names
 
     def undo_action(self):
         return UndoRecruit(self.game_name, self.playername, self.markername,
-          self.creature_name)
+          self.creature_name, self.recruiter_names)
 
 pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)
 
 
 class UndoRecruit(UndoAction):
-    def __init__(self, game_name, playername, markername, creature_name):
+    def __init__(self, game_name, playername, markername, creature_name,
+      recruiter_names):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
         self.creature_name = creature_name
+        self.recruiter_names = recruiter_names
 pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)
 
 class DoneRecruiting(Action):

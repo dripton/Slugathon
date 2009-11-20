@@ -336,7 +336,8 @@ class Player(Observed):
         if isinstance(action, Action.RecruitCreature):
             legion = self.legions[action.markername]
             creature = Creature.Creature(action.creature_name)
-            legion.recruit(creature)
+            recruiter_names = action.recruiter_names
+            legion.recruit(creature, recruiter_names)
         elif isinstance(action, Action.AcquireAngel):
             legion = self.legions[action.markername]
             angel = Creature.Creature(action.angel_name)

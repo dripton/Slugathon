@@ -599,9 +599,7 @@ class GUIBattleMap(gtk.Window):
                     masterhex = self.game.board.hexes[legion.hexlabel]
                     caretaker = self.game.caretaker
                     mterrain = self.battlemap.mterrain
-                    recruit_names = legion.available_recruits(mterrain,
-                      caretaker)
-                    if recruit_names:
+                    if legion.can_recruit(mterrain, caretaker):
                         PickRecruit.PickRecruit(self.username, legion.player,
                           legion, mterrain, caretaker,
                           self.picked_reinforcement, self)
@@ -630,9 +628,9 @@ class GUIBattleMap(gtk.Window):
                 self.game.attacker_legion.creatures[-1].hexlabel = "ATTACKER"
                 self.repaint(["ATTACKER"])
 
-    def picked_reinforcement(self, legion, creature):
+    def picked_reinforcement(self, legion, creature, recruiter_names):
         def1 = self.user.callRemote("recruit_creature", self.game.name,
-          legion.markername, creature.name)
+          legion.markername, creature.name, recruiter_names)
         def1.addErrback(self.failure)
 
     def picked_summon(self, legion, donor, creature):

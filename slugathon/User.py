@@ -152,9 +152,9 @@ class User(pb.Avatar):
         self.server.done_with_engagements(self.name, game_name)
 
     def perspective_recruit_creature(self, game_name, markername,
-      creature_name):
+      creature_name, recruiter_names):
         self.server.recruit_creature(self.name, game_name, markername,
-          creature_name)
+          creature_name, recruiter_names)
 
     def perspective_done_with_recruits(self, game_name):
         self.server.done_with_recruits(self.name, game_name)
@@ -200,7 +200,7 @@ class User(pb.Avatar):
               action.creature_name, action.old_hexlabel, action.new_hexlabel)
         elif isinstance(action, Action.RecruitCreature):
             self.server.recruit_creature(self.name, action.game_name,
-              action.markername, action.creature_name)
+              action.markername, action.creature_name, action.recruiter_names)
         elif isinstance(action, Action.DoneRecruiting):
             self.server.done_with_recruits(self.name, action.game_name)
 

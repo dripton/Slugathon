@@ -712,14 +712,15 @@ class Game(Observed):
         if self.phase == Phase.FIGHT:
             player.done_with_engagements()
 
-    def recruit_creature(self, playername, markername, creature_name):
+    def recruit_creature(self, playername, markername, creature_name, 
+      recruiter_names):
         """Called from Server"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         # Avoid double recruit
         if not legion.recruited:
             creature = Creature.Creature(creature_name)
-            legion.recruit(creature)
+            legion.recruit(creature, recruiter_names)
             if self.phase == Phase.FIGHT:
                 creature.hexlabel = "DEFENDER"
 
@@ -1278,7 +1279,7 @@ class Game(Observed):
 
         elif isinstance(action, Action.RecruitCreature):
             self.recruit_creature(action.playername, action.markername,
-              action.creature_name)
+              action.creature_name, action.recruiter_names)
 
         elif isinstance(action, Action.UndoRecruit):
             self.undo_recruit(action.playername, action.markername)

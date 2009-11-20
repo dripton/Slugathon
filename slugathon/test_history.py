@@ -169,9 +169,9 @@ MoveLegion {'markername': 'Bu06', 'entry_side': 1, 'teleport': False, \
 'hexlabel': 36}
 DoneMoving {'playername': 'tchula', 'game_name': 'a'}
 RecruitCreature {'playername': 'tchula', 'markername': 'Bu06', \
-'creature_name': 'Ogre', 'game_name': 'a'}
+'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}
 RecruitCreature {'playername': 'tchula', 'markername': 'Bu11', \
-'creature_name': 'Warlock', 'game_name': 'a'}
+'creature_name': 'Warlock', 'game_name': 'a', 'recruiter_names': ['Titan']}
 DoneRecruiting {'playername': 'tchula', 'game_name': 'a'}
 SplitLegion {'playername': 'dripton', 'child_creature_names': \
 ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
@@ -186,9 +186,9 @@ MoveLegion {'markername': 'Rd02', 'entry_side': 5, 'teleport': False, \
 'hexlabel': 117}
 DoneMoving {'playername': 'dripton', 'game_name': 'a'}
 RecruitCreature {'playername': 'dripton', 'markername': 'Rd02', \
-'creature_name': 'Ogre', 'game_name': 'a'}
+'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}
 RecruitCreature {'playername': 'dripton', 'markername': 'Rd04', \
-'creature_name': 'Warlock', 'game_name': 'a'}
+'creature_name': 'Warlock', 'game_name': 'a', 'recruiter_names': ['Titan']}
 """
 
 def test_load2():

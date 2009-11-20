@@ -27,6 +27,8 @@ class Legion(Observed):
         self.entry_side = None
         self.previous_hexlabel = None
         self.recruited = False
+        # List of tuples of recruiter names
+        self.recruiter_names_list = []
         self.angels_pending = 0
         self.archangels_pending = 0
 
@@ -207,6 +209,29 @@ class Legion(Observed):
                 maximum = num
         return maximum
 
+    def can_recruit(self, mterrain, caretaker):
+        """Return True iff the legion could recruit in a masterhex with 
+        terrain type mterrain, if it moved there."""
+        counts = bag(self.living_creature_names)
+        recruits = recruitdata.data[mterrain]
+        for sublist in self._gen_sublists(recruits):
+            names = [tup[0] for tup in sublist]
+            nums = [tup[1] for tup in sublist]
+            for ii in xrange(len(sublist) - 1, -1, -1):
+                name = names[ii]
+                num = nums[ii]
+                if ii >= 1:
+                    prev = names[ii - 1]
+                else:
+                    prev = None
+                if ((counts[name] and num) or (counts[prev] >= num) or
+                  prev == recruitdata.ANYTHING or (prev == recruitdata.CREATURE
+                  and self._max_creatures_of_one_type() >= num)):
+                    for jj in xrange(ii + 1):
+                        if nums[jj]:
+                            return True
+        return False
+
     def available_recruits(self, mterrain, caretaker):
         """Return a list of the creature names that this legion could
         recruit in a masterhex with terrain type mterrain, if it moved there.
@@ -219,8 +244,7 @@ class Legion(Observed):
         for sublist in self._gen_sublists(recruits):
             names = [tup[0] for tup in sublist]
             nums = [tup[1] for tup in sublist]
-            ii = len(sublist) - 1
-            while ii >= 0:
+            for ii in xrange(len(sublist) - 1, -1, -1):
                 name = names[ii]
                 num = nums[ii]
                 if ii >= 1:
@@ -230,11 +254,10 @@ class Legion(Observed):
                 if ((counts[name] and num) or (counts[prev] >= num) or
                   prev == recruitdata.ANYTHING or (prev == recruitdata.CREATURE
                   and self._max_creatures_of_one_type() >= num)):
-                    for jj in xrange(0, ii+1):
+                    for jj in xrange(ii + 1):
                         if nums[jj]:
                             result_set.add(names[jj])
                     break
-                ii -= 1
         # Order matters, so revisit the original recruits list.  Also check
         # the caretaker.
         result_list = []
@@ -245,7 +268,85 @@ class Legion(Observed):
                     result_list.append(name)
         return result_list
 
-    def recruit(self, creature):
+    def available_recruits_and_recruiters(self, mterrain, caretaker):
+        """Return a list of tuples with creature names and recruiters that this
+        legion could recruit in a masterhex with terrain type mterrain, if it 
+        moved there.
+
+        Each tuple will contain the recruit as its first element, and the
+        recruiters (if any) as its remaining elements.
+
+        The list is sorted in the same order as within recruitdata.
+        """
+        result_list = []
+        counts = bag(self.living_creature_names)
+        recruits = recruitdata.data[mterrain]
+        for sublist in self._gen_sublists(recruits):
+            names = [tup[0] for tup in sublist]
+            nums = [tup[1] for tup in sublist]
+            for ii in xrange(len(sublist)):
+                name = names[ii]
+                num = nums[ii]
+                if ii >= 1:
+                    prev = names[ii - 1]
+                else:
+                    prev = None
+                if prev == recruitdata.ANYTHING:
+                    # basic tower creature
+                    for jj in xrange(ii + 1):
+                        if nums[jj] and caretaker.counts.get(names[jj]):
+                            result_list.append((names[jj],))
+                else:
+                    if (prev == recruitdata.CREATURE and 
+                      self._max_creatures_of_one_type() >= num):
+                        # guardian
+                        recruiters = []
+                        for name2, num2 in counts.iteritems():
+                            if (num2 >= num and Creature.Creature(
+                              name2).character_type == "creature"):
+                                recruiters.append(name2)
+                        for jj in xrange(ii + 1):
+                            if nums[jj] and caretaker.counts.get(names[jj]):
+                                for recruiter in recruiters:
+                                    li = [names[jj]]
+                                    for kk in xrange(num):
+                                        li.append(recruiter)
+                                    tup = tuple(li)
+                                    result_list.append(tup)
+                    if counts[prev] >= num: 
+                        # recruit up
+                        if num and caretaker.counts.get(name):
+                            li = [name]
+                            for kk in xrange(num):
+                                li.append(prev)
+                            tup = tuple(li)
+                            result_list.append(tup)
+                    if counts[name] and num:
+                        # recruit same or down
+                        for jj in xrange(ii + 1):
+                            if nums[jj] and caretaker.counts.get(names[jj]):
+                                result_list.append((names[jj], name))
+
+        def cmp_helper(tup1, tup2):
+            ii = 0
+            while True:
+                if len(tup1) < ii + 1:
+                    return -1
+                if len(tup2) < ii + 1:
+                    return 1
+                if tup1[ii] != tup2[ii]:
+                    c1 = Creature.Creature(tup1[ii])
+                    c2 = Creature.Creature(tup2[ii])
+                    diff = 100 * (c1.sort_value - c2.sort_value)
+                    if diff != 0:
+                        return int(diff)
+                ii += 1
+
+        result_list.sort(cmp=cmp_helper)
+        return result_list
+
+
+    def recruit(self, creature, recruiter_names):
         """Recruit creature, and notify observers."""
         player = self.player
         if self.recruited:
@@ -262,10 +363,11 @@ class Legion(Observed):
                 raise AssertionError("none of creature left")
             caretaker.take_one(creature.name)
             self.creatures.append(creature)
+            self.recruiter_names_list.append(recruiter_names)
             creature.legion = self
             self.recruited = True
             action = Action.RecruitCreature(player.game.name, player.name,
-              self.markername, creature.name)
+              self.markername, creature.name, tuple(recruiter_names))
             self.notify(action)
 
     def undo_recruit(self):
@@ -275,11 +377,12 @@ class Legion(Observed):
             return
         player = self.player
         creature = self.creatures.pop()
+        recruiter_names = self.recruiter_names_list.pop()
         self.recruited = False
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
         action = Action.UndoRecruit(player.game.name, player.name,
-          self.markername, creature.name)
+          self.markername, creature.name, recruiter_names)
         self.notify(action)
 
     @property
