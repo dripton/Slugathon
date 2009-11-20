@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 import gtk
 
 import icon
-import guiutils
 
 
 class PickMarker(object):
@@ -44,6 +43,8 @@ class PickMarker(object):
         self.pick_marker_dialog.destroy()
 
 if __name__ == "__main__":
+    import guiutils
+
     username = "test user"
     game_name = "test game"
     markers_left = ["Rd%02d" % ii for ii in xrange(1, 12+1)]

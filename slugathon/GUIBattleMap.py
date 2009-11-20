@@ -5,7 +5,6 @@ __license__ = "GNU GPL v2"
 
 
 import math
-import random
 from sys import maxint, argv
 
 from twisted.internet import gtk2reactor
@@ -19,11 +18,9 @@ import gtk
 from zope.interface import implements
 
 from Observer import IObserver
-import BattleMap
 import icon
 import guiutils
 import GUIBattleHex
-import battlemapdata
 import Chit
 import Phase
 import Action
@@ -663,6 +660,10 @@ class GUIBattleMap(gtk.Window):
 
 
 if __name__ == "__main__":
+    import random
+    import BattleMap
+    import battlemapdata
+
     entry_side = None
     if len(argv) > 1:
         terrain = argv[1].title()

@@ -3,19 +3,11 @@
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-import time
-
 import gtk
 
 import Chit
-import creaturedata
-import Creature
-import Legion
 import Marker
 import icon
-import guiutils
-import Game
-import Player
 
 class ShowLegion(object):
     """Window to show a legion's contents."""
@@ -50,6 +42,14 @@ class ShowLegion(object):
 
 
 if __name__ == "__main__":
+    import time
+    import creaturedata
+    import Creature
+    import Legion
+    import guiutils
+    import Game
+    import Player
+
     now = time.time()
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]

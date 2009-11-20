@@ -6,19 +6,12 @@ __license__ = "GNU GPL v2"
 
 # TODO Need feedback when a split fails for no markers.
 
-import time
-
 import gtk
 
 import Chit
 import Marker
-import creaturedata
-import Creature
-import Legion
-import Player
 import icon
-import guiutils
-import Game
+import Legion
 
 
 class SplitLegion(object):
@@ -98,6 +91,13 @@ class SplitLegion(object):
 
 
 if __name__ == "__main__":
+    import time
+    import creaturedata
+    import Creature
+    import Player
+    import guiutils
+    import Game
+
     now = time.time()
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]

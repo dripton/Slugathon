@@ -4,18 +4,11 @@ __copyright__ = "Copyright (c) 2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import time
-
 import gtk
 
 import Chit
 import Marker
-import Creature
-import Legion
-import Player
 import icon
-import guiutils
-import Game
 
 
 class SummonAngel(object):
@@ -76,6 +69,13 @@ class SummonAngel(object):
 
 
 if __name__ == "__main__":
+    import time
+    import Creature
+    import Legion
+    import Player
+    import guiutils
+    import Game
+
     now = time.time()
     username = "test"
     game = Game.Game("g1", username, now, now, 2, 6)

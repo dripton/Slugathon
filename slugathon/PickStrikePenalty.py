@@ -3,13 +3,9 @@
 __copyright__ = "Copyright (c) 2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-import time
-
 import gtk
 
 import icon
-import guiutils
-import Game
 import Phase
 
 
@@ -81,6 +77,10 @@ class PickStrikePenalty(object):
 
 
 if __name__ == "__main__":
+    import time
+    import guiutils
+    import Game
+
     now = time.time()
     username = "p0"
     game_name = "g1"
@@ -138,6 +138,7 @@ if __name__ == "__main__":
 
     pick_strike_penalty = PickStrikePenalty(username, game_name, titan2,
       centaur1, my_callback, None)
+    # XXX Remove commented-out code
     #pick_strike_penalty.pick_strike_penalty_dialog.connect("destroy",
     #  guiutils.exit)
     gtk.main()

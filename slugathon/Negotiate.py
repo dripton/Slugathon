@@ -5,19 +5,11 @@ __license__ = "GNU GPL v2"
 
 # TODO Angel summoning
 
-
-import time
-
 import gtk
 
 import Chit
 import Marker
-import Creature
-import Legion
-import Player
 import icon
-import guiutils
-import Game
 
 class Negotiate(object):
     """Dialog to choose whether to concede, negotiate, or fight."""
@@ -154,6 +146,13 @@ class Negotiate(object):
         self.negotiate_dialog.destroy()
 
 if __name__ == "__main__":
+    import time
+    import Creature
+    import Legion
+    import Player
+    import guiutils
+    import Game
+
     now = time.time()
     game_name = "Game1"
     attacker_username = "Roar!"

@@ -4,18 +4,12 @@ __copyright__ = "Copyright (c) 2007-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import time
-
 import gtk
 
 import Chit
 import Marker
 import Creature
-import Legion
-import Player
 import icon
-import guiutils
-import Game
 
 
 class AcquireAngel(object):
@@ -77,6 +71,12 @@ class AcquireAngel(object):
 
 
 if __name__ == "__main__":
+    import time
+    import Legion
+    import Player
+    import guiutils
+    import Game
+
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 

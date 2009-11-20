@@ -4,18 +4,11 @@ __copyright__ = "Copyright (c) 2006-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import time
-
 import gtk
 from zope.interface import implements
 
 import icon
-import guiutils
 from Observer import IObserver
-import Game
-import Player
-import creaturedata
-import Creature
 import Action
 import Phase
 import prefs
@@ -212,6 +205,13 @@ class StatusScreen(object):
 
 
 if __name__ == "__main__":
+    import time
+    import guiutils
+    import Game
+    import Player
+    import creaturedata
+    import Creature
+
     now = time.time()
     user = None
     username = "p0"

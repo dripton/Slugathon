@@ -6,8 +6,6 @@ __license__ = "GNU GPL v2"
 
 import gtk
 
-import Dice
-
 
 CHIT_SCALE_FACTOR = 3
 
@@ -36,6 +34,8 @@ class Die(object):
         self.image.show()
 
 if __name__ == "__main__":
+    import Dice
+
     die = Die(Dice.roll()[0], scale=45)
     window = gtk.Window()
     window.connect("destroy", gtk.main_quit)

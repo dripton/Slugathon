@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 
 import gtk
 
-import guiutils
 import icon
 
 class About(object):
@@ -38,6 +37,8 @@ class About(object):
 
 
 if __name__ == "__main__":
+    import guiutils
+
     about = About()
     about.ad.connect("response", guiutils.exit)
     gtk.main()

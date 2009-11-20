@@ -3,19 +3,11 @@
 __copyright__ = "Copyright (c) 2006-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-import random
-
 import gtk
 
 import Chit
-import creaturedata
-import Creature
-import Legion
 import Marker
 import icon
-import guiutils
-import Player
-import playercolordata
 
 class Inspector(object):
     """Window to show a legion's contents."""
@@ -68,6 +60,14 @@ class Inspector(object):
 
 
 if __name__ == "__main__":
+    import random
+    import creaturedata
+    import Creature
+    import Legion
+    import guiutils
+    import Player
+    import playercolordata
+
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
 

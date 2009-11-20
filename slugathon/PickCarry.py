@@ -3,14 +3,9 @@
 __copyright__ = "Copyright (c) 2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-import time
-
 import gtk
 
 import icon
-import guiutils
-import Game
-import Phase
 
 
 class PickCarry(object):
@@ -58,6 +53,11 @@ class PickCarry(object):
 
 
 if __name__ == "__main__":
+    import time
+    import guiutils
+    import Game
+    import Phase
+
     now = time.time()
     username = "p0"
     game_name = "g1"

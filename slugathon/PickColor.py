@@ -7,11 +7,9 @@ __license__ = "GNU GPL v2"
 # TODO This dialog should always be on top.
 
 import gtk
-from twisted.internet import defer
 
 from playercolordata import colors
 import icon
-import guiutils
 
 
 class PickColor(object):
@@ -55,6 +53,9 @@ class PickColor(object):
         print "PickColor.failure", error
 
 if __name__ == "__main__":
+    from twisted.internet import defer
+    import guiutils
+
     class NullUser(object):
         def callRemote(*args):
             return defer.Deferred()

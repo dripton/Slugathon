@@ -13,7 +13,6 @@ import pangocairo
 
 import guiutils
 import colors
-import Creature
 
 CHIT_SCALE_FACTOR = 3
 
@@ -206,6 +205,8 @@ class Chit(object):
 
 
 if __name__ == "__main__":
+    import Creature
+
     creature = Creature.Creature("Ogre")
     creature.hits = 3
     chit = Chit(creature, "Red", scale=45)

@@ -5,10 +5,8 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
-from twisted.internet import defer
 
 import icon
-import guiutils
 import prefs
 
 
@@ -51,6 +49,9 @@ class LoadGame(object):
 
 
 if __name__ == "__main__":
+    from twisted.internet import defer
+    import guiutils
+
     class NullUser(object):
         def callRemote(*args):
             return defer.Deferred()

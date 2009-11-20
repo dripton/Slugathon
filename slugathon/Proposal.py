@@ -4,18 +4,11 @@ __copyright__ = "Copyright (c) 2006-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import time
-
 import gtk
 
 import Chit
 import Marker
-import Creature
-import Legion
-import Player
 import icon
-import guiutils
-import Game
 from bag import bag
 
 class Proposal(object):
@@ -111,6 +104,13 @@ class Proposal(object):
         self.proposal_dialog.destroy()
 
 if __name__ == "__main__":
+    import time
+    import Creature
+    import Legion
+    import Player
+    import guiutils
+    import Game
+
     now = time.time()
     game_name = "Game1"
     attacker_username = "Roar!"

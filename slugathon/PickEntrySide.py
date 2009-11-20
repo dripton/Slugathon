@@ -5,8 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import math
-import random
-from sys import maxint, argv
+from sys import maxint
 
 from twisted.internet import gtk2reactor
 try:
@@ -21,7 +20,6 @@ import BattleMap
 import icon
 import guiutils
 import GUIBattleHex
-import battlemapdata
 import prefs
 
 
@@ -216,6 +214,10 @@ class PickEntrySide(gtk.Window):
 
 
 if __name__ == "__main__":
+    import random
+    from sys import argv
+    import battlemapdata
+
     entry_side = None
     if len(argv) > 1:
         terrain = argv[1].title()

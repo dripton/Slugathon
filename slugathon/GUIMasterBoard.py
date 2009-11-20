@@ -20,7 +20,6 @@ import gtk
 from zope.interface import implements
 
 import GUIMasterHex
-import MasterBoard
 import guiutils
 from Observer import IObserver
 import Action
@@ -1049,6 +1048,8 @@ class GUIMasterBoard(gtk.Window):
 
 
 def main():
+    import MasterBoard
+
     board = MasterBoard.MasterBoard()
     guiboard = GUIMasterBoard(board)
     reactor.run()
