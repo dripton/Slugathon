@@ -402,14 +402,8 @@ class GUIMasterBoard(gtk.Window):
                           self.board.hexes[hexlabel].terrain,
                           self.game.caretaker)
                         if recruit_names:
-                            creaturename = recruit_names[-1]
-                            recruit = Creature.Creature(creaturename)
-                            chit = Chit.Chit(recruit, player.color,
-                              self.scale / 2)
-                            chit_scale = chit.chit_scale
-                            chit.location = (guihex.center[0] - chit_scale / 2,
-                              guihex.center[1] - chit_scale / 2)
-                            self.recruitchits.append((chit, hexlabel))
+                            self._create_recruitchits(legion, hexlabel,
+                              recruit_names)
                 self.repaint()
 
             elif phase == Phase.FIGHT:
@@ -506,29 +500,29 @@ class GUIMasterBoard(gtk.Window):
         for marker in hitlist:
             self.markers.remove(marker)
 
-    def _compute_marker_locations(self, hex1):
-        mih = self.markers_in_hex(hex1)
-        num = len(mih)
-        guihex = self.guihexes[hex1]
-        chit_scale = self.markers[0].chit_scale
+    def _place_chits(self, chits, guihex):
+        """Compute and set the correct locations for each chit (or recruitchit
+        or marker) in the list, if they're all in guihex, taking their scale 
+        into account.
+        """
+        if not chits:
+            return
+        num = len(chits)
+        chit_scale = chits[0].chit_scale
+        # If we have a lot of chits, squeeze them closer together so they
+        # fit in the hex.
+        if num <= 3:
+            increment = chit_scale / 2
+        else:
+            increment = chit_scale / 4
         base_location = (guihex.center[0] - chit_scale / 2,
           guihex.center[1] - chit_scale / 2)
-
-        if num == 1:
-            mih[0].location = base_location
-        elif num == 2:
-            mih[0].location = (base_location[0] - chit_scale / 4,
-              base_location[1] - chit_scale / 4)
-            mih[1].location = (base_location[0] + chit_scale / 4,
-              base_location[1] + chit_scale / 4)
-        elif num == 3:
-            mih[0].location = (base_location[0] - chit_scale / 2,
-              base_location[1] - chit_scale / 2)
-            mih[1].location = base_location
-            mih[2].location = (base_location[0] + chit_scale / 2,
-              base_location[1] + chit_scale / 2)
-        else:
-            raise AssertionError("invalid number of markers in hex")
+        starting_offset = (num - 1) / 2.
+        first_location = (base_location[0] - starting_offset * increment,
+          base_location[1] - starting_offset * increment)
+        for ii, chit in enumerate(chits):
+            chit.location = (first_location[0] + ii * increment,
+              first_location[1] + ii * increment)
 
     def _render_marker(self, marker, ctx):
         ctx.set_source_pixbuf(marker.pixbuf, int(round(marker.location[0])),
@@ -542,17 +536,33 @@ class GUIMasterBoard(gtk.Window):
         self._remove_extra_markers()
         hexlabels = set((marker.legion.hexlabel for marker in self.markers))
         for hexlabel in hexlabels:
-            self._compute_marker_locations(hexlabel)
+            guihex = self.guihexes[hexlabel]
             mih = self.markers_in_hex(hexlabel)
+            self._place_chits(mih, guihex)
             # Draw in reverse order so that the markers that come earlier
             # in self.markers are on top.
             for marker in reversed(mih):
                 marker.update_height()
                 self._render_marker(marker, ctx)
 
+    def _create_recruitchits(self, legion, hexlabel, recruit_names):
+        player = legion.player
+        guihex = self.guihexes[hexlabel]
+        num = len(recruit_names)
+        recruitchit_scale = self.scale * Chit.CHIT_SCALE_FACTOR / 4
+        chits = []
+        for recruit_name in recruit_names:
+            recruit = Creature.Creature(recruit_name)
+            chit = Chit.Chit(recruit, player.color, recruitchit_scale)
+            chits.append(chit)
+            chit_scale = chit.chit_scale
+            self.recruitchits.append((chit, hexlabel))
+        self._place_chits(chits, guihex)
+
     def draw_recruitchits(self, ctx):
         if not self.game:
             return
+        # Draw in forward order so the last recruitchits in the list is on top.
         for (chit, unused) in self.recruitchits:
             self._render_marker(chit, ctx)
 

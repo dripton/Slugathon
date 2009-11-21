@@ -49,7 +49,8 @@ class Marker(object):
         return "Marker %s in %s" % (self.name, self.legion.hexlabel)
 
     def point_inside(self, point):
-        assert self.location
+        if not self.location:
+            return False
         return guiutils.point_in_square(point, self.location, self.chit_scale)
 
     def update_height(self):
