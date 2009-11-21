@@ -404,7 +404,7 @@ class BattleMap(object):
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
         strike_elevation = min(hex1.elevation, hex2.elevation)
-        if close(delta_y, 0) or close(delta_y, 1.5 * abs(delta_x)):
+        if close(delta_y, 0) or close(abs(delta_y), 1.5 * abs(delta_x)):
             return (self._is_los_blocked_dir(hex1, hex1, hex2, True,
               strike_elevation, game=game) and self._is_los_blocked_dir(hex1,
                 hex1, hex2, False, strike_elevation, game=game))
