@@ -503,7 +503,7 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("resolving engagement out of turn")
-        if hexlabel not in self.engagement_hexlabels():
+        if hexlabel not in self.engagement_hexlabels:
             raise AssertionError("no engagement to resolve in %s" % hexlabel)
         legions = self.all_legions(hexlabel)
         assert len(legions) == 2
@@ -781,6 +781,7 @@ class Game(Observed):
           carries, carries_left)
         self.notify(action2)
 
+    @property
     def engagement_hexlabels(self):
         """Return a set of all hexlabels with engagements"""
         hexlabels_to_legion_colors = {}
@@ -1242,7 +1243,7 @@ class Game(Observed):
 
         elif isinstance(action, Action.DoneMoving):
             player = self.get_player_by_name(action.playername)
-            if self.engagement_hexlabels():
+            if self.engagement_hexlabels:
                 self.phase = Phase.FIGHT
             else:
                 self.phase = Phase.MUSTER

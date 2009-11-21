@@ -681,7 +681,7 @@ class GUIMasterBoard(gtk.Window):
     def highlight_engagements(self):
         """Highlight all hexes with engagements."""
         self.unselect_all()
-        hexlabels = self.game.engagement_hexlabels()
+        hexlabels = self.game.engagement_hexlabels
         for hexlabel in hexlabels:
             guihex = self.guihexes[hexlabel]
             guihex.selected = True

@@ -75,7 +75,7 @@ class Legion(Observed):
     @property
     def engaged(self):
         """Return True iff this legion is engaged with an enemy legion."""
-        return self.hexlabel in self.player.game.engagement_hexlabels()
+        return self.hexlabel in self.player.game.engagement_hexlabels
 
     def __repr__(self):
         return "Legion %s in %s %s" % (self.markername, self.hexlabel,
