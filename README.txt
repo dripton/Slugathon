@@ -4,7 +4,7 @@ Internet.
 
 It's still in heavy development and not enduser-friendly yet.  It may crash.
 There's no AI yet, so you have to play all the players, or else find a friend
-of two to help.
+or two to help.
 
 If you want to try it anyway:
 
