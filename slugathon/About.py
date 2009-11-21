@@ -16,8 +16,8 @@ class About(object):
         ad.set_position(gtk.WIN_POS_MOUSE)
         ad.set_name("Slugathon")
         ad.set_version("")
-        ad.set_copyright(__copyright__)
-        ad.set_comments("""Very very prerelease""")
+        ad.set_copyright("Copyright (c) 2003-2009 David Ripton")
+        ad.set_comments("""Not-quite-alpha""")
 
         license_fn = "../docs/COPYING.txt"
         with open(license_fn) as fil:
@@ -31,7 +31,7 @@ class About(object):
           "Sakis Spyropoulos", "D. U. Thibault",])
 
         ad.set_logo(icon.pixbuf)
-        ad.set_website("http://slugathon.sf.net")
+        ad.set_website("http://github.com/dripton/Slugathon")
         ad.show()
         self.ad = ad
 
