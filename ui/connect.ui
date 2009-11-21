@@ -2,7 +2,7 @@
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkWindow" id="connect_window">
-    <property name="width_request">300</property>
+    <property name="width_request">350</property>
     <property name="visible">True</property>
     <property name="can_focus">True</property>
     <property name="has_focus">True</property>
