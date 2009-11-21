@@ -8,6 +8,7 @@ from sys import maxint
 import Game
 import Phase
 import Creature
+import Legion
 
 class TestBattle(object):
     def setup_method(self, method):
@@ -388,6 +389,67 @@ class TestBattle(object):
         assert gargoyle2.strike_number(titan1) == 5
         assert gargoyle2.number_of_dice(ogre1) == 4
         assert gargoyle2.strike_number(ogre1) == 3
+
+    def test_strikes_plain2(self):
+        rd02 = Legion.Legion(self.player0, "Rd02", Creature.n2c(["Angel",
+          "Ranger"]), 1)
+        self.player0.legions["Rd02"] = rd02
+        bu02 = Legion.Legion(self.player0, "Bu02", Creature.n2c(["Troll"]), 1)
+        self.player1.legions["Bu02"] = bu02
+        troll1 = bu02.creatures[0]
+        angel1 = rd02.creatures[0]
+        ranger1 = rd02.creatures[1]
+        game = self.game
+        defender = bu02
+        attacker = rd02
+
+        rd02.entry_side = 1
+        game._init_battle(rd02, bu02)
+        troll1.move("B2")
+        game.battle_active_legion = attacker
+        game.battle_phase = Phase.MANEUVER
+        angel1.move("C2")
+        ranger1.move("C1")
+        game.battle_phase = Phase.STRIKE
+        assert angel1.engaged_enemies == set([troll1])
+        assert angel1.number_of_dice(troll1) == 6
+        assert angel1.strike_number(troll1) == 2
+        assert ranger1.engaged_enemies == set()
+        assert ranger1.rangestrike_targets == set([troll1])
+        assert ranger1.number_of_dice(troll1) == 2
+        assert ranger1.strike_number(troll1) == 2
+
+        rd02.entry_side = 3
+        game._init_battle(rd02, bu02)
+        troll1.move("B2")
+        game.battle_active_legion = attacker
+        game.battle_phase = Phase.MANEUVER
+        angel1.move("C2")
+        ranger1.move("C1")
+        game.battle_phase = Phase.STRIKE
+        assert angel1.engaged_enemies == set([troll1])
+        assert angel1.number_of_dice(troll1) == 6
+        assert angel1.strike_number(troll1) == 2
+        assert ranger1.engaged_enemies == set()
+        assert ranger1.rangestrike_targets == set([troll1])
+        assert ranger1.number_of_dice(troll1) == 2
+        assert ranger1.strike_number(troll1) == 2
+
+        rd02.entry_side = 5
+        game._init_battle(rd02, bu02)
+        troll1.move("B2")
+        game.battle_active_legion = attacker
+        game.battle_phase = Phase.MANEUVER
+        angel1.move("C2")
+        ranger1.move("C1")
+        game.battle_phase = Phase.STRIKE
+        assert angel1.engaged_enemies == set([troll1])
+        assert angel1.number_of_dice(troll1) == 6
+        assert angel1.strike_number(troll1) == 2
+        assert ranger1.engaged_enemies == set()
+        assert ranger1.rangestrike_targets == set([troll1])
+        assert ranger1.number_of_dice(troll1) == 2
+        assert ranger1.strike_number(troll1) == 2
 
     def test_strikes_marsh(self):
         self.rd01.move(41, False, None, 5)
