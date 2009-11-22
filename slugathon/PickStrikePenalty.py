@@ -68,12 +68,12 @@ class PickStrikePenalty(object):
 
     def cb_click(self, widget, event):
         tup = widget.tup
+        self.pick_strike_penalty_dialog.destroy()
         if tup is None:
             self.callback(None, None, None, None)
         else:
             num_dice, strike_number = tup
             self.callback(self.striker, self.target, num_dice, strike_number)
-        self.pick_strike_penalty_dialog.destroy()
 
 
 if __name__ == "__main__":
