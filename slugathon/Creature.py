@@ -246,6 +246,7 @@ class Creature(object):
         self.previous_hexlabel = None
         self.moved = False
 
+    @property
     def can_strike(self):
         """Return True iff this creature can strike."""
         return not self.struck and (self.engaged or self.can_rangestrike)

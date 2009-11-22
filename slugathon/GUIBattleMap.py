@@ -170,9 +170,8 @@ class GUIBattleMap(gtk.Window):
             self.unselect_all()
             return
         hexlabels = set()
-        for creature in self.game.battle_active_legion.creatures:
-            if creature.mobile:
-                hexlabels.add(creature.hexlabel)
+        for creature in self.game.battle_active_legion.mobile_creatures:
+            hexlabels.add(creature.hexlabel)
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
@@ -186,9 +185,8 @@ class GUIBattleMap(gtk.Window):
             self.unselect_all()
             return
         hexlabels = set()
-        for creature in self.game.battle_active_legion.creatures:
-            if creature.can_strike():
-                hexlabels.add(creature.hexlabel)
+        for creature in self.game.battle_active_legion.strikers:
+            hexlabels.add(creature.hexlabel)
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
@@ -525,9 +523,19 @@ class GUIBattleMap(gtk.Window):
 
         elif isinstance(action, Action.DoneReinforcing):
             self.highlight_mobile_chits()
+            if self.game.battle_active_player.name == self.username:
+                if not self.game.battle_active_legion.mobile_creatures:
+                    def1 = self.user.callRemote("done_with_maneuvers",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoneManeuvering):
             self.highlight_strikers()
+            if self.game.battle_active_player.name == self.username:
+                if not self.game.battle_active_legion.strikers:
+                    def1 = self.user.callRemote("done_with_strikes",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.Strike):
             print "GUIBattleMap.update got Strike", action
@@ -585,6 +593,11 @@ class GUIBattleMap(gtk.Window):
 
         elif isinstance(action, Action.DoneStriking):
             self.highlight_strikers()
+            if self.game.battle_active_player.name == self.username:
+                if not self.game.battle_active_legion.strikers:
+                    def1 = self.user.callRemote("done_with_counterstrikes",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoneStrikingBack):
             self._remove_dead_chits()
@@ -592,23 +605,36 @@ class GUIBattleMap(gtk.Window):
               self.game.battle_active_player.name == self.username and
               self.game.battle_active_legion == self.game.defender_legion):
                 legion = self.game.defender_legion
-                if len(legion.living_creature_names) < 7:
-                    masterhex = self.game.board.hexes[legion.hexlabel]
-                    caretaker = self.game.caretaker
-                    mterrain = self.battlemap.mterrain
-                    if legion.can_recruit(mterrain, caretaker):
-                        PickRecruit.PickRecruit(self.username, legion.player,
-                          legion, mterrain, caretaker,
-                          self.picked_reinforcement, self)
+                masterhex = self.game.board.hexes[legion.hexlabel]
+                caretaker = self.game.caretaker
+                mterrain = self.battlemap.mterrain
+                if (len(legion.living_creature_names) < 7 and 
+                  legion.can_recruit(mterrain, caretaker)):
+                    PickRecruit.PickRecruit(self.username, legion.player,
+                      legion, mterrain, caretaker, self.picked_reinforcement, 
+                      self)
+                else:
+                    def1 = self.user.callRemote("done_with_reinforcements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
             elif (self.game.battle_active_player.name == self.username and
               self.game.battle_active_legion == self.game.attacker_legion):
                 legion = self.game.attacker_legion
-                if len(legion.living_creature_names) < 7:
-                    if (legion.can_summon and self.game.first_attacker_kill in
-                      [self.game.battle_turn - 1, self.game.battle_turn]):
-                        SummonAngel.SummonAngel(self.username, legion.player,
-                          legion, self.picked_summon, self)
+                if (len(legion.living_creature_names) < 7 and legion.can_summon
+                  and self.game.first_attacker_kill in
+                  [self.game.battle_turn - 1, self.game.battle_turn]):
+                    SummonAngel.SummonAngel(self.username, legion.player,
+                      legion, self.picked_summon, self)
+                else:
+                    def1 = self.user.callRemote("done_with_reinforcements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
+
+            elif self.game.battle_active_player.name == self.username:
+                def1 = self.user.callRemote("done_with_reinforcements",
+                  self.game.name)
+                def1.addErrback(self.failure)
 
         elif isinstance(action, Action.BattleOver):
             self.destroy()

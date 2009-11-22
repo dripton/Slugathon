@@ -122,6 +122,14 @@ class Legion(Observed):
     def creature_names(self):
         return sorted(creature.name for creature in self.creatures)
 
+    @property
+    def mobile_creatures(self):
+        return [creature for creature in self.creatures if creature.mobile]
+
+    @property
+    def strikers(self):
+        return [creature for creature in self.creatures if creature.can_strike]
+
     def add_creature_by_name(self, creature_name):
         if len(self.living_creature_names) >= 7:
             raise ValueError, "no room to add another creature"
