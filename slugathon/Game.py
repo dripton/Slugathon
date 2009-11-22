@@ -105,6 +105,7 @@ class Game(Observed):
         self.attacker_legion.enter_battle("ATTACKER")
         self.first_attacker_kill = None
         self.pending_carry = None
+        self.clear_battle_flags()
 
     def _cleanup_battle(self):
         self.current_engagement_hexlabel = None
@@ -1337,7 +1338,7 @@ class Game(Observed):
             self.battle_phase = Phase.STRIKE
 
         elif isinstance(action, Action.Strike):
-            print "Game.update got Strike", action
+            print "Game.update got", action
             target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
             target.hits += action.hits
             target.hits = min(target.hits, target.power)
@@ -1350,7 +1351,7 @@ class Game(Observed):
                 self.pending_carry = None
 
         elif isinstance(action, Action.Carry):
-            print "Game.update got Carry", action
+            print "Game.update got", action
             carry_target = self.creatures_in_battle_hex(
               action.carry_target_hexlabel).pop()
             carry_target.hits += action.carries
