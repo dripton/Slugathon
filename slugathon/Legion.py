@@ -408,7 +408,7 @@ class Legion(Observed):
           for creature in self.creatures))
         return [tup[1] for tup in li]
 
-    def die(self, scoring_legion, fled, no_points):
+    def die(self, scoring_legion, fled, no_points, check_for_victory=True):
         if scoring_legion is not None and not no_points:
             points = self.score
             if fled:
@@ -422,7 +422,7 @@ class Legion(Observed):
                 dead_titan = True
         self.player.remove_legion(self.markername)
         if dead_titan:
-            self.player.die(scoring_legion)
+            self.player.die(scoring_legion, check_for_victory)
 
     def add_points(self, points, can_acquire):
         # TODO Move these to a data file

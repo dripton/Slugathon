@@ -1086,7 +1086,7 @@ class Game(Observed):
         if self.battle_turn > 7:
             self.attacker_legion.die(self.defender_legion, False, True)
         elif self.attacker_legion.dead and self.defender_legion.dead:
-            self.attacker_legion.die(self.defender_legion, False, True)
+            self.attacker_legion.die(self.defender_legion, False, True, False)
             self.defender_legion.die(self.attacker_legion, False, True)
         elif self.attacker_legion.dead:
             self.attacker_legion.die(self.defender_legion, False, False)

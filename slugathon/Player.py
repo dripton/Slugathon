@@ -323,14 +323,15 @@ class Player(Observed):
         action = Action.RemoveLegion(self.game.name, markername, hexlabel)
         self.notify(action)
 
-    def die(self, scoring_legion):
+    def die(self, scoring_legion, check_for_victory):
         points = sum(legion.score for legion in self.legions.itervalues())
         half_points = points // 2
         scoring_legion.add_points(half_points, False)
         # Make a list to avoid changing size while iterating.
         for legion in self.legions.values():
             self.remove_legion(legion.markername)
-        self.game.check_for_victory()
+        if check_for_victory:
+            self.game.check_for_victory()
 
     def update(self, observed, action):
         if isinstance(action, Action.RecruitCreature):
