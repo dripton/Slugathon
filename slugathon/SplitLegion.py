@@ -88,6 +88,8 @@ class SplitLegion(object):
         self.split_legion_dialog.destroy()
         if response_id == gtk.RESPONSE_OK:
             self.callback(self.old_legion, self.new_legion1, self.new_legion2)
+        else:
+            self.callback(None, None, None)
 
 
 if __name__ == "__main__":
