@@ -141,8 +141,8 @@ def test_available_recruits():
     assert legion.available_recruits("Desert", caretaker) == []
     assert legion.available_recruits("Plain", caretaker) == ["Centaur", "Lion"]
     assert legion.available_recruits("Brush", caretaker) == ["Gargoyle"]
-    assert legion.available_recruits("Tower", caretaker) == ["Centaur",
-      "Gargoyle", "Ogre", "Warlock"]
+    assert legion.available_recruits("Tower", caretaker) == ["Ogre",
+      "Centaur", "Gargoyle", "Warlock"]
 
 def test_available_recruits_and_recruiters():
     now = time.time()

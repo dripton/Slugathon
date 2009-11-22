@@ -220,25 +220,8 @@ class Legion(Observed):
     def can_recruit(self, mterrain, caretaker):
         """Return True iff the legion could recruit in a masterhex with 
         terrain type mterrain, if it moved there."""
-        counts = bag(self.living_creature_names)
-        recruits = recruitdata.data[mterrain]
-        for sublist in self._gen_sublists(recruits):
-            names = [tup[0] for tup in sublist]
-            nums = [tup[1] for tup in sublist]
-            for ii in xrange(len(sublist) - 1, -1, -1):
-                name = names[ii]
-                num = nums[ii]
-                if ii >= 1:
-                    prev = names[ii - 1]
-                else:
-                    prev = None
-                if ((counts[name] and num) or (counts[prev] >= num) or
-                  prev == recruitdata.ANYTHING or (prev == recruitdata.CREATURE
-                  and self._max_creatures_of_one_type() >= num)):
-                    for jj in xrange(ii + 1):
-                        if nums[jj]:
-                            return True
-        return False
+        return bool(self.available_recruits_and_recruiters(mterrain,
+          caretaker))
 
     def available_recruits(self, mterrain, caretaker):
         """Return a list of the creature names that this legion could
@@ -246,35 +229,8 @@ class Legion(Observed):
 
         The list is sorted in the same order as within recruitdata.
         """
-        result_set = set()
-        counts = bag(self.living_creature_names)
-        recruits = recruitdata.data[mterrain]
-        for sublist in self._gen_sublists(recruits):
-            names = [tup[0] for tup in sublist]
-            nums = [tup[1] for tup in sublist]
-            for ii in xrange(len(sublist) - 1, -1, -1):
-                name = names[ii]
-                num = nums[ii]
-                if ii >= 1:
-                    prev = names[ii - 1]
-                else:
-                    prev = None
-                if ((counts[name] and num) or (counts[prev] >= num) or
-                  prev == recruitdata.ANYTHING or (prev == recruitdata.CREATURE
-                  and self._max_creatures_of_one_type() >= num)):
-                    for jj in xrange(ii + 1):
-                        if nums[jj]:
-                            result_set.add(names[jj])
-                    break
-        # Order matters, so revisit the original recruits list.  Also check
-        # the caretaker.
-        result_list = []
-        for tup in recruits:
-            if tup:
-                name = tup[0]
-                if name in result_set and caretaker.counts.get(name):
-                    result_list.append(name)
-        return result_list
+        return [tup[0] for tup in self.available_recruits_and_recruiters(
+          mterrain, caretaker)]
 
     def available_recruits_and_recruiters(self, mterrain, caretaker):
         """Return a list of tuples with creature names and recruiters that this
