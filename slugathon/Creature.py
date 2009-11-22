@@ -120,7 +120,7 @@ class Creature(object):
         return self.character_type == "lord"
 
     def _hexlabel_to_enemy(self):
-        """Return a dict of hexlabel: enemy Creature"""
+        """Return a dict of hexlabel: live enemy Creature"""
         hexlabel_to_enemy = {}
         game = self.legion.player.game
         legion2 = game.other_battle_legion(self.legion)
@@ -129,9 +129,20 @@ class Creature(object):
                 hexlabel_to_enemy[creature.hexlabel] = creature
         return hexlabel_to_enemy
 
+    def _hexlabel_to_dead_enemy(self):
+        """Return a dict of hexlabel: dead enemy Creature"""
+        hexlabel_to_enemy = {}
+        game = self.legion.player.game
+        legion2 = game.other_battle_legion(self.legion)
+        for creature in legion2.creatures:
+            if creature.dead and not creature.offboard:
+                hexlabel_to_enemy[creature.hexlabel] = creature
+        return hexlabel_to_enemy
+
     @property
     def engaged_enemies(self):
-        """Return a set of enemy Creatures this Creature is engaged with."""
+        """Return a set of live enemy Creatures this Creature is engaged 
+        with."""
         enemies = set()
         if self.offboard or self.hexlabel is None:
             return enemies
@@ -144,6 +155,24 @@ class Creature(object):
                   hex2.borders[(hexside + 3) % 6] != "Cliff"):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
+
+    @property
+    def dead_adjacent_enemies(self):
+        """Return a set of dead enemy Creatures this Creature is engaged 
+        with."""
+        enemies = set()
+        if self.offboard or self.hexlabel is None:
+            return enemies
+        game = self.legion.player.game
+        hex1 = game.battlemap.hexes[self.hexlabel]
+        hexlabel_to_enemy = self._hexlabel_to_dead_enemy()
+        for hexside, hex2 in hex1.neighbors.iteritems():
+            if hex2.label in hexlabel_to_enemy:
+                if (hex1.borders[hexside] != "Cliff" and
+                  hex2.borders[(hexside + 3) % 6] != "Cliff"):
+                    enemies.add(hexlabel_to_enemy[hex2.label])
+        return enemies
+
 
     def has_los_to(self, hexlabel):
         """Return True iff this creature has line of sight to the
@@ -180,7 +209,8 @@ class Creature(object):
             for target in self.engaged_enemies:
                 hexlabels.add(target.hexlabel)
             if (not hexlabels and self.rangestrikes and
-              game.battle_phase == Phase.STRIKE):
+              game.battle_phase == Phase.STRIKE and not 
+              self.dead_adjacent_enemies):
                 for target in self.rangestrike_targets:
                     hexlabels.add(target.hexlabel)
         return hexlabels
@@ -225,7 +255,6 @@ class Creature(object):
         """Return True iff this creature can rangestrike an enemy."""
         return bool(self.rangestrike_targets)
 
-    # TODO strike penalties to carry
     def number_of_dice(self, target):
         """Return the number of dice to use if striking target."""
         map1 = self.legion.player.game.battlemap
@@ -252,7 +281,6 @@ class Creature(object):
             dice = 0
         return dice
 
-    # TODO strike penalties to carry
     def strike_number(self, target):
         """Return the strike number to use if striking target."""
         game = self.legion.player.game
