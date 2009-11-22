@@ -56,6 +56,12 @@ class SplitLegion(object):
             chit.connect("button-press-event", self.cb_click)
 
         self.okbutton = self.split_legion_dialog.action_area.get_children()[1]
+        for child in self.split_legion_dialog.action_area.get_children():
+            if child.name == "okbutton1":
+                self.okbutton = child
+                break
+        else:
+            assert False, "okbutton1 not found"
         self.okbutton.set_sensitive(False)
 
         self.split_legion_dialog.connect("response", self.cb_response)
