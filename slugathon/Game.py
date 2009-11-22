@@ -1033,10 +1033,10 @@ class Game(Observed):
         assert target.name == target_name
         print "target", target
         # TODO check for valid strike penalty if not equal
-        assert num_dice <= striker.number_of_dice(target)
         print "num_dice", num_dice
-        assert strike_number >= striker.strike_number(target)
         print "strike_number", strike_number
+        assert num_dice <= striker.number_of_dice(target)
+        assert strike_number >= striker.strike_number(target)
         rolls = Dice.roll(num_dice)
         print "rolls", rolls
         hits = 0
