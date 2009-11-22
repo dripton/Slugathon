@@ -300,6 +300,7 @@ class GUIMasterBoard(gtk.Window):
             entry_sides = set([1, 3, 5])
         else:
             entry_sides = set((m[1] for m in moves))
+            entry_sides.discard("TELEPORT")
         hexlabel = moves[0][0]
         if len(entry_sides) == 1 or not legion.player.enemy_legions(hexlabel):
             self._pick_teleporting_lord(entry_sides.pop())
