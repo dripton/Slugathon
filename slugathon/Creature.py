@@ -187,7 +187,7 @@ class Creature(object):
         game = self.legion.player.game
         enemies = set()
         if (self.offboard or self.hexlabel is None or not self.rangestrikes
-          or game.battle_phase != Phase.STRIKE):
+          or game.battle_phase != Phase.STRIKE or self.dead_adjacent_enemies):
             return enemies
         hexlabel_to_enemy = self._hexlabel_to_enemy()
         map1 = game.battlemap
