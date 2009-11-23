@@ -229,8 +229,13 @@ class Legion(Observed):
 
         The list is sorted in the same order as within recruitdata.
         """
-        return [tup[0] for tup in self.available_recruits_and_recruiters(
-          mterrain, caretaker)]
+        recruits = []
+        for tup in self.available_recruits_and_recruiters(mterrain, 
+          caretaker):
+            recruit = tup[0]
+            if recruit not in recruits:
+                recruits.append(recruit)
+        return recruits
 
     def available_recruits_and_recruiters(self, mterrain, caretaker):
         """Return a list of tuples with creature names and recruiters that this

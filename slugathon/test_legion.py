@@ -133,12 +133,12 @@ def test_available_recruits():
     player = Player.Player("p0", game, 0)
     board = game.board
 
-    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
+    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan", "Lion",
       "Gargoyle", "Centaur", "Centaur"]), 1)
     caretaker = Caretaker.Caretaker()
 
     assert legion.available_recruits("Marsh", caretaker) == []
-    assert legion.available_recruits("Desert", caretaker) == []
+    assert legion.available_recruits("Desert", caretaker) == ["Lion"]
     assert legion.available_recruits("Plain", caretaker) == ["Centaur", "Lion"]
     assert legion.available_recruits("Brush", caretaker) == ["Gargoyle"]
     assert legion.available_recruits("Tower", caretaker) == ["Ogre",
