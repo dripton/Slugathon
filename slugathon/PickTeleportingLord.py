@@ -54,7 +54,7 @@ class PickTeleportingLord(object):
         eventbox = widget
         chit = eventbox.chit
         creature = chit.creature
-        self.callback(self.legion, creature)
+        self.callback(creature)
         self.pick_teleporting_lord_dialog.destroy()
 
     def cb_response(self, widget, response_id):
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures1, 1)
     player.legions[legion.markername] = legion
 
-    def my_callback(legion, creature):
+    def my_callback(creature):
         print "Picked", creature
         guiutils.exit()
 
