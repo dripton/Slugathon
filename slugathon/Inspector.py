@@ -30,8 +30,8 @@ class Inspector(object):
 
 
     def show_legion(self, legion):
-        self.legion_name.set_text("Legion %s in hex %s" % (legion.markername,
-          legion.hexlabel))
+        self.legion_name.set_text("Legion %s in hex %s (%d points)" % (
+          legion.markername, legion.hexlabel, legion.score))
 
         for hbox in [self.marker_hbox, self.chits_hbox]:
             for child in hbox.get_children():

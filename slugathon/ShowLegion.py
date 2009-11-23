@@ -22,8 +22,8 @@ class ShowLegion(object):
         self.show_legion_window.set_icon(icon.pixbuf)
         self.show_legion_window.set_title("ShowLegion - %s" % (username))
 
-        self.legion_name.set_text("Legion %s in hex %s" % (legion.markername,
-          legion.hexlabel))
+        self.legion_name.set_text("Legion %s in hex %s (%d points)" % (
+          legion.markername, legion.hexlabel, legion.score))
 
         self.marker = None
         if show_marker:
