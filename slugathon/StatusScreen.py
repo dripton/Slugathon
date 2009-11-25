@@ -19,29 +19,57 @@ class StatusScreen(object):
 
     implements(IObserver)
 
+
     def __init__(self, game, user, username):
         self.game = game
         self.user = user
         self.username = username
-        self.builder = gtk.Builder()
-        self.builder.add_from_file("../ui/statusscreen.ui")
-        self.widget_names = ["status_screen_window", "turn_table",
-          "player_table", "game_turn_label", "game_player_label",
-          "game_phase_label", "battle_turn_label", "battle_player_label",
-          "battle_phase_label",
-        ]
-        for num, player in enumerate(self.game.players):
-            self.widget_names.append("name%d_label" % num)
-            self.widget_names.append("tower%d_label" % num)
-            self.widget_names.append("color%d_label" % num)
-            self.widget_names.append("legions%d_label" % num)
-            self.widget_names.append("markers%d_label" % num)
-            self.widget_names.append("creatures%d_label" % num)
-            self.widget_names.append("titan_power%d_label" % num)
-            self.widget_names.append("eliminated%d_label" % num)
-            self.widget_names.append("score%d_label" % num)
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
+
+        self.contrasting = {
+            "Black": "White",
+            "Blue": "White",
+            "Brown": "White",
+            "Gray": "Black",
+            "Green": "Black",
+            "Gold": "Black",
+            "Red": "White",
+        }
+        self.status_screen_window = gtk.Window()
+        vbox1 = gtk.VBox()
+        self.status_screen_window.add(vbox1)
+        turn_table = gtk.Table(rows=4, columns=3)
+        vbox1.pack_start(turn_table)
+
+        self.add_label(turn_table, 2, 1, "Game")
+        self.add_label(turn_table, 3, 1, "Battle")
+        self.add_label(turn_table, 1, 2, "Turn")
+        self.add_label(turn_table, 1, 3, "Player")
+        self.add_label(turn_table, 1, 4, "Phase")
+        self.game_turn_label = self.add_label(turn_table, 2, 2)
+        self.battle_turn_label = self.add_label(turn_table, 3, 2)
+        self.game_player_label = self.add_label(turn_table, 2, 3)
+        self.battle_player_label = self.add_label(turn_table, 3, 3)
+        self.game_phase_label = self.add_label(turn_table, 2, 4)
+        self.battle_phase_label = self.add_label(turn_table, 3, 4)
+
+        hseparator1 = gtk.HSeparator()
+        vbox1.pack_start(hseparator1)
+        self.player_table = gtk.Table(rows=9, columns=7)
+        vbox1.pack_start(self.player_table)
+
+        for row, text in enumerate(["Name", "Tower", "Color", "Legions",
+          "Markers", "Creatures", "Titan Power", "Eliminated", "Score"]):
+            self.add_label(self.player_table, 1, row, text)
+            
+
+        for col, num in enumerate(xrange(len(self.game.players))):
+            for row, st in enumerate(["name%d_label", "tower%d_label",
+              "color%d_label", "legions%d_label", "markers%d_label",
+              "creatures%d_label", "titan_power%d_label", "eliminated%d_label",
+              "score%d_label"]):
+                name = st % num
+                label = self.add_label(self.player_table, col + 1, row)
+                setattr(self, name, label)
 
         self.status_screen_window.connect("configure-event",
           self.cb_configure_event)
@@ -64,8 +92,22 @@ class StatusScreen(object):
         self.status_screen_window.set_icon(icon.pixbuf)
         self.status_screen_window.set_title("%s - %s" % (
           self.status_screen_window.get_title(), self.username))
-        self.status_screen_window.show()
+        self.status_screen_window.show_all()
 
+
+    def add_label(self, table, col, row, text=""):
+        """Add a label inside an eventbox to the table."""
+        label = gtk.Label(text)
+        eventbox = gtk.EventBox()
+        eventbox.add(label)
+        label.eventbox = eventbox
+        table.attach(eventbox, col, col + 1, row, row + 1)
+        return label
+
+    def set_bg(self, label, color):
+        if color:
+            label.eventbox.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse(
+              color))
 
     def cb_configure_event(self, event, unused):
         if self.username:
@@ -86,24 +128,47 @@ class StatusScreen(object):
 
     def _init_players(self):
         for num, player in enumerate(self.game.players):
+            bg = "Gray"
+            try:
+                if (player.name == self.game.active_player.name):
+                    bg = "yellow"
+            except AttributeError:
+                pass
+            player_color = "Gray"
+            try:
+                if player.color is not None:
+                    player_color = player.color
+            except AttributeError:
+                pass
             name_label = getattr(self, "name%d_label" % num)
-            name_label.set_text(player.name)
+            self.set_bg(name_label, player_color)
+            name_label.set_markup("<span foreground='%s'>%s</span>" % (
+              self.contrasting[player_color], player_color))
             tower_label = getattr(self, "tower%d_label" % num)
             tower_label.set_text(str(player.starting_tower))
+            self.set_bg(tower_label, bg)
             color_label = getattr(self, "color%d_label" % num)
-            color_label.set_text(player.color or "")
+            color_label.set_text(str(player.color or ""))
+            self.set_bg(color_label, bg)
             legions_label = getattr(self, "legions%d_label" % num)
             legions_label.set_text(str(len(player.legions)))
+            self.set_bg(legions_label, bg)
             markers_label = getattr(self, "markers%d_label" % num)
             markers_label.set_text(str(len(player.markernames)))
+            self.set_bg(markers_label, bg)
             creatures_label = getattr(self, "creatures%d_label" % num)
             creatures_label.set_text(str(player.num_creatures()))
+            self.set_bg(creatures_label, bg)
             titan_power_label = getattr(self, "titan_power%d_label" % num)
             titan_power_label.set_text(str(player.titan_power()))
+            self.set_bg(titan_power_label, bg)
             eliminated_label = getattr(self, "eliminated%d_label" % num)
+            # TODO
             eliminated_label.set_text("")
+            self.set_bg(eliminated_label, bg)
             score_label = getattr(self, "score%d_label" % num)
             score_label.set_text(str(player.score))
+            self.set_bg(score_label, bg)
 
     def _init_battle(self):
         if self.game.battle_turn is not None:
@@ -214,17 +279,51 @@ if __name__ == "__main__":
 
     now = time.time()
     user = None
-    username = "p0"
+    username = "p1"
     creatures = Creature.n2c(creaturedata.starting_creature_names)
-    game = Game.Game("g1", "p0", now, now, 2, 6)
-    player0 = Player.Player(username, game, 0)
-    player0.assign_starting_tower(600)
-    assert player0.starting_tower == 600
-    player0.assign_color("Red")
-    assert player0.color == "Red"
-    player0.pick_marker("Rd01")
-    player0.create_starting_legion()
-    assert len(player0.legions) == 1
+    game = Game.Game("g1", "Player 1", now, now, 2, 6)
+
+    player1 = game.players[0]
+    player1.assign_starting_tower(600)
+    player1.assign_color("Red")
+    player1.pick_marker("Rd01")
+    player1.create_starting_legion()
+    game.active_player = player1
+
+    player2 = Player.Player("Player 2", game, 1)
+    player2.assign_starting_tower(500)
+    player2.assign_color("Blue")
+    player2.pick_marker("Bu02")
+    player2.create_starting_legion()
+    game.players.append(player2)
+
+    player3 = Player.Player("Player 3", game, 2)
+    player3.assign_starting_tower(400)
+    player3.assign_color("Green")
+    player3.pick_marker("Gr03")
+    player3.create_starting_legion()
+    game.players.append(player3)
+
+    player4 = Player.Player("Player 4", game, 3)
+    player4.assign_starting_tower(300)
+    player4.assign_color("Brown")
+    player4.pick_marker("Br04")
+    player4.create_starting_legion()
+    game.players.append(player4)
+
+    player5 = Player.Player("Player 5", game, 4)
+    player5.assign_starting_tower(200)
+    player5.assign_color("Black")
+    player5.pick_marker("Bk05")
+    player5.create_starting_legion()
+    game.players.append(player5)
+
+    player6 = Player.Player("Player 6", game, 5)
+    player6.assign_starting_tower(100)
+    player6.assign_color("Gold")
+    player6.pick_marker("Gd06")
+    player6.create_starting_legion()
+    game.players.append(player6)
 
     status_screen = StatusScreen(game, user, username)
     status_screen.status_screen_window.connect("destroy", guiutils.exit)
