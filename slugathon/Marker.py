@@ -1,8 +1,6 @@
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
-# TODO show titan power
-
 import tempfile
 import os
 

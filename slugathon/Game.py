@@ -475,7 +475,6 @@ class Game(Observed):
         if not self.can_move_legion(player, legion, hexlabel, entry_side,
           teleport, teleporting_lord):
             raise AssertionError("illegal move attempt")
-        # TODO reveal teleporting lord
         legion.move(hexlabel, teleport, teleporting_lord, entry_side)
         action = Action.MoveLegion(self.name, playername, markername,
           hexlabel, entry_side, teleport, teleporting_lord)
