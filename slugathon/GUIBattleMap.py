@@ -288,8 +288,8 @@ class GUIBattleMap(gtk.Window):
                 target = creature
                 striker = self.selected_chit.creature
                 if striker.can_take_strike_penalty(target):
-                    PickStrikePenalty.PickStrikePenalty(self.username, 
-                      self.game.name, striker, target, 
+                    PickStrikePenalty.PickStrikePenalty(self.username,
+                      self.game.name, striker, target,
                       self.picked_strike_penalty, self)
                 else:
                     num_dice = striker.number_of_dice(target)
@@ -608,10 +608,10 @@ class GUIBattleMap(gtk.Window):
                 masterhex = self.game.board.hexes[legion.hexlabel]
                 caretaker = self.game.caretaker
                 mterrain = self.battlemap.mterrain
-                if (len(legion.living_creature_names) < 7 and 
+                if (len(legion.living_creature_names) < 7 and
                   legion.can_recruit(mterrain, caretaker)):
                     PickRecruit.PickRecruit(self.username, legion.player,
-                      legion, mterrain, caretaker, self.picked_reinforcement, 
+                      legion, mterrain, caretaker, self.picked_reinforcement,
                       self)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
@@ -672,7 +672,7 @@ class GUIBattleMap(gtk.Window):
 
     def picked_strike_penalty(self, striker, target, num_dice, strike_number):
         print "picked_strike_penalty", striker, target, num_dice, strike_number
-        if striker is None: 
+        if striker is None:
             # User cancelled the strike.
             self.highlight_strikers()
         else:

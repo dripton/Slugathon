@@ -44,7 +44,7 @@ hexlabel_to_entry_side = {
 class PickEntrySide(gtk.Window):
     """Dialog to pick a masterhex entry side."""
 
-    def __init__(self, terrain, entry_sides, callback, username=None, 
+    def __init__(self, terrain, entry_sides, callback, username=None,
       scale=None):
         gtk.Window.__init__(self)
 

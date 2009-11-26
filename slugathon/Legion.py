@@ -226,7 +226,7 @@ class Legion(Observed):
         return maximum
 
     def can_recruit(self, mterrain, caretaker):
-        """Return True iff the legion could recruit in a masterhex with 
+        """Return True iff the legion could recruit in a masterhex with
         terrain type mterrain, if it moved there."""
         return bool(self.available_recruits_and_recruiters(mterrain,
           caretaker))
@@ -238,7 +238,7 @@ class Legion(Observed):
         The list is sorted in the same order as within recruitdata.
         """
         recruits = []
-        for tup in self.available_recruits_and_recruiters(mterrain, 
+        for tup in self.available_recruits_and_recruiters(mterrain,
           caretaker):
             recruit = tup[0]
             if recruit not in recruits:
@@ -247,7 +247,7 @@ class Legion(Observed):
 
     def available_recruits_and_recruiters(self, mterrain, caretaker):
         """Return a list of tuples with creature names and recruiters that this
-        legion could recruit in a masterhex with terrain type mterrain, if it 
+        legion could recruit in a masterhex with terrain type mterrain, if it
         moved there.
 
         Each tuple will contain the recruit as its first element, and the
@@ -274,7 +274,7 @@ class Legion(Observed):
                         if nums[jj] and caretaker.counts.get(names[jj]):
                             result_list.append((names[jj],))
                 else:
-                    if (prev == recruitdata.CREATURE and 
+                    if (prev == recruitdata.CREATURE and
                       self._max_creatures_of_one_type() >= num):
                         # guardian
                         recruiters = []
@@ -290,7 +290,7 @@ class Legion(Observed):
                                         li.append(recruiter)
                                     tup = tuple(li)
                                     result_list.append(tup)
-                    if counts[prev] >= num: 
+                    if counts[prev] >= num:
                         # recruit up
                         if num and caretaker.counts.get(name):
                             li = [name]

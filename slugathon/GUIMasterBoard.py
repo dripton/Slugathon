@@ -250,10 +250,10 @@ class GUIMasterBoard(gtk.Window):
                 if guihex.selected:
                     legion = self.selected_marker.legion
                     hexlabel = guihex.masterhex.label
-                    all_moves = self.game.find_all_moves(legion, 
-                      self.board.hexes[legion.hexlabel], 
+                    all_moves = self.game.find_all_moves(legion,
+                      self.board.hexes[legion.hexlabel],
                       legion.player.movement_roll)
-                    moves = [m for m in all_moves if m[0] == 
+                    moves = [m for m in all_moves if m[0] ==
                       guihex.masterhex.label]
                     self._pick_move_type(legion, moves)
                 self.selected_marker = None
@@ -271,7 +271,7 @@ class GUIMasterBoard(gtk.Window):
 
 
     # XXX This is kind of gross.  Maybe deferreds and inlineCallbacks?
- 
+
     def _pick_move_type(self, legion, moves):
         """Figure out whether to teleport, then call _pick_entry_side."""
         self.moving_legion = legion
@@ -287,7 +287,7 @@ class GUIMasterBoard(gtk.Window):
 
     def _pick_entry_side(self, teleport):
         """Pick an entry side, then call _pick_teleporting_lord.
-        
+
         teleport can be True, False, or None (cancel the move).
         """
         self.teleport = teleport
@@ -311,7 +311,7 @@ class GUIMasterBoard(gtk.Window):
                 entry_sides = set([1, 3, 5])
             else:
                 entry_sides = set((move[1] for move in moves))
-            PickEntrySide.PickEntrySide(terrain, entry_sides, 
+            PickEntrySide.PickEntrySide(terrain, entry_sides,
               self._pick_teleporting_lord)
 
     def _pick_teleporting_lord(self, entry_side):
@@ -507,7 +507,7 @@ class GUIMasterBoard(gtk.Window):
 
     def _place_chits(self, chits, guihex):
         """Compute and set the correct locations for each chit (or recruitchit
-        or marker) in the list, if they're all in guihex, taking their scale 
+        or marker) in the list, if they're all in guihex, taking their scale
         into account.
         """
         if not chits:

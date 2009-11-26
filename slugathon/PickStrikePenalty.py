@@ -10,7 +10,7 @@ import Phase
 
 
 class PickStrikePenalty(object):
-    """Dialog to pick whether to take a strike penalty to allow carrying 
+    """Dialog to pick whether to take a strike penalty to allow carrying
     excess hits."""
     def __init__(self, username, game_name, striker, target, callback, parent):
         self.username = username

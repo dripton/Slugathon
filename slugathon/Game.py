@@ -712,7 +712,7 @@ class Game(Observed):
         if self.phase == Phase.FIGHT:
             player.done_with_engagements()
 
-    def recruit_creature(self, playername, markername, creature_name, 
+    def recruit_creature(self, playername, markername, creature_name,
       recruiter_names):
         """Called from Server"""
         player = self.get_player_by_name(playername)

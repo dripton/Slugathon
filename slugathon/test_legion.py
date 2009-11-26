@@ -178,9 +178,9 @@ def test_available_recruits_and_recruiters():
 
     legion3 = Legion.Legion(player, "Rd03", Creature.n2c(["Colossus"]), 1)
     assert legion3.available_recruits_and_recruiters("Tundra", caretaker) == [
-      ("Troll", "Colossus"), ("Warbear", "Colossus"), ("Giant", "Colossus"), 
+      ("Troll", "Colossus"), ("Warbear", "Colossus"), ("Giant", "Colossus"),
       ("Colossus", "Colossus")]
-    assert legion3.available_recruits_and_recruiters("Mountains", 
+    assert legion3.available_recruits_and_recruiters("Mountains",
       caretaker) == [ ("Lion", "Colossus"), ("Minotaur", "Colossus"),
       ("Dragon", "Colossus"), ("Colossus", "Colossus")]
     assert legion3.available_recruits_and_recruiters("Marsh", caretaker) == []

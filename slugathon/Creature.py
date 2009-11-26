@@ -141,7 +141,7 @@ class Creature(object):
 
     @property
     def engaged_enemies(self):
-        """Return a set of live enemy Creatures this Creature is engaged 
+        """Return a set of live enemy Creatures this Creature is engaged
         with."""
         enemies = set()
         if self.offboard or self.hexlabel is None:
@@ -158,7 +158,7 @@ class Creature(object):
 
     @property
     def dead_adjacent_enemies(self):
-        """Return a set of dead enemy Creatures this Creature is engaged 
+        """Return a set of dead enemy Creatures this Creature is engaged
         with."""
         enemies = set()
         if self.offboard or self.hexlabel is None:
@@ -209,7 +209,7 @@ class Creature(object):
             for target in self.engaged_enemies:
                 hexlabels.add(target.hexlabel)
             if (not hexlabels and self.rangestrikes and
-              game.battle_phase == Phase.STRIKE and not 
+              game.battle_phase == Phase.STRIKE and not
               self.dead_adjacent_enemies):
                 for target in self.rangestrike_targets:
                     hexlabels.add(target.hexlabel)
@@ -356,7 +356,7 @@ class Creature(object):
         num_dice = self.number_of_dice(target)
         strike_number = self.strike_number(target)
         for creature in self.engaged_enemies:
-            if creature is not target: 
+            if creature is not target:
                 num_dice2 = self.number_of_dice(creature)
                 strike_number2 = self.strike_number(creature)
                 if num_dice2 < num_dice or strike_number2 > strike_number:
