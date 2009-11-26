@@ -231,6 +231,7 @@ class StatusScreen(object):
 
     def _clear_battle(self):
         self.battle_turn_label.set_text("")
+        self.set_bg(self.battle_player_label, self.default_bg)
         self.battle_player_label.set_text("")
         self.battle_phase_label.set_text("")
 
