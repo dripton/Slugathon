@@ -985,6 +985,8 @@ class GUIMasterBoard(gtk.Window):
             self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.DoneRecruiting):
+            if self.username != self.game.active_player.name:
+                self.unselect_all()
             if self.game.phase == Phase.SPLIT:
                 self.highlight_tall_legions()
             elif self.game.phase == Phase.MOVE:
