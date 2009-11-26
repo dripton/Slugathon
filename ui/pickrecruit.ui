@@ -10,9 +10,11 @@
     <child internal-child="vbox">
       <object class="GtkVBox" id="pick_recruit_dialog-vbox">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
+            <property name="orientation">vertical</property>
             <property name="spacing">9</property>
             <child>
               <object class="GtkLabel" id="legion_name">

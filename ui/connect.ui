@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<!--*- mode: xml -*-->
 <interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="connect_window">
     <property name="width_request">350</property>
     <property name="visible">True</property>
@@ -9,10 +10,11 @@
     <property name="can_default">True</property>
     <property name="has_default">True</property>
     <property name="title" translatable="yes">Slugathon - Connect</property>
-    <property name="window_position">GTK_WIN_POS_MOUSE</property>
+    <property name="window_position">mouse</property>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <object class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
@@ -25,20 +27,13 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkComboBoxEntry" id="playername_comboboxentry">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <child internal-child="entry">
-                  <object class="GtkEntry" id="comboboxentry-entry2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="has_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                  </object>
-                </child>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -49,6 +44,7 @@
             <property name="expand">False</property>
             <property name="fill">False</property>
             <property name="padding">2</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -63,6 +59,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -94,19 +91,13 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkComboBoxEntry" id="server_name_comboboxentry">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <child internal-child="entry">
-                  <object class="GtkEntry" id="comboboxentry-entry3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                  </object>
-                </child>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -131,19 +122,13 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkComboBoxEntry" id="server_port_comboboxentry">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <child internal-child="entry">
-                  <object class="GtkEntry" id="comboboxentry-entry1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                  </object>
-                </child>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -159,13 +144,13 @@
         </child>
         <child>
           <object class="GtkButton" id="connect_button">
+            <property name="label" translatable="yes">Connect to server</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="can_default">True</property>
             <property name="receives_default">True</property>
-            <property name="label" translatable="yes">Connect to server</property>
             <property name="use_underline">True</property>
-            <signal handler="on_connect_button_clicked" name="clicked"/>
+            <signal name="clicked" handler="on_connect_button_clicked"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -185,13 +170,13 @@
         </child>
         <child>
           <object class="GtkButton" id="start_server_button">
+            <property name="label" translatable="yes">Start local server</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="can_default">True</property>
             <property name="receives_default">True</property>
-            <property name="label" translatable="yes">Start local server</property>
             <property name="use_underline">True</property>
-            <signal handler="on_start_server_button_clicked" name="clicked"/>
+            <signal name="clicked" handler="on_start_server_button_clicked"/>
           </object>
           <packing>
             <property name="expand">False</property>
