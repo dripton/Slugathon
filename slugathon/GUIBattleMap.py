@@ -583,7 +583,7 @@ class GUIBattleMap(gtk.Window):
                 assert striker.name == action.striker_name
                 carry_target = self.game.creatures_in_battle_hex(
                   action.carry_target_hexlabel).pop()
-                assert target.name == action.target_name
+                assert carry_target.name == action.carry_target_name
                 num_dice = action.num_dice
                 strike_number = action.strike_number
                 carries_left = action.carries_left
