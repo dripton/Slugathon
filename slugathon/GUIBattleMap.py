@@ -431,15 +431,15 @@ class GUIBattleMap(gtk.Window):
                   self.game.name)
                 def1.addErrback(self.failure)
             elif self.game.battle_phase == Phase.STRIKE:
-                # TODO Check to see if forced strikes remain
-                def1 = self.user.callRemote("done_with_strikes",
-                  self.game.name)
-                def1.addErrback(self.failure)
+                if not self.game.battle_active_legion.forced_strikes:
+                    def1 = self.user.callRemote("done_with_strikes",
+                      self.game.name)
+                    def1.addErrback(self.failure)
             elif self.game.battle_phase == Phase.COUNTERSTRIKE:
-                # TODO Check to see if forced strikes remain
-                def1 = self.user.callRemote("done_with_counterstrikes",
-                  self.game.name)
-                def1.addErrback(self.failure)
+                if not self.game.battle_active_legion.forced_strikes:
+                    def1 = self.user.callRemote("done_with_counterstrikes",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
     # TODO
     def cb_concede(self, action):

@@ -130,6 +130,14 @@ class Legion(Observed):
     def strikers(self):
         return [creature for creature in self.creatures if creature.can_strike]
 
+    @property
+    def forced_strikes(self):
+        for creature in self.creatures:
+            if (not creature.dead and not creature.struck and
+              creature.engaged_enemies):
+                return True
+        return False
+
     def add_creature_by_name(self, creature_name):
         if len(self.living_creature_names) >= 7:
             raise ValueError, "no room to add another creature"
