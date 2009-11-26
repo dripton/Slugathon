@@ -40,10 +40,13 @@ class AcquireAngel(object):
         self.marker.show()
 
         for creature in legion.sorted_creatures:
-            chit = Chit.Chit(creature, player.color, scale=20)
-            chit.show()
-            self.chits_hbox.pack_start(chit.event_box, expand=False,
-              fill=False)
+            # XXX This is the wrong place to do this.
+            if not creature.dead:
+                creature.heal()
+                chit = Chit.Chit(creature, player.color, scale=20)
+                chit.show()
+                self.chits_hbox.pack_start(chit.event_box, expand=False,
+                  fill=False)
 
         angels = Creature.n2c(available_angels)
         for angel in angels:
