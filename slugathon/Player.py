@@ -49,10 +49,11 @@ class Player(Observed):
         self.mulligans_left = 1
         self.movement_roll = None
         self.summoned = False
+        self.eliminated_colors = []
 
     @property
     def dead(self):
-        return not self.legions
+        return self.color and self.starting_tower and not self.legions
 
     @property
     def teleported(self):
@@ -330,6 +331,8 @@ class Player(Observed):
         # Make a list to avoid changing size while iterating.
         for legion in self.legions.values():
             self.remove_legion(legion.markername)
+        scoring_legion.player.eliminated_colors.append(
+          playercolordata.name_to_abbrev[self.color])
         if check_for_victory:
             self.game.check_for_victory()
 

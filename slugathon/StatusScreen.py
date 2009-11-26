@@ -29,7 +29,6 @@ class StatusScreen(object):
             "Black": "White",
             "Blue": "White",
             "Brown": "White",
-            "Gray": "Black",
             "Green": "Black",
             "Gold": "Black",
             "Red": "White",
@@ -54,13 +53,13 @@ class StatusScreen(object):
 
         hseparator1 = gtk.HSeparator()
         vbox1.pack_start(hseparator1)
-        self.player_table = gtk.Table(rows=9, columns=7)
+        self.player_table = gtk.Table(rows=9, columns=len(self.game.players)
+          + 1)
         vbox1.pack_start(self.player_table)
 
         for row, text in enumerate(["Name", "Tower", "Color", "Legions",
           "Markers", "Creatures", "Titan Power", "Eliminated", "Score"]):
             self.add_label(self.player_table, 1, row, text)
-            
 
         for col, num in enumerate(xrange(len(self.game.players))):
             for row, st in enumerate(["name%d_label", "tower%d_label",
@@ -68,7 +67,7 @@ class StatusScreen(object):
               "creatures%d_label", "titan_power%d_label", "eliminated%d_label",
               "score%d_label"]):
                 name = st % num
-                label = self.add_label(self.player_table, col + 1, row)
+                label = self.add_label(self.player_table, col + 2, row)
                 setattr(self, name, label)
 
         self.status_screen_window.connect("configure-event",
@@ -86,13 +85,15 @@ class StatusScreen(object):
                 width, height = tup
                 self.status_screen_window.resize(width, height)
 
-        self._init_turn()
+        self.default_bg = None
         self._init_players()
+        self._init_turn()
 
         self.status_screen_window.set_icon(icon.pixbuf)
-        self.status_screen_window.set_title("%s - %s" % (
-          self.status_screen_window.get_title(), self.username))
+        self.status_screen_window.set_title("Game Status - %s" % self.username)
         self.status_screen_window.show_all()
+        self.default_bg = \
+          self.status_screen_window.get_style().copy().bg[gtk.STATE_NORMAL]
 
 
     def add_label(self, table, col, row, text=""):
@@ -106,8 +107,11 @@ class StatusScreen(object):
 
     def set_bg(self, label, color):
         if color:
-            label.eventbox.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse(
-              color))
+            if isinstance(color, str):
+                gtkcolor = gtk.gdk.color_parse(color)
+            else:
+                gtkcolor = color
+            label.eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
 
     def cb_configure_event(self, event, unused):
         if self.username:
@@ -123,18 +127,60 @@ class StatusScreen(object):
         self.game_turn_label.set_text(str(self.game.turn))
         self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
         if self.game.active_player:
+            if self.game.active_player.name == self.username:
+                self.set_bg(self.game_player_label, "Yellow")
+            else:
+                self.set_bg(self.game_player_label, self.default_bg)
             self.game_player_label.set_text(self.game.active_player.name)
         self._clear_battle()
+        self._color_player_columns()
+
+    def _color_player_columns(self):
+        for num, player in enumerate(self.game.players):
+            bg = self.default_bg
+            try:
+                if player.name == self.game.active_player.name:
+                    bg = "Yellow"
+                elif player.dead:
+                    bg = "Red"
+            except AttributeError:
+                pass
+            player_color = self.default_bg
+            try:
+                if player.color is not None:
+                    player_color = player.color
+            except AttributeError:
+                pass
+            name_label = getattr(self, "name%d_label" % num)
+            self.set_bg(name_label, player_color)
+            tower_label = getattr(self, "tower%d_label" % num)
+            self.set_bg(tower_label, bg)
+            color_label = getattr(self, "color%d_label" % num)
+            self.set_bg(color_label, bg)
+            legions_label = getattr(self, "legions%d_label" % num)
+            self.set_bg(legions_label, bg)
+            markers_label = getattr(self, "markers%d_label" % num)
+            self.set_bg(markers_label, bg)
+            creatures_label = getattr(self, "creatures%d_label" % num)
+            self.set_bg(creatures_label, bg)
+            titan_power_label = getattr(self, "titan_power%d_label" % num)
+            self.set_bg(titan_power_label, bg)
+            eliminated_label = getattr(self, "eliminated%d_label" % num)
+            self.set_bg(eliminated_label, bg)
+            score_label = getattr(self, "score%d_label" % num)
+            self.set_bg(score_label, bg)
 
     def _init_players(self):
         for num, player in enumerate(self.game.players):
-            bg = "Gray"
+            bg = self.default_bg
             try:
-                if (player.name == self.game.active_player.name):
-                    bg = "yellow"
+                if player.name == self.game.active_player.name:
+                    bg = "Yellow"
+                elif player.dead:
+                    bg = "Red"
             except AttributeError:
                 pass
-            player_color = "Gray"
+            player_color = self.default_bg
             try:
                 if player.color is not None:
                     player_color = player.color
@@ -143,7 +189,7 @@ class StatusScreen(object):
             name_label = getattr(self, "name%d_label" % num)
             self.set_bg(name_label, player_color)
             name_label.set_markup("<span foreground='%s'>%s</span>" % (
-              self.contrasting[player_color], player_color))
+              self.contrasting.get(str(player_color), "Black"), player.name))
             tower_label = getattr(self, "tower%d_label" % num)
             tower_label.set_text(str(player.starting_tower))
             self.set_bg(tower_label, bg)
@@ -163,8 +209,7 @@ class StatusScreen(object):
             titan_power_label.set_text(str(player.titan_power()))
             self.set_bg(titan_power_label, bg)
             eliminated_label = getattr(self, "eliminated%d_label" % num)
-            # TODO
-            eliminated_label.set_text("")
+            eliminated_label.set_text("".join(player.eliminated_colors))
             self.set_bg(eliminated_label, bg)
             score_label = getattr(self, "score%d_label" % num)
             score_label.set_text(str(player.score))
@@ -173,6 +218,10 @@ class StatusScreen(object):
     def _init_battle(self):
         if self.game.battle_turn is not None:
             self.battle_turn_label.set_text(str(self.game.battle_turn))
+            if self.game.battle_active_player.name == self.username:
+                self.set_bg(self.battle_player_label, "Yellow")
+            else:
+                self.set_bg(self.battle_player_label, self.default_bg)
             self.battle_player_label.set_text(
               self.game.battle_active_player.name)
             self.battle_phase_label.set_text(Phase.battle_phase_names[
@@ -198,6 +247,13 @@ class StatusScreen(object):
             color = action.color
             color_label = getattr(self, "color%d_label" % player_num)
             color_label.set_text(color)
+            name_label = getattr(self, "name%d_label" % player_num)
+            self.set_bg(name_label, color)
+            name_label.set_markup("<span foreground='%s'>%s</span>" % (
+              self.contrasting.get(str(color), "Black"), player.name))
+
+        elif isinstance(action, Action.AssignedAllColors):
+            self._init_turn()
 
         elif isinstance(action, Action.CreateStartingLegion):
             playername = action.playername
