@@ -138,7 +138,4 @@ if __name__ == "__main__":
 
     pick_strike_penalty = PickStrikePenalty(username, game_name, titan2,
       centaur1, my_callback, None)
-    # XXX Remove commented-out code
-    #pick_strike_penalty.pick_strike_penalty_dialog.connect("destroy",
-    #  guiutils.exit)
     gtk.main()
