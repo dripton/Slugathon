@@ -25,9 +25,11 @@ class Flee(object):
           "legion_name",
           "attacker_hbox",
           "attacker_marker_hbox",
+          "attacker_score_label",
           "attacker_chits_hbox",
           "defender_hbox",
           "defender_marker_hbox",
+          "defender_score_label",
           "defender_chits_hbox",
           "flee_button",
           "do_not_flee_button"
@@ -54,12 +56,16 @@ class Flee(object):
           expand=False, fill=False)
         self.defender_marker.show()
 
+        self.attacker_score_label.set_text("%d\npoints" %
+          attacker_legion.score)
         for creature in attacker_legion.creatures:
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20)
             chit.show()
             self.attacker_chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
 
+        self.defender_score_label.set_text("%d\npoints" %
+          defender_legion.score)
         for creature in defender_legion.creatures:
             chit = Chit.Chit(creature, defender_legion.player.color, scale=20)
             chit.show()
