@@ -41,6 +41,7 @@ class Player(Observed):
         self.starting_tower = None    # a numeric hex label
         self.score = 0
         self.color = None
+        # Currently available markers
         self.markernames = set()
         # Private to this instance; not shown to others until a
         # legion is actually split off with this marker.

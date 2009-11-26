@@ -46,6 +46,7 @@ import SummonAngel
 import PickEntrySide
 import PickMoveType
 import PickTeleportingLord
+import InfoDialog
 
 
 SQRT3 = math.sqrt(3.0)
@@ -372,6 +373,8 @@ class GUIMasterBoard(gtk.Window):
                     self.split_legion(player)
                 else:
                     if not player.markernames:
+                        InfoDialog.InfoDialog("Info", "No markers available",
+                          self)
                         return
                     self._splitting_legion = legion
                     PickMarker.PickMarker(self.username, self.game.name,
@@ -435,8 +438,9 @@ class GUIMasterBoard(gtk.Window):
 
     def split_legion(self, player):
         legion = self._splitting_legion
-        SplitLegion.SplitLegion(self.username, player, legion,
-          self.try_to_split_legion, self)
+        if legion is not None:
+            SplitLegion.SplitLegion(self.username, player, legion,
+              self.try_to_split_legion, self)
 
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
         if old_legion is None:
@@ -670,11 +674,12 @@ class GUIMasterBoard(gtk.Window):
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
             self.unselect_all()
-            for legion in player.legions.itervalues():
-                if len(legion) >= 7:
-                    self.repaint_hexlabels.add(legion.hexlabel)
-                    guihex = self.guihexes[legion.hexlabel]
-                    guihex.selected = True
+            if player.markernames:
+                for legion in player.legions.itervalues():
+                    if len(legion) >= 7:
+                        self.repaint_hexlabels.add(legion.hexlabel)
+                        guihex = self.guihexes[legion.hexlabel]
+                        guihex.selected = True
             self.repaint()
 
     def highlight_unmoved_legions(self):
