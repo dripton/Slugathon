@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+from slugathon.net import Server
+
+if __name__ == "__main__":
+    Server.main()

@@ -1,0 +1,4 @@
+recursive-include slugathon/images/*
+recursive-include slugathon/ui/*
+recursive-include slugathon/config/*
+recursive-include slugathon/docs/*
