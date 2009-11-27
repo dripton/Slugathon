@@ -3,6 +3,11 @@
 from glob import glob
 from distutils.core import setup
 from distutils.command.install_data import install_data
+import subprocess
+import datetime
+
+
+VERSION = "0.1a1"
 
 class install_data_twisted(install_data):
     """Make sure data files are installed in package.
@@ -15,10 +20,37 @@ class install_data_twisted(install_data):
         )
         install_data.finalize_options(self)
 
+def head_commit():
+    """Return the current commit of HEAD, or "" on failure."""
+    cmd = ["git", "rev-list", "--max-count=1", "HEAD"]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    stdout, unused = proc.communicate()
+    if proc.returncode != 0:
+        return ""
+    if stdout:
+        return stdout.strip()
+    else:
+        return ""
+
+def timestamp():
+    """Return the current UTC time in YYYYMMDDhhmmss form."""
+    utcnow = datetime.datetime.utcnow()
+    return utcnow.strftime("%Y%m%d%H%M%S")
+
+def write_version_file():
+    """Dump a file containing the version, timestamp, and commit to
+    docs/version.txt"""
+    version = "%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7])
+    # Need to use a relative path here because we may not have installed yet.
+    fil = open("slugathon/docs/version.txt", "w")
+    fil.write("%s\n" % version)
+    fil.close()
+
+write_version_file()
 
 setup(
     name = "slugathon",
-    version = "0.1alpha",
+    version = "%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7]),
     description = "board game",
     author = "David Ripton",
     author_email = "d+slugathon@ripton.net",
@@ -47,4 +79,3 @@ setup(
     ],
     cmdclass = {"install_data": install_data_twisted},
 )
-

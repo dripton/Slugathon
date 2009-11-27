@@ -19,14 +19,20 @@ class About(object):
         ad.set_icon(icon.pixbuf)
         ad.set_position(gtk.WIN_POS_MOUSE)
         ad.set_name("Slugathon")
-        ad.set_version("")
         ad.set_copyright("Copyright (c) 2003-2009 David Ripton")
-        ad.set_comments("""Not-quite-alpha""")
 
         license_fn = guiutils.basedir("docs/COPYING.txt")
         with open(license_fn) as fil:
             st = fil.read()
         ad.set_license(st)
+
+        version_fn = guiutils.basedir("docs/version.txt")
+        try:
+            with open(version_fn) as fil:
+                version = fil.read().strip()
+        except IOError:
+            version = "unknown"
+        ad.set_version(version)
 
         ad.set_authors(["David Ripton",])
         ad.set_artists(["Chris Byler", "Keith Carter", "Chris Howe",
