@@ -73,6 +73,8 @@
               <object class="GtkSpinButton" id="min_players_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="max_length">1</property>
+                <property name="width_chars">1</property>
                 <property name="adjustment">adjustment1</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
@@ -97,9 +99,12 @@
               <object class="GtkSpinButton" id="max_players_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="max_length">1</property>
+                <property name="width_chars">1</property>
                 <property name="adjustment">adjustment2</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
+                <property name="update_policy">if-valid</property>
               </object>
               <packing>
                 <property name="position">3</property>

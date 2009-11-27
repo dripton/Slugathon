@@ -29,6 +29,8 @@ class NewGame(object):
         self.new_game_dialog.set_title("%s - %s" % (
           self.new_game_dialog.get_title(), self.username))
         self.new_game_dialog.set_transient_for(parent)
+        self.min_players_spin.set_value(2)
+        self.max_players_spin.set_value(6)
 
         response = self.new_game_dialog.run()
         if response == gtk.RESPONSE_OK:
