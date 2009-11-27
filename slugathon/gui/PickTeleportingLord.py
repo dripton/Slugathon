@@ -60,7 +60,7 @@ class PickTeleportingLord(object):
 
     def cb_response(self, widget, response_id):
         """Player hit cancel"""
-        self.callback(self.legion, None)
+        self.callback(None)
         self.pick_teleporting_lord_dialog.destroy()
 
 
