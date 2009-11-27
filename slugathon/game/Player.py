@@ -221,7 +221,8 @@ class Player(Observed):
                 legions_in_hex = list(self.friendly_legions(legion.hexlabel))
                 if len(legions_in_hex) >= 2:
                     split_action = self.game.history.find_last_split(self.name,
-                      legions_in_hex[0], legions_in_hex[1])
+                      legions_in_hex[0].markername,
+                      legions_in_hex[1].markername)
                     if split_action is not None:
                         parent_markername = split_action.parent_markername
                         child_markername = split_action.child_markername
