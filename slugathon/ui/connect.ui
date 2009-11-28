@@ -3,7 +3,7 @@
   <!-- interface-requires gtk+ 2.12 -->
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="connect_window">
-    <property name="width_request">350</property>
+    <property name="width_request">400</property>
     <property name="visible">True</property>
     <property name="can_focus">True</property>
     <property name="has_focus">True</property>
