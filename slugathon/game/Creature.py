@@ -348,19 +348,26 @@ class Creature(object):
                 max_carries += creature.power - creature.hits
         return max_carries
 
-    def can_take_strike_penalty(self, target):
-        """Return True if it's legal to take a strike penalty when striking
-        target."""
+    def valid_strike_penalties(self, target):
+        """Return a set of all valid tuples (num_dice, strike_number) that
+        this creature can use to strike target."""
+        result = set()
         num_dice = self.number_of_dice(target)
         strike_number = self.strike_number(target)
+        result.add((num_dice, strike_number))
         for creature in self.engaged_enemies:
             if creature is not target:
                 num_dice2 = self.number_of_dice(creature)
                 strike_number2 = self.strike_number(creature)
                 if num_dice2 < num_dice or strike_number2 > strike_number:
                     if num_dice2 > target.power - target.hits:
-                        return True
-        return False
+                        result.add((num_dice2, strike_number2))
+        return result
+
+    def can_take_strike_penalty(self, target):
+        """Return True if it's legal to take a strike penalty when striking
+        target."""
+        return len(self.valid_strike_penalties(target)) > 1
 
     @property
     def offboard(self):

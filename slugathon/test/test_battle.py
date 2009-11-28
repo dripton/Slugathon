@@ -1473,3 +1473,70 @@ class TestBattle(object):
         assert ogre1.number_of_dice(colossus2) == 6
         assert ogre1.strike_number(colossus2) == 6
         assert titan1.engaged_enemies == set()
+
+    def test_strikes_brush(self):
+        game = self.game
+        rd01 = self.rd01
+        bu01 = self.bu01
+        rd01.move(3, False, None, 3)
+        bu01.add_creature_by_name("Gargoyle")
+        bu01.move(3, False, None, 3)
+        defender = bu01
+        attacker = rd01
+
+        titan = rd01.creatures[0]
+        assert titan.name == "Titan"
+        titan.hits = 2
+
+        ogre = bu01.creatures[1]
+        assert ogre.name == "Ogre"
+        ogre.hits = 2
+        gargoyle1 = bu01.creatures[3]
+        assert gargoyle1.name == "Gargoyle"
+        gargoyle2 = bu01.creatures[4]
+        assert gargoyle2.name == "Gargoyle"
+        gargoyle2.hits = 2
+
+        rd01.entry_side = 1
+        game._init_battle(rd01, bu01)
+
+        ogre.move("B1")
+        gargoyle1.move("D2")
+        gargoyle2.move("C2")
+        game.battle_active_legion = attacker
+        game.battle_phase = Phase.MANEUVER
+        titan.move("C1")
+
+        game.battle_phase = Phase.STRIKE
+
+        assert titan.engaged_enemies == set([ogre, gargoyle1, gargoyle2])
+        assert titan.number_of_dice(ogre) == 6
+        assert titan.strike_number(ogre) == 2
+        assert titan.number_of_dice(gargoyle1) == 6
+        assert titan.strike_number(gargoyle1) == 4
+        assert titan.number_of_dice(gargoyle2) == 6
+        assert titan.strike_number(gargoyle2) == 3
+
+        assert titan.can_take_strike_penalty(ogre)
+        assert not titan.can_take_strike_penalty(gargoyle1)
+        assert titan.can_take_strike_penalty(gargoyle2)
+
+        assert titan.valid_strike_penalties(ogre) == set([(6, 4), (6, 3),
+          (6, 2)])
+        assert titan.valid_strike_penalties(gargoyle1) == set([(6, 4)])
+        assert titan.valid_strike_penalties(gargoyle2) == set([(6, 4), (6, 3)])
+
+        assert titan.can_carry_to(ogre, gargoyle1, 6, 4)
+        assert titan.can_carry_to(gargoyle2, gargoyle1, 6, 4)
+
+        assert titan.can_carry_to(ogre, gargoyle2, 6, 3)
+        assert not titan.can_carry_to(gargoyle1, gargoyle2, 6, 3)
+        assert titan.can_carry_to(gargoyle1, gargoyle2, 6, 4)
+
+        assert not titan.can_carry_to(gargoyle1, ogre, 6, 2)
+        assert not titan.can_carry_to(gargoyle1, ogre, 6, 3)
+        assert titan.can_carry_to(gargoyle1, ogre, 6, 4)
+
+        assert not titan.can_carry_to(gargoyle2, ogre, 6, 2)
+        assert titan.can_carry_to(gargoyle2, ogre, 6, 3)
+        assert titan.can_carry_to(gargoyle2, ogre, 6, 4)

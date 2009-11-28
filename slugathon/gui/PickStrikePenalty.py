@@ -29,20 +29,19 @@ class PickStrikePenalty(gtk.Dialog):
 
         label = gtk.Label("Choose strike penalty for %r striking %r?" %
           (striker, target))
-        label.show()
         self.vbox.add(label)
 
-        num_dice = striker.number_of_dice(target)
-        strike_number = striker.strike_number(target)
         # Map tuple of (num_dice, strike_number) to set of creatures it can hit
         dice_strike_to_creatures = {}
-        dice_strike_to_creatures[(num_dice, strike_number)] = set()
-        for creature in striker.engaged_enemies:
-            if creature is not target:
-                num_dice2 = striker.number_of_dice(creature)
-                strike_number2 = striker.strike_number(creature)
-                tup = (num_dice2, strike_number2)
-                dice_strike_to_creatures.setdefault(tup, set()).add(creature)
+        for tup in striker.valid_strike_penalties(target):
+            num_dice, strike_number = tup
+            dice_strike_to_creatures[tup] = set()
+            for creature in striker.engaged_enemies:
+                if creature is not target:
+                    if striker.can_carry_to(creature, target, num_dice,
+                      strike_number):
+                        dice_strike_to_creatures[tup].add(creature)
+
         for ii, (tup, creatures) in enumerate(sorted(
           dice_strike_to_creatures.iteritems())):
             (num_dice3, strike_number3) = tup
@@ -136,5 +135,5 @@ if __name__ == "__main__":
         guiutils.exit()
 
     pick_strike_penalty = PickStrikePenalty(username, game_name, titan2,
-      centaur1, my_callback, None)
+      gargoyle1, my_callback, None)
     gtk.main()
