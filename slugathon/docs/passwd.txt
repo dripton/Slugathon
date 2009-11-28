@@ -1,6 +1,4 @@
 unittest:unittest
-dripton:a
-tchula:b
 ai1:ai1
 ai2:ai2
 ai3:ai3
