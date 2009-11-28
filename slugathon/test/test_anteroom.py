@@ -11,7 +11,7 @@ from slugathon.gui import Anteroom, Client
 client = None
 
 def setup_module(module):
-    utils.getProcessValue("python", ["Server.py"])
+    utils.getProcessValue("python", ["slugathon-server"])
 
 def test_init():
     global client
@@ -29,5 +29,6 @@ def failure():
     reactor.stop()
     assert False
 
+# TODO Use a process protocol to make this more portable.
 def teardown_module(module):
-    utils.getProcessValue("pkill", ["-f", "python.*Server.py"])
+    utils.getProcessValue("pkill", ["-f", "python.*slugathon-server"])
