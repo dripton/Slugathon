@@ -680,7 +680,7 @@ class GUIBattleMap(gtk.Window):
 
 if __name__ == "__main__":
     import random
-    from slugathon.gui import BattleMap
+    from slugathon.game import BattleMap
     from slugathon.data import battlemapdata
 
     entry_side = None
