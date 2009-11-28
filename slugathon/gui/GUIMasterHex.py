@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import os
 import math
 from sys import maxint
 

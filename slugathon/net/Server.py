@@ -4,7 +4,6 @@ __copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import os
 import time
 from optparse import OptionParser
 
@@ -18,7 +17,7 @@ from slugathon.game import Game, Action
 from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
-from slugathon.util import guiutils, prefs
+from slugathon.util import prefs
 
 
 class Server(Observed):

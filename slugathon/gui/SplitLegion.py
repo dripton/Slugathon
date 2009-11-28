@@ -6,8 +6,6 @@ __license__ = "GNU GPL v2"
 
 # TODO Need feedback when a split fails for no markers.
 
-import os
-
 import gtk
 
 from slugathon.gui import Chit, Marker, icon

@@ -6,8 +6,6 @@ __license__ = "GNU GPL v2"
 
 # TODO This dialog should always be on top.
 
-import os
-
 import gtk
 
 from slugathon.data.playercolordata import colors
