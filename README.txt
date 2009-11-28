@@ -11,7 +11,8 @@ If you want to try it anyway:
 1. Install all the dependencies listed at
 http://wiki.github.com/dripton/Slugathon/dependencies.
 
-2. Add some users and passwords to config/passwd.txt
+2. Add some users and passwords to ~/.slugathon/globalprefs/passwd
+(See slugathon/docs/passwd.txt for an example of the format.)
 
 3. In one terminal, cd to slugathon and run "python Server.py"
 

@@ -1,5 +1,6 @@
 import shutil
 import getpass
+import os
 
 from slugathon.util import prefs, Dice
 from slugathon.net import config
@@ -40,6 +41,10 @@ def test_load_playernames():
     playernames = prefs.load_playernames()
     assert playername in playernames
     assert getpass.getuser() in playernames
+
+def test_passwd_path():
+    assert prefs.passwd_path() == os.path.expanduser(
+      "~/.slugathon/globalprefs/passwd")
 
 def teardown_module(module):
     shutil.rmtree(prefs.player_prefs_dir(playername))

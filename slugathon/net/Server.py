@@ -18,7 +18,7 @@ from slugathon.game import Game, Action
 from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
-from slugathon.util import guiutils
+from slugathon.util import guiutils, prefs
 
 
 class Server(Observed):
@@ -328,8 +328,7 @@ def main():
     port = opts.port
     server = Server()
     realm = Realm.Realm(server)
-    checker = UniqueFilePasswordDB(guiutils.basedir("config/passwd.txt"),
-      server=server)
+    checker = UniqueFilePasswordDB(prefs.passwd_path(), server=server)
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)

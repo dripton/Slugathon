@@ -71,6 +71,10 @@ def server_path():
     """Return the path to the file that holds known servers and ports.."""
     return os.path.join(GLOBAL_PREFS_DIR, "servers")
 
+def passwd_path():
+    """Return the path to the file that holds usernames and passwords.."""
+    return os.path.join(GLOBAL_PREFS_DIR, "passwd")
+
 def load_servers():
     """Return a list of (str server_name, int server_port) tuples."""
     server_entries = set()
