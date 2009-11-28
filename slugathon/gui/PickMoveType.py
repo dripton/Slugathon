@@ -49,17 +49,19 @@ class PickMoveType(object):
                 self.chits_hbox.pack_start(chit.event_box, expand=False,
                   fill=False)
 
-        self.pick_move_type_dialog.connect("response", self.cb_response)
+        self.teleport_button.connect("button-press-event", self.cb_click)
+        self.normal_move_button.connect("button-press-event", self.cb_click)
+        self.cancel_button.connect("button-press-event", self.cb_click)
         self.pick_move_type_dialog.show()
 
 
-    def cb_response(self, dialog, response_id):
-        if response_id == TELEPORT:
+    def cb_click(self, widget, event):
+        if widget is self.teleport_button:
             self.callback(True)
-        elif response_id == NORMAL_MOVE:
+        elif widget is self.normal_move_button:
             self.callback(False)
         else:
-            assert response_id == gtk.RESPONSE_CANCEL
+            assert widget is self.cancel_button
             self.callback(None)
         self.pick_move_type_dialog.destroy()
 
