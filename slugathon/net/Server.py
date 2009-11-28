@@ -322,12 +322,14 @@ class Server(Observed):
 def main():
     op = OptionParser()
     op.add_option("-p", "--port", action="store", type="int",
-      default=config.DEFAULT_PORT)
+      default=config.DEFAULT_PORT, help="listening TCP port")
+    op.add_option("--passwd", "--a", action="store", type="str",
+      default=prefs.passwd_path(), help="path to passwd file")
     opts, args = op.parse_args()
     port = opts.port
     server = Server()
     realm = Realm.Realm(server)
-    checker = UniqueFilePasswordDB(prefs.passwd_path(), server=server)
+    checker = UniqueFilePasswordDB(opts.passwd, server=server)
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
