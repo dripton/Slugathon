@@ -9,28 +9,28 @@ from slugathon.gui import icon
 from slugathon.game import Phase
 
 
-class PickStrikePenalty(object):
+class PickStrikePenalty(gtk.Dialog):
     """Dialog to pick whether to take a strike penalty to allow carrying
     excess hits."""
     def __init__(self, username, game_name, striker, target, callback, parent):
+        gtk.Dialog.__init__(self, "PickStrikePenalty - %s" % username,
+          parent)
         self.username = username
         self.game_name = game_name
         self.striker = striker
         self.target = target
         self.callback = callback
 
-        self.pick_strike_penalty_dialog = gtk.Dialog()
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
 
-        self.pick_strike_penalty_dialog.set_icon(icon.pixbuf)
-        self.pick_strike_penalty_dialog.set_title("PickStrikePenalty - %s" %
-          (self.username))
-        self.pick_strike_penalty_dialog.set_transient_for(parent)
+        self.vbox.set_spacing(9)
 
         label = gtk.Label("Choose strike penalty for %r striking %r?" %
           (striker, target))
         label.show()
-        # We could use get_content_area() instead of vbox, in PyGTK 2.14+
-        self.pick_strike_penalty_dialog.vbox.add(label)
+        self.vbox.add(label)
 
         num_dice = striker.number_of_dice(target)
         strike_number = striker.strike_number(target)
@@ -53,22 +53,21 @@ class PickStrikePenalty(object):
             else:
                 st = "%d dice at strike number %d, unable to carry" % (
                   num_dice3, strike_number3)
-            button = self.pick_strike_penalty_dialog.add_button(st, ii)
+            button = gtk.Button(st)
+            self.vbox.pack_start(button)
             button.tup = tup
-            button.show()
             button.connect("button-press-event", self.cb_click)
-        button = self.pick_strike_penalty_dialog.add_button("Cancel strike",
-          ii + 1)
+        button = gtk.Button("Cancel strike")
         button.tup = None
-        button.show()
+        self.vbox.pack_start(button)
         button.connect("button-press-event", self.cb_click)
 
-        self.pick_strike_penalty_dialog.show()
+        self.show_all()
 
 
     def cb_click(self, widget, event):
         tup = widget.tup
-        self.pick_strike_penalty_dialog.destroy()
+        self.destroy()
         if tup is None:
             self.callback(None, None, None, None)
         else:
