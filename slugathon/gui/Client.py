@@ -181,7 +181,10 @@ class Client(pb.Referenceable, Observed):
             self._maybe_pick_first_marker(game, action.playername)
         elif isinstance(action, Action.GameOver):
             # TODO Destroy windows and dialogs?
-            print "Game %s over, won by %s" % (action.game_name,
-              " and ".join(action.winner_names))
+            if action.winner_names:
+                print "Game %s over, won by %s" % (action.game_name,
+                  " and ".join(action.winner_names))
+            else:
+                print "Game %s over, draw" % action.game_name
 
         self.notify(action)

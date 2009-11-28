@@ -813,7 +813,7 @@ class Game(Observed):
             winner_names = [living[0].name]
         else:
             # draw
-            winner_names = [player.name for player in self.players_left]
+            winner_names = []
         print "game over", winner_names
         action = Action.GameOver(self.name, winner_names)
         self.notify(action)
