@@ -43,6 +43,8 @@ class Connect(object):
         self.playernames.update(prefs.load_playernames())
         if playername:
             self.playernames.add(playername)
+        else:
+            playername = prefs.last_playername()
         store = gtk.ListStore(gobject.TYPE_STRING)
         active_index = 0
         for index, name in enumerate(sorted(self.playernames)):
@@ -58,14 +60,19 @@ class Connect(object):
             self.password_entry.set_text(password)
 
     def _init_server_names_and_ports(self, server_name, server_port):
+        last_server_name, last_server_port = prefs.load_last_server()
         server_entries = prefs.load_servers()
         for name, port in server_entries:
             self.server_names.add(name)
             self.server_ports.add(port)
         if server_name:
             self.server_names.add(server_name)
+        else:
+            server_name = last_server_name
         if server_port:
             self.server_ports.add(server_port)
+        else:
+            server_port = last_server_port
 
         namestore = gtk.ListStore(gobject.TYPE_STRING)
         active_index = 0
@@ -93,6 +100,7 @@ class Connect(object):
         server_name = self.server_name_comboboxentry.child.get_text()
         server_port = int(self.server_port_comboboxentry.child.get_text())
         prefs.save_server(server_name, server_port)
+        prefs.save_last_playername(playername)
         client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
         def1.addCallback(self.connected)

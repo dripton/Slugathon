@@ -71,6 +71,10 @@ def server_path():
     """Return the path to the file that holds known servers and ports.."""
     return os.path.join(GLOBAL_PREFS_DIR, "servers")
 
+def last_server_path():
+    """Return the path to the file that holds the last used server:port."""
+    return os.path.join(GLOBAL_PREFS_DIR, "last_server")
+
 def passwd_path():
     """Return the path to the file that holds usernames and passwords.."""
     return os.path.join(GLOBAL_PREFS_DIR, "passwd")
@@ -91,8 +95,21 @@ def load_servers():
             server_entries.add((host, int(port)))
     return sorted(server_entries)
 
+def load_last_server():
+    """Return the last (str server_name, int server_port) used, or
+    the default if there are none."""
+    if os.path.exists(last_server_path()):
+        with open(last_server_path()) as fil:
+            for line in fil:
+                line = line.strip()
+                if line:
+                    host, port = line.split(":")
+                    return ((host, int(port)))
+    return ("localhost", "config.DEFAULT_PORT")
+
 def save_server(server_name, server_port):
-    """Add server_name and server_port to the list of known servers."""
+    """Add server_name and server_port to the list of known servers,
+    and save it as the last server used."""
     if not os.path.exists(GLOBAL_PREFS_DIR):
         os.makedirs(GLOBAL_PREFS_DIR)
     server_entries = set(load_servers())
@@ -100,6 +117,9 @@ def save_server(server_name, server_port):
     with open(server_path(), "w") as fil:
         for host, port in sorted(server_entries):
             fil.write("%s:%d\n" % (host, port))
+    with open(last_server_path(), "w") as fil:
+        fil.write("%s:%d\n" % (server_name, int(server_port)))
+
 
 def load_playernames():
     """Return a sorted list of known player names."""
@@ -111,3 +131,21 @@ def load_playernames():
             if os.path.isdir(path):
                 playernames.add(fn)
     return sorted(playernames)
+
+def last_playername_path():
+    """Return the path to the file that holds the last playername."""
+    return os.path.join(GLOBAL_PREFS_DIR, "last_player")
+
+def last_playername():
+    """Return the last player name used, or "" if none."""
+    if os.path.exists(last_playername_path()):
+        with open(last_playername_path()) as fil:
+            line = fil.read().strip()
+            return line
+    return ""
+
+def save_last_playername(playername):
+    if not os.path.exists(GLOBAL_PREFS_DIR):
+        os.makedirs(GLOBAL_PREFS_DIR)
+    with open(last_playername_path(), "w") as fil:
+        fil.write("%s\n" % playername)
