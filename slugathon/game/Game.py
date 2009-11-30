@@ -509,11 +509,11 @@ class Game(Observed):
         # Reveal attacker only to defender
         action = Action.RevealLegion(self.name, attacker.markername,
           attacker.creature_names)
-        self.notify(action, defender.player.name)
+        self.notify(action, [defender.player.name])
         # Reveal defender only to attacker
         action = Action.RevealLegion(self.name, defender.markername,
           defender.creature_names)
-        self.notify(action, attacker.player.name)
+        self.notify(action, [attacker.player.name])
         self.current_engagement_hexlabel = hexlabel
         # Notify everyone that we're currently resolving this engagement
         action = Action.ResolvingEngagement(self.name, hexlabel)
