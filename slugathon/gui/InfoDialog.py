@@ -7,20 +7,20 @@ import gtk
 
 from slugathon.util import guiutils
 
-class InfoDialog(object):
+class InfoDialog(gtk.Dialog):
     def __init__(self, title, message, parent):
-        self.dialog = gtk.Dialog(title, parent,
+        gtk.Dialog.__init__(self, title, parent,
           buttons=((gtk.STOCK_OK, gtk.RESPONSE_ACCEPT)))
         label = gtk.Label(message)
-        self.dialog.vbox.pack_start(label)
-        self.dialog.connect("response", self.cb_response)
-        self.dialog.show_all()
+        self.vbox.pack_start(label)
+        self.connect("response", self.cb_response)
+        self.show_all()
 
     def cb_response(self, widget, response_id):
-        self.dialog.destroy()
+        self.destroy()
 
 
 if __name__ == "__main__":
     info_dialog = InfoDialog("Info", "Look out behind you!", None)
-    info_dialog.dialog.connect("destroy", guiutils.exit)
+    info_dialog.connect("destroy", guiutils.exit)
     gtk.main()

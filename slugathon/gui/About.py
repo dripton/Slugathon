@@ -12,18 +12,18 @@ from slugathon.gui import icon
 from slugathon.util import guiutils
 
 
-class About(object):
+class About(gtk.AboutDialog):
     def __init__(self):
-        ad = self.ad = gtk.AboutDialog()
-        ad.set_icon(icon.pixbuf)
-        ad.set_position(gtk.WIN_POS_MOUSE)
-        ad.set_name("Slugathon")
-        ad.set_copyright("Copyright (c) 2003-2009 David Ripton")
+        gtk.AboutDialog.__init__(self)
+        self.set_icon(icon.pixbuf)
+        self.set_position(gtk.WIN_POS_MOUSE)
+        self.set_name("Slugathon")
+        self.set_copyright("Copyright (c) 2003-2009 David Ripton")
 
         license_fn = guiutils.basedir("docs/COPYING.txt")
         with open(license_fn) as fil:
             st = fil.read()
-        ad.set_license(st)
+        self.set_license(st)
 
         version_fn = guiutils.basedir("docs/version.txt")
         try:
@@ -31,21 +31,20 @@ class About(object):
                 version = fil.read().strip()
         except IOError:
             version = "unknown"
-        ad.set_version(version)
+        self.set_version(version)
 
-        ad.set_authors(["David Ripton",])
-        ad.set_artists(["Chris Byler", "Keith Carter", "Chris Howe",
+        self.set_authors(["David Ripton",])
+        self.set_artists(["Chris Byler", "Keith Carter", "Chris Howe",
           "Klint Hull", "David Lum", "John Lum", "Agustin Martin",
           "Tchula Ripton", "Jerry Reiger", "Josh Smith",
           "Sakis Spyropoulos", "D. U. Thibault",])
 
-        ad.set_logo(icon.pixbuf)
-        ad.set_website("http://github.com/dripton/Slugathon")
-        ad.show()
-        self.ad = ad
+        self.set_logo(icon.pixbuf)
+        self.set_website("http://github.com/dripton/Slugathon")
+        self.show()
 
 
 if __name__ == "__main__":
     about = About()
-    about.ad.connect("response", guiutils.exit)
+    about.connect("response", guiutils.exit)
     gtk.main()

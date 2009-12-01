@@ -9,44 +9,39 @@ import gtk
 from slugathon.gui import icon
 
 
-class PickCarry(object):
+class PickCarry(gtk.Dialog):
     """Dialog to pick whether and where to carry excess hits."""
     def __init__(self, username, game_name, striker, target, num_dice,
       strike_number, carries, callback, parent):
+        gtk.Dialog.__init__(self, "PickCarry - %s" % username, parent)
         self.username = username
         self.game_name = game_name
         self.carries = carries
         self.callback = callback
 
-        self.pick_carry_dialog = gtk.Dialog()
-
-        self.pick_carry_dialog.set_icon(icon.pixbuf)
-        self.pick_carry_dialog.set_title("PickCarry - %s" % (self.username))
-        self.pick_carry_dialog.set_transient_for(parent)
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
 
         label = gtk.Label("%r strikes %r and may carry over %d hit%s." %
           (striker, target, carries, "" if carries == 1 else "s"))
-        label.show()
         # We could use get_content_area() instead of vbox, in PyGTK 2.14+
-        self.pick_carry_dialog.vbox.add(label)
+        self.vbox.add(label)
 
         for ii, creature in enumerate(striker.engaged_enemies):
             if striker.can_carry_to(creature, target, num_dice, strike_number):
-                button = self.pick_carry_dialog.add_button(repr(creature), ii)
+                button = self.add_button(repr(creature), ii)
                 button.creature = creature
-                button.show()
                 button.connect("button-press-event", self.cb_click)
-        button = self.pick_carry_dialog.add_button("Do not carry", ii + 1)
+        button = self.add_button("Do not carry", ii + 1)
         button.creature = None
-        button.show()
         button.connect("button-press-event", self.cb_click)
 
-        self.pick_carry_dialog.show()
+        self.show_all()
 
 
     def cb_click(self, widget, event):
         creature = widget.creature
-        self.pick_carry_dialog.destroy()
+        self.destroy()
         if creature:
             self.callback(creature, self.carries)
         else:
