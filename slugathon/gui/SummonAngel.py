@@ -10,61 +10,61 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
 
-class SummonAngel(object):
+class SummonAngel(gtk.Dialog):
     """Dialog to summon an angel."""
     def __init__(self, username, player, legion, callback, parent):
+        gtk.Dialog.__init__(self, "SummonAngel - %s" % username, parent)
         self.player = player
         self.legion = legion
         self.callback = callback
-        self.builder = gtk.Builder()
         self.donor = None
         self.summonable = None
 
-        self.builder.add_from_file(guiutils.basedir("ui/summonangel.ui"))
-        self.widget_names = ["summon_angel_dialog", "top_label",
-          "middle_label", "bottom_label", "vbox1"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
 
-        self.summon_angel_dialog.set_icon(icon.pixbuf)
-        self.summon_angel_dialog.set_title("SummonAngel - %s" % (username))
-        self.summon_angel_dialog.set_transient_for(parent)
-
-        self.top_label.set_text("Summoning an angel into legion %s in hex %s"
+        top_label = gtk.Label("Summoning an angel into legion %s in hex %s"
           % (legion.markername, legion.hexlabel))
+        self.vbox.set_spacing(9)
+        self.vbox.pack_start(top_label)
+        middle_label = gtk.Label("Summonable creatures have a red border")
+        self.vbox.pack_start(middle_label)
+        bottom_label = gtk.Label("Click one to summon it.")
+        self.vbox.pack_start(bottom_label)
 
         for legion2 in self.player.legions.itervalues():
             if legion2.any_summonable:
-                print legion2, "has a summonable"
                 hbox = gtk.HBox(spacing=3)
-                hbox.show()
-                self.vbox1.pack_start(hbox)
+                self.vbox.pack_start(hbox)
                 marker = Marker.Marker(legion2, False, scale=20)
                 hbox.pack_start(marker.event_box, expand=False, fill=False)
-                marker.show()
                 for creature in legion2.sorted_creatures:
                     chit = Chit.Chit(creature, self.player.color, scale=20,
                       outlined=creature.summonable)
-                    chit.show()
                     hbox.pack_start(chit.event_box, expand=False, fill=False)
                     if creature.summonable:
                         chit.connect("button-press-event", self.cb_click)
 
-        self.summon_angel_dialog.connect("response", self.cb_response)
-        self.summon_angel_dialog.show()
+        self.cancel_button = gtk.Button("gtk-cancel")
+        self.cancel_button.set_use_stock(True)
+        self.vbox.pack_start(self.cancel_button)
+        self.cancel_button.connect("button-press-event", self.cb_click)
+
+        self.show_all()
 
 
     def cb_click(self, widget, event):
         """Summon the clicked-on Chit's creature."""
-        eventbox = widget
-        chit = eventbox.chit
-        creature = chit.creature
-        donor = creature.legion
-        self.summon_angel_dialog.destroy()
-        self.callback(self.legion, donor, creature)
-
-    def cb_response(self, widget, response_id):
-        self.summon_angel_dialog.destroy()
+        if widget is self.cancel_button:
+            self.destroy()
+        else:
+            eventbox = widget
+            chit = eventbox.chit
+            creature = chit.creature
+            donor = creature.legion
+            self.callback(self.legion, donor, creature)
+            self.destroy()
 
 
 if __name__ == "__main__":
@@ -99,6 +99,6 @@ if __name__ == "__main__":
         guiutils.exit()
 
     summonangel = SummonAngel(username, player, legion1, callback, None)
-    summonangel.summon_angel_dialog.connect("destroy", guiutils.exit)
+    summonangel.connect("destroy", guiutils.exit)
 
     gtk.main()
