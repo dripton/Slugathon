@@ -7,26 +7,34 @@ __license__ = "GNU GPL v2"
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.util import guiutils
 
-class Inspector(object):
+class Inspector(gtk.Window):
     """Window to show a legion's contents."""
     def __init__(self, username):
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/showlegion.ui"))
-        self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
-          "legion_name"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
+        gtk.Window.__init__(self)
 
-        self.show_legion_window.set_icon(icon.pixbuf)
-        self.show_legion_window.set_title("Inspector - %s" % (username))
+        self.set_icon(icon.pixbuf)
+        self.set_title("Inspector - %s" % (username))
+
+        vbox = gtk.VBox(spacing=9)
+        self.add(vbox)
+
+        self.legion_name = gtk.Label()
+        vbox.pack_start(self.legion_name)
+
+        hbox = gtk.HBox(spacing=3)
+        vbox.pack_start(hbox)
+
+        self.marker_hbox = gtk.HBox(spacing=3)
+        hbox.pack_start(self.marker_hbox, expand=False)
+        self.chits_hbox = gtk.HBox(spacing=3)
+        hbox.pack_start(self.chits_hbox, expand=True)
 
         self.legion = None
         self.marker = None
         self.destroyed = False
 
-        self.show_legion_window.connect("delete-event", self.hide_window)
+        self.connect("delete-event", self.hide_window)
 
 
     def show_legion(self, legion):
@@ -38,24 +46,21 @@ class Inspector(object):
                 hbox.remove(child)
 
         self.marker = Marker.Marker(legion, True, scale=20)
-        self.marker_hbox.pack_start(self.marker.event_box, expand=False,
-          fill=False)
-        self.marker.show()
+        self.marker_hbox.pack_start(self.marker.event_box, expand=False)
 
         # TODO Handle unknown creatures correctly
         playercolor = legion.player.color
         for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)
-            chit.show()
-            self.chits_hbox.add(chit.event_box)
+            self.chits_hbox.pack_start(chit.event_box, expand=False)
 
-        self.show_legion_window.show()
+        self.show_all()
 
     def destroy(self, unused):
         self.destroyed = True
 
     def hide_window(self, event, unused):
-        self.show_legion_window.hide()
+        self.hide()
         return True
 
 
@@ -72,7 +77,6 @@ if __name__ == "__main__":
     player.color = random.choice(playercolordata.colors)
     abbrev = playercolordata.name_to_abbrev[player.color]
     inspector = Inspector(username)
-    inspector.show_legion_window.connect("delete-event", guiutils.exit)
 
     legion = Legion.Legion(player, "%s01" % abbrev, creatures, 1)
     inspector.show_legion(legion)

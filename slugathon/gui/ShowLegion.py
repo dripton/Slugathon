@@ -10,36 +10,41 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
 
-class ShowLegion(object):
+class ShowLegion(gtk.Window):
     """Window to show a legion's contents."""
     def __init__(self, username, legion, playercolor, show_marker):
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/showlegion.ui"))
+        gtk.Window.__init__(self)
         self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
           "legion_name"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
 
-        self.show_legion_window.set_icon(icon.pixbuf)
-        self.show_legion_window.set_title("ShowLegion - %s" % (username))
+        self.set_icon(icon.pixbuf)
+        self.set_title("ShowLegion - %s" % (username))
 
-        self.legion_name.set_text("Legion %s in hex %s (%d points)" % (
+        vbox = gtk.VBox(spacing=9)
+        self.add(vbox)
+        legion_name = gtk.Label("Legion %s in hex %s (%d points)" % (
           legion.markername, legion.hexlabel, legion.score))
+        vbox.pack_start(legion_name)
 
-        self.marker = None
+        hbox = gtk.HBox(spacing=3)
+        vbox.pack_start(hbox)
+
+        marker_hbox = gtk.HBox()
+        hbox.pack_start(marker_hbox, expand=False)
+        chits_hbox = gtk.HBox(spacing=3)
+        hbox.pack_start(chits_hbox, expand=True)
+
+        marker = None
         if show_marker:
-            self.marker = Marker.Marker(legion, True, scale=20)
-            self.marker_hbox.pack_start(self.marker.event_box, expand=False,
-              fill=False)
-            self.marker.show()
+            marker = Marker.Marker(legion, True, scale=20)
+            marker_hbox.pack_start(marker.event_box, expand=False)
 
         # TODO Handle unknown creatures correctly
         for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)
-            chit.show()
-            self.chits_hbox.add(chit.event_box)
+            chits_hbox.pack_start(chit.event_box, expand=False)
 
-        self.show_legion_window.show()
+        self.show_all()
 
 
 if __name__ == "__main__":
@@ -56,6 +61,6 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     showlegion = ShowLegion(username, legion, player.color, True)
-    showlegion.show_legion_window.connect("destroy", guiutils.exit)
+    showlegion.connect("destroy", guiutils.exit)
 
     gtk.main()
