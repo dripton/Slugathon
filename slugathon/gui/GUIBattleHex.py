@@ -96,7 +96,6 @@ class GUIBattleHex(object):
     @property
     def bounding_rect(self):
         """Return the bounding rectangle (x, y, width, height) of this hex."""
-        scale = self.guimap.scale
         min_x = maxint
         max_x = -maxint
         min_y = maxint

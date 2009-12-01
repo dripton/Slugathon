@@ -108,9 +108,7 @@ def test_is_legal_split():
 def test_can_recruit():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", game, 0)
-    board = game.board
 
     legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
       "Gargoyle", "Centaur", "Centaur"]), 1)
@@ -125,9 +123,7 @@ def test_can_recruit():
 def test_available_recruits():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", game, 0)
-    board = game.board
 
     legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan", "Lion",
       "Gargoyle", "Centaur", "Centaur"]), 1)
@@ -143,9 +139,7 @@ def test_available_recruits():
 def test_available_recruits_and_recruiters():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", game, 0)
-    board = game.board
 
     legion = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
       "Gargoyle", "Centaur", "Centaur"]), 1)

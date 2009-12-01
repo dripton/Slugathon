@@ -397,7 +397,6 @@ class TestBattle(object):
         angel1 = rd02.creatures[0]
         ranger1 = rd02.creatures[1]
         game = self.game
-        defender = bu02
         attacker = rd02
 
         rd02.entry_side = 1
@@ -1481,7 +1480,6 @@ class TestBattle(object):
         rd01.move(3, False, None, 3)
         bu01.add_creature_by_name("Gargoyle")
         bu01.move(3, False, None, 3)
-        defender = bu01
         attacker = rd01
 
         titan = rd01.creatures[0]

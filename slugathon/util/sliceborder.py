@@ -33,7 +33,6 @@ def slice_border_image(input_path, output_path, hexsides):
     vertexes.append((0, 0.5 * y_size))
     center = (0.5 * x_size, 0.5 * y_size)
 
-    color = (0, 0, 0)
     output_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, x_size, y_size)
     output_ctx = cairo.Context(output_surface)
 

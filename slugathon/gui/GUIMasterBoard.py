@@ -230,7 +230,6 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.MOVE and self.selected_marker:
                 if guihex.selected:
                     legion = self.selected_marker.legion
-                    hexlabel = guihex.masterhex.label
                     all_moves = self.game.find_all_moves(legion,
                       self.board.hexes[legion.hexlabel],
                       legion.player.movement_roll)
@@ -537,14 +536,12 @@ class GUIMasterBoard(gtk.Window):
     def _create_recruitchits(self, legion, hexlabel, recruit_names):
         player = legion.player
         guihex = self.guihexes[hexlabel]
-        num = len(recruit_names)
         recruitchit_scale = self.scale * Chit.CHIT_SCALE_FACTOR / 4
         chits = []
         for recruit_name in recruit_names:
             recruit = Creature.Creature(recruit_name)
             chit = Chit.Chit(recruit, player.color, recruitchit_scale)
             chits.append(chit)
-            chit_scale = chit.chit_scale
             self.recruitchits.append((chit, hexlabel))
         self._place_chits(chits, guihex)
 
@@ -845,7 +842,6 @@ class GUIMasterBoard(gtk.Window):
     def update(self, observed, action):
         if isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
-            hexlabels = [legion.hexlabel]
             self.highlight_tall_legions()
             self.repaint([legion.hexlabel])
 
@@ -1053,7 +1049,7 @@ def main():
     from slugathon.game import MasterBoard
 
     board = MasterBoard.MasterBoard()
-    guiboard = GUIMasterBoard(board)
+    GUIMasterBoard(board)
     reactor.run()
 
 if __name__ == "__main__":

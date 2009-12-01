@@ -83,8 +83,7 @@ class WaitingForPlayers(object):
     # TODO Save the selection and do something useful with it.
     def cb_player_list_select(self, path, unused):
         index = path[0]
-        row = self.player_store[index, 0]
-        name = row[0]
+        self.player_store[index, 0]
         return False
 
     def update_countdown(self):

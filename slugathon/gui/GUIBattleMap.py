@@ -187,7 +187,7 @@ class GUIBattleMap(gtk.Window):
 
     def strike(self, striker, target, num_dice, strike_number):
         """Have striker strike target."""
-        def1 = self.user.callRemote("strike", self.game.name, striker.name,
+        self.user.callRemote("strike", self.game.name, striker.name,
           striker.hexlabel, target.name, target.hexlabel, num_dice,
           strike_number)
 
@@ -598,7 +598,6 @@ class GUIBattleMap(gtk.Window):
               self.game.battle_active_player.name == self.username and
               self.game.battle_active_legion == self.game.defender_legion):
                 legion = self.game.defender_legion
-                masterhex = self.game.board.hexes[legion.hexlabel]
                 caretaker = self.game.caretaker
                 mterrain = self.battlemap.mterrain
                 if (len(legion.living_creature_names) < 7 and

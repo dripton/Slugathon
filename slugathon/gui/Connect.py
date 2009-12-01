@@ -127,7 +127,7 @@ def main():
     opts, args = op.parse_args()
     if args:
         op.error("got illegal argument")
-    connect = Connect(opts.playername, opts.password, opts.server, opts.port)
+    Connect(opts.playername, opts.password, opts.server, opts.port)
     reactor.run()
 
 if __name__ == "__main__":

@@ -54,8 +54,6 @@ def test_history_2():
     playername = "player"
     parent_markername = "Rd01"
     child_markername = "Rd02"
-    parent_creature_names = 4 * [None]
-    child_creature_names = 4 * [None]
 
     history = History.History()
     assert history.actions == []
@@ -102,8 +100,6 @@ def test_save():
     playername = "player"
     parent_markername = "Rd01"
     child_markername = "Rd02"
-    parent_creature_names = 4 * [None]
-    child_creature_names = 4 * [None]
 
     history = History.History()
     assert history.actions == []
