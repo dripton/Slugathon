@@ -10,57 +10,55 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
 
-class PickTeleportingLord(object):
+class PickTeleportingLord(gtk.Dialog):
     """Dialog to pick a lord to reveal for tower teleport."""
     def __init__(self, username, legion, callback, parent):
+        gtk.Dialog.__init__(self, "PickTeleportingLord - %s" % username,
+          parent)
         self.legion = legion
         self.callback = callback
-        self.builder = gtk.Builder()
 
-        self.builder.add_from_file(guiutils.basedir(
-          "ui/pickteleportinglord.ui"))
-        self.widget_names = ["pick_teleporting_lord_dialog", "top_label",
+        self.widget_names = ["top_label",
           "bottom_label", "vbox1"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
 
-        self.pick_teleporting_lord_dialog.set_icon(icon.pixbuf)
-        self.pick_teleporting_lord_dialog.set_title(
-          "PickTeleportingLord - %s" % username)
-        self.pick_teleporting_lord_dialog.set_transient_for(parent)
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
+        self.vbox.set_spacing(9)
 
-        self.top_label.set_text("Pick teleporting lord for legion %s"
-          % legion.markername)
+        top_label = gtk.Label("Revealing a lord to tower teleport")
+        self.vbox.pack_start(top_label)
+
+        bottom_label = gtk.Label("Click on a lord (red outline) to reveal it.")
+        self.vbox.pack_start(bottom_label)
 
         hbox = gtk.HBox(spacing=3)
-        hbox.show()
-        self.vbox1.pack_start(hbox)
+        self.vbox.pack_start(hbox)
         marker = Marker.Marker(legion, False, scale=20)
-        hbox.pack_start(marker.event_box, expand=False, fill=False)
-        marker.show()
+        hbox.pack_start(marker.event_box, expand=False)
         player = self.legion.player
         for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, player.color, scale=20,
               outlined=creature.is_lord)
-            chit.show()
-            hbox.pack_start(chit.event_box, expand=False, fill=False)
+            hbox.pack_start(chit.event_box, expand=False)
             if creature.is_lord:
                 chit.connect("button-press-event", self.cb_click)
 
-        self.pick_teleporting_lord_dialog.connect("response", self.cb_response)
-        self.pick_teleporting_lord_dialog.show()
+        self.cancel_button = gtk.Button("gtk-cancel")
+        self.vbox.pack_start(self.cancel_button)
+        self.cancel_button.connect("button-press-event", self.cb_click)
+        self.cancel_button.set_use_stock(True)
+
+        self.show_all()
+
 
     def cb_click(self, widget, event):
-        eventbox = widget
-        chit = eventbox.chit
-        creature = chit.creature
-        self.callback(creature)
-        self.pick_teleporting_lord_dialog.destroy()
-
-    def cb_response(self, widget, response_id):
-        """Player hit cancel"""
-        self.callback(None)
-        self.pick_teleporting_lord_dialog.destroy()
+        if widget is not self.cancel_button:
+            eventbox = widget
+            chit = eventbox.chit
+            creature = chit.creature
+            self.callback(creature)
+        self.destroy()
 
 
 if __name__ == "__main__":
@@ -83,7 +81,7 @@ if __name__ == "__main__":
 
     pick_teleporting_lord = PickTeleportingLord(username, legion, my_callback,
       None)
-    pick_teleporting_lord.pick_teleporting_lord_dialog.connect("destroy",
+    pick_teleporting_lord.connect("destroy",
       guiutils.exit)
 
     gtk.main()

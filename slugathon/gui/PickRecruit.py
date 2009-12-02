@@ -11,46 +11,48 @@ from slugathon.game import Creature
 from slugathon.util import guiutils
 
 
-class PickRecruit(object):
+class PickRecruit(gtk.Dialog):
     """Dialog to pick a recruit."""
     def __init__(self, username, player, legion, mterrain, caretaker,
       callback, parent):
-        self.callback = callback
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/pickrecruit.ui"))
-        self.widget_names = ["pick_recruit_dialog", "marker_hbox",
-          "chits_hbox", "vbox1", "legion_name"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
-
-        self.pick_recruit_dialog.set_icon(icon.pixbuf)
-        self.pick_recruit_dialog.set_title("PickRecruit - %s" % (username))
-        self.pick_recruit_dialog.set_transient_for(parent)
-
-        self.legion_name.set_text("Pick recruit for legion %s in hex %s" % (
-          legion.markername, legion.hexlabel))
-
+        gtk.Dialog.__init__(self, "PickRecruit - %s" % username, parent)
         self.player = player
         self.legion = legion
+        self.callback = callback
 
-        self.marker = Marker.Marker(legion, True, scale=20)
-        self.marker_hbox.pack_start(self.marker.event_box, expand=False,
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
+        self.vbox.set_spacing(9)
+
+        legion_name = gtk.Label("Pick recruit for legion %s in hex %s" % (
+          legion.markername, legion.hexlabel))
+        self.vbox.pack_start(legion_name)
+
+        legion_hbox = gtk.HBox(spacing=15)
+        self.vbox.pack_start(legion_hbox)
+
+        marker_hbox = gtk.HBox()
+        legion_hbox.pack_start(marker_hbox, expand=False)
+
+        chits_hbox = gtk.HBox(spacing=3)
+        legion_hbox.pack_start(chits_hbox, expand=False)
+
+        marker = Marker.Marker(legion, True, scale=20)
+        marker_hbox.pack_start(marker.event_box, expand=False,
           fill=False)
-        self.marker.show()
 
         for creature in legion.sorted_creatures:
             if not creature.dead:
                 chit = Chit.Chit(creature, player.color, scale=20)
-                chit.show()
-                self.chits_hbox.pack_start(chit.event_box, expand=False,
-                  fill=False)
+                chits_hbox.pack_start(chit.event_box, expand=False)
 
         recruit_tups = legion.available_recruits_and_recruiters(mterrain,
           caretaker)
         max_len = max(len(tup) for tup in recruit_tups)
         for tup in recruit_tups:
             hbox = gtk.HBox()
-            self.vbox1.pack_start(hbox)
+            self.vbox.pack_start(hbox)
             recruit_name = tup[0]
             recruit = Creature.Creature(recruit_name)
             recruiter_names = tup[1:]
@@ -68,17 +70,18 @@ class PickRecruit(object):
                 chit.recruit = recruit
                 chit.recruiter_names = recruiter_names
                 if ii < len(li) - 2:
-                    hbox.pack_start(chit.event_box, expand=False, fill=False)
+                    hbox.pack_start(chit.event_box, expand=False)
                 elif ii == len(li) - 2:
-                    hbox.pack_start(chit.event_box, expand=True, fill=False)
+                    hbox.pack_start(chit.event_box, expand=True)
                 else:
-                    hbox.pack_end(chit.event_box, expand=False, fill=False)
-                chit.show()
+                    hbox.pack_end(chit.event_box, expand=False)
                 chit.connect("button-press-event", self.cb_click)
-            hbox.show()
 
-        self.pick_recruit_dialog.connect("response", self.cb_response)
-        self.pick_recruit_dialog.show()
+        self.cancel_button = gtk.Button("gtk-cancel")
+        self.vbox.pack_start(self.cancel_button)
+        self.cancel_button.connect("button-press-event", self.cb_cancel)
+        self.cancel_button.set_use_stock(True)
+        self.show_all()
 
 
     def cb_click(self, widget, event):
@@ -86,11 +89,11 @@ class PickRecruit(object):
         eventbox = widget
         chit = eventbox.chit
         self.callback(self.legion, chit.recruit, chit.recruiter_names)
-        self.pick_recruit_dialog.destroy()
+        self.destroy()
 
-    def cb_response(self, dialog, response_id):
+    def cb_cancel(self, widget, event):
         """The cancel button was pressed, so exit"""
-        self.pick_recruit_dialog.destroy()
+        self.destroy()
 
 
 if __name__ == "__main__":
@@ -115,6 +118,6 @@ if __name__ == "__main__":
     mterrain = masterhex.terrain
     pickrecruit = PickRecruit(username, player, legion, mterrain,
       game.caretaker, callback, None)
-    pickrecruit.pick_recruit_dialog.connect("destroy", guiutils.exit)
+    pickrecruit.connect("destroy", guiutils.exit)
 
     gtk.main()

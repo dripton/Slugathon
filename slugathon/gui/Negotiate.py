@@ -9,61 +9,61 @@ import gtk
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
-class Negotiate(object):
+
+CONCEDE = 0
+MAKE_PROPOSAL = 1
+DONE_PROPOSING = 2
+FIGHT = 4
+
+
+class Negotiate(gtk.Dialog):
     """Dialog to choose whether to concede, negotiate, or fight."""
     def __init__(self, username, attacker_legion, defender_legion,
       callback, parent):
+        gtk.Dialog.__init__(self, "Negotiate - %s" % username, parent)
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.callback = callback
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/negotiate.ui"))
-        self.widget_names = [
-          "negotiate_dialog",
-          "legion_name",
-          "attacker_hbox",
-          "attacker_marker_hbox",
-          "attacker_chits_hbox",
-          "defender_hbox",
-          "defender_marker_hbox",
-          "defender_chits_hbox",
-          "concede_button",
-          "proposal_button",
-          "done_proposing_button",
-          "fight_button",
-        ]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
 
-        self.proposal_button.set_sensitive(False)
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
+        self.vbox.set_spacing(9)
 
-        self.negotiate_dialog.set_icon(icon.pixbuf)
-        self.negotiate_dialog.set_title("Negotiate - %s" % (username))
-        self.negotiate_dialog.set_transient_for(parent)
-
-        self.legion_name.set_text("Legion %s negotiates with %s in hex %s?" % (
+        legion_name = gtk.Label("Legion %s negotiates with %s in hex %s?" % (
           attacker_legion.markername, defender_legion.markername,
           defender_legion.hexlabel))
+        self.vbox.pack_start(legion_name)
+
+        attacker_hbox = gtk.HBox(spacing=15)
+        self.vbox.pack_start(attacker_hbox)
+        attacker_marker_hbox = gtk.HBox()
+        attacker_hbox.pack_start(attacker_marker_hbox, expand=False)
+        attacker_chits_hbox = gtk.HBox(spacing=3)
+        attacker_hbox.pack_start(attacker_chits_hbox)
+
+        defender_hbox = gtk.HBox(spacing=15)
+        self.vbox.pack_start(defender_hbox)
+        defender_marker_hbox = gtk.HBox()
+        defender_hbox.pack_start(defender_marker_hbox, expand=False)
+        defender_chits_hbox = gtk.HBox(spacing=3)
+        defender_hbox.pack_start(defender_chits_hbox)
 
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
-        self.attacker_marker_hbox.pack_start(self.attacker_marker.event_box,
-          expand=False, fill=False)
+        attacker_marker_hbox.pack_start(self.attacker_marker.event_box,
+          expand=False)
         self.attacker_marker.connect("button-press-event", self.cb_click)
-        self.attacker_marker.show()
 
         self.defender_marker = Marker.Marker(defender_legion, True, scale=20)
-        self.defender_marker_hbox.pack_start(self.defender_marker.event_box,
-          expand=False, fill=False)
+        defender_marker_hbox.pack_start(self.defender_marker.event_box,
+          expand=False)
         self.defender_marker.connect("button-press-event", self.cb_click)
-        self.defender_marker.show()
 
         self.attacker_chits = []
 
         for creature in attacker_legion.creatures:
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20)
-            chit.show()
-            self.attacker_chits_hbox.pack_start(chit.event_box, expand=False,
-              fill=False)
+            attacker_chits_hbox.pack_start(chit.event_box, expand=False)
             chit.connect("button-press-event", self.cb_click)
             self.attacker_chits.append(chit)
 
@@ -71,14 +71,40 @@ class Negotiate(object):
 
         for creature in defender_legion.creatures:
             chit = Chit.Chit(creature, defender_legion.player.color, scale=20)
-            chit.show()
-            self.defender_chits_hbox.pack_start(chit.event_box, expand=False,
-              fill=False)
+            defender_chits_hbox.pack_start(chit.event_box, expand=False)
             chit.connect("button-press-event", self.cb_click)
             self.defender_chits.append(chit)
 
-        self.negotiate_dialog.connect("response", self.cb_response)
-        self.negotiate_dialog.show()
+        hseparator = gtk.HSeparator()
+        self.vbox.pack_start(hseparator)
+
+        buttonbox = gtk.HBox(homogeneous=True)
+        self.vbox.pack_start(buttonbox)
+
+        self.concede_button = gtk.Button("Concede")
+        self.proposal_button = gtk.Button("Make proposal")
+        self.done_proposing_button = gtk.Button("No more proposals")
+        self.fight_button = gtk.Button("Fight")
+
+        buttonbox.pack_start(self.concede_button)
+        buttonbox.pack_start(self.proposal_button)
+        buttonbox.pack_start(self.done_proposing_button)
+        buttonbox.pack_start(self.fight_button)
+
+        self.concede_button.connect("button-press-event", self.cb_done)
+        self.proposal_button.connect("button-press-event", self.cb_done)
+        self.done_proposing_button.connect("button-press-event", self.cb_done)
+        self.fight_button.connect("button-press-event", self.cb_done)
+
+        self.concede_button.response_id = CONCEDE
+        self.proposal_button.response_id = MAKE_PROPOSAL
+        self.done_proposing_button.response_id = DONE_PROPOSING
+        self.fight_button.response_id = FIGHT
+
+        self.proposal_button.set_sensitive(False)
+
+        self.show_all()
+
 
     def cb_click(self, widget, event):
         """Toggle the clicked-on chit's creature's status."""
@@ -123,25 +149,19 @@ class Negotiate(object):
 
     def surviving_creature_names(self, chits):
         """Return a list of creature names for the survivors."""
-        li = []
-        for chit in chits:
-            if not chit.dead:
-                li.append(chit.creature.name)
-        return li
+        return [chit.creature.name for chit in chits if not chit.dead]
 
-    def cb_response(self, widget, response_id):
+    def cb_done(self, widget, event):
         """Calls the callback function, with the attacker, the defender, and
         the response_id."""
-        self.negotiate_dialog.destroy()
+        self.destroy()
         attacker_creature_names = self.surviving_creature_names(
           self.attacker_chits)
         defender_creature_names = self.surviving_creature_names(
           self.defender_chits)
         self.callback(self.attacker_legion, attacker_creature_names,
-          self.defender_legion, defender_creature_names, response_id)
+          self.defender_legion, defender_creature_names, widget.response_id)
 
-    def destroy(self):
-        self.negotiate_dialog.destroy()
 
 if __name__ == "__main__":
     import time

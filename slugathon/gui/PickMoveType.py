@@ -10,49 +10,58 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
 
-NORMAL_MOVE = 0
-TELEPORT = 1
-
-
-class PickMoveType(object):
+class PickMoveType(gtk.Dialog):
     """Dialog to choose whether to teleport."""
     def __init__(self, username, legion, hexlabel, callback, parent):
+        gtk.Dialog.__init__(self, "PickMoveType - %s" % username, parent)
         self.callback = callback
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/pickmovetype.ui"))
-        self.widget_names = ["pick_move_type_dialog", "marker_hbox",
-          "chits_hbox", "legion_name", "teleport_button", "normal_move_button",
-          "cancel_button"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
-
-        self.pick_move_type_dialog.set_icon(icon.pixbuf)
-        self.pick_move_type_dialog.set_title("PickMoveType - %s" % (username))
-        self.pick_move_type_dialog.set_transient_for(parent)
-
-        self.legion_name.set_text(
-          "Pick move type for legion %s in hex %s moving to hex %s" % (
-          legion.markername, legion.hexlabel, hexlabel))
-
         self.legion = legion
         player = legion.player
 
-        self.marker = Marker.Marker(legion, True, scale=20)
-        self.marker_hbox.pack_start(self.marker.event_box, expand=False,
-          fill=False)
-        self.marker.show()
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
+        self.vbox.set_spacing(9)
+
+        legion_name = gtk.Label(
+          "Pick move type for legion %s in hex %s moving to hex %s" % (
+          legion.markername, legion.hexlabel, hexlabel))
+        self.vbox.pack_start(legion_name)
+
+        legion_hbox = gtk.HBox(spacing=15)
+        self.vbox.pack_start(legion_hbox)
+
+        marker_hbox = gtk.HBox()
+        legion_hbox.pack_start(marker_hbox)
+
+        marker = Marker.Marker(legion, True, scale=20)
+        marker_hbox.pack_start(marker.event_box, expand=False)
+
+        chits_hbox = gtk.HBox(spacing=3)
+        legion_hbox.pack_start(chits_hbox)
 
         for creature in legion.sorted_creatures:
             if not creature.dead:
                 chit = Chit.Chit(creature, player.color, scale=20)
-                chit.show()
-                self.chits_hbox.pack_start(chit.event_box, expand=False,
-                  fill=False)
+                chits_hbox.pack_start(chit.event_box, expand=False)
 
+        button_hbox = gtk.HBox(homogeneous=True)
+        self.vbox.pack_start(button_hbox)
+
+        self.teleport_button = gtk.Button("Teleport")
         self.teleport_button.connect("button-press-event", self.cb_click)
+        button_hbox.pack_start(self.teleport_button)
+
+        self.normal_move_button = gtk.Button("Move Normally")
         self.normal_move_button.connect("button-press-event", self.cb_click)
+        button_hbox.pack_start(self.normal_move_button)
+
+        self.cancel_button = gtk.Button("gtk-cancel")
+        self.cancel_button.set_use_stock(True)
         self.cancel_button.connect("button-press-event", self.cb_click)
-        self.pick_move_type_dialog.show()
+        button_hbox.pack_start(self.cancel_button)
+
+        self.show_all()
 
 
     def cb_click(self, widget, event):
@@ -63,7 +72,7 @@ class PickMoveType(object):
         else:
             assert widget is self.cancel_button
             self.callback(None)
-        self.pick_move_type_dialog.destroy()
+        self.destroy()
 
 
 if __name__ == "__main__":
@@ -93,6 +102,6 @@ if __name__ == "__main__":
     masterhex = game.board.hexes[legion.hexlabel]
     mterrain = masterhex.terrain
     pickmovetype = PickMoveType(username, legion, hexlabel, mycallback, None)
-    pickmovetype.pick_move_type_dialog.connect("destroy", guiutils.exit)
+    pickmovetype.connect("destroy", guiutils.exit)
 
     gtk.main()

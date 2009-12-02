@@ -11,65 +11,68 @@ from slugathon.game import Creature
 from slugathon.util import guiutils
 
 
-class AcquireAngel(object):
+class AcquireAngel(gtk.Dialog):
     """Dialog to acquire an angel."""
     def __init__(self, username, player, legion, available_angels,
       callback, parent):
+        gtk.Dialog.__init__(self, "AcquireAngel - %s" % username, parent)
         self.callback = callback
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/acquireangel.ui"))
-        self.widget_names = ["acquire_angel_dialog", "marker_hbox",
-          "chits_hbox", "angels_hbox", "legion_name"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
-
-        self.acquire_angel_dialog.set_icon(icon.pixbuf)
-        self.acquire_angel_dialog.set_title("AcquireAngel - %s" % (username))
-        self.acquire_angel_dialog.set_transient_for(parent)
-
-        self.legion_name.set_text("Acquire angel for legion %s in hex %s" % (
-          legion.markername, legion.hexlabel))
-
         self.player = player
         self.legion = legion
 
-        self.marker = Marker.Marker(legion, True, scale=20)
-        self.marker_hbox.pack_start(self.marker.event_box, expand=False,
-          fill=False)
-        self.marker.show()
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
+        self.vbox.set_spacing(9)
+
+        legion_name = gtk.Label("Acquire angel for legion %s in hex %s" % (
+          legion.markername, legion.hexlabel))
+        self.vbox.pack_start(legion_name)
+
+        legion_hbox = gtk.HBox(spacing=15)
+        self.vbox.pack_start(legion_hbox)
+
+        marker_hbox = gtk.HBox()
+        legion_hbox.pack_start(marker_hbox, expand=False)
+
+        marker = Marker.Marker(legion, True, scale=20)
+        marker_hbox.pack_start(marker.event_box, expand=False)
+
+        chits_hbox = gtk.HBox(spacing=3)
+        legion_hbox.pack_start(chits_hbox, expand=True)
 
         for creature in legion.sorted_creatures:
             # XXX This is the wrong place to do this.
             if not creature.dead:
                 creature.heal()
                 chit = Chit.Chit(creature, player.color, scale=20)
-                chit.show()
-                self.chits_hbox.pack_start(chit.event_box, expand=False,
-                  fill=False)
+                chits_hbox.pack_start(chit.event_box, expand=False)
+
+        angels_hbox = gtk.HBox(spacing=15, homogeneous=True)
+        self.vbox.pack_start(angels_hbox)
 
         angels = Creature.n2c(available_angels)
         for angel in angels:
             chit = Chit.Chit(angel, player.color, scale=20)
-            chit.show()
-            self.angels_hbox.pack_start(chit.event_box, expand=False,
-              fill=False)
+            angels_hbox.pack_start(chit.event_box, expand=False)
             chit.connect("button-press-event", self.cb_click)
 
-        self.acquire_angel_dialog.connect("response", self.cb_response)
-        self.acquire_angel_dialog.show()
+        self.cancel_button = gtk.Button("gtk-cancel")
+        self.cancel_button.connect("button-press-event", self.cb_click)
+        self.cancel_button.set_use_stock(True)
+        self.vbox.pack_start(self.cancel_button)
+        self.show_all()
 
 
     def cb_click(self, widget, event):
         """Acquire an angel."""
-        eventbox = widget
-        if eventbox in self.angels_hbox.get_children():
+        if widget == self.cancel_button:
+            self.destroy()
+        else:
+            eventbox = widget
             chit = eventbox.chit
             self.callback(self.legion, chit.creature)
-            self.acquire_angel_dialog.destroy()
-
-    def cb_response(self, dialog, response_id):
-        """The cancel button was pressed, so exit"""
-        self.acquire_angel_dialog.destroy()
+            self.destroy()
 
 
 if __name__ == "__main__":
@@ -93,6 +96,6 @@ if __name__ == "__main__":
     available_angels = ["Archangel", "Angel"]
     acquireangel = AcquireAngel(username, player, legion, available_angels,
       callback, None)
-    acquireangel.acquire_angel_dialog.connect("destroy", guiutils.exit)
+    acquireangel.connect("destroy", guiutils.exit)
 
     gtk.main()

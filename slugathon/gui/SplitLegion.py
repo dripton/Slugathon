@@ -13,58 +13,70 @@ from slugathon.game import Legion
 from slugathon.util import guiutils
 
 
-class SplitLegion(object):
+class SplitLegion(gtk.Dialog):
     """Dialog to split a legion."""
     def __init__(self, username, player, legion, callback, parent):
+        gtk.Dialog.__init__(self, "SplitLegion - %s" % username, parent)
         self.old_legion = legion
         self.callback = callback
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/splitlegion.ui"))
-        self.widget_names = ["split_legion_dialog", "old_marker_hbox",
-          "old_chits_hbox", "new_marker_hbox", "new_chits_hbox",
-          "legion_name"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
 
-        self.split_legion_dialog.set_icon(icon.pixbuf)
-        self.split_legion_dialog.set_title("SplitLegion - %s" % (username))
-        self.split_legion_dialog.set_transient_for(parent)
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_has_separator(False)
+        self.vbox.set_spacing(9)
 
-        self.legion_name.set_text("Splitting legion %s in hex %s" % (
+        legion_name = gtk.Label("Splitting legion %s in hex %s" % (
           legion.markername, legion.hexlabel))
+        self.vbox.pack_start(legion_name)
 
-        self.old_marker = Marker.Marker(legion, False, scale=20)
-        self.old_marker_hbox.pack_start(self.old_marker.event_box,
-          expand=False, fill=False)
-        self.old_marker.show()
+        old_hbox = gtk.HBox(spacing=15)
+        self.vbox.pack_start(old_hbox)
+        old_marker_hbox = gtk.HBox()
+        old_hbox.pack_start(old_marker_hbox, expand=False)
+        self.old_chits_hbox = gtk.HBox()
+        old_hbox.pack_start(self.old_chits_hbox, expand=True)
+
+        new_hbox = gtk.HBox(spacing=15)
+        self.vbox.pack_start(new_hbox)
+        new_marker_hbox = gtk.HBox()
+        new_hbox.pack_start(new_marker_hbox, expand=False)
+        self.new_chits_hbox = gtk.HBox()
+        new_hbox.pack_start(self.new_chits_hbox, expand=True)
+
+        old_marker = Marker.Marker(legion, False, scale=20)
+        old_marker_hbox.pack_start(old_marker.event_box, expand=False)
 
         self.new_legion1 = Legion.Legion(player, legion.markername,
           legion.sorted_creatures, legion.hexlabel)
         self.new_legion2 = Legion.Legion(player, player.selected_markername,
           [], legion.hexlabel)
         self.new_marker = Marker.Marker(self.new_legion2, False, scale=20)
-        self.new_marker_hbox.pack_start(self.new_marker.event_box,
-          expand=False, fill=False)
-        self.new_marker.show()
+        new_marker_hbox.pack_start(self.new_marker.event_box, expand=False)
 
         for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
-            chit.show()
             self.old_chits_hbox.pack_start(chit.event_box, expand=False,
               fill=False)
             chit.connect("button-press-event", self.cb_click)
 
-        self.okbutton = self.split_legion_dialog.action_area.get_children()[1]
-        for child in self.split_legion_dialog.action_area.get_children():
-            if child.name == "okbutton1":
-                self.okbutton = child
-                break
-        else:
-            assert False, "okbutton1 not found"
-        self.okbutton.set_sensitive(False)
+        hseparator = gtk.HSeparator()
+        self.vbox.pack_start(hseparator)
 
-        self.split_legion_dialog.connect("response", self.cb_response)
-        self.split_legion_dialog.show()
+        buttonbox = gtk.HBox(homogeneous=True)
+        self.vbox.pack_start(buttonbox)
+
+        self.ok_button = gtk.Button("gtk-ok")
+        self.ok_button.connect("button-press-event", self.cb_ok)
+        self.ok_button.set_use_stock(True)
+        self.ok_button.set_sensitive(False)
+        buttonbox.pack_start(self.ok_button)
+
+        self.cancel_button = gtk.Button("gtk-cancel")
+        self.cancel_button.connect("button-press-event", self.cb_cancel)
+        self.cancel_button.set_use_stock(True)
+        buttonbox.pack_start(self.cancel_button)
+
+        self.show_all()
 
 
     def cb_click(self, widget, event):
@@ -87,14 +99,15 @@ class SplitLegion(object):
         next_legion.creatures.append(chit.creature)
         legal = self.old_legion.is_legal_split(self.new_legion1,
           self.new_legion2)
-        self.okbutton.set_sensitive(legal)
+        self.ok_button.set_sensitive(legal)
 
-    def cb_response(self, widget, response_id):
-        self.split_legion_dialog.destroy()
-        if response_id == gtk.RESPONSE_OK:
-            self.callback(self.old_legion, self.new_legion1, self.new_legion2)
-        else:
-            self.callback(None, None, None)
+    def cb_ok(self, widget, event):
+        self.destroy()
+        self.callback(self.old_legion, self.new_legion1, self.new_legion2)
+
+    def cb_cancel(self, widget, event):
+        self.destroy()
+        self.callback(None, None, None)
 
 
 if __name__ == "__main__":
@@ -112,6 +125,6 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
     splitlegion = SplitLegion(username, player, legion, guiutils.exit, None)
-    splitlegion.split_legion_dialog.connect("destroy", guiutils.exit)
+    splitlegion.connect("destroy", guiutils.exit)
 
     gtk.main()
