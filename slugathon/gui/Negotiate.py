@@ -13,7 +13,7 @@ from slugathon.util import guiutils
 CONCEDE = 0
 MAKE_PROPOSAL = 1
 DONE_PROPOSING = 2
-FIGHT = 4
+FIGHT = 3
 
 
 class Negotiate(gtk.Dialog):

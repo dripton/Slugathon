@@ -783,13 +783,7 @@ class GUIMasterBoard(gtk.Window):
 
     def cb_negotiate(self, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, response_id):
-        """Callback from Negotiate dialog.
-
-        response_ids: 0 - Concede
-                      1 - Make proposal
-                      2 - Done proposing
-                      3 - Fight
-        """
+        """Callback from Negotiate dialog."""
         player = self.game.get_player_by_name(self.username)
         hexlabel = attacker_legion.hexlabel
         for legion in player.friendly_legions(hexlabel):
@@ -798,32 +792,28 @@ class GUIMasterBoard(gtk.Window):
             enemy_legion = defender_legion
         else:
             enemy_legion = attacker_legion
-        if response_id == 0:
+        if response_id == Negotiate.CONCEDE:
             self.user.callRemote("concede", self.game.name,
               friendly_legion.markername, enemy_legion.markername, hexlabel)
-        elif response_id == 1:
+        elif response_id == Negotiate.MAKE_PROPOSAL:
             self.user.callRemote("make_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
-        elif response_id == 2:
+        elif response_id == Negotiate.DONE_PROPOSING:
             # TODO no more proposals
             pass
-        elif response_id == 3:
+        elif response_id == Negotiate.FIGHT:
             self.user.callRemote("fight", self.game.name,
               attacker_legion.markername, defender_legion.markername)
 
     def cb_proposal(self, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, response_id):
-        """Callback from Proposal dialog.
-
-        response_ids: 0 - Accept
-                      1 - Reject
-        """
-        if response_id == 0:
+        """Callback from Proposal dialog."""
+        if response_id == Proposal.ACCEPT:
             self.user.callRemote("accept_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
-        elif response_id == 1:
+        elif response_id == Proposal.REJECT:
             self.user.callRemote("reject_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
