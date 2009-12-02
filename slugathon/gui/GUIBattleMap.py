@@ -533,7 +533,7 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.Strike):
             print "GUIBattleMap.update got Strike", action
             if self.pickcarry is not None:
-                self.pickcarry.pick_carry_dialog.destroy()
+                self.pickcarry.destroy()
                 self.pickcarry = None
             # XXX clean this up
             if action.hits > 0:
@@ -560,7 +560,7 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.Carry):
             print "GUIBattleMap.update got Carry", action
             if self.pickcarry is not None:
-                self.pickcarry.pick_carry_dialog.destroy()
+                self.pickcarry.destroy()
                 self.pickcarry = None
             # XXX clean this up
             if action.carries > 0:
@@ -656,7 +656,7 @@ class GUIBattleMap(gtk.Window):
     def picked_carry(self, carry_target, carries):
         print "picked_carry", carry_target, carries
         if self.pickcarry is not None:
-            self.pickcarry.pick_carry_dialog.destroy()
+            self.pickcarry.destroy()
         self.pickcarry = None
         def1 = self.user.callRemote("carry", self.game.name,
           carry_target.name, carry_target.hexlabel, carries)
