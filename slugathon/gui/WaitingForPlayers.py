@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __copyright__ = "Copyright (c) 2004-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
@@ -129,3 +131,19 @@ class WaitingForPlayers(object):
         elif isinstance(action, Action.AssignTower):
             if action.game_name == self.game.name:
                 self.shutdown()
+
+if __name__ == "__main__":
+    from twisted.internet import defer
+    from slugathon.game import Game
+
+    class NullUser(object):
+        def callRemote(*args):
+            return defer.Deferred()
+
+    now = time.time()
+    user = NullUser()
+    username = "Player 1"
+    game = Game.Game("g1", "Player 1", now, now, 2, 6)
+    wfp = WaitingForPlayers(user, username, game)
+
+    gtk.main()
