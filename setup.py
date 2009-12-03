@@ -65,7 +65,6 @@ setup(
         ("slugathon/images/dice", glob("slugathon/images/dice/*")),
         ("slugathon/images/legion", glob("slugathon/images/legion/*")),
         ("slugathon/images/masterhex", glob("slugathon/images/masterhex/*")),
-        ("slugathon/ui", glob("slugathon/ui/*")),
         ("slugathon/config", glob("slugathon/config/*")),
         ("slugathon/docs", glob("slugathon/docs/*")),
     ],
