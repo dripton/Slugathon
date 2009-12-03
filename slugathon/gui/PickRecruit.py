@@ -17,7 +17,7 @@ class PickRecruit(gtk.Dialog):
       parent):
         gtk.Dialog.__init__(self, "PickRecruit - %s" % username, parent)
         self.legion = legion
-        self.player = legion.player
+        player = legion.player
         self.callback = callback
 
         self.set_icon(icon.pixbuf)
