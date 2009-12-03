@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
@@ -87,3 +89,24 @@ class Marker(object):
         pctx.set_source_rgb(0, 0, 0)
         pctx.move_to(x, y)
         pctx.show_layout(layout)
+
+
+if __name__ == "__main__":
+    import time
+    from slugathon.data import creaturedata
+    from slugathon.game import Creature, Player, Game, Legion
+
+    now = time.time()
+    creatures = [Creature.Creature(name) for name in
+      creaturedata.starting_creature_names]
+    username = "test"
+    game = Game.Game("g1", username, now, now, 2, 6)
+    player = Player.Player(username, game, 0)
+    player.color = "Red"
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
+    marker = Marker(legion, True, scale=45)
+    window = gtk.Window()
+    window.connect("destroy", gtk.main_quit)
+    window.add(marker.event_box)
+    window.show_all()
+    gtk.main()
