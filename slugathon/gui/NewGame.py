@@ -10,44 +10,71 @@ from slugathon.gui import icon
 from slugathon.util import guiutils
 
 
-class NewGame(object):
+class NewGame(gtk.Dialog):
     """Form new game dialog."""
     def __init__(self, user, username, parent):
-        self.name = None
+        gtk.Dialog.__init__(self, "Form New Game - %s" % username, parent)
+        self.game_name = None
         self.min_players = None
         self.max_players = None
         self.user = user
         self.username = username
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/newgame.ui"))
-        self.widget_names = ["new_game_dialog", "name_entry",
-          "min_players_spin", "max_players_spin"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
-        self.new_game_dialog.set_icon(icon.pixbuf)
-        self.new_game_dialog.set_title("%s - %s" % (
-          self.new_game_dialog.get_title(), self.username))
-        self.new_game_dialog.set_transient_for(parent)
-        self.min_players_spin.set_value(2)
-        self.max_players_spin.set_value(6)
 
-        response = self.new_game_dialog.run()
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+
+        hbox1 = gtk.HBox()
+        self.vbox.pack_start(hbox1)
+        label1 = gtk.Label("Name of game")
+        hbox1.pack_start(label1, expand=False)
+        self.name_entry = gtk.Entry(max=40)
+        self.name_entry.set_width_chars(40)
+        hbox1.pack_start(self.name_entry, expand=False)
+
+        min_adjustment = gtk.Adjustment(2, 2, 6, 1, 0, 0)
+        max_adjustment = gtk.Adjustment(6, 2, 6, 1, 0, 0)
+
+        hbox2 = gtk.HBox()
+        self.vbox.pack_start(hbox2)
+        label2 = gtk.Label("Min players")
+        hbox2.pack_start(label2, expand=False)
+        self.min_players_spin = gtk.SpinButton(adjustment=min_adjustment,
+          climb_rate=1, digits=0)
+        self.min_players_spin.set_numeric(True)
+        self.min_players_spin.set_update_policy(gtk.UPDATE_IF_VALID)
+        self.min_players_spin.set_value(2)
+        hbox2.pack_start(self.min_players_spin, expand=False)
+        label3 = gtk.Label("Max players")
+        hbox2.pack_start(label3, expand=False)
+        self.max_players_spin = gtk.SpinButton(adjustment=max_adjustment,
+          climb_rate=1, digits=0)
+        self.max_players_spin.set_numeric(True)
+        self.max_players_spin.set_update_policy(gtk.UPDATE_IF_VALID)
+        self.max_players_spin.set_value(6)
+        hbox2.pack_start(self.max_players_spin, expand=False)
+
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.add_button("gtk-ok", gtk.RESPONSE_OK)
+
+        self.show_all()
+
+        response = self.run()
         if response == gtk.RESPONSE_OK:
             self.ok()
         else:
             self.cancel()
 
     def ok(self):
-        self.name = self.name_entry.get_text()
+        self.game_name = self.name_entry.get_text()
         self.min_players = self.min_players_spin.get_value_as_int()
         self.max_players = self.max_players_spin.get_value_as_int()
-        def1 = self.user.callRemote("form_game", self.name, self.min_players,
-          self.max_players)
+        def1 = self.user.callRemote("form_game", self.game_name,
+          self.min_players, self.max_players)
         def1.addErrback(self.failure)
-        self.new_game_dialog.destroy()
+        self.destroy()
 
     def cancel(self):
-        self.new_game_dialog.destroy()
+        self.destroy()
 
     def failure(self, error):
         print "NewGame", error
@@ -63,5 +90,5 @@ if __name__ == "__main__":
     user = NullUser()
     username = "test user"
     newgame = NewGame(user, username, None)
-    newgame.new_game_dialog.connect("destroy", guiutils.exit)
+    newgame.connect("destroy", guiutils.exit)
     gtk.main()
