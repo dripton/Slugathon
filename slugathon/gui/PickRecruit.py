@@ -13,11 +13,11 @@ from slugathon.util import guiutils
 
 class PickRecruit(gtk.Dialog):
     """Dialog to pick a recruit."""
-    def __init__(self, username, player, legion, mterrain, caretaker,
-      callback, parent):
+    def __init__(self, username, legion, mterrain, caretaker, callback,
+      parent):
         gtk.Dialog.__init__(self, "PickRecruit - %s" % username, parent)
-        self.player = player
         self.legion = legion
+        self.player = legion.player
         self.callback = callback
 
         self.set_icon(icon.pixbuf)
@@ -116,8 +116,8 @@ if __name__ == "__main__":
     legion.hexlabel = 1000
     masterhex = game.board.hexes[legion.hexlabel]
     mterrain = masterhex.terrain
-    pickrecruit = PickRecruit(username, player, legion, mterrain,
-      game.caretaker, callback, None)
+    pickrecruit = PickRecruit(username, legion, mterrain, game.caretaker,
+      callback, None)
     pickrecruit.connect("destroy", guiutils.exit)
 
     gtk.main()

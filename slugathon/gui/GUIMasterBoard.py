@@ -404,9 +404,8 @@ class GUIMasterBoard(gtk.Window):
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
                     if legion.can_recruit(mterrain, caretaker):
-                        PickRecruit.PickRecruit(self.username, legion.player,
-                          legion, mterrain, caretaker, self.picked_recruit,
-                          self)
+                        PickRecruit.PickRecruit(self.username, legion,
+                          mterrain, caretaker, self.picked_recruit, self)
                 self.highlight_recruits()
 
 
@@ -1026,9 +1025,8 @@ class GUIMasterBoard(gtk.Window):
                         caretaker = self.game.caretaker
                         terrain = masterhex.terrain
                         if legion.can_recruit(terrain, caretaker):
-                            PickRecruit.PickRecruit(self.username, player,
-                              legion, terrain, caretaker, self.picked_recruit,
-                              self)
+                            PickRecruit.PickRecruit(self.username, legion,
+                              terrain, caretaker, self.picked_recruit, self)
             self.guimap = None
             self.highlight_engagements()
             self.clear_hexlabels.add(action.hexlabel)

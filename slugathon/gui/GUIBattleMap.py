@@ -602,9 +602,8 @@ class GUIBattleMap(gtk.Window):
                 mterrain = self.battlemap.mterrain
                 if (len(legion.living_creature_names) < 7 and
                   legion.can_recruit(mterrain, caretaker)):
-                    PickRecruit.PickRecruit(self.username, legion.player,
-                      legion, mterrain, caretaker, self.picked_reinforcement,
-                      self)
+                    PickRecruit.PickRecruit(self.username, legion, mterrain,
+                      caretaker, self.picked_reinforcement, self)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
                       self.game.name)
