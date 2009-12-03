@@ -17,27 +17,76 @@ from slugathon.gui import Client, icon
 from slugathon.util import guiutils, prefs
 
 
-class Connect(object):
+class Connect(gtk.Window):
     """GUI for connecting to a server."""
     def __init__(self, playername, password, server_name, server_port):
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/connect.ui"))
-        self.widget_names = ["connect_window", "playername_comboboxentry",
-          "password_entry", "server_name_comboboxentry",
-          "server_port_comboboxentry", "connect_button",
-          "start_server_button", "status_textview"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
-        self.builder.connect_signals(self)
+        gtk.Window.__init__(self)
+
         self.playernames = set()
         self.server_names = set()
         self.server_ports = set()
+
+        self.set_title("Slugathon - Connect")
+        self.set_default_size(400, -1)
+
+        vbox1 = gtk.VBox()
+        self.add(vbox1)
+
+        hbox1 = gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox1, expand=False)
+        label1 = gtk.Label("Player name")
+        hbox1.pack_start(label1, expand=False)
+        self.playername_comboboxentry = gtk.ComboBoxEntry()
+        hbox1.pack_start(self.playername_comboboxentry, expand=False)
+
+        hbox2 = gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox2, expand=False)
+        label2 = gtk.Label("Password")
+        hbox2.pack_start(label2, expand=False)
+        self.password_entry = gtk.Entry()
+        self.password_entry.set_visibility(False)
+        hbox2.pack_start(self.password_entry, expand=False)
+
+        hbox3 = gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox3, expand=False)
+        label3 = gtk.Label("Server name")
+        hbox3.pack_start(label3, expand=False)
+        self.server_name_comboboxentry = gtk.ComboBoxEntry()
+        hbox3.pack_start(self.server_name_comboboxentry, expand=False)
+
+        hbox4 = gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox4, expand=False)
+        label4 = gtk.Label("Server port")
+        hbox4.pack_start(label4, expand=False)
+        self.server_port_comboboxentry = gtk.ComboBoxEntry()
+        hbox4.pack_start(self.server_port_comboboxentry, expand=False)
+
+        connect_button = gtk.Button("Connect to server")
+        connect_button.connect("button-press-event",
+          self.on_connect_button_clicked)
+        vbox1.pack_start(connect_button, expand=False)
+
+        hseparator1 = gtk.HSeparator()
+        vbox1.pack_start(hseparator1, expand=False)
+
+        start_server_button = gtk.Button("Start local server")
+        start_server_button.connect("button-press-event",
+          self.on_start_server_button_clicked)
+        vbox1.pack_start(start_server_button, expand=False)
+
+        hseparator2 = gtk.HSeparator()
+        vbox1.pack_start(hseparator2, expand=False)
+
+        self.status_textview = gtk.TextView()
+        vbox1.pack_start(self.status_textview, expand=False)
+
         self._init_playernames(playername)
         self._init_password(password)
         self._init_server_names_and_ports(server_name, server_port)
-        self.connect_window.connect("destroy", guiutils.exit)
-        self.connect_window.set_icon(icon.pixbuf)
-        self.connect_window.show()
+
+        self.connect("destroy", guiutils.exit)
+        self.set_icon(icon.pixbuf)
+        self.show_all()
 
     def _init_playernames(self, playername):
         self.playernames.update(prefs.load_playernames())
@@ -110,7 +159,7 @@ class Connect(object):
         utils.getProcessValue("python", ["slugathon-server"])
 
     def connected(self, user):
-        self.connect_window.hide()
+        self.hide()
 
     def connection_failed(self, arg):
         self.status_textview.modify_text(gtk.STATE_NORMAL,
