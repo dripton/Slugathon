@@ -14,55 +14,122 @@ from slugathon.game import Action
 from slugathon.util import guiutils, prefs
 
 
-class Anteroom(object):
+class Anteroom(gtk.Window):
     """GUI for a multiplayer chat and game finding lobby."""
 
     implements(IObserver)
 
     def __init__(self, user, username, usernames, games):
+        gtk.Window.__init__(self)
         self.user = user
         self.username = username
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(guiutils.basedir("ui/anteroom.ui"))
-        self.widget_names = ["anteroom_window", "chat_entry", "chat_view",
-          "game_list", "user_list", "new_game_button", "load_game_button"]
-        for widget_name in self.widget_names:
-            setattr(self, widget_name, self.builder.get_object(widget_name))
         self.usernames = usernames   # set, aliased from Client
         self.games = games           # list, aliased from Client
+
         self.wfps = {}               # game name : WaitingForPlayers
         self.selected_names = set()
+
+        self.set_title("Anteroom - %s" % self.username)
+        self.set_default_size(800, 600)
+        self.set_icon(icon.pixbuf)
+
+        vbox1 = gtk.VBox()
+        self.add(vbox1)
+
+        scrolled_window1 = gtk.ScrolledWindow()
+        scrolled_window1.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        vbox1.pack_start(scrolled_window1)
+
+        self.game_list = gtk.TreeView()
+        self.game_list.set_enable_search(False)
+        scrolled_window1.add(self.game_list)
+
+        hbox1 = gtk.HBox(spacing=10)
+        vbox1.pack_start(hbox1, expand=False)
+
+        new_game_button = gtk.Button()
+        hbox1.pack_start(new_game_button, expand=False)
+        alignment1 = gtk.Alignment()
+        new_game_button.add(alignment1)
+        hbox2 = gtk.HBox(spacing=2)
+        alignment1.add(hbox2)
+        image1 = gtk.Image()
+        image1.set_from_stock(gtk.STOCK_NEW, gtk.ICON_SIZE_BUTTON)
+        hbox2.pack_start(image1, expand=False)
+        label1 = gtk.Label("Start new game")
+        hbox2.pack_start(label1, expand=False)
+
+        load_game_button = gtk.Button()
+        hbox1.pack_start(load_game_button, expand=False)
+        alignment2 = gtk.Alignment()
+        load_game_button.add(alignment2)
+        hbox3 = gtk.HBox(spacing=2)
+        alignment2.add(hbox3)
+        image2 = gtk.Image()
+        image2.set_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_BUTTON)
+        hbox3.pack_start(image2, expand=False)
+        label2 = gtk.Label("Load saved game")
+        hbox3.pack_start(label2, expand=False)
+
+        hbox4 = gtk.HBox()
+        vbox1.pack_start(hbox4)
+
+        vbox2 = gtk.VBox()
+        hbox4.pack_start(vbox2)
+
+        label3 = gtk.Label("Chat messages")
+        vbox2.pack_start(label3, expand=False)
+
+        scrolled_window2 = gtk.ScrolledWindow()
+        scrolled_window2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        vbox2.pack_start(scrolled_window2)
+
+        self.chat_view = gtk.TextView()
+        self.chat_view.set_editable(False)
+        self.chat_view.set_cursor_visible(False)
+        self.chat_view.set_wrap_mode(gtk.WRAP_WORD)
+        scrolled_window2.add(self.chat_view)
+
+        label4 = gtk.Label("Chat entry")
+        vbox2.pack_start(label4, expand=False)
+
+        self.chat_entry = gtk.Entry(max=80)
+        self.chat_entry.set_width_chars(80)
+        vbox2.pack_start(self.chat_entry, expand=False)
+
+        scrolled_window3 = gtk.ScrolledWindow()
+        scrolled_window3.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        hbox4.pack_start(scrolled_window3)
+
+        self.user_list = gtk.TreeView()
+        self.user_list.set_enable_search(False)
+        scrolled_window3.add(self.user_list)
 
         self.user_store = None       # ListStore
         self.game_store = None       # ListStore
         self._init_liststores()
 
-        self.anteroom_window.connect("destroy", guiutils.exit)
-        self.anteroom_window.connect("configure-event",
-          self.cb_configure_event)
+        self.connect("destroy", guiutils.exit)
+        self.connect("configure-event", self.cb_configure_event)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
-        self.new_game_button.connect("button-press-event",
+        new_game_button.connect("button-press-event",
           self.on_new_game_button_click)
-        self.load_game_button.connect("button-press-event",
+        load_game_button.connect("button-press-event",
           self.on_load_game_button_click)
-
-        self.anteroom_window.set_icon(icon.pixbuf)
-        self.anteroom_window.set_title("%s - %s" % (
-          self.anteroom_window.get_title(), self.username))
 
         if self.username:
             tup = prefs.load_window_position(self.username,
               self.__class__.__name__)
             if tup:
                 x, y = tup
-                self.anteroom_window.move(x, y)
+                self.move(x, y)
             tup = prefs.load_window_size(self.username,
               self.__class__.__name__)
             if tup:
                 width, height = tup
-                self.anteroom_window.resize(width, height)
+                self.resize(width, height)
 
-        self.anteroom_window.show_all()
+        self.show_all()
 
 
     def name_to_game(self, game_name):
@@ -127,10 +194,10 @@ class Anteroom(object):
 
     def cb_configure_event(self, event, unused):
         if self.username:
-            x, y = self.anteroom_window.get_position()
+            x, y = self.get_position()
             prefs.save_window_position(self.username, self.__class__.__name__,
               x, y)
-            width, height = self.anteroom_window.get_size()
+            width, height = self.get_size()
             prefs.save_window_size(self.username, self.__class__.__name__,
               width, height)
         return False
@@ -148,10 +215,10 @@ class Anteroom(object):
                 self.chat_entry.set_text("")
 
     def on_new_game_button_click(self, widget, event):
-        NewGame.NewGame(self.user, self.username, self.anteroom_window)
+        NewGame.NewGame(self.user, self.username, self)
 
     def on_load_game_button_click(self, widget, event):
-        LoadGame.LoadGame(self.user, self.username, self.anteroom_window)
+        LoadGame.LoadGame(self.user, self.username, self)
 
     def receive_chat_message(self, message):
         buf = self.chat_view.get_buffer()
@@ -163,7 +230,7 @@ class Anteroom(object):
     def _add_wfp(self, game):
         wfp = self.wfps.get(game.name)
         if wfp is not None:
-            if wfp.waiting_for_players_window.has_user_ref_count:
+            if wfp.has_user_ref_count:
                 # has not been destroyed
                 return
             else:
