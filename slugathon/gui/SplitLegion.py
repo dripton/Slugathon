@@ -22,7 +22,6 @@ class SplitLegion(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Splitting legion %s in hex %s" % (
@@ -59,22 +58,10 @@ class SplitLegion(gtk.Dialog):
               fill=False)
             chit.connect("button-press-event", self.cb_click)
 
-        hseparator = gtk.HSeparator()
-        self.vbox.pack_start(hseparator)
-
-        buttonbox = gtk.HBox(homogeneous=True)
-        self.vbox.pack_start(buttonbox)
-
-        self.ok_button = gtk.Button("gtk-ok")
-        self.ok_button.connect("button-press-event", self.cb_ok)
-        self.ok_button.set_use_stock(True)
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.ok_button = self.add_button("gtk-ok", gtk.RESPONSE_OK)
         self.ok_button.set_sensitive(False)
-        buttonbox.pack_start(self.ok_button)
-
-        self.cancel_button = gtk.Button("gtk-cancel")
-        self.cancel_button.connect("button-press-event", self.cb_cancel)
-        self.cancel_button.set_use_stock(True)
-        buttonbox.pack_start(self.cancel_button)
+        self.connect("response", self.cb_response)
 
         self.show_all()
 
@@ -101,13 +88,12 @@ class SplitLegion(gtk.Dialog):
           self.new_legion2)
         self.ok_button.set_sensitive(legal)
 
-    def cb_ok(self, widget, event):
+    def cb_response(self, widget, response_id):
         self.destroy()
-        self.callback(self.old_legion, self.new_legion1, self.new_legion2)
-
-    def cb_cancel(self, widget, event):
-        self.destroy()
-        self.callback(None, None, None)
+        if response_id == gtk.RESPONSE_OK:
+            self.callback(self.old_legion, self.new_legion1, self.new_legion2)
+        else:
+            self.callback(None, None, None)
 
 
 if __name__ == "__main__":

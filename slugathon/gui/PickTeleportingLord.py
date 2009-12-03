@@ -23,7 +23,6 @@ class PickTeleportingLord(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
         self.vbox.set_spacing(9)
 
         top_label = gtk.Label("Revealing a lord to tower teleport")
@@ -44,20 +43,20 @@ class PickTeleportingLord(gtk.Dialog):
             if creature.is_lord:
                 chit.connect("button-press-event", self.cb_click)
 
-        self.cancel_button = gtk.Button("gtk-cancel")
-        self.vbox.pack_start(self.cancel_button)
-        self.cancel_button.connect("button-press-event", self.cb_click)
-        self.cancel_button.set_use_stock(True)
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.connect("response", self.cb_cancel)
 
         self.show_all()
 
 
     def cb_click(self, widget, event):
-        if widget is not self.cancel_button:
-            eventbox = widget
-            chit = eventbox.chit
-            creature = chit.creature
-            self.callback(creature)
+        eventbox = widget
+        chit = eventbox.chit
+        creature = chit.creature
+        self.callback(creature)
+        self.destroy()
+
+    def cb_cancel(self, widget, response_id):
         self.destroy()
 
 

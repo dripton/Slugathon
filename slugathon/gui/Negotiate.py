@@ -27,7 +27,6 @@ class Negotiate(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Legion %s negotiates with %s in hex %s?" % (
@@ -75,31 +74,11 @@ class Negotiate(gtk.Dialog):
             chit.connect("button-press-event", self.cb_click)
             self.defender_chits.append(chit)
 
-        hseparator = gtk.HSeparator()
-        self.vbox.pack_start(hseparator)
-
-        buttonbox = gtk.HBox(homogeneous=True)
-        self.vbox.pack_start(buttonbox)
-
-        self.concede_button = gtk.Button("Concede")
-        self.proposal_button = gtk.Button("Make proposal")
-        self.done_proposing_button = gtk.Button("No more proposals")
-        self.fight_button = gtk.Button("Fight")
-
-        buttonbox.pack_start(self.concede_button)
-        buttonbox.pack_start(self.proposal_button)
-        buttonbox.pack_start(self.done_proposing_button)
-        buttonbox.pack_start(self.fight_button)
-
-        self.concede_button.connect("button-press-event", self.cb_done)
-        self.proposal_button.connect("button-press-event", self.cb_done)
-        self.done_proposing_button.connect("button-press-event", self.cb_done)
-        self.fight_button.connect("button-press-event", self.cb_done)
-
-        self.concede_button.response_id = CONCEDE
-        self.proposal_button.response_id = MAKE_PROPOSAL
-        self.done_proposing_button.response_id = DONE_PROPOSING
-        self.fight_button.response_id = FIGHT
+        self.add_button("Concede", CONCEDE)
+        self.proposal_button = self.add_button("Make proposal", MAKE_PROPOSAL)
+        self.add_button("No more proposals", DONE_PROPOSING)
+        self.add_button("Fight", FIGHT)
+        self.connect("response", self.cb_response)
 
         self.proposal_button.set_sensitive(False)
 
@@ -151,7 +130,7 @@ class Negotiate(gtk.Dialog):
         """Return a list of creature names for the survivors."""
         return [chit.creature.name for chit in chits if not chit.dead]
 
-    def cb_done(self, widget, event):
+    def cb_response(self, widget, response_id):
         """Calls the callback function, with the attacker, the defender, and
         the response_id."""
         self.destroy()
@@ -160,7 +139,7 @@ class Negotiate(gtk.Dialog):
         defender_creature_names = self.surviving_creature_names(
           self.defender_chits)
         self.callback(self.attacker_legion, attacker_creature_names,
-          self.defender_legion, defender_creature_names, widget.response_id)
+          self.defender_legion, defender_creature_names, response_id)
 
 
 if __name__ == "__main__":

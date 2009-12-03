@@ -9,6 +9,9 @@ import gtk
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
+TELEPORT = 1
+NORMAL_MOVE = 2
+
 
 class PickMoveType(gtk.Dialog):
     """Dialog to choose whether to teleport."""
@@ -20,7 +23,6 @@ class PickMoveType(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label(
@@ -48,29 +50,21 @@ class PickMoveType(gtk.Dialog):
         button_hbox = gtk.HBox(homogeneous=True)
         self.vbox.pack_start(button_hbox)
 
-        self.teleport_button = gtk.Button("Teleport")
-        self.teleport_button.connect("button-press-event", self.cb_click)
-        button_hbox.pack_start(self.teleport_button)
+        self.add_button("Teleport", TELEPORT)
+        self.add_button("Move normally", NORMAL_MOVE)
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
 
-        self.normal_move_button = gtk.Button("Move Normally")
-        self.normal_move_button.connect("button-press-event", self.cb_click)
-        button_hbox.pack_start(self.normal_move_button)
-
-        self.cancel_button = gtk.Button("gtk-cancel")
-        self.cancel_button.set_use_stock(True)
-        self.cancel_button.connect("button-press-event", self.cb_click)
-        button_hbox.pack_start(self.cancel_button)
+        self.connect("response", self.cb_response)
 
         self.show_all()
 
 
-    def cb_click(self, widget, event):
-        if widget is self.teleport_button:
+    def cb_response(self, widget, response_id):
+        if response_id == TELEPORT:
             self.callback(True)
-        elif widget is self.normal_move_button:
+        elif response_id == NORMAL_MOVE:
             self.callback(False)
         else:
-            assert widget is self.cancel_button
             self.callback(None)
         self.destroy()
 

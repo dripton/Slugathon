@@ -24,21 +24,8 @@ class Proposal(gtk.Dialog):
         self.defender_creature_names = defender_creature_names
         self.callback = callback
 
-        [
-          "legion_name",
-          "attacker_hbox",
-          "attacker_marker_hbox",
-          "attacker_chits_hbox",
-          "defender_hbox",
-          "defender_marker_hbox",
-          "defender_chits_hbox",
-          "accept_button",
-          "reject_button",
-        ]
-
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Legion %s negotiates with %s in hex %s" % (
@@ -99,32 +86,19 @@ class Proposal(gtk.Dialog):
             defender_chits_hbox.pack_start(chit.event_box, expand=False)
             defender_chits.append(chit)
 
-        hseparator = gtk.HSeparator()
-        self.vbox.pack_start(hseparator)
-
-        buttons_hbox = gtk.HBox(homogeneous=True)
-        self.vbox.pack_start(buttons_hbox)
-
-        accept_button = gtk.Button("Accept")
-        accept_button.connect("button-press-event", self.cb_click)
-        accept_button.response_id = ACCEPT
-        buttons_hbox.pack_start(accept_button)
-
-        reject_button = gtk.Button("Reject")
-        reject_button.connect("button-press-event", self.cb_click)
-        reject_button.response_id = REJECT
-        buttons_hbox.pack_start(reject_button)
+        self.add_button("Accept", ACCEPT)
+        self.add_button("Reject", REJECT)
+        self.connect("response", self.cb_response)
 
         self.show_all()
 
 
-    def cb_click(self, widget, event):
+    def cb_response(self, widget, response_id):
         """Calls the callback function, with the attacker, the defender, and
         the response_id."""
         self.destroy()
         self.callback(self.attacker_legion, self.attacker_creature_names,
-          self.defender_legion, self.defender_creature_names,
-          widget.response_id)
+          self.defender_legion, self.defender_creature_names, response_id)
 
 
 if __name__ == "__main__":

@@ -22,7 +22,6 @@ class PickRecruit(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Pick recruit for legion %s in hex %s" % (
@@ -77,10 +76,8 @@ class PickRecruit(gtk.Dialog):
                     hbox.pack_end(chit.event_box, expand=False)
                 chit.connect("button-press-event", self.cb_click)
 
-        self.cancel_button = gtk.Button("gtk-cancel")
-        self.vbox.pack_start(self.cancel_button)
-        self.cancel_button.connect("button-press-event", self.cb_cancel)
-        self.cancel_button.set_use_stock(True)
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.connect("response", self.cb_cancel)
         self.show_all()
 
 
@@ -91,7 +88,7 @@ class PickRecruit(gtk.Dialog):
         self.callback(self.legion, chit.recruit, chit.recruiter_names)
         self.destroy()
 
-    def cb_cancel(self, widget, event):
+    def cb_cancel(self, widget, response_id):
         """The cancel button was pressed, so exit"""
         self.destroy()
 

@@ -23,7 +23,6 @@ class PickStrikePenalty(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
 
         self.vbox.set_spacing(9)
 
@@ -56,22 +55,21 @@ class PickStrikePenalty(gtk.Dialog):
             self.vbox.pack_start(button)
             button.tup = tup
             button.connect("button-press-event", self.cb_click)
-        button = gtk.Button("Cancel strike")
-        button.tup = None
-        self.vbox.pack_start(button)
-        button.connect("button-press-event", self.cb_click)
+
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.connect("response", self.cb_cancel)
 
         self.show_all()
 
 
     def cb_click(self, widget, event):
-        tup = widget.tup
         self.destroy()
-        if tup is None:
-            self.callback(None, None, None, None)
-        else:
-            num_dice, strike_number = tup
-            self.callback(self.striker, self.target, num_dice, strike_number)
+        num_dice, strike_number = widget.tup
+        self.callback(self.striker, self.target, num_dice, strike_number)
+
+    def cb_cancel(self, widget, response_id):
+        self.destroy()
+        self.callback(None, None, None, None)
 
 
 if __name__ == "__main__":

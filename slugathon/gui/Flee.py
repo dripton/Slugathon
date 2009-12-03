@@ -8,6 +8,8 @@ import gtk
 
 from slugathon.gui import Chit, Marker, icon
 
+DO_NOT_FLEE = 0
+FLEE = 1
 
 class Flee(gtk.Dialog):
     """Dialog to choose whether to flee."""
@@ -68,8 +70,8 @@ class Flee(gtk.Dialog):
             chit.show()
             self.defender_chits_hbox.pack_start(chit.event_box, expand=False)
 
-        self.add_button("Do Not Flee", 0)
-        self.add_button("Flee", 1)
+        self.add_button("Do Not Flee", DO_NOT_FLEE)
+        self.add_button("Flee", FLEE)
 
         self.connect("response", self.cb_response)
         self.show_all()

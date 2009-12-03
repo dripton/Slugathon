@@ -22,7 +22,6 @@ class AcquireAngel(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Acquire angel for legion %s in hex %s" % (
@@ -57,23 +56,21 @@ class AcquireAngel(gtk.Dialog):
             angels_hbox.pack_start(chit.event_box, expand=False)
             chit.connect("button-press-event", self.cb_click)
 
-        self.cancel_button = gtk.Button("gtk-cancel")
-        self.cancel_button.connect("button-press-event", self.cb_click)
-        self.cancel_button.set_use_stock(True)
-        self.vbox.pack_start(self.cancel_button)
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.connect("response", self.cb_cancel)
+
         self.show_all()
 
 
     def cb_click(self, widget, event):
         """Acquire an angel."""
-        if widget == self.cancel_button:
-            self.destroy()
-        else:
-            eventbox = widget
-            chit = eventbox.chit
-            self.callback(self.legion, chit.creature)
-            self.destroy()
+        eventbox = widget
+        chit = eventbox.chit
+        self.callback(self.legion, chit.creature)
+        self.destroy()
 
+    def cb_cancel(self, widget, response_id):
+        self.destroy()
 
 if __name__ == "__main__":
     import time

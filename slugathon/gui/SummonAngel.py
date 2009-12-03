@@ -22,7 +22,6 @@ class SummonAngel(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
-        self.set_has_separator(False)
 
         top_label = gtk.Label("Summoning an angel into legion %s in hex %s"
           % (legion.markername, legion.hexlabel))
@@ -46,25 +45,23 @@ class SummonAngel(gtk.Dialog):
                     if creature.summonable:
                         chit.connect("button-press-event", self.cb_click)
 
-        self.cancel_button = gtk.Button("gtk-cancel")
-        self.cancel_button.set_use_stock(True)
-        self.vbox.pack_start(self.cancel_button)
-        self.cancel_button.connect("button-press-event", self.cb_click)
+        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.connect("response", self.cb_cancel)
 
         self.show_all()
 
 
     def cb_click(self, widget, event):
         """Summon the clicked-on Chit's creature."""
-        if widget is self.cancel_button:
-            self.destroy()
-        else:
-            eventbox = widget
-            chit = eventbox.chit
-            creature = chit.creature
-            donor = creature.legion
-            self.callback(self.legion, donor, creature)
-            self.destroy()
+        eventbox = widget
+        chit = eventbox.chit
+        creature = chit.creature
+        donor = creature.legion
+        self.callback(self.legion, donor, creature)
+        self.destroy()
+
+    def cb_cancel(self, widget, response_id):
+        self.destroy()
 
 
 if __name__ == "__main__":
