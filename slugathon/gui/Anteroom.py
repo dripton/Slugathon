@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
@@ -149,7 +151,7 @@ class Anteroom(object):
         NewGame.NewGame(self.user, self.username, self.anteroom_window)
 
     def on_load_game_button_click(self, widget, event):
-        LoadGame.Loadgame(self.user, self.username, self.anteroom_window)
+        LoadGame.LoadGame(self.user, self.username, self.anteroom_window)
 
     def receive_chat_message(self, message):
         buf = self.chat_view.get_buffer()
@@ -232,3 +234,22 @@ class Anteroom(object):
         elif isinstance(action, Action.AssignTower):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
+
+
+if __name__ == "__main__":
+    import time
+    from twisted.internet import defer
+    from slugathon.game import Game
+
+    class NullUser(object):
+        def callRemote(*args):
+            return defer.Deferred()
+
+    now = time.time()
+    user = NullUser()
+    username = "Player 1"
+    game = Game.Game("g1", "Player 1", now, now, 2, 6)
+    usernames = [username]
+    games = [game]
+    anteroom = Anteroom(user, username, usernames, games)
+    gtk.main()
