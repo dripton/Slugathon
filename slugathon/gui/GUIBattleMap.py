@@ -553,9 +553,10 @@ class GUIBattleMap(gtk.Window):
                 num_dice = action.num_dice
                 strike_number = action.strike_number
                 carries = action.carries
-                self.pickcarry = PickCarry.PickCarry(self.username,
+                self.pickcarry, def1 = PickCarry.new(self.username,
                   self.game.name, striker, target, num_dice, strike_number,
-                  carries, self.picked_carry, self)
+                  carries, self)
+                def1.addCallback(self.picked_carry)
 
         elif isinstance(action, Action.Carry):
             print "GUIBattleMap.update got Carry", action
@@ -580,9 +581,10 @@ class GUIBattleMap(gtk.Window):
                 num_dice = action.num_dice
                 strike_number = action.strike_number
                 carries_left = action.carries_left
-                self.pickcarry = PickCarry.PickCarry(self.username,
+                self.pickcarry, def1 = PickCarry.new(self.username,
                   self.game.name, striker, target, num_dice, strike_number,
-                  carries_left, self.picked_carry, self)
+                  carries_left, self)
+                def1.addCallback(self.picked_carry)
 
         elif isinstance(action, Action.DoneStriking):
             self.highlight_strikers()
@@ -652,7 +654,7 @@ class GUIBattleMap(gtk.Window):
           legion.markername, donor.markername, creature.name)
         def1.addErrback(self.failure)
 
-    def picked_carry(self, carry_target, carries):
+    def picked_carry(self, (carry_target, carries)):
         print "picked_carry", carry_target, carries
         if self.pickcarry is not None:
             self.pickcarry.destroy()

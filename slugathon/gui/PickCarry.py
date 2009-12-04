@@ -4,20 +4,35 @@ __copyright__ = "Copyright (c) 2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
+from twisted.internet import reactor, defer
 import gtk
 
 from slugathon.gui import icon
 
 
+def new(username, game_name, striker, target, num_dice, strike_number,
+  carries, parent):
+    """Create a PickCarry dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    pickcarry = PickCarry(username, game_name, striker, target, num_dice,
+      strike_number, carries, def1, parent)
+    return pickcarry, def1
+
+
 class PickCarry(gtk.Dialog):
     """Dialog to pick whether and where to carry excess hits."""
     def __init__(self, username, game_name, striker, target, num_dice,
-      strike_number, carries, callback, parent):
+      strike_number, carries, def1, parent):
         gtk.Dialog.__init__(self, "PickCarry - %s" % username, parent)
         self.username = username
         self.game_name = game_name
         self.carries = carries
-        self.callback = callback
+        self.deferred = def1
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -43,14 +58,13 @@ class PickCarry(gtk.Dialog):
         creature = widget.creature
         self.destroy()
         if creature:
-            self.callback(creature, self.carries)
+            self.deferred.callback((creature, self.carries))
         else:
-            self.callback(None, 0)
+            self.deferred.callback((None, 0))
 
 
 if __name__ == "__main__":
     import time
-    from slugathon.util import guiutils
     from slugathon.game import Game, Phase
 
     now = time.time()
@@ -104,10 +118,10 @@ if __name__ == "__main__":
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
-    def my_callback(creature, carries):
+    def my_callback((creature, carries)):
         print "carry %d hits to %s" % (carries, creature)
-        guiutils.exit()
+        reactor.stop()
 
-    pickcarry = PickCarry(username, game_name, titan2, centaur1, 6, 4, 1,
-      my_callback, None)
-    gtk.main()
+    _, def1 = new(username, game_name, titan2, centaur1, 6, 4, 1, None)
+    def1.addCallback(my_callback)
+    reactor.run()
