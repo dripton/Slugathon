@@ -15,9 +15,10 @@ from slugathon.util import guiutils
 
 class SplitLegion(gtk.Dialog):
     """Dialog to split a legion."""
-    def __init__(self, username, player, legion, callback, parent):
+    def __init__(self, username, legion, callback, parent):
         gtk.Dialog.__init__(self, "SplitLegion - %s" % username, parent)
         self.old_legion = legion
+        player = legion.player
         self.callback = callback
 
         self.set_icon(icon.pixbuf)
@@ -110,7 +111,7 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
-    splitlegion = SplitLegion(username, player, legion, guiutils.exit, None)
+    splitlegion = SplitLegion(username, legion, guiutils.exit, None)
     splitlegion.connect("destroy", guiutils.exit)
 
     gtk.main()

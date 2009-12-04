@@ -12,7 +12,7 @@ from slugathon.util import guiutils
 
 class ShowLegion(gtk.Window):
     """Window to show a legion's contents."""
-    def __init__(self, username, legion, playercolor, show_marker):
+    def __init__(self, username, legion, show_marker):
         gtk.Window.__init__(self)
         self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
           "legion_name"]
@@ -41,7 +41,7 @@ class ShowLegion(gtk.Window):
 
         # TODO Handle unknown creatures correctly
         for creature in legion.sorted_creatures:
-            chit = Chit.Chit(creature, playercolor, scale=20)
+            chit = Chit.Chit(creature, legion.player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, expand=False)
 
         self.show_all()
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     player = Player.Player(username, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    showlegion = ShowLegion(username, legion, player.color, True)
+    showlegion = ShowLegion(username, legion, True)
     showlegion.connect("destroy", guiutils.exit)
 
     gtk.main()

@@ -615,8 +615,8 @@ class GUIBattleMap(gtk.Window):
                 if (len(legion.living_creature_names) < 7 and legion.can_summon
                   and self.game.first_attacker_kill in
                   [self.game.battle_turn - 1, self.game.battle_turn]):
-                    SummonAngel.SummonAngel(self.username, legion.player,
-                      legion, self.picked_summon, self)
+                    SummonAngel.SummonAngel(self.username, legion,
+                      self.picked_summon, self)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
                       self.game.name)

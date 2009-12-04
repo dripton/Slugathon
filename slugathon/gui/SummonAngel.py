@@ -12,10 +12,10 @@ from slugathon.util import guiutils
 
 class SummonAngel(gtk.Dialog):
     """Dialog to summon an angel."""
-    def __init__(self, username, player, legion, callback, parent):
+    def __init__(self, username, legion, callback, parent):
         gtk.Dialog.__init__(self, "SummonAngel - %s" % username, parent)
-        self.player = player
         self.legion = legion
+        player = legion.player
         self.callback = callback
         self.donor = None
         self.summonable = None
@@ -32,14 +32,14 @@ class SummonAngel(gtk.Dialog):
         bottom_label = gtk.Label("Click one to summon it.")
         self.vbox.pack_start(bottom_label)
 
-        for legion2 in self.player.legions.itervalues():
+        for legion2 in player.legions.itervalues():
             if legion2.any_summonable:
                 hbox = gtk.HBox(spacing=3)
                 self.vbox.pack_start(hbox)
                 marker = Marker.Marker(legion2, False, scale=20)
                 hbox.pack_start(marker.event_box, expand=False, fill=False)
                 for creature in legion2.sorted_creatures:
-                    chit = Chit.Chit(creature, self.player.color, scale=20,
+                    chit = Chit.Chit(creature, player.color, scale=20,
                       outlined=creature.summonable)
                     hbox.pack_start(chit.event_box, expand=False, fill=False)
                     if creature.summonable:
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         print "Will summon", creature, "from", donor, "into", legion
         guiutils.exit()
 
-    summonangel = SummonAngel(username, player, legion1, callback, None)
+    summonangel = SummonAngel(username, legion1, callback, None)
     summonangel.connect("destroy", guiutils.exit)
 
     gtk.main()

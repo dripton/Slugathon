@@ -331,8 +331,7 @@ class GUIMasterBoard(gtk.Window):
 
     def clicked_on_marker(self, area, event, marker):
         if event.button >= 2:
-            ShowLegion.ShowLegion(self.username, marker.legion,
-              marker.legion.player.color, True)
+            ShowLegion.ShowLegion(self.username, marker.legion, True)
 
         else: # left button
             phase = self.game.phase
@@ -416,7 +415,7 @@ class GUIMasterBoard(gtk.Window):
     def split_legion(self, player):
         legion = self._splitting_legion
         if legion is not None:
-            SplitLegion.SplitLegion(self.username, player, legion,
+            SplitLegion.SplitLegion(self.username, legion,
               self.try_to_split_legion, self)
 
     def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
@@ -978,8 +977,8 @@ class GUIMasterBoard(gtk.Window):
                       if caretaker.counts.get(angel) > 0]
                     if not available_angels:
                         break
-                    _, def1 = AcquireAngel.new(self.username, legion.player,
-                      legion, available_angels, self)
+                    _, def1 = AcquireAngel.new(self.username, legion,
+                      available_angels, self)
                     def1.addCallback(self.picked_angel)
                     archangels -= 1
                 while angels > 0:
@@ -988,8 +987,8 @@ class GUIMasterBoard(gtk.Window):
                       if caretaker.counts.get(angel) > 0]
                     if not available_angels:
                         break
-                    _, def1 = AcquireAngel.new(self.username, legion.player,
-                      legion, available_angels, self)
+                    _, def1 = AcquireAngel.new(self.username, legion,
+                      available_angels, self)
                     def1.addCallback(self.picked_angel)
                     angels -= 1
 
@@ -1021,8 +1020,8 @@ class GUIMasterBoard(gtk.Window):
                 if player == self.game.active_player:
                     # attacker can summon
                     if (player.name == self.username and legion.can_summon):
-                        SummonAngel.SummonAngel(self.username, player,
-                          legion, self.picked_summon, self)
+                        SummonAngel.SummonAngel(self.username, legion,
+                          self.picked_summon, self)
                 elif not legion.recruited:
                     # defender can reinforce
                     if player.name == self.username:
