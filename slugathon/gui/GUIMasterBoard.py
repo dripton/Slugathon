@@ -441,7 +441,7 @@ class GUIMasterBoard(gtk.Window):
           legion.markername, donor.markername, creature.name)
         def1.addErrback(self.failure)
 
-    def picked_angel(self, legion, angel):
+    def picked_angel(self, (legion, angel)):
         """Callback from AcquireAngel"""
         def1 = self.user.callRemote("acquire_angel", self.game.name,
           legion.markername, angel.name)
@@ -772,15 +772,15 @@ class GUIMasterBoard(gtk.Window):
                 def1 = self.user.callRemote("apply_action", action)
                 def1.addErrback(self.failure)
 
-    def cb_maybe_flee(self, attacker, defender, fled):
+    def cb_maybe_flee(self, (attacker, defender, fled)):
         if fled:
             self.user.callRemote("flee", self.game.name, defender.markername)
         else:
             self.user.callRemote("do_not_flee", self.game.name,
               defender.markername)
 
-    def cb_negotiate(self, attacker_legion, attacker_creature_names,
-      defender_legion, defender_creature_names, response_id):
+    def cb_negotiate(self, (attacker_legion, attacker_creature_names,
+      defender_legion, defender_creature_names, response_id)):
         """Callback from Negotiate dialog."""
         player = self.game.get_player_by_name(self.username)
         hexlabel = attacker_legion.hexlabel
@@ -804,8 +804,8 @@ class GUIMasterBoard(gtk.Window):
             self.user.callRemote("fight", self.game.name,
               attacker_legion.markername, defender_legion.markername)
 
-    def cb_proposal(self, attacker_legion, attacker_creature_names,
-      defender_legion, defender_creature_names, response_id):
+    def cb_proposal(self, (attacker_legion, attacker_creature_names,
+      defender_legion, defender_creature_names, response_id)):
         """Callback from Proposal dialog."""
         if response_id == Proposal.ACCEPT:
             self.user.callRemote("accept_proposal", self.game.name,
@@ -884,12 +884,12 @@ class GUIMasterBoard(gtk.Window):
                     defender = legion
             if defender.player.name == self.username:
                 if defender.can_flee:
-                    Flee.Flee(self.username, attacker, defender,
-                      self.cb_maybe_flee, self)
+                    _, def1 = Flee.new(self.username, attacker, defender, self)
+                    def1.addCallback(self.cb_maybe_flee)
                 else:
                     # Can't flee, so we always send the do_not_flee.
                     # (Others may not know that we have a lord here.)
-                    self.cb_maybe_flee(attacker, defender, False)
+                    self.cb_maybe_flee((attacker, defender, False))
 
         elif isinstance(action, Action.Flee):
             self.highlight_engagements()
@@ -905,8 +905,9 @@ class GUIMasterBoard(gtk.Window):
                     attacker = legion
             if (defender.player.name == self.username or
               attacker.player.name == self.username):
-                self.negotiate = Negotiate.Negotiate(self.username, attacker,
-                  defender, self.cb_negotiate, self)
+                self.negotiate, def1 = Negotiate.new(self.username, attacker,
+                  defender, self)
+                def1.addCallback(self.cb_negotiate)
 
         elif isinstance(action, Action.Concede):
             self.destroy_negotiate()
@@ -920,9 +921,11 @@ class GUIMasterBoard(gtk.Window):
             defender_markername = action.defender_markername
             defender = self.game.find_legion(defender_markername)
             if attacker is not None and defender is not None:
-                self.proposals.add(Proposal.Proposal(self.username, attacker,
+                proposal, def1 = Proposal.new(self.username, attacker,
                   action.attacker_creature_names, defender,
-                  action.defender_creature_names, self.cb_proposal, self))
+                  action.defender_creature_names, self)
+                def1.addCallback(self.cb_proposal)
+                self.proposals.add(proposal)
 
         elif isinstance(action, Action.AcceptProposal):
             self.destroy_negotiate()
@@ -936,8 +939,9 @@ class GUIMasterBoard(gtk.Window):
             defender_markername = action.defender_markername
             defender = self.game.find_legion(defender_markername)
             if (action.other_playername == self.username):
-                self.negotiate = Negotiate.Negotiate(self.username, attacker,
-                  defender, self.cb_negotiate, self)
+                self.negotiate, def1 = Negotiate.new(self.username, attacker,
+                  defender, self)
+                def1.addCallback(self.cb_negotiate)
 
         elif isinstance(action, Action.DoneFighting):
             self.highlight_recruits()
@@ -974,8 +978,9 @@ class GUIMasterBoard(gtk.Window):
                       if caretaker.counts.get(angel) > 0]
                     if not available_angels:
                         break
-                    AcquireAngel.AcquireAngel(self.username, legion.player,
-                      legion, available_angels, self.picked_angel, self)
+                    _, def1 = AcquireAngel.new(self.username, legion.player,
+                      legion, available_angels, self)
+                    def1.addCallback(self.picked_angel)
                     archangels -= 1
                 while angels > 0:
                     possible_angels = ["Angel"]
@@ -983,8 +988,9 @@ class GUIMasterBoard(gtk.Window):
                       if caretaker.counts.get(angel) > 0]
                     if not available_angels:
                         break
-                    AcquireAngel.AcquireAngel(self.username, legion.player,
-                      legion, available_angels, self.picked_angel, self)
+                    _, def1 = AcquireAngel.new(self.username, legion.player,
+                      legion, available_angels, self)
+                    def1.addCallback(self.picked_angel)
                     angels -= 1
 
         elif isinstance(action, Action.AcquireAngel):

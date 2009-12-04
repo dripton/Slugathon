@@ -4,25 +4,41 @@ __copyright__ = "Copyright (c) 2006-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
+from twisted.internet import defer, reactor
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util.bag import bag
-from slugathon.util import guiutils
+
 
 ACCEPT = 0
 REJECT = 1
 
+
+def new(username, attacker_legion, attacker_creature_names,
+      defender_legion, defender_creature_names, parent):
+    """Create a Proposal dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    proposal = Proposal(username, attacker_legion, attacker_creature_names,
+      defender_legion, defender_creature_names, def1, parent)
+    return proposal, def1
+
+
 class Proposal(gtk.Dialog):
     """Dialog to choose whether to accept an opponent's proposal."""
     def __init__(self, username, attacker_legion, attacker_creature_names,
-      defender_legion, defender_creature_names, callback, parent):
+      defender_legion, defender_creature_names, def1, parent):
         gtk.Dialog.__init__(self, "Proposal - %s" % username, parent)
         self.attacker_legion = attacker_legion
         self.attacker_creature_names = attacker_creature_names
         self.defender_legion = defender_legion
         self.defender_creature_names = defender_creature_names
-        self.callback = callback
+        self.deferred = def1
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -94,11 +110,12 @@ class Proposal(gtk.Dialog):
 
 
     def cb_response(self, widget, response_id):
-        """Calls the callback function, with the attacker, the defender, and
+        """Fires the Deferred with the attacker, the defender, and
         the response_id."""
         self.destroy()
-        self.callback(self.attacker_legion, self.attacker_creature_names,
-          self.defender_legion, self.defender_creature_names, response_id)
+        self.deferred.callback((self.attacker_legion,
+          self.attacker_creature_names, self.defender_legion,
+          self.defender_creature_names, response_id))
 
 
 if __name__ == "__main__":
@@ -128,11 +145,11 @@ if __name__ == "__main__":
     defender_legion = Legion.Legion(defender_player, "Rd01",
       defender_creatures, 1)
 
-    def callback(*args):
-        print "callback", args
-        guiutils.exit()
+    def my_callback(*args):
+        print "my_callback", args
+        reactor.stop()
 
-    proposal = Proposal(defender_username, attacker_legion,
-      attacker_survivor_names, defender_legion, defender_survivor_names,
-      callback, None)
-    gtk.main()
+    _, def1 = new(defender_username, attacker_legion, attacker_survivor_names,
+      defender_legion, defender_survivor_names, None)
+    def1.addCallback(my_callback)
+    reactor.run()

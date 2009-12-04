@@ -5,18 +5,27 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
+from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
 from slugathon.util import guiutils
 
 
+def new(username, player, legion, available_angels, parent):
+    """Create an AcquireAngel dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    acquire_angel = AcquireAngel(username, player, legion, available_angels,
+      def1, parent)
+    return acquire_angel, def1
+
+
 class AcquireAngel(gtk.Dialog):
     """Dialog to acquire an angel."""
     def __init__(self, username, player, legion, available_angels,
-      callback, parent):
+      def1, parent):
         gtk.Dialog.__init__(self, "AcquireAngel - %s" % username, parent)
-        self.callback = callback
+        self.deferred = def1
         self.player = player
         self.legion = legion
 
@@ -66,7 +75,7 @@ class AcquireAngel(gtk.Dialog):
         """Acquire an angel."""
         eventbox = widget
         chit = eventbox.chit
-        self.callback(self.legion, chit.creature)
+        self.deferred.callback((self.legion, chit.creature))
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
@@ -79,7 +88,7 @@ if __name__ == "__main__":
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 
-    def callback(legion, creature):
+    def my_callback((legion, creature)):
         print legion, "acquired", creature
         guiutils.exit()
 
@@ -91,8 +100,8 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000
     available_angels = ["Archangel", "Angel"]
-    acquireangel = AcquireAngel(username, player, legion, available_angels,
-      callback, None)
-    acquireangel.connect("destroy", guiutils.exit)
+    acquire_angel, def1 = new(username, player, legion, available_angels, None)
+    acquire_angel.connect("destroy", guiutils.exit)
+    def1.addCallback(my_callback)
 
     gtk.main()

@@ -4,10 +4,15 @@ __copyright__ = "Copyright (c) 2006-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
+from twisted.internet import defer, reactor
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.util import guiutils
 
 
 CONCEDE = 0
@@ -16,14 +21,22 @@ DONE_PROPOSING = 2
 FIGHT = 3
 
 
+def new(username, attacker_legion, defender_legion, parent):
+    """Create a Negotiate dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    negotiate = Negotiate(username, attacker_legion, defender_legion, def1,
+      parent)
+    return negotiate, def1
+
+
 class Negotiate(gtk.Dialog):
     """Dialog to choose whether to concede, negotiate, or fight."""
     def __init__(self, username, attacker_legion, defender_legion,
-      callback, parent):
+      def1, parent):
         gtk.Dialog.__init__(self, "Negotiate - %s" % username, parent)
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
-        self.callback = callback
+        self.deferred = def1
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -131,15 +144,15 @@ class Negotiate(gtk.Dialog):
         return [chit.creature.name for chit in chits if not chit.dead]
 
     def cb_response(self, widget, response_id):
-        """Calls the callback function, with the attacker, the defender, and
+        """Fires the Deferred, with the attacker, the defender, and
         the response_id."""
         self.destroy()
         attacker_creature_names = self.surviving_creature_names(
           self.attacker_chits)
         defender_creature_names = self.surviving_creature_names(
           self.defender_chits)
-        self.callback(self.attacker_legion, attacker_creature_names,
-          self.defender_legion, defender_creature_names, response_id)
+        self.deferred.callback((self.attacker_legion, attacker_creature_names,
+          self.defender_legion, defender_creature_names, response_id))
 
 
 if __name__ == "__main__":
@@ -167,10 +180,10 @@ if __name__ == "__main__":
     defender_legion = Legion.Legion(defender_player, "Rd01",
       defender_creatures, 1)
 
-    def callback(*args):
+    def my_callback(*args):
         print "callback", args
-        guiutils.exit()
+        reactor.stop()
 
-    negotiate = Negotiate(defender_username, attacker_legion, defender_legion,
-      callback, None)
-    gtk.main()
+    _, def1 = new(defender_username, attacker_legion, defender_legion, None)
+    def1.addCallback(my_callback)
+    reactor.run()

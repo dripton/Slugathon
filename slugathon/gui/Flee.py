@@ -4,6 +4,12 @@ __copyright__ = "Copyright (c) 2006-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
+from twisted.internet import defer, reactor
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
@@ -11,15 +17,21 @@ from slugathon.gui import Chit, Marker, icon
 DO_NOT_FLEE = 0
 FLEE = 1
 
+def new(username, attacker_legion, defender_legion, parent):
+    """Create a Flee dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    flee = Flee(username, attacker_legion, defender_legion, def1, parent)
+    return flee, def1
+
+
 class Flee(gtk.Dialog):
     """Dialog to choose whether to flee."""
-    def __init__(self, username, attacker_legion, defender_legion,
-      callback, parent):
-
+    def __init__(self, username, attacker_legion, defender_legion, def1,
+      parent):
         gtk.Dialog.__init__(self, "Flee - %s" % (username), parent)
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
-        self.callback = callback
+        self.deferred = def1
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -78,16 +90,16 @@ class Flee(gtk.Dialog):
 
 
     def cb_response(self, widget, response_id):
-        """Calls the callback function, with the attacker, the defender, and
+        """Fires the deferred, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""
         self.destroy()
-        self.callback(self.attacker_legion, self.defender_legion, response_id)
+        self.deferred.callback((self.attacker_legion, self.defender_legion,
+          response_id))
 
 
 if __name__ == "__main__":
     import time
     from slugathon.game import Creature, Legion, Player, Game
-    from slugathon.util import guiutils
 
     now = time.time()
     attacker_username = "Roar!"
@@ -109,11 +121,10 @@ if __name__ == "__main__":
     defender_legion = Legion.Legion(defender_player, "Rd01",
       defender_creatures, 1)
 
-    def callback(attacker, defender, fled):
+    def my_callback((attacker, defender, fled)):
         print "fled is", fled
-        guiutils.exit()
+        reactor.stop()
 
-    flee = Flee(defender_username, attacker_legion, defender_legion,
-      callback, None)
-
-    gtk.main()
+    _, def1 = new(defender_username, attacker_legion, defender_legion, None)
+    def1.addCallback(my_callback)
+    reactor.run()
