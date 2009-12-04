@@ -250,8 +250,6 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_recruits()
 
 
-    # XXX This is kind of gross.  Maybe deferreds and inlineCallbacks?
-
     def _pick_move_type(self, legion, moves):
         """Figure out whether to teleport, then call _pick_entry_side."""
         self.moving_legion = legion
@@ -262,8 +260,8 @@ class GUIMasterBoard(gtk.Window):
             self._pick_entry_side(False)
         else:
             hexlabel = moves[0][0]
-            PickMoveType.PickMoveType(self.username, legion, hexlabel,
-              self._pick_entry_side, self)
+            _, def1 = PickMoveType.new(self.username, legion, hexlabel, self)
+            def1.addCallback(self._pick_entry_side)
 
     def _pick_entry_side(self, teleport):
         """Pick an entry side, then call _pick_teleporting_lord.
@@ -291,8 +289,8 @@ class GUIMasterBoard(gtk.Window):
                 entry_sides = set([1, 3, 5])
             else:
                 entry_sides = set((move[1] for move in moves))
-            PickEntrySide.PickEntrySide(terrain, entry_sides,
-              self._pick_teleporting_lord)
+            _, def1 = PickEntrySide.new(terrain, entry_sides)
+            def1.addCallback(self._pick_teleporting_lord)
 
     def _pick_teleporting_lord(self, entry_side):
         """Pick a teleporting lord, then call _do_move_legion."""
@@ -312,8 +310,9 @@ class GUIMasterBoard(gtk.Window):
                 if len(lord_types) == 1:
                     teleporting_lord = lord_types.pop()
                 else:
-                    PickTeleportingLord.PickTeleportingLord(self.username,
-                      legion, self._do_move_legion, self)
+                    _, def1 = PickTeleportingLord.new(self.username, legion,
+                      self)
+                    def1.addCallback(self._do_move_legion)
                     return
         else:
             teleporting_lord = None

@@ -12,7 +12,7 @@ try:
     gtk2reactor.install()
 except AssertionError:
     pass
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 
 import gtk
 
@@ -39,17 +39,25 @@ hexlabel_to_entry_side = {
 }
 
 
+def new(terrain, entry_sides, username=None, scale=None):
+    """Create a PickEntrySide dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    pick_entry_side = PickEntrySide(terrain, entry_sides, def1, username,
+      scale)
+    return pick_entry_side, def1
+
+
 class PickEntrySide(gtk.Window):
     """Dialog to pick a masterhex entry side."""
 
-    def __init__(self, terrain, entry_sides, callback, username=None,
+    def __init__(self, terrain, entry_sides, def1, username=None,
       scale=None):
         gtk.Window.__init__(self)
 
         # We always orient the map as if for entry side 5.
         self.battlemap = BattleMap.BattleMap(terrain, 5)
         self.entry_sides = entry_sides
-        self.callback = callback
+        self.deferred = def1
         self.username = username
 
         self.set_icon(icon.pixbuf)
@@ -137,7 +145,7 @@ class PickEntrySide(gtk.Window):
     def clicked_on_hex(self, area, event, guihex):
         if guihex.selected:
             entry_side = hexlabel_to_entry_side[guihex.battlehex.label]
-            self.callback(entry_side)
+            self.deferred.callback(entry_side)
             self.destroy()
 
     def bounding_rect_for_hexlabels(self, hexlabels):
@@ -208,7 +216,8 @@ class PickEntrySide(gtk.Window):
 
     def callback_with_none(self, *args):
         """Called if the window is destroyed."""
-        self.callback(None)
+        if not self.deferred.called:
+            self.deferred.callback(None)
 
 
 if __name__ == "__main__":
@@ -224,7 +233,8 @@ if __name__ == "__main__":
 
     def my_callback(choice):
         print "chose entry side", choice
-        guiutils.exit()
+        reactor.stop()
 
-    pick_entry_side = PickEntrySide(terrain, set([1, 3, 5]), my_callback)
+    pick_entry_side, def1 = new(terrain, set([1, 3, 5]))
+    def1.addCallback(my_callback)
     reactor.run()

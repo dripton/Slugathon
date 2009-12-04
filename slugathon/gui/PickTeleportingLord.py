@@ -5,18 +5,26 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
+from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
 
+def new(username, legion, parent):
+    """Create a PickTeleportingLord dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    pick_teleporting_lord = PickTeleportingLord(username, legion, def1, parent)
+    return pick_teleporting_lord, def1
+
+
 class PickTeleportingLord(gtk.Dialog):
     """Dialog to pick a lord to reveal for tower teleport."""
-    def __init__(self, username, legion, callback, parent):
+    def __init__(self, username, legion, def1, parent):
         gtk.Dialog.__init__(self, "PickTeleportingLord - %s" % username,
           parent)
         self.legion = legion
-        self.callback = callback
+        self.deferred = def1
 
         self.widget_names = ["top_label",
           "bottom_label", "vbox1"]
@@ -53,7 +61,7 @@ class PickTeleportingLord(gtk.Dialog):
         eventbox = widget
         chit = eventbox.chit
         creature = chit.creature
-        self.callback(creature)
+        self.deferred.callback(creature)
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
@@ -78,9 +86,8 @@ if __name__ == "__main__":
         print "Picked", creature
         guiutils.exit()
 
-    pick_teleporting_lord = PickTeleportingLord(username, legion, my_callback,
-      None)
-    pick_teleporting_lord.connect("destroy",
-      guiutils.exit)
+    pick_teleporting_lord, def1 = new(username, legion, None)
+    pick_teleporting_lord.connect("destroy", guiutils.exit)
+    def1.addCallback(my_callback)
 
     gtk.main()

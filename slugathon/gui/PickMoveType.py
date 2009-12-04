@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
+from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
@@ -13,11 +14,18 @@ TELEPORT = 1
 NORMAL_MOVE = 2
 
 
+def new(username, legion, hexlabel, parent):
+    """Create a PickMoveType dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    pickmovetype = PickMoveType(username, legion, hexlabel, def1, parent)
+    return pickmovetype, def1
+
+
 class PickMoveType(gtk.Dialog):
     """Dialog to choose whether to teleport."""
-    def __init__(self, username, legion, hexlabel, callback, parent):
+    def __init__(self, username, legion, hexlabel, def1, parent):
         gtk.Dialog.__init__(self, "PickMoveType - %s" % username, parent)
-        self.callback = callback
+        self.deferred = def1
         self.legion = legion
         player = legion.player
 
@@ -61,11 +69,11 @@ class PickMoveType(gtk.Dialog):
 
     def cb_response(self, widget, response_id):
         if response_id == TELEPORT:
-            self.callback(True)
+            self.deferred.callback(True)
         elif response_id == NORMAL_MOVE:
-            self.callback(False)
+            self.deferred.callback(False)
         else:
-            self.callback(None)
+            self.deferred.callback(None)
         self.destroy()
 
 
@@ -95,7 +103,8 @@ if __name__ == "__main__":
     hexlabel = 101
     masterhex = game.board.hexes[legion.hexlabel]
     mterrain = masterhex.terrain
-    pickmovetype = PickMoveType(username, legion, hexlabel, mycallback, None)
+    pickmovetype, def1 = new(username, legion, hexlabel, None)
     pickmovetype.connect("destroy", guiutils.exit)
+    def1.addCallback(mycallback)
 
     gtk.main()
