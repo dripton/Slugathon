@@ -281,9 +281,9 @@ class GUIBattleMap(gtk.Window):
                 target = creature
                 striker = self.selected_chit.creature
                 if striker.can_take_strike_penalty(target):
-                    PickStrikePenalty.PickStrikePenalty(self.username,
-                      self.game.name, striker, target,
-                      self.picked_strike_penalty, self)
+                    _, def1 = PickStrikePenalty.new(self.username,
+                      self.game.name, striker, target, self)
+                    def1.addCallback(self.picked_strike_penalty)
                 else:
                     num_dice = striker.number_of_dice(target)
                     strike_number = striker.strike_number(target)
@@ -604,8 +604,9 @@ class GUIBattleMap(gtk.Window):
                 mterrain = self.battlemap.mterrain
                 if (len(legion.living_creature_names) < 7 and
                   legion.can_recruit(mterrain, caretaker)):
-                    PickRecruit.PickRecruit(self.username, legion, mterrain,
-                      caretaker, self.picked_reinforcement, self)
+                    _, def1 = PickRecruit.new(self.username, legion, mterrain,
+                      caretaker, self)
+                    def1.addCallback(self.picked_reinforcement)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
                       self.game.name)
@@ -617,8 +618,8 @@ class GUIBattleMap(gtk.Window):
                 if (len(legion.living_creature_names) < 7 and legion.can_summon
                   and self.game.first_attacker_kill in
                   [self.game.battle_turn - 1, self.game.battle_turn]):
-                    SummonAngel.SummonAngel(self.username, legion,
-                      self.picked_summon, self)
+                    _, def1 = SummonAngel.new(self.username, legion, self)
+                    def1.addCallback(self.picked_summon)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
                       self.game.name)
@@ -644,12 +645,12 @@ class GUIBattleMap(gtk.Window):
                 self.game.attacker_legion.creatures[-1].hexlabel = "ATTACKER"
                 self.repaint(["ATTACKER"])
 
-    def picked_reinforcement(self, legion, creature, recruiter_names):
+    def picked_reinforcement(self, (legion, creature, recruiter_names)):
         def1 = self.user.callRemote("recruit_creature", self.game.name,
           legion.markername, creature.name, recruiter_names)
         def1.addErrback(self.failure)
 
-    def picked_summon(self, legion, donor, creature):
+    def picked_summon(self, (legion, donor, creature)):
         def1 = self.user.callRemote("summon_angel", self.game.name,
           legion.markername, donor.markername, creature.name)
         def1.addErrback(self.failure)
@@ -663,7 +664,8 @@ class GUIBattleMap(gtk.Window):
           carry_target.name, carry_target.hexlabel, carries)
         def1.addErrback(self.failure)
 
-    def picked_strike_penalty(self, striker, target, num_dice, strike_number):
+    def picked_strike_penalty(self, (striker, target, num_dice,
+      strike_number)):
         print "picked_strike_penalty", striker, target, num_dice, strike_number
         if striker is None:
             # User cancelled the strike.

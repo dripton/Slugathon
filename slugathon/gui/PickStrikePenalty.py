@@ -3,23 +3,38 @@
 __copyright__ = "Copyright (c) 2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
+from twisted.internet import reactor, defer
 import gtk
 
 from slugathon.gui import icon
 from slugathon.game import Phase
 
 
+def new(username, game_name, striker, target, parent):
+    """Create a PickStrikePenalty dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    pick_strike_penalty = PickStrikePenalty(username, game_name, striker,
+      target, def1, parent)
+    return pick_strike_penalty, def1
+
+
 class PickStrikePenalty(gtk.Dialog):
     """Dialog to pick whether to take a strike penalty to allow carrying
     excess hits."""
-    def __init__(self, username, game_name, striker, target, callback, parent):
+    def __init__(self, username, game_name, striker, target, def1, parent):
         gtk.Dialog.__init__(self, "PickStrikePenalty - %s" % username,
           parent)
         self.username = username
         self.game_name = game_name
         self.striker = striker
         self.target = target
-        self.callback = callback
+        self.deferred = def1
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -65,16 +80,16 @@ class PickStrikePenalty(gtk.Dialog):
     def cb_click(self, widget, event):
         self.destroy()
         num_dice, strike_number = widget.tup
-        self.callback(self.striker, self.target, num_dice, strike_number)
+        self.deferred.callback((self.striker, self.target, num_dice,
+          strike_number))
 
     def cb_cancel(self, widget, response_id):
         self.destroy()
-        self.callback(None, None, None, None)
+        self.deferred.callback((None, None, None, None))
 
 
 if __name__ == "__main__":
     import time
-    from slugathon.util import guiutils
     from slugathon.game import Game
 
     now = time.time()
@@ -128,10 +143,11 @@ if __name__ == "__main__":
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
-    def my_callback(striker, target, num_dice, strike_number):
+    def my_callback((striker, target, num_dice, strike_number)):
         print "called my_callback", striker, target, num_dice, strike_number
-        guiutils.exit()
+        reactor.stop()
 
-    pick_strike_penalty = PickStrikePenalty(username, game_name, titan2,
-      gargoyle1, my_callback, None)
-    gtk.main()
+    pick_strike_penalty, def1 = new(username, game_name, titan2, gargoyle1,
+      None)
+    def1.addCallback(my_callback)
+    reactor.run()

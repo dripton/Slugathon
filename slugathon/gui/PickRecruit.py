@@ -5,20 +5,28 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
+from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
 from slugathon.util import guiutils
 
 
+def new(username, legion, mterrain, caretaker, parent):
+    """Create a PickRecruit dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    pickrecruit = PickRecruit(username, legion, mterrain, caretaker, def1,
+      parent)
+    return pickrecruit, def1
+
+
 class PickRecruit(gtk.Dialog):
     """Dialog to pick a recruit."""
-    def __init__(self, username, legion, mterrain, caretaker, callback,
-      parent):
+    def __init__(self, username, legion, mterrain, caretaker, def1, parent):
         gtk.Dialog.__init__(self, "PickRecruit - %s" % username, parent)
         self.legion = legion
         player = legion.player
-        self.callback = callback
+        self.deferred = def1
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -85,7 +93,8 @@ class PickRecruit(gtk.Dialog):
         """Chose a recruit."""
         eventbox = widget
         chit = eventbox.chit
-        self.callback(self.legion, chit.recruit, chit.recruiter_names)
+        self.deferred.callback((self.legion, chit.recruit,
+          chit.recruiter_names))
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
@@ -100,7 +109,7 @@ if __name__ == "__main__":
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 
-    def callback(legion, creature, recruiter_names):
+    def my_callback((legion, creature, recruiter_names)):
         print legion, "recruited", creature, recruiter_names
         guiutils.exit()
 
@@ -113,8 +122,8 @@ if __name__ == "__main__":
     legion.hexlabel = 1000
     masterhex = game.board.hexes[legion.hexlabel]
     mterrain = masterhex.terrain
-    pickrecruit = PickRecruit(username, legion, mterrain, game.caretaker,
-      callback, None)
+    pickrecruit, def1 = new(username, legion, mterrain, game.caretaker, None)
+    def1.addCallback(my_callback)
     pickrecruit.connect("destroy", guiutils.exit)
 
     gtk.main()

@@ -354,8 +354,9 @@ class GUIMasterBoard(gtk.Window):
                           self)
                         return
                     self._splitting_legion = legion
-                    PickMarker.PickMarker(self.username, self.game.name,
-                      player.markernames, self.picked_marker_presplit, self)
+                    _, def1 = PickMarker.new(self.username, self.game.name,
+                      player.markernames, self)
+                    def1.addCallback(self.picked_marker_presplit)
 
             elif phase == Phase.MOVE:
                 legion = marker.legion
@@ -402,12 +403,13 @@ class GUIMasterBoard(gtk.Window):
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
                     if legion.can_recruit(mterrain, caretaker):
-                        PickRecruit.PickRecruit(self.username, legion,
-                          mterrain, caretaker, self.picked_recruit, self)
+                        _, def1 = PickRecruit.new(self.username, legion,
+                          mterrain, caretaker, self)
+                        def1.addCallback(self.picked_recruit)
                 self.highlight_recruits()
 
 
-    def picked_marker_presplit(self, game_name, username, markername):
+    def picked_marker_presplit(self, (game_name, username, markername)):
         player = self.game.get_player_by_name(username)
         player.pick_marker(markername)
         self.split_legion(player)
@@ -415,10 +417,10 @@ class GUIMasterBoard(gtk.Window):
     def split_legion(self, player):
         legion = self._splitting_legion
         if legion is not None:
-            SplitLegion.SplitLegion(self.username, legion,
-              self.try_to_split_legion, self)
+            _, def1 = SplitLegion.new(self.username, legion, self)
+            def1.addCallback(self.try_to_split_legion)
 
-    def try_to_split_legion(self, old_legion, new_legion1, new_legion2):
+    def try_to_split_legion(self, (old_legion, new_legion1, new_legion2)):
         if old_legion is None:
             # canceled
             self._splitting_legion = None
@@ -428,13 +430,13 @@ class GUIMasterBoard(gtk.Window):
           new_legion1.creature_names, new_legion2.creature_names)
         def1.addErrback(self.failure)
 
-    def picked_recruit(self, legion, creature, recruiter_names):
+    def picked_recruit(self, (legion, creature, recruiter_names)):
         """Callback from PickRecruit"""
         def1 = self.user.callRemote("recruit_creature", self.game.name,
           legion.markername, creature.name, recruiter_names)
         def1.addErrback(self.failure)
 
-    def picked_summon(self, legion, donor, creature):
+    def picked_summon(self, (legion, donor, creature)):
         """Callback from SummonAngel"""
         def1 = self.user.callRemote("summon_angel", self.game.name,
           legion.markername, donor.markername, creature.name)
@@ -1020,17 +1022,18 @@ class GUIMasterBoard(gtk.Window):
                 if player == self.game.active_player:
                     # attacker can summon
                     if (player.name == self.username and legion.can_summon):
-                        SummonAngel.SummonAngel(self.username, legion,
-                          self.picked_summon, self)
+                        _, def1 = SummonAngel.new(self.username, legion, self)
+                        def1.addCallback(self.picked_summon)
                 elif not legion.recruited:
                     # defender can reinforce
                     if player.name == self.username:
                         masterhex = self.game.board.hexes[legion.hexlabel]
                         caretaker = self.game.caretaker
-                        terrain = masterhex.terrain
-                        if legion.can_recruit(terrain, caretaker):
-                            PickRecruit.PickRecruit(self.username, legion,
-                              terrain, caretaker, self.picked_recruit, self)
+                        mterrain = masterhex.terrain
+                        if legion.can_recruit(mterrain, caretaker):
+                            _, def1 = PickRecruit.new(self.username, legion,
+                              mterrain, caretaker, self)
+                            def1.addCallback(self.picked_recruit)
             self.guimap = None
             self.highlight_engagements()
             self.clear_hexlabels.add(action.hexlabel)

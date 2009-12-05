@@ -4,19 +4,27 @@ __copyright__ = "Copyright (c) 2009 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from twisted.internet import defer
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
 
+def new(username, legion, parent):
+    """Create a SummonAngel dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    summonangel = SummonAngel(username, legion, def1, parent)
+    return summonangel, def1
+
+
 class SummonAngel(gtk.Dialog):
     """Dialog to summon an angel."""
-    def __init__(self, username, legion, callback, parent):
+    def __init__(self, username, legion, def1, parent):
         gtk.Dialog.__init__(self, "SummonAngel - %s" % username, parent)
         self.legion = legion
         player = legion.player
-        self.callback = callback
+        self.deferred = def1
         self.donor = None
         self.summonable = None
 
@@ -57,7 +65,7 @@ class SummonAngel(gtk.Dialog):
         chit = eventbox.chit
         creature = chit.creature
         donor = creature.legion
-        self.callback(self.legion, donor, creature)
+        self.deferred.callback((self.legion, donor, creature))
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
@@ -91,11 +99,12 @@ if __name__ == "__main__":
     for legion in [legion1, legion2, legion3, legion4, legion5]:
         player.legions[legion.markername] = legion
 
-    def callback(legion, donor, creature):
+    def my_callback((legion, donor, creature)):
         print "Will summon", creature, "from", donor, "into", legion
         guiutils.exit()
 
-    summonangel = SummonAngel(username, legion1, callback, None)
+    summonangel, def1 = new(username, legion1, None)
+    def1.addCallback(my_callback)
     summonangel.connect("destroy", guiutils.exit)
 
     gtk.main()

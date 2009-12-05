@@ -130,11 +130,12 @@ class Client(pb.Referenceable, Observed):
         if playername == self.username:
             player = game.get_player_by_name(playername)
             markernames = sorted(player.markernames.copy())
-            PickMarker.PickMarker(self.username, game.name, markernames,
-              self.pick_marker, self.guiboards[game])
+            _, def1 = PickMarker.new(self.username, game.name, markernames,
+              self.guiboards[game])
+            def1.addCallback(self.pick_marker)
             self.pickcolor = None
 
-    def pick_marker(self, game_name, username, markername):
+    def pick_marker(self, (game_name, username, markername)):
         """Callback from PickMarker."""
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)

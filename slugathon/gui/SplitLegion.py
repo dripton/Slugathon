@@ -6,6 +6,8 @@ __license__ = "GNU GPL v2"
 
 # TODO Need feedback when a split fails for no markers.
 
+
+from twisted.internet import defer
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
@@ -13,13 +15,20 @@ from slugathon.game import Legion
 from slugathon.util import guiutils
 
 
+def new(username, legion, parent):
+    """Create a SplitLegion dialog and return it and a Deferred."""
+    def1 = defer.Deferred()
+    splitlegion = SplitLegion(username, legion, def1, parent)
+    return splitlegion, def1
+
+
 class SplitLegion(gtk.Dialog):
     """Dialog to split a legion."""
-    def __init__(self, username, legion, callback, parent):
+    def __init__(self, username, legion, def1, parent):
         gtk.Dialog.__init__(self, "SplitLegion - %s" % username, parent)
         self.old_legion = legion
         player = legion.player
-        self.callback = callback
+        self.deferred = def1
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -92,9 +101,10 @@ class SplitLegion(gtk.Dialog):
     def cb_response(self, widget, response_id):
         self.destroy()
         if response_id == gtk.RESPONSE_OK:
-            self.callback(self.old_legion, self.new_legion1, self.new_legion2)
+            self.deferred.callback((self.old_legion, self.new_legion1,
+              self.new_legion2))
         else:
-            self.callback(None, None, None)
+            self.deferred.callback((None, None, None))
 
 
 if __name__ == "__main__":
@@ -111,7 +121,8 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markername = "Rd02"
-    splitlegion = SplitLegion(username, legion, guiutils.exit, None)
+    splitlegion, def1 = new(username, legion, None)
+    def1.addCallback(guiutils.exit)
     splitlegion.connect("destroy", guiutils.exit)
 
     gtk.main()
