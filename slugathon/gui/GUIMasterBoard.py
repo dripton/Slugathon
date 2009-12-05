@@ -111,12 +111,6 @@ class GUIMasterBoard(gtk.Window):
         # This fixes markers that overlap the edge of the map.
         self.clear_hexlabels = set()
 
-        self.moving_legion = None
-        # List of move tuples
-        self.moves = []
-        self.teleport = False
-        self.entry_side = None
-
         if self.username:
             tup = prefs.load_window_position(self.username,
               self.__class__.__name__)
@@ -252,28 +246,23 @@ class GUIMasterBoard(gtk.Window):
 
     def _pick_move_type(self, legion, moves):
         """Figure out whether to teleport, then call _pick_entry_side."""
-        self.moving_legion = legion
-        self.moves = moves
         if self._all_teleports(moves):
-            self._pick_entry_side(True)
+            self._pick_entry_side(True, legion, moves)
         elif self._no_teleports(moves):
-            self._pick_entry_side(False)
+            self._pick_entry_side(False, legion, moves)
         else:
             hexlabel = moves[0][0]
             _, def1 = PickMoveType.new(self.username, legion, hexlabel, self)
-            def1.addCallback(self._pick_entry_side)
+            def1.addCallback(self._pick_entry_side, legion, moves)
 
-    def _pick_entry_side(self, teleport):
+    def _pick_entry_side(self, teleport, legion, moves):
         """Pick an entry side, then call _pick_teleporting_lord.
 
         teleport can be True, False, or None (cancel the move).
         """
-        self.teleport = teleport
         if teleport is None:
             self.highlight_unmoved_legions()
             return
-        moves = self.moves
-        legion = self.moving_legion
         if teleport:
             entry_sides = set([1, 3, 5])
         else:
@@ -281,7 +270,8 @@ class GUIMasterBoard(gtk.Window):
             entry_sides.discard("TELEPORT")
         hexlabel = moves[0][0]
         if len(entry_sides) == 1 or not legion.player.enemy_legions(hexlabel):
-            self._pick_teleporting_lord(entry_sides.pop())
+            self._pick_teleporting_lord(entry_sides.pop(), legion, moves,
+              teleport)
         else:
             battlehex = self.game.board.hexes[hexlabel]
             terrain = battlehex.terrain
@@ -290,17 +280,15 @@ class GUIMasterBoard(gtk.Window):
             else:
                 entry_sides = set((move[1] for move in moves))
             _, def1 = PickEntrySide.new(terrain, entry_sides)
-            def1.addCallback(self._pick_teleporting_lord)
+            def1.addCallback(self._pick_teleporting_lord, legion, moves,
+              teleport)
 
-    def _pick_teleporting_lord(self, entry_side):
+    def _pick_teleporting_lord(self, entry_side, legion, moves, teleport):
         """Pick a teleporting lord, then call _do_move_legion."""
-        self.entry_side = entry_side
         if entry_side is None:
             self.highlight_unmoved_legions()
             return
-        teleport = self.teleport
-        legion = self.moving_legion
-        hexlabel = self.moves[0][0]
+        hexlabel = moves[0][0]
         if teleport:
             if legion.player.enemy_legions(hexlabel):
                 assert legion.has_titan
@@ -312,18 +300,18 @@ class GUIMasterBoard(gtk.Window):
                 else:
                     _, def1 = PickTeleportingLord.new(self.username, legion,
                       self)
-                    def1.addCallback(self._do_move_legion)
+                    def1.addCallback(self._do_move_legion, legion, moves,
+                      teleport, entry_side)
                     return
         else:
             teleporting_lord = None
-        self._do_move_legion(teleporting_lord)
+        self._do_move_legion(teleporting_lord, legion, moves, teleport,
+          entry_side)
 
-    def _do_move_legion(self, teleporting_lord):
+    def _do_move_legion(self, teleporting_lord, legion, moves, teleport,
+      entry_side):
         """Call the server to request a legion move."""
-        legion = self.moving_legion
-        hexlabel = self.moves[0][0]
-        entry_side = self.entry_side
-        teleport = self.teleport
+        hexlabel = moves[0][0]
         def1 = self.user.callRemote("move_legion", self.game.name,
           legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
         def1.addErrback(self.failure)
