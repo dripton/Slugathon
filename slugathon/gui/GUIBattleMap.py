@@ -500,6 +500,12 @@ class GUIBattleMap(gtk.Window):
         self.repaint_hexlabels.clear()
         self.clear_hexlabels.clear()
 
+    def repaint_all(self):
+        for hexlabel in self.guihexes:
+            self.repaint_hexlabels.add(hexlabel)
+            self.clear_hexlabels.add(hexlabel)
+        self.repaint()
+
     def repaint(self, hexlabels=None):
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
@@ -595,6 +601,7 @@ class GUIBattleMap(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoneStrikingBack):
+            print "GUIBattleMap got DoneStrikingBack", action
             self._remove_dead_chits()
             if (self.game.battle_turn == 4 and
               self.game.battle_active_player.name == self.username and
@@ -669,6 +676,7 @@ class GUIBattleMap(gtk.Window):
         print "picked_strike_penalty", striker, target, num_dice, strike_number
         if striker is None:
             # User cancelled the strike.
+            self.repaint_all()
             self.highlight_strikers()
         else:
             def1 = self.user.callRemote("strike", self.game.name, striker.name,
