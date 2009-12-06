@@ -10,7 +10,7 @@ from zope.interface import implements
 from slugathon.gui import icon
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase
-from slugathon.util import prefs
+from slugathon.util import prefs, colors
 
 
 def add_label(table, col, row, text=""):
@@ -44,14 +44,6 @@ class StatusScreen(gtk.Window):
         self.user = user
         self.username = username
 
-        self.contrasting = {
-            "Black": "White",
-            "Blue": "White",
-            "Brown": "White",
-            "Green": "Black",
-            "Gold": "Black",
-            "Red": "White",
-        }
         vbox1 = gtk.VBox()
         self.add(vbox1)
         turn_table = gtk.Table(rows=4, columns=3)
@@ -189,7 +181,8 @@ class StatusScreen(gtk.Window):
             name_label = getattr(self, "name%d_label" % num)
             set_bg(name_label, player_color)
             name_label.set_markup("<span foreground='%s'>%s</span>" % (
-              self.contrasting.get(str(player_color), "Black"), player.name))
+              colors.contrasting_colors.get(str(player_color), "Black"),
+              player.name))
             tower_label = getattr(self, "tower%d_label" % num)
             tower_label.set_text(str(player.starting_tower))
             set_bg(tower_label, bg)
@@ -251,7 +244,7 @@ class StatusScreen(gtk.Window):
             name_label = getattr(self, "name%d_label" % player_num)
             set_bg(name_label, color)
             name_label.set_markup("<span foreground='%s'>%s</span>" % (
-              self.contrasting.get(str(color), "Black"), player.name))
+              colors.contrasting_colors.get(str(color), "Black"), player.name))
 
         elif isinstance(action, Action.AssignedAllColors):
             self._init_turn()

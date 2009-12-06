@@ -200,3 +200,13 @@ battle_terrain_colors = {
     "Volcano": "dark_red",
     "Drift": "blue",
 }
+
+contrasting_colors = {
+    "Black": "White",
+    "Blue": "White",
+    "Brown": "White",
+    "Green": "Black",
+    "Gold": "Black",
+    "Red": "White",
+}
+

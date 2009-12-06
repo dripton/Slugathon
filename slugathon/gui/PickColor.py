@@ -11,6 +11,7 @@ import gtk
 from slugathon.data.playercolordata import colors
 from slugathon.gui import icon
 from slugathon.util import guiutils
+from slugathon.util.colors import contrasting_colors
 
 
 class PickColor(gtk.Dialog):
@@ -35,13 +36,13 @@ class PickColor(gtk.Dialog):
             button = gtk.Button(button_name)
             hbox.pack_start(button)
             button.connect("button-press-event", self.cb_click)
-            color = button_name.lower()
+            color = button_name
             gtk_color = button.get_colormap().alloc_color(color)
             button.modify_bg(gtk.STATE_NORMAL, gtk_color)
-            if color in ["black", "blue", "brown", "red"]:
-                white = button.get_colormap().alloc_color("white")
-                label = button.get_child()
-                label.modify_fg(gtk.STATE_NORMAL, white)
+            fg_name = contrasting_colors[color]
+            fg_color = button.get_colormap().alloc_color(fg_name)
+            label = button.get_child()
+            label.modify_fg(gtk.STATE_NORMAL, fg_color)
 
         self.show_all()
 
