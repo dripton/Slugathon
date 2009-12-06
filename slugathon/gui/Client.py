@@ -37,7 +37,6 @@ class Client(pb.Referenceable, Observed):
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
         self.status_screens = {}   # Maps game to status_screen
-        self.pickcolor = None      # To prevent gc of dialog
 
     def remote_set_name(self, name):
         self.playername = name
@@ -123,8 +122,17 @@ class Client(pb.Referenceable, Observed):
 
     def _maybe_pick_color(self, game):
         if game.next_playername_to_pick_color() == self.username:
-            self.pickcolor = PickColor.PickColor(self.user, self.username,
-              game.name, game.colors_left(), self.guiboards[game])
+            _, def1 = PickColor.new(self.username, game, game.colors_left(),
+              self.guiboards[game])
+            def1.addCallback(self._cb_pickcolor)
+
+    def _cb_pickcolor(self, (game, color)):
+        """Callback for PickColor"""
+        if color is None:
+            self._maybe_pick_color(game)
+        else:
+            def1 = self.user.callRemote("pick_color", game.name, color)
+            def1.addErrback(self.failure)
 
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
