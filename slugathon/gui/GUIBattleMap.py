@@ -677,8 +677,9 @@ class GUIBattleMap(gtk.Window):
         print "picked_strike_penalty", striker, target, num_dice, strike_number
         if striker is None:
             # User cancelled the strike.
-            self.repaint_all()
+            self.unselect_all()
             self.highlight_strikers()
+            self.repaint_all()
         else:
             def1 = self.user.callRemote("strike", self.game.name, striker.name,
               striker.hexlabel, target.name, target.hexlabel, num_dice,
