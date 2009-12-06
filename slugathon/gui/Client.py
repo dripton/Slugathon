@@ -147,11 +147,15 @@ class Client(pb.Referenceable, Observed):
         """Callback from PickMarker."""
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
-        player.pick_marker(markername)
-        if not player.legions:
-            def1 = self.user.callRemote("pick_first_marker", game_name,
-              markername)
-            def1.addErrback(self.failure)
+        if markername is None:
+            if not player.legions:
+                self._maybe_pick_first_marker(game, username)
+        else:
+            player.pick_marker(markername)
+            if not player.legions:
+                def1 = self.user.callRemote("pick_first_marker", game_name,
+                  markername)
+                def1.addErrback(self.failure)
 
     def _init_status_screen(self, game):
         self.status_screens[game] = StatusScreen.StatusScreen(game, self.user,
