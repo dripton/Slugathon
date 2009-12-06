@@ -625,6 +625,7 @@ class GUIBattleMap(gtk.Window):
                 if (len(legion.living_creature_names) < 7 and legion.can_summon
                   and self.game.first_attacker_kill in
                   [self.game.battle_turn - 1, self.game.battle_turn]):
+                    self.game.first_attacker_kill = -1
                     _, def1 = SummonAngel.new(self.username, legion, self)
                     def1.addCallback(self.picked_summon)
                 else:
