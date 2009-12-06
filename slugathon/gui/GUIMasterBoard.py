@@ -95,7 +95,6 @@ class GUIMasterBoard(gtk.Window):
         self.guihexes = {}
         # list of tuples (Chit, hexlabel)
         self.recruitchits = []
-        self._splitting_legion = None
         for hex1 in self.board.hexes.itervalues():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
@@ -335,16 +334,15 @@ class GUIMasterBoard(gtk.Window):
                 elif not legion.can_be_split(self.game.turn):
                     return
                 elif player.selected_markername:
-                    self.split_legion(player)
+                    self.split_legion(legion)
                 else:
                     if not player.markernames:
                         InfoDialog.InfoDialog("Info", "No markers available",
                           self)
                         return
-                    self._splitting_legion = legion
                     _, def1 = PickMarker.new(self.username, self.game.name,
                       player.markernames, self)
-                    def1.addCallback(self.picked_marker_presplit)
+                    def1.addCallback(self.picked_marker_presplit, legion)
 
             elif phase == Phase.MOVE:
                 legion = marker.legion
@@ -397,13 +395,13 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_recruits()
 
 
-    def picked_marker_presplit(self, (game_name, username, markername)):
+    def picked_marker_presplit(self, (game_name, username, markername),
+      legion):
         player = self.game.get_player_by_name(username)
         player.pick_marker(markername)
-        self.split_legion(player)
+        self.split_legion(legion)
 
-    def split_legion(self, player):
-        legion = self._splitting_legion
+    def split_legion(self, legion):
         if legion is not None:
             _, def1 = SplitLegion.new(self.username, legion, self)
             def1.addCallback(self.try_to_split_legion)
@@ -411,7 +409,6 @@ class GUIMasterBoard(gtk.Window):
     def try_to_split_legion(self, (old_legion, new_legion1, new_legion2)):
         if old_legion is None:
             # canceled
-            self._splitting_legion = None
             return
         def1 = self.user.callRemote("split_legion", self.game.name,
           new_legion1.markername, new_legion2.markername,
@@ -823,13 +820,11 @@ class GUIMasterBoard(gtk.Window):
             self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.SplitLegion):
-            self._splitting_legion = None
             legion = self.game.find_legion(action.parent_markername)
             self.highlight_tall_legions()
             self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.UndoSplit):
-            self._splitting_legion = None
             legion = self.game.find_legion(action.parent_markername)
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
