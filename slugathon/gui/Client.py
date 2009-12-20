@@ -158,7 +158,7 @@ class Client(pb.Referenceable, Observed):
                 def1.addErrback(self.failure)
 
     def _init_status_screen(self, game):
-        self.status_screens[game] = StatusScreen.StatusScreen(game, self.user,
+        self.status_screens[game] = StatusScreen.StatusScreen(game,
           self.username)
         game.add_observer(self.status_screens[game])
 

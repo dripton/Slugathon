@@ -38,10 +38,9 @@ class StatusScreen(gtk.Window):
     implements(IObserver)
 
 
-    def __init__(self, game, user, username):
+    def __init__(self, game, username):
         gtk.Window.__init__(self)
         self.game = game
-        self.user = user
         self.username = username
 
         vbox1 = gtk.VBox()
@@ -326,7 +325,6 @@ if __name__ == "__main__":
     from slugathon.data import creaturedata
 
     now = time.time()
-    user = None
     username = "p1"
     creatures = Creature.n2c(creaturedata.starting_creature_names)
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
@@ -373,6 +371,6 @@ if __name__ == "__main__":
     player6.create_starting_legion()
     game.players.append(player6)
 
-    status_screen = StatusScreen(game, user, username)
+    status_screen = StatusScreen(game, username)
     status_screen.connect("destroy", guiutils.exit)
     gtk.main()
