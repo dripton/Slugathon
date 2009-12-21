@@ -387,10 +387,9 @@ class DoneReinforcing(Action):
 pb.setUnjellyableForClass(DoneReinforcing, DoneReinforcing)
 
 class DriftDamage(Action):
-    def __init__(self, game_name, creature_name, hexlabel,
-      target_creature_name, target_hexlabel, hits):
+    def __init__(self, game_name, target_name, target_hexlabel, hits):
         self.game_name = game_name
-        self.target_creature_name = target_creature_name
+        self.target_name = target_name
         self.target_hexlabel = target_hexlabel
         self.hits = hits
 pb.setUnjellyableForClass(DriftDamage, DriftDamage)
