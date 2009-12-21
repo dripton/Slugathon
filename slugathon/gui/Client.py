@@ -14,7 +14,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game
 from slugathon.gui import (Anteroom, PickColor, PickMarker, GUIMasterBoard,
-  StatusScreen)
+  StatusScreen, GUICaretaker)
 
 
 class Client(pb.Referenceable, Observed):
@@ -37,6 +37,7 @@ class Client(pb.Referenceable, Observed):
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
         self.status_screens = {}   # Maps game to status_screen
+        self.guicaretakers = {}   # Maps game to GUICaretaker
 
     def remote_set_name(self, name):
         self.playername = name
@@ -162,6 +163,11 @@ class Client(pb.Referenceable, Observed):
           self.username)
         game.add_observer(self.status_screens[game])
 
+    def _init_caretaker(self, game):
+        self.guicaretakers[game] = GUICaretaker.GUICaretaker(game,
+          self.username)
+        game.add_observer(self.guicaretakers[game])
+
     def _init_guiboard(self, game):
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(game.board, game,
           self.user, self.username)
@@ -186,6 +192,7 @@ class Client(pb.Referenceable, Observed):
             self._init_guiboard(game)
             self._maybe_pick_color(game)
             self._init_status_screen(game)
+            self._init_caretaker(game)
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
