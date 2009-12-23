@@ -11,6 +11,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.gui import Chit
 from slugathon.game import Creature, Action
 from slugathon.data import creaturedata
+from slugathon.util import prefs
 
 
 class GUICaretaker(gtk.Window):
@@ -19,6 +20,7 @@ class GUICaretaker(gtk.Window):
     implements(IObserver)
 
     def __init__(self, game, username):
+        self.username = username
         self.caretaker = game.caretaker
 
         gtk.Window.__init__(self)
@@ -52,8 +54,33 @@ class GUICaretaker(gtk.Window):
             self.update_counts_label(creature_name, left_count, game_count,
               dead_count)
 
+        if self.username:
+            tup = prefs.load_window_position(self.username,
+              self.__class__.__name__)
+            if tup:
+                x, y = tup
+                self.move(x, y)
+            tup = prefs.load_window_size(self.username,
+              self.__class__.__name__)
+            if tup:
+                width, height = tup
+                self.resize(width, height)
+
+        self.connect("configure-event", self.cb_configure_event)
         self.set_title("Caretaker - %s" % username)
         self.show_all()
+
+
+    def cb_configure_event(self, event, unused):
+        if self.username:
+            x, y = self.get_position()
+            prefs.save_window_position(self.username, self.__class__.__name__,
+              x, y)
+            width, height = self.get_size()
+            prefs.save_window_size(self.username, self.__class__.__name__,
+              width, height)
+        return False
+
 
     def update_max_count_label(self, creature_name, max_count):
         label = self.max_count_labels[creature_name]
