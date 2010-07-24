@@ -212,7 +212,13 @@ class GUIBattleMap(gtk.Window):
                 return True
         for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
-                self.clicked_on_hex(area, event, guihex)
+                hexlabel = guihex.battlehex.label
+                chits = self.chits_in_hex(hexlabel)
+                if len(chits) == 1:
+                    chit = chits[0]
+                    self.clicked_on_chit(area, event, chit)
+                else:
+                    self.clicked_on_hex(area, event, guihex)
                 return True
         self.clicked_on_background(area, event)
         return True
@@ -247,7 +253,6 @@ class GUIBattleMap(gtk.Window):
                 self.highlight_mobile_chits()
 
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
-            # TODO Allow striking by clicking hex not just chit?
             self.highlight_strikers()
 
 
@@ -378,6 +383,7 @@ class GUIBattleMap(gtk.Window):
         ctx.paint()
 
     def chits_in_hex(self, hexlabel):
+        """Return a list of all Chits found in the hex with hexlabel."""
         return [chit for chit in self.chits
           if chit.creature.hexlabel == hexlabel]
 
