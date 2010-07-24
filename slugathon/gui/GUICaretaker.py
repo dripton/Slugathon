@@ -90,7 +90,7 @@ class GUICaretaker(gtk.Window):
       dead_count):
         label = self.counts_labels[creature_name]
         label.set_markup("<span foreground='black'>%d</span>" % left_count +
-          "/<span foreground='green'>%d</span>" % game_count +
+          "/<span foreground='darkgreen'>%d</span>" % game_count +
           "/<span foreground='red'>%d</span>" % dead_count)
 
     def update_creature(self, creature_name):
