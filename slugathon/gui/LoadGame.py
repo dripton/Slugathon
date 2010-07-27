@@ -8,6 +8,7 @@ import gtk
 
 from slugathon.gui import icon
 from slugathon.util import prefs
+from slugathon.util.NullUser import NullUser
 
 
 class LoadGame(gtk.FileChooserDialog):
@@ -46,12 +47,7 @@ class LoadGame(gtk.FileChooserDialog):
 
 
 if __name__ == "__main__":
-    from twisted.internet import defer
     from slugathon.util import guiutils
-
-    class NullUser(object):
-        def callRemote(*args):
-            return defer.Deferred()
 
     user = NullUser()
     username = "test user"

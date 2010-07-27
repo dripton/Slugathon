@@ -12,6 +12,7 @@ from slugathon.gui import NewGame, LoadGame, WaitingForPlayers, icon
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.util import guiutils, prefs
+from slugathon.util.NullUser import NullUser
 
 
 class Anteroom(gtk.Window):
@@ -305,12 +306,7 @@ class Anteroom(gtk.Window):
 
 if __name__ == "__main__":
     import time
-    from twisted.internet import defer
     from slugathon.game import Game
-
-    class NullUser(object):
-        def callRemote(*args):
-            return defer.Deferred()
 
     now = time.time()
     user = NullUser()

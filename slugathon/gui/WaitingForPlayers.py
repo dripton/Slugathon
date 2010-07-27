@@ -13,6 +13,7 @@ from zope.interface import implements
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.gui import icon
+from slugathon.util.NullUser import NullUser
 
 
 def format_time(secs):
@@ -192,12 +193,7 @@ class WaitingForPlayers(gtk.Window):
                 self.shutdown()
 
 if __name__ == "__main__":
-    from twisted.internet import defer
     from slugathon.game import Game
-
-    class NullUser(object):
-        def callRemote(*args):
-            return defer.Deferred()
 
     now = time.time()
     user = NullUser()

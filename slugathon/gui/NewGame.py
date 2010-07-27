@@ -8,6 +8,7 @@ import gtk
 
 from slugathon.gui import icon
 from slugathon.util import guiutils
+from slugathon.util.NullUser import NullUser
 
 
 class NewGame(gtk.Dialog):
@@ -81,12 +82,6 @@ class NewGame(gtk.Dialog):
 
 
 if __name__ == "__main__":
-    from twisted.internet import defer
-
-    class NullUser(object):
-        def callRemote(*args):
-            return defer.Deferred()
-
     user = NullUser()
     username = "test user"
     newgame = NewGame(user, username, None)
