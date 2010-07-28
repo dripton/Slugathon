@@ -1,10 +1,11 @@
 """Outward-facing facade for AI."""
 
-__copyright__ = "Copyright (c) 2003-2009 David Ripton"
+__copyright__ = "Copyright (c) 2003-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 import random
+from optparse import OptionParser
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -53,18 +54,22 @@ class Client(pb.Referenceable, Observed):
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
-        # No errback here; let Connect's errback handle failed login.
-        return def1
+        def1.addErrback(self.connection_failed)
 
     def connected(self, user):
+        print "connected"
         if user:
             self.user = user
             def1 = user.callRemote("get_usernames")
             def1.addCallback(self.got_usernames)
             def1.addErrback(self.failure)
 
+    def connection_failed(self, arg):
+        print "connection failed"
+
     def got_usernames(self, usernames):
         """Only called when the client first connects to the server."""
+        print "got usernames", usernames
         self.usernames.clear()
         for username in usernames:
             self.usernames.add(username)
@@ -74,6 +79,7 @@ class Client(pb.Referenceable, Observed):
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""
+        print "got games", game_info_tuples
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
@@ -180,3 +186,22 @@ class Client(pb.Referenceable, Observed):
                 print "Game %s over, draw" % action.game_name
 
         self.notify(action)
+
+
+def main():
+    op = OptionParser()
+    op.add_option("-n", "--playername", action="store", type="str")
+    op.add_option("-a", "--password", action="store", type="str")
+    op.add_option("-s", "--server", action="store", type="str",
+      default="localhost")
+    op.add_option("-p", "--port", action="store", type="int",
+      default=config.DEFAULT_PORT)
+    opts, args = op.parse_args()
+    if args:
+        op.error("got illegal argument")
+    client = Client(opts.playername, opts.password, opts.server, opts.port)
+    client.connect()
+    reactor.run()
+
+if __name__ == "__main__":
+    main()
