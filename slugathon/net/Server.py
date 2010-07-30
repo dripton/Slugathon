@@ -17,6 +17,7 @@ from slugathon.game import Game, Action
 from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
+from slugathon.net.UniqueNoPassword import UniqueNoPassword
 from slugathon.util import prefs
 
 
@@ -323,13 +324,18 @@ def main():
     op = OptionParser()
     op.add_option("-p", "--port", action="store", type="int",
       default=config.DEFAULT_PORT, help="listening TCP port")
-    op.add_option("--passwd", "--a", action="store", type="str",
+    op.add_option("--passwd", "-a", action="store", type="str",
       default=prefs.passwd_path(), help="path to passwd file")
+    op.add_option("--no-passwd", "-n", action="store_true",
+      help="do not check passwords")
     opts, args = op.parse_args()
     port = opts.port
     server = Server()
     realm = Realm.Realm(server)
-    checker = UniqueFilePasswordDB(opts.passwd, server=server)
+    if opts.no_passwd:
+        checker = UniqueNoPassword(None, server=server)
+    else:
+        checker = UniqueFilePasswordDB(opts.passwd, server=server)
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
