@@ -148,7 +148,7 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
             player = game.get_player_by_name(playername)
-            markername = random.choice(player.markernames)
+            markername = random.choice(list(player.markernames))
             self.pick_marker((game.name, self.username, markername))
 
     def pick_marker(self, (game_name, username, markername)):
