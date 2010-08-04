@@ -85,6 +85,11 @@ class Client(pb.Referenceable, Observed):
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
+        # For now, AI joins all games.
+        for game in self.games:
+            print "joining game", game.name
+            def1 = self.user.callRemote("join_game", game.name)
+            def1.addCallback(self.failure)
 
     def name_to_game(self, game_name):
         for game in self.games:
@@ -102,6 +107,9 @@ class Client(pb.Referenceable, Observed):
         for playername in playernames[1:]:
             game.add_player(playername)
         self.games.append(game)
+        # For now, AI joins all games.
+        def1 = self.user.callRemote("join_game", game.name)
+        def1.addCallback(self.failure)
 
     def remove_game(self, game_name):
         game = self.name_to_game(game_name)
