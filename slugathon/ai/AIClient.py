@@ -135,7 +135,7 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_color(self, game):
         if game.next_playername_to_pick_color() == self.username:
             color = random.choice(game.colors_left())
-            self._cb_pickcolor(game, color)
+            self._cb_pickcolor((game, color))
 
     def _cb_pickcolor(self, (game, color)):
         """Callback for PickColor"""
