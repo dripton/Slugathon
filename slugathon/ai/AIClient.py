@@ -1,7 +1,9 @@
-"""Outward-facing facade for AI."""
+#!/usr/bin/env python
 
 __copyright__ = "Copyright (c) 2003-2010 David Ripton"
 __license__ = "GNU GPL v2"
+
+"""Outward-facing facade for AI."""
 
 
 import random
