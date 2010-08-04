@@ -1,3 +1,7 @@
+__copyright__ = "Copyright (c) 2009 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 import shutil
 import getpass
 import os
@@ -5,8 +9,10 @@ import os
 from slugathon.util import prefs, Dice
 from slugathon.net import config
 
+
 playername = "unittest"
 window_name = "GUIMasterBoard"
+
 
 def test_save_load_window_position():
     x1 = Dice.roll()[0]

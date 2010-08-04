@@ -6,6 +6,7 @@ import time
 
 from slugathon.game import Game
 
+
 class TestMovement(object):
     def setup_method(self, method):
         now = time.time()

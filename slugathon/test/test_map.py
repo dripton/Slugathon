@@ -6,6 +6,7 @@ from sys import maxint
 from slugathon.game import BattleMap
 from slugathon.util import guiutils
 
+
 map1 = BattleMap.BattleMap("Mountains", 1)
 hex1 = map1.hexes["A2"]
 hex2 = map1.hexes["A1"]

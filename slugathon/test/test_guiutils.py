@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 from slugathon.util import guiutils
 
+
 def test_rectangles_intersect():
     ri = guiutils.rectangles_intersect
     rect1 = (0, 0, 0, 0)

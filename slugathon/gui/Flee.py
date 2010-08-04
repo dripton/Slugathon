@@ -14,8 +14,10 @@ import gtk
 
 from slugathon.gui import Chit, Marker, icon
 
+
 DO_NOT_FLEE = 0
 FLEE = 1
+
 
 def new(username, attacker_legion, defender_legion, parent):
     """Create a Flee dialog and return it and a Deferred."""

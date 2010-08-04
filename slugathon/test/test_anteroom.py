@@ -8,7 +8,9 @@ from twisted.internet import utils
 
 from slugathon.gui import Anteroom, Client
 
+
 client = None
+
 
 def setup_module(module):
     utils.getProcessValue("python", ["slugathon-server"])

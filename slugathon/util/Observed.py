@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 from zope.interface import Interface, implements
 
+
 class IObserved(Interface):
     def add_observer(observer, name=None):
         """Add an observer to this object."""

@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 from slugathon.game import Caretaker
 
+
 def test_init():
     caretaker = Caretaker.Caretaker()
     assert caretaker.num_left("Centaur") == 25

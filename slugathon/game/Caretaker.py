@@ -1,11 +1,13 @@
-"""Tracks creatures remaining, onboard, and dead."""
-
 __copyright__ = "Copyright (c) 2005 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+"""Tracks creatures remaining, onboard, and dead."""
+
+
 from slugathon.data import creaturedata
 from slugathon.game import Creature
+
 
 class Caretaker(object):
     """Tracks creatures remaining, onboard, and dead."""

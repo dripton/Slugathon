@@ -6,6 +6,7 @@ import time
 
 from slugathon.game import Player, Game
 
+
 def test_can_exit_split_phase():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)

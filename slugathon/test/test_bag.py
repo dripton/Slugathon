@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 from slugathon.util.bag import bag
 
+
 def test_add():
     b = bag()
     b.add(1)

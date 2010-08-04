@@ -6,7 +6,9 @@ import math
 
 from slugathon.util import Dice
 
+
 EPSILON = 0.000001
+
 
 def find_median(rolls):
     """Find the median of a sequence of numbers."""

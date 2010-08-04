@@ -11,6 +11,7 @@ import pangocairo
 
 from slugathon.util import guiutils, colors
 
+
 SQRT3 = math.sqrt(3.0)
 RAD_TO_DEG = 180. / math.pi
 

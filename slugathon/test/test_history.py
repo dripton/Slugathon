@@ -8,7 +8,9 @@ import cStringIO as StringIO
 
 from slugathon.game import History, Action
 
+
 tmp_path = None
+
 
 def test_history_1():
     game_name = "game"

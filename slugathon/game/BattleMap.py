@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+
 from sys import maxint
 
 from slugathon.data import battlemapdata

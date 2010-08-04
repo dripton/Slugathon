@@ -8,6 +8,7 @@ from zope.interface import implements
 
 from slugathon.net import User
 
+
 class Realm(object):
     implements(portal.IRealm)
 

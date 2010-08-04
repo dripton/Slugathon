@@ -8,6 +8,7 @@ import gtk
 
 from slugathon.gui import Chit, Marker, icon
 
+
 class Inspector(gtk.Window):
     """Window to show a legion's contents."""
     def __init__(self, username):

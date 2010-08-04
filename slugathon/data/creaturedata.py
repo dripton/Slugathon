@@ -1,15 +1,14 @@
-"""
-Raw data about creature types.
+__copyright__ = "Copyright (c) 2003-2009 David Ripton"
+__license__ = "GNU GPL v2"
+
+
+"""Raw data about creature types.
 
 name: (plural, power, skill, rangestrikes, flies, character_type,
   summonable, acquirable_every, count, color)
 
 rangestrikes 0:no, 1:normal, 2:magic missile
 """
-
-__copyright__ = "Copyright (c) 2003-2009 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 data = {
 

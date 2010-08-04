@@ -5,7 +5,6 @@ __license__ = "GNU GPL v2"
 
 # TODO When we click on a marker, move it to the top of the z-order
 
-
 import math
 from sys import maxint
 
@@ -15,7 +14,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor
-
 import gtk
 from zope.interface import implements
 
@@ -23,7 +21,6 @@ from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
   SplitLegion, About, icon, Die, PickRecruit, Flee, Inspector, Chit,
   Negotiate, Proposal, AcquireAngel, GUIBattleMap, SummonAngel, PickEntrySide,
   PickMoveType, PickTeleportingLord, InfoDialog)
-
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature

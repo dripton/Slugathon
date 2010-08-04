@@ -13,7 +13,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-
 import gtk
 
 from slugathon.game import BattleMap

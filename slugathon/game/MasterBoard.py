@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 from slugathon.data import boarddata
 from slugathon.game import MasterHex
 
+
 class MasterBoard(object):
     """Model of the Titan MasterBoard.  No GUI logic allowed."""
     def __init__(self):

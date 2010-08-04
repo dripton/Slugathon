@@ -9,6 +9,7 @@ from zope.interface import implements
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 
+
 class User(pb.Avatar):
     """Perspective for a player or spectator."""
 

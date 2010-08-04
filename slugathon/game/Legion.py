@@ -9,6 +9,7 @@ from slugathon.data import recruitdata
 from slugathon.game import Creature, Action
 from slugathon.util.Observed import Observed
 
+
 class Legion(Observed):
     def __init__(self, player, markername, creatures, hexlabel):
         Observed.__init__(self)

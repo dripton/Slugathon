@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 from slugathon.game import Action
 
+
 def test_fromstring():
     obj = Action.fromstring("MoveLegion {'markername': 'Rd01', \
 'entry_side': 1, 'teleport': False, 'playername': 'player', \

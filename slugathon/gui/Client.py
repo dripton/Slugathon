@@ -1,7 +1,7 @@
-"""Outward-facing facade for client side."""
-
 __copyright__ = "Copyright (c) 2003-2009 David Ripton"
 __license__ = "GNU GPL v2"
+
+"""Outward-facing facade for client side."""
 
 
 from twisted.spread import pb

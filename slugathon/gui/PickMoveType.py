@@ -10,6 +10,7 @@ from twisted.internet import defer
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
+
 TELEPORT = 1
 NORMAL_MOVE = 2
 

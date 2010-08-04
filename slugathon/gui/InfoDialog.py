@@ -3,9 +3,11 @@
 __copyright__ = "Copyright (c) 2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+
 import gtk
 
 from slugathon.util import guiutils
+
 
 class InfoDialog(gtk.Dialog):
     def __init__(self, title, message, parent):

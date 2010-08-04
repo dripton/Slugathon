@@ -13,7 +13,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor
-
 import gtk
 from zope.interface import implements
 

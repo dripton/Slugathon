@@ -6,7 +6,6 @@ __license__ = "GNU GPL v2"
 
 # TODO Need feedback when a split fails for no markers.
 
-
 from twisted.internet import defer
 import gtk
 

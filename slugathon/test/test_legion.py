@@ -7,6 +7,7 @@ import time
 from slugathon.game import Legion, Player, Creature, Game, Caretaker
 from slugathon.data import creaturedata
 
+
 def test_num_lords():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)

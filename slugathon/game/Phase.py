@@ -1,8 +1,8 @@
-"""Phase constants"""
-
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
 
+
+"""Phase constants"""
 
 # Master
 SPLIT, MOVE, FIGHT, MUSTER = range(4)

@@ -7,6 +7,7 @@ from sys import maxint
 
 from slugathon.game import Game, Phase, Creature, Legion
 
+
 class TestBattle(object):
     def setup_method(self, method):
         now = time.time()

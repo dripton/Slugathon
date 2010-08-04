@@ -8,5 +8,6 @@ import gtk
 
 from slugathon.util import guiutils
 
+
 pixbuf = gtk.gdk.pixbuf_new_from_file(guiutils.basedir(
   "images/creature/Serpent.png"))
