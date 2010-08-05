@@ -68,7 +68,11 @@ setup(
         ("slugathon/config", glob("slugathon/config/*")),
         ("slugathon/docs", glob("slugathon/docs/*")),
     ],
-    scripts = ["bin/slugathon-server", "bin/slugathon-client"],
+    scripts = [
+        "bin/slugathon-server",
+        "bin/slugathon-client",
+        "bin/slugathon-aiclient",
+    ],
     classifiers = [
         "Development Status :: 3 - Alpha",
         "Intended Audience :: End Users/Desktop",
