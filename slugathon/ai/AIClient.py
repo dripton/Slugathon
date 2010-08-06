@@ -89,7 +89,7 @@ class Client(pb.Referenceable, Observed):
         for game in self.games:
             print "joining game", game.name
             def1 = self.user.callRemote("join_game", game.name)
-            def1.addCallback(self.failure)
+            def1.addErrback(self.failure)
 
     def name_to_game(self, game_name):
         for game in self.games:
@@ -109,7 +109,7 @@ class Client(pb.Referenceable, Observed):
         self.games.append(game)
         # For now, AI joins all games.
         def1 = self.user.callRemote("join_game", game.name)
-        def1.addCallback(self.failure)
+        def1.addErrback(self.failure)
 
     def remove_game(self, game_name):
         game = self.name_to_game(game_name)
