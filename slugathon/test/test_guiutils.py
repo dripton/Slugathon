@@ -24,9 +24,9 @@ def test_rectangles_intersect():
     assert not ri(rect4, rect5)
 
 def test_basedir():
-    assert guiutils.basedir().endswith("-packages/slugathon")
-    assert guiutils.basedir("images").endswith("-packages/slugathon/images")
+    assert guiutils.basedir().endswith("/slugathon")
+    assert guiutils.basedir("images").endswith("/slugathon/images")
     assert guiutils.basedir("images/creature/titan").endswith(
-      "-packages/slugathon/images/creature/titan")
+      "/slugathon/images/creature/titan")
     assert guiutils.basedir("images", "creature", "titan").endswith(
-      "-packages/slugathon/images/creature/titan")
+      "/slugathon/images/creature/titan")
