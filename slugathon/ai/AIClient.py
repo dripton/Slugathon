@@ -222,8 +222,44 @@ class Client(pb.Referenceable, Observed):
         def1.addErrback(self.failure)
 
     def engage(self, game):
-        """Resolve engagements."""
-        print "engage TODO"
+        """Resolve engagements.
+
+        For now only know how to flee or concede.
+        """
+        print "engage"
+        hexlabels = game.engagement_hexlabels
+        if hexlabels:
+            hexlabel = hexlabels.pop()
+            def1 = self.user.callRemote("resolve_engagement", game.name,
+              hexlabel)
+            def1.addErrback(self.failure)
+        else:
+            def1 = self.user.callRemote("done_with_engagements", game.name)
+            def1.addErrback(self.failure)
+
+    def resolve_engagement(self, game, hexlabel):
+        """Resolve the engagement in hexlabel.
+
+        For now only know how to flee or concede.
+        """
+        for legion in game.all_legions(hexlabel):
+            if legion.player == game.active_player:
+                attacker = legion
+            else:
+                defender = legion
+        if defender.player.name == self.playername:
+            if defender.can_flee:
+                def1 = self.user.callRemote("flee", game.name,
+                  defender.markername)
+                def1.addErrback(self.failure)
+            else:
+                def1 = self.user.callRemote("concede", game.name,
+                  defender.markername, attacker.markername, hexlabel)
+                def1.addErrback(self.failure)
+        else:
+            def1 = self.user.callRemote("concede", game.name,
+              attacker.markername, defender.markername, hexlabel)
+            def1.addErrback(self.failure)
 
     def recruit(self, game):
         print "recruit"
@@ -312,6 +348,21 @@ class Client(pb.Referenceable, Observed):
                     self.engage(game)
                 else:
                     self.recruit(game)
+        elif isinstance(action, Action.ResolvingEngagement):
+            game = self.name_to_game(action.game_name)
+            self.resolve_engagement(game, action.hexlabel)
+        elif isinstance(action, Action.Flee):
+            game = self.name_to_game(action.game_name)
+            if game.engagement_hexlabels:
+                self.engage(game)
+            else:
+                self.recruit(game)
+        elif isinstance(action, Action.Concede):
+            game = self.name_to_game(action.game_name)
+            if game.engagement_hexlabels:
+                self.engage(game)
+            else:
+                self.recruit(game)
         elif isinstance(action, Action.RecruitCreature):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
