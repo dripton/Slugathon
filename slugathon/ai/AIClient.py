@@ -11,7 +11,7 @@ from optparse import OptionParser
 
 from twisted.spread import pb
 from twisted.cred import credentials
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from zope.interface import implements
 
 from slugathon.net import config
@@ -98,6 +98,7 @@ class Client(pb.Referenceable, Observed):
         return None
 
     def add_game(self, game_info_tuple):
+        print "add_game", game_info_tuple
         (name, create_time, start_time, min_players, max_players,
           playernames) = game_info_tuple
         owner = playernames[0]
@@ -133,31 +134,30 @@ class Client(pb.Referenceable, Observed):
         self.update(observed, action)
 
     def _maybe_pick_color(self, game):
+        """Return a Deferred."""
+        print "_maybe_pick_color"
         if game.next_playername_to_pick_color() == self.username:
             color = random.choice(game.colors_left())
-            self._cb_pickcolor((game, color))
-
-    def _cb_pickcolor(self, (game, color)):
-        """Callback for PickColor"""
-        if color is None:
-            self._maybe_pick_color(game)
-        else:
             def1 = self.user.callRemote("pick_color", game.name, color)
             def1.addErrback(self.failure)
+            return def1
+        else:
+            return defer.succeed(None)
 
-    def _maybe_pick_first_marker(self, game, playername):
+    def _maybe_pick_first_marker(self, unused, game, playername):
+        print "_maybe_pick_first_marker"
         if playername == self.username:
             player = game.get_player_by_name(playername)
             markername = random.choice(list(player.markernames))
-            self.pick_marker((game.name, self.username, markername))
+            self.pick_marker(game.name, self.username, markername)
 
-    def pick_marker(self, (game_name, username, markername)):
-        """Callback from PickMarker."""
+    def pick_marker(self, game_name, username, markername):
+        print "pick_marker"
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
         if markername is None:
             if not player.legions:
-                self._maybe_pick_first_marker(game, username)
+                self._maybe_pick_first_marker(None, game, username)
         else:
             player.pick_marker(markername)
             if not player.legions:
@@ -165,9 +165,42 @@ class Client(pb.Referenceable, Observed):
                   markername)
                 def1.addErrback(self.failure)
 
+    def _maybe_split(self, unused, game):
+        """Split if it's my turn.
+
+        For now, only split 8-high initial legion.
+        """
+        print "_maybe_split"
+        if game.active_player.name == self.playername:
+            player = game.active_player
+            for legion in player.legions.itervalues():
+                if len(legion) == 8:
+                    new_markername = random.choice(list(player.markernames))
+                    lord = random.choice(["Titan", "Angel"])
+                    creatures = ["Centaur", "Gargoyle", "Ogre"]
+                    creature1 = random.choice(creatures)
+                    creature2 = creature1
+                    creature3 = creature1
+                    while creature3 == creature1:
+                        creature3 = random.choice(creatures)
+                    new_creatures = [lord, creature1, creature2, creature3]
+                    old_creatures = legion.creature_names
+                    for creature in new_creatures:
+                        old_creatures.remove(creature)
+                    def1 = self.user.callRemote("split_legion", game.name,
+                      legion.markername, new_markername,
+                      old_creatures, new_creatures)
+                    def1.addErrback(self.failure)
+
+
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
+        print "update", action
+
+        # Update the Game first, then act.
+        self.notify(action)
+
         if isinstance(action, Action.AddUsername):
             self.usernames.add(action.username)
         elif isinstance(action, Action.DelUsername):
@@ -181,21 +214,30 @@ class Client(pb.Referenceable, Observed):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
-            self._maybe_pick_color(game)
+            def1 = self._maybe_pick_color(game)
+            def1.addCallback(self._maybe_split, game)
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
-            self._maybe_pick_color(game)
-            self._maybe_pick_first_marker(game, action.playername)
+            def1 = self._maybe_pick_color(game)
+            def1.addCallback(self._maybe_pick_first_marker, game,
+              action.playername)
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
                 print "Game %s over, won by %s" % (action.game_name,
                   " and ".join(action.winner_names))
             else:
                 print "Game %s over, draw" % action.game_name
+        elif isinstance(action, Action.DoneRecruiting):
+            game = self.name_to_game(action.game_name)
+            self._maybe_split(None, game)
+        elif isinstance(action, Action.CreateStartingLegion):
+            game = self.name_to_game(action.game_name)
+            self._maybe_split(None, game)
+        else:
+            print "got unhandled action", action
 
-        self.notify(action)
 
 
 def main():
