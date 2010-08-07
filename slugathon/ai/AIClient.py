@@ -192,6 +192,29 @@ class Client(pb.Referenceable, Observed):
                       old_creatures, new_creatures)
                     def1.addErrback(self.failure)
 
+    def move_legions(self, unused, game):
+        """For now, just move one legion."""
+        assert game.active_player.name == self.playername
+        player = game.active_player
+        legions = player.legions.values()
+        random.shuffle(legions)
+        for legion in legions:
+            moves = game.find_all_moves(legion, game.board.hexes[
+              legion.hexlabel], player.movement_roll)
+            if moves:
+                move = random.choice(list(moves))
+                break
+        (hexlabel, entry_side) = move
+        if entry_side == Game.TELEPORT:
+            teleport = True
+            entry_side = random.choice([1, 3, 5])
+            teleporting_lord = sorted(legion.lord_types)[-1]
+        else:
+            teleport = False
+            teleporting_lord = None
+        def1 = self.user.callRemote("move_legion", game.name,
+          legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
+        def1.addErrback(self.failure)
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
@@ -235,6 +258,19 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             self._maybe_split(None, game)
+        elif isinstance(action, Action.SplitLegion):
+            game = self.name_to_game(action.game_name)
+            # For now, only one split per phase.
+            if action.playername == self.playername:
+                def1 = self.user.callRemote("done_with_splits", game.name)
+                def1.addCallback(self.move_legions, game)
+                def1.addErrback(self.failure)
+        elif isinstance(action, Action.MoveLegion):
+            game = self.name_to_game(action.game_name)
+            # For now, only one move per phase.
+            if action.playername == self.playername:
+                def1 = self.user.callRemote("done_with_moves", game.name)
+                def1.addErrback(self.failure)
         else:
             print "got unhandled action", action
 
