@@ -587,7 +587,9 @@ class Game(Observed):
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
                 break
-        assert enemy_legion != legion
+        # XXX Enemy managed to concede before we could flee.
+        if enemy_legion == legion:
+            return
         enemy_markername = enemy_legion.markername
         action = Action.Flee(self.name, markername, enemy_markername, hexlabel)
         self.notify(action)
