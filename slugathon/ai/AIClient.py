@@ -191,6 +191,11 @@ class Client(pb.Referenceable, Observed):
                       legion.markername, new_markername,
                       old_creatures, new_creatures)
                     def1.addErrback(self.failure)
+                    return
+            # No splits, so move on to the next phase.
+            def1 = self.user.callRemote("done_with_splits", game.name)
+            def1.addCallback(self.move_legions, game)
+            def1.addErrback(self.failure)
 
     def move_legions(self, unused, game):
         """For now, just move one legion."""
