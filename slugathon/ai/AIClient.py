@@ -216,6 +216,34 @@ class Client(pb.Referenceable, Observed):
           legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
         def1.addErrback(self.failure)
 
+    def engage(self, game):
+        """Resolve engagements."""
+        print "engage TODO"
+
+    def recruit(self, game):
+        print "recruit"
+        assert game.active_player.name == self.playername
+        player = game.active_player
+        for legion in player.legions.itervalues():
+            if legion.moved and not legion.recruited:
+                masterhex = game.board.hexes[legion.hexlabel]
+                caretaker = game.caretaker
+                mterrain = masterhex.terrain
+                lst = legion.available_recruits_and_recruiters(mterrain,
+                  caretaker)
+                if lst:
+                    # For now, just take the last one.
+                    tup = lst[-1]
+                    recruit = tup[0]
+                    recruiters = tup[1:]
+                    def1 = self.user.callRemote("recruit_creature", game.name,
+                      legion.markername, recruit, recruiters)
+                    def1.addErrback(self.failure)
+                    return
+        def1 = self.user.callRemote("done_with_recruits", game.name)
+        def1.addErrback(self.failure)
+
+
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
@@ -272,6 +300,17 @@ class Client(pb.Referenceable, Observed):
             if action.playername == self.playername:
                 def1 = self.user.callRemote("done_with_moves", game.name)
                 def1.addErrback(self.failure)
+        elif isinstance(action, Action.DoneMoving):
+            if action.playername == self.playername:
+                game = self.name_to_game(action.game_name)
+                if game.engagement_hexlabels:
+                    self.engage(game)
+                else:
+                    self.recruit(game)
+        elif isinstance(action, Action.RecruitCreature):
+            if action.playername == self.playername:
+                game = self.name_to_game(action.game_name)
+                self.recruit(game)
         else:
             print "got unhandled action", action
 
