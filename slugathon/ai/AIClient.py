@@ -257,7 +257,8 @@ class Client(pb.Referenceable, Observed):
             self._maybe_split(None, game)
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
-            self._maybe_split(None, game)
+            if action.playername == self.playername:
+                self._maybe_split(None, game)
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
             # For now, only one split per phase.
