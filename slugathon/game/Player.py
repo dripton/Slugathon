@@ -157,7 +157,8 @@ class Player(Observed):
 
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
-        return max([len(legion) for legion in self.legions.itervalues()]) < 8
+        return (self.legions and max([len(legion) for legion in
+          self.legions.itervalues()]) < 8)
 
     def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
