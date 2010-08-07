@@ -881,11 +881,13 @@ class GUIMasterBoard(gtk.Window):
             markername = action.markername
             defender = self.game.find_legion(markername)
             hexlabel = defender.hexlabel
+            attacker = None
             for legion in self.game.all_legions(hexlabel=hexlabel):
                 if legion != defender:
                     attacker = legion
-            if (defender.player.name == self.username or
-              attacker.player.name == self.username):
+            if (attacker is not None and (
+              defender.player.name == self.username or
+              attacker.player.name == self.username)):
                 self.negotiate, def1 = Negotiate.new(self.username, attacker,
                   defender, self)
                 def1.addCallback(self.cb_negotiate)
