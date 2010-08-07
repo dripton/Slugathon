@@ -133,9 +133,9 @@ class Client(pb.Referenceable, Observed):
         observed = None
         self.update(observed, action)
 
-    def _maybe_pick_color(self, game):
+    def maybe_pick_color(self, game):
         """Return a Deferred."""
-        print "_maybe_pick_color"
+        print "maybe_pick_color"
         if game.next_playername_to_pick_color() == self.username:
             color = random.choice(game.colors_left())
             def1 = self.user.callRemote("pick_color", game.name, color)
@@ -144,8 +144,8 @@ class Client(pb.Referenceable, Observed):
         else:
             return defer.succeed(None)
 
-    def _maybe_pick_first_marker(self, unused, game, playername):
-        print "_maybe_pick_first_marker"
+    def maybe_pick_first_marker(self, unused, game, playername):
+        print "maybe_pick_first_marker"
         if playername == self.username:
             player = game.get_player_by_name(playername)
             markername = random.choice(list(player.markernames))
@@ -157,7 +157,7 @@ class Client(pb.Referenceable, Observed):
         player = game.get_player_by_name(username)
         if markername is None:
             if not player.legions:
-                self._maybe_pick_first_marker(None, game, username)
+                self.maybe_pick_first_marker(None, game, username)
         else:
             player.pick_marker(markername)
             if not player.legions:
@@ -165,12 +165,12 @@ class Client(pb.Referenceable, Observed):
                   markername)
                 def1.addErrback(self.failure)
 
-    def _maybe_split(self, unused, game):
+    def split(self, unused, game):
         """Split if it's my turn.
 
         For now, only split 8-high initial legion.
         """
-        print "_maybe_split"
+        print "split"
         if game.active_player.name == self.playername:
             player = game.active_player
             for legion in player.legions.itervalues():
@@ -221,12 +221,12 @@ class Client(pb.Referenceable, Observed):
           legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
         def1.addErrback(self.failure)
 
-    def engage(self, game):
+    def choose_engagement(self, game):
         """Resolve engagements.
 
         For now only know how to flee or concede.
         """
-        print "engage"
+        print "choose_engagement"
         hexlabels = game.engagement_hexlabels
         if hexlabels:
             hexlabel = hexlabels.pop()
@@ -306,14 +306,14 @@ class Client(pb.Referenceable, Observed):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
-            def1 = self._maybe_pick_color(game)
-            def1.addCallback(self._maybe_split, game)
+            def1 = self.maybe_pick_color(game)
+            def1.addCallback(self.split, game)
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
-            def1 = self._maybe_pick_color(game)
-            def1.addCallback(self._maybe_pick_first_marker, game,
+            def1 = self.maybe_pick_color(game)
+            def1.addCallback(self.maybe_pick_first_marker, game,
               action.playername)
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
@@ -323,11 +323,11 @@ class Client(pb.Referenceable, Observed):
                 print "Game %s over, draw" % action.game_name
         elif isinstance(action, Action.DoneRecruiting):
             game = self.name_to_game(action.game_name)
-            self._maybe_split(None, game)
+            self.split(None, game)
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self._maybe_split(None, game)
+                self.split(None, game)
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
             # For now, only one split per phase.
@@ -345,7 +345,7 @@ class Client(pb.Referenceable, Observed):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
                 if game.engagement_hexlabels:
-                    self.engage(game)
+                    self.choose_engagement(game)
                 else:
                     self.recruit(game)
         elif isinstance(action, Action.ResolvingEngagement):
@@ -354,13 +354,13 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.Flee):
             game = self.name_to_game(action.game_name)
             if game.engagement_hexlabels:
-                self.engage(game)
+                self.choose_engagement(game)
             else:
                 self.recruit(game)
         elif isinstance(action, Action.Concede):
             game = self.name_to_game(action.game_name)
             if game.engagement_hexlabels:
-                self.engage(game)
+                self.choose_engagement(game)
             else:
                 self.recruit(game)
         elif isinstance(action, Action.RecruitCreature):
