@@ -166,15 +166,13 @@ class Client(pb.Referenceable, Observed):
                 def1.addErrback(self.failure)
 
     def split(self, unused, game):
-        """Split if it's my turn.
-
-        For now, only split 8-high initial legion.
-        """
+        """Split if it's my turn."""
         print "split"
         if game.active_player.name == self.playername:
             player = game.active_player
             for legion in player.legions.itervalues():
                 if len(legion) == 8:
+                    # initial split 4-4, one lord per legion
                     new_markername = random.choice(list(player.markernames))
                     lord = random.choice(["Titan", "Angel"])
                     creatures = ["Centaur", "Gargoyle", "Ogre"]
@@ -192,12 +190,27 @@ class Client(pb.Referenceable, Observed):
                       old_creatures, new_creatures)
                     def1.addErrback(self.failure)
                     return
+                elif len(legion) == 7 and player.markernames:
+                    # split 5-2.  For now, always split.
+                    # TODO consider safety and what can be attacked
+                    # or recruited
+                    new_markername = random.choice(list(player.markernames))
+                    lst = legion.sorted_creatures
+                    keep = lst[:-2]
+                    keep_names = [creature.name for creature in keep]
+                    split = lst[-2:]
+                    split_names = [creature.name for creature in split]
+                    def1 = self.user.callRemote("split_legion", game.name,
+                      legion.markername, new_markername, keep_names,
+                      split_names)
+                    def1.addErrback(self.failure)
+                    return
+
             # No splits, so move on to the next phase.
             def1 = self.user.callRemote("done_with_splits", game.name)
-            def1.addCallback(self.move_legions, game)
             def1.addErrback(self.failure)
 
-    def move_legions(self, unused, game):
+    def move_legions(self, game):
         """For now, just move one legion."""
         assert game.active_player.name == self.playername
         player = game.active_player
@@ -323,18 +336,20 @@ class Client(pb.Referenceable, Observed):
                 print "Game %s over, draw" % action.game_name
         elif isinstance(action, Action.DoneRecruiting):
             game = self.name_to_game(action.game_name)
-            self.split(None, game)
+            if game.active_player.name == self.playername:
+                self.split(None, game)
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 self.split(None, game)
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
-            # For now, only one split per phase.
             if action.playername == self.playername:
-                def1 = self.user.callRemote("done_with_splits", game.name)
-                def1.addCallback(self.move_legions, game)
-                def1.addErrback(self.failure)
+                self.split(None, game)
+        elif isinstance(action, Action.RollMovement):
+            game = self.name_to_game(action.game_name)
+            if action.playername == self.playername:
+                self.move_legions(game)
         elif isinstance(action, Action.MoveLegion):
             game = self.name_to_game(action.game_name)
             # For now, only one move per phase.
