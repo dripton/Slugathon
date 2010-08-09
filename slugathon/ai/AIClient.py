@@ -368,16 +368,18 @@ class Client(pb.Referenceable, Observed):
             self.resolve_engagement(game, action.hexlabel)
         elif isinstance(action, Action.Flee):
             game = self.name_to_game(action.game_name)
-            if game.engagement_hexlabels:
-                self.choose_engagement(game)
-            else:
-                self.recruit(game)
+            if game.active_player.name == self.playername:
+                if game.engagement_hexlabels:
+                    self.choose_engagement(game)
+                else:
+                    self.recruit(game)
         elif isinstance(action, Action.Concede):
             game = self.name_to_game(action.game_name)
-            if game.engagement_hexlabels:
-                self.choose_engagement(game)
-            else:
-                self.recruit(game)
+            if game.active_player.name == self.playername:
+                if game.engagement_hexlabels:
+                    self.choose_engagement(game)
+                else:
+                    self.recruit(game)
         elif isinstance(action, Action.RecruitCreature):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
