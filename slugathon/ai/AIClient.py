@@ -207,17 +207,23 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def move_legions(self, game):
-        """For now, just move one legion."""
+        """For now, try to move all legions."""
         assert game.active_player.name == self.playername
         player = game.active_player
         legions = player.legions.values()
-        random.shuffle(legions)
+        move = None
         for legion in legions:
-            moves = game.find_all_moves(legion, game.board.hexes[
-              legion.hexlabel], player.movement_roll)
-            if moves:
-                move = random.choice(list(moves))
-                break
+            if not legion.moved:
+                moves = game.find_all_moves(legion, game.board.hexes[
+                  legion.hexlabel], player.movement_roll)
+                if moves:
+                    move = random.choice(list(moves))
+                    break
+        if move is None:
+            # No more legions can move.
+            def1 = self.user.callRemote("done_with_moves", game.name)
+            def1.addErrback(self.failure)
+            return
         (hexlabel, entry_side) = move
         if entry_side == Game.TELEPORT:
             teleport = True
@@ -350,10 +356,8 @@ class Client(pb.Referenceable, Observed):
                 self.move_legions(game)
         elif isinstance(action, Action.MoveLegion):
             game = self.name_to_game(action.game_name)
-            # For now, only one move per phase.
             if action.playername == self.playername:
-                def1 = self.user.callRemote("done_with_moves", game.name)
-                def1.addErrback(self.failure)
+                self.move_legions(game)
         elif isinstance(action, Action.DoneMoving):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
