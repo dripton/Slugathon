@@ -537,7 +537,9 @@ class Game(Observed):
 
     def _concede(self, playername, markername):
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions.get(markername)
+        if legion is None:
+            return
         hexlabel = legion.hexlabel
         for legion2 in self.all_legions(hexlabel):
             if legion2 != legion:
