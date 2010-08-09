@@ -11,7 +11,7 @@ from optparse import OptionParser
 
 from twisted.spread import pb
 from twisted.cred import credentials
-from twisted.internet import reactor, defer
+from twisted.internet import reactor
 from zope.interface import implements
 
 from slugathon.net import config
@@ -134,17 +134,13 @@ class Client(pb.Referenceable, Observed):
         self.update(observed, action)
 
     def maybe_pick_color(self, game):
-        """Return a Deferred."""
         print "maybe_pick_color"
         if game.next_playername_to_pick_color() == self.username:
             color = random.choice(game.colors_left())
             def1 = self.user.callRemote("pick_color", game.name, color)
             def1.addErrback(self.failure)
-            return def1
-        else:
-            return defer.succeed(None)
 
-    def maybe_pick_first_marker(self, unused, game, playername):
+    def maybe_pick_first_marker(self, game, playername):
         print "maybe_pick_first_marker"
         if playername == self.username:
             player = game.get_player_by_name(playername)
@@ -157,7 +153,7 @@ class Client(pb.Referenceable, Observed):
         player = game.get_player_by_name(username)
         if markername is None:
             if not player.legions:
-                self.maybe_pick_first_marker(None, game, username)
+                self.maybe_pick_first_marker(game, username)
         else:
             player.pick_marker(markername)
             if not player.legions:
@@ -319,15 +315,17 @@ class Client(pb.Referenceable, Observed):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
-            def1 = self.maybe_pick_color(game)
-            def1.addCallback(self.split, game)
+            self.maybe_pick_color(game)
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
-            def1 = self.maybe_pick_color(game)
-            def1.addCallback(self.maybe_pick_first_marker, game,
-              action.playername)
+            self.maybe_pick_color(game)
+            self.maybe_pick_first_marker(game, action.playername)
+        elif isinstance(action, Action.AssignedAllColors):
+            game = self.name_to_game(action.game_name)
+            if game.active_player.name == self.playername:
+                self.split(None, game)
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
                 print "Game %s over, won by %s" % (action.game_name,
