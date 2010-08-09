@@ -454,9 +454,9 @@ class GUIMasterBoard(gtk.Window):
 
     def _add_missing_markers(self):
         """Add markers for any legions that lack them."""
+        markernames = set((marker.name for marker in self.markers))
         for legion in self.game.all_legions():
-            if legion.markername not in (marker.name for marker in
-              self.markers):
+            if legion.markername not in markernames:
                 marker = Marker.Marker(legion, True, self.scale)
                 self.markers.append(marker)
 
