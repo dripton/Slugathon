@@ -252,7 +252,7 @@ class Client(pb.Referenceable, Observed):
             def1 = self.user.callRemote("done_with_engagements", game.name)
             def1.addErrback(self.failure)
 
-    def resolve_engagement(self, game, hexlabel):
+    def resolve_engagement(self, game, hexlabel, did_not_flee):
         """Resolve the engagement in hexlabel.
 
         For now only know how to flee or concede.
@@ -272,9 +272,13 @@ class Client(pb.Referenceable, Observed):
                   defender.markername, attacker.markername, hexlabel)
                 def1.addErrback(self.failure)
         else:
-            def1 = self.user.callRemote("concede", game.name,
-              attacker.markername, defender.markername, hexlabel)
-            def1.addErrback(self.failure)
+            if defender.can_flee and not did_not_flee:
+                # Wait for the defender to choose before conceding.
+                pass
+            else:
+                def1 = self.user.callRemote("concede", game.name,
+                  attacker.markername, defender.markername, hexlabel)
+                def1.addErrback(self.failure)
 
     def recruit(self, game):
         print "recruit"
@@ -367,8 +371,9 @@ class Client(pb.Referenceable, Observed):
                     self.recruit(game)
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
-            self.resolve_engagement(game, action.hexlabel)
-        elif isinstance(action, Action.Flee):
+            self.resolve_engagement(game, action.hexlabel, False)
+        elif (isinstance(action, Action.Flee) or
+          isinstance(action, Action.Concede)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 if game.engagement_hexlabels:
@@ -377,15 +382,9 @@ class Client(pb.Referenceable, Observed):
                     def1 = self.user.callRemote("done_with_engagements",
                       game.name)
                     def1.addErrback(self.failure)
-        elif isinstance(action, Action.Concede):
+        elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
-            if game.active_player.name == self.playername:
-                if game.engagement_hexlabels:
-                    self.choose_engagement(game)
-                else:
-                    def1 = self.user.callRemote("done_with_engagements",
-                      game.name)
-                    def1.addErrback(self.failure)
+            self.resolve_engagement(game, action.hexlabel, True)
         elif isinstance(action, Action.DoneFighting):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
