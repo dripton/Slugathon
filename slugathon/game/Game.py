@@ -542,8 +542,9 @@ class Game(Observed):
         for legion2 in self.all_legions(hexlabel):
             if legion2 != legion:
                 break
-        assert legion2 != legion
-        assert legion2.player != player
+        if legion2 == legion or legion2.player == player:
+            # Can't concede because other legion already did.
+            return
         legion.die(legion2, False, False)
         assert markername not in player.legions
         for legion in self.all_legions():
@@ -610,10 +611,15 @@ class Game(Observed):
     def concede(self, playername, markername):
         """Called from Server"""
         legion = self.find_legion(markername)
+        if legion is None:
+            # Player is already out of the game.
+            return
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
                 break
+        if enemy_legion == legion:
+            return
         enemy_markername = enemy_legion.markername
         self._concede(playername, markername)
         action = Action.Concede(self.name, markername, enemy_markername,
