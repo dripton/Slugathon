@@ -528,8 +528,9 @@ class Game(Observed):
         for legion2 in self.all_legions(hexlabel):
             if legion2 != legion:
                 break
-        assert legion2 != legion
-        assert legion2.player != player
+        # Abort if the enemy managed to concede.
+        if legion2 == legion or legion2.player == player:
+            return
         legion.die(legion2, True, False)
         assert markername not in player.legions
         for legion in self.all_legions():
@@ -1262,8 +1263,9 @@ class Game(Observed):
 
         elif isinstance(action, Action.Concede):
             legion = self.find_legion(action.markername)
-            playername = legion.player.name
-            self._concede(playername, action.markername)
+            if legion is not None:
+                playername = legion.player.name
+                self._concede(playername, action.markername)
 
         elif isinstance(action, Action.AcceptProposal):
             attacker_legion = self.find_legion(action.attacker_markername)
