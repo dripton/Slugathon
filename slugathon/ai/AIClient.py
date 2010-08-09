@@ -370,14 +370,22 @@ class Client(pb.Referenceable, Observed):
                 if game.engagement_hexlabels:
                     self.choose_engagement(game)
                 else:
-                    self.recruit(game)
+                    def1 = self.user.callRemote("done_with_engagements",
+                      game.name)
+                    def1.addErrback(self.failure)
         elif isinstance(action, Action.Concede):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 if game.engagement_hexlabels:
                     self.choose_engagement(game)
                 else:
-                    self.recruit(game)
+                    def1 = self.user.callRemote("done_with_engagements",
+                      game.name)
+                    def1.addErrback(self.failure)
+        elif isinstance(action, Action.DoneFighting):
+            if action.playername == self.playername:
+                game = self.name_to_game(action.game_name)
+                self.recruit(game)
         elif isinstance(action, Action.RecruitCreature):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
