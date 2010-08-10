@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+__copyright__ = "Copyright (c) 2009-2010 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 from glob import glob
 from distutils.core import setup
 from distutils.command.install_data import install_data

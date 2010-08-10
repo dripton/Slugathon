@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 
+
+__copyright__ = "Copyright (c) 2009 David Ripton"
+__license__ = "GNU GPL v2"
+
+
 from slugathon.gui import Connect
+
 
 if __name__ == "__main__":
     Connect.main()
