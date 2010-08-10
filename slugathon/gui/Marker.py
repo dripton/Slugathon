@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2009 David Ripton"
+__copyright__ = "Copyright (c) 2005-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -31,21 +31,26 @@ class Marker(object):
 
     def build_image(self):
         self.height = len(self.legion)
-        surface = cairo.ImageSurface.create_from_png(self.image_path)
-        self._render_text(surface)
+        input_surface = cairo.ImageSurface.create_from_png(self.image_path)
+        self._render_text(input_surface)
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
+          self.chit_scale)
+        ctx = cairo.Context(self.surface)
+        ctx.scale(float(self.chit_scale) / input_surface.get_width(),
+          float(self.chit_scale) / input_surface.get_height())
+        ctx.set_source_surface(input_surface)
+        ctx.paint()
         with tempfile.NamedTemporaryFile(prefix="slugathon",
           suffix=".png", delete=False) as tmp_file:
             tmp_path = tmp_file.name
-        surface.write_to_png(tmp_path)
-        raw_pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
-        self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
-          self.chit_scale, gtk.gdk.INTERP_BILINEAR)
+        self.surface.write_to_png(tmp_path)
+        pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
+        os.remove(tmp_path)
         self.event_box = gtk.EventBox()
         self.event_box.marker = self
         self.image = gtk.Image()
-        self.image.set_from_pixbuf(self.pixbuf)
+        self.image.set_from_pixbuf(pixbuf)
         self.event_box.add(self.image)
-        os.remove(tmp_path)
 
     def __repr__(self):
         return "Marker %s in %s" % (self.name, self.legion.hexlabel)

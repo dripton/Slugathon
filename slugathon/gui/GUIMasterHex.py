@@ -1,11 +1,11 @@
-__copyright__ = "Copyright (c) 2003-2009 David Ripton"
+__copyright__ = "Copyright (c) 2003-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 import math
 from sys import maxint
 
-import gtk
+import cairo
 import pango
 import pangocairo
 
@@ -184,13 +184,23 @@ class GUIMasterHex(object):
 
         image_filename = guiutils.basedir("images/masterhex",
           self.masterhex.overlay_filename)
-        pixbuf = gtk.gdk.pixbuf_new_from_file(image_filename)
-        self.pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
-            int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
+        input_surface = cairo.ImageSurface.create_from_png(image_filename)
+        input_width = input_surface.get_width()
+        input_height = input_surface.get_height()
+        output_width = int(round(myboxsize[0]))
+        output_height = int(round(myboxsize[1]))
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+          output_width, output_height)
+        ctx = cairo.Context(self.surface)
+        ctx.scale(float(output_width) / input_width,
+          float(output_height) / input_height)
+        ctx.move_to(0, 0)
+        ctx.set_source_surface(input_surface)
+        ctx.paint()
 
 
     def draw_overlay(self, ctx):
-        ctx.set_source_pixbuf(self.pixbuf, self.dest_x, self.dest_y)
+        ctx.set_source_surface(self.surface, self.dest_x, self.dest_y)
         ctx.paint()
 
 

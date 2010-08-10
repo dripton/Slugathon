@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2009 David Ripton"
+__copyright__ = "Copyright (c) 2005-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 import tempfile
 import os
+import math
 
 import gtk
 import cairo
@@ -36,7 +37,8 @@ class Chit(object):
         else:
             self.name = creature.name
         self.dead = dead
-        self.rotate = rotate
+        # Convert from degrees to radians
+        self.rotate = rotate * math.pi / 180
         self.outlined = outlined
         self.location = None    # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
@@ -70,30 +72,37 @@ class Chit(object):
 
     def build_image(self):
         path = self.paths[0]
-        surface = cairo.ImageSurface.create_from_png(path)
-        ctx = cairo.Context(surface)
+        input_surface = cairo.ImageSurface.create_from_png(path)
+        ctx = cairo.Context(input_surface)
         for path in self.paths[1:]:
             mask = cairo.ImageSurface.create_from_png(path)
             ctx.set_source_rgb(*self.rgb)
             ctx.mask_surface(mask, 0, 0)
-        self._render_text(surface)
+        self._render_text(input_surface)
         if self.dead or (self.creature and self.creature.dead):
-            self._render_x(surface)
+            self._render_x(input_surface)
         elif self.creature and self.creature.hits > 0:
-            self._render_hits(surface)
+            self._render_hits(input_surface)
         if self.outlined:
-            self._render_outline(surface)
+            self._render_outline(input_surface)
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
+          self.chit_scale)
+        ctx2 = cairo.Context(self.surface)
+        if self.rotate:
+            ctx2.translate(self.chit_scale / 2.0, self.chit_scale / 2.0)
+            ctx2.rotate(self.rotate)
+            ctx2.translate(-self.chit_scale / 2.0, -self.chit_scale / 2.0)
+        ctx2.scale(float(self.chit_scale) / input_surface.get_width(),
+          float(self.chit_scale) / input_surface.get_height())
+        ctx2.set_source_surface(input_surface)
+        ctx2.paint()
         with tempfile.NamedTemporaryFile(prefix="slugathon",
           suffix=".png", delete=False) as tmp_file:
             tmp_path = tmp_file.name
-        surface.write_to_png(tmp_path)
-        raw_pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
-        self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
-          self.chit_scale, gtk.gdk.INTERP_BILINEAR)
-        if self.rotate:
-            self.pixbuf = self.pixbuf.rotate_simple(self.rotate)
-        self.image.set_from_pixbuf(self.pixbuf)
+        self.surface.write_to_png(tmp_path)
+        self.pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
         os.remove(tmp_path)
+        self.image.set_from_pixbuf(self.pixbuf)
 
     def point_inside(self, point):
         assert self.location
@@ -210,7 +219,7 @@ if __name__ == "__main__":
 
     creature = Creature.Creature("Ogre")
     creature.hits = 3
-    chit = Chit(creature, "Red", scale=45)
+    chit = Chit(creature, "Red", scale=45, rotate=180)
     window = gtk.Window()
     window.connect("destroy", gtk.main_quit)
     window.add(chit.event_box)

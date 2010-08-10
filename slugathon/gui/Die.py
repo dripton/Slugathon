@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2008 David Ripton"
+__copyright__ = "Copyright (c) 2005-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import os
+import tempfile
+
 import gtk
+import cairo
 
 from slugathon.util import guiutils
 
@@ -23,13 +27,24 @@ class Die(object):
 
         path = guiutils.basedir("images/%s/%s.png" % (self.IMAGE_DIR,
           self.name))
-        raw_pixbuf = gtk.gdk.pixbuf_new_from_file(path)
-        self.pixbuf = raw_pixbuf.scale_simple(self.chit_scale,
-          self.chit_scale, gtk.gdk.INTERP_BILINEAR)
+        input_surface = cairo.ImageSurface.create_from_png(path)
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
+          self.chit_scale)
+        ctx = cairo.Context(self.surface)
+        ctx.scale(float(self.chit_scale) / input_surface.get_width(),
+          float(self.chit_scale) / input_surface.get_height())
+        ctx.set_source_surface(input_surface)
+        ctx.paint()
+        with tempfile.NamedTemporaryFile(prefix="slugathon",
+          suffix=".png", delete=False) as tmp_file:
+            tmp_path = tmp_file.name
+        self.surface.write_to_png(tmp_path)
+        pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
+        os.remove(tmp_path)
         self.event_box = gtk.EventBox()
         self.event_box.chit = self
         self.image = gtk.Image()
-        self.image.set_from_pixbuf(self.pixbuf)
+        self.image.set_from_pixbuf(pixbuf)
         self.event_box.add(self.image)
         self.location = None    # (x, y) of top left corner
 

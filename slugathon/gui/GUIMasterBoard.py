@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2003-2009 David Ripton"
+__copyright__ = "Copyright (c) 2003-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 # TODO When we click on a marker, move it to the top of the z-order
@@ -494,7 +494,7 @@ class GUIMasterBoard(gtk.Window):
               first_location[1] + ii * increment)
 
     def _render_marker(self, marker, ctx):
-        ctx.set_source_pixbuf(marker.pixbuf, int(round(marker.location[0])),
+        ctx.set_source_surface(marker.surface, int(round(marker.location[0])),
           int(round(marker.location[1])))
         ctx.paint()
 
@@ -541,7 +541,7 @@ class GUIMasterBoard(gtk.Window):
         if not roll:
             return
         die = Die.Die(roll, scale=self.scale)
-        ctx.set_source_pixbuf(die.pixbuf, 0, 0)
+        ctx.set_source_surface(die.surface, 0, 0)
         ctx.paint()
 
     def bounding_rect_for_hexlabels(self, hexlabels):

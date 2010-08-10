@@ -377,7 +377,7 @@ class GUIBattleMap(gtk.Window):
             raise AssertionError("invalid number of chits in hex")
 
     def _render_chit(self, chit, ctx):
-        ctx.set_source_pixbuf(chit.pixbuf, int(round(chit.location[0])),
+        ctx.set_source_surface(chit.surface, int(round(chit.location[0])),
           int(round(chit.location[1])))
         ctx.paint()
 

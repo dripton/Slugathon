@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2009 David Ripton"
+__copyright__ = "Copyright (c) 2005-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -6,7 +6,7 @@ import os
 import math
 from sys import maxint
 
-import gtk
+import cairo
 import pango
 import pangocairo
 
@@ -43,12 +43,12 @@ class GUIBattleHex(object):
         self.center = rp(guiutils.midpoint(self.vertexes[0], self.vertexes[3]))
         self.bboxsize = rp((self.vertexes[2][0] - self.vertexes[5][0],
           self.vertexes[3][1] - self.vertexes[0][1]))
-        self.hex_pixbuf = None
-        self.hex_pixbuf_x = None
-        self.hex_pixbuf_y = None
-        self.border_pixbufs = []
-        self.border_pixbuf_x = None
-        self.border_pixbuf_y = None
+        self.hex_surface = None
+        self.hex_surface_x = None
+        self.hex_surface_y = None
+        self.border_surfaces = []
+        self.border_surface_x = None
+        self.border_surface_y = None
         self.init_hex_overlay()
         self.init_border_overlays()
 
@@ -139,20 +139,30 @@ class GUIBattleHex(object):
         image_path = os.path.join(IMAGE_DIR, overlay_filename)
         if not os.path.exists(image_path):
             return
-        myboxsize = [0.85 * mag for mag in self.bboxsize]
-        self.hex_pixbuf_x = int(round(self.center[0] - myboxsize[0] / 2.))
-        self.hex_pixbuf_y = int(round(self.center[1] - myboxsize[1] / 2.))
-        pixbuf = gtk.gdk.pixbuf_new_from_file(image_path)
-        self.hex_pixbuf = pixbuf.scale_simple(int(round(myboxsize[0])),
-            int(round(myboxsize[1])), gtk.gdk.INTERP_BILINEAR)
+        myboxsize = [int(round(0.85 * mag)) for mag in self.bboxsize]
+        self.hex_surface_x = int(round(self.center[0] - myboxsize[0] / 2.))
+        self.hex_surface_y = int(round(self.center[1] - myboxsize[1] / 2.))
+        input_surface = cairo.ImageSurface.create_from_png(image_path)
+        input_width = input_surface.get_width()
+        input_height = input_surface.get_height()
+        output_width = myboxsize[0]
+        output_height = myboxsize[1]
+        self.hex_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, output_width,
+          output_height)
+        ctx = cairo.Context(self.hex_surface)
+        ctx.scale(float(output_width) / input_width,
+          float(output_height) / input_height)
+        ctx.move_to(0, 0)
+        ctx.set_source_surface(input_surface)
+        ctx.paint()
 
     def init_border_overlays(self):
         """Setup the overlays for each border."""
-        myboxsize = [0.97 * mag for mag in self.bboxsize]
-        self.border_pixbuf_x = int(round(self.center[0] - myboxsize[0] / 2.))
-        self.border_pixbuf_y = int(round(self.center[1] - myboxsize[1] / 2.))
+        myboxsize = [int(round(0.97 * mag)) for mag in self.bboxsize]
+        self.border_surface_x = int(round(self.center[0] - myboxsize[0] / 2.))
+        self.border_surface_y = int(round(self.center[1] - myboxsize[1] / 2.))
         for hexside, border in enumerate(self.battlehex.borders):
-            border_pixbuf = None
+            border_surface = None
             overlay_filename = "%s.png" % border
             image_path = os.path.join(IMAGE_DIR, overlay_filename)
             if os.path.exists(image_path):
@@ -163,26 +173,35 @@ class GUIBattleHex(object):
                 if not os.path.exists(border_path):
                     sliceborder.slice_border_image(image_path, border_path,
                       hexsides)
-                pixbuf = gtk.gdk.pixbuf_new_from_file(border_path)
-                border_pixbuf = pixbuf.scale_simple(
-                  int(round(myboxsize[0])), int(round(myboxsize[1])),
-                  gtk.gdk.INTERP_BILINEAR)
-            self.border_pixbufs.append(border_pixbuf)
+                input_surface = cairo.ImageSurface.create_from_png(image_path)
+                input_width = input_surface.get_width()
+                input_height = input_surface.get_height()
+                output_width = myboxsize[0]
+                output_height = myboxsize[1]
+                border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                  output_width, output_height)
+                ctx = cairo.Context(border_surface)
+                ctx.scale(float(output_width) / input_width,
+                  float(output_height) / input_height)
+                ctx.move_to(0, 0)
+                ctx.set_source_surface(input_surface)
+                ctx.paint()
+            self.border_surfaces.append(border_surface)
 
     def draw_hex_overlay(self, ctx):
         """Draw the main terrain overlay for the hex."""
-        if self.hex_pixbuf is None:
+        if self.hex_surface is None:
             return
-        ctx.set_source_pixbuf(self.hex_pixbuf, self.hex_pixbuf_x,
-          self.hex_pixbuf_y)
+        ctx.set_source_surface(self.hex_surface, self.hex_surface_x,
+          self.hex_surface_y)
         ctx.paint()
 
     def draw_border_overlays(self, ctx):
         """Draw the overlays for all borders that have them."""
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
-                ctx.set_source_pixbuf(self.border_pixbufs[hexside],
-                  self.border_pixbuf_x, self.border_pixbuf_y)
+                ctx.set_source_surface(self.border_surfaces[hexside],
+                  self.border_surface_x, self.border_surface_y)
                 ctx.paint()
 
     def draw_label(self, ctx, label, side):
