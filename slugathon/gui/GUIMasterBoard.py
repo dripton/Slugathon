@@ -15,6 +15,7 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 import gtk
+import cairo
 from zope.interface import implements
 
 from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
@@ -582,7 +583,9 @@ class GUIMasterBoard(gtk.Window):
         else:
             clip_rect = event.area
 
-        ctx = self.area.window.cairo_create()
+        x, y, width, height = self.allocation
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        ctx = cairo.Context(surface)
         ctx.rectangle(*clip_rect)
         ctx.clip()
 
@@ -605,6 +608,11 @@ class GUIMasterBoard(gtk.Window):
         self.draw_markers(ctx)
         self.draw_recruitchits(ctx)
         self.draw_movement_die(ctx)
+
+        ctx2 = self.area.window.cairo_create()
+        ctx2.set_source_surface(surface)
+        ctx2.paint()
+
         self.repaint_hexlabels.clear()
         self.clear_hexlabels.clear()
 

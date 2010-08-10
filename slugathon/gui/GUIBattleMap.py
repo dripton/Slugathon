@@ -14,6 +14,7 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 import gtk
+import cairo
 from zope.interface import implements
 
 from slugathon.util.Observer import IObserver
@@ -482,7 +483,10 @@ class GUIBattleMap(gtk.Window):
             clip_rect = event.area
         if not self.area or not self.area.window:
             return
-        ctx = self.area.window.cairo_create()
+
+        x, y, width, height = self.allocation
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        ctx = cairo.Context(surface)
         ctx.set_line_width(round(0.2 * self.scale))
         ctx.rectangle(*clip_rect)
         ctx.clip()
@@ -502,8 +506,14 @@ class GUIBattleMap(gtk.Window):
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
         self.draw_chits(ctx)
+
+        ctx2 = self.area.window.cairo_create()
+        ctx2.set_source_surface(surface)
+        ctx2.paint()
+
         self.repaint_hexlabels.clear()
         self.clear_hexlabels.clear()
+
 
     def repaint_all(self):
         for hexlabel in self.guihexes:
