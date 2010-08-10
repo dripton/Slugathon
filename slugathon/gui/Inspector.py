@@ -7,12 +7,15 @@ __license__ = "GNU GPL v2"
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
+from slugathon.util import prefs
 
 
 class Inspector(gtk.Window):
     """Window to show a legion's contents."""
     def __init__(self, username):
         gtk.Window.__init__(self)
+
+        self.username = username
 
         self.set_icon(icon.pixbuf)
         self.set_title("Inspector - %s" % (username))
@@ -35,8 +38,31 @@ class Inspector(gtk.Window):
         self.marker = None
         self.destroyed = False
 
-        self.connect("delete-event", self.hide_window)
+        if self.username:
+            tup = prefs.load_window_position(self.username,
+              self.__class__.__name__)
+            if tup:
+                x, y = tup
+                self.move(x, y)
+            tup = prefs.load_window_size(self.username,
+              self.__class__.__name__)
+            if tup:
+                width, height = tup
+                self.resize(width, height)
 
+        self.connect("delete-event", self.hide_window)
+        self.connect("configure-event", self.cb_configure_event)
+
+
+    def cb_configure_event(self, event, unused):
+        if self.username:
+            x, y = self.get_position()
+            prefs.save_window_position(self.username, self.__class__.__name__,
+              x, y)
+            width, height = self.get_size()
+            prefs.save_window_size(self.username, self.__class__.__name__,
+              width, height)
+        return False
 
     def show_legion(self, legion):
         self.legion_name.set_text("Legion %s in hex %s (%d points)" % (
