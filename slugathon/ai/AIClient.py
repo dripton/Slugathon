@@ -257,11 +257,15 @@ class Client(pb.Referenceable, Observed):
 
         For now only know how to flee or concede.
         """
+        attacker = None
+        defender = None
         for legion in game.all_legions(hexlabel):
             if legion.player == game.active_player:
                 attacker = legion
             else:
                 defender = legion
+        if not attacker or not defender:
+            return
         if defender.player.name == self.playername:
             if defender.can_flee:
                 def1 = self.user.callRemote("flee", game.name,
