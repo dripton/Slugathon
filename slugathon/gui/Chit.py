@@ -37,8 +37,9 @@ class Chit(object):
         else:
             self.name = creature.name
         self.dead = dead
-        # Convert from degrees to radians
-        self.rotate = rotate * math.pi / 180
+        # Convert from degrees to radians, and from GTK rotation direction
+        # to Cairo.
+        self.rotate = -rotate * math.pi / 180
         self.outlined = outlined
         self.location = None    # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
@@ -219,7 +220,7 @@ if __name__ == "__main__":
 
     creature = Creature.Creature("Ogre")
     creature.hits = 3
-    chit = Chit(creature, "Red", scale=45, rotate=180)
+    chit = Chit(creature, "Red", scale=45, rotate=90)
     window = gtk.Window()
     window.connect("destroy", gtk.main_quit)
     window.add(chit.event_box)
