@@ -3,8 +3,8 @@ clone of the classic Avalon Hill boardgame Titan. The focus is on playing
 against other humans across the Internet.
 
 It's still in heavy development and not enduser-friendly yet.  It may crash.
-There's no AI yet, so you have to play all the players, or else find a friend
-or two to help.
+The AI is not quite done yet, so you have to play all the players, or else
+find a friend or two to help.
 
 If you want to try it anyway:
 
