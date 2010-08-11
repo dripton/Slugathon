@@ -582,6 +582,13 @@ class GUIBattleMap(gtk.Window):
                   carries, self)
                 def1.addCallback(self.picked_carry)
 
+        elif isinstance(action, Action.DriftDamage):
+            print "GUIBattleMap.update got DriftDamage", action
+            for chit in self.chits:
+                if chit.creature.hexlabel == action.target_hexlabel:
+                    chit.build_image()
+            self.repaint([action.target_hexlabel])
+
         elif isinstance(action, Action.Carry):
             print "GUIBattleMap.update got Carry", action
             if self.pickcarry is not None:

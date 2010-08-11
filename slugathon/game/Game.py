@@ -1016,6 +1016,9 @@ class Game(Observed):
                     if hex1.terrain == "Drift" and not creature.is_native(
                       hex1.terrain):
                         creature.hits += 1
+                        action = Action.DriftDamage(self.name, creature.name,
+                          creature.hexlabel, creature.hits)
+                        self.notify(action)
 
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
