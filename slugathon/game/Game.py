@@ -1017,7 +1017,7 @@ class Game(Observed):
                       hex1.terrain):
                         creature.hits += 1
                         action = Action.DriftDamage(self.name, creature.name,
-                          creature.hexlabel, creature.hits)
+                          creature.hexlabel, 1)
                         self.notify(action)
 
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
@@ -1356,6 +1356,12 @@ class Game(Observed):
                 self.pending_carry = action
             else:
                 self.pending_carry = None
+
+        elif isinstance(action, Action.DriftDamage):
+            print "Game.update got", action
+            target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
+            target.hits += action.hits
+            target.hits = min(target.hits, target.power)
 
         elif isinstance(action, Action.Carry):
             print "Game.update got", action
