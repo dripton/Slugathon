@@ -397,7 +397,8 @@ class GUIMasterBoard(gtk.Window):
       legion):
         player = self.game.get_player_by_name(username)
         player.pick_marker(markername)
-        self.split_legion(legion)
+        if markername:
+            self.split_legion(legion)
 
     def split_legion(self, legion):
         if legion is not None:
