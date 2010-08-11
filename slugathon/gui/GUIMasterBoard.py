@@ -571,17 +571,21 @@ class GUIMasterBoard(gtk.Window):
     def update_gui(self, event=None):
         """Repaint the amount of the GUI that needs repainting.
 
-        If event is not None, then that's the dirty rectangle.
-        If event is None, then we compute the dirty rectangle from
-        self.repaint_hexlabels.
+        Compute the dirty rectangle from the union of
+        self.repaint_hexlabels and the event's area.
         """
         if event is None:
             if not self.repaint_hexlabels:
                 return
-            clip_rect = self.bounding_rect_for_hexlabels(
-              self.repaint_hexlabels)
+            else:
+                clip_rect = self.bounding_rect_for_hexlabels(
+                  self.repaint_hexlabels)
         else:
-            clip_rect = event.area
+            if self.repaint_hexlabels:
+                clip_rect = guiutils.combine_rectangles(event.area,
+                  self.bounding_rect_for_hexlabels(self.repaint_hexlabels))
+            else:
+                clip_rect = event.area
 
         x, y, width, height = self.allocation
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
@@ -604,7 +608,7 @@ class GUIMasterBoard(gtk.Window):
         for guihex in self.guihexes.itervalues():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
-        # TODO Optimize these too?
+
         self.draw_markers(ctx)
         self.draw_recruitchits(ctx)
         self.draw_movement_die(ctx)

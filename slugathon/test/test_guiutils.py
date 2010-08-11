@@ -23,6 +23,26 @@ def test_rectangles_intersect():
     assert not ri(rect3, rect5)
     assert not ri(rect4, rect5)
 
+def test_combine_rectangles():
+    cr = guiutils.combine_rectangles
+    rect1 = (0, 0, 0, 0)
+    rect2 = (0, 0, 1, 1)
+    rect3 = (1, 1, 0, 0)
+    rect4 = (1, 1, 1, 1)
+    rect5 = (0.5, 0.5, 0, 0)
+    assert cr(rect1, rect1) == rect1
+    assert cr(rect1, rect2) == rect2
+    assert cr(rect1, rect3) == (0, 0, 1, 1)
+    assert cr(rect1, rect4) == (0, 0, 2, 2)
+    assert cr(rect1, rect5) == (0, 0, 0.5, 0.5)
+    assert cr(rect2, rect2) == rect2
+    assert cr(rect2, rect3) == (0, 0, 1, 1)
+    assert cr(rect2, rect4) == (0, 0, 2, 2)
+    assert cr(rect2, rect5) == (0, 0, 1, 1)
+    assert cr(rect3, rect4) == rect4
+    assert cr(rect3, rect5) == (0.5, 0.5, 0.5, 0.5)
+    assert cr(rect4, rect5) == (0.5, 0.5, 1.5, 1.5)
+
 def test_basedir():
     assert guiutils.basedir().endswith("/slugathon")
     assert guiutils.basedir("images").endswith("/slugathon/images")

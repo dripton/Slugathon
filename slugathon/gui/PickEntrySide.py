@@ -173,19 +173,24 @@ class PickEntrySide(gtk.Window):
     def update_gui(self, event=None):
         """Repaint the amount of the GUI that needs repainting.
 
-        If event is not None, then that's the dirty rectangle.
-        If event is None, then we compute the dirty rectangle from
-        self.repaint_hexlabels.
+        Compute the dirty rectangle from the union of
+        self.repaint_hexlabels and the event's area.
         """
+        if not self.area or not self.area.window:
+            return
         if event is None:
             if not self.repaint_hexlabels:
                 return
-            clip_rect = self.bounding_rect_for_hexlabels(
-              self.repaint_hexlabels)
+            else:
+                clip_rect = self.bounding_rect_for_hexlabels(
+                  self.repaint_hexlabels)
         else:
-            clip_rect = event.area
-        if not self.area or not self.area.window:
-            return
+            if self.repaint_hexlabels:
+                clip_rect = guiutils.combine_rectangles(event.area,
+                  self.bounding_rect_for_hexlabels(self.repaint_hexlabels))
+            else:
+                clip_rect = event.area
+
         ctx = self.area.window.cairo_create()
         ctx.set_line_width(round(0.2 * self.scale))
         ctx.rectangle(*clip_rect)

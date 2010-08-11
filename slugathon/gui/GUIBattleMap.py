@@ -470,20 +470,23 @@ class GUIBattleMap(gtk.Window):
     def update_gui(self, event=None):
         """Repaint the amount of the GUI that needs repainting.
 
-        If event is not None, then that's the dirty rectangle.
-        If event is None, then we compute the dirty rectangle from
-        self.repaint_hexlabels.
+        Compute the dirty rectangle from the union of
+        self.repaint_hexlabels and the event's area.
         """
+        if not self.area or not self.area.window:
+            return
         if event is None:
             if not self.repaint_hexlabels:
                 return
-            clip_rect = self.bounding_rect_for_hexlabels(
-              self.repaint_hexlabels)
+            else:
+                clip_rect = self.bounding_rect_for_hexlabels(
+                  self.repaint_hexlabels)
         else:
-            clip_rect = event.area
-        if not self.area or not self.area.window:
-            return
-
+            if self.repaint_hexlabels:
+                clip_rect = guiutils.combine_rectangles(event.area,
+                  self.bounding_rect_for_hexlabels(self.repaint_hexlabels))
+            else:
+                clip_rect = event.area
         x, y, width, height = self.allocation
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         ctx = cairo.Context(surface)
@@ -519,7 +522,7 @@ class GUIBattleMap(gtk.Window):
         for hexlabel in self.guihexes:
             self.repaint_hexlabels.add(hexlabel)
             self.clear_hexlabels.add(hexlabel)
-        self.repaint()
+        self.update_gui()
 
     def repaint(self, hexlabels=None):
         if hexlabels:

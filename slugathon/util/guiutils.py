@@ -136,6 +136,18 @@ def rectangles_intersect(rect1, rect2):
         return False
     return True
 
+def combine_rectangles(rect1, rect2):
+    """Return the smallest rectangle containing both passed rectangles."""
+    x1, y1, width1, height1 = rect1
+    x2, y2, width2, height2 = rect2
+    x = min(x1, x2)
+    y = min(y1, y2)
+    max_x = max(x1 + width1, x2 + width2)
+    width = max_x - x
+    max_y = max(y1 + height1, y2 + height2)
+    height = max_y - y
+    return x, y, width, height
+
 def basedir(*args):
     """Return an absolute path based on the base slugathon package directory
     and the passed paths."""
