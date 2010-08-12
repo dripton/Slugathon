@@ -938,6 +938,9 @@ class Game(Observed):
         """Return a set of all hexlabels to which creature can move,
         excluding its current hex"""
         result = set()
+        if creature.hexlabel is None:
+            print creature, "has hexlabel None"
+            return result
         if creature.moved or creature.engaged:
             return result
         if (self.battle_turn == 1 and creature.legion == self.defender_legion
@@ -1181,6 +1184,8 @@ class Game(Observed):
                     # TODO Move to graveyard instead
 
     def update(self, observed, action):
+        print "Game.update", action
+
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
                 self.add_player(action.username)

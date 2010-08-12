@@ -17,7 +17,7 @@ from zope.interface import implements
 from slugathon.net import config
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
-from slugathon.game import Action, Game
+from slugathon.game import Action, Game, Phase
 
 
 class Client(pb.Referenceable, Observed):
@@ -268,21 +268,82 @@ class Client(pb.Referenceable, Observed):
             return
         if defender.player.name == self.playername:
             if defender.can_flee:
-                def1 = self.user.callRemote("flee", game.name,
-                  defender.markername)
-                def1.addErrback(self.failure)
-            else:
-                def1 = self.user.callRemote("concede", game.name,
-                  defender.markername, attacker.markername, hexlabel)
-                def1.addErrback(self.failure)
+                if defender.score * 1.5 < attacker.score:
+                    def1 = self.user.callRemote("flee", game.name,
+                      defender.markername)
+                    def1.addErrback(self.failure)
+                else:
+                    def1 = self.user.callRemote("fight", game.name,
+                      attacker.markername, defender.markername)
+                    def1.addErrback(self.failure)
         else:
             if defender.can_flee and not did_not_flee:
                 # Wait for the defender to choose before conceding.
                 pass
             else:
-                def1 = self.user.callRemote("concede", game.name,
-                  attacker.markername, defender.markername, hexlabel)
+                def1 = self.user.callRemote("fight", game.name,
+                  attacker.markername, defender.markername)
                 def1.addErrback(self.failure)
+
+    def move_creatures(self, game):
+        print "move creatures"
+        assert game.battle_active_player.name == self.playername
+        legion = game.battle_active_legion
+        for creature in legion.sorted_creatures:
+            moves = game.find_battle_moves(creature)
+            if moves:
+                move = random.choice(list(moves))
+                print "calling move_creature", creature.name, \
+                  creature.hexlabel, move
+                def1 = self.user.callRemote("move_creature", game.name,
+                  creature.name, creature.hexlabel, move)
+                def1.addErrback(self.failure)
+                return
+        # No moves, so end the maneuver phase.
+        print "calling done_with_maneuvers"
+        def1 = self.user.callRemote("done_with_maneuvers", game.name)
+        def1.addErrback(self.failure)
+
+    def strike(self, game):
+        print "strike"
+        assert game.battle_active_player.name == self.playername
+        legion = game.battle_active_legion
+        for striker in legion.sorted_creatures:
+            if striker.can_strike:
+                hexlabels = striker.find_target_hexlabels()
+                hexlabel = random.choice(list(hexlabels))
+                target = game.creatures_in_battle_hex(hexlabel).pop()
+                num_dice = striker.number_of_dice(target)
+                strike_number = striker.strike_number(target)
+                def1 = self.user.callRemote("strike", game.name,
+                  striker.name, striker.hexlabel, target.name, target.hexlabel,
+                  num_dice, strike_number)
+                def1.addErrback(self.failure)
+                return
+        # No strikes, so end the strike phase.
+        if game.battle_phase == Phase.STRIKE:
+            def1 = self.user.callRemote("done_with_strikes",
+              game.name)
+            def1.addErrback(self.failure)
+        else:
+            assert game.battle_phase == Phase.COUNTERSTRIKE
+            def1 = self.user.callRemote("done_with_counterstrikes",
+              game.name)
+            def1.addErrback(self.failure)
+
+    def carry(self, game, striker_name, striker_hexlabel, target_name,
+      target_hexlabel, num_dice, strike_number, carries):
+        striker = game.creatures_in_battle_hex(striker_hexlabel).pop()
+        target = game.creatures_in_battle_hex(target_hexlabel).pop()
+        carry_targets = []
+        for creature in striker.engaged_enemies:
+            if striker.can_carry_to(creature, target, num_dice, strike_number):
+                carry_targets.append(creature)
+        carry_target = random.choice(carry_targets)
+        def1 = self.user.callRemote("carry", game.name,
+          carry_target.name, carry_target.hexlabel, carries)
+        def1.addErrback(self.failure)
+
 
     def recruit(self, game):
         print "recruit"
@@ -311,61 +372,74 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        print "update", action
+        print "AIClient.update", action
 
         # Update the Game first, then act.
         self.notify(action)
 
         if isinstance(action, Action.AddUsername):
             self.usernames.add(action.username)
+
         elif isinstance(action, Action.DelUsername):
             self.usernames.remove(action.username)
+
         elif isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
               action.start_time, action.min_players, action.max_players,
               [action.username])
             self.add_game(game_info_tuple)
+
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
+
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
             self.maybe_pick_color(game)
+
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
             self.maybe_pick_color(game)
             self.maybe_pick_first_marker(game, action.playername)
+
         elif isinstance(action, Action.AssignedAllColors):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 self.split(None, game)
+
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
                 print "Game %s over, won by %s" % (action.game_name,
                   " and ".join(action.winner_names))
             else:
                 print "Game %s over, draw" % action.game_name
+
         elif isinstance(action, Action.DoneRecruiting):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 self.split(None, game)
+
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 self.split(None, game)
+
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 self.split(None, game)
+
         elif isinstance(action, Action.RollMovement):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 self.move_legions(game)
+
         elif isinstance(action, Action.MoveLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 self.move_legions(game)
+
         elif isinstance(action, Action.DoneMoving):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
@@ -376,6 +450,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
             self.resolve_engagement(game, action.hexlabel, False)
+
         elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede)):
             game = self.name_to_game(action.game_name)
@@ -386,17 +461,74 @@ class Client(pb.Referenceable, Observed):
                     def1 = self.user.callRemote("done_with_engagements",
                       game.name)
                     def1.addErrback(self.failure)
+
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
             self.resolve_engagement(game, action.hexlabel, True)
+
+        elif isinstance(action, Action.Fight):
+            game = self.name_to_game(action.game_name)
+            if game.defender_legion.player.name == self.playername:
+                self.move_creatures(game)
+
+        elif isinstance(action, Action.MoveCreature):
+            game = self.name_to_game(action.game_name)
+            if game.battle_active_legion.player.name == self.playername:
+                self.move_creatures(game)
+
+        elif isinstance(action, Action.DoneManeuvering):
+            game = self.name_to_game(action.game_name)
+            if game.battle_active_legion.player.name == self.playername:
+                self.strike(game)
+
+        elif isinstance(action, Action.Strike):
+            game = self.name_to_game(action.game_name)
+            if game.battle_active_legion.player.name == self.playername:
+                if action.carries:
+                    self.carry(game, action.striker_name,
+                      action.striker_hexlabel, action.target_name,
+                      action.target_hexlabel, action.num_dice,
+                      action.strike_number, action.carries)
+                else:
+                    self.strike(game)
+
+        elif isinstance(action, Action.Carry):
+            game = self.name_to_game(action.game_name)
+            if game.battle_active_legion.player.name == self.playername:
+                if action.carries_left:
+                    self.carry(game, action.striker_name,
+                      action.striker_hexlabel, action.target_name,
+                      action.target_hexlabel, action.num_dice,
+                      action.strike_number, action.carries_left)
+                else:
+                    self.strike(game)
+
+        elif isinstance(action, Action.DoneStriking):
+            game = self.name_to_game(action.game_name)
+            if game.battle_active_legion.player.name == self.playername:
+                self.strike(game)
+
+        elif isinstance(action, Action.DoneStrikingBack):
+            game = self.name_to_game(action.game_name)
+            # TODO summon / reinforce
+            if game.battle_active_legion.player.name == self.playername:
+                self.user.callRemote("done_with_reinforcements", game.name)
+
+        elif isinstance(action, Action.DoneReinforcing):
+            game = self.name_to_game(action.game_name)
+            if game.battle_active_legion.player.name == self.playername:
+                self.move_creatures(game)
+
         elif isinstance(action, Action.DoneFighting):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
                 self.recruit(game)
+
         elif isinstance(action, Action.RecruitCreature):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
                 self.recruit(game)
+
         else:
             print "got unhandled action", action
 
