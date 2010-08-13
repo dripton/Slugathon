@@ -416,6 +416,27 @@ class Client(pb.Referenceable, Observed):
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
+    def acquire_angel(self, game, markername, angels, archangels):
+        player = game.get_player_by_name(self.playername)
+        legion = player.legions[markername]
+        starting_height = len(legion)
+        acquires = 0
+        while starting_height + acquires < 7 and (angels or archangels):
+            if archangels:
+                def1 = self.user.callRemote("acquire_angel", game.name,
+                  markername, "Archangel")
+                def1.addErrback(self.failure)
+                archangels -= 1
+                acquires += 1
+            elif angels:
+                def1 = self.user.callRemote("acquire_angel", game.name,
+                  markername, "Angel")
+                def1.addErrback(self.failure)
+                angels -= 1
+                acquires += 1
+        if player == game.active_player:
+            self.choose_engagement(game)
+
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
@@ -597,6 +618,12 @@ class Client(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 self.choose_engagement(game)
+
+        elif isinstance(action, Action.AcquireAngels):
+            game = self.name_to_game(action.game_name)
+            if action.playername == self.playername:
+                self.acquire_angel(game, action.markername, action.angels,
+                  action.archangels)
 
         else:
             print "got unhandled action", action
