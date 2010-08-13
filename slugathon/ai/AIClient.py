@@ -404,8 +404,8 @@ class Client(pb.Referenceable, Observed):
                         if creature.summonable:
                             summonables.append(creature)
             if summonables:
-                tuples = reversed(sorted((creature.sort_value, creature)
-                  for creature in summonables))
+                tuples = sorted(((creature.sort_value, creature)
+                  for creature in summonables), reverse=True)
                 summonable = tuples[0][1]
                 donor = summonable.legion
                 def1 = self.user.callRemote("summon_angel", game.name,
