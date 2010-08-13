@@ -112,6 +112,14 @@ class Player(Observed):
             caretaker.take_one(creature.name)
         self.notify(action)
 
+    def can_split(self):
+        """Return True if this player can split any legions."""
+        if self.markernames:
+            for legion in self.legions.itervalues():
+                if len(legion) >= 4:
+                    return True
+        return False
+
     def split_legion(self, parent_markername, child_markername,
       parent_creature_names, child_creature_names):
         parent = self.legions[parent_markername]
@@ -254,6 +262,16 @@ class Player(Observed):
         if self.can_exit_fight_phase():
             action = Action.DoneFighting(self.game.name, self.name)
             self.notify(action)
+
+    def can_recruit(self):
+        """Return True if any of this player's legions can recruit."""
+        for legion in self.legions.itervalues():
+            hexlabel = legion.hexlabel
+            if (legion.moved and not legion.recruited and len(legion) < 7 and
+              legion.can_recruit(self.game.board.hexes[hexlabel].terrain,
+              self.game.caretaker)):
+                return True
+        return False
 
     def done_with_recruits(self):
         action = Action.DoneRecruiting(self.game.name, self.name)
