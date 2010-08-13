@@ -237,10 +237,7 @@ class Client(pb.Referenceable, Observed):
         def1.addErrback(self.failure)
 
     def choose_engagement(self, game):
-        """Resolve engagements.
-
-        For now only know how to flee or concede.
-        """
+        """Resolve engagements."""
         print "choose_engagement"
         hexlabels = game.engagement_hexlabels
         if hexlabels:
@@ -366,6 +363,57 @@ class Client(pb.Referenceable, Observed):
                     def1.addErrback(self.failure)
                     return
         def1 = self.user.callRemote("done_with_recruits", game.name)
+        def1.addErrback(self.failure)
+
+
+    def reinforce(self, game):
+        assert game.battle_active_player.name == self.playername
+        legion = game.defender_legion
+        assert legion.player.name == self.playername
+        mterrain = game.battlemap.mterrain
+        caretaker = game.caretaker
+        if (game.battle_turn == 4 and
+          len(legion.living_creature_names) < 7 and
+          not legion.recruited and legion.can_recruit(mterrain, caretaker)):
+            lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
+            if lst:
+                # For now, just take the last one.
+                tup = lst[-1]
+                recruit = tup[0]
+                recruiters = tup[1:]
+                def1 = self.user.callRemote("recruit_creature", game.name,
+                  legion.markername, recruit, recruiters)
+                def1.addErrback(self.failure)
+                return
+        else:
+            def1 = self.user.callRemote("done_with_reinforcements", game.name)
+            def1.addErrback(self.failure)
+
+
+    def summon(self, game):
+        assert game.active_player.name == self.playername
+        legion = game.attacker_legion
+        assert legion.player.name == self.playername
+        summonables = []
+        if (len(legion.living_creature_names) < 7 and
+          legion.can_summon and game.first_attacker_kill in
+          [game.battle_turn - 1, game.battle_turn]):
+            for legion2 in legion.player.legions.itervalues():
+                if not legion2.engaged:
+                    for creature in legion2.creatures:
+                        if creature.summonable:
+                            summonables.append(creature)
+            if summonables:
+                tuples = reversed(sorted((creature.sort_value, creature)
+                  for creature in summonables))
+                summonable = tuples[0][1]
+                donor = summonable.legion
+                def1 = self.user.callRemote("summon_angel", game.name,
+                  legion.markername, donor.markername, summonable.name)
+                def1.addErrback(self.failure)
+                return
+
+        def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
 
@@ -510,9 +558,12 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.DoneStrikingBack):
             game = self.name_to_game(action.game_name)
-            # TODO summon / reinforce
             if game.battle_active_legion.player.name == self.playername:
-                self.user.callRemote("done_with_reinforcements", game.name)
+                legion = game.battle_active_legion
+                if legion == game.defender_legion:
+                    self.reinforce(game)
+                else:
+                    self.summon(game)
 
         elif isinstance(action, Action.DoneReinforcing):
             game = self.name_to_game(action.game_name)
@@ -527,7 +578,25 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.RecruitCreature):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                self.recruit(game)
+                if game.phase == Phase.MUSTER:
+                    self.recruit(game)
+                else:
+                    assert game.phase == Phase.FIGHT
+                    assert game.battle_phase == Phase.REINFORCE
+                    self.reinforce(game)
+
+        elif isinstance(action, Action.SummonAngel):
+            game = self.name_to_game(action.game_name)
+            if action.playername == self.playername:
+                if game.battle_phase == Phase.REINFORCE:
+                    self.summon(game)
+                else:
+                    self.choose_engagement(game)
+
+        elif isinstance(action, Action.BattleOver):
+            game = self.name_to_game(action.game_name)
+            if game.active_player.name == self.playername:
+                self.choose_engagement(game)
 
         else:
             print "got unhandled action", action
