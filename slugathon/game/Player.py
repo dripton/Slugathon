@@ -274,7 +274,17 @@ class Player(Observed):
         return False
 
     def done_with_recruits(self):
-        action = Action.DoneRecruiting(self.game.name, self.name)
+        player_num = self.game.players.index(self)
+        turn = self.game.turn
+        dead = True
+        while dead:
+            player_num = (player_num + 1) % len(self.game.players)
+            if player_num == 0:
+                turn += 1
+            active_player = self.game.players[player_num]
+            dead = active_player.dead
+        action = Action.DoneRecruiting(self.game.name, self.name, turn,
+          active_player.name)
         self.notify(action)
 
     def done_with_reinforcements(self):

@@ -1115,6 +1115,11 @@ class Game(Observed):
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
         self._cleanup_battle()
+        if not self.engagement_hexlabels:
+            self.active_player.done_with_engagements()
+            if self.active_player.dead:
+                self.active_player.done_with_engagements()
+                self.active_player.done_with_recruits()
 
 
     def done_with_counterstrikes(self, playername):
@@ -1299,14 +1304,10 @@ class Game(Observed):
             self.undo_recruit(action.playername, action.markername)
 
         elif isinstance(action, Action.DoneRecruiting):
-            player = self.get_player_by_name(action.playername)
+            self.turn = action.turn
             self.phase = Phase.SPLIT
-            player_num = self.players.index(player)
-            # TODO Skip dead players
-            new_player_num = (player_num + 1) % len(self.players)
-            if new_player_num == 0:
-                self.turn += 1
-            self.active_player = self.players[new_player_num]
+            self.active_player = self.get_player_by_name(
+              action.active_playername)
             for player in self.players:
                 player.new_turn()
 

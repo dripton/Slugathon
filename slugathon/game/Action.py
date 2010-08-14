@@ -250,9 +250,11 @@ class UndoRecruit(UndoAction):
 pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)
 
 class DoneRecruiting(Action):
-    def __init__(self, game_name, playername):
+    def __init__(self, game_name, playername, turn, active_playername):
         self.game_name = game_name
         self.playername = playername
+        self.turn = turn
+        self.active_playername = active_playername
 pb.setUnjellyableForClass(DoneRecruiting, DoneRecruiting)
 
 
