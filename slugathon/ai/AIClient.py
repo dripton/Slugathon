@@ -484,10 +484,15 @@ class Client(pb.Referenceable, Observed):
             else:
                 print "Game %s over, draw" % action.game_name
 
-        elif isinstance(action, Action.DoneRecruiting):
+        elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 self.split(None, game)
+
+        elif isinstance(action, Action.StartMovePhase):
+            game = self.name_to_game(action.game_name)
+            if game.active_player.name == self.playername:
+                self.move_creatures(game)
 
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
@@ -509,13 +514,16 @@ class Client(pb.Referenceable, Observed):
             if action.playername == self.playername:
                 self.move_legions(game)
 
-        elif isinstance(action, Action.DoneMoving):
+        elif isinstance(action, Action.StartFightPhase):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                if game.engagement_hexlabels:
-                    self.choose_engagement(game)
-                else:
-                    self.recruit(game)
+                self.choose_engagement(game)
+
+        elif isinstance(action, Action.StartMusterPhase):
+            if action.playername == self.playername:
+                game = self.name_to_game(action.game_name)
+                self.recruit(game)
+
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
             self.resolve_engagement(game, action.hexlabel, False)
@@ -545,7 +553,7 @@ class Client(pb.Referenceable, Observed):
             if game.battle_active_legion.player.name == self.playername:
                 self.move_creatures(game)
 
-        elif isinstance(action, Action.DoneManeuvering):
+        elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 self.strike(game)
@@ -572,12 +580,12 @@ class Client(pb.Referenceable, Observed):
                 else:
                     self.strike(game)
 
-        elif isinstance(action, Action.DoneStriking):
+        elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 self.strike(game)
 
-        elif isinstance(action, Action.DoneStrikingBack):
+        elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 legion = game.battle_active_legion
@@ -586,15 +594,10 @@ class Client(pb.Referenceable, Observed):
                 else:
                     self.summon(game)
 
-        elif isinstance(action, Action.DoneReinforcing):
+        elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 self.move_creatures(game)
-
-        elif isinstance(action, Action.DoneFighting):
-            if action.playername == self.playername:
-                game = self.name_to_game(action.game_name)
-                self.recruit(game)
 
         elif isinstance(action, Action.RecruitCreature):
             if action.playername == self.playername:

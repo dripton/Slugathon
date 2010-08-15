@@ -538,7 +538,7 @@ class GUIBattleMap(gtk.Window):
             self.repaint([action.old_hexlabel, action.new_hexlabel])
             self.highlight_mobile_chits()
 
-        elif isinstance(action, Action.DoneReinforcing):
+        elif isinstance(action, Action.StartManeuverBattlePhase):
             self.highlight_mobile_chits()
             if self.game.battle_active_player.name == self.username:
                 if not self.game.battle_active_legion.mobile_creatures:
@@ -546,7 +546,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
-        elif isinstance(action, Action.DoneManeuvering):
+        elif isinstance(action, Action.StartStrikeBattlePhase):
             self.highlight_strikers()
             if self.game.battle_active_player.name == self.username:
                 if not self.game.battle_active_legion.strikers:
@@ -617,7 +617,7 @@ class GUIBattleMap(gtk.Window):
                   carries_left, self)
                 def1.addCallback(self.picked_carry)
 
-        elif isinstance(action, Action.DoneStriking):
+        elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             self.highlight_strikers()
             if self.game.battle_active_player.name == self.username:
                 if not self.game.battle_active_legion.strikers:
@@ -625,7 +625,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
-        elif isinstance(action, Action.DoneStrikingBack):
+        elif isinstance(action, Action.StartReinforceBattlePhase):
             print "GUIBattleMap got DoneStrikingBack", action
             self._remove_dead_chits()
             if (self.game.battle_turn == 4 and

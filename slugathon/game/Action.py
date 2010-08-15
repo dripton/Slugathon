@@ -216,11 +216,31 @@ class UndoMoveLegion(UndoAction):
         self.teleporting_lord = teleporting_lord
 pb.setUnjellyableForClass(UndoMoveLegion, UndoMoveLegion)
 
-class DoneMoving(Action):
+class StartSplitPhase(Action):
+    def __init__(self, game_name, playername, turn):
+        self.game_name = game_name
+        self.playername = playername
+        self.turn = turn
+pb.setUnjellyableForClass(StartSplitPhase, StartSplitPhase)
+
+class StartMovePhase(Action):
+    def __init__(self, game_name, playername, turn, active_playername):
+        self.game_name = game_name
+        self.playername = playername
+        self.turn = turn
+pb.setUnjellyableForClass(StartMovePhase, StartMovePhase)
+
+class StartFightPhase(Action):
     def __init__(self, game_name, playername):
         self.game_name = game_name
         self.playername = playername
-pb.setUnjellyableForClass(DoneMoving, DoneMoving)
+pb.setUnjellyableForClass(StartFightPhase, StartFightPhase)
+
+class StartMusterPhase(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(StartMusterPhase, StartMusterPhase)
 
 
 class RecruitCreature(Action):
@@ -248,15 +268,6 @@ class UndoRecruit(UndoAction):
         self.creature_name = creature_name
         self.recruiter_names = recruiter_names
 pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)
-
-class DoneRecruiting(Action):
-    def __init__(self, game_name, playername, turn, active_playername):
-        self.game_name = game_name
-        self.playername = playername
-        self.turn = turn
-        self.active_playername = active_playername
-pb.setUnjellyableForClass(DoneRecruiting, DoneRecruiting)
-
 
 # TODO Act on this action.  Currently meaningless since all legion contents
 # are public.
@@ -377,17 +388,32 @@ class UndoMoveCreature(UndoAction):
         self.new_hexlabel = new_hexlabel
 pb.setUnjellyableForClass(UndoMoveCreature, UndoMoveCreature)
 
-class DoneManeuvering(Action):
-    def __init__(self, game_name, playername):
+class StartReinforceBattlePhase(Action):
+    def __init__(self, game_name, playername, battle_turn):
         self.game_name = game_name
         self.playername = playername
-pb.setUnjellyableForClass(DoneManeuvering, DoneManeuvering)
+        self.battle_turn = battle_turn
+pb.setUnjellyableForClass(StartReinforceBattlePhase, StartReinforceBattlePhase)
 
-class DoneReinforcing(Action):
+class StartManeuverBattlePhase(Action):
     def __init__(self, game_name, playername):
         self.game_name = game_name
         self.playername = playername
-pb.setUnjellyableForClass(DoneReinforcing, DoneReinforcing)
+pb.setUnjellyableForClass(StartManeuverBattlePhase, StartManeuverBattlePhase)
+
+class StartStrikeBattlePhase(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(StartStrikeBattlePhase, StartStrikeBattlePhase)
+
+class StartCounterstrikeBattlePhase(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(StartCounterstrikeBattlePhase,
+  StartCounterstrikeBattlePhase)
+
 
 class DriftDamage(Action):
     def __init__(self, game_name, target_name, target_hexlabel, hits):
@@ -437,25 +463,6 @@ class Carry(Action):
         self.carries = carries
         self.carries_left = carries_left
 pb.setUnjellyableForClass(Carry, Carry)
-
-class DoneStriking(Action):
-    def __init__(self, game_name, playername):
-        self.game_name = game_name
-        self.playername = playername
-pb.setUnjellyableForClass(DoneStriking, DoneStriking)
-
-class DoneStrikingBack(Action):
-    def __init__(self, game_name, playername, battle_turn):
-        self.game_name = game_name
-        self.playername = playername
-        self.battle_turn = battle_turn
-pb.setUnjellyableForClass(DoneStrikingBack, DoneStrikingBack)
-
-class DoneFighting(Action):
-    def __init__(self, game_name, playername):
-        self.game_name = game_name
-        self.playername = playername
-pb.setUnjellyableForClass(DoneFighting, DoneFighting)
 
 class SummonAngel(Action):
     def __init__(self, game_name, playername, markername, donor_markername,

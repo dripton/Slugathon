@@ -273,7 +273,10 @@ class StatusScreen(gtk.Window):
         elif isinstance(action, Action.RollMovement):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
-        elif isinstance(action, Action.DoneMoving):
+        elif isinstance(action, Action.StartFightPhase):
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+
+        elif isinstance(action, Action.StartMusterPhase):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
 
         elif (isinstance(action, Action.RecruitCreature) or
@@ -285,7 +288,10 @@ class StatusScreen(gtk.Window):
             creatures_label = getattr(self, "creatures%d_label" % player_num)
             creatures_label.set_text(str(player.num_creatures()))
 
-        elif isinstance(action, Action.DoneRecruiting):
+        elif isinstance(action, Action.StartSplitPhase):
+            self._init_turn()
+
+        elif isinstance(action, Action.StartMovePhase):
             self._init_turn()
 
         elif (isinstance(action, Action.Flee) or
@@ -305,13 +311,13 @@ class StatusScreen(gtk.Window):
                 score_label.set_text(str(player.score))
 
         elif (isinstance(action, Action.Fight) or
-          isinstance(action, Action.DoneReinforcing) or
-          isinstance(action, Action.DoneManeuvering) or
-          isinstance(action, Action.DoneStriking) or
-          isinstance(action, Action.DoneStrikingBack)):
+          isinstance(action, Action.StartManeuverBattlePhase) or
+          isinstance(action, Action.StartStrikeBattlePhase) or
+          isinstance(action, Action.StartCounterstrikeBattlePhase) or
+          isinstance(action, Action.StartReinforceBattlePhase)):
             self._init_battle()
 
-        elif (isinstance(action, Action.DoneFighting) or
+        elif (isinstance(action, Action.StartMusterPhase) or
           isinstance(action, Action.BattleOver)):
             self._clear_battle()
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])

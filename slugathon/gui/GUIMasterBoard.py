@@ -861,12 +861,13 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_unmoved_legions()
             self.repaint()
 
-        elif isinstance(action, Action.DoneMoving):
+        elif isinstance(action, Action.StartFightPhase):
             self.clear_recruitchits()
-            if self.game.phase == Phase.FIGHT:
-                self.highlight_engagements()
-            elif self.game.phase == Phase.MUSTER:
-                self.highlight_recruits()
+            self.highlight_engagements()
+
+        elif isinstance(action, Action.StartMusterPhase):
+            self.clear_recruitchits()
+            self.highlight_recruits()
 
         elif isinstance(action, Action.ResolvingEngagement):
             hexlabel = action.hexlabel
@@ -939,22 +940,21 @@ class GUIMasterBoard(gtk.Window):
                   defender, self)
                 def1.addCallback(self.cb_negotiate)
 
-        elif isinstance(action, Action.DoneFighting):
-            self.highlight_recruits()
-
         elif isinstance(action, Action.RecruitCreature) or isinstance(action,
           Action.UndoRecruit):
             self.highlight_recruits()
             legion = self.game.find_legion(action.markername)
             self.repaint([legion.hexlabel])
 
-        elif isinstance(action, Action.DoneRecruiting):
+        elif isinstance(action, Action.StartSplitPhase):
+            if self.username == self.game.active_player.name:
+                self.unselect_all()
+                self.highlight_tall_legions()
+
+        elif isinstance(action, Action.StartMovePhase):
             if self.username != self.game.active_player.name:
                 self.unselect_all()
-            if self.game.phase == Phase.SPLIT:
-                self.highlight_tall_legions()
-            elif self.game.phase == Phase.MOVE:
-                self.highlight_unmoved_legions()
+            self.highlight_unmoved_legions()
 
         elif isinstance(action, Action.SummonAngel):
             legion = self.game.find_legion(action.markername)

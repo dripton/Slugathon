@@ -194,16 +194,12 @@ class User(pb.Avatar):
             self.server.move_legion(self.name, action.game_name,
               action.markername, action.hexlabel, action.entry_side,
               action.teleport, action.teleporting_lord)
-        elif isinstance(action, Action.DoneMoving):
-            self.server.done_with_moves(self.name, action.game_name)
         elif isinstance(action, Action.MoveCreature):
             self.server.move_creature(self.name, action.game_name,
               action.creature_name, action.old_hexlabel, action.new_hexlabel)
         elif isinstance(action, Action.RecruitCreature):
             self.server.recruit_creature(self.name, action.game_name,
               action.markername, action.creature_name, action.recruiter_names)
-        elif isinstance(action, Action.DoneRecruiting):
-            self.server.done_with_recruits(self.name, action.game_name)
 
     def perspective_save(self, game_name):
         self.server.save(self.name, game_name)

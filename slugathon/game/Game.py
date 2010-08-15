@@ -188,6 +188,21 @@ class Game(Observed):
         """Return a list of Players still in the game."""
         return [player for player in self.players if not player.dead]
 
+    def get_next_player_and_turn(self):
+        """Return the next player and what game turn it will be when
+        his turn starts."""
+        player = self.active_player
+        player_num = self.players.index(player)
+        turn = self.turn
+        dead = True
+        while dead:
+            player_num = (player_num + 1) % len(self.players)
+            if player_num == 0:
+                turn += 1
+            player = self.players[player_num]
+            dead = player.dead
+        return player, turn
+
     def assign_towers(self):
         """Randomly assign a tower to each player."""
         towers = self.board.get_tower_labels()
@@ -1258,12 +1273,8 @@ class Game(Observed):
             if legion.moved:
                 self.undo_move_legion(action.playername, markername)
 
-        elif isinstance(action, Action.DoneMoving):
-            player = self.get_player_by_name(action.playername)
-            if self.engagement_hexlabels:
-                self.phase = Phase.FIGHT
-            else:
-                self.phase = Phase.MUSTER
+        elif isinstance(action, Action.StartFightPhase):
+            self.phase = Phase.FIGHT
 
         elif isinstance(action, Action.ResolvingEngagement):
             for player in self.players:
@@ -1291,7 +1302,7 @@ class Game(Observed):
             self.acquire_angel(action.playername, action.markername,
               action.angel_name)
 
-        elif isinstance(action, Action.DoneFighting):
+        elif isinstance(action, Action.StartMusterPhase):
             self.phase = Phase.MUSTER
             for player in self.players:
                 player.reset_angels_pending()
@@ -1303,11 +1314,11 @@ class Game(Observed):
         elif isinstance(action, Action.UndoRecruit):
             self.undo_recruit(action.playername, action.markername)
 
-        elif isinstance(action, Action.DoneRecruiting):
+        elif isinstance(action, Action.StartSplitPhase):
             self.turn = action.turn
             self.phase = Phase.SPLIT
             self.active_player = self.get_player_by_name(
-              action.active_playername)
+              action.playername)
             for player in self.players:
                 player.new_turn()
 
@@ -1342,10 +1353,10 @@ class Game(Observed):
             if creature.moved:
                 creature.undo_move()
 
-        elif isinstance(action, Action.DoneReinforcing):
+        elif isinstance(action, Action.StartManeuverBattlePhase):
             self.battle_phase = Phase.MANEUVER
 
-        elif isinstance(action, Action.DoneManeuvering):
+        elif isinstance(action, Action.StartStrikeBattlePhase):
             self.battle_phase = Phase.DRIFTDAMAGE
             self.apply_drift_damage()
             self.battle_phase = Phase.STRIKE
@@ -1380,15 +1391,15 @@ class Game(Observed):
             else:
                 self.pending_carry = None
 
-        elif isinstance(action, Action.DoneStriking):
+        elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             self.battle_phase = Phase.COUNTERSTRIKE
             # Switch active players before the counterstrike phase.
             if action.playername == self.defender_legion.player.name:
-                self.battle_active_legion = self.attacker_legion
-            else:
                 self.battle_active_legion = self.defender_legion
+            else:
+                self.battle_active_legion = self.attacker_legion
 
-        elif isinstance(action, Action.DoneStrikingBack):
+        elif isinstance(action, Action.StartReinforceBattlePhase):
             self.clear_battle_flags()
             self.cleanup_offboard_creatures()
             self.cleanup_dead_creatures()

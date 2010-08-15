@@ -247,7 +247,10 @@ class Player(Observed):
     def done_with_moves(self):
         if self.can_exit_move_phase():
             self.recombine()
-            action = Action.DoneMoving(self.game.name, self.name)
+            if self.game.engagement_hexlabels:
+                action = Action.StartFightPhase(self.game.name, self.name)
+            else:
+                action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 
     def can_exit_fight_phase(self):
@@ -260,7 +263,9 @@ class Player(Observed):
 
     def done_with_engagements(self):
         if self.can_exit_fight_phase():
-            action = Action.DoneFighting(self.game.name, self.name)
+            # TODO Should we auto-advance past the muster phase if there
+            # are no recruits?
+            action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 
     def can_recruit(self):
@@ -274,33 +279,33 @@ class Player(Observed):
         return False
 
     def done_with_recruits(self):
-        player_num = self.game.players.index(self)
-        turn = self.game.turn
-        dead = True
-        while dead:
-            player_num = (player_num + 1) % len(self.game.players)
-            if player_num == 0:
-                turn += 1
-            active_player = self.game.players[player_num]
-            dead = active_player.dead
-        action = Action.DoneRecruiting(self.game.name, self.name, turn,
-          active_player.name)
+        (player, turn) = self.game.get_next_player_and_turn()
+        if player.can_split():
+            action = Action.StartSplitPhase(self.game.name, player.name, turn)
+        else:
+            action = Action.StartMovePhase(self.game.name, player.name, turn)
         self.notify(action)
 
     def done_with_reinforcements(self):
-        action = Action.DoneReinforcing(self.game.name, self.name)
+        action = Action.StartManeuverBattlePhase(self.game.name, self.name)
         self.notify(action)
 
     def done_with_maneuvers(self):
-        action = Action.DoneManeuvering(self.game.name, self.name)
+        action = Action.StartStrikeBattlePhase(self.game.name, self.name)
         self.notify(action)
 
     def done_with_strikes(self):
+        # TODO extract has_forced_strikes method
         for creature in self.game.battle_active_legion.creatures:
             if not creature.struck and creature.engaged:
                 print "Forced strikes remain", creature
                 return
-        action = Action.DoneStriking(self.game.name, self.name)
+        player = None
+        for legion in self.game.battle_legions:
+            if legion.player != self:
+                player = legion.player
+        action = Action.StartCounterstrikeBattlePhase(self.game.name,
+          player.name)
         self.notify(action)
 
     def done_with_counterstrikes(self):
@@ -308,8 +313,11 @@ class Player(Observed):
             if not creature.struck and creature.engaged:
                 print "Forced strikes remain", creature
                 return
-        action = Action.DoneStrikingBack(self.game.name, self.name,
-          self.game.battle_turn)
+        turn = self.game.battle_turn
+        if self.game.defender_legion.player == self:
+            turn += 1
+        action = Action.StartReinforceBattlePhase(self.game.name, self.name,
+          turn)
         self.notify(action)
 
     def summon(self, legion, donor, creature_name):

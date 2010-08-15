@@ -164,12 +164,12 @@ MoveLegion {'markername': 'Bu11', 'entry_side': 1, 'teleport': True, \
 MoveLegion {'markername': 'Bu06', 'entry_side': 1, 'teleport': False, \
 'playername': 'tchula', 'teleporting_lord': None, 'game_name': 'a', \
 'hexlabel': 36}
-DoneMoving {'playername': 'tchula', 'game_name': 'a'}
+StartMusterPhase {'playername': 'tchula', 'game_name': 'a'}
 RecruitCreature {'playername': 'tchula', 'markername': 'Bu06', \
 'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}
 RecruitCreature {'playername': 'tchula', 'markername': 'Bu11', \
 'creature_name': 'Warlock', 'game_name': 'a', 'recruiter_names': ['Titan']}
-DoneRecruiting {'playername': 'tchula', 'game_name': 'a'}
+StartSplitPhase {'playername': 'dripton', 'game_name': 'a', 'turn': 1}
 SplitLegion {'playername': 'dripton', 'child_creature_names': \
 ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
 'child_markername': 'Rd02', 'parent_creature_names': \
@@ -181,7 +181,7 @@ MoveLegion {'markername': 'Rd04', 'entry_side': 1, 'teleport': True, \
 MoveLegion {'markername': 'Rd02', 'entry_side': 5, 'teleport': False, \
 'playername': 'dripton', 'teleporting_lord': None, 'game_name': 'a', \
 'hexlabel': 117}
-DoneMoving {'playername': 'dripton', 'game_name': 'a'}
+StartMusterPhase {'playername': 'dripton', 'game_name': 'a'}
 RecruitCreature {'playername': 'dripton', 'markername': 'Rd02', \
 'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}
 RecruitCreature {'playername': 'dripton', 'markername': 'Rd04', \
