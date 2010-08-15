@@ -7,7 +7,7 @@ import time
 from slugathon.game import Game
 
 
-class TestMovement(object):
+class TestGame(object):
     def setup_method(self, method):
         now = time.time()
         self.game = game = Game.Game("g1", "p0", now, now, 2, 6)
@@ -139,3 +139,12 @@ class TestMovement(object):
         assert game.can_move_legion(player, legion, 16, 5, True, "Titan")
         assert not game.can_move_legion(player, legion, 16, 4, True, "Titan")
         assert game.can_move_legion(player, legion, 4000, 1, True, "Titan")
+
+    def test_get_next_player_and_turn(self):
+        game = self.game
+        player0 = game.players[0]
+        player1 = game.players[1]
+        assert game.turn == 1
+        assert game.active_player == player0
+        assert game.get_next_player_and_turn() == (player1, 1)
+        player0.done_with_splits()
