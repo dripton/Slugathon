@@ -291,9 +291,6 @@ class StatusScreen(gtk.Window):
         elif isinstance(action, Action.StartSplitPhase):
             self._init_turn()
 
-        elif isinstance(action, Action.StartMovePhase):
-            self._init_turn()
-
         elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal) or

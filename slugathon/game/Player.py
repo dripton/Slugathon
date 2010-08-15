@@ -247,10 +247,7 @@ class Player(Observed):
     def done_with_moves(self):
         if self.can_exit_move_phase():
             self.recombine()
-            if self.game.engagement_hexlabels:
-                action = Action.StartFightPhase(self.game.name, self.name)
-            else:
-                action = Action.StartMusterPhase(self.game.name, self.name)
+            action = Action.StartFightPhase(self.game.name, self.name)
             self.notify(action)
 
     def can_exit_fight_phase(self):
@@ -263,8 +260,6 @@ class Player(Observed):
 
     def done_with_engagements(self):
         if self.can_exit_fight_phase():
-            # TODO Should we auto-advance past the muster phase if there
-            # are no recruits?
             action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 
@@ -280,10 +275,7 @@ class Player(Observed):
 
     def done_with_recruits(self):
         (player, turn) = self.game.get_next_player_and_turn()
-        if player.can_split():
-            action = Action.StartSplitPhase(self.game.name, player.name, turn)
-        else:
-            action = Action.StartMovePhase(self.game.name, player.name, turn)
+        action = Action.StartSplitPhase(self.game.name, player.name, turn)
         self.notify(action)
 
     def done_with_reinforcements(self):

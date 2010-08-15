@@ -223,13 +223,6 @@ class StartSplitPhase(Action):
         self.turn = turn
 pb.setUnjellyableForClass(StartSplitPhase, StartSplitPhase)
 
-class StartMovePhase(Action):
-    def __init__(self, game_name, playername, turn):
-        self.game_name = game_name
-        self.playername = playername
-        self.turn = turn
-pb.setUnjellyableForClass(StartMovePhase, StartMovePhase)
-
 class StartFightPhase(Action):
     def __init__(self, game_name, playername):
         self.game_name = game_name

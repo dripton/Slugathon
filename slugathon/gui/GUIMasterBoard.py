@@ -858,10 +858,23 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.StartFightPhase):
             self.clear_recruitchits()
             self.highlight_engagements()
+            player = self.game.active_player
+            if self.username == player.name:
+                if not self.game.engagement_hexlabels:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.StartMusterPhase):
             self.clear_recruitchits()
             self.highlight_recruits()
+            player = self.game.active_player
+            if self.username == player.name:
+                if not player.can_recruit():
+                    def1 = self.user.callRemote("done_with_recruits",
+                      self.game.name)
+                    def1.addErrback(self.failure)
+
 
         elif isinstance(action, Action.ResolvingEngagement):
             hexlabel = action.hexlabel
@@ -941,14 +954,15 @@ class GUIMasterBoard(gtk.Window):
             self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.StartSplitPhase):
-            if self.username == self.game.active_player.name:
+            player = self.game.active_player
+            if self.username == player.name:
                 self.unselect_all()
                 self.highlight_tall_legions()
-
-        elif isinstance(action, Action.StartMovePhase):
-            if self.username != self.game.active_player.name:
-                self.unselect_all()
-            self.highlight_unmoved_legions()
+                player = self.game.active_player
+                if not player.can_split():
+                    def1 = self.user.callRemote("done_with_splits",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.SummonAngel):
             legion = self.game.find_legion(action.markername)

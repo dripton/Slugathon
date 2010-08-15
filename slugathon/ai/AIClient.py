@@ -490,11 +490,6 @@ class Client(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 self.split(game)
 
-        elif isinstance(action, Action.StartMovePhase):
-            game = self.name_to_game(action.game_name)
-            if game.active_player.name == self.playername:
-                self.move_legions(game)
-
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
