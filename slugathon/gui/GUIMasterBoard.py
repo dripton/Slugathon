@@ -104,9 +104,6 @@ class GUIMasterBoard(gtk.Window):
         # If set to all hexlabels then we redraw the whole window.
         # Used to combine nearly simultaneous redraws into one.
         self.repaint_hexlabels = set()
-        # Hexes that need their bounding rectangles cleared, too.
-        # This fixes markers that overlap the edge of the map.
-        self.clear_hexlabels = set()
 
         if self.username:
             tup = prefs.load_window_position(self.username,
@@ -594,13 +591,13 @@ class GUIMasterBoard(gtk.Window):
         ctx.rectangle(*clip_rect)
         ctx.clip()
 
-        # black background, only when we get an event
+        # black background
         if event is not None:
             ctx.set_source_rgb(0, 0, 0)
             width, height = self.area.size_request()
             ctx.rectangle(0, 0, width, height)
             ctx.fill()
-        for hexlabel in self.clear_hexlabels:
+        for hexlabel in self.repaint_hexlabels:
             ctx.set_source_rgb(0, 0, 0)
             guihex = self.guihexes[hexlabel]
             x, y, width, height = guihex.bounding_rect
@@ -619,7 +616,6 @@ class GUIMasterBoard(gtk.Window):
         ctx2.paint()
 
         self.repaint_hexlabels.clear()
-        self.clear_hexlabels.clear()
 
     def repaint(self, hexlabels=None):
         if hexlabels:
@@ -839,7 +835,6 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
-                    self.clear_hexlabels.add(hexlabel)
             self.highlight_tall_legions()
             self.repaint()
 
@@ -856,7 +851,6 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
-                    self.clear_hexlabels.add(hexlabel)
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
             self.repaint()
@@ -888,7 +882,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.Flee):
             self.highlight_engagements()
-            self.clear_hexlabels.add(action.hexlabel)
+            self.repaint_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
         elif isinstance(action, Action.DoNotFlee):
@@ -909,7 +903,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Concede):
             self.destroy_negotiate()
             self.highlight_engagements()
-            self.clear_hexlabels.add(action.hexlabel)
+            self.repaint_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
         elif isinstance(action, Action.MakeProposal):
@@ -927,7 +921,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.AcceptProposal):
             self.destroy_negotiate()
             self.highlight_engagements()
-            self.clear_hexlabels.add(action.hexlabel)
+            self.repaint_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
         elif isinstance(action, Action.RejectProposal):
@@ -1006,7 +1000,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.RemoveLegion):
             self._remove_extra_markers()
-            self.clear_hexlabels.add(action.hexlabel)
+            self.repaint_hexlabels.add(action.hexlabel)
             self.repaint(self.board.hexes.keys())
 
         elif isinstance(action, Action.BattleOver):
@@ -1031,7 +1025,7 @@ class GUIMasterBoard(gtk.Window):
                             def1.addCallback(self.picked_recruit)
             self.guimap = None
             self.highlight_engagements()
-            self.clear_hexlabels.add(action.hexlabel)
+            self.repaint_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
 
