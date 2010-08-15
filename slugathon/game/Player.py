@@ -313,12 +313,8 @@ class Player(Observed):
             if not creature.struck and creature.engaged:
                 print "Forced strikes remain", creature
                 return
-        turn = self.game.battle_turn
-        if self.game.defender_legion.player == self:
-            turn += 1
-            print "bumped battle_turn to", turn
         action = Action.StartReinforceBattlePhase(self.game.name, self.name,
-          turn)
+          self.game.battle_turn)
         self.notify(action)
 
     def summon(self, legion, donor, creature_name):
