@@ -161,7 +161,7 @@ class Client(pb.Referenceable, Observed):
                   markername)
                 def1.addErrback(self.failure)
 
-    def split(self, unused, game):
+    def split(self, game):
         """Split if it's my turn."""
         print "split"
         if game.active_player.name == self.playername:
@@ -475,7 +475,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.AssignedAllColors):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                self.split(None, game)
+                self.split(game)
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
@@ -487,7 +487,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                self.split(None, game)
+                self.split(game)
 
         elif isinstance(action, Action.StartMovePhase):
             game = self.name_to_game(action.game_name)
@@ -497,12 +497,12 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self.split(None, game)
+                self.split(game)
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self.split(None, game)
+                self.split(game)
 
         elif isinstance(action, Action.RollMovement):
             game = self.name_to_game(action.game_name)
