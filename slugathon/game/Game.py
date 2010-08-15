@@ -1204,7 +1204,7 @@ class Game(Observed):
                     # TODO Move to graveyard instead
 
     def update(self, observed, action):
-        print "Game.update", action
+        print "Game.update", observed, action
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
@@ -1362,7 +1362,6 @@ class Game(Observed):
             self.battle_phase = Phase.STRIKE
 
         elif isinstance(action, Action.Strike):
-            print "Game.update got", action
             target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
             target.hits += action.hits
             target.hits = min(target.hits, target.power)
@@ -1375,13 +1374,11 @@ class Game(Observed):
                 self.pending_carry = None
 
         elif isinstance(action, Action.DriftDamage):
-            print "Game.update got", action
             target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
             target.hits += action.hits
             target.hits = min(target.hits, target.power)
 
         elif isinstance(action, Action.Carry):
-            print "Game.update got", action
             carry_target = self.creatures_in_battle_hex(
               action.carry_target_hexlabel).pop()
             carry_target.hits += action.carries
