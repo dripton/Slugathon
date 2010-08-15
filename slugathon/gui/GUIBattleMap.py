@@ -530,6 +530,8 @@ class GUIBattleMap(gtk.Window):
         reactor.callLater(0, self.update_gui)
 
     def update(self, observed, action):
+        print "GUIBattleMap.update", observed, action
+
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
             for hexlabel in [action.old_hexlabel, action.new_hexlabel]:
@@ -555,7 +557,6 @@ class GUIBattleMap(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.Strike):
-            print "GUIBattleMap.update got Strike", action
             if self.pickcarry is not None:
                 self.pickcarry.destroy()
                 self.pickcarry = None
@@ -583,14 +584,12 @@ class GUIBattleMap(gtk.Window):
                 def1.addCallback(self.picked_carry)
 
         elif isinstance(action, Action.DriftDamage):
-            print "GUIBattleMap.update got DriftDamage", action
             for chit in self.chits:
                 if chit.creature.hexlabel == action.target_hexlabel:
                     chit.build_image()
             self.repaint([action.target_hexlabel])
 
         elif isinstance(action, Action.Carry):
-            print "GUIBattleMap.update got Carry", action
             if self.pickcarry is not None:
                 self.pickcarry.destroy()
                 self.pickcarry = None
@@ -626,14 +625,14 @@ class GUIBattleMap(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
-            print "GUIBattleMap got DoneStrikingBack", action
             self._remove_dead_chits()
             if (self.game.battle_turn == 4 and
               self.game.battle_active_player.name == self.username and
               self.game.battle_active_legion == self.game.defender_legion):
                 legion = self.game.defender_legion
                 caretaker = self.game.caretaker
-                mterrain = self.battlemap.mterrain
+                hexlabel = legion.hexlabel
+                mterrain = self.game.board.hexes[hexlabel].terrain
                 if (len(legion.living_creature_names) < 7 and
                   legion.can_recruit(mterrain, caretaker)):
                     _, def1 = PickRecruit.new(self.username, legion, mterrain,

@@ -14,6 +14,7 @@ from slugathon.util import guiutils
 
 def new(username, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
+    print "PickRecruit.new", username, legion, mterrain, caretaker, parent
     def1 = defer.Deferred()
     pickrecruit = PickRecruit(username, legion, mterrain, caretaker, def1,
       parent)
