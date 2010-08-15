@@ -316,6 +316,7 @@ class Player(Observed):
         turn = self.game.battle_turn
         if self.game.defender_legion.player == self:
             turn += 1
+            print "bumped battle_turn to", turn
         action = Action.StartReinforceBattlePhase(self.game.name, self.name,
           turn)
         self.notify(action)
