@@ -273,6 +273,12 @@ class Player(Observed):
                 return True
         return False
 
+    def has_forced_strikes(self):
+        for creature in self.game.battle_active_legion.creatures:
+            if creature.engaged and not creature.struck:
+                return True
+        return False
+
     def done_with_recruits(self):
         (player, turn) = self.game.get_next_player_and_turn()
         action = Action.StartSplitPhase(self.game.name, player.name, turn)
@@ -287,11 +293,9 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_strikes(self):
-        # TODO extract has_forced_strikes method
-        for creature in self.game.battle_active_legion.creatures:
-            if not creature.struck and creature.engaged:
-                print "Forced strikes remain", creature
-                return
+        if self.has_forced_strikes():
+            print "Forced strikes remain"
+            return
         player = None
         for legion in self.game.battle_legions:
             if legion.player != self:
@@ -301,10 +305,9 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_counterstrikes(self):
-        for creature in self.game.battle_active_legion.creatures:
-            if not creature.struck and creature.engaged:
-                print "Forced strikes remain", creature
-                return
+        if self.has_forced_strikes():
+            print "Forced strikes remain"
+            return
         action = Action.StartReinforceBattlePhase(self.game.name, self.name,
           self.game.battle_turn)
         self.notify(action)
