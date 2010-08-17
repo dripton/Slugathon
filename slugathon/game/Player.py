@@ -41,6 +41,7 @@ class Player(Observed):
         # Private to this instance; not shown to others until a
         # legion is actually split off with this marker.
         self.selected_markername = None
+        # {str markername : Legion}
         self.legions = {}
         self.mulligans_left = 1
         self.movement_roll = None
@@ -153,8 +154,10 @@ class Player(Observed):
         parent_creature_names = parent.creature_names
         child_creature_names = child.creature_names
         parent.creatures += child.creatures
+        child.remove_observer(self)
         del self.legions[child_markername]
         self.markernames.add(child.markername)
+        del child
         # TODO One action for our player with creature names, and a
         # different action for other players without.
         action = Action.UndoSplit(self.game.name, self.name,
@@ -343,7 +346,9 @@ class Player(Observed):
         if markername in self.legions:
             legion = self.legions[markername]
             hexlabel = legion.hexlabel
+            legion.remove_observer(self)
             del self.legions[markername]
+            del legion
             self.markernames.add(markername)
         else:
             hexlabel = None
