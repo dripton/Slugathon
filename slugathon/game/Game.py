@@ -1130,11 +1130,9 @@ class Game(Observed):
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
         self._cleanup_battle()
-        if not self.engagement_hexlabels:
+        if self.active_player.dead:
             self.active_player.done_with_engagements()
-            if self.active_player.dead:
-                self.active_player.done_with_engagements()
-                self.active_player.done_with_recruits()
+            self.active_player.done_with_recruits()
 
 
     def done_with_counterstrikes(self, playername):
