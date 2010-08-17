@@ -1037,6 +1037,8 @@ class GUIMasterBoard(gtk.Window):
                             _, def1 = PickRecruit.new(self.username, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)
+            self.game.remove_observer(self.guimap)
+            del self.guimap
             self.guimap = None
             self.highlight_engagements()
             self.repaint_hexlabels.add(action.hexlabel)
