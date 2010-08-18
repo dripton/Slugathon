@@ -24,14 +24,14 @@ class Client(pb.Referenceable, Observed):
 
     implements(IObserver)
 
-    def __init__(self, username, password, host="localhost",
-      port=config.DEFAULT_PORT):
+    def __init__(self, username, password, host, port, delay):
         Observed.__init__(self)
         self.username = username
         self.playername = username # In case the same user logs in twice
         self.password = password
         self.host = host
         self.port = port
+        self.delay = delay
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
         self.user = None
@@ -464,19 +464,20 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
-            self.maybe_pick_color(game)
+            reactor.callLater(self.delay, self.maybe_pick_color, game)
 
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
-            self.maybe_pick_color(game)
-            self.maybe_pick_first_marker(game, action.playername)
+            reactor.callLater(self.delay, self.maybe_pick_color, game)
+            reactor.callLater(self.delay, self.maybe_pick_first_marker, game,
+              action.playername)
 
         elif isinstance(action, Action.AssignedAllColors):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                self.split(game)
+                reactor.callLater(self.delay, self.split, game)
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
@@ -488,48 +489,49 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                self.split(game)
+                reactor.callLater(self.delay, self.split, game)
 
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self.split(game)
+                reactor.callLater(self.delay, self.split, game)
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self.split(game)
+                reactor.callLater(self.delay, self.split, game)
 
         elif isinstance(action, Action.RollMovement):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self.move_legions(game)
+                reactor.callLater(self.delay, self.move_legions, game)
 
         elif isinstance(action, Action.MoveLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self.move_legions(game)
+                reactor.callLater(self.delay, self.move_legions, game)
 
         elif isinstance(action, Action.StartFightPhase):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                self.choose_engagement(game)
+                reactor.callLater(self.delay, self.choose_engagement, game)
 
         elif isinstance(action, Action.StartMusterPhase):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                self.recruit(game)
+                reactor.callLater(self.delay, self.recruit, game)
 
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
-            self.resolve_engagement(game, action.hexlabel, False)
+            reactor.callLater(self.delay, self.resolve_engagement, game,
+              action.hexlabel, False)
 
         elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 if game.engagement_hexlabels:
-                    self.choose_engagement(game)
+                    reactor.callLater(self.delay, self.choose_engagement, game)
                 else:
                     def1 = self.user.callRemote("done_with_engagements",
                       game.name)
@@ -537,92 +539,95 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
-            self.resolve_engagement(game, action.hexlabel, True)
+            reactor.callLater(self.delay, self.resolve_engagement, game,
+              action.hexlabel, True)
 
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)
             if game.defender_legion.player.name == self.playername:
-                self.move_creatures(game)
+                reactor.callLater(self.delay, self.move_creatures, game)
 
         elif isinstance(action, Action.MoveCreature):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                self.move_creatures(game)
+                reactor.callLater(self.delay, self.move_creatures, game)
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                self.strike(game)
+                reactor.callLater(self.delay, self.strike, game)
 
         elif isinstance(action, Action.Strike):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 if action.carries:
-                    self.carry(game, action.striker_name,
-                      action.striker_hexlabel, action.target_name,
-                      action.target_hexlabel, action.num_dice,
-                      action.strike_number, action.carries)
+                    reactor.callLater(self.delay, self.carry, game,
+                      action.striker_name, action.striker_hexlabel,
+                      action.target_name, action.target_hexlabel,
+                      action.num_dice, action.strike_number, action.carries)
                 else:
-                    self.strike(game)
+                    reactor.callLater(self.delay, self.strike, game)
 
         elif isinstance(action, Action.Carry):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 if action.carries_left:
-                    self.carry(game, action.striker_name,
-                      action.striker_hexlabel, action.target_name,
-                      action.target_hexlabel, action.num_dice,
-                      action.strike_number, action.carries_left)
+                    reactor.callLater(self.delay, self.carry, game,
+                      action.striker_name, action.striker_hexlabel,
+                      action.target_name, action.target_hexlabel,
+                      action.num_dice, action.strike_number,
+                      action.carries_left)
                 else:
-                    self.strike(game)
+                    reactor.callLater(self.delay, self.strike, game)
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                self.strike(game)
+                reactor.callLater(self.delay, self.strike, game)
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 legion = game.battle_active_legion
                 if legion == game.defender_legion:
-                    self.reinforce(game)
+                    reactor.callLater(self.delay, self.reinforce, game)
                 else:
-                    self.summon(game)
+                    reactor.callLater(self.delay, self.summon, game)
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                self.move_creatures(game)
+                reactor.callLater(self.delay, self.move_creatures, game)
 
         elif isinstance(action, Action.RecruitCreature):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
                 if game.phase == Phase.MUSTER:
                     self.recruit(game)
+                    reactor.callLater(self.delay, self.recruit, game)
                 else:
                     assert game.phase == Phase.FIGHT
                     assert game.battle_phase == Phase.REINFORCE
-                    self.reinforce(game)
+                    reactor.callLater(self.delay, self.reinforce, game)
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
-                    self.summon(game)
+                    reactor.callLater(self.delay, self.summon, game)
                 else:
-                    self.choose_engagement(game)
+                    reactor.callLater(self.delay, self.choose_engagement, game)
 
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                self.choose_engagement(game)
+                reactor.callLater(self.delay, self.choose_engagement, game)
 
         elif isinstance(action, Action.AcquireAngels):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                self.acquire_angel(game, action.markername, action.angels,
-                  action.archangels)
+                reactor.callLater(self.delay, self.acquire_angel, game,
+                  action.markername, action.angels, action.archangels)
 
         else:
             print "got unhandled action", action
@@ -637,10 +642,13 @@ def main():
       default="localhost")
     op.add_option("-p", "--port", action="store", type="int",
       default=config.DEFAULT_PORT)
+    op.add_option("-d", "--delay", action="store", type="float",
+      default=config.DEFAULT_AI_DELAY)
     opts, args = op.parse_args()
     if args:
         op.error("got illegal argument")
-    client = Client(opts.playername, opts.password, opts.server, opts.port)
+    client = Client(opts.playername, opts.password, opts.server, opts.port,
+      opts.delay)
     client.connect()
     reactor.run()
 
