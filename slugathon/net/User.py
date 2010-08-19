@@ -165,6 +165,12 @@ class User(pb.Avatar):
         self.server.summon_angel(self.name, game_name, markername,
           donor_markername, creature_name)
 
+    def perspective_do_not_summon(self, game_name, markername):
+        self.server.do_not_summon(self.name, game_name, markername)
+
+    def perspective_do_not_reinforce(self, game_name, markername):
+        self.server.do_not_reinforce(self.name, game_name, markername)
+
     def perspective_carry(self, game_name, carry_target_name,
       carry_target_hexlabel, carries):
         print "perspective_carry", carry_target_name, carry_target_hexlabel, \

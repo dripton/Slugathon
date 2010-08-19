@@ -69,6 +69,7 @@ class SummonAngel(gtk.Dialog):
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
+        self.deferred.callback((self.legion, None, None))
         self.destroy()
 
 

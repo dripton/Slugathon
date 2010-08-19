@@ -419,9 +419,14 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_summon(self, (legion, donor, creature)):
         """Callback from SummonAngel"""
-        def1 = self.user.callRemote("summon_angel", self.game.name,
-          legion.markername, donor.markername, creature.name)
-        def1.addErrback(self.failure)
+        if donor is None or creature is None:
+            def1 = self.user.callRemote("do_not_summon", self.game.name,
+              legion.markername)
+            def1.addErrback(self.failure)
+        else:
+            def1 = self.user.callRemote("summon_angel", self.game.name,
+              legion.markername, donor.markername, creature.name)
+            def1.addErrback(self.failure)
 
     def picked_angel(self, (legion, angel)):
         """Callback from AcquireAngel"""
@@ -1020,23 +1025,34 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.BattleOver):
             legion = self.game.find_legion(action.winner_markername)
             if legion:
-                # XXX Post-battle summoning and reinforcing should be earlier
                 player = legion.player
                 if player == self.game.active_player:
-                    # attacker can summon
-                    if (player.name == self.username and legion.can_summon):
-                        _, def1 = SummonAngel.new(self.username, legion, self)
-                        def1.addCallback(self.picked_summon)
-                elif not legion.recruited:
-                    # defender can reinforce
+                    # attacker can possibly summon
+                    if player.name == self.username:
+                        if legion.can_summon:
+                            _, def1 = SummonAngel.new(self.username, legion,
+                              self)
+                            def1.addCallback(self.picked_summon)
+                        else:
+                            def1 = self.user.callRemote("do_not_summon",
+                              self.game.name, legion.markername)
+                            def1.addErrback(self.failure)
+                else:
+                    # defender can possibly reinforce
                     if player.name == self.username:
                         masterhex = self.game.board.hexes[legion.hexlabel]
                         caretaker = self.game.caretaker
                         mterrain = masterhex.terrain
-                        if legion.can_recruit(mterrain, caretaker):
+                        if (not legion.recruited and len(legion) < 7 and
+                          legion.can_recruit(mterrain, caretaker)):
                             _, def1 = PickRecruit.new(self.username, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)
+                        else:
+                            def1 = self.user.callRemote("do_not_reinforce",
+                              self.game.name, legion.markername)
+                            def1.addErrback(self.failure)
+
             self.game.remove_observer(self.guimap)
             del self.guimap
             self.guimap = None

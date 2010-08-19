@@ -252,6 +252,15 @@ class RecruitCreature(Action):
 pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)
 
 
+class DoNotReinforce(Action):
+    def __init__(self, game_name, playername, markername):
+        self.game_name = game_name
+        self.playername = playername
+        self.markername = markername
+
+pb.setUnjellyableForClass(DoNotReinforce, DoNotReinforce)
+
+
 class UndoRecruit(UndoAction):
     def __init__(self, game_name, playername, markername, creature_name,
       recruiter_names):
@@ -467,6 +476,13 @@ class SummonAngel(Action):
         self.creature_name = creature_name
 pb.setUnjellyableForClass(SummonAngel, SummonAngel)
 
+class DoNotSummon(Action):
+    def __init__(self, game_name, playername, markername):
+        self.game_name = game_name
+        self.playername = playername
+        self.markername = markername
+pb.setUnjellyableForClass(DoNotSummon, DoNotSummon)
+
 class AcquireAngels(Action):
     def __init__(self, game_name, playername, markername, angels, archangels):
         self.game_name = game_name
@@ -483,6 +499,13 @@ class AcquireAngel(Action):
         self.markername = markername
         self.angel_name = angel_name
 pb.setUnjellyableForClass(AcquireAngel, AcquireAngel)
+
+class DoNotAcquireAngel(Action):
+    def __init__(self, game_name, playername, markername):
+        self.game_name = game_name
+        self.playername = playername
+        self.markername = markername
+pb.setUnjellyableForClass(DoNotAcquireAngel, DoNotAcquireAngel)
 
 class RemoveLegion(Action):
     def __init__(self, game_name, markername, hexlabel):

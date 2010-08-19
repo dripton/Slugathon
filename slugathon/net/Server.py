@@ -300,6 +300,16 @@ class Server(Observed):
             game.summon_angel(username, markername, donor_markername,
               creature_name)
 
+    def do_not_summon(self, username, game_name, markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.do_not_summon(username, markername)
+
+    def do_not_reinforce(self, username, game_name, markername):
+        game = self.name_to_game(game_name)
+        if game:
+            game.do_not_reinforce(username, markername)
+
     def carry(self, username, game_name, carry_target_name,
       carry_target_hexlabel, carries):
         print "Server.carry", carry_target_name, carry_target_hexlabel, carries

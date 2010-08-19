@@ -65,6 +65,9 @@ class Game(Observed):
         self.battle_active_legion = None
         self.first_attacker_kill = None
         self.pending_carry = None
+        self.pending_summon = False
+        self.pending_reinforcement = False
+        self.pending_acquire = False
 
 
     @property
@@ -112,6 +115,8 @@ class Game(Observed):
         self.battle_active_legion = None
         self.first_attacker_kill = None
         self.pending_carry = None
+        self.pending_summon = False
+        self.pending_reinforcement = False
 
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
@@ -508,6 +513,8 @@ class Game(Observed):
 
     def resolve_engagement(self, playername, hexlabel):
         """Called from Server"""
+        if self.pending_summon or self.pending_reinforcement:
+            raise AssertionError("cannot move on to next engagement yet")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("resolving engagement out of turn")
@@ -701,6 +708,7 @@ class Game(Observed):
     # XXX Need playername?
     def fight(self, playername, attacker_markername, defender_markername):
         """Called from Server"""
+        assert self.battle_turn is None, "already fighting"
         attacker_legion = self.find_legion(attacker_markername)
         defender_legion = self.find_legion(defender_markername)
         hexlabel = attacker_legion.hexlabel
@@ -725,6 +733,8 @@ class Game(Observed):
 
     def done_with_engagements(self, playername):
         """Try to end playername's fight phase."""
+        if self.pending_summon or self.pending_reinforcement:
+            raise AssertionError("cannot move on to next engagement yet")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("ending fight phase out of turn")
@@ -733,7 +743,7 @@ class Game(Observed):
 
     def recruit_creature(self, playername, markername, creature_name,
       recruiter_names):
-        """Called from Server"""
+        """Called from Server and update"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         # Avoid double recruit
@@ -742,6 +752,9 @@ class Game(Observed):
             legion.recruit(creature, recruiter_names)
             if self.phase == Phase.FIGHT:
                 creature.hexlabel = "DEFENDER"
+        self.pending_reinforcement = False
+        if self.battle_legions and self.is_battle_over():
+            self._end_battle2()
 
     def undo_recruit(self, playername, markername):
         player = self.get_player_by_name(playername)
@@ -760,7 +773,7 @@ class Game(Observed):
 
     def summon_angel(self, playername, markername, donor_markername,
       creature_name):
-        """Called from Server"""
+        """Called from Server and update"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         donor = player.legions[donor_markername]
@@ -770,6 +783,36 @@ class Game(Observed):
             if self.phase == Phase.FIGHT:
                 creature = legion.creatures[-1]
                 creature.hexlabel = "ATTACKER"
+        self.pending_summon = False
+        if self.is_battle_over():
+            self._end_battle2()
+
+    def do_not_summon(self, playername, markername):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        player.do_not_summon(legion)
+        self.pending_summon = False
+        if self.is_battle_over():
+            self._end_battle2()
+
+    def _do_not_summon(self, playername, markername):
+        """Called from update"""
+        self.pending_summon = False
+        if self.is_battle_over():
+            self._end_battle2()
+
+    def do_not_reinforce(self, playername, markername):
+        """Called from Server"""
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        player.do_not_reinforce(legion)
+
+    def _do_not_reinforce(self, playername, markername):
+        """Called from update"""
+        self.pending_reinforcement = False
+        if self.is_battle_over():
+            self._end_battle2()
 
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
       carries):
@@ -1106,18 +1149,51 @@ class Game(Observed):
             return True
         return False
 
-    def _end_battle(self):
+    def _end_battle1(self):
+        """Determine the winner, and set up summoning or reinforcing if
+        possible, but don't eliminate legions or hand out points yet."""
+        mterrain = self.battle_masterhex.terrain
         if self.battle_turn > 7:
+            #defender wins on time loss, possible reinforcement
+            if (not self.defender_legion.recruited and
+              self.defender_legion.can_recruit(mterrain, self.caretaker)):
+                self.pending_reinforcement = True
+        elif self.attacker_legion.dead and self.defender_legion.dead:
+            #mutual kill
+            pass
+        elif self.attacker_legion.dead:
+            #defender wins, possible reinforcement
+            if (not self.defender_legion.recruited and
+              self.defender_legion.can_recruit(mterrain, self.caretaker)):
+                self.pending_reinforcement = True
+        elif self.defender_legion.dead:
+            #attacker wins, possible summon
+            if self.attacker_legion.can_summon:
+                self.pending_summon = True
+        else:
+            assert False, "bug in Game._end_battle1"
+        if not self.pending_reinforcement and not self.pending_summon:
+            # XXX Is it safe to call this directly from here?
+            self._end_battle2()
+
+    def _end_battle2(self):
+        """Summoning and reinforcing is done, so remove the dead legion(s)
+        award points, and heal surviving creatures in the winning legion."""
+        if self.battle_turn > 7:
+            #defender wins on time loss, possible reinforcement
             self.attacker_legion.die(self.defender_legion, False, True)
         elif self.attacker_legion.dead and self.defender_legion.dead:
+            #mutual kill
             self.attacker_legion.die(self.defender_legion, False, True, False)
             self.defender_legion.die(self.attacker_legion, False, True)
         elif self.attacker_legion.dead:
+            #defender wins, possible reinforcement
             self.attacker_legion.die(self.defender_legion, False, False)
         elif self.defender_legion.dead:
+            #attacker wins, possible summon
             self.defender_legion.die(self.attacker_legion, False, False)
         else:
-            assert False, "bug in Game._end_battle"
+            assert False, "bug in Game._end_battle2"
         for legion in self.battle_legions:
             if not legion.dead:
                 creature_names_to_remove = []
@@ -1166,7 +1242,7 @@ class Game(Observed):
               loser.dead_creature_names, time_loss,
               self.current_engagement_hexlabel)
             self.notify(action)
-            self._end_battle()
+            self._end_battle1()
         else:
             player.done_with_counterstrikes()
 
@@ -1307,6 +1383,9 @@ class Game(Observed):
         elif isinstance(action, Action.UndoRecruit):
             self.undo_recruit(action.playername, action.markername)
 
+        elif isinstance(action, Action.DoNotReinforce):
+            self._do_not_reinforce(action.playername, action.markername)
+
         elif isinstance(action, Action.StartSplitPhase):
             self.turn = action.turn
             self.phase = Phase.SPLIT
@@ -1318,6 +1397,9 @@ class Game(Observed):
         elif isinstance(action, Action.SummonAngel):
             self.summon_angel(action.playername, action.markername,
               action.donor_markername, action.creature_name)
+
+        elif isinstance(action, Action.DoNotSummon):
+            self._do_not_summon(action.playername, action.markername)
 
         elif isinstance(action, Action.Fight):
             attacker_markername = action.attacker_markername
@@ -1401,6 +1483,6 @@ class Game(Observed):
         elif isinstance(action, Action.BattleOver):
             if action.time_loss:
                 self.battle_turn = 8
-            self._end_battle()
+            self._end_battle1()
 
         self.notify(action)

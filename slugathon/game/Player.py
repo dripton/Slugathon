@@ -329,6 +329,18 @@ class Player(Observed):
           legion.markername, donor.markername, creature.name)
         self.notify(action)
 
+    def do_not_summon(self, legion):
+        """Do not summon an angel into legion."""
+        action = Action.DoNotSummon(self.game.name, self.name,
+          legion.markername)
+        self.notify(action)
+
+    def do_not_reinforce(self, legion):
+        """Do not recruit a reinforcement into legion."""
+        action = Action.DoNotReinforce(self.game.name, self.name,
+          legion.markername)
+        self.notify(action)
+
     def new_turn(self):
         self.selected_markername = None
         self.movement_roll = None
