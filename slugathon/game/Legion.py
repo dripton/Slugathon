@@ -423,11 +423,13 @@ class Legion(Observed):
 
     def acquire(self, angel):
         """Acquire angel, and notify observers."""
+        print "acquire", angel
         if angel.name == "Archangel":
             okay = self.archangels_pending > 0
         elif angel.name == "Angel":
             okay = self.archangels_pending > 0 or self.angels_pending > 0
         if not okay:
+            print "no angels pending"
             return
         if len(self) >= 7:
             raise AssertionError("legion too tall to recruit")
