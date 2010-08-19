@@ -1295,10 +1295,6 @@ class Game(Observed):
               action.attacker_creature_names, defender_legion,
               action.defender_creature_names)
 
-        elif isinstance(action, Action.AcquireAngel):
-            self.acquire_angel(action.playername, action.markername,
-              action.angel_name)
-
         elif isinstance(action, Action.StartMusterPhase):
             self.phase = Phase.MUSTER
             for player in self.players:
