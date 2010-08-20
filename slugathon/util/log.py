@@ -15,7 +15,11 @@ def log(*args):
     path = tup[1]
     fn = os.path.split(path)[-1]
     line = tup[2]
-    print time.time(), fn, line,
+    now = time.time()
+    fract = now - int(now)
+    sfract = ("%.2f" % fract)[1:]
+    local = time.localtime(now)
+    print time.strftime("%H:%M:%S", local) + sfract, fn, line,
     for arg in args:
         print arg,
     print
