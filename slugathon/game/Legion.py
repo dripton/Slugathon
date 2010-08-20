@@ -447,6 +447,15 @@ class Legion(Observed):
           self.markername, angel.name)
         self.notify(action)
 
+    def do_not_acquire(self):
+        """Do not acquire an angel, and notify observers."""
+        print "do_not_acquire", self
+        if self.angels_pending or self.archangels_pending:
+            self.reset_angels_pending()
+            action = Action.DoNotAcquire(self.player.game.name,
+              self.player.name, self.markername)
+            self.notify(action)
+
     def reset_angels_pending(self):
         self.angels_pending = 0
         self.archangels_pending = 0

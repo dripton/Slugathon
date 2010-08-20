@@ -500,12 +500,12 @@ class AcquireAngel(Action):
         self.angel_name = angel_name
 pb.setUnjellyableForClass(AcquireAngel, AcquireAngel)
 
-class DoNotAcquireAngel(Action):
+class DoNotAcquire(Action):
     def __init__(self, game_name, playername, markername):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
-pb.setUnjellyableForClass(DoNotAcquireAngel, DoNotAcquireAngel)
+pb.setUnjellyableForClass(DoNotAcquire, DoNotAcquire)
 
 class RemoveLegion(Action):
     def __init__(self, game_name, markername, hexlabel):

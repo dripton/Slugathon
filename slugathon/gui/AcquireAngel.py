@@ -78,6 +78,7 @@ class AcquireAngel(gtk.Dialog):
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
+        self.deferred.callback((self.legion, None))
         self.destroy()
 
 if __name__ == "__main__":

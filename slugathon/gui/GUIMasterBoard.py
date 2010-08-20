@@ -430,9 +430,16 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_angel(self, (legion, angel)):
         """Callback from AcquireAngel"""
-        def1 = self.user.callRemote("acquire_angel", self.game.name,
-          legion.markername, angel.name)
-        def1.addErrback(self.failure)
+        print "picked_angel", legion, angel
+        if angel is None:
+            print "GUIMasterBoard calling do_not_acquire", legion
+            def1 = self.user.callRemote("do_not_acquire", self.game.name,
+              legion.markername)
+            def1.addErrback(self.failure)
+        else:
+            def1 = self.user.callRemote("acquire_angel", self.game.name,
+              legion.markername, angel.name)
+            def1.addErrback(self.failure)
 
     def compute_scale(self):
         """Return the approximate maximum scale that let the board fit on
@@ -956,7 +963,8 @@ class GUIMasterBoard(gtk.Window):
           Action.UndoRecruit):
             self.highlight_recruits()
             legion = self.game.find_legion(action.markername)
-            self.repaint([legion.hexlabel])
+            if legion:
+                self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.StartSplitPhase):
             player = self.game.active_player

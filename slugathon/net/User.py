@@ -149,6 +149,10 @@ class User(pb.Avatar):
         self.server.acquire_angel(self.name, game_name, markername,
           angel_name)
 
+    def perspective_do_not_acquire(self, game_name, markername):
+        print "User.do_not_acquire", self, game_name, markername
+        self.server.do_not_acquire(self.name, game_name, markername)
+
     def perspective_done_with_engagements(self, game_name):
         self.server.done_with_engagements(self.name, game_name)
 

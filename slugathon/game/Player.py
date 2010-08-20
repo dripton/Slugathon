@@ -257,6 +257,13 @@ class Player(Observed):
         """Return True iff this player can finish the move phase."""
         return not self.game.engagement_hexlabels
 
+    @property
+    def pending_acquire(self):
+        for legion in self.legions.itervalues():
+            if legion.angels_pending or legion.archangels_pending:
+                return True
+        return False
+
     def reset_angels_pending(self):
         for legion in self.legions.itervalues():
             legion.reset_angels_pending()
@@ -380,6 +387,7 @@ class Player(Observed):
             self.game.check_for_victory()
 
     def update(self, observed, action):
+        print "Player.update", self, observed, action
         if isinstance(action, Action.RecruitCreature):
             legion = self.legions[action.markername]
             creature = Creature.Creature(action.creature_name)
@@ -389,4 +397,7 @@ class Player(Observed):
             legion = self.legions[action.markername]
             angel = Creature.Creature(action.angel_name)
             legion.acquire(angel)
+        elif isinstance(action, Action.DoNotAcquire):
+            legion = self.legions[action.markername]
+            legion.do_not_acquire()
         self.notify(action)

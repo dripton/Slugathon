@@ -67,7 +67,6 @@ class Game(Observed):
         self.pending_carry = None
         self.pending_summon = False
         self.pending_reinforcement = False
-        self.pending_acquire = False
 
 
     @property
@@ -513,7 +512,8 @@ class Game(Observed):
 
     def resolve_engagement(self, playername, hexlabel):
         """Called from Server"""
-        if self.pending_summon or self.pending_reinforcement:
+        if (self.pending_summon or self.pending_reinforcement or
+          self.pending_acquire):
             raise AssertionError("cannot move on to next engagement yet")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
@@ -731,13 +731,21 @@ class Game(Observed):
         angel = Creature.Creature(angel_name)
         legion.acquire(angel)
 
+    def do_not_acquire(self, playername, markername):
+        """Called from Server"""
+        print "Game.do_not_acquire", playername, markername
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        legion.do_not_acquire()
+
     def done_with_engagements(self, playername):
         """Try to end playername's fight phase."""
-        if self.pending_summon or self.pending_reinforcement:
-            raise AssertionError("cannot move on to next engagement yet")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("ending fight phase out of turn")
+        if (self.pending_summon or self.pending_reinforcement or
+          self.pending_acquire):
+            raise AssertionError("cannot end engagements yet")
         if self.phase == Phase.FIGHT:
             player.done_with_engagements()
 
@@ -819,6 +827,9 @@ class Game(Observed):
         """Called from Server"""
         print "Game.carry", playername, carry_target_name, \
           carry_target_hexlabel, carries
+        if not self.pending_carry:
+            print "no carry pending"
+            return
         action = self.pending_carry
         self.pending_carry = None
         assert action
@@ -856,6 +867,14 @@ class Game(Observed):
             if len(colorset) >= 2:
                 results.add(hexlabel)
         return results
+
+    @property
+    def pending_acquire(self):
+        """True iff we're waiting for any player to acquire angels."""
+        for player in self.players:
+            if player.pending_acquire:
+                return True
+        return False
 
     # XXX Need playername?
     def save(self, playername):

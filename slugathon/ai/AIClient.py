@@ -18,6 +18,7 @@ from slugathon.net import config
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase
+from slugathon.util.log import log
 
 
 class Client(pb.Referenceable, Observed):
@@ -59,7 +60,7 @@ class Client(pb.Referenceable, Observed):
         def1.addErrback(self.connection_failed)
 
     def connected(self, user):
-        print "connected"
+        log("connected")
         if user:
             self.user = user
             def1 = user.callRemote("get_usernames")
@@ -67,11 +68,11 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def connection_failed(self, arg):
-        print "connection failed"
+        log("connection failed")
 
     def got_usernames(self, usernames):
         """Only called when the client first connects to the server."""
-        print "got usernames", usernames
+        log("got usernames", usernames)
         self.usernames.clear()
         for username in usernames:
             self.usernames.add(username)
@@ -81,13 +82,13 @@ class Client(pb.Referenceable, Observed):
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""
-        print "got games", game_info_tuples
+        log("got games", game_info_tuples)
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
         # For now, AI joins all games.
         for game in self.games:
-            print "joining game", game.name
+            log("joining game", game.name)
             def1 = self.user.callRemote("join_game", game.name)
             def1.addErrback(self.failure)
 
@@ -98,7 +99,7 @@ class Client(pb.Referenceable, Observed):
         return None
 
     def add_game(self, game_info_tuple):
-        print "add_game", game_info_tuple
+        log("add_game", game_info_tuple)
         (name, create_time, start_time, min_players, max_players,
           playernames) = game_info_tuple
         owner = playernames[0]
@@ -119,7 +120,7 @@ class Client(pb.Referenceable, Observed):
             self.games.remove(game)
 
     def failure(self, error):
-        print "Client.failure", self, error
+        log("Client.failure", self, error)
 
     def remote_receive_chat_message(self, text):
         pass
@@ -134,21 +135,21 @@ class Client(pb.Referenceable, Observed):
         self.update(observed, action)
 
     def maybe_pick_color(self, game):
-        print "maybe_pick_color"
+        log("maybe_pick_color")
         if game.next_playername_to_pick_color() == self.username:
             color = random.choice(game.colors_left())
             def1 = self.user.callRemote("pick_color", game.name, color)
             def1.addErrback(self.failure)
 
     def maybe_pick_first_marker(self, game, playername):
-        print "maybe_pick_first_marker"
+        log("maybe_pick_first_marker")
         if playername == self.username:
             player = game.get_player_by_name(playername)
             markername = random.choice(list(player.markernames))
             self.pick_marker(game.name, self.username, markername)
 
     def pick_marker(self, game_name, username, markername):
-        print "pick_marker"
+        log("pick_marker")
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
         if markername is None:
@@ -163,7 +164,7 @@ class Client(pb.Referenceable, Observed):
 
     def split(self, game):
         """Split if it's my turn."""
-        print "split"
+        log("split")
         if game.active_player.name == self.playername:
             player = game.active_player
             for legion in player.legions.itervalues():
@@ -239,7 +240,11 @@ class Client(pb.Referenceable, Observed):
 
     def choose_engagement(self, game):
         """Resolve engagements."""
-        print "choose_engagement"
+        log("AIClient.choose_engagement")
+        if (game.pending_summon or game.pending_reinforcement or
+          game.pending_acquire):
+            log("AIClient.choose_engagement bailing early")
+            return
         hexlabels = game.engagement_hexlabels
         if hexlabels:
             hexlabel = hexlabels.pop()
@@ -284,26 +289,26 @@ class Client(pb.Referenceable, Observed):
                 def1.addErrback(self.failure)
 
     def move_creatures(self, game):
-        print "move creatures"
+        log("move creatures")
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
         for creature in legion.sorted_creatures:
             moves = game.find_battle_moves(creature)
             if moves:
                 move = random.choice(list(moves))
-                print "calling move_creature", creature.name, \
-                  creature.hexlabel, move
+                log("calling move_creature", creature.name,
+                  creature.hexlabel, move)
                 def1 = self.user.callRemote("move_creature", game.name,
                   creature.name, creature.hexlabel, move)
                 def1.addErrback(self.failure)
                 return
         # No moves, so end the maneuver phase.
-        print "calling done_with_maneuvers"
+        log("calling done_with_maneuvers")
         def1 = self.user.callRemote("done_with_maneuvers", game.name)
         def1.addErrback(self.failure)
 
     def strike(self, game):
-        print "strike"
+        log("strike")
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
         for striker in legion.sorted_creatures:
@@ -344,7 +349,7 @@ class Client(pb.Referenceable, Observed):
 
 
     def recruit(self, game):
-        print "recruit"
+        log("recruit")
         assert game.active_player.name == self.playername
         player = game.active_player
         for legion in player.legions.itervalues():
@@ -452,6 +457,7 @@ class Client(pb.Referenceable, Observed):
 
     def summon_after(self, game):
         """Summon, after the battle is over."""
+        log("AIClient.summon_after")
         assert game.active_player.name == self.playername
         legion = game.attacker_legion
         assert legion.player.name == self.playername
@@ -479,31 +485,37 @@ class Client(pb.Referenceable, Observed):
         def1.addErrback(self.failure)
 
     def acquire_angel(self, game, markername, angels, archangels):
+        log("AIClient.acquire_angel", markername, angels, archangels)
         player = game.get_player_by_name(self.playername)
         legion = player.legions[markername]
         starting_height = len(legion)
         acquires = 0
         while starting_height + acquires < 7 and (angels or archangels):
             if archangels:
+                log("AIClient calling acquire_angel", markername, "Archangel")
                 def1 = self.user.callRemote("acquire_angel", game.name,
                   markername, "Archangel")
                 def1.addErrback(self.failure)
                 archangels -= 1
                 acquires += 1
             elif angels:
+                log("AIClient calling acquire_angel", markername, "Angel")
                 def1 = self.user.callRemote("acquire_angel", game.name,
                   markername, "Angel")
                 def1.addErrback(self.failure)
                 angels -= 1
                 acquires += 1
-        if player == game.active_player:
-            self.choose_engagement(game)
+        if not acquires:
+            log("AIClient calling do_not_acquire", markername)
+            def1 = self.user.callRemote("do_not_acquire", game.name,
+              markername)
+            def1.addErrback(self.failure)
 
 
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        print "AIClient.update", action
+        log("AIClient.update", action)
 
         # Update the Game first, then act.
         self.notify(action)
@@ -531,7 +543,7 @@ class Client(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
             game.assign_color(action.playername, action.color)
-            reactor.callLater(self.delay, self.maybe_pick_color, game)
+            self.maybe_pick_color(game)
             reactor.callLater(self.delay, self.maybe_pick_first_marker, game,
               action.playername)
 
@@ -542,10 +554,10 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
-                print "Game %s over, won by %s" % (action.game_name,
-                  " and ".join(action.winner_names))
+                log("Game %s over, won by %s" % (action.game_name,
+                  " and ".join(action.winner_names)))
             else:
-                print "Game %s over, draw" % action.game_name
+                log("Game %s over, draw" % action.game_name)
 
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
@@ -732,8 +744,18 @@ class Client(pb.Referenceable, Observed):
                 reactor.callLater(self.delay, self.acquire_angel, game,
                   action.markername, action.angels, action.archangels)
 
+        elif isinstance(action, Action.AcquireAngel):
+            game = self.name_to_game(action.game_name)
+            if action.playername == self.playername:
+                reactor.callLater(self.delay, self.choose_engagement, game)
+
+        elif isinstance(action, Action.DoNotAcquire):
+            game = self.name_to_game(action.game_name)
+            if action.playername == self.playername:
+                reactor.callLater(self.delay, self.choose_engagement, game)
+
         else:
-            print "got unhandled action", action
+            log("AIClient got unhandled action", action)
 
 
 
