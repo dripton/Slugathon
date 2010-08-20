@@ -240,10 +240,10 @@ class Client(pb.Referenceable, Observed):
 
     def choose_engagement(self, game):
         """Resolve engagements."""
-        log("AIClient.choose_engagement")
+        log("choose_engagement")
         if (game.pending_summon or game.pending_reinforcement or
           game.pending_acquire):
-            log("AIClient.choose_engagement bailing early")
+            log("choose_engagement bailing early")
             return
         hexlabels = game.engagement_hexlabels
         if hexlabels:
@@ -457,7 +457,7 @@ class Client(pb.Referenceable, Observed):
 
     def summon_after(self, game):
         """Summon, after the battle is over."""
-        log("AIClient.summon_after")
+        log("summon_after")
         assert game.active_player.name == self.playername
         legion = game.attacker_legion
         assert legion.player.name == self.playername
@@ -485,28 +485,28 @@ class Client(pb.Referenceable, Observed):
         def1.addErrback(self.failure)
 
     def acquire_angel(self, game, markername, angels, archangels):
-        log("AIClient.acquire_angel", markername, angels, archangels)
+        log("acquire_angel", markername, angels, archangels)
         player = game.get_player_by_name(self.playername)
         legion = player.legions[markername]
         starting_height = len(legion)
         acquires = 0
         while starting_height + acquires < 7 and (angels or archangels):
             if archangels:
-                log("AIClient calling acquire_angel", markername, "Archangel")
+                log("calling acquire_angel", markername, "Archangel")
                 def1 = self.user.callRemote("acquire_angel", game.name,
                   markername, "Archangel")
                 def1.addErrback(self.failure)
                 archangels -= 1
                 acquires += 1
             elif angels:
-                log("AIClient calling acquire_angel", markername, "Angel")
+                log("calling acquire_angel", markername, "Angel")
                 def1 = self.user.callRemote("acquire_angel", game.name,
                   markername, "Angel")
                 def1.addErrback(self.failure)
                 angels -= 1
                 acquires += 1
         if not acquires:
-            log("AIClient calling do_not_acquire", markername)
+            log("calling do_not_acquire", markername)
             def1 = self.user.callRemote("do_not_acquire", game.name,
               markername)
             def1.addErrback(self.failure)
@@ -515,7 +515,7 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        log("AIClient.update", action)
+        log("update", action)
 
         # Update the Game first, then act.
         self.notify(action)
@@ -755,7 +755,7 @@ class Client(pb.Referenceable, Observed):
                 reactor.callLater(self.delay, self.choose_engagement, game)
 
         else:
-            log("AIClient got unhandled action", action)
+            log("got unhandled action", action)
 
 
 
