@@ -175,7 +175,7 @@ class WaitingForPlayers(gtk.Window):
           self.game.get_owner().name)
 
     def failure(self, arg):
-        log("WaitingForPlayers.failure", arg)
+        log("failure", arg)
 
     def shutdown(self):
         self.game.remove_observer(self)

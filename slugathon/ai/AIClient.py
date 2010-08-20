@@ -120,7 +120,7 @@ class Client(pb.Referenceable, Observed):
             self.games.remove(game)
 
     def failure(self, error):
-        log("Client.failure", self, error)
+        log("failure", self, error)
 
     def remote_receive_chat_message(self, text):
         pass

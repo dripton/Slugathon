@@ -15,7 +15,7 @@ from slugathon.util.log import log
 
 def new(username, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
-    log("PickRecruit.new", username, legion, mterrain, caretaker, parent)
+    log("new", username, legion, mterrain, caretaker, parent)
     def1 = defer.Deferred()
     pickrecruit = PickRecruit(username, legion, mterrain, caretaker, def1,
       parent)

@@ -79,7 +79,7 @@ class NewGame(gtk.Dialog):
         self.destroy()
 
     def failure(self, error):
-        log("NewGame", error)
+        log(error)
 
 
 if __name__ == "__main__":

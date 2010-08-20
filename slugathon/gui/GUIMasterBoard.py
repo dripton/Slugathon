@@ -433,7 +433,7 @@ class GUIMasterBoard(gtk.Window):
         """Callback from AcquireAngel"""
         log("picked_angel", legion, angel)
         if angel is None:
-            log("GUIMasterBoard calling do_not_acquire", legion)
+            log("calling do_not_acquire", legion)
             def1 = self.user.callRemote("do_not_acquire", self.game.name,
               legion.markername)
             def1.addErrback(self.failure)
@@ -830,7 +830,7 @@ class GUIMasterBoard(gtk.Window):
         self.proposals.clear()
 
     def failure(self, arg):
-        log("GUIMasterBoard.failure", arg)
+        log("failure", arg)
 
     def update(self, observed, action):
         if isinstance(action, Action.CreateStartingLegion):

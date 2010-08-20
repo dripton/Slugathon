@@ -273,7 +273,7 @@ class Server(Observed):
             game.acquire_angel(username, markername, angel_name)
 
     def do_not_acquire(self, username, game_name, markername):
-        log("Server.do_not_acquire", self, username, game_name, markername)
+        log("do_not_acquire", self, username, game_name, markername)
         game = self.name_to_game(game_name)
         if game:
             game.do_not_acquire(username, markername)
@@ -319,7 +319,7 @@ class Server(Observed):
 
     def carry(self, username, game_name, carry_target_name,
       carry_target_hexlabel, carries):
-        log("Server.carry", carry_target_name, carry_target_hexlabel, carries)
+        log("carry", carry_target_name, carry_target_hexlabel, carries)
         game = self.name_to_game(game_name)
         if game:
             game.carry(username, carry_target_name, carry_target_hexlabel,

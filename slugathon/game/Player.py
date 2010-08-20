@@ -388,7 +388,7 @@ class Player(Observed):
             self.game.check_for_victory()
 
     def update(self, observed, action):
-        log("Player.update", self, observed, action)
+        log("update", self, observed, action)
         if isinstance(action, Action.RecruitCreature):
             legion = self.legions[action.markername]
             creature = Creature.Creature(action.creature_name)

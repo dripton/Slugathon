@@ -44,7 +44,7 @@ class LoadGame(gtk.FileChooserDialog):
         self.destroy()
 
     def failure(self, error):
-        log("LoadGame", error)
+        log(error)
 
 
 if __name__ == "__main__":

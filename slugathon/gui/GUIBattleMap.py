@@ -531,7 +531,7 @@ class GUIBattleMap(gtk.Window):
         reactor.callLater(0, self.update_gui)
 
     def update(self, observed, action):
-        log("GUIBattleMap.update", observed, action)
+        log("update", observed, action)
 
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
@@ -712,7 +712,7 @@ class GUIBattleMap(gtk.Window):
             def1.addErrback(self.failure)
 
     def failure(self, arg):
-        log("GUIBattleMap.failure", arg)
+        log("failure", arg)
 
 
 if __name__ == "__main__":

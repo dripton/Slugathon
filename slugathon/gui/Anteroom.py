@@ -191,7 +191,7 @@ class Anteroom(gtk.Window):
             del self.game_store[leng]
 
     def failure(self, error):
-        log("Anteroom.failure", self, error)
+        log("failure", self, error)
         reactor.stop()
 
     def cb_configure_event(self, event, unused):

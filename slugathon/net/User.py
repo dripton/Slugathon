@@ -151,7 +151,7 @@ class User(pb.Avatar):
           angel_name)
 
     def perspective_do_not_acquire(self, game_name, markername):
-        log("User.do_not_acquire", self, game_name, markername)
+        log("do_not_acquire", self, game_name, markername)
         self.server.do_not_acquire(self.name, game_name, markername)
 
     def perspective_done_with_engagements(self, game_name):
@@ -233,7 +233,7 @@ class User(pb.Avatar):
         pass
 
     def failure(self, arg):
-        log("User.failure", arg)
+        log("failure", arg)
 
     def did_ping(self, arg):
         pass

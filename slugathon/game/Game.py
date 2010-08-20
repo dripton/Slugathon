@@ -734,7 +734,7 @@ class Game(Observed):
 
     def do_not_acquire(self, playername, markername):
         """Called from Server"""
-        log("Game.do_not_acquire", playername, markername)
+        log("do_not_acquire", playername, markername)
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         legion.do_not_acquire()
@@ -827,7 +827,7 @@ class Game(Observed):
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
       carries):
         """Called from Server"""
-        log("Game.carry", playername, carry_target_name, carry_target_hexlabel,
+        log("carry", playername, carry_target_name, carry_target_hexlabel,
           carries)
         if not self.pending_carry:
             log("no carry pending")
@@ -1105,7 +1105,7 @@ class Game(Observed):
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
         """Called from Server"""
-        log("Game.strike")
+        log("strike")
         player = self.get_player_by_name(playername)
         assert player == self.battle_active_player, "striking out of turn"
         assert self.battle_phase in [Phase.STRIKE, Phase.COUNTERSTRIKE], \
@@ -1237,7 +1237,7 @@ class Game(Observed):
 
         Called from Server
         """
-        log("Game.done_with_counterstrikes", playername)
+        log("done_with_counterstrikes", playername)
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             raise AssertionError("ending counterstrike phase out of turn")
@@ -1298,7 +1298,7 @@ class Game(Observed):
                     # TODO Move to graveyard instead
 
     def update(self, observed, action):
-        log("Game.update", observed, action)
+        log("update", observed, action)
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
