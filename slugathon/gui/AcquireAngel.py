@@ -10,6 +10,7 @@ from twisted.internet import defer
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
 from slugathon.util import guiutils
+from slugathon.util.log import log
 
 
 def new(username, legion, available_angels, parent):
@@ -89,7 +90,7 @@ if __name__ == "__main__":
     creatures = Creature.n2c(creature_names)
 
     def my_callback((legion, creature)):
-        print legion, "acquired", creature
+        log(legion, "acquired", creature)
         guiutils.exit()
 
     now = time.time()

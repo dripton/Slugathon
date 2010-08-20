@@ -8,6 +8,7 @@ from slugathon.util.bag import bag
 from slugathon.data import recruitdata
 from slugathon.game import Creature, Action
 from slugathon.util.Observed import Observed
+from slugathon.util.log import log
 
 
 class Legion(Observed):
@@ -255,7 +256,7 @@ class Legion(Observed):
 
         The list is sorted in the same order as within recruitdata.
         """
-        print "available_recruits_and_recruiters", self, mterrain, caretaker
+        log("available_recruits_and_recruiters", self, mterrain, caretaker)
         result_list = []
         counts = bag(self.living_creature_names)
         recruits = recruitdata.data[mterrain]
@@ -423,13 +424,13 @@ class Legion(Observed):
 
     def acquire(self, angel):
         """Acquire angel, and notify observers."""
-        print "acquire", angel
+        log("acquire", angel)
         if angel.name == "Archangel":
             okay = self.archangels_pending > 0
         elif angel.name == "Angel":
             okay = self.archangels_pending > 0 or self.angels_pending > 0
         if not okay:
-            print "no angels pending"
+            log("no angels pending")
             return
         if len(self) >= 7:
             raise AssertionError("legion too tall to recruit")
@@ -449,7 +450,7 @@ class Legion(Observed):
 
     def do_not_acquire(self):
         """Do not acquire an angel, and notify observers."""
-        print "do_not_acquire", self
+        log("do_not_acquire", self)
         if self.angels_pending or self.archangels_pending:
             self.reset_angels_pending()
             action = Action.DoNotAcquire(self.player.game.name,

@@ -18,6 +18,7 @@ import gtk
 from slugathon.game import BattleMap
 from slugathon.gui import icon, GUIBattleHex
 from slugathon.util import guiutils, prefs
+from slugathon.util.log import log
 
 
 SQRT3 = math.sqrt(3.0)
@@ -236,7 +237,7 @@ if __name__ == "__main__":
         terrain = random.choice(battlemapdata.data.keys())
 
     def my_callback(choice):
-        print "chose entry side", choice
+        log("chose entry side", choice)
         reactor.stop()
 
     pick_entry_side, def1 = new(terrain, set([1, 3, 5]))

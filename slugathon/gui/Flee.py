@@ -13,6 +13,7 @@ from twisted.internet import defer, reactor
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
+from slugathon.util.log import log
 
 
 DO_NOT_FLEE = 0
@@ -124,7 +125,7 @@ if __name__ == "__main__":
       defender_creatures, 1)
 
     def my_callback((attacker, defender, fled)):
-        print "fled is", fled
+        log("fled is", fled)
         reactor.stop()
 
     _, def1 = new(defender_username, attacker_legion, defender_legion, None)

@@ -12,6 +12,7 @@ from slugathon.game import Action, Creature, Legion, Phase
 from slugathon.data import playercolordata, creaturedata, markerdata
 from slugathon.util.bag import bag
 from slugathon.util import Dice
+from slugathon.util.log import log
 
 
 class Player(Observed):
@@ -304,7 +305,7 @@ class Player(Observed):
 
     def done_with_strikes(self):
         if self.has_forced_strikes():
-            print "Forced strikes remain"
+            log("Forced strikes remain")
             return
         player = None
         for legion in self.game.battle_legions:
@@ -316,7 +317,7 @@ class Player(Observed):
 
     def done_with_counterstrikes(self):
         if self.has_forced_strikes():
-            print "Forced strikes remain"
+            log("Forced strikes remain")
             return
         action = Action.StartReinforceBattlePhase(self.game.name, self.name,
           self.game.battle_turn)
@@ -387,7 +388,7 @@ class Player(Observed):
             self.game.check_for_victory()
 
     def update(self, observed, action):
-        print "Player.update", self, observed, action
+        log("Player.update", self, observed, action)
         if isinstance(action, Action.RecruitCreature):
             legion = self.legions[action.markername]
             creature = Creature.Creature(action.creature_name)

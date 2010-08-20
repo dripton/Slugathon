@@ -9,6 +9,7 @@ from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
+from slugathon.util.log import log
 
 
 TELEPORT = 1
@@ -87,11 +88,11 @@ if __name__ == "__main__":
 
     def mycallback(teleported):
         if teleported is None:
-            print "canceled"
+            log("canceled")
         elif teleported:
-            print "teleport"
+            log("teleport")
         else:
-            print "normal move"
+            log("normal move")
         guiutils.exit()
 
     now = time.time()

@@ -9,6 +9,7 @@ import gtk
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
+from slugathon.util.log import log
 
 
 def new(username, legion, parent):
@@ -101,7 +102,7 @@ if __name__ == "__main__":
         player.legions[legion.markername] = legion
 
     def my_callback((legion, donor, creature)):
-        print "Will summon", creature, "from", donor, "into", legion
+        log("Will summon", creature, "from", donor, "into", legion)
         guiutils.exit()
 
     summonangel, def1 = new(username, legion1, None)

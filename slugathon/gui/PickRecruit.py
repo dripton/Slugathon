@@ -10,11 +10,12 @@ from twisted.internet import defer
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
 from slugathon.util import guiutils
+from slugathon.util.log import log
 
 
 def new(username, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
-    print "PickRecruit.new", username, legion, mterrain, caretaker, parent
+    log("PickRecruit.new", username, legion, mterrain, caretaker, parent)
     def1 = defer.Deferred()
     pickrecruit = PickRecruit(username, legion, mterrain, caretaker, def1,
       parent)
@@ -111,7 +112,7 @@ if __name__ == "__main__":
     creatures = Creature.n2c(creature_names)
 
     def my_callback((legion, creature, recruiter_names)):
-        print legion, "recruited", creature, recruiter_names
+        log(legion, "recruited", creature, recruiter_names)
         guiutils.exit()
 
     now = time.time()

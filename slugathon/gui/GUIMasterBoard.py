@@ -25,6 +25,7 @@ from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
+from slugathon.util.log import log
 
 
 SQRT3 = math.sqrt(3.0)
@@ -430,9 +431,9 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_angel(self, (legion, angel)):
         """Callback from AcquireAngel"""
-        print "picked_angel", legion, angel
+        log("picked_angel", legion, angel)
         if angel is None:
-            print "GUIMasterBoard calling do_not_acquire", legion
+            log("GUIMasterBoard calling do_not_acquire", legion)
             def1 = self.user.callRemote("do_not_acquire", self.game.name,
               legion.markername)
             def1.addErrback(self.failure)
@@ -829,7 +830,7 @@ class GUIMasterBoard(gtk.Window):
         self.proposals.clear()
 
     def failure(self, arg):
-        print "GUIMasterBoard.failure", arg
+        log("GUIMasterBoard.failure", arg)
 
     def update(self, observed, action):
         if isinstance(action, Action.CreateStartingLegion):

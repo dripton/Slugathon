@@ -13,6 +13,7 @@ from twisted.internet import reactor, defer
 import gtk
 
 from slugathon.gui import icon
+from slugathon.util.log import log
 
 
 def new(username, game_name, striker, target, num_dice, strike_number,
@@ -119,7 +120,7 @@ if __name__ == "__main__":
     game.battle_phase = Phase.STRIKE
 
     def my_callback((creature, carries)):
-        print "carry %d hits to %s" % (carries, creature)
+        log("carry %d hits to %s" % (carries, creature))
         reactor.stop()
 
     _, def1 = new(username, game_name, titan2, centaur1, 6, 4, 1, None)

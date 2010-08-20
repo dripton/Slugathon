@@ -13,6 +13,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.util import guiutils, prefs
 from slugathon.util.NullUser import NullUser
+from slugathon.util.log import log
 
 
 class Anteroom(gtk.Window):
@@ -190,7 +191,7 @@ class Anteroom(gtk.Window):
             del self.game_store[leng]
 
     def failure(self, error):
-        print "Anteroom.failure", self, error
+        log("Anteroom.failure", self, error)
         reactor.stop()
 
     def cb_configure_event(self, event, unused):

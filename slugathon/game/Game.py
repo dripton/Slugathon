@@ -15,6 +15,7 @@ from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.util import prefs, Dice
 from slugathon.util.bag import bag
+from slugathon.util.log import log
 
 
 # Movement constants
@@ -733,7 +734,7 @@ class Game(Observed):
 
     def do_not_acquire(self, playername, markername):
         """Called from Server"""
-        print "Game.do_not_acquire", playername, markername
+        log("Game.do_not_acquire", playername, markername)
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         legion.do_not_acquire()
@@ -742,7 +743,8 @@ class Game(Observed):
         """Try to end playername's fight phase."""
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
-            raise AssertionError("ending fight phase out of turn")
+            raise AssertionError("%s ending fight phase out of turn" %
+              playername)
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
             raise AssertionError("cannot end engagements yet")
@@ -825,10 +827,10 @@ class Game(Observed):
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
       carries):
         """Called from Server"""
-        print "Game.carry", playername, carry_target_name, \
-          carry_target_hexlabel, carries
+        log("Game.carry", playername, carry_target_name, carry_target_hexlabel,
+          carries)
         if not self.pending_carry:
-            print "no carry pending"
+            log("no carry pending")
             return
         action = self.pending_carry
         self.pending_carry = None
@@ -902,7 +904,7 @@ class Game(Observed):
         else:
             # draw
             winner_names = []
-        print "game over", winner_names
+        log("game over", winner_names)
         action = Action.GameOver(self.name, winner_names)
         self.notify(action)
 
@@ -1016,7 +1018,7 @@ class Game(Observed):
         excluding its current hex"""
         result = set()
         if creature.hexlabel is None:
-            print creature, "has hexlabel None"
+            log(creature, "has hexlabel None")
             return result
         if creature.moved or creature.engaged:
             return result
@@ -1103,7 +1105,7 @@ class Game(Observed):
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
         """Called from Server"""
-        print "Game.strike"
+        log("Game.strike")
         player = self.get_player_by_name(playername)
         assert player == self.battle_active_player, "striking out of turn"
         assert self.battle_phase in [Phase.STRIKE, Phase.COUNTERSTRIKE], \
@@ -1111,25 +1113,25 @@ class Game(Observed):
         strikers = self.creatures_in_battle_hex(striker_hexlabel)
         assert len(strikers) == 1
         striker = strikers.pop()
-        print "striker", striker
+        log("striker", striker)
         assert striker.name == striker_name
         targets = self.creatures_in_battle_hex(target_hexlabel)
         assert len(targets) == 1
         target = targets.pop()
         assert target.name == target_name
-        print "target", target
+        log("target", target)
         # TODO check for valid strike penalty if not equal
-        print "num_dice", num_dice
-        print "strike_number", strike_number
+        log("num_dice", num_dice)
+        log("strike_number", strike_number)
         assert num_dice <= striker.number_of_dice(target)
         assert strike_number >= striker.strike_number(target)
         rolls = Dice.roll(num_dice)
-        print "rolls", rolls
+        log("rolls", rolls)
         hits = 0
         for roll in rolls:
             if roll >= strike_number:
                 hits += 1
-        print "hits", hits
+        log("hits", hits)
         target.hits += hits
         if target.hits > target.power:
             carries = target.hits - target.power
@@ -1143,7 +1145,7 @@ class Game(Observed):
         action = Action.Strike(self.name, playername, striker_name,
           striker_hexlabel, target_name, target_hexlabel, num_dice,
           strike_number, rolls, hits, carries)
-        print "action", action
+        log("action", action)
         if carries:
             self.pending_carry = action
         self.notify(action)
@@ -1235,7 +1237,7 @@ class Game(Observed):
 
         Called from Server
         """
-        print "Game.done_with_counterstrikes", playername
+        log("Game.done_with_counterstrikes", playername)
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             raise AssertionError("ending counterstrike phase out of turn")
@@ -1243,18 +1245,18 @@ class Game(Observed):
             return
         if self.battle_active_legion == self.defender_legion:
             self.battle_turn += 1
-            print "bumped battle turn to", self.battle_turn
+            log("bumped battle turn to", self.battle_turn)
         if self.is_battle_over():
-            print "battle over"
+            log("battle over")
             time_loss = self.battle_turn > 7
-            print "time_loss is", time_loss
+            log("time_loss is", time_loss)
             # If it's a draw, arbitrarily call the defender the "winner"
             if time_loss or self.attacker_legion.dead:
                 winner = self.defender_legion
             else:
                 winner = self.attacker_legion
             loser = self.other_battle_legion(winner)
-            print "winner", winner, "loser", loser
+            log("winner", winner, "loser", loser)
             action = Action.BattleOver(self.name, winner.markername,
               winner.living_creature_names, winner.dead_creature_names,
               loser.markername, loser.living_creature_names,
@@ -1296,7 +1298,7 @@ class Game(Observed):
                     # TODO Move to graveyard instead
 
     def update(self, observed, action):
-        print "Game.update", observed, action
+        log("Game.update", observed, action)
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:

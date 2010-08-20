@@ -12,6 +12,7 @@ from slugathon.data.playercolordata import colors
 from slugathon.gui import icon
 from slugathon.util import guiutils
 from slugathon.util.colors import contrasting_colors
+from slugathon.util.log import log
 
 
 def new(username, game, colors_left, parent):
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     from slugathon.game import Game
 
     def my_callback((game, color)):
-        print "picked", color
+        log("picked", color)
         guiutils.exit()
 
     now = time.time()

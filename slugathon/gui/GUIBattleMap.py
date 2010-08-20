@@ -22,6 +22,7 @@ from slugathon.gui import (icon, GUIBattleHex, Chit, PickRecruit, SummonAngel,
   PickCarry, PickStrikePenalty)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
+from slugathon.util.log import log
 
 
 SQRT3 = math.sqrt(3.0)
@@ -530,7 +531,7 @@ class GUIBattleMap(gtk.Window):
         reactor.callLater(0, self.update_gui)
 
     def update(self, observed, action):
-        print "GUIBattleMap.update", observed, action
+        log("GUIBattleMap.update", observed, action)
 
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
@@ -688,7 +689,7 @@ class GUIBattleMap(gtk.Window):
         def1.addErrback(self.failure)
 
     def picked_carry(self, (carry_target, carries)):
-        print "picked_carry", carry_target, carries
+        log("picked_carry", carry_target, carries)
         if self.pickcarry is not None:
             self.pickcarry.destroy()
         self.pickcarry = None
@@ -698,7 +699,7 @@ class GUIBattleMap(gtk.Window):
 
     def picked_strike_penalty(self, (striker, target, num_dice,
       strike_number)):
-        print "picked_strike_penalty", striker, target, num_dice, strike_number
+        log("picked_strike_penalty", striker, target, num_dice, strike_number)
         if striker is None:
             # User cancelled the strike.
             self.unselect_all()
@@ -711,7 +712,7 @@ class GUIBattleMap(gtk.Window):
             def1.addErrback(self.failure)
 
     def failure(self, arg):
-        print "GUIBattleMap.failure", arg
+        log("GUIBattleMap.failure", arg)
 
 
 if __name__ == "__main__":

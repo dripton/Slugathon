@@ -14,6 +14,7 @@ import gtk
 
 from slugathon.gui import icon
 from slugathon.game import Phase
+from slugathon.util.log import log
 
 
 def new(username, game_name, striker, target, parent):
@@ -144,7 +145,7 @@ if __name__ == "__main__":
     game.battle_phase = Phase.STRIKE
 
     def my_callback((striker, target, num_dice, strike_number)):
-        print "called my_callback", striker, target, num_dice, strike_number
+        log("called my_callback", striker, target, num_dice, strike_number)
         reactor.stop()
 
     pick_strike_penalty, def1 = new(username, game_name, titan2, gargoyle1,

@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 import math
 
 from slugathon.util import Dice
+from slugathon.util.log import log
 
 
 EPSILON = 0.000001
@@ -155,7 +156,7 @@ class TestDice(object):
         mean_M = 2. * r * (n - r) / n + 1.
         var_M = (((2. * r) * (n - r) / n ** 2 * ((2. * r) * (n - r) - n)) /
           (n - 1.))
-        print "M test: r =", r, "M = ", M, "mean = ", mean_M, "var =", var_M
+        log("M test: r =", r, "M = ", M, "mean = ", mean_M, "var =", var_M)
         fail_if_abnormal(M, mean_M, var_M)
 
     def test_sign(self):
@@ -166,7 +167,7 @@ class TestDice(object):
         M = count_non_zero_diffs(self.rolls)
         mean_P = M / 2.
         var_P = M / 12.
-        print "Sign test: P =", P, "M = ", M, "mean = ", mean_P, "var =", var_P
+        log("Sign test: P =", P, "M = ", M, "mean = ", mean_P, "var =", var_P)
         fail_if_abnormal(P, mean_P, var_P)
 
     def test_runs(self):
@@ -178,7 +179,7 @@ class TestDice(object):
         mean_R = 1. + (2 * pos * neg) / (pos + neg)
         var_R = ((( 2. * pos * neg) * (2. * pos * neg - pos - neg)) /
                 ((pos + neg) * (pos + neg) * (pos + neg - 1)))
-        print "Runs test: R =", R, "m = ", m, "mean = ", mean_R, "var =", var_R
+        log("Runs test: R =", R, "m = ", m, "mean = ", mean_R, "var =", var_R)
         fail_if_abnormal(R, mean_R, var_R)
 
     def test_mann_kendall(self):
@@ -190,7 +191,7 @@ class TestDice(object):
                 S += val
         mean_S = 0.
         var_S = (n / 18.) * (n - 1.) * (2. * n + 5.)
-        print "Mann-Kendall test: S =", S, "mean = ", mean_S, "var =", var_S
+        log("Mann-Kendall test: S =", S, "mean = ", mean_S, "var =", var_S)
         fail_if_abnormal(S, mean_S, var_S)
 
     def test_shuffle(self):
@@ -210,6 +211,6 @@ class TestDice(object):
             expected = self.trials / 6.0
             chi_square += (num - expected) ** 2.0 / expected
         chi_square /= self.trials - 1
-        print "chi_square is", chi_square
+        log("chi_square is", chi_square)
         # degrees of freedom = 5, 99.5% chance of randomness
         assert chi_square < 0.4117

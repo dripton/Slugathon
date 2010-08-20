@@ -9,6 +9,7 @@ from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
+from slugathon.util.log import log
 
 
 def new(username, legion, parent):
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     player.legions[legion.markername] = legion
 
     def my_callback(creature):
-        print "Picked", creature
+        log("Picked", creature)
         guiutils.exit()
 
     pick_teleporting_lord, def1 = new(username, legion, None)

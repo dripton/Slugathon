@@ -9,6 +9,7 @@ import gtk
 from slugathon.gui import icon
 from slugathon.util import guiutils
 from slugathon.util.NullUser import NullUser
+from slugathon.util.log import log
 
 
 class NewGame(gtk.Dialog):
@@ -78,7 +79,7 @@ class NewGame(gtk.Dialog):
         self.destroy()
 
     def failure(self, error):
-        print "NewGame", error
+        log("NewGame", error)
 
 
 if __name__ == "__main__":

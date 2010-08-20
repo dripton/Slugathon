@@ -14,6 +14,7 @@ import gtk
 
 from slugathon.gui import icon
 from slugathon.util import guiutils
+from slugathon.util.log import log
 
 
 def new(username, game_name, markers_left, parent):
@@ -59,7 +60,7 @@ class PickMarker(gtk.Dialog):
 
 if __name__ == "__main__":
     def my_callback((game_name, username, markername)):
-        print "picked", markername
+        log("picked", markername)
         reactor.stop()
 
     username = "test user"

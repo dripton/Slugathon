@@ -14,6 +14,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.gui import icon
 from slugathon.util.NullUser import NullUser
+from slugathon.util.log import log
 
 
 def format_time(secs):
@@ -174,7 +175,7 @@ class WaitingForPlayers(gtk.Window):
           self.game.get_owner().name)
 
     def failure(self, arg):
-        print "WaitingForPlayers.failure", arg
+        log("WaitingForPlayers.failure", arg)
 
     def shutdown(self):
         self.game.remove_observer(self)

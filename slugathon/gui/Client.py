@@ -15,6 +15,7 @@ from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game
 from slugathon.gui import (Anteroom, PickColor, PickMarker, GUIMasterBoard,
   StatusScreen, GUICaretaker)
+from slugathon.util.log import log
 
 
 class Client(pb.Referenceable, Observed):
@@ -106,7 +107,7 @@ class Client(pb.Referenceable, Observed):
             self.games.remove(game)
 
     def failure(self, error):
-        print "Client.failure", self, error
+        log("Client.failure", self, error)
 
     # TODO Make this an Action, after adding a filter on Observed.notify
     def remote_receive_chat_message(self, text):
@@ -202,9 +203,9 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.GameOver):
             # TODO Destroy windows and dialogs?
             if action.winner_names:
-                print "Game %s over, won by %s" % (action.game_name,
-                  " and ".join(action.winner_names))
+                log("Game %s over, won by %s" % (action.game_name,
+                  " and ".join(action.winner_names)))
             else:
-                print "Game %s over, draw" % action.game_name
+                log("Game %s over, draw" % action.game_name)
 
         self.notify(action)

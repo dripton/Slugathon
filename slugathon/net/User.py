@@ -8,6 +8,7 @@ from zope.interface import implements
 
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
+from slugathon.util.log import log
 
 
 class User(pb.Avatar):
@@ -150,7 +151,7 @@ class User(pb.Avatar):
           angel_name)
 
     def perspective_do_not_acquire(self, game_name, markername):
-        print "User.do_not_acquire", self, game_name, markername
+        log("User.do_not_acquire", self, game_name, markername)
         self.server.do_not_acquire(self.name, game_name, markername)
 
     def perspective_done_with_engagements(self, game_name):
@@ -177,8 +178,8 @@ class User(pb.Avatar):
 
     def perspective_carry(self, game_name, carry_target_name,
       carry_target_hexlabel, carries):
-        print "perspective_carry", carry_target_name, carry_target_hexlabel, \
-          carries
+        log("perspective_carry", carry_target_name, carry_target_hexlabel,
+          carries)
         self.server.carry(self.name, game_name, carry_target_name,
           carry_target_hexlabel, carries)
 
@@ -232,7 +233,7 @@ class User(pb.Avatar):
         pass
 
     def failure(self, arg):
-        print "User.failure", arg
+        log("User.failure", arg)
 
     def did_ping(self, arg):
         pass
