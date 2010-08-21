@@ -256,7 +256,9 @@ class Player(Observed):
 
     def can_exit_fight_phase(self):
         """Return True iff this player can finish the move phase."""
-        return not self.game.engagement_hexlabels
+        return (not self.game.engagement_hexlabels and not
+          self.game.pending_summon and not self.game.pending_reinforcement
+          and not self.game.pending_acquire)
 
     @property
     def pending_acquire(self):
