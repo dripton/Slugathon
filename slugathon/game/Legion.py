@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2004-2009 David Ripton"
+__copyright__ = "Copyright (c) 2004-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -421,7 +421,7 @@ class Legion(Observed):
             self.angels_pending = angels
             self.archangels_pending = archangels
             if angels + archangels > 0:
-                action = Action.AcquireAngels(self.player.game.name,
+                action = Action.CanAcquire(self.player.game.name,
                   self.player.name, self.markername, angels, archangels)
                 self.notify(action)
 

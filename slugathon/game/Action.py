@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2004-2009 David Ripton"
+__copyright__ = "Copyright (c) 2004-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -483,22 +483,22 @@ class DoNotSummon(Action):
         self.markername = markername
 pb.setUnjellyableForClass(DoNotSummon, DoNotSummon)
 
-class AcquireAngels(Action):
+class CanAcquire(Action):
     def __init__(self, game_name, playername, markername, angels, archangels):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
         self.angels = angels
         self.archangels = archangels
-pb.setUnjellyableForClass(AcquireAngels, AcquireAngels)
+pb.setUnjellyableForClass(CanAcquire, CanAcquire)
 
-class AcquireAngel(Action):
-    def __init__(self, game_name, playername, markername, angel_name):
+class Acquire(Action):
+    def __init__(self, game_name, playername, markername, angel_names):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
-        self.angel_name = angel_name
-pb.setUnjellyableForClass(AcquireAngel, AcquireAngel)
+        self.angel_names = angel_names
+pb.setUnjellyableForClass(Acquire, Acquire)
 
 class DoNotAcquire(Action):
     def __init__(self, game_name, playername, markername):

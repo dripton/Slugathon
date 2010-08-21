@@ -281,7 +281,7 @@ class StatusScreen(gtk.Window):
 
         elif (isinstance(action, Action.RecruitCreature) or
           isinstance(action, Action.UndoRecruit) or
-          isinstance(action, Action.AcquireAngel)):
+          isinstance(action, Action.Acquire)):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
             player_num = self.game.players.index(player)

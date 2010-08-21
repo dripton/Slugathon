@@ -1528,7 +1528,7 @@ class Game(Observed):
                 self.battle_turn = 8
             self._end_battle1()
 
-        elif isinstance(action, Action.AcquireAngel):
+        elif isinstance(action, Action.Acquire):
             player = self.get_player_by_name(action.playername)
             legion = player.legions[action.markername]
             angel = Creature.Creature(action.angel_name)

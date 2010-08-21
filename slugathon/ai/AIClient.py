@@ -740,13 +740,13 @@ class Client(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.choose_engagement, game)
 
-        elif isinstance(action, Action.AcquireAngels):
+        elif isinstance(action, Action.CanAcquire):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.acquire_angel, game,
                   action.markername, action.angels, action.archangels)
 
-        elif isinstance(action, Action.AcquireAngel):
+        elif isinstance(action, Action.Acquire):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.choose_engagement, game)

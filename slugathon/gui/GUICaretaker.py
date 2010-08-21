@@ -126,9 +126,9 @@ class GUICaretaker(gtk.Window):
             creature_name = action.target_name
             self.update_creature(creature_name)
 
-        elif isinstance(action, Action.AcquireAngel):
-            creature_name = action.angel_name
-            self.update_creature(creature_name)
+        elif isinstance(action, Action.Acquire):
+            for creature_name in action.angel_names:
+                self.update_creature(creature_name)
 
 
 if __name__ == "__main__":
