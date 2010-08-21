@@ -86,6 +86,14 @@ class Game(Observed):
         except AttributeError:
             return None
 
+    @property
+    def pending_acquires(self):
+        """Return True if we have to wait for a player to acquire."""
+        for player in self.players:
+            if player.angels_pending or player.archangels_pending:
+                return True
+        return False
+
     def _init_battle(self, attacker_legion, defender_legion):
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
