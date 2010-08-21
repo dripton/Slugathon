@@ -396,7 +396,7 @@ class Legion(Observed):
             self.player.die(scoring_legion, check_for_victory)
 
     def add_points(self, points, can_acquire):
-        log("add_points")
+        log("add_points", points, can_acquire)
         # TODO Move these to a data file
         ARCHANGEL_POINTS = 500
         ANGEL_POINTS = 100
@@ -404,16 +404,16 @@ class Legion(Observed):
         score0 = player.score
         score1 = score0 + points
         player.score = score1
+        height = len(self.living_creature_names)
         if can_acquire:
-            log("can_acquire")
             archangels = 0
-            while (len(self) + archangels < 7 and
+            while (height + archangels < 7 and
               score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
                 archangels += 1
                 score1 -= ANGEL_POINTS
             log("archangels %d" % archangels)
             angels = 0
-            while (len(self) + archangels + angels < 7 and
+            while (height + archangels + angels < 7 and
               score1 // ANGEL_POINTS > score0 // ANGEL_POINTS):
                 angels += 1
                 score1 -= ANGEL_POINTS
