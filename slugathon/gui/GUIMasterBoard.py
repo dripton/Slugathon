@@ -414,9 +414,14 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_recruit(self, (legion, creature, recruiter_names)):
         """Callback from PickRecruit"""
-        def1 = self.user.callRemote("recruit_creature", self.game.name,
-          legion.markername, creature.name, recruiter_names)
-        def1.addErrback(self.failure)
+        if creature is not None:
+            def1 = self.user.callRemote("recruit_creature", self.game.name,
+              legion.markername, creature.name, recruiter_names)
+            def1.addErrback(self.failure)
+        elif self.game.phase == Phase.FIGHT:
+            def1 = self.user.callRemote("do_not_reinforce", self.game.name,
+              legion.markername)
+            def1.addErrback(self.failure)
 
     def picked_summon(self, (legion, donor, creature)):
         """Callback from SummonAngel"""

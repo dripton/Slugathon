@@ -101,6 +101,7 @@ class PickRecruit(gtk.Dialog):
 
     def cb_cancel(self, widget, response_id):
         """The cancel button was pressed, so exit"""
+        self.deferred.callback((self.legion, None, None))
         self.destroy()
 
 
