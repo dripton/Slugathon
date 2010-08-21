@@ -248,10 +248,12 @@ class Client(pb.Referenceable, Observed):
         hexlabels = game.engagement_hexlabels
         if hexlabels:
             hexlabel = hexlabels.pop()
+            log("calling resolve_engagement")
             def1 = self.user.callRemote("resolve_engagement", game.name,
               hexlabel)
             def1.addErrback(self.failure)
         else:
+            log("calling done_with_engagements")
             def1 = self.user.callRemote("done_with_engagements", game.name)
             def1.addErrback(self.failure)
 

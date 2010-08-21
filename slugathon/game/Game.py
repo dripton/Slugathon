@@ -112,6 +112,7 @@ class Game(Observed):
         self.clear_battle_flags()
 
     def _cleanup_battle(self):
+        log("_cleanup_battle")
         self.current_engagement_hexlabel = None
         self.attacker_legion = None
         self.defender_legion = None
@@ -521,6 +522,7 @@ class Game(Observed):
 
     def resolve_engagement(self, playername, hexlabel):
         """Called from Server"""
+        log("resolve_engagement")
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
             raise AssertionError("cannot move on to next engagement yet")
@@ -536,6 +538,7 @@ class Game(Observed):
                 attacker = legion
             else:
                 defender = legion
+        log("resolve_engagement; reset_angels_pending")
         player.reset_angels_pending()
         # Reveal attacker only to defender
         action = Action.RevealLegion(self.name, attacker.markername,
@@ -749,6 +752,7 @@ class Game(Observed):
 
     def done_with_engagements(self, playername):
         """Try to end playername's fight phase."""
+        log("done_with_engagements")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("%s ending fight phase out of turn" %
@@ -762,6 +766,7 @@ class Game(Observed):
     def recruit_creature(self, playername, markername, creature_name,
       recruiter_names):
         """Called from Server and update"""
+        log("recruit_creature")
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         # Avoid double recruit
@@ -792,6 +797,7 @@ class Game(Observed):
     def summon_angel(self, playername, markername, donor_markername,
       creature_name):
         """Called from Server and update"""
+        log("summon_angel")
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         donor = player.legions[donor_markername]
@@ -807,24 +813,28 @@ class Game(Observed):
 
     def do_not_summon(self, playername, markername):
         """Called from Server"""
+        log("do_not_summon")
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         player.do_not_summon(legion)
 
     def _do_not_summon(self, playername, markername):
         """Called from update"""
+        log("_do_not_summon")
         self.pending_summon = False
         if self.is_battle_over():
             self._end_battle2()
 
     def do_not_reinforce(self, playername, markername):
         """Called from Server"""
+        log("do_not_reinforce")
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         player.do_not_reinforce(legion)
 
     def _do_not_reinforce(self, playername, markername):
         """Called from update"""
+        log("_do_not_reinforce")
         self.pending_reinforcement = False
         if self.is_battle_over():
             self._end_battle2()
@@ -1178,6 +1188,7 @@ class Game(Observed):
     def _end_battle1(self):
         """Determine the winner, and set up summoning or reinforcing if
         possible, but don't eliminate legions or hand out points yet."""
+        log("_end_battle1")
         mterrain = self.battle_masterhex.terrain
         if self.battle_turn > 7:
             #defender wins on time loss, possible reinforcement
@@ -1205,6 +1216,7 @@ class Game(Observed):
     def _end_battle2(self):
         """Summoning and reinforcing is done, so remove the dead legion(s)
         award points, and heal surviving creatures in the winning legion."""
+        log("_end_battle2")
         if self.battle_turn > 7:
             #defender wins on time loss, possible reinforcement
             self.attacker_legion.die(self.defender_legion, False, True)
@@ -1233,6 +1245,8 @@ class Game(Observed):
                     self.caretaker.kill_one(creature_name)
         self._cleanup_battle()
         if self.active_player.dead:
+            # XXX If this can't happen because summon/reinforcement/acquire
+            # is pending, we need to kick the phase advance again.
             self.active_player.done_with_engagements()
             self.active_player.done_with_recruits()
 
@@ -1377,6 +1391,7 @@ class Game(Observed):
             self.phase = Phase.FIGHT
 
         elif isinstance(action, Action.ResolvingEngagement):
+            log("ResolvingEngagement; reset_angels_pending")
             for player in self.players:
                 player.reset_angels_pending()
 
@@ -1399,6 +1414,7 @@ class Game(Observed):
               action.defender_creature_names)
 
         elif isinstance(action, Action.StartMusterPhase):
+            log("StartMusterPhase; reset_angels_pending")
             self.phase = Phase.MUSTER
             for player in self.players:
                 player.reset_angels_pending()
