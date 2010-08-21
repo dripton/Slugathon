@@ -810,9 +810,6 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         player.do_not_summon(legion)
-        self.pending_summon = False
-        if self.is_battle_over():
-            self._end_battle2()
 
     def _do_not_summon(self, playername, markername):
         """Called from update"""
