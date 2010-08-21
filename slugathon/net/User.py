@@ -243,7 +243,6 @@ class User(pb.Avatar):
 
     def update(self, observed, action):
         """Defers updates to its client, dropping the observed reference."""
-        if not (isinstance(action, Action.AcquireAngels) or
-          isinstance(action, Action.DriftDamage)):
+        if not isinstance(action, Action.DriftDamage):
             def1 = self.client.callRemote("update", action)
             def1.addErrback(self.failure)
