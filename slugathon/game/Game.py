@@ -740,7 +740,7 @@ class Game(Observed):
         """Called from Server"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
-        angels = [Creature.Creature(name for name in angel_names)]
+        angels = [Creature.Creature(name) for name in angel_names]
         legion.acquire(angels)
 
     def do_not_acquire(self, playername, markername):
