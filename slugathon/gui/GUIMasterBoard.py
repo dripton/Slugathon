@@ -986,7 +986,12 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.SummonAngel):
             legion = self.game.find_legion(action.markername)
             donor = self.game.find_legion(action.donor_markername)
-            self.repaint([legion.hexlabel, donor.hexlabel])
+            lst = []
+            if legion:
+                lst.append(legion.hexlabel)
+            if donor:
+                lst.append(donor.hexlabel)
+            self.repaint(lst)
 
         elif isinstance(action, Action.CanAcquire):
             if action.playername == self.username:
