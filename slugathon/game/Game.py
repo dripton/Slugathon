@@ -1243,7 +1243,8 @@ class Game(Observed):
             raise AssertionError("ending counterstrike phase out of turn")
         if self.battle_phase != Phase.COUNTERSTRIKE:
             return
-        if self.battle_active_legion == self.defender_legion:
+        if (not self.is_battle_over() and
+          self.battle_active_legion == self.defender_legion):
             self.battle_turn += 1
             log("bumped battle turn to", self.battle_turn)
         if self.is_battle_over():
