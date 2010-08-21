@@ -1515,4 +1515,15 @@ class Game(Observed):
                 self.battle_turn = 8
             self._end_battle1()
 
+        elif isinstance(action, Action.AcquireAngel):
+            player = self.get_player_by_name(action.playername)
+            legion = player.legions[action.markername]
+            angel = Creature.Creature(action.angel_name)
+            legion.acquire(angel)
+
+        elif isinstance(action, Action.DoNotAcquire):
+            player = self.get_player_by_name(action.playername)
+            legion = player.legions[action.markername]
+            legion.do_not_acquire()
+
         self.notify(action)

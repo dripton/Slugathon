@@ -390,17 +390,6 @@ class Player(Observed):
             self.game.check_for_victory()
 
     def update(self, observed, action):
+        """Pass updates up to the game"""
         log("update", self, observed, action)
-        if isinstance(action, Action.RecruitCreature):
-            legion = self.legions[action.markername]
-            creature = Creature.Creature(action.creature_name)
-            recruiter_names = action.recruiter_names
-            legion.recruit(creature, recruiter_names)
-        elif isinstance(action, Action.AcquireAngel):
-            legion = self.legions[action.markername]
-            angel = Creature.Creature(action.angel_name)
-            legion.acquire(angel)
-        elif isinstance(action, Action.DoNotAcquire):
-            legion = self.legions[action.markername]
-            legion.do_not_acquire()
         self.notify(action)
