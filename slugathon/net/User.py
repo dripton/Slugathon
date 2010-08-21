@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2009 David Ripton"
+__copyright__ = "Copyright (c) 2003-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 import time
@@ -145,10 +145,10 @@ class User(pb.Avatar):
         self.server.strike(self.name, game_name, creature_name, hexlabel,
           target_creature_name, target_hexlabel, num_dice, strike_number)
 
-    def perspective_acquire_angel(self, game_name, markername,
-      angel_name):
-        self.server.acquire_angel(self.name, game_name, markername,
-          angel_name)
+    def perspective_acquire_angels(self, game_name, markername,
+      angel_names):
+        self.server.acquire_angels(self.name, game_name, markername,
+          angel_names)
 
     def perspective_do_not_acquire(self, game_name, markername):
         log("do_not_acquire", self, game_name, markername)

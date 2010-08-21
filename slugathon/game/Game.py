@@ -736,12 +736,12 @@ class Game(Observed):
           defender_markername, hexlabel)
         self.notify(action)
 
-    def acquire_angel(self, playername, markername, angel_name):
+    def acquire_angels(self, playername, markername, angel_names):
         """Called from Server"""
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
-        angel = Creature.Creature(angel_name)
-        legion.acquire(angel)
+        angels = [Creature.Creature(name for name in angel_names)]
+        legion.acquire(angels)
 
     def do_not_acquire(self, playername, markername):
         """Called from Server"""
@@ -1531,8 +1531,8 @@ class Game(Observed):
         elif isinstance(action, Action.Acquire):
             player = self.get_player_by_name(action.playername)
             legion = player.legions[action.markername]
-            angel = Creature.Creature(action.angel_name)
-            legion.acquire(angel)
+            angels = [Creature.Creature(name) for name in action.angel_names]
+            legion.acquire(angels)
 
         elif isinstance(action, Action.DoNotAcquire):
             player = self.get_player_by_name(action.playername)

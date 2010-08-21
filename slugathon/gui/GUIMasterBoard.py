@@ -434,17 +434,17 @@ class GUIMasterBoard(gtk.Window):
               legion.markername, donor.markername, creature.name)
             def1.addErrback(self.failure)
 
-    def picked_angel(self, (legion, angel)):
+    def picked_angels(self, (legion, angels)):
         """Callback from AcquireAngel"""
-        log("picked_angel", legion, angel)
-        if angel is None:
+        log("picked_angels", legion, angels)
+        if not angels:
             log("calling do_not_acquire", legion)
             def1 = self.user.callRemote("do_not_acquire", self.game.name,
               legion.markername)
             def1.addErrback(self.failure)
         else:
-            def1 = self.user.callRemote("acquire_angel", self.game.name,
-              legion.markername, angel.name)
+            def1 = self.user.callRemote("acquire_angels", self.game.name,
+              legion.markername, [angel.name for angel in angels])
             def1.addErrback(self.failure)
 
     def compute_scale(self):
@@ -995,26 +995,11 @@ class GUIMasterBoard(gtk.Window):
                 angels = action.angels
                 archangels = action.archangels
                 caretaker = self.game.caretaker
-                while archangels > 0:
-                    possible_angels = ["Archangel", "Angel"]
-                    available_angels = [angel for angel in possible_angels
-                      if caretaker.counts.get(angel) > 0]
-                    if not available_angels:
-                        break
+                if angels or archangels:
                     _, def1 = AcquireAngel.new(self.username, legion,
-                      available_angels, self)
-                    def1.addCallback(self.picked_angel)
-                    archangels -= 1
-                while angels > 0:
-                    possible_angels = ["Angel"]
-                    available_angels = [angel for angel in possible_angels
-                      if caretaker.counts.get(angel) > 0]
-                    if not available_angels:
-                        break
-                    _, def1 = AcquireAngel.new(self.username, legion,
-                      available_angels, self)
-                    def1.addCallback(self.picked_angel)
-                    angels -= 1
+                      archangels, angels, self.game.caretaker, self)
+                    def1.addCallback(self.picked_angels)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.Acquire):
             markername = action.markername

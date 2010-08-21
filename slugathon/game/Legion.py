@@ -426,30 +426,37 @@ class Legion(Observed):
                 self.notify(action)
 
 
-    def acquire(self, angel):
-        """Acquire angel, and notify observers."""
-        log("acquire", angel)
-        if angel.name == "Archangel":
-            okay = self.archangels_pending > 0
-        elif angel.name == "Angel":
-            okay = self.archangels_pending > 0 or self.angels_pending > 0
+    def acquire(self, angels):
+        """Acquire angels, and notify observers."""
+        log("acquire", angels)
+        num_archangels = num_angels = 0
+        for angel in angels:
+            if angel.name == "Archangel":
+                num_archangels += 1
+            elif angel.name == "Angel":
+                num_angels += 1
+        okay = (num_archangels <= self.archangels_pending and
+          num_angels <= self.angels_pending + self.archangels_pending -
+          num_archangels)
         if not okay:
-            log("no angels pending")
+            log("not enough angels pending")
             return
-        if len(self) >= 7:
-            raise AssertionError("legion too tall to recruit")
+        if len(self) + num_angels + num_archangels > 7:
+            raise AssertionError("legion too tall to acquire")
         caretaker = self.player.game.caretaker
-        if not caretaker.num_left(angel.name):
-            raise AssertionError("none of angel left")
-        caretaker.take_one(angel.name)
-        self.creatures.append(angel)
-        angel.legion = self
-        if angel.name == "Archangel" or self.angels_pending < 1:
-            self.archangels_pending -= 1
-        else:
-            self.angels_pending -= 1
-        action = Action.AcquireAngel(self.player.game.name, self.player.name,
-          self.markername, angel.name)
+        if caretaker.num_left("Archangel") < num_archangels:
+            raise AssertionError("not enough Archangels left")
+        if caretaker.num_left("Angel") < num_angels:
+            raise AssertionError("not enough Angels left")
+        self.archangels_pending -= num_archangels
+        self.angels_pending -= num_angels
+        for angel in angels:
+            caretaker.take_one(angel.name)
+            self.creatures.append(angel)
+            angel.legion = self
+        angel_names = [angel.name for angel in angels]
+        action = Action.Acquire(self.player.game.name,
+          self.player.name, self.markername, angel_names)
         self.notify(action)
         log("end of acquire", self)
 

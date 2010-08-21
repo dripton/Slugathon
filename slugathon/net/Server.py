@@ -267,10 +267,10 @@ class Server(Observed):
         if game:
             game.done_with_counterstrikes(username)
 
-    def acquire_angel(self, username, game_name, markername, angel_name):
+    def acquire_angels(self, username, game_name, markername, angel_names):
         game = self.name_to_game(game_name)
         if game:
-            game.acquire_angel(username, markername, angel_name)
+            game.acquire_angels(username, markername, angel_names)
 
     def do_not_acquire(self, username, game_name, markername):
         log("do_not_acquire", self, username, game_name, markername)

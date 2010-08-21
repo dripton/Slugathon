@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2007-2009 David Ripton"
+__copyright__ = "Copyright (c) 2007-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -13,17 +13,18 @@ from slugathon.util import guiutils
 from slugathon.util.log import log
 
 
-def new(username, legion, available_angels, parent):
+def new(username, legion, num_archangels, num_angels, caretaker, parent):
     """Create an AcquireAngel dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    acquire_angel = AcquireAngel(username, legion, available_angels, def1,
-      parent)
+    acquire_angel = AcquireAngel(username, legion, num_archangels, num_angels,
+      caretaker, def1, parent)
     return acquire_angel, def1
 
 
 class AcquireAngel(gtk.Dialog):
     """Dialog to acquire an angel."""
-    def __init__(self, username, legion, available_angels, def1, parent):
+    def __init__(self, username, legion, num_archangels, num_angels, caretaker,
+      def1, parent):
         gtk.Dialog.__init__(self, "AcquireAngel - %s" % username, parent)
         self.deferred = def1
         self.legion = legion
@@ -37,7 +38,7 @@ class AcquireAngel(gtk.Dialog):
           legion.markername, legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
-        legion_hbox = gtk.HBox(spacing=15)
+        legion_hbox = gtk.HBox(spacing=3)
         self.vbox.pack_start(legion_hbox)
 
         marker_hbox = gtk.HBox()
@@ -56,26 +57,59 @@ class AcquireAngel(gtk.Dialog):
                 chit = Chit.Chit(creature, player.color, scale=20)
                 chits_hbox.pack_start(chit.event_box, expand=False)
 
-        angels_hbox = gtk.HBox(spacing=15, homogeneous=True)
-        self.vbox.pack_start(angels_hbox)
-
-        angels = Creature.n2c(available_angels)
-        for angel in angels:
-            chit = Chit.Chit(angel, player.color, scale=20)
-            angels_hbox.pack_start(chit.event_box, expand=False)
-            chit.connect("button-press-event", self.cb_click)
+        angel_combos = self.find_angel_combos(num_archangels, num_angels,
+          caretaker.num_left("Archangel"), caretaker.num_left("Angel"))
+        max_len = max(len(combo) for combo in angel_combos)
+        leading_spaces = (len(legion) + 1 - max_len) // 2
+        for combo in angel_combos:
+            hbox = gtk.HBox(spacing=3, homogeneous=False)
+            self.vbox.pack_start(hbox)
+            for unused in xrange(leading_spaces):
+                chit = Chit.Chit(None, player.color, scale=20, name="Nothing")
+                chit.combo = combo
+                hbox.pack_start(chit.event_box, expand=False)
+                chit.connect("button-press-event", self.cb_click)
+            for angel in combo:
+                chit = Chit.Chit(angel, player.color, scale=20)
+                chit.combo = combo
+                hbox.pack_start(chit.event_box, expand=False)
+                chit.connect("button-press-event", self.cb_click)
 
         self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
         self.connect("response", self.cb_cancel)
 
         self.show_all()
 
+    def find_angel_combos(self, num_archangels, num_angels, archangels_left,
+      angels_left):
+        """Return a list of tuples of Creatures, corresponding to each
+        possible group of angels and archangels."""
+        set1 = set()
+        for archies in xrange(min(num_archangels, archangels_left) + 1):
+            for angies in xrange(min((num_angels + num_archangels),
+              angels_left) + 1):
+                if 0 < archies + angies <= num_archangels + num_angels:
+                    lst = []
+                    for unused in xrange(archies):
+                        lst.append(Creature.Creature("Archangel"))
+                    for unused in xrange(angies):
+                        lst.append(Creature.Creature("Angel"))
+                    combo = tuple(lst)
+                    set1.add(combo)
+        sorter = []
+        for combo in set1:
+            score = sum((creature.score for creature in combo))
+            sorter.append((score, combo))
+        sorter.sort(reverse=True)
+        combos = [combo for (score, combo) in sorter]
+        return combos
+
 
     def cb_click(self, widget, event):
         """Acquire an angel."""
         eventbox = widget
         chit = eventbox.chit
-        self.deferred.callback((self.legion, chit.creature))
+        self.deferred.callback((self.legion, chit.combo))
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
@@ -100,8 +134,7 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000
-    available_angels = ["Archangel", "Angel"]
-    acquire_angel, def1 = new(username, legion, available_angels, None)
+    acquire_angel, def1 = new(username, legion, 1, 1, game.caretaker, None)
     acquire_angel.connect("destroy", guiutils.exit)
     def1.addCallback(my_callback)
 
