@@ -604,12 +604,8 @@ class Client(pb.Referenceable, Observed):
           isinstance(action, Action.Concede)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                if game.engagement_hexlabels:
-                    reactor.callLater(self.delay, self.choose_engagement, game)
-                else:
-                    def1 = self.user.callRemote("done_with_engagements",
-                      game.name)
-                    def1.addErrback(self.failure)
+                def1 = self.user.callRemote("done_with_engagements", game.name)
+                def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
