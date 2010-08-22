@@ -74,31 +74,22 @@ def point_in_square(point, topleft, length):
 def point_in_polygon(point, vertexes):
     """Return True iff the point (a 2-tuple) is in the polygon specified
     by vertexes (a sequence of 2-tuples).
-    """
-    # Test against the polygon's bounding box.
-    xs = [x for (x, y) in vertexes]
-    ys = [y for (x, y) in vertexes]
-    min_x = min(xs)
-    min_y = min(ys)
-    max_x = max(xs)
-    max_y = max(ys)
-    (px, py) = point
-    if px < min_x or px >= max_x or py < min_y or py >= max_y:
-        return False
 
+    Consider points exactly on the edge to be outside the polygon.
+    """
+    (px, py) = point
     # Draw a ray due east from point, and see how many lines it crosses.
-    # Treat intervals as closed on the low end, open on the high end.
     crossings = 0
     numpoints = len(vertexes)
     for i in xrange(numpoints):
         j = (i + 1) % numpoints
         (xi, yi) = vertexes[i]
         (xj, yj) = vertexes[j]
-        if (yi < py and yj < py) or (yi >= py and yj >= py):
-            # No intersection possible.
-            continue
-        if xi >= px and xj >= px:
-            crossings += 1
+        if min([yi, yj]) < py < max([yi, yj]):
+            if px < max([xi, xj]):
+                xc = (py - yi) * (xj - px) / (yj - yi) + px
+                if px < xc:
+                    crossings += 1
     return crossings & 1
 
 def midpoint(point1, point2):
