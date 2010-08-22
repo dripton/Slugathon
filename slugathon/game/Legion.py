@@ -83,7 +83,8 @@ class Legion(Observed):
           self.creatures)
 
     def __len__(self):
-        return len(self.creatures)
+        """Return the number of living creatures in the legion."""
+        return len(self.living_creature_names)
 
     def __eq__(self, other):
         return self.markername == other.markername
@@ -140,7 +141,7 @@ class Legion(Observed):
         return False
 
     def add_creature_by_name(self, creature_name):
-        if len(self.living_creature_names) >= 7:
+        if len(self) >= 7:
             raise ValueError, "no room to add another creature"
         creature = Creature.Creature(creature_name)
         creature.legion = self
@@ -335,7 +336,7 @@ class Legion(Observed):
             else:
                 raise AssertionError("legion tried to recruit twice")
         else:
-            if len(self.living_creature_names) >= 7:
+            if len(self) >= 7:
                 raise AssertionError("legion too tall to recruit")
             caretaker = self.player.game.caretaker
             if not caretaker.num_left(creature.name):
@@ -404,7 +405,7 @@ class Legion(Observed):
         score0 = player.score
         score1 = score0 + points
         player.score = score1
-        height = len(self.living_creature_names)
+        height = len(self)
         if can_acquire:
             archangels = 0
             while (height + archangels < 7 and

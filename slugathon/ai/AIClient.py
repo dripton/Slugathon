@@ -187,7 +187,7 @@ class Client(pb.Referenceable, Observed):
                       old_creatures, new_creatures)
                     def1.addErrback(self.failure)
                     return
-                elif len(legion) == 7 and player.markernames:
+                elif (len(legion) == 7 and player.markernames):
                     # split 5-2.  For now, always split.
                     # TODO consider safety and what can be attacked
                     # or recruited
@@ -383,7 +383,7 @@ class Client(pb.Referenceable, Observed):
         mterrain = game.battlemap.mterrain
         caretaker = game.caretaker
         if (game.battle_turn == 4 and
-          len(legion.living_creature_names) < 7 and
+          len(legion) < 7 and
           not legion.recruited and legion.can_recruit(mterrain, caretaker)):
             lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
             if lst:
@@ -406,8 +406,8 @@ class Client(pb.Referenceable, Observed):
         assert legion.player.name == self.playername
         mterrain = game.battlemap.mterrain
         caretaker = game.caretaker
-        if (len(legion.living_creature_names) < 7 and
-          not legion.recruited and legion.can_recruit(mterrain, caretaker)):
+        if (len(legion) < 7 and not legion.recruited and
+          legion.can_recruit(mterrain, caretaker)):
             lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
             if lst:
                 # For now, just take the last one.
@@ -431,8 +431,8 @@ class Client(pb.Referenceable, Observed):
         legion = game.attacker_legion
         assert legion.player.name == self.playername
         summonables = []
-        if (len(legion.living_creature_names) < 7 and
-          legion.can_summon and game.first_attacker_kill in
+        if (len(legion) < 7 and legion.can_summon and
+          game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
             for legion2 in legion.player.legions.itervalues():
                 if not legion2.engaged:
@@ -464,8 +464,8 @@ class Client(pb.Referenceable, Observed):
         legion = game.attacker_legion
         assert legion.player.name == self.playername
         summonables = []
-        if (len(legion.living_creature_names) < 7 and
-          legion.can_summon and game.first_attacker_kill in
+        if (len(legion) < 7 and legion.can_summon and
+          game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
             for legion2 in legion.player.legions.itervalues():
                 if not legion2.engaged:

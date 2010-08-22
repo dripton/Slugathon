@@ -634,7 +634,7 @@ class GUIBattleMap(gtk.Window):
                 caretaker = self.game.caretaker
                 hexlabel = legion.hexlabel
                 mterrain = self.game.board.hexes[hexlabel].terrain
-                if (len(legion.living_creature_names) < 7 and
+                if (len(legion) < 7 and
                   legion.can_recruit(mterrain, caretaker)):
                     _, def1 = PickRecruit.new(self.username, legion, mterrain,
                       caretaker, self)
@@ -647,7 +647,7 @@ class GUIBattleMap(gtk.Window):
             elif (self.game.battle_active_player.name == self.username and
               self.game.battle_active_legion == self.game.attacker_legion):
                 legion = self.game.attacker_legion
-                if (len(legion.living_creature_names) < 7 and legion.can_summon
+                if (len(legion) < 7 and legion.can_summon
                   and self.game.first_attacker_kill in
                   [self.game.battle_turn - 1, self.game.battle_turn]):
                     self.game.first_attacker_kill = -1
