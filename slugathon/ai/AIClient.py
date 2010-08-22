@@ -752,7 +752,7 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.DoNotAcquire):
             game = self.name_to_game(action.game_name)
-            if action.playername == self.playername:
+            if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.choose_engagement, game)
 
         else:
