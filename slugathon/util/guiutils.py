@@ -75,22 +75,19 @@ def point_in_polygon(point, vertexes):
     """Return True iff the point (a 2-tuple) is in the polygon specified
     by vertexes (a sequence of 2-tuples).
 
-    Consider points exactly on the edge to be outside the polygon.
+    Based on C code from http://www.faqs.org/faqs/graphics/algorithms-faq/
     """
-    (px, py) = point
-    # Draw a ray due east from point, and see how many lines it crosses.
-    crossings = 0
-    numpoints = len(vertexes)
-    for i in xrange(numpoints):
-        j = (i + 1) % numpoints
-        (xi, yi) = vertexes[i]
-        (xj, yj) = vertexes[j]
-        if min([yi, yj]) < py < max([yi, yj]):
-            if px < max([xi, xj]):
-                xc = (py - yi) * (xj - px) / (yj - yi) + px
-                if px < xc:
-                    crossings += 1
-    return crossings & 1
+    npol = len(vertexes)
+    x, y = point
+    c = False
+    for i, (xi, yi) in enumerate(vertexes):
+        j = (i + 1) % npol
+        xj, yj = vertexes[j]
+        if ((yi <= y < yj or yj <= y < yi) and
+          (x < 1.0 * (xj - xi) * (y - yi) / (yj - yi) + xi)):
+            c = not c
+    return c
+
 
 def midpoint(point1, point2):
     """Return a point midway between two points."""
