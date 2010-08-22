@@ -761,7 +761,9 @@ class Game(Observed):
               playername)
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
-            raise AssertionError("cannot end engagements yet")
+            raise AssertionError("cannot end engagements yet",
+              "summon", self.pending_summon, "reinforcement",
+              self.pending_reinforcement, "acquire", self.pending_acquire)
         if self.phase == Phase.FIGHT:
             player.done_with_engagements()
 
