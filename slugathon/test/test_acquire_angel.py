@@ -2,8 +2,6 @@ __copyright__ = "Copyright (c) 2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import time
-
 from slugathon.gui import AcquireAngel
 from slugathon.game import Creature
 
