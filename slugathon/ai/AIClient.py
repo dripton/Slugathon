@@ -486,28 +486,27 @@ class Client(pb.Referenceable, Observed):
           legion.markername)
         def1.addErrback(self.failure)
 
-    def acquire_angel(self, game, markername, angels, archangels):
-        log("acquire_angel", markername, angels, archangels)
+    def acquire_angel(self, game, markername, num_angels, num_archangels):
+        log("acquire_angel", markername, num_angels, num_archangels)
         player = game.get_player_by_name(self.playername)
         legion = player.legions[markername]
         starting_height = len(legion)
         acquires = 0
-        while starting_height + acquires < 7 and (angels or archangels):
-            if archangels:
-                log("calling acquire_angel", markername, "Archangel")
-                def1 = self.user.callRemote("acquire_angel", game.name,
-                  markername, "Archangel")
-                def1.addErrback(self.failure)
-                archangels -= 1
-                acquires += 1
-            elif angels:
-                log("calling acquire_angel", markername, "Angel")
-                def1 = self.user.callRemote("acquire_angel", game.name,
-                  markername, "Angel")
-                def1.addErrback(self.failure)
-                angels -= 1
-                acquires += 1
-        if not acquires:
+        angel_names = []
+        while starting_height + acquires < 7 and num_archangels:
+            angel_names.append("Archangel")
+            num_archangels -= 1
+            acquires += 1
+        while starting_height + acquires < 7 and num_angels:
+            angel_names.append("Angel")
+            num_angels -= 1
+            acquires += 1
+        if angel_names:
+            log("calling acquire_angels", markername, angel_names)
+            def1 = self.user.callRemote("acquire_angel", game.name,
+              markername, angel_names)
+            def1.addErrback(self.failure)
+        else:
             log("calling do_not_acquire", markername)
             def1 = self.user.callRemote("do_not_acquire", game.name,
               markername)
