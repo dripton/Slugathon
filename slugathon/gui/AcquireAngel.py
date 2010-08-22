@@ -20,6 +20,31 @@ def new(username, legion, num_archangels, num_angels, caretaker, parent):
       caretaker, def1, parent)
     return acquire_angel, def1
 
+def find_angel_combos(num_archangels, num_angels, archangels_left,
+  angels_left):
+    """Return a list of tuples of Creatures, corresponding to each
+    possible group of angels and archangels."""
+    set1 = set()
+    for archies in xrange(min(num_archangels, archangels_left) + 1):
+        for angies in xrange(min((num_angels + num_archangels),
+          angels_left) + 1):
+            if 0 < archies + angies <= num_archangels + num_angels:
+                lst = []
+                for unused in xrange(archies):
+                    lst.append(Creature.Creature("Archangel"))
+                for unused in xrange(angies):
+                    lst.append(Creature.Creature("Angel"))
+                combo = tuple(lst)
+                set1.add(combo)
+    sorter = []
+    for combo in set1:
+        score = sum((creature.score for creature in combo))
+        sorter.append((score, combo))
+    sorter.sort(reverse=True)
+    combos = [combo for (score, combo) in sorter]
+    return combos
+
+
 
 class AcquireAngel(gtk.Dialog):
     """Dialog to acquire an angel."""
@@ -57,7 +82,7 @@ class AcquireAngel(gtk.Dialog):
                 chit = Chit.Chit(creature, player.color, scale=20)
                 chits_hbox.pack_start(chit.event_box, expand=False)
 
-        angel_combos = self.find_angel_combos(num_archangels, num_angels,
+        angel_combos = find_angel_combos(num_archangels, num_angels,
           caretaker.num_left("Archangel"), caretaker.num_left("Angel"))
         max_len = max(len(combo) for combo in angel_combos)
         leading_spaces = (len(legion) + 1 - max_len) // 2
@@ -79,31 +104,6 @@ class AcquireAngel(gtk.Dialog):
         self.connect("response", self.cb_cancel)
 
         self.show_all()
-
-    def find_angel_combos(self, num_archangels, num_angels, archangels_left,
-      angels_left):
-        """Return a list of tuples of Creatures, corresponding to each
-        possible group of angels and archangels."""
-        set1 = set()
-        for archies in xrange(min(num_archangels, archangels_left) + 1):
-            for angies in xrange(min((num_angels + num_archangels),
-              angels_left) + 1):
-                if 0 < archies + angies <= num_archangels + num_angels:
-                    lst = []
-                    for unused in xrange(archies):
-                        lst.append(Creature.Creature("Archangel"))
-                    for unused in xrange(angies):
-                        lst.append(Creature.Creature("Angel"))
-                    combo = tuple(lst)
-                    set1.add(combo)
-        sorter = []
-        for combo in set1:
-            score = sum((creature.score for creature in combo))
-            sorter.append((score, combo))
-        sorter.sort(reverse=True)
-        combos = [combo for (score, combo) in sorter]
-        return combos
-
 
     def cb_click(self, widget, event):
         """Acquire an angel."""

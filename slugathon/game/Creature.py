@@ -96,6 +96,10 @@ class Creature(object):
         else:
             return base
 
+    def __eq__(self, other):
+        """All creatures of the same type are equal."""
+        return self.name == other.name
+
     @property
     def score(self):
         """Return the point value of this creature."""
