@@ -34,7 +34,9 @@ class PickMarker(gtk.Dialog):
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
 
-        for ii, button_name in enumerate(markers_left):
+        prev_color = ""
+        hbox = None
+        for ii, button_name in enumerate(sorted(markers_left)):
             button = gtk.Button()
             button.tag = button_name
             pixbuf = gtk.gdk.pixbuf_new_from_file(guiutils.basedir(
@@ -43,7 +45,11 @@ class PickMarker(gtk.Dialog):
             image.set_from_pixbuf(pixbuf)
             button.add(image)
             button.connect("button-press-event", self.cb_click)
-            self.add_action_widget(button, ii + 1)
+            if button_name[:2] != prev_color:
+                prev_color = button_name[:2]
+                hbox = gtk.HBox()
+                self.vbox.add(hbox)
+            hbox.add(button)
 
         self.connect("destroy", self.cb_destroy)
         self.show_all()
@@ -65,7 +71,8 @@ if __name__ == "__main__":
 
     username = "test user"
     game_name = "test game"
-    markers_left = ["Rd%02d" % ii for ii in xrange(1, 12+1)]
+    markers_left = (["Rd%02d" % ii for ii in xrange(1, 12 + 1)] +
+      ["Bu%02d" % ii for ii in xrange(1, 8 + 1)])
     pickmarker, def1 = new(username, game_name, markers_left, None)
     def1.addCallback(my_callback)
     reactor.run()
