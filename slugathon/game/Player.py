@@ -47,7 +47,7 @@ class Player(Observed):
         self.mulligans_left = 1
         self.movement_roll = None
         self.summoned = False
-        self.eliminated_colors = []
+        self.eliminated_colors = set()
 
     @property
     def dead(self):
@@ -383,9 +383,12 @@ class Player(Observed):
         # Make a list to avoid changing size while iterating.
         for legion in self.legions.values():
             self.remove_legion(legion.markername)
-        scoring_legion.player.eliminated_colors.append(
+        scoring_legion.player.eliminated_colors.add(
           playercolordata.name_to_abbrev[self.color])
         scoring_legion.player.markernames.update(self.markernames)
+        action = Action.EliminatePlayer(self.game.name,
+          scoring_legion.player.name, self.name)
+        self.notify(action)
         if check_for_victory:
             self.game.check_for_victory()
 

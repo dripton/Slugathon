@@ -201,7 +201,8 @@ class StatusScreen(gtk.Window):
             titan_power_label.set_text(str(player.titan_power()))
             set_bg(titan_power_label, bg)
             eliminated_label = getattr(self, "eliminated%d_label" % num)
-            eliminated_label.set_text("".join(player.eliminated_colors))
+            eliminated_label.set_text("".join(sorted(
+              player.eliminated_colors)))
             set_bg(eliminated_label, bg)
             score_label = getattr(self, "score%d_label" % num)
             score_label.set_text(str(player.score))
@@ -295,6 +296,7 @@ class StatusScreen(gtk.Window):
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal) or
           isinstance(action, Action.RemoveLegion) or
+          isinstance(action, Action.EliminatePlayer) or
           isinstance(action, Action.GameOver)):
             for num, player in enumerate(self.game.players):
                 legions_label = getattr(self, "legions%d_label" % num)
@@ -307,6 +309,8 @@ class StatusScreen(gtk.Window):
                 titan_power_label.set_text(str(player.titan_power()))
                 score_label = getattr(self, "score%d_label" % num)
                 score_label.set_text(str(player.score))
+                eliminated_label = getattr(self, "eliminated%d_label" % num)
+                eliminated_label.set_text("".join(player.eliminated_colors))
 
         elif (isinstance(action, Action.Fight) or
           isinstance(action, Action.StartManeuverBattlePhase) or

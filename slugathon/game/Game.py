@@ -10,7 +10,7 @@ from zope.interface import implements
 
 from slugathon.game import (Player, MasterBoard, Action, Phase, Caretaker,
   Creature, History, BattleMap)
-from slugathon.data.playercolordata import colors
+from slugathon.data import playercolordata
 from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.util import prefs, Dice
@@ -270,7 +270,7 @@ class Game(Observed):
 
     def colors_left(self):
         """Return a list of player colors that aren't taken yet."""
-        left = colors[:]
+        left = playercolordata.colors[:]
         for player in self.players:
             if player.color:
                 left.remove(player.color)
@@ -1542,5 +1542,11 @@ class Game(Observed):
             player = self.get_player_by_name(action.playername)
             legion = player.legions[action.markername]
             legion.do_not_acquire()
+
+        elif isinstance(action, Action.EliminatePlayer):
+            winner_player = self.get_player_by_name(action.winner_playername)
+            loser_player = self.get_player_by_name(action.loser_playername)
+            winner_player.eliminated_colors.add(
+              playercolordata.name_to_abbrev[loser_player.color])
 
         self.notify(action)

@@ -529,6 +529,13 @@ class BattleOver(Action):
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(BattleOver, BattleOver)
 
+class EliminatePlayer(Action):
+    def __init__(self, game_name, winner_playername, loser_playername):
+        self.game_name = game_name
+        self.winner_playername = winner_playername
+        self.loser_playername = loser_playername
+pb.setUnjellyableForClass(EliminatePlayer, EliminatePlayer)
+
 class GameOver(Action):
     def __init__(self, game_name, winner_names):
         self.game_name = game_name
