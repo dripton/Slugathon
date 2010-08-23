@@ -385,6 +385,7 @@ class Player(Observed):
             self.remove_legion(legion.markername)
         scoring_legion.player.eliminated_colors.append(
           playercolordata.name_to_abbrev[self.color])
+        scoring_legion.player.markernames.update(self.markernames)
         if check_for_victory:
             self.game.check_for_victory()
 
