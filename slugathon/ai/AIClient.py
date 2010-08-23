@@ -542,8 +542,6 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
-            # Do this now rather than waiting for game to be notified.
-            game.assign_color(action.playername, action.color)
             self.maybe_pick_color(game)
             reactor.callLater(self.delay, self.maybe_pick_first_marker, game,
               action.playername)
