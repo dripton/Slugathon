@@ -243,7 +243,9 @@ class Client(pb.Referenceable, Observed):
         log("choose_engagement")
         if (game.pending_summon or game.pending_reinforcement or
           game.pending_acquire):
-            log("choose_engagement bailing early")
+            log("choose_engagement bailing early summon", game.pending_summon,
+              "reinforcement", game.pending_reinforcement,
+              "acquire", game.pending_acquire)
             return
         hexlabels = game.engagement_hexlabels
         if hexlabels:
