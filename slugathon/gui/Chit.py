@@ -145,7 +145,7 @@ class Chit(object):
 
         # Power
         label = str(self.creature.power)
-        x = 0.07 * size
+        x = 0.14 * size
         y = 0.77 * size
         pctx.move_to(x , y)
         layout.set_text(label)
