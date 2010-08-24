@@ -307,15 +307,16 @@ class Client(pb.Referenceable, Observed):
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
         for creature in legion.sorted_creatures:
-            moves = game.find_battle_moves(creature)
-            if moves:
-                move = random.choice(list(moves))
-                log("calling move_creature", creature.name,
-                  creature.hexlabel, move)
-                def1 = self.user.callRemote("move_creature", game.name,
-                  creature.name, creature.hexlabel, move)
-                def1.addErrback(self.failure)
-                return
+            if not creature.dead:
+                moves = game.find_battle_moves(creature)
+                if moves:
+                    move = random.choice(list(moves))
+                    log("calling move_creature", creature.name,
+                      creature.hexlabel, move)
+                    def1 = self.user.callRemote("move_creature", game.name,
+                      creature.name, creature.hexlabel, move)
+                    def1.addErrback(self.failure)
+                    return
         # No moves, so end the maneuver phase.
         log("calling done_with_maneuvers")
         def1 = self.user.callRemote("done_with_maneuvers", game.name)
