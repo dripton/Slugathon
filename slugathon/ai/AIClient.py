@@ -145,7 +145,7 @@ class Client(pb.Referenceable, Observed):
         log("maybe_pick_first_marker")
         if playername == self.username:
             player = game.get_player_by_name(playername)
-            markername = random.choice(list(player.markernames))
+            markername = self.choose_marker(player)
             self.pick_marker(game.name, self.username, markername)
 
     def pick_marker(self, game_name, username, markername):
@@ -162,6 +162,16 @@ class Client(pb.Referenceable, Observed):
                   markername)
                 def1.addErrback(self.failure)
 
+    def choose_marker(self, player):
+        """Pick a legion marker randomly, except prefer my own markers
+        to captured ones to be less annoying."""
+        own_markernames = [name for name in player.markernames if name[:2] ==
+          player.color_abbrev]
+        if own_markernames:
+            return random.choice(own_markernames)
+        else:
+            return random.choice(player.markernames)
+
     def split(self, game):
         """Split if it's my turn."""
         log("split")
@@ -170,7 +180,7 @@ class Client(pb.Referenceable, Observed):
             for legion in player.legions.itervalues():
                 if len(legion) == 8:
                     # initial split 4-4, one lord per legion
-                    new_markername = random.choice(list(player.markernames))
+                    new_markername = self.choose_marker(player)
                     lord = random.choice(["Titan", "Angel"])
                     creatures = ["Centaur", "Gargoyle", "Ogre"]
                     creature1 = random.choice(creatures)
@@ -191,7 +201,7 @@ class Client(pb.Referenceable, Observed):
                     # split 5-2.  For now, always split.
                     # TODO consider safety and what can be attacked
                     # or recruited
-                    new_markername = random.choice(list(player.markernames))
+                    new_markername = self.choose_marker(player)
                     lst = legion.sorted_creatures
                     keep = lst[:-2]
                     keep_names = [creature.name for creature in keep]
