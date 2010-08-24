@@ -62,6 +62,10 @@ class Player(Observed):
                 return True
         return False
 
+    @property
+    def color_abbrev(self):
+        return playercolordata.name_to_abbrev.get(self.color)
+
     def __repr__(self):
         return "Player " + self.name
 
@@ -76,7 +80,7 @@ class Player(Observed):
         """Set this player's color"""
         self.color = color
         action = Action.PickedColor(self.game.name, self.name, color)
-        abbrev = playercolordata.name_to_abbrev[self.color]
+        abbrev = self.color_abbrev
         num_markers = len(markerdata.data[color])
         for ii in xrange(num_markers):
             self.markernames.add("%s%02d" % (abbrev, ii + 1))
@@ -383,8 +387,7 @@ class Player(Observed):
         # Make a list to avoid changing size while iterating.
         for legion in self.legions.values():
             self.remove_legion(legion.markername)
-        scoring_legion.player.eliminated_colors.add(
-          playercolordata.name_to_abbrev[self.color])
+        scoring_legion.player.eliminated_colors.add(self.color_abbrev)
         scoring_legion.player.markernames.update(self.markernames)
         action = Action.EliminatePlayer(self.game.name,
           scoring_legion.player.name, self.name)

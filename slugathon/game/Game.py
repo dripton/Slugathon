@@ -1546,7 +1546,6 @@ class Game(Observed):
         elif isinstance(action, Action.EliminatePlayer):
             winner_player = self.get_player_by_name(action.winner_playername)
             loser_player = self.get_player_by_name(action.loser_playername)
-            winner_player.eliminated_colors.add(
-              playercolordata.name_to_abbrev[loser_player.color])
+            winner_player.eliminated_colors.add(loser_player.color_abbrev)
 
         self.notify(action)

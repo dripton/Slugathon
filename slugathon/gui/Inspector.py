@@ -102,7 +102,7 @@ if __name__ == "__main__":
     username = "test"
     player = Player.Player(username, None, None)
     player.color = random.choice(playercolordata.colors)
-    abbrev = playercolordata.name_to_abbrev[player.color]
+    abbrev = player.color_abbrev
     inspector = Inspector(username)
 
     legion = Legion.Legion(player, "%s01" % abbrev, creatures, 1)
