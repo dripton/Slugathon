@@ -257,7 +257,7 @@ class Legion(Observed):
 
         The list is sorted in the same order as within recruitdata.
         """
-        log("available_recruits_and_recruiters", self, mterrain, caretaker)
+        log("available_recruits_and_recruiters", self, mterrain)
         result_list = []
         counts = bag(self.living_creature_names)
         recruits = recruitdata.data[mterrain]
