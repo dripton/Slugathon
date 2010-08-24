@@ -297,7 +297,11 @@ class StatusScreen(gtk.Window):
           isinstance(action, Action.AcceptProposal) or
           isinstance(action, Action.EliminatePlayer) or
           isinstance(action, Action.BattleOver) or
-          isinstance(action, Action.GameOver)):
+          isinstance(action, Action.GameOver) or
+          isinstance(action, Action.StartMusterPhase)):
+            self._clear_battle()
+            self._color_player_columns()
+            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
             for num, player in enumerate(self.game.players):
                 legions_label = getattr(self, "legions%d_label" % num)
                 legions_label.set_text(str(len(player.legions)))
@@ -318,12 +322,6 @@ class StatusScreen(gtk.Window):
           isinstance(action, Action.StartCounterstrikeBattlePhase) or
           isinstance(action, Action.StartReinforceBattlePhase)):
             self._init_battle()
-
-        elif (isinstance(action, Action.StartMusterPhase) or
-          isinstance(action, Action.BattleOver)):
-            self._clear_battle()
-            self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
-
 
 
 if __name__ == "__main__":
