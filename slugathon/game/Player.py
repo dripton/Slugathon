@@ -370,15 +370,10 @@ class Player(Observed):
         assert type(markername) == str
         if markername in self.legions:
             legion = self.legions[markername]
-            hexlabel = legion.hexlabel
             legion.remove_observer(self)
             del self.legions[markername]
             del legion
             self.markernames.add(markername)
-        else:
-            hexlabel = None
-        action = Action.RemoveLegion(self.game.name, markername, hexlabel)
-        self.notify(action)
 
     def die(self, scoring_legion, check_for_victory):
         points = sum(legion.score for legion in self.legions.itervalues())

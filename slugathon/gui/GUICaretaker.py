@@ -115,7 +115,6 @@ class GUICaretaker(gtk.Window):
         elif isinstance(action, Action.Flee or
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal) or
-          isinstance(action, Action.RemoveLegion) or
           isinstance(action, Action.BattleOver)):
             for creature_name in self.caretaker.counts:
                 self.update_creature(creature_name)

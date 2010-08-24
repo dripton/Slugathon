@@ -507,13 +507,6 @@ class DoNotAcquire(Action):
         self.markername = markername
 pb.setUnjellyableForClass(DoNotAcquire, DoNotAcquire)
 
-class RemoveLegion(Action):
-    def __init__(self, game_name, markername, hexlabel):
-        self.game_name = game_name
-        self.markername = markername
-        self.hexlabel = hexlabel
-pb.setUnjellyableForClass(RemoveLegion, RemoveLegion)
-
 class BattleOver(Action):
     def __init__(self, game_name, winner_markername, winner_survivors,
       winner_losses, loser_markername, loser_survivors, loser_losses,

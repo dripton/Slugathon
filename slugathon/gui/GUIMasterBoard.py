@@ -1021,11 +1021,6 @@ class GUIMasterBoard(gtk.Window):
                   self.game.battlemap, self.game, self.user, self.username)
                 self.game.add_observer(self.guimap)
 
-        elif isinstance(action, Action.RemoveLegion):
-            self._remove_extra_markers()
-            self.repaint_hexlabels.add(action.hexlabel)
-            self.repaint(self.board.hexes.keys())
-
         elif isinstance(action, Action.BattleOver):
             legion = self.game.find_legion(action.winner_markername)
             if legion:
