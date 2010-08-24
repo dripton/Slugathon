@@ -514,7 +514,7 @@ class Client(pb.Referenceable, Observed):
             acquires += 1
         if angel_names:
             log("calling acquire_angels", markername, angel_names)
-            def1 = self.user.callRemote("acquire_angel", game.name,
+            def1 = self.user.callRemote("acquire_angels", game.name,
               markername, angel_names)
             def1.addErrback(self.failure)
         else:
