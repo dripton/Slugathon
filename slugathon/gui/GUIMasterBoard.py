@@ -1033,7 +1033,7 @@ class GUIMasterBoard(gtk.Window):
                 if player == self.game.active_player:
                     # attacker can possibly summon
                     if player.name == self.username:
-                        if len(legion) < 7 and legion.can_summon:
+                        if legion.can_summon:
                             _, def1 = SummonAngel.new(self.username, legion,
                               self)
                             def1.addCallback(self.picked_summon)

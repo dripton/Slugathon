@@ -444,8 +444,7 @@ class Client(pb.Referenceable, Observed):
         legion = game.attacker_legion
         assert legion.player.name == self.playername
         summonables = []
-        if (len(legion) < 7 and legion.can_summon and
-          game.first_attacker_kill in
+        if (legion.can_summon and game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
             for legion2 in legion.player.legions.itervalues():
                 if not legion2.engaged:
@@ -477,8 +476,7 @@ class Client(pb.Referenceable, Observed):
         legion = game.attacker_legion
         assert legion.player.name == self.playername
         summonables = []
-        if (len(legion) < 7 and legion.can_summon and
-          game.first_attacker_kill in
+        if (legion.can_summon and game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
             for legion2 in legion.player.legions.itervalues():
                 if not legion2.engaged:

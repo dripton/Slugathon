@@ -66,7 +66,7 @@ class Legion(Observed):
         """Return True if this legion's player has not already summoned this
         turn and any of this player's other unengaged legions has a summonable.
         """
-        if self.player.summoned:
+        if len(self) >= 7 or self.player.summoned:
             return False
         for legion in self.player.legions.itervalues():
             if legion != self and not legion.engaged and legion.any_summonable:

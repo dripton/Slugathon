@@ -647,8 +647,7 @@ class GUIBattleMap(gtk.Window):
             elif (self.game.battle_active_player.name == self.username and
               self.game.battle_active_legion == self.game.attacker_legion):
                 legion = self.game.attacker_legion
-                if (len(legion) < 7 and legion.can_summon
-                  and self.game.first_attacker_kill in
+                if (legion.can_summon and self.game.first_attacker_kill in
                   [self.game.battle_turn - 1, self.game.battle_turn]):
                     self.game.first_attacker_kill = -1
                     _, def1 = SummonAngel.new(self.username, legion, self)
