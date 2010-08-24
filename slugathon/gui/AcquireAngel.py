@@ -85,7 +85,7 @@ class AcquireAngel(gtk.Dialog):
         angel_combos = find_angel_combos(num_archangels, num_angels,
           caretaker.num_left("Archangel"), caretaker.num_left("Angel"))
         max_len = max(len(combo) for combo in angel_combos)
-        leading_spaces = (len(legion) + 1 - max_len) // 2
+        leading_spaces = (len(legion) + 2 - max_len) // 2
         for combo in angel_combos:
             hbox = gtk.HBox(spacing=3, homogeneous=False)
             self.vbox.pack_start(hbox)
