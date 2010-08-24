@@ -101,6 +101,7 @@ class GUIMasterBoard(gtk.Window):
         self.negotiate = None
         self.proposals = set()
         self.guimap = None
+        self.acquire_angel = None
         # Set of hexlabels of hexes to redraw.
         # If set to all hexlabels then we redraw the whole window.
         # Used to combine nearly simultaneous redraws into one.
@@ -437,6 +438,7 @@ class GUIMasterBoard(gtk.Window):
     def picked_angels(self, (legion, angels)):
         """Callback from AcquireAngel"""
         log("picked_angels", legion, angels)
+        self.acquire_angel = None
         if not angels:
             log("calling do_not_acquire", legion)
             def1 = self.user.callRemote("do_not_acquire", self.game.name,
@@ -994,15 +996,16 @@ class GUIMasterBoard(gtk.Window):
             self.repaint(lst)
 
         elif isinstance(action, Action.CanAcquire):
-            if action.playername == self.username:
+            if (self.acquire_angel is None and action.playername ==
+              self.username):
                 markername = action.markername
                 legion = self.game.find_legion(markername)
                 angels = action.angels
                 archangels = action.archangels
                 caretaker = self.game.caretaker
                 if angels or archangels:
-                    _, def1 = AcquireAngel.new(self.username, legion,
-                      archangels, angels, self.game.caretaker, self)
+                    self.acquire_angel, def1 = AcquireAngel.new(self.username,
+                      legion, archangels, angels, self.game.caretaker, self)
                     def1.addCallback(self.picked_angels)
                     def1.addErrback(self.failure)
 
