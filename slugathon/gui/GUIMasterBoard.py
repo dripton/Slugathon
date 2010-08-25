@@ -334,8 +334,8 @@ class GUIMasterBoard(gtk.Window):
                     self.split_legion(legion)
                 else:
                     if not player.markernames:
-                        InfoDialog.InfoDialog("Info", "No markers available",
-                          self)
+                        InfoDialog.InfoDialog(self, "Info",
+                          "No markers available")
                         return
                     _, def1 = PickMarker.new(self.username, self.game.name,
                       player.markernames, self)
