@@ -795,7 +795,7 @@ class Game(Observed):
         """Try to end playername's muster phase."""
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
-            raise AssertionError("ending muster phase out of turn")
+            return
         if self.phase == Phase.MUSTER:
             player.done_with_recruits()
 
