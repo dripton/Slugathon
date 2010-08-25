@@ -440,7 +440,8 @@ class Client(pb.Referenceable, Observed):
     def summon(self, game):
         """Summon, during the REINFORCE battle phase"""
         assert game.active_player.name == self.playername
-        assert game.battle_phase == Phase.REINFORCE
+        if game.battle_phase != Phase.REINFORCE:
+            return
         legion = game.attacker_legion
         assert legion.player.name == self.playername
         summonables = []
