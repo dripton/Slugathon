@@ -1062,6 +1062,14 @@ class GUIMasterBoard(gtk.Window):
             self.repaint_hexlabels.add(action.hexlabel)
             self.repaint([action.hexlabel])
 
+        elif isinstance(action, Action.GameOver):
+            if action.winner_names:
+                InfoDialog.InfoDialog(self, "Info",
+                  "Game over.  %s wins." % action.winner_names[0])
+            else:
+                InfoDialog.InfoDialog(self, "Info", "Game over.  Draw.")
+
+
 
 def main():
     from slugathon.game import MasterBoard
