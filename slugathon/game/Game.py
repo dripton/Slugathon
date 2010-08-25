@@ -722,7 +722,8 @@ class Game(Observed):
     # XXX Need playername?
     def fight(self, playername, attacker_markername, defender_markername):
         """Called from Server"""
-        assert self.battle_turn is None, "already fighting"
+        if self.battle_turn is not None:
+            return
         attacker_legion = self.find_legion(attacker_markername)
         defender_legion = self.find_legion(defender_markername)
         hexlabel = attacker_legion.hexlabel
