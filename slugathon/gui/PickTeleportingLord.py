@@ -62,7 +62,7 @@ class PickTeleportingLord(gtk.Dialog):
         eventbox = widget
         chit = eventbox.chit
         creature = chit.creature
-        self.deferred.callback(creature)
+        self.deferred.callback(creature.name)
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
@@ -83,8 +83,8 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures1, 1)
     player.legions[legion.markername] = legion
 
-    def my_callback(creature):
-        log("Picked", creature)
+    def my_callback(creature_name):
+        log("Picked", creature_name)
         guiutils.exit()
 
     pick_teleporting_lord, def1 = new(username, legion, None)

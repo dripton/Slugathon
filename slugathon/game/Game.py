@@ -467,8 +467,6 @@ class Game(Observed):
     def can_move_legion(self, player, legion, hexlabel, entry_side, teleport,
       teleporting_lord):
         """Return True iff player can legally move this legion."""
-        log("can_move_legion", player, legion, hexlabel, entry_side, teleport,
-          teleporting_lord)
         if player is not self.active_player or player is not legion.player:
             return False
         if legion.moved:

@@ -288,11 +288,11 @@ class GUIMasterBoard(gtk.Window):
         if teleport:
             if legion.player.enemy_legions(hexlabel):
                 assert legion.has_titan
-                teleporting_lord = "Titan"
+                lord_name = "Titan"
             else:
                 lord_types = legion.lord_types
                 if len(lord_types) == 1:
-                    teleporting_lord = lord_types.pop()
+                    lord_name = lord_types.pop()
                 else:
                     _, def1 = PickTeleportingLord.new(self.username, legion,
                       self)
@@ -300,16 +300,15 @@ class GUIMasterBoard(gtk.Window):
                       teleport, entry_side)
                     return
         else:
-            teleporting_lord = None
-        self._do_move_legion(teleporting_lord, legion, moves, teleport,
+            lord_name = None
+        self._do_move_legion(lord_name, legion, moves, teleport,
           entry_side)
 
-    def _do_move_legion(self, teleporting_lord, legion, moves, teleport,
-      entry_side):
+    def _do_move_legion(self, lord_name, legion, moves, teleport, entry_side):
         """Call the server to request a legion move."""
         hexlabel = moves[0][0]
         def1 = self.user.callRemote("move_legion", self.game.name,
-          legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
+          legion.markername, hexlabel, entry_side, teleport, lord_name)
         def1.addErrback(self.failure)
 
 
