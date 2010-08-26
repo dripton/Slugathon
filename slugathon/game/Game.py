@@ -848,8 +848,8 @@ class Game(Observed):
         log("carry", playername, carry_target_name, carry_target_hexlabel,
           carries)
         if not self.pending_carry:
-            log("no carry pending")
-            return
+            log("no carry pending; continuing to avoid confusing AI")
+            carries = 0
         action = self.pending_carry
         self.pending_carry = None
         assert action
