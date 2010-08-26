@@ -102,6 +102,7 @@ class GUIMasterBoard(gtk.Window):
         self.proposals = set()
         self.guimap = None
         self.acquire_angel = None
+        self.game_over = None
         # Set of hexlabels of hexes to redraw.
         # If set to all hexlabels then we redraw the whole window.
         # Used to combine nearly simultaneous redraws into one.
@@ -1062,12 +1063,12 @@ class GUIMasterBoard(gtk.Window):
             self.repaint([action.hexlabel])
 
         elif isinstance(action, Action.GameOver):
-            if action.winner_names:
-                InfoDialog.InfoDialog(self, "Info",
-                  "Game over.  %s wins." % action.winner_names[0])
-            else:
-                InfoDialog.InfoDialog(self, "Info", "Game over.  Draw.")
-
+            if self.game_over is None:
+                if action.winner_names:
+                    message = "Game over.  %s wins." % action.winner_names[0]
+                else:
+                    message = "Game over.  Draw."
+                self.game_over = InfoDialog.InfoDialog(self, "Info", message)
 
 
 def main():
