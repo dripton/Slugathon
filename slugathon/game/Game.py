@@ -1132,6 +1132,7 @@ class Game(Observed):
         assert len(strikers) == 1
         striker = strikers.pop()
         log("striker", striker)
+        assert striker.can_strike, "illegal strike"
         assert striker.name == striker_name
         targets = self.creatures_in_battle_hex(target_hexlabel)
         assert len(targets) == 1
