@@ -97,9 +97,6 @@ class GUIBattleMap(gtk.Window):
         for hex1 in self.battlemap.hexes.itervalues():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
         self.repaint_hexlabels = set()
-        # Hexes that need their bounding rectangles cleared, too.
-        # This fixes chits.
-        self.clear_hexlabels = set()
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -153,7 +150,6 @@ class GUIBattleMap(gtk.Window):
             if guihex.selected:
                 guihex.selected = False
                 self.repaint_hexlabels.add(hexlabel)
-                self.clear_hexlabels.add(hexlabel)
         self.repaint()
 
     def highlight_mobile_chits(self):
@@ -333,7 +329,6 @@ class GUIBattleMap(gtk.Window):
                 hexlabel = (chit.creature.hexlabel or
                   chit.creature.previous_hexlabel)
                 if hexlabel is not None:
-                    self.clear_hexlabels.add(hexlabel)
                     self.repaint([hexlabel])
                 self.chits.remove(chit)
 
@@ -505,7 +500,7 @@ class GUIBattleMap(gtk.Window):
             width, height = self.area.size_request()
             ctx.rectangle(0, 0, width, height)
             ctx.fill()
-        for hexlabel in self.clear_hexlabels:
+        for hexlabel in self.repaint_hexlabels:
             ctx.set_source_rgb(1, 1, 1)
             guihex = self.guihexes[hexlabel]
             x, y, width, height = guihex.bounding_rect
@@ -521,13 +516,11 @@ class GUIBattleMap(gtk.Window):
         ctx2.paint()
 
         self.repaint_hexlabels.clear()
-        self.clear_hexlabels.clear()
 
 
     def repaint_all(self):
         for hexlabel in self.guihexes:
             self.repaint_hexlabels.add(hexlabel)
-            self.clear_hexlabels.add(hexlabel)
         self.update_gui()
 
     def repaint(self, hexlabels=None):
@@ -542,7 +535,7 @@ class GUIBattleMap(gtk.Window):
           Action.UndoMoveCreature):
             for hexlabel in [action.old_hexlabel, action.new_hexlabel]:
                 if hexlabel is not None:
-                    self.clear_hexlabels.add(hexlabel)
+                    self.repaint_hexlabels.add(hexlabel)
             self.repaint([action.old_hexlabel, action.new_hexlabel])
             self.highlight_mobile_chits()
 
