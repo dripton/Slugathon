@@ -281,8 +281,13 @@ class GUIBattleMap(gtk.Window):
             player = legion.player
             guihex = self.guihexes[creature.hexlabel]
 
-            if (self.selected_chit is not None and player.name != self.username
-              and guihex.selected):
+            if (player.name != self.username and guihex.selected and
+              self.pickcarry):
+                # carrying to enemy creature
+                self.picked_carry((creature, self.pickcarry.carries))
+
+            elif (self.selected_chit is not None and player.name !=
+              self.username and guihex.selected):
                 # striking enemy creature
                 target = creature
                 striker = self.selected_chit.creature
@@ -583,6 +588,12 @@ class GUIBattleMap(gtk.Window):
                   self.game.name, striker, target, num_dice, strike_number,
                   carries, self)
                 def1.addCallback(self.picked_carry)
+                self.unselect_all()
+                for creature in striker.engaged_enemies:
+                    if striker.can_carry_to(creature, target, num_dice,
+                      strike_number):
+                        self.guihexes[creature.hexlabel].selected = True
+                        self.repaint([creature.hexlabel])
 
         elif isinstance(action, Action.DriftDamage):
             for chit in self.chits:
@@ -616,6 +627,12 @@ class GUIBattleMap(gtk.Window):
                   self.game.name, striker, target, num_dice, strike_number,
                   carries_left, self)
                 def1.addCallback(self.picked_carry)
+                self.unselect_all()
+                for creature in striker.engaged_enemies:
+                    if striker.can_carry_to(creature, target, num_dice,
+                      strike_number):
+                        self.guihexes[creature.hexlabel].selected = True
+                        self.repaint([creature.hexlabel])
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             self.highlight_strikers()
