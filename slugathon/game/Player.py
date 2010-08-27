@@ -275,6 +275,13 @@ class Player(Observed):
         for legion in self.legions.itervalues():
             legion.reset_angels_pending()
 
+    def remove_empty_legions(self):
+        """Remove any legions with no creatures, caused by summoning out
+        the only creature in the legion."""
+        for legion in self.legions:
+            if not legion.creatures:
+                self.remove_legion(legion.markername)
+
     def done_with_engagements(self):
         if self.can_exit_fight_phase():
             action = Action.StartMusterPhase(self.game.name, self.name)

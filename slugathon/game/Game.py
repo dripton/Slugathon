@@ -1428,6 +1428,7 @@ class Game(Observed):
             self.phase = Phase.MUSTER
             for player in self.players:
                 player.reset_angels_pending()
+                player.remove_empty_legions()
 
         elif isinstance(action, Action.RecruitCreature):
             self.recruit_creature(action.playername, action.markername,
