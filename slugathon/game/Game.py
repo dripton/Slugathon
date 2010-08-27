@@ -582,10 +582,16 @@ class Game(Observed):
         if legion2 == legion or legion2.player == player:
             # Can't concede because other legion already did.
             return
-        legion.die(legion2, False, False)
-        assert markername not in player.legions
-        for legion in self.all_legions():
-            assert legion.markername != markername
+        if legion in self.battle_legions:
+            # conceding during battle
+            for creature in legion.creatures:
+                creature.kill()
+        else:
+            # conceding before battle
+            legion.die(legion2, False, False)
+            assert markername not in player.legions
+            for legion in self.all_legions():
+                assert legion.markername != markername
 
     def _accept_proposal_helper(self, winning_legion, losing_legion,
       survivors):

@@ -441,9 +441,16 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
-    # TODO
-    def cb_concede(self, action):
-        pass
+    def cb_concede(self, event):
+        log("cb_concede", event)
+        for legion in self.game.battle_legions:
+            if legion.player.name == self.username:
+                friend = legion
+            else:
+                enemy = legion
+        def1 = self.user.callRemote("concede", self.game.name,
+          friend.markername, enemy.markername, friend.hexlabel)
+        def1.addErrback(self.failure)
 
     def bounding_rect_for_hexlabels(self, hexlabels):
         """Return the minimum bounding rectangle that encloses all
@@ -686,6 +693,12 @@ class GUIBattleMap(gtk.Window):
               self.game.attacker_legion.creatures):
                 self.game.attacker_legion.creatures[-1].hexlabel = "ATTACKER"
                 self.repaint(["ATTACKER"])
+
+        elif isinstance(action, Action.Concede):
+            for legion in self.game.battle_legions:
+                if legion.markername == action.markername:
+                    break
+            self.repaint([creature.hexlabel for creature in legion.creatures])
 
     def picked_reinforcement(self, (legion, creature, recruiter_names)):
         def1 = self.user.callRemote("recruit_creature", self.game.name,

@@ -614,7 +614,16 @@ class Client(pb.Referenceable, Observed):
           isinstance(action, Action.Concede)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.choose_engagement, game)
+                if game.battle_legions:
+                    if game.battle_phase == Phase.REINFORCE:
+                        reactor.callLater(self.reinforce, game)
+                    elif game.battle_phase == Phase.MANEUVER:
+                        reactor.callLater(self.delay, self.move_creatures,
+                          game)
+                    else:
+                        reactor.callLater(self.delay, self.strike, game)
+                else:
+                    reactor.callLater(self.delay, self.choose_engagement, game)
 
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
