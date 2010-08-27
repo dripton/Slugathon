@@ -278,7 +278,7 @@ class Player(Observed):
     def remove_empty_legions(self):
         """Remove any legions with no creatures, caused by summoning out
         the only creature in the legion."""
-        for legion in self.legions:
+        for legion in self.legions.itervalues():
             if not legion.creatures:
                 self.remove_legion(legion.markername)
 
