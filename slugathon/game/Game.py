@@ -858,9 +858,8 @@ class Game(Observed):
             carries = 0
         action = self.pending_carry
         self.pending_carry = None
-        assert action
-        assert action.playername == playername
-        assert carries <= action.carries
+        if action and carries > action.carries:
+            carries = action.carries
         striker = self.creatures_in_battle_hex(action.striker_hexlabel).pop()
         target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
         carry_target = self.creatures_in_battle_hex(
