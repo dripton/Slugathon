@@ -630,8 +630,9 @@ class Game(Observed):
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
                 break
-        # XXX Enemy managed to concede before we could flee.
+        # XXX Enemy illegally managed to concede before we could flee.
         if enemy_legion == legion:
+            log("illegal concede before flee")
             return
         enemy_markername = enemy_legion.markername
         action = Action.Flee(self.name, markername, enemy_markername, hexlabel)
@@ -722,13 +723,23 @@ class Game(Observed):
           defender_markername, defender_creature_names)
         self.notify(action)
 
-    # XXX Need playername?
     def fight(self, playername, attacker_markername, defender_markername):
         """Called from Server"""
+        log("fight", playername, attacker_markername, defender_markername,
+          self.battle_turn)
         if self.battle_turn is not None:
+            # already fighting, bail
             return
         attacker_legion = self.find_legion(attacker_markername)
         defender_legion = self.find_legion(defender_markername)
+        log("attacker", attacker_legion)
+        log("defender", defender_legion)
+        log(attacker_legion.player.name)
+        log(defender_legion.player.name)
+        if playername not in [attacker_legion.player.name,
+          defender_legion.player.name]:
+            log("illegal fight call from", playername)
+            return
         hexlabel = attacker_legion.hexlabel
         assert defender_legion.hexlabel == hexlabel
         action = Action.RevealLegion(self.name, attacker_markername,
@@ -900,7 +911,6 @@ class Game(Observed):
                 return True
         return False
 
-    # XXX Need playername?
     def save(self, playername):
         """Save this game to a file on the local disk.
 
@@ -1455,8 +1465,10 @@ class Game(Observed):
 
         elif isinstance(action, Action.Fight):
             attacker_markername = action.attacker_markername
+            attacker = self.find_legion(attacker_markername)
             defender_markername = action.defender_markername
-            self.fight(None, attacker_markername, defender_markername)
+            self.fight(attacker.player.name, attacker_markername,
+              defender_markername)
 
         elif isinstance(action, Action.MoveCreature):
             for creature in self.battle_active_legion.creatures:
@@ -1476,7 +1488,7 @@ class Game(Observed):
             else:
                 raise AssertionError("no %s in %s" % (action.creature_name,
                   action.old_hexlabel))
-            # XXX Avoid double undo
+            # Avoid double undo
             if creature.moved:
                 creature.undo_move()
 
