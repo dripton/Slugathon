@@ -282,8 +282,7 @@ class Game(Observed):
         # Just abort if we've already done this.  Simplifies timing.
         if player.color == color:
             return
-        left = self.colors_left()
-        if color not in left:
+        if color not in self.colors_left():
             raise AssertionError, "tried to take unavailable color"
         player.assign_color(color)
 
