@@ -39,6 +39,7 @@ class Client(pb.Referenceable, Observed):
         self.guiboards = {}   # Maps game to guiboard
         self.status_screens = {}   # Maps game to status_screen
         self.guicaretakers = {}   # Maps game to GUICaretaker
+        self.pickcolor = None
 
     def remote_set_name(self, name):
         self.playername = name
@@ -123,9 +124,10 @@ class Client(pb.Referenceable, Observed):
         self.update(observed, action)
 
     def _maybe_pick_color(self, game):
-        if game.next_playername_to_pick_color() == self.username:
-            _, def1 = PickColor.new(self.username, game, game.colors_left(),
-              self.guiboards[game])
+        if (game.next_playername_to_pick_color() == self.username and
+          self.pickcolor is None):
+            self.pickcolor, def1 = PickColor.new(self.username, game,
+              game.colors_left(), self.guiboards[game])
             def1.addCallback(self._cb_pickcolor)
 
     def _cb_pickcolor(self, (game, color)):
