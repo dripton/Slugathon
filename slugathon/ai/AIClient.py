@@ -274,6 +274,7 @@ class Client(pb.Referenceable, Observed):
 
         For now only know how to flee or concede.
         """
+        log("resolve_engagement", game, hexlabel, did_not_flee)
         attacker = None
         defender = None
         for legion in game.all_legions(hexlabel):
@@ -281,26 +282,40 @@ class Client(pb.Referenceable, Observed):
                 attacker = legion
             else:
                 defender = legion
+        log("attacker", attacker, attacker.player.name)
+        log("defender", defender, defender.player.name)
         if not attacker or not defender:
+            log("no attacker or defender; bailing")
             return
         if defender.player.name == self.playername:
             if defender.can_flee:
                 if defender.score * 1.5 < attacker.score:
+                    log("fleeing")
                     def1 = self.user.callRemote("flee", game.name,
                       defender.markername)
                     def1.addErrback(self.failure)
                 else:
+                    log("fighting")
                     def1 = self.user.callRemote("fight", game.name,
                       attacker.markername, defender.markername)
                     def1.addErrback(self.failure)
-        else:
-            if defender.can_flee and not did_not_flee:
-                # Wait for the defender to choose before conceding.
-                pass
             else:
+                log("fighting")
                 def1 = self.user.callRemote("fight", game.name,
                   attacker.markername, defender.markername)
                 def1.addErrback(self.failure)
+        elif attacker.player.name == self.playername:
+            if defender.can_flee and not did_not_flee:
+                log("waiting for defender")
+                # Wait for the defender to choose before conceding.
+                pass
+            else:
+                log("fighting")
+                def1 = self.user.callRemote("fight", game.name,
+                  attacker.markername, defender.markername)
+                def1.addErrback(self.failure)
+        else:
+            log("not my engagement")
 
     def move_creatures(self, game):
         log("move creatures")
@@ -629,7 +644,8 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)
-            if game.defender_legion.player.name == self.playername:
+            if (game.defender_legion and game.defender_legion.player.name ==
+              self.playername):
                 reactor.callLater(self.delay, self.move_creatures, game)
 
         elif isinstance(action, Action.MoveCreature):
