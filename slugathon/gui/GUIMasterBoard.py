@@ -40,6 +40,7 @@ ui_string = """<ui>
     <menu action="PhaseMenu">
       <menuitem action="Done"/>
       <menuitem action="Undo"/>
+      <menuitem action="Undo All"/>
       <menuitem action="Redo"/>
       <separator/>
       <menuitem action="Mulligan"/>
@@ -51,6 +52,7 @@ ui_string = """<ui>
   <toolbar name="Toolbar">
     <toolitem action="Done"/>
     <toolitem action="Undo"/>
+    <toolitem action="Undo All"/>
     <toolitem action="Redo"/>
     <separator/>
     <toolitem action="Mulligan"/>
@@ -138,6 +140,8 @@ class GUIMasterBoard(gtk.Window):
           ("PhaseMenu", None, "_Phase"),
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
           ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
+          ("Undo All", gtk.STOCK_DELETE, "Undo _All", "a", "Undo All",
+            self.cb_undo_all),
           ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
           ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan",
             self.cb_mulligan),
@@ -774,6 +778,16 @@ class GUIMasterBoard(gtk.Window):
                 last_action = history.actions[-1]
                 def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
+                def1.addErrback(self.failure)
+
+    def cb_undo_all(self, action):
+        if self.game:
+            history = self.game.history
+            if history.can_undo(self.username):
+                last_action = history.actions[-1]
+                def1 = self.user.callRemote("apply_action",
+                  last_action.undo_action())
+                def1.addCallback(self.cb_undo_all)
                 def1.addErrback(self.failure)
 
     def cb_redo(self, action):
