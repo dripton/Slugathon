@@ -4,6 +4,8 @@ __copyright__ = "Copyright (c) 2004-2008 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import collections
+
 from twisted.internet import gtk2reactor
 try:
     gtk2reactor.install()
@@ -23,6 +25,25 @@ def new(username, game_name, markers_left, parent):
     pickmarker = PickMarker(username, game_name, markers_left, def1, parent)
     return pickmarker, def1
 
+def sorted_markers(markers):
+    """Return a copy of markers sorted so that the colors that have the
+    fewest markers left come first.
+
+    The intent is to have the player's own color first, then the color
+    of captured markers that he's actually been using next.
+    """
+    color_count = collections.defaultdict(int)
+    for marker in markers:
+        color = marker[:2]
+        color_count[color] += 1
+    augmented = []
+    for marker in markers:
+        color = marker[:2]
+        count = color_count[color]
+        augmented.append((count, marker))
+    augmented.sort()
+    return [marker for count, marker in augmented]
+
 class PickMarker(gtk.Dialog):
     """Dialog to pick a legion marker."""
     def __init__(self, username, game_name, markers_left, def1, parent):
@@ -36,7 +57,7 @@ class PickMarker(gtk.Dialog):
 
         prev_color = ""
         hbox = None
-        for ii, button_name in enumerate(sorted(markers_left)):
+        for ii, button_name in enumerate(sorted_markers(markers_left)):
             button = gtk.Button()
             button.tag = button_name
             pixbuf = gtk.gdk.pixbuf_new_from_file(guiutils.basedir(
