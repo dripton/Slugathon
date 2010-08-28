@@ -396,5 +396,4 @@ class Player(Observed):
 
     def update(self, observed, action):
         """Pass updates up to the game"""
-        log("update", self, observed, action)
         self.notify(action)
