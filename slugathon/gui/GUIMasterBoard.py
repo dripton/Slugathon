@@ -990,7 +990,6 @@ class GUIMasterBoard(gtk.Window):
             if self.username == player.name:
                 self.unselect_all()
                 self.highlight_tall_legions()
-                player = self.game.active_player
                 if not player.can_split():
                     def1 = self.user.callRemote("done_with_splits",
                       self.game.name)
