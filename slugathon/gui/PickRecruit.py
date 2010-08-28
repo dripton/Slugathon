@@ -85,6 +85,8 @@ class PickRecruit(gtk.Dialog):
                 else:
                     hbox.pack_end(chit.event_box, expand=False)
                 chit.connect("button-press-event", self.cb_click)
+            label = gtk.Label(caretaker.num_left(creature.name))
+            hbox.pack_end(label, expand=False)
 
         self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
         self.connect("response", self.cb_cancel)
