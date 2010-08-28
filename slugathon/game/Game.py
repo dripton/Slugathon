@@ -816,7 +816,8 @@ class Game(Observed):
     def summon_angel(self, playername, markername, donor_markername,
       creature_name):
         """Called from Server and update"""
-        log("summon_angel")
+        log("summon_angel", playername, markername, donor_markername,
+          creature_name)
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         donor = player.legions[donor_markername]

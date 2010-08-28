@@ -1046,6 +1046,7 @@ class GUIMasterBoard(gtk.Window):
                               self)
                             def1.addCallback(self.picked_summon)
                         else:
+                            log("calling do_not_summon")
                             def1 = self.user.callRemote("do_not_summon",
                               self.game.name, legion.markername)
                             def1.addErrback(self.failure)
@@ -1060,6 +1061,7 @@ class GUIMasterBoard(gtk.Window):
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)
                         else:
+                            log("calling do_not_reinforce")
                             def1 = self.user.callRemote("do_not_reinforce",
                               self.game.name, legion.markername)
                             def1.addErrback(self.failure)

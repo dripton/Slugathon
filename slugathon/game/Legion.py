@@ -484,9 +484,10 @@ class Legion(Observed):
             self.notify(action)
 
     def reset_angels_pending(self):
-        log("reset_angels_pending")
-        self.angels_pending = 0
-        self.archangels_pending = 0
+        if self.angels_pending or self.archangels_pending:
+            log("reset_angels_pending")
+            self.angels_pending = 0
+            self.archangels_pending = 0
 
     def enter_battle(self, hexlabel):
         for creature in self.creatures:
