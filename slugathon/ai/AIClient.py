@@ -383,7 +383,7 @@ class Client(pb.Referenceable, Observed):
         assert game.active_player.name == self.playername
         player = game.active_player
         for legion in player.legions.itervalues():
-            if legion.moved and not legion.recruited:
+            if legion.moved and legion.can_recruit():
                 masterhex = game.board.hexes[legion.hexlabel]
                 caretaker = game.caretaker
                 mterrain = masterhex.terrain
