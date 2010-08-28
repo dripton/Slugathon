@@ -66,7 +66,7 @@ class Legion(Observed):
         """Return True if this legion's player has not already summoned this
         turn and any of this player's other unengaged legions has a summonable.
         """
-        if len(self) >= 7 or self.player.summoned:
+        if len(self) >= 7 or self.player.summoned or self.dead:
             return False
         for legion in self.player.legions.itervalues():
             if legion != self and not legion.engaged and legion.any_summonable:
@@ -230,7 +230,7 @@ class Legion(Observed):
     def can_recruit(self):
         """Return True iff the legion can currently recruit, if it moved
         or defended in a battle."""
-        if len(self) >= 7 or self.recruited:
+        if len(self) >= 7 or self.recruited or self.dead:
             return False
         game = self.player.game
         mterrain = game.board.hexes[self.hexlabel].terrain
