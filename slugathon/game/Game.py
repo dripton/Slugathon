@@ -1215,7 +1215,6 @@ class Game(Observed):
         else:
             assert False, "bug in Game._end_battle1"
         if not self.pending_reinforcement and not self.pending_summon:
-            # XXX Is it safe to call this directly from here?
             self._end_battle2()
 
     def _end_battle2(self):
