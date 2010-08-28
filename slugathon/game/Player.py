@@ -290,10 +290,7 @@ class Player(Observed):
     def can_recruit(self):
         """Return True if any of this player's legions can recruit."""
         for legion in self.legions.itervalues():
-            hexlabel = legion.hexlabel
-            if (legion.moved and not legion.recruited and len(legion) < 7 and
-              legion.can_recruit(self.game.board.hexes[hexlabel].terrain,
-              self.game.caretaker)):
+            if legion.moved and legion.can_recruit():
                 return True
         return False
 

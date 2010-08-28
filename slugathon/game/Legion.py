@@ -227,9 +227,21 @@ class Legion(Observed):
                 maximum = num
         return maximum
 
-    def can_recruit(self, mterrain, caretaker):
+    def can_recruit(self):
+        """Return True iff the legion can currently recruit, if it moved
+        or defended in a battle."""
+        if len(self) >= 7 or self.recruited:
+            return False
+        game = self.player.game
+        mterrain = game.board.hexes[self.hexlabel].terrain
+        caretaker = game.caretaker
+        return bool(self.available_recruits_and_recruiters(mterrain,
+          caretaker))
+
+    def could_recruit(self, mterrain, caretaker):
         """Return True iff the legion could recruit in a masterhex with
-        terrain type mterrain, if it moved there."""
+        terrain type mterrain, if it moved there and was the right height
+        and had not already recruited this turn."""
         return bool(self.available_recruits_and_recruiters(mterrain,
           caretaker))
 

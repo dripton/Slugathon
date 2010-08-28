@@ -1197,19 +1197,16 @@ class Game(Observed):
         """Determine the winner, and set up summoning or reinforcing if
         possible, but don't eliminate legions or hand out points yet."""
         log("_end_battle1")
-        mterrain = self.battle_masterhex.terrain
         if self.battle_turn > 7:
             #defender wins on time loss, possible reinforcement
-            if (not self.defender_legion.recruited and
-              self.defender_legion.can_recruit(mterrain, self.caretaker)):
+            if self.defender_legion.can_recruit():
                 self.pending_reinforcement = True
         elif self.attacker_legion.dead and self.defender_legion.dead:
             #mutual kill
             pass
         elif self.attacker_legion.dead:
             #defender wins, possible reinforcement
-            if (not self.defender_legion.recruited and
-              self.defender_legion.can_recruit(mterrain, self.caretaker)):
+            if self.defender_legion.can_recruit():
                 self.pending_reinforcement = True
         elif self.defender_legion.dead:
             #attacker wins, possible summon

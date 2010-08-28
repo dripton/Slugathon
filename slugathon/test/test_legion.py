@@ -107,7 +107,7 @@ def test_is_legal_split():
     child4 = Legion.Legion(player, "Rd03", Creature.n2c(["Centaur"]), 1)
     assert not parent2.is_legal_split(child3, child4)
 
-def test_can_recruit():
+def test_could_recruit():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -116,11 +116,11 @@ def test_can_recruit():
       "Gargoyle", "Centaur", "Centaur"]), 1)
     caretaker = Caretaker.Caretaker()
 
-    assert not legion.can_recruit("Marsh", caretaker)
-    assert not legion.can_recruit("Desert", caretaker)
-    assert legion.can_recruit("Plain", caretaker)
-    assert legion.can_recruit("Brush", caretaker)
-    assert legion.can_recruit("Tower", caretaker)
+    assert not legion.could_recruit("Marsh", caretaker)
+    assert not legion.could_recruit("Desert", caretaker)
+    assert legion.could_recruit("Plain", caretaker)
+    assert legion.could_recruit("Brush", caretaker)
+    assert legion.could_recruit("Tower", caretaker)
 
 def test_available_recruits():
     now = time.time()

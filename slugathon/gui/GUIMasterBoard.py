@@ -385,11 +385,11 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.MUSTER:
                 self.unselect_all()
                 legion = marker.legion
-                if legion.moved and not legion.recruited and len(legion) < 7:
+                if legion.moved:
                     masterhex = self.board.hexes[legion.hexlabel]
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
-                    if legion.can_recruit(mterrain, caretaker):
+                    if legion.can_recruit():
                         _, def1 = PickRecruit.new(self.username, legion,
                           mterrain, caretaker, self)
                         def1.addCallback(self.picked_recruit)
@@ -713,11 +713,8 @@ class GUIMasterBoard(gtk.Window):
             hexlabels = set()
             for legion in player.legions.itervalues():
                 hexlabel = legion.hexlabel
-                if (legion.moved and not legion.recruited and
-                  len(legion) < 7 and
-                  legion.can_recruit(self.game.board.hexes[hexlabel].terrain,
-                    self.game.caretaker)):
-                      hexlabels.add(hexlabel)
+                if legion.moved and legion.can_recruit():
+                    hexlabels.add(hexlabel)
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
                 guihex.selected = True
@@ -1059,8 +1056,7 @@ class GUIMasterBoard(gtk.Window):
                         masterhex = self.game.board.hexes[legion.hexlabel]
                         caretaker = self.game.caretaker
                         mterrain = masterhex.terrain
-                        if (not legion.recruited and len(legion) < 7 and
-                          legion.can_recruit(mterrain, caretaker)):
+                        if legion.can_recruit():
                             _, def1 = PickRecruit.new(self.username, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)

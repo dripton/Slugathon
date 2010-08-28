@@ -395,9 +395,7 @@ class Client(pb.Referenceable, Observed):
         assert legion.player.name == self.playername
         mterrain = game.battlemap.mterrain
         caretaker = game.caretaker
-        if (game.battle_turn == 4 and
-          len(legion) < 7 and
-          not legion.recruited and legion.can_recruit(mterrain, caretaker)):
+        if game.battle_turn == 4 and legion.can_recruit():
             lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
             if lst:
                 # For now, just take the last one.
@@ -419,8 +417,7 @@ class Client(pb.Referenceable, Observed):
         assert legion.player.name == self.playername
         mterrain = game.battlemap.mterrain
         caretaker = game.caretaker
-        if (len(legion) < 7 and not legion.recruited and
-          legion.can_recruit(mterrain, caretaker)):
+        if legion.can_recruit():
             lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
             if lst:
                 # For now, just take the last one.
@@ -744,9 +741,7 @@ class Client(pb.Referenceable, Observed):
                 if game.defender_legion:
                     legion = game.defender_legion
                     if legion.player.name == self.playername:
-                        mterrain = game.board.hexes[legion.hexlabel].terrain
-                        if not legion.recruited and legion.can_recruit(
-                          mterrain, game.caretaker):
+                        if legion.can_recruit():
                             reactor.callLater(self.delay, self.reinforce_after,
                               game)
                             return
