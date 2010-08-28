@@ -19,7 +19,8 @@ from slugathon.util import guiutils, prefs
 
 class Connect(gtk.Window):
     """GUI for connecting to a server."""
-    def __init__(self, playername, password, server_name, server_port):
+    def __init__(self, playername, password, server_name, server_port,
+      connect_now):
         gtk.Window.__init__(self)
 
         self.playernames = set()
@@ -87,6 +88,9 @@ class Connect(gtk.Window):
         self.connect("destroy", guiutils.exit)
         self.set_icon(icon.pixbuf)
         self.show_all()
+
+        if connect_now:
+            reactor.callWhenRunning(self.on_connect_button_clicked)
 
     def _init_playernames(self, playername):
         self.playernames.update(prefs.load_playernames())
@@ -173,10 +177,12 @@ def main():
     op.add_option("-a", "--password", action="store", type="str")
     op.add_option("-s", "--server", action="store", type="str")
     op.add_option("-p", "--port", action="store", type="int")
+    op.add_option("-c", "--connect", action="store_true")
     opts, args = op.parse_args()
     if args:
         op.error("got illegal argument")
-    Connect(opts.playername, opts.password, opts.server, opts.port)
+    Connect(opts.playername, opts.password, opts.server, opts.port,
+      opts.connect)
     reactor.run()
 
 if __name__ == "__main__":
