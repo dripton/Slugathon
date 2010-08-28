@@ -666,7 +666,7 @@ class GUIBattleMap(gtk.Window):
                 hexlabel = legion.hexlabel
                 mterrain = self.game.board.hexes[hexlabel].terrain
                 if (len(legion) < 7 and
-                  legion.can_recruit(mterrain, caretaker)):
+                  legion.can_recruit()):
                     _, def1 = PickRecruit.new(self.username, legion, mterrain,
                       caretaker, self)
                     def1.addCallback(self.picked_reinforcement)
