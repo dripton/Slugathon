@@ -1248,12 +1248,13 @@ class Game(Observed):
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
         self._cleanup_battle()
+        self._end_dead_player_turn()
+
+    def _end_dead_player_turn(self):
+        """If the active player is dead then advance phases if possible."""
         if self.active_player.dead:
-            # XXX If this can't happen because summon/reinforcement/acquire
-            # is pending, we need to kick the phase advance again.
             self.active_player.done_with_engagements()
             self.active_player.done_with_recruits()
-
 
     def done_with_counterstrikes(self, playername):
         """Try to end playername's counterstrike battle phase.
@@ -1541,11 +1542,13 @@ class Game(Observed):
             legion = player.legions[action.markername]
             angels = [Creature.Creature(name) for name in action.angel_names]
             legion.acquire(angels)
+            self._end_dead_player_turn()
 
         elif isinstance(action, Action.DoNotAcquire):
             player = self.get_player_by_name(action.playername)
             legion = player.legions[action.markername]
             legion.do_not_acquire()
+            self._end_dead_player_turn()
 
         elif isinstance(action, Action.EliminatePlayer):
             winner_player = self.get_player_by_name(action.winner_playername)
