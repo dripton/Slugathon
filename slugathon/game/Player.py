@@ -162,6 +162,7 @@ class Player(Observed):
         child.remove_observer(self)
         del self.legions[child_markername]
         self.markernames.add(child.markername)
+        self.selected_markername = None
         del child
         # TODO One action for our player with creature names, and a
         # different action for other players without.

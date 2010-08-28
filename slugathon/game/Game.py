@@ -1365,7 +1365,7 @@ class Game(Observed):
 
         elif isinstance(action, Action.UndoSplit):
             player = self.get_player_by_name(action.playername)
-            # Avoid doing the same split twice.
+            # Avoid undoing the same split twice.
             if action.child_markername in player.legions:
                 self.undo_split(action.playername, action.parent_markername,
                   action.child_markername)
