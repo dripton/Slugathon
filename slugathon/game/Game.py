@@ -1317,10 +1317,13 @@ class Game(Observed):
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.dead:
+                    log("dead", creature)
                     if (self.first_attacker_kill is None
                       and creature.legion is self.defender_legion
-                      and creature.hexlabel != "DEFENDER"):
+                      and creature.hexlabel != "DEFENDER"
+                      and creature.hexlabel is not None):
                         self.first_attacker_kill = self.battle_turn
+                        log("first_attacker_kill", self.battle_turn)
                     creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = None
                     # TODO Move to graveyard instead
