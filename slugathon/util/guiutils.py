@@ -6,6 +6,8 @@ import os
 import sys
 import math
 
+from twisted.internet import reactor
+
 
 def flatten_point_list(points):
     """Flatten a list of (x, y) tuples into a single tuple"""
@@ -105,7 +107,10 @@ def exit(*unused):
     Used because sys.exit takes an argument, but it's not always
     convenient to pass one through a callback.
     """
-    sys.exit(0)
+    if reactor.running:
+        reactor.stop()
+    else:
+        sys.exit(0)
 
 def draw_polygon(ctx, points):
     """Draw a polygon using Cairo"""
