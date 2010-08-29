@@ -75,8 +75,7 @@ class GUIMasterBoard(gtk.Window):
 
         self.set_icon(icon.pixbuf)
         self.set_title("Masterboard - Slugathon - %s" % self.username)
-        # TODO Rethink this, especially if the game is over.
-        self.connect("destroy", guiutils.exit)
+        self.connect("destroy", self.cb_destroy)
         self.connect("configure-event", self.cb_configure_event)
 
         self.vbox = gtk.VBox()
@@ -153,6 +152,15 @@ class GUIMasterBoard(gtk.Window):
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
         self.add_accel_group(self.ui.get_accel_group())
+
+
+    # TODO Keep references to other dialogs so we can destroy them too.
+    def cb_destroy(self, event):
+        for widget in [self.inspector, self.negotiate, self.guimap,
+          self.acquire_angel, self.game_over]:
+            if widget is not None:
+                widget.destroy(event)
+        self.destroy()
 
     def cb_configure_event(self, event, unused):
         if self.username:
