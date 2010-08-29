@@ -581,6 +581,10 @@ class Client(pb.Referenceable, Observed):
                   " and ".join(action.winner_names)))
             else:
                 log("Game %s over, draw" % action.game_name)
+            # For now, the AI drops when the game ends.  Maybe rethink
+            # this in the future and reuse the same AI process for
+            # multiple games.
+            reactor.stop()
 
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
