@@ -853,13 +853,13 @@ class GUIMasterBoard(gtk.Window):
     def update(self, observed, action):
         if isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
+            self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_tall_legions()
-            self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.SplitLegion):
             legion = self.game.find_legion(action.parent_markername)
+            self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_tall_legions()
-            self.repaint([legion.hexlabel])
 
         elif isinstance(action, Action.UndoSplit):
             legion = self.game.find_legion(action.parent_markername)
@@ -867,12 +867,13 @@ class GUIMasterBoard(gtk.Window):
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
             self.highlight_tall_legions()
-            self.repaint()
 
         elif isinstance(action, Action.RollMovement):
+            self.repaint_hexlabels.update(self.board.hexes.keys())
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
-            self.repaint(self.board.hexes.keys())
+            else:
+                self.repaint()
 
         elif isinstance(action, Action.MoveLegion) or isinstance(action,
           Action.UndoMoveLegion):
@@ -884,7 +885,8 @@ class GUIMasterBoard(gtk.Window):
                     self.repaint_hexlabels.add(hexlabel)
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
-            self.repaint()
+            else:
+                self.repaint()
 
         elif isinstance(action, Action.StartFightPhase):
             self.clear_recruitchits()
@@ -925,9 +927,8 @@ class GUIMasterBoard(gtk.Window):
                     self.cb_maybe_flee((attacker, defender, False))
 
         elif isinstance(action, Action.Flee):
-            self.highlight_engagements()
             self.repaint_hexlabels.add(action.hexlabel)
-            self.repaint([action.hexlabel])
+            self.highlight_engagements()
 
         elif isinstance(action, Action.DoNotFlee):
             markername = action.markername
@@ -946,9 +947,8 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.Concede):
             self.destroy_negotiate()
-            self.highlight_engagements()
             self.repaint_hexlabels.add(action.hexlabel)
-            self.repaint([action.hexlabel])
+            self.highlight_engagements()
 
         elif isinstance(action, Action.MakeProposal):
             attacker_markername = action.attacker_markername
@@ -964,9 +964,8 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.AcceptProposal):
             self.destroy_negotiate()
-            self.highlight_engagements()
             self.repaint_hexlabels.add(action.hexlabel)
-            self.repaint([action.hexlabel])
+            self.highlight_engagements()
 
         elif isinstance(action, Action.RejectProposal):
             attacker_markername = action.attacker_markername
@@ -980,10 +979,10 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.RecruitCreature) or isinstance(action,
           Action.UndoRecruit):
-            self.highlight_recruits()
             legion = self.game.find_legion(action.markername)
             if legion:
-                self.repaint([legion.hexlabel])
+                self.repaint_hexlabels.add(legion.hexlabel)
+            self.highlight_recruits()
 
         elif isinstance(action, Action.StartSplitPhase):
             player = self.game.active_player
@@ -1024,7 +1023,6 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(markername)
             self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
-            self.repaint()
 
         elif isinstance(action, Action.Fight):
             self.destroy_negotiate()
@@ -1069,9 +1067,8 @@ class GUIMasterBoard(gtk.Window):
             self.game.remove_observer(self.guimap)
             del self.guimap
             self.guimap = None
-            self.highlight_engagements()
             self.repaint_hexlabels.add(action.hexlabel)
-            self.repaint([action.hexlabel])
+            self.highlight_engagements()
 
         elif isinstance(action, Action.GameOver):
             if self.game_over is None:
