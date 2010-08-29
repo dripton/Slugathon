@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.util import guiutils
 
 
 class ShowLegion(gtk.Window):
@@ -51,6 +50,7 @@ if __name__ == "__main__":
     import time
     from slugathon.data import creaturedata
     from slugathon.game import Creature, Legion, Game, Player
+    from slugathon.util import guiutils
 
     now = time.time()
     creatures = [Creature.Creature(name) for name in

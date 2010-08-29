@@ -11,7 +11,6 @@ import gtk
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Legion
-from slugathon.util import guiutils
 
 
 def new(username, legion, parent):
@@ -110,6 +109,7 @@ if __name__ == "__main__":
     import time
     from slugathon.data import creaturedata
     from slugathon.game import Creature, Player, Game
+    from slugathon.util import guiutils
 
     now = time.time()
     creatures = [Creature.Creature(name) for name in

@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 import gtk
 
 from slugathon.gui import icon
-from slugathon.util import guiutils
 
 
 class InfoDialog(gtk.MessageDialog):
@@ -26,6 +25,8 @@ class InfoDialog(gtk.MessageDialog):
 
 
 if __name__ == "__main__":
+    from slugathon.util import guiutils
+
     info_dialog = InfoDialog(parent=None, title="Info",
       message_format="Look out behind you!")
     info_dialog.connect("destroy", guiutils.exit)

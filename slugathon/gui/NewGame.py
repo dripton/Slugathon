@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 import gtk
 
 from slugathon.gui import icon
-from slugathon.util import guiutils
 from slugathon.util.NullUser import NullUser
 from slugathon.util.log import log
 
@@ -83,6 +82,8 @@ class NewGame(gtk.Dialog):
 
 
 if __name__ == "__main__":
+    from slugathon.util import guiutils
+
     user = NullUser()
     username = "test user"
     newgame = NewGame(user, username, None)

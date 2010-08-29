@@ -10,7 +10,6 @@ from twisted.internet import defer
 
 from slugathon.data.playercolordata import colors
 from slugathon.gui import icon
-from slugathon.util import guiutils
 from slugathon.util.colors import contrasting_colors
 from slugathon.util.log import log
 
@@ -67,6 +66,7 @@ class PickColor(gtk.Dialog):
 if __name__ == "__main__":
     import time
     from slugathon.game import Game
+    from slugathon.util import guiutils
 
     def my_callback((game, color)):
         log("picked", color)

@@ -9,7 +9,6 @@ from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
-from slugathon.util import guiutils
 from slugathon.util.log import log
 
 
@@ -119,6 +118,7 @@ class AcquireAngel(gtk.Dialog):
 if __name__ == "__main__":
     import time
     from slugathon.game import Legion, Player, Game
+    from slugathon.util import guiutils
 
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)

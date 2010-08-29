@@ -8,7 +8,6 @@ import gtk
 from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.util import guiutils
 from slugathon.util.log import log
 
 
@@ -72,6 +71,7 @@ class PickTeleportingLord(gtk.Dialog):
 if __name__ == "__main__":
     import time
     from slugathon.game import Creature, Legion, Player, Game
+    from slugathon.util import guiutils
 
     now = time.time()
     username = "test"
