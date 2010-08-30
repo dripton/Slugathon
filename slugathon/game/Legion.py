@@ -403,6 +403,7 @@ class Legion(Observed):
         for creature in self.creatures:
             caretaker.kill_one(creature.name)
             if creature.name == "Titan":
+                log("setting dead_titan")
                 dead_titan = True
         self.player.remove_legion(self.markername)
         if dead_titan:
