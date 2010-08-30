@@ -3,13 +3,12 @@ clone of the classic Avalon Hill boardgame Titan. The focus is on playing
 against other humans across the Internet.
 
 It's still in heavy development and not enduser-friendly yet.  It may crash.
-The AI is not quite done yet, so you have to play all the players, or else
-find a friend or two to help.
 
 If you want to try it anyway:
 
 1. Install all the dependencies listed at
 http://wiki.github.com/dripton/Slugathon/dependencies.
+(This is easy on Linux, harder on Windows or MacOS.)
 
 2. Clone Slugathon with Git, or download and uncompress a zip or tar
 version.
@@ -26,13 +25,17 @@ require root permissions, so use su or sudo.
 "python slugathon-client"
 
 7. In a third terminal, (on the same or a different computer), run
-"python slugathon-client", picking a different player.  (You can add
-up to a total of 6 players.)
+"python slugathon-aiclient", picking a different player.  The AI
+doesn't have a GUI so you'll need to set everything with command-line
+arguments; use -h to list them.
+
+(You can add up to a total of 6 players.)
 
 8. Chat with each other in the Anteroom window.
 
 9. Have the first player form a game, then have the other player(s) join it,
-then have the first player start it, then play some Titan.
+(AIs currently join all games automatically), then have the first player start
+it, then play some Titan.
 
 10. If you actually do this successfully, please let me know.
 
