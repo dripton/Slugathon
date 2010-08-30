@@ -6,7 +6,6 @@ __license__ = "GNU GPL v2"
 """Outward-facing facade for AI."""
 
 
-import random
 from optparse import OptionParser
 
 from twisted.spread import pb
@@ -19,13 +18,14 @@ from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase
 from slugathon.util.log import log
+from slugathon.ai import DimBot, CleverBot
 
 
 class Client(pb.Referenceable, Observed):
 
     implements(IObserver)
 
-    def __init__(self, username, password, host, port, delay):
+    def __init__(self, username, password, host, port, delay, aitype):
         Observed.__init__(self)
         self.username = username
         self.playername = username # In case the same user logs in twice
@@ -36,11 +36,14 @@ class Client(pb.Referenceable, Observed):
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
         self.user = None
-        self.anteroom = None
         self.usernames = set()
         self.games = []
-        self.guiboards = {}   # Maps game to guiboard
-        self.status_screens = {}   # Maps game to status_screen
+        if aitype == "CleverBot":
+            self.ai = CleverBot.CleverBot(self.playername)
+        elif aitype == "DimBot":
+            self.ai = DimBot.DimBot(self.playername)
+        else:
+            raise ValueError("invalid aitype %s" % aitype)
 
     def remote_set_name(self, name):
         self.playername = name
@@ -63,6 +66,7 @@ class Client(pb.Referenceable, Observed):
         log("connected")
         if user:
             self.user = user
+            self.ai.user = user
             def1 = user.callRemote("get_usernames")
             def1.addCallback(self.got_usernames)
             def1.addErrback(self.failure)
@@ -134,409 +138,6 @@ class Client(pb.Referenceable, Observed):
         observed = None
         self.update(observed, action)
 
-    def maybe_pick_color(self, game):
-        log("maybe_pick_color")
-        if game.next_playername_to_pick_color() == self.username:
-            color = random.choice(game.colors_left())
-            def1 = self.user.callRemote("pick_color", game.name, color)
-            def1.addErrback(self.failure)
-
-    def maybe_pick_first_marker(self, game, playername):
-        log("maybe_pick_first_marker")
-        if playername == self.username:
-            player = game.get_player_by_name(playername)
-            markername = self.choose_marker(player)
-            self.pick_marker(game.name, self.username, markername)
-
-    def pick_marker(self, game_name, username, markername):
-        log("pick_marker")
-        game = self.name_to_game(game_name)
-        player = game.get_player_by_name(username)
-        if markername is None:
-            if not player.legions:
-                self.maybe_pick_first_marker(game, username)
-        else:
-            player.pick_marker(markername)
-            if not player.legions:
-                def1 = self.user.callRemote("pick_first_marker", game_name,
-                  markername)
-                def1.addErrback(self.failure)
-
-    def choose_marker(self, player):
-        """Pick a legion marker randomly, except prefer my own markers
-        to captured ones to be less annoying."""
-        own_markernames = [name for name in player.markernames if name[:2] ==
-          player.color_abbrev]
-        if own_markernames:
-            return random.choice(own_markernames)
-        else:
-            return random.choice(player.markernames)
-
-    def split(self, game):
-        """Split if it's my turn."""
-        log("split")
-        if game.active_player.name == self.playername:
-            player = game.active_player
-            for legion in player.legions.itervalues():
-                if len(legion) == 8:
-                    # initial split 4-4, one lord per legion
-                    new_markername = self.choose_marker(player)
-                    lord = random.choice(["Titan", "Angel"])
-                    creatures = ["Centaur", "Gargoyle", "Ogre"]
-                    creature1 = random.choice(creatures)
-                    creature2 = creature1
-                    creature3 = creature1
-                    while creature3 == creature1:
-                        creature3 = random.choice(creatures)
-                    new_creatures = [lord, creature1, creature2, creature3]
-                    old_creatures = legion.creature_names
-                    for creature in new_creatures:
-                        old_creatures.remove(creature)
-                    def1 = self.user.callRemote("split_legion", game.name,
-                      legion.markername, new_markername,
-                      old_creatures, new_creatures)
-                    def1.addErrback(self.failure)
-                    return
-                elif (len(legion) == 7 and player.markernames):
-                    # split 5-2.  For now, always split.
-                    # TODO consider safety and what can be attacked
-                    # or recruited
-                    new_markername = self.choose_marker(player)
-                    lst = legion.sorted_creatures
-                    keep = lst[:-2]
-                    keep_names = [creature.name for creature in keep]
-                    split = lst[-2:]
-                    split_names = [creature.name for creature in split]
-                    def1 = self.user.callRemote("split_legion", game.name,
-                      legion.markername, new_markername, keep_names,
-                      split_names)
-                    def1.addErrback(self.failure)
-                    return
-
-            # No splits, so move on to the next phase.
-            def1 = self.user.callRemote("done_with_splits", game.name)
-            def1.addErrback(self.failure)
-
-    def move_legions(self, game):
-        """For now, try to move all legions."""
-        assert game.active_player.name == self.playername
-        player = game.active_player
-        legions = player.legions.values()
-        move = None
-        for legion in legions:
-            if not legion.moved:
-                moves = game.find_all_moves(legion, game.board.hexes[
-                  legion.hexlabel], player.movement_roll)
-                if moves:
-                    move = random.choice(list(moves))
-                    break
-        if move is None:
-            # No more legions can move.
-            def1 = self.user.callRemote("done_with_moves", game.name)
-            def1.addErrback(self.failure)
-            return
-        (hexlabel, entry_side) = move
-        if entry_side == Game.TELEPORT:
-            teleport = True
-            # XXX Need to special-case tower?
-            entry_side = random.choice([1, 3, 5])
-            teleporting_lord = sorted(legion.lord_types)[-1]
-        else:
-            teleport = False
-            teleporting_lord = None
-        def1 = self.user.callRemote("move_legion", game.name,
-          legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
-        def1.addErrback(self.failure)
-
-    def choose_engagement(self, game):
-        """Resolve engagements."""
-        log("choose_engagement")
-        if (game.pending_summon or game.pending_reinforcement or
-          game.pending_acquire):
-            log("choose_engagement bailing early summon", game.pending_summon,
-              "reinforcement", game.pending_reinforcement,
-              "acquire", game.pending_acquire)
-            return
-        hexlabels = game.engagement_hexlabels
-        if hexlabels:
-            hexlabel = hexlabels.pop()
-            log("calling resolve_engagement")
-            def1 = self.user.callRemote("resolve_engagement", game.name,
-              hexlabel)
-            def1.addErrback(self.failure)
-        else:
-            log("calling done_with_engagements")
-            def1 = self.user.callRemote("done_with_engagements", game.name)
-            def1.addErrback(self.failure)
-
-    def resolve_engagement(self, game, hexlabel, did_not_flee):
-        """Resolve the engagement in hexlabel.
-
-        For now only know how to flee or concede.
-        """
-        log("resolve_engagement", game, hexlabel, did_not_flee)
-        attacker = None
-        defender = None
-        for legion in game.all_legions(hexlabel):
-            if legion.player == game.active_player:
-                attacker = legion
-            else:
-                defender = legion
-        log("attacker", attacker, attacker.player.name)
-        log("defender", defender, defender.player.name)
-        if not attacker or not defender:
-            log("no attacker or defender; bailing")
-            return
-        if defender.player.name == self.playername:
-            if defender.can_flee:
-                if defender.score * 1.5 < attacker.score:
-                    log("fleeing")
-                    def1 = self.user.callRemote("flee", game.name,
-                      defender.markername)
-                    def1.addErrback(self.failure)
-                else:
-                    log("fighting")
-                    def1 = self.user.callRemote("fight", game.name,
-                      attacker.markername, defender.markername)
-                    def1.addErrback(self.failure)
-            else:
-                log("fighting")
-                def1 = self.user.callRemote("fight", game.name,
-                  attacker.markername, defender.markername)
-                def1.addErrback(self.failure)
-        elif attacker.player.name == self.playername:
-            if defender.can_flee and not did_not_flee:
-                log("waiting for defender")
-                # Wait for the defender to choose before conceding.
-                pass
-            else:
-                log("fighting")
-                def1 = self.user.callRemote("fight", game.name,
-                  attacker.markername, defender.markername)
-                def1.addErrback(self.failure)
-        else:
-            log("not my engagement")
-
-    def move_creatures(self, game):
-        log("move creatures")
-        assert game.battle_active_player.name == self.playername
-        legion = game.battle_active_legion
-        for creature in legion.sorted_creatures:
-            if not creature.dead:
-                moves = game.find_battle_moves(creature)
-                if moves:
-                    move = random.choice(list(moves))
-                    log("calling move_creature", creature.name,
-                      creature.hexlabel, move)
-                    def1 = self.user.callRemote("move_creature", game.name,
-                      creature.name, creature.hexlabel, move)
-                    def1.addErrback(self.failure)
-                    return
-        # No moves, so end the maneuver phase.
-        log("calling done_with_maneuvers")
-        def1 = self.user.callRemote("done_with_maneuvers", game.name)
-        def1.addErrback(self.failure)
-
-    def strike(self, game):
-        log("strike")
-        assert game.battle_active_player.name == self.playername
-        legion = game.battle_active_legion
-        for striker in legion.sorted_creatures:
-            if striker.can_strike:
-                hexlabels = striker.find_target_hexlabels()
-                hexlabel = random.choice(list(hexlabels))
-                target = game.creatures_in_battle_hex(hexlabel).pop()
-                num_dice = striker.number_of_dice(target)
-                strike_number = striker.strike_number(target)
-                def1 = self.user.callRemote("strike", game.name,
-                  striker.name, striker.hexlabel, target.name, target.hexlabel,
-                  num_dice, strike_number)
-                def1.addErrback(self.failure)
-                return
-        # No strikes, so end the strike phase.
-        if game.battle_phase == Phase.STRIKE:
-            def1 = self.user.callRemote("done_with_strikes",
-              game.name)
-            def1.addErrback(self.failure)
-        else:
-            assert game.battle_phase == Phase.COUNTERSTRIKE
-            def1 = self.user.callRemote("done_with_counterstrikes",
-              game.name)
-            def1.addErrback(self.failure)
-
-    def carry(self, game, striker_name, striker_hexlabel, target_name,
-      target_hexlabel, num_dice, strike_number, carries):
-        striker = game.creatures_in_battle_hex(striker_hexlabel).pop()
-        target = game.creatures_in_battle_hex(target_hexlabel).pop()
-        carry_targets = []
-        for creature in striker.engaged_enemies:
-            if striker.can_carry_to(creature, target, num_dice, strike_number):
-                carry_targets.append(creature)
-        carry_target = random.choice(carry_targets)
-        def1 = self.user.callRemote("carry", game.name,
-          carry_target.name, carry_target.hexlabel, carries)
-        def1.addErrback(self.failure)
-
-
-    def recruit(self, game):
-        log("recruit")
-        assert game.active_player.name == self.playername
-        player = game.active_player
-        for legion in player.legions.itervalues():
-            if legion.moved and legion.can_recruit():
-                masterhex = game.board.hexes[legion.hexlabel]
-                caretaker = game.caretaker
-                mterrain = masterhex.terrain
-                lst = legion.available_recruits_and_recruiters(mterrain,
-                  caretaker)
-                if lst:
-                    # For now, just take the last one.
-                    tup = lst[-1]
-                    recruit = tup[0]
-                    recruiters = tup[1:]
-                    def1 = self.user.callRemote("recruit_creature", game.name,
-                      legion.markername, recruit, recruiters)
-                    def1.addErrback(self.failure)
-                    return
-        def1 = self.user.callRemote("done_with_recruits", game.name)
-        def1.addErrback(self.failure)
-
-
-    def reinforce(self, game):
-        """Reinforce, during the REINFORCE battle phase"""
-        assert game.battle_active_player.name == self.playername
-        assert game.battle_phase == Phase.REINFORCE
-        legion = game.defender_legion
-        assert legion.player.name == self.playername
-        mterrain = game.battlemap.mterrain
-        caretaker = game.caretaker
-        if game.battle_turn == 4 and legion.can_recruit():
-            lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
-            if lst:
-                # For now, just take the last one.
-                tup = lst[-1]
-                recruit = tup[0]
-                recruiters = tup[1:]
-                def1 = self.user.callRemote("recruit_creature", game.name,
-                  legion.markername, recruit, recruiters)
-                def1.addErrback(self.failure)
-                return
-
-        def1 = self.user.callRemote("done_with_reinforcements", game.name)
-        def1.addErrback(self.failure)
-
-
-    def reinforce_after(self, game):
-        """Reinforce, after the battle"""
-        legion = game.defender_legion
-        assert legion.player.name == self.playername
-        mterrain = game.battlemap.mterrain
-        caretaker = game.caretaker
-        if legion.can_recruit():
-            lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
-            if lst:
-                # For now, just take the last one.
-                tup = lst[-1]
-                recruit = tup[0]
-                recruiters = tup[1:]
-                def1 = self.user.callRemote("recruit_creature", game.name,
-                  legion.markername, recruit, recruiters)
-                def1.addErrback(self.failure)
-                return
-
-        def1 = self.user.callRemote("do_not_reinforce", game.name,
-          legion.markername)
-        def1.addErrback(self.failure)
-
-
-    def summon(self, game):
-        """Summon, during the REINFORCE battle phase"""
-        assert game.active_player.name == self.playername
-        if game.battle_phase != Phase.REINFORCE:
-            return
-        legion = game.attacker_legion
-        assert legion.player.name == self.playername
-        summonables = []
-        if (legion.can_summon and game.first_attacker_kill in
-          [game.battle_turn - 1, game.battle_turn]):
-            for legion2 in legion.player.legions.itervalues():
-                if not legion2.engaged:
-                    for creature in legion2.creatures:
-                        if creature.summonable:
-                            summonables.append(creature)
-            if summonables:
-                tuples = sorted(((creature.sort_value, creature)
-                  for creature in summonables), reverse=True)
-                summonable = tuples[0][1]
-                donor = summonable.legion
-                def1 = self.user.callRemote("summon_angel", game.name,
-                  legion.markername, donor.markername, summonable.name)
-                def1.addErrback(self.failure)
-                return
-
-        def1 = self.user.callRemote("do_not_summon", game.name,
-          legion.markername)
-        def1.addErrback(self.failure)
-
-        def1 = self.user.callRemote("done_with_reinforcements", game.name)
-        def1.addErrback(self.failure)
-
-
-    def summon_after(self, game):
-        """Summon, after the battle is over."""
-        log("summon_after")
-        assert game.active_player.name == self.playername
-        legion = game.attacker_legion
-        assert legion.player.name == self.playername
-        summonables = []
-        if (legion.can_summon and game.first_attacker_kill in
-          [game.battle_turn - 1, game.battle_turn]):
-            for legion2 in legion.player.legions.itervalues():
-                if not legion2.engaged:
-                    for creature in legion2.creatures:
-                        if creature.summonable:
-                            summonables.append(creature)
-            if summonables:
-                tuples = sorted(((creature.sort_value, creature)
-                  for creature in summonables), reverse=True)
-                summonable = tuples[0][1]
-                donor = summonable.legion
-                def1 = self.user.callRemote("summon_angel", game.name,
-                  legion.markername, donor.markername, summonable.name)
-                def1.addErrback(self.failure)
-                return
-
-        def1 = self.user.callRemote("do_not_summon", game.name,
-          legion.markername)
-        def1.addErrback(self.failure)
-
-    def acquire_angel(self, game, markername, num_angels, num_archangels):
-        log("acquire_angel", markername, num_angels, num_archangels)
-        player = game.get_player_by_name(self.playername)
-        legion = player.legions[markername]
-        starting_height = len(legion)
-        acquires = 0
-        angel_names = []
-        while starting_height + acquires < 7 and num_archangels:
-            angel_names.append("Archangel")
-            num_archangels -= 1
-            acquires += 1
-        while starting_height + acquires < 7 and num_angels:
-            angel_names.append("Angel")
-            num_angels -= 1
-            acquires += 1
-        if angel_names:
-            log("calling acquire_angels", markername, angel_names)
-            def1 = self.user.callRemote("acquire_angels", game.name,
-              markername, angel_names)
-            def1.addErrback(self.failure)
-        else:
-            log("calling do_not_acquire", markername)
-            def1 = self.user.callRemote("do_not_acquire", game.name,
-              markername)
-            def1.addErrback(self.failure)
-
-
     def update(self, observed, action):
         """Updates from User will come via remote_update, with
         observed set to None."""
@@ -562,18 +163,18 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
-            reactor.callLater(self.delay, self.maybe_pick_color, game)
+            reactor.callLater(self.delay, self.ai.maybe_pick_color, game)
 
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
-            self.maybe_pick_color(game)
-            reactor.callLater(self.delay, self.maybe_pick_first_marker, game,
-              action.playername)
+            self.ai.maybe_pick_color(game)
+            reactor.callLater(self.delay, self.ai.maybe_pick_first_marker,
+              game, action.playername)
 
         elif isinstance(action, Action.AssignedAllColors):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
@@ -589,41 +190,41 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)
 
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)
 
         elif isinstance(action, Action.RollMovement):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.move_legions, game)
+                reactor.callLater(self.delay, self.ai.move_legions, game)
 
         elif isinstance(action, Action.MoveLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.move_legions, game)
+                reactor.callLater(self.delay, self.ai.move_legions, game)
 
         elif isinstance(action, Action.StartFightPhase):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                reactor.callLater(self.delay, self.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
         elif isinstance(action, Action.StartMusterPhase):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                reactor.callLater(self.delay, self.recruit, game)
+                reactor.callLater(self.delay, self.ai.recruit, game)
 
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
-            reactor.callLater(self.delay, self.resolve_engagement, game,
+            reactor.callLater(self.delay, self.ai.resolve_engagement, game,
               action.hexlabel, False)
 
         elif (isinstance(action, Action.Flee) or
@@ -632,122 +233,127 @@ class Client(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 if game.battle_legions:
                     if game.battle_phase == Phase.REINFORCE:
-                        reactor.callLater(self.reinforce, game)
+                        reactor.callLater(self.ai.reinforce, game)
                     elif game.battle_phase == Phase.MANEUVER:
-                        reactor.callLater(self.delay, self.move_creatures,
+                        reactor.callLater(self.delay, self.ai.move_creatures,
                           game)
                     else:
-                        reactor.callLater(self.delay, self.strike, game)
+                        reactor.callLater(self.delay, self.ai.strike, game)
                 else:
-                    reactor.callLater(self.delay, self.choose_engagement, game)
+                    reactor.callLater(self.delay, self.ai.choose_engagement,
+                      game)
 
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
-            reactor.callLater(self.delay, self.resolve_engagement, game,
+            reactor.callLater(self.delay, self.ai.resolve_engagement, game,
               action.hexlabel, True)
 
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)
             if (game.defender_legion and game.defender_legion.player.name ==
               self.playername):
-                reactor.callLater(self.delay, self.move_creatures, game)
+                reactor.callLater(self.delay, self.ai.move_creatures, game)
 
         elif isinstance(action, Action.MoveCreature):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                reactor.callLater(self.delay, self.move_creatures, game)
+                reactor.callLater(self.delay, self.ai.move_creatures, game)
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                reactor.callLater(self.delay, self.strike, game)
+                reactor.callLater(self.delay, self.ai.strike, game)
 
         elif isinstance(action, Action.Strike):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 if action.carries:
-                    reactor.callLater(self.delay, self.carry, game,
+                    reactor.callLater(self.delay, self.ai.carry, game,
                       action.striker_name, action.striker_hexlabel,
                       action.target_name, action.target_hexlabel,
                       action.num_dice, action.strike_number, action.carries)
                 else:
-                    reactor.callLater(self.delay, self.strike, game)
+                    reactor.callLater(self.delay, self.ai.strike, game)
 
         elif isinstance(action, Action.Carry):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 if action.carries_left:
-                    reactor.callLater(self.delay, self.carry, game,
+                    reactor.callLater(self.delay, self.ai.carry, game,
                       action.striker_name, action.striker_hexlabel,
                       action.target_name, action.target_hexlabel,
                       action.num_dice, action.strike_number,
                       action.carries_left)
                 else:
-                    reactor.callLater(self.delay, self.strike, game)
+                    reactor.callLater(self.delay, self.ai.strike, game)
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                reactor.callLater(self.delay, self.strike, game)
+                reactor.callLater(self.delay, self.ai.strike, game)
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
                 legion = game.battle_active_legion
                 if legion == game.defender_legion:
-                    reactor.callLater(self.delay, self.reinforce, game)
+                    reactor.callLater(self.delay, self.ai.reinforce, game)
                 else:
-                    reactor.callLater(self.delay, self.summon, game)
+                    reactor.callLater(self.delay, self.ai.summon, game)
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
             if game.battle_active_legion.player.name == self.playername:
-                reactor.callLater(self.delay, self.move_creatures, game)
+                reactor.callLater(self.delay, self.ai.move_creatures, game)
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 if game.phase == Phase.MUSTER:
                     if game.active_player.name == self.playername:
-                        reactor.callLater(self.delay, self.recruit, game)
+                        reactor.callLater(self.delay, self.ai.recruit, game)
                 elif game.phase == Phase.FIGHT:
                     if game.battle_phase == Phase.REINFORCE:
-                        reactor.callLater(self.delay, self.reinforce, game)
+                        reactor.callLater(self.delay, self.ai.reinforce, game)
                     else:
-                        reactor.callLater(self.delay, self.choose_engagement,
-                          game)
+                        reactor.callLater(self.delay,
+                          self.ai.choose_engagement, game)
             else:
                 if (game.phase == Phase.FIGHT and
                   game.battle_phase != Phase.REINFORCE and
                   game.active_player.name == self.playername):
-                    reactor.callLater(self.delay, self.choose_engagement, game)
+                    reactor.callLater(self.delay, self.ai.choose_engagement,
+                      game)
 
 
         elif isinstance(action, Action.DoNotReinforce):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 assert game.phase == Phase.FIGHT
-                reactor.callLater(self.delay, self.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)
             else:
                 if (game.phase == Phase.FIGHT and
                   game.active_player.name == self.playername):
-                    reactor.callLater(self.delay, self.choose_engagement, game)
+                    reactor.callLater(self.delay, self.ai.choose_engagement,
+                      game)
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
-                    reactor.callLater(self.delay, self.summon, game)
+                    reactor.callLater(self.delay, self.ai.summon, game)
                 else:
-                    reactor.callLater(self.delay, self.choose_engagement, game)
+                    reactor.callLater(self.delay, self.ai.choose_engagement,
+                      game)
 
         elif isinstance(action, Action.DoNotSummon):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
-                    reactor.callLater(self.delay, self.summon, game)
+                    reactor.callLater(self.delay, self.ai.summon, game)
                 else:
-                    reactor.callLater(self.delay, self.choose_engagement, game)
+                    reactor.callLater(self.delay, self.ai.choose_engagement,
+                      game)
 
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
@@ -755,34 +361,35 @@ class Client(pb.Referenceable, Observed):
                 if game.attacker_legion:
                     legion = game.attacker_legion
                     if legion.can_summon:
-                        reactor.callLater(self.delay, self.summon_after, game)
+                        reactor.callLater(self.delay, self.ai.summon_after,
+                          game)
                         return
             else:
                 if game.defender_legion:
                     legion = game.defender_legion
                     if legion.player.name == self.playername:
                         if legion.can_recruit():
-                            reactor.callLater(self.delay, self.reinforce_after,
-                              game)
+                            reactor.callLater(self.delay,
+                              self.ai.reinforce_after, game)
                             return
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
         elif isinstance(action, Action.CanAcquire):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.acquire_angel, game,
+                reactor.callLater(self.delay, self.ai.acquire_angel, game,
                   action.markername, action.angels, action.archangels)
 
         elif isinstance(action, Action.Acquire):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
         elif isinstance(action, Action.DoNotAcquire):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
         else:
             log("got unhandled action", action)
@@ -799,11 +406,16 @@ def main():
       default=config.DEFAULT_PORT)
     op.add_option("-d", "--delay", action="store", type="float",
       default=config.DEFAULT_AI_DELAY)
+    op.add_option("-t", "--aitype", action="store", type="str",
+      default="CleverBot")
     opts, args = op.parse_args()
     if args:
         op.error("got illegal argument")
+    valid_ai_types = ["CleverBot", "DimBot"]
+    if opts.aitype not in valid_ai_types:
+        op.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     client = Client(opts.playername, opts.password, opts.server, opts.port,
-      opts.delay)
+      opts.delay, opts.aitype)
     client.connect()
     reactor.run()
 
