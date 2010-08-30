@@ -288,10 +288,11 @@ class Player(Observed):
             action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 
+    @property
     def can_recruit(self):
         """Return True if any of this player's legions can recruit."""
         for legion in self.legions.itervalues():
-            if legion.moved and legion.can_recruit():
+            if legion.moved and legion.can_recruit:
                 return True
         return False
 

@@ -368,7 +368,7 @@ class Client(pb.Referenceable, Observed):
                 if game.defender_legion:
                     legion = game.defender_legion
                     if legion.player.name == self.playername:
-                        if legion.can_recruit():
+                        if legion.can_recruit:
                             reactor.callLater(self.delay,
                               self.ai.reinforce_after, game)
                             return

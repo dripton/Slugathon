@@ -270,7 +270,7 @@ class DimBot(object):
         assert game.active_player.name == self.playername
         player = game.active_player
         for legion in player.legions.itervalues():
-            if legion.moved and legion.can_recruit():
+            if legion.moved and legion.can_recruit:
                 masterhex = game.board.hexes[legion.hexlabel]
                 caretaker = game.caretaker
                 mterrain = masterhex.terrain
@@ -297,7 +297,7 @@ class DimBot(object):
         assert legion.player.name == self.playername
         mterrain = game.battlemap.mterrain
         caretaker = game.caretaker
-        if game.battle_turn == 4 and legion.can_recruit():
+        if game.battle_turn == 4 and legion.can_recruit:
             lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
             if lst:
                 # For now, just take the last one.
@@ -319,7 +319,7 @@ class DimBot(object):
         assert legion.player.name == self.playername
         mterrain = game.battlemap.mterrain
         caretaker = game.caretaker
-        if legion.can_recruit():
+        if legion.can_recruit:
             lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
             if lst:
                 # For now, just take the last one.

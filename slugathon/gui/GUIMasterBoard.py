@@ -398,7 +398,7 @@ class GUIMasterBoard(gtk.Window):
                     masterhex = self.board.hexes[legion.hexlabel]
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
-                    if legion.can_recruit():
+                    if legion.can_recruit:
                         _, def1 = PickRecruit.new(self.username, legion,
                           mterrain, caretaker, self)
                         def1.addCallback(self.picked_recruit)
@@ -722,7 +722,7 @@ class GUIMasterBoard(gtk.Window):
             hexlabels = set()
             for legion in player.legions.itervalues():
                 hexlabel = legion.hexlabel
-                if legion.moved and legion.can_recruit():
+                if legion.moved and legion.can_recruit:
                     hexlabels.add(hexlabel)
             for hexlabel in hexlabels:
                 guihex = self.guihexes[hexlabel]
@@ -912,7 +912,7 @@ class GUIMasterBoard(gtk.Window):
             self.highlight_recruits()
             player = self.game.active_player
             if self.username == player.name:
-                if not player.can_recruit():
+                if not player.can_recruit:
                     def1 = self.user.callRemote("done_with_recruits",
                       self.game.name)
                     def1.addErrback(self.failure)
@@ -1063,7 +1063,7 @@ class GUIMasterBoard(gtk.Window):
                         masterhex = self.game.board.hexes[legion.hexlabel]
                         caretaker = self.game.caretaker
                         mterrain = masterhex.terrain
-                        if legion.can_recruit():
+                        if legion.can_recruit:
                             _, def1 = PickRecruit.new(self.username, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)

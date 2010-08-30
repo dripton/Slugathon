@@ -227,6 +227,7 @@ class Legion(Observed):
                 maximum = num
         return maximum
 
+    @property
     def can_recruit(self):
         """Return True iff the legion can currently recruit, if it moved
         or defended in a battle."""

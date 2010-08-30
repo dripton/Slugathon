@@ -1210,14 +1210,14 @@ class Game(Observed):
         log("_end_battle1")
         if self.battle_turn > 7:
             #defender wins on time loss, possible reinforcement
-            if self.defender_legion.can_recruit():
+            if self.defender_legion.can_recruit:
                 self.pending_reinforcement = True
         elif self.attacker_legion.dead and self.defender_legion.dead:
             #mutual kill
             pass
         elif self.attacker_legion.dead:
             #defender wins, possible reinforcement
-            if self.defender_legion.can_recruit():
+            if self.defender_legion.can_recruit:
                 self.pending_reinforcement = True
         elif self.defender_legion.dead:
             #attacker wins, possible summon
