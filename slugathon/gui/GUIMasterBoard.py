@@ -159,6 +159,7 @@ class GUIMasterBoard(gtk.Window):
         for widget in [self.inspector, self.negotiate, self.guimap,
           self.acquire_angel, self.game_over]:
             if widget is not None:
+                log("destroying", widget)
                 widget.destroy(event)
         self.destroy()
 
