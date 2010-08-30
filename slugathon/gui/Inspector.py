@@ -36,7 +36,6 @@ class Inspector(gtk.Window):
 
         self.legion = None
         self.marker = None
-        self.destroyed = False
 
         if self.username:
             tup = prefs.load_window_position(self.username,
@@ -82,9 +81,6 @@ class Inspector(gtk.Window):
             self.chits_hbox.pack_start(chit.event_box, expand=False)
 
         self.show_all()
-
-    def destroy(self, unused):
-        self.destroyed = True
 
     def hide_window(self, event, unused):
         self.hide()

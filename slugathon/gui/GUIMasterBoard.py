@@ -155,12 +155,12 @@ class GUIMasterBoard(gtk.Window):
 
 
     # TODO Keep references to other dialogs so we can destroy them too.
+    # TODO set_destroy_with_parent on dialogs so they go away easily.
     def cb_destroy(self, event):
         for widget in [self.inspector, self.negotiate, self.guimap,
           self.acquire_angel, self.game_over]:
             if widget is not None:
-                log("destroying", widget)
-                widget.destroy(event)
+                widget.destroy()
         self.destroy()
 
     def cb_configure_event(self, event, unused):
