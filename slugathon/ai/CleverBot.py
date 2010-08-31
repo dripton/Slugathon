@@ -5,8 +5,91 @@ __license__ = "GNU GPL v2"
 """An attempt at a smarter AI."""
 
 
+import random
+
 from slugathon.ai import DimBot
+from slugathon.game import Game, Creature
+from slugathon.util.log import log
 
 
 class CleverBot(DimBot.DimBot):
-    pass
+
+    def move_legions(self, game):
+        """Move one or more legions, and then end the Move phase."""
+        log("move_legions")
+        assert game.active_player.name == self.playername
+        player = game.active_player
+        legions = player.legions.values()
+        if not player.moved_legions():
+            # (score, legion, hexlabel, entry_side)
+            self.best_moves = []
+            for legion in legions:
+                moves = game.find_all_moves(legion, game.board.hexes[
+                  legion.hexlabel], player.movement_roll)
+                for hexlabel, entry_side in moves:
+                    score = self._score_move(legion, hexlabel, True)
+                    self.best_moves.append(
+                      (score, legion, hexlabel, entry_side))
+            self.best_moves.sort()
+
+        log("best moves", self.best_moves)
+        while self.best_moves:
+            score, legion, hexlabel, entry_side = self.best_moves.pop()
+            if (score > 0 or not player.moved_legions() or
+              len(player.friendly_legions(legion.hexlabel)) >= 2):
+                # keeper; remove other moves for this legion, and moves
+                # for other legions to this hex, and other teleports if
+                # this move was a teleport.
+                new_best_moves = [(score2, legion2, hexlabel2, entry_side2)
+                  for (score2, legion2, hexlabel2, entry_side2) in
+                  self.best_moves
+                  if legion2 != legion and hexlabel2 != hexlabel and not
+                  (entry_side == entry_side2 == Game.TELEPORT)]
+                self.best_moves = new_best_moves
+
+                if entry_side == Game.TELEPORT:
+                    teleport = True
+                    # XXX Need to special-case tower?
+                    entry_side = random.choice([1, 3, 5])
+                    teleporting_lord = sorted(legion.lord_types)[-1]
+                else:
+                    teleport = False
+                    teleporting_lord = None
+                def1 = self.user.callRemote("move_legion", game.name,
+                  legion.markername, hexlabel, entry_side, teleport,
+                  teleporting_lord)
+                def1.addErrback(self.failure)
+                return
+
+        # No more legions will move.
+        def1 = self.user.callRemote("done_with_moves", game.name)
+        def1.addErrback(self.failure)
+
+    def _score_move(self, legion, hexlabel, move):
+        """Return a score for legion moving to (or staying in) hexlabel."""
+        score = 0
+        player = legion.player
+        game = player.game
+        caretaker = game.caretaker
+        board = game.board
+        enemies = player.enemy_legions(hexlabel)
+        if enemies:
+            assert len(enemies) == 1
+            enemy = enemies.pop()
+            SQUASH = 0.6
+            BE_SQUASHED = 1.0
+            enemy_sort_value = enemy.sort_value
+            legion_sort_value = legion.sort_value
+            if enemy_sort_value < SQUASH * legion_sort_value:
+                score += enemy.score
+            elif enemy_sort_value >= BE_SQUASHED * legion_sort_value:
+                score -= legion_sort_value
+        if move and (len(legion) < 7 or enemies):
+            masterhex = board.hexes[hexlabel]
+            terrain = masterhex.terrain
+            recruits = legion.available_recruits(terrain, caretaker)
+            if recruits:
+                recruit_name = recruits[-1]
+                recruit = Creature.Creature(recruit_name)
+                score += recruit.sort_value
+        return score
