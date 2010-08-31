@@ -46,6 +46,11 @@ class Legion(Observed):
         return not alive
 
     @property
+    def living_creatures(self):
+        return [creature for creature in self.creatures if not
+          creature.dead]
+
+    @property
     def living_creature_names(self):
         return [creature.name for creature in self.creatures if not
           creature.dead]
@@ -270,7 +275,6 @@ class Legion(Observed):
 
         The list is sorted in the same order as within recruitdata.
         """
-        log("available_recruits_and_recruiters", self, mterrain)
         result_list = []
         counts = bag(self.living_creature_names)
         recruits = recruitdata.data[mterrain]
@@ -392,6 +396,11 @@ class Legion(Observed):
         li = reversed(sorted((creature.sort_value, creature)
           for creature in self.creatures))
         return [tup[1] for tup in li]
+
+    @property
+    def sort_value(self):
+        """Return a rough indication of legion value."""
+        return sum([creature.sort_value for creature in self.living_creatures])
 
     def die(self, scoring_legion, fled, no_points, check_for_victory=True):
         if scoring_legion is not None and not no_points:
