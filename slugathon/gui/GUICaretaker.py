@@ -47,7 +47,8 @@ class GUICaretaker(gtk.Window):
             table.attach(vbox, col, col + 1, row, row + 1)
             label = self.max_count_labels[creature_name] = gtk.Label()
             vbox.pack_start(label, expand=False)
-            chit = Chit.Chit(creature, "Black", scale=20)
+            chit = Chit.Chit(creature, "Black", scale=20,
+              dead=(not left_count))
             vbox.pack_start(chit.event_box, expand=False)
             label = self.counts_labels[creature_name] = gtk.Label()
             vbox.pack_start(label, expand=False)
@@ -154,6 +155,10 @@ if __name__ == "__main__":
     player2.pick_marker("Bu02")
     player2.create_starting_legion()
     game.players.append(player2)
+
+    caretaker = game.caretaker
+    for unused in xrange(10):
+        caretaker.take_one("Colossus")
 
     guicaretaker = GUICaretaker(game, username)
     guicaretaker.connect("destroy", guiutils.exit)
