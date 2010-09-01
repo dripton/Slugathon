@@ -12,7 +12,78 @@ from slugathon.game import Game, Creature
 from slugathon.util.log import log
 
 
+SQUASH = 0.6
+BE_SQUASHED = 1.0
+
+
 class CleverBot(DimBot.DimBot):
+
+    def split(self, game):
+        """Split if it's my turn."""
+        assert game.active_player.name == self.playername
+        player = game.active_player
+        legions = player.legions.values()
+        caretaker = game.caretaker
+        for legion in legions:
+            if len(legion) == 8:
+                # initial split 4-4, one lord per legion
+                new_markername = self._choose_marker(player)
+                lord = random.choice(["Titan", "Angel"])
+                creatures = ["Centaur", "Gargoyle", "Ogre"]
+                creature1 = random.choice(creatures)
+                creature2 = creature1
+                creature3 = creature1
+                while creature3 == creature1:
+                    creature3 = random.choice(creatures)
+                new_creatures = [lord, creature1, creature2, creature3]
+                old_creatures = legion.creature_names
+                for creature in new_creatures:
+                    old_creatures.remove(creature)
+                def1 = self.user.callRemote("split_legion", game.name,
+                  legion.markername, new_markername,
+                  old_creatures, new_creatures)
+                def1.addErrback(self.failure)
+                return
+            elif len(legion) == 7 and player.markernames:
+                good_recruit_rolls = set()
+                safe_split_rolls = set()
+                lst = legion.sorted_creatures
+                for roll in xrange(1, 6 + 1):
+                    moves = game.find_all_moves(legion,
+                      game.board.hexes[legion.hexlabel], roll)
+                    for hexlabel, entry_side in moves:
+                        masterhex = game.board.hexes[hexlabel]
+                        terrain = masterhex.terrain
+                        recruits = legion.available_recruits(terrain,
+                          caretaker)
+                        if recruits:
+                            recruit = Creature.Creature(recruits[-1])
+                            if recruit.sort_value > lst[-1].sort_value:
+                                good_recruit_rolls.add(roll)
+                        enemies = player.enemy_legions(hexlabel)
+                        if enemies:
+                            enemy = enemies.pop()
+                            if enemy.sort_value < SQUASH * legion.sort_value:
+                                safe_split_rolls.add(roll)
+                        else:
+                            safe_split_rolls.add(roll)
+                if good_recruit_rolls and len(safe_split_rolls) == 6:
+                    split = lst[-2:]
+                    split_names = [creature.name for creature in split]
+                    keep = lst[:-2]
+                    keep_names = [creature.name for creature in keep]
+                    new_markername = self._choose_marker(player)
+                    def1 = self.user.callRemote("split_legion", game.name,
+                      legion.markername, new_markername, keep_names,
+                      split_names)
+                    def1.addErrback(self.failure)
+                    return
+
+        # No splits, so move on to the next phase.
+        def1 = self.user.callRemote("done_with_splits", game.name)
+        def1.addErrback(self.failure)
+
+
 
     def move_legions(self, game):
         """Move one or more legions, and then end the Move phase."""
@@ -76,8 +147,6 @@ class CleverBot(DimBot.DimBot):
         if enemies:
             assert len(enemies) == 1
             enemy = enemies.pop()
-            SQUASH = 0.6
-            BE_SQUASHED = 1.0
             enemy_sort_value = enemy.sort_value
             legion_sort_value = legion.sort_value
             if enemy_sort_value < SQUASH * legion_sort_value:
