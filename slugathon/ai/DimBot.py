@@ -125,8 +125,12 @@ class DimBot(object):
         (hexlabel, entry_side) = move
         if entry_side == Game.TELEPORT:
             teleport = True
-            # XXX Need to special-case tower?
-            entry_side = random.choice([1, 3, 5])
+            masterhex = game.board.hexes[hexlabel]
+            terrain = masterhex.terrain
+            if terrain == "Tower":
+                entry_side = 5
+            else:
+                entry_side = random.choice([1, 3, 5])
             teleporting_lord = sorted(legion.lord_types)[-1]
         else:
             teleport = False
