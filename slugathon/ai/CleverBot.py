@@ -165,3 +165,94 @@ class CleverBot(DimBot.DimBot):
                 recruit = Creature.Creature(recruit_name)
                 score += recruit.sort_value
         return score
+
+
+
+    def move_creatures(self, game):
+        log("move creatures")
+        assert game.battle_active_player.name == self.playername
+        legion = game.battle_active_legion
+        for creature in legion.sorted_creatures:
+            if not creature.dead:
+                moves = game.find_battle_moves(creature)
+                if moves:
+                    score_moves = []
+                    # Not moving is also an option.
+                    if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
+                        moves.add(creature.hexlabel)
+                    for move in moves:
+                        score = self._score_battle_hex(game, creature, move)
+                        score_moves.append((score, move))
+                    score_moves.sort()
+                    log("score_moves", score_moves)
+                    best_score_move = score_moves.pop()
+                    best_move = best_score_move[1]
+                    if best_move is not creature.hexlabel:
+                        log("calling move_creature", creature.name,
+                          creature.hexlabel, best_move)
+                        def1 = self.user.callRemote("move_creature", game.name,
+                          creature.name, creature.hexlabel, best_move)
+                        def1.addErrback(self.failure)
+                        return
+        # No moves, so end the maneuver phase.
+        log("calling done_with_maneuvers")
+        def1 = self.user.callRemote("done_with_maneuvers", game.name)
+        def1.addErrback(self.failure)
+
+    def _score_battle_hex(self, game, creature, hexlabel):
+        """Return a score for creature moving to or staying in hexlabel."""
+        ATTACKER_AGGRESSION_BONUS = 1.0
+        HIT_BONUS = 1.0
+        KILL_BONUS = 3.0
+        DAMAGE_PENALTY = 1.0
+        DEATH_PENALTY = 3.0
+
+        legion = creature.legion
+        score = 0
+        prev_hexlabel = creature.hexlabel
+        # XXX Modifying game state is probably a bad idea.
+        creature.hexlabel = hexlabel
+        try:
+            engaged = creature.engaged_enemies
+            probable_kill = False
+            max_mean_hits = 0.0
+            total_mean_damage_taken = 0.0
+            for enemy in engaged:
+                # Damage we can do.
+                dice = creature.number_of_dice(enemy)
+                strike_number = creature.strike_number(enemy)
+                mean_hits = dice * (7. - strike_number) / 6
+                if mean_hits >= enemy.hits_left:
+                    probable_kill = True
+                max_mean_hits = max(mean_hits, max_mean_hits)
+                # Damage we can take.
+                dice = enemy.number_of_dice(creature)
+                strike_number = enemy.strike_number(creature)
+                mean_hits = dice * (7. - strike_number) / 6
+                total_mean_damage_taken += mean_hits
+            probable_death = total_mean_damage_taken >= creature.hits_left
+            if not engaged:
+                targets = creature.rangestrike_targets
+                for enemy in targets:
+                    # Damage we can do
+                    dice = creature.number_of_dice(enemy)
+                    strike_number = creature.strike_number(enemy)
+                    mean_hits = dice * (7. - strike_number) / 6
+                    if mean_hits >= enemy.hits_left:
+                        probable_kill = True
+                    max_mean_hits = max(mean_hits, max_mean_hits)
+            # Don't encourage titans to charge early.
+            if creature.name != "Titan" or game.battle_turn > 4:
+                score += HIT_BONUS * max_mean_hits
+                score += KILL_BONUS * probable_kill
+            score -= DAMAGE_PENALTY * total_mean_damage_taken
+            score -= DEATH_PENALTY * probable_death
+
+            if legion == game.attacker_legion:
+                if engaged or targets:
+                    score += ATTACKER_AGGRESSION_BONUS
+                # TODO penalty based on range to nearest enemy
+        finally:
+            creature.hexlabel = prev_hexlabel
+
+        return score
