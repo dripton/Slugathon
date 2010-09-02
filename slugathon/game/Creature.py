@@ -86,6 +86,10 @@ class Creature(object):
     def dead(self):
         return self.hits >= self.power
 
+    @property
+    def hits_left(self):
+        return max(self.power - self.hits, 0)
+
     def __repr__(self):
         if self.name == "Titan":
             base = "%s(%d)" % (self.name, self.power)
