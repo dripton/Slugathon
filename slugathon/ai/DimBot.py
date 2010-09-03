@@ -57,7 +57,7 @@ class DimBot(object):
         if own_markernames:
             return random.choice(own_markernames)
         else:
-            return random.choice(player.markernames)
+            return random.choice(list(player.markernames))
 
     def split(self, game):
         """Split if it's my turn."""
