@@ -19,10 +19,10 @@ class TestGame(object):
         player1.assign_starting_tower(100)
         game.sort_players()
         game.started = True
-        game.assign_color("p0", "Red")
         game.assign_color("p1", "Blue")
-        game.assign_first_marker("p0", "Rd01")
+        game.assign_color("p0", "Red")
         game.assign_first_marker("p1", "Bu01")
+        game.assign_first_marker("p0", "Rd01")
         player0.pick_marker("Rd02")
         player0.split_legion("Rd01", "Rd02",
           ["Titan", "Centaur", "Centaur", "Gargoyle"],

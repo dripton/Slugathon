@@ -19,8 +19,8 @@ class TestBattle(object):
         self.player1.assign_starting_tower(100)
         self.game.sort_players()
         self.game.started = True
-        self.game.assign_color("p0", "Red")
         self.game.assign_color("p1", "Blue")
+        self.game.assign_color("p0", "Red")
         self.game.assign_first_marker("p0", "Rd01")
         self.game.assign_first_marker("p1", "Bu01")
         self.player0.pick_marker("Rd02")
