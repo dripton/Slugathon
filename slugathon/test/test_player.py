@@ -18,11 +18,11 @@ def test_can_exit_split_phase():
     assert player.selected_markername == "Rd01"
     player.create_starting_legion()
     assert len(player.legions) == 1
-    assert not player.can_exit_split_phase()
+    assert not player.can_exit_split_phase
 
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Centaur", "Gargoyle"])
-    assert player.can_exit_split_phase()
+    assert player.can_exit_split_phase
 
 
 def test_friendly_legions():
@@ -63,11 +63,11 @@ def test_can_exit_move_phase():
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Gargoyle", "Centaur", "Centaur"])
     legion2 = player.legions["Rd02"]
-    assert not player.can_exit_move_phase()
+    assert not player.can_exit_move_phase
     legion1.move(8, False, None, 1)
-    assert player.can_exit_move_phase()
+    assert player.can_exit_move_phase
     legion2.move(200, True, "Angel", 3)
-    assert player.can_exit_move_phase()
+    assert player.can_exit_move_phase
 
 def test_num_creatures():
     now = time.time()
@@ -79,7 +79,7 @@ def test_num_creatures():
     player.pick_marker("Rd01")
     assert player.selected_markername == "Rd01"
     player.create_starting_legion()
-    assert player.num_creatures() == 8
+    assert player.num_creatures == 8
 
 def test_teleported():
     now = time.time()
@@ -91,7 +91,7 @@ def test_teleported():
     player.pick_marker("Rd01")
     assert player.selected_markername == "Rd01"
     player.create_starting_legion()
-    assert player.num_creatures() == 8
+    assert player.num_creatures == 8
     assert not player.teleported
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Gargoyle", "Centaur", "Centaur"])

@@ -91,7 +91,7 @@ class CleverBot(DimBot.DimBot):
         assert game.active_player.name == self.playername
         player = game.active_player
         legions = player.legions.values()
-        if not player.moved_legions():
+        if not player.moved_legions:
             # (score, legion, hexlabel, entry_side)
             self.best_moves = []
             for legion in legions:
@@ -106,7 +106,7 @@ class CleverBot(DimBot.DimBot):
         log("best moves", self.best_moves)
         while self.best_moves:
             score, legion, hexlabel, entry_side = self.best_moves.pop()
-            if (score > 0 or not player.moved_legions() or
+            if (score > 0 or not player.moved_legions or
               len(player.friendly_legions(legion.hexlabel)) >= 2):
                 # keeper; remove other moves for this legion, and moves
                 # for other legions to this hex, and other teleports if

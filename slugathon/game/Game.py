@@ -302,6 +302,7 @@ class Game(Observed):
         Once all players have done this, create the starting legions.
         """
         player = self.get_player_by_name(playername)
+        log(player.markernames)
         if markername not in player.markernames:
             raise AssertionError, "marker not available"
         player.pick_marker(markername)
@@ -356,7 +357,7 @@ class Game(Observed):
     def take_mulligan(self, playername):
         """playername tries to take a mulligan."""
         player = self.get_player_by_name(playername)
-        if not player.can_take_mulligan():
+        if not player.can_take_mulligan:
             raise AssertionError("illegal mulligan attempt")
         player.take_mulligan()
 
@@ -443,7 +444,7 @@ class Game(Observed):
         teleport."""
         player = legion.player
         moves = set()
-        if player.can_titan_teleport() and "Titan" in legion.creature_names:
+        if player.can_titan_teleport and "Titan" in legion.creature_names:
             for legion in player.enemy_legions():
                 hexlabel = legion.hexlabel
                 if not player.friendly_legions(hexlabel):

@@ -79,11 +79,12 @@ class Player(Observed):
     def assign_color(self, color):
         """Set this player's color"""
         self.color = color
-        action = Action.PickedColor(self.game.name, self.name, color)
         abbrev = self.color_abbrev
         num_markers = len(markerdata.data[color])
         for ii in xrange(num_markers):
             self.markernames.add("%s%02d" % (abbrev, ii + 1))
+        log(self.markernames)
+        action = Action.PickedColor(self.game.name, self.name, color)
         self.notify(action)
 
     def pick_marker(self, markername):
@@ -118,6 +119,7 @@ class Player(Observed):
             caretaker.take_one(creature.name)
         self.notify(action)
 
+    @property
     def can_split(self):
         """Return True if this player can split any legions."""
         if self.markernames:
@@ -171,7 +173,7 @@ class Player(Observed):
           child_creature_names)
         self.notify(action)
 
-
+    @property
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
         return (self.legions and max([len(legion) for legion in
@@ -184,9 +186,10 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_splits(self):
-        if self.can_exit_split_phase():
+        if self.can_exit_split_phase:
             self._roll_movement()
 
+    @property
     def can_take_mulligan(self):
         """Return True iff this player can take a mulligan"""
         return bool(self is self.game.active_player and self.game.turn == 1
@@ -196,15 +199,19 @@ class Player(Observed):
         self.mulligans_left -= 1
         self._roll_movement()
 
+    @property
     def can_titan_teleport(self):
         return self.score >= 400
 
+    @property
     def titan_power(self):
         return 6 + self.score // 100
 
+    @property
     def num_creatures(self):
         return sum(len(legion) for legion in self.legions.itervalues())
 
+    @property
     def moved_legions(self):
         """Return a set of this players legions that have moved this turn."""
         return set([legion for legion in self.legions.itervalues() if
@@ -220,9 +227,10 @@ class Player(Observed):
         return set([legion for legion in self.game.all_legions(hexlabel)
           if legion.player is not self])
 
+    @property
     def can_exit_move_phase(self):
         """Return True iff this player can finish the move phase."""
-        if not self.moved_legions():
+        if not self.moved_legions:
             return False
         for legion in self.friendly_legions():
             if len(self.friendly_legions(legion.hexlabel)) >= 2:
@@ -254,11 +262,12 @@ class Player(Observed):
                 return
 
     def done_with_moves(self):
-        if self.can_exit_move_phase():
+        if self.can_exit_move_phase:
             self.recombine()
             action = Action.StartFightPhase(self.game.name, self.name)
             self.notify(action)
 
+    @property
     def can_exit_fight_phase(self):
         """Return True iff this player can finish the move phase."""
         return (not self.game.engagement_hexlabels and not
@@ -284,7 +293,7 @@ class Player(Observed):
                 self.remove_legion(legion.markername)
 
     def done_with_engagements(self):
-        if self.can_exit_fight_phase():
+        if self.can_exit_fight_phase:
             action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 
@@ -296,6 +305,7 @@ class Player(Observed):
                 return True
         return False
 
+    @property
     def has_forced_strikes(self):
         for creature in self.game.battle_active_legion.creatures:
             if creature.engaged and not creature.struck:
@@ -316,7 +326,7 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_strikes(self):
-        if self.has_forced_strikes():
+        if self.has_forced_strikes:
             log("Forced strikes remain")
             return
         player = None
@@ -328,7 +338,7 @@ class Player(Observed):
         self.notify(action)
 
     def done_with_counterstrikes(self):
-        if self.has_forced_strikes():
+        if self.has_forced_strikes:
             log("Forced strikes remain")
             return
         action = Action.StartReinforceBattlePhase(self.game.name, self.name,

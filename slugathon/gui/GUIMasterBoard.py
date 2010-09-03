@@ -741,17 +741,17 @@ class GUIMasterBoard(gtk.Window):
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
             if self.game.phase == Phase.SPLIT:
-                if player.can_exit_split_phase():
+                if player.can_exit_split_phase:
                     def1 = self.user.callRemote("done_with_splits",
                       self.game.name)
                     def1.addErrback(self.failure)
             elif self.game.phase == Phase.MOVE:
-                if player.can_exit_move_phase():
+                if player.can_exit_move_phase:
                     def1 = self.user.callRemote("done_with_moves",
                       self.game.name)
                     def1.addErrback(self.failure)
             elif self.game.phase == Phase.FIGHT:
-                if player.can_exit_fight_phase():
+                if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
                       self.game.name)
                     def1.addErrback(self.failure)
@@ -764,7 +764,7 @@ class GUIMasterBoard(gtk.Window):
         if not self.game:
             return
         player = self.game.get_player_by_name(self.username)
-        if player.can_take_mulligan():
+        if player.can_take_mulligan:
             history = self.game.history
             if history.can_undo(self.username):
                 last_action = history.actions[-1]
@@ -1000,7 +1000,7 @@ class GUIMasterBoard(gtk.Window):
             if self.username == player.name:
                 self.unselect_all()
                 self.highlight_tall_legions()
-                if not player.can_split():
+                if not player.can_split:
                     def1 = self.user.callRemote("done_with_splits",
                       self.game.name)
                     def1.addErrback(self.failure)

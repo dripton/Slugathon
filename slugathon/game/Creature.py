@@ -78,7 +78,7 @@ class Creature(object):
     @property
     def power(self):
         if self.name == "Titan" and self.legion is not None:
-            return self.legion.player.titan_power()
+            return self.legion.player.titan_power
         else:
             return self._power
 
