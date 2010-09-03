@@ -202,12 +202,22 @@ class CleverBot(DimBot.DimBot):
     def _score_battle_hex(self, game, creature, hexlabel):
         """Return a score for creature moving to or staying in hexlabel."""
         ATTACKER_AGGRESSION_BONUS = 1.0
+        ATTACKER_DISTANCE_PENALTY = 1.0
         HIT_BONUS = 1.0
         KILL_BONUS = 3.0
         DAMAGE_PENALTY = 1.0
         DEATH_PENALTY = 3.0
+        ELEVATION_BONUS = 0.5
+        NATIVE_BRAMBLE_BONUS = 0.3
+        NON_NATIVE_BRAMBLE_PENALTY = 0.5
+        TOWER_BONUS = 0.5
+        NON_NATIVE_DRIFT_PENALTY = 2.0
+        NATIVE_VOLCANO_BONUS = 1.0
+        ADJACENT_ALLY_BONUS = 0.5
 
         legion = creature.legion
+        legion2 = game.other_battle_legion(legion)
+        battlemap = game.battlemap
         score = 0
         prev_hexlabel = creature.hexlabel
         # XXX Modifying game state is probably a bad idea.
@@ -217,6 +227,7 @@ class CleverBot(DimBot.DimBot):
             probable_kill = False
             max_mean_hits = 0.0
             total_mean_damage_taken = 0.0
+            # melee
             for enemy in engaged:
                 # Damage we can do.
                 dice = creature.number_of_dice(enemy)
@@ -231,6 +242,8 @@ class CleverBot(DimBot.DimBot):
                 mean_hits = dice * (7. - strike_number) / 6
                 total_mean_damage_taken += mean_hits
             probable_death = total_mean_damage_taken >= creature.hits_left
+
+            # rangestriking
             if not engaged:
                 targets = creature.rangestrike_targets
                 for enemy in targets:
@@ -241,6 +254,7 @@ class CleverBot(DimBot.DimBot):
                     if mean_hits >= enemy.hits_left:
                         probable_kill = True
                     max_mean_hits = max(mean_hits, max_mean_hits)
+
             # Don't encourage titans to charge early.
             if creature.name != "Titan" or game.battle_turn > 4:
                 score += HIT_BONUS * max_mean_hits
@@ -248,10 +262,40 @@ class CleverBot(DimBot.DimBot):
             score -= DAMAGE_PENALTY * total_mean_damage_taken
             score -= DEATH_PENALTY * probable_death
 
+            # attacker must attack to avoid time loss
             if legion == game.attacker_legion:
                 if engaged or targets:
                     score += ATTACKER_AGGRESSION_BONUS
-                # TODO penalty based on range to nearest enemy
+                else:
+                    enemy_hexlabels = [enemy.hexlabel for enemy in
+                      legion2.living_creatures]
+                    min_range = min((battlemap.range(creature.hexlabel,
+                      hexlabel) for hexlabel in enemy_hexlabels))
+                    score -= min_range * ATTACKER_DISTANCE_PENALTY
+
+            # terrain
+            battlehex = battlemap.hexes[creature.hexlabel]
+            terrain = battlehex.terrain
+            score += battlehex.elevation * ELEVATION_BONUS
+            if terrain == "Bramble":
+                if creature.is_native(terrain):
+                    score += NATIVE_BRAMBLE_BONUS
+                else:
+                    score -= NON_NATIVE_BRAMBLE_PENALTY
+            elif terrain == "Tower":
+                score += TOWER_BONUS
+            elif terrain == "Drift":
+                if not creature.is_native(terrain):
+                    score -= NON_NATIVE_DRIFT_PENALTY
+            elif terrain == "Volcano":
+                score += NATIVE_VOLCANO_BONUS
+
+            # allies
+            for neighbor in battlehex.neighbors:
+                for ally in legion.living_creatures:
+                    if ally.hexlabel == neighbor:
+                        score += ADJACENT_ALLY_BONUS
+
         finally:
             creature.hexlabel = prev_hexlabel
 
