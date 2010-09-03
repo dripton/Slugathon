@@ -263,7 +263,9 @@ class CleverBot(DimBot.DimBot):
             score -= DEATH_PENALTY * probable_death
 
             # attacker must attack to avoid time loss
-            if legion == game.attacker_legion:
+            # Don't encourage titans to charge early.
+            if legion == game.attacker_legion and (creature.name != "Titan"
+              or game.battle_turn > 4):
                 if engaged or targets:
                     score += ATTACKER_AGGRESSION_BONUS
                 else:
