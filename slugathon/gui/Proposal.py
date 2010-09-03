@@ -77,7 +77,7 @@ class Proposal(gtk.Dialog):
         surviving_attackers = bag(attacker_creature_names)
         surviving_defenders = bag(defender_creature_names)
 
-        for creature in attacker_legion.creatures:
+        for creature in attacker_legion.sorted_creatures:
             name = creature.name
             if name in surviving_attackers:
                 surviving_attackers.remove(name)
@@ -91,7 +91,7 @@ class Proposal(gtk.Dialog):
 
         defender_chits = []
 
-        for creature in defender_legion.creatures:
+        for creature in defender_legion.sorted_creatures:
             name = creature.name
             if name in surviving_defenders:
                 surviving_defenders.remove(name)

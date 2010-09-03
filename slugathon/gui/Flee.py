@@ -61,7 +61,7 @@ class Flee(gtk.Dialog):
         self.attacker_chits_hbox = gtk.HBox(False, 3)
         self.attacker_hbox.pack_start(self.attacker_chits_hbox, expand=True,
           fill=True)
-        for creature in attacker_legion.creatures:
+        for creature in attacker_legion.sorted_creatures:
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20)
             chit.show()
             self.attacker_chits_hbox.pack_start(chit.event_box, expand=False)
@@ -80,7 +80,7 @@ class Flee(gtk.Dialog):
         self.defender_chits_hbox = gtk.HBox(False, 3)
         self.defender_hbox.pack_start(self.defender_chits_hbox, expand=True,
           fill=True)
-        for creature in defender_legion.creatures:
+        for creature in defender_legion.sorted_creatures:
             chit = Chit.Chit(creature, defender_legion.player.color, scale=20)
             chit.show()
             self.defender_chits_hbox.pack_start(chit.event_box, expand=False)

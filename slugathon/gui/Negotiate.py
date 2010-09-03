@@ -74,7 +74,7 @@ class Negotiate(gtk.Dialog):
 
         self.attacker_chits = []
 
-        for creature in attacker_legion.creatures:
+        for creature in attacker_legion.sorted_creatures:
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20)
             attacker_chits_hbox.pack_start(chit.event_box, expand=False)
             chit.connect("button-press-event", self.cb_click)
@@ -82,7 +82,7 @@ class Negotiate(gtk.Dialog):
 
         self.defender_chits = []
 
-        for creature in defender_legion.creatures:
+        for creature in defender_legion.sorted_creatures:
             chit = Chit.Chit(creature, defender_legion.player.color, scale=20)
             defender_chits_hbox.pack_start(chit.event_box, expand=False)
             chit.connect("button-press-event", self.cb_click)
