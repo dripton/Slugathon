@@ -473,7 +473,6 @@ class Game(Observed):
         if legion.moved:
             return False
         masterhex = self.board.hexes[legion.hexlabel]
-        terrain = masterhex.terrain
         if teleport:
             if (player.teleported or teleporting_lord not in
               legion.creature_names):
@@ -484,6 +483,7 @@ class Game(Observed):
                 return False
             if entry_side not in (1, 3, 5):
                 return False
+            terrain = self.board.hexes[hexlabel].terrain
             if terrain == "Tower" and entry_side != 5:
                 return False
         else:

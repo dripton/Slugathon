@@ -273,18 +273,20 @@ class GUIMasterBoard(gtk.Window):
         if teleport is None:
             self.highlight_unmoved_legions()
             return
-        if teleport:
+        hexlabel = moves[0][0]
+        battlehex = self.game.board.hexes[hexlabel]
+        terrain = battlehex.terrain
+        if terrain == "Tower":
+            entry_sides = set([5])
+        elif teleport:
             entry_sides = set([1, 3, 5])
         else:
             entry_sides = set((m[1] for m in moves))
             entry_sides.discard("TELEPORT")
-        hexlabel = moves[0][0]
         if len(entry_sides) == 1 or not legion.player.enemy_legions(hexlabel):
             self._pick_teleporting_lord(entry_sides.pop(), legion, moves,
               teleport)
         else:
-            battlehex = self.game.board.hexes[hexlabel]
-            terrain = battlehex.terrain
             if teleport:
                 entry_sides = set([1, 3, 5])
             else:
