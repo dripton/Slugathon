@@ -282,6 +282,9 @@ class Game(Observed):
         # Just abort if we've already done this.  Simplifies timing.
         if player.color == color:
             return
+        if playername != self.next_playername_to_pick_color():
+            log("illegal assign_color attempt", playername, color)
+            return
         if color not in self.colors_left():
             raise AssertionError, "tried to take unavailable color"
         player.assign_color(color)
