@@ -298,7 +298,11 @@ class StatusScreen(gtk.Window):
           isinstance(action, Action.EliminatePlayer) or
           isinstance(action, Action.BattleOver) or
           isinstance(action, Action.GameOver) or
-          isinstance(action, Action.StartMusterPhase)):
+          isinstance(action, Action.StartMusterPhase) or
+          isinstance(action, Action.RecruitCreature) or
+          isinstance(action, Action.DoNotReinforce) or
+          isinstance(action, Action.SummonAngel) or
+          isinstance(action, Action.DoNotSummon)):
             self._clear_battle()
             self._color_player_columns()
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
