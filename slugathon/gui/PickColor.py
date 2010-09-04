@@ -35,6 +35,7 @@ class PickColor(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_has_separator(False)
 
         hbox = gtk.HBox(len(colors), spacing=3)

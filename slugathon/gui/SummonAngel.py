@@ -30,6 +30,7 @@ class SummonAngel(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
 
         top_label = gtk.Label("Summoning an angel into legion %s in hex %s"
           % (legion.markername, legion.hexlabel))

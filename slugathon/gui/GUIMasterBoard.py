@@ -154,8 +154,7 @@ class GUIMasterBoard(gtk.Window):
         self.add_accel_group(self.ui.get_accel_group())
 
 
-    # TODO Keep references to other dialogs so we can destroy them too.
-    # TODO set_destroy_with_parent on dialogs so they go away easily.
+    # TODO Keep references to other windows so we can destroy them too.
     def cb_destroy(self, event):
         for widget in [self.inspector, self.negotiate, self.guimap,
           self.acquire_angel, self.game_over]:

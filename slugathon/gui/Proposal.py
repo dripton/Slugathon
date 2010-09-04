@@ -43,6 +43,7 @@ class Proposal(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Legion %s negotiates with %s in hex %s" % (

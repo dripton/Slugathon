@@ -39,6 +39,7 @@ class PickStrikePenalty(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
 
         self.vbox.set_spacing(9)
 

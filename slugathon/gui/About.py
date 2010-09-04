@@ -19,6 +19,7 @@ class About(gtk.AboutDialog):
         self.set_icon(icon.pixbuf)
         self.set_position(gtk.WIN_POS_MOUSE)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_name("Slugathon")
         self.set_copyright("Copyright (c) 2003-2010 David Ripton")
 

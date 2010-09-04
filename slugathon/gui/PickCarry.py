@@ -37,6 +37,7 @@ class PickCarry(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
 
         label = gtk.Label("%r strikes %r and may carry over %d hit%s." %
           (striker, target, carries, "" if carries == 1 else "s"))

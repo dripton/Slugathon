@@ -23,6 +23,7 @@ class NewGame(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
 
         hbox1 = gtk.HBox()
         self.vbox.pack_start(hbox1)

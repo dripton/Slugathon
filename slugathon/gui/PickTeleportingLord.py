@@ -31,6 +31,7 @@ class PickTeleportingLord(gtk.Dialog):
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
         top_label = gtk.Label("Revealing a lord to tower teleport")
