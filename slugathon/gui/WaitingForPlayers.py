@@ -27,7 +27,7 @@ class WaitingForPlayers(gtk.Window):
 
     implements(IObserver)
 
-    def __init__(self, user, username, game):
+    def __init__(self, user, username, game, parent):
         gtk.Window.__init__(self)
         self.user = user
         self.username = username
@@ -35,6 +35,8 @@ class WaitingForPlayers(gtk.Window):
         self.game.add_observer(self)
 
         self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_title("Waiting for Players - %s" % self.username)
         self.set_default_size(-1, 300)
 
@@ -200,6 +202,6 @@ if __name__ == "__main__":
     user = NullUser()
     username = "Player 1"
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
-    wfp = WaitingForPlayers(user, username, game)
+    wfp = WaitingForPlayers(user, username, game, None)
 
     gtk.main()

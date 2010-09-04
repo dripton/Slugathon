@@ -238,7 +238,7 @@ class Anteroom(gtk.Window):
             else:
                 del wfp
         wfp = WaitingForPlayers.WaitingForPlayers(self.user, self.username,
-          game)
+          game, self)
         self.wfps[game.name] = wfp
 
     def _remove_wfp(self, game_name):

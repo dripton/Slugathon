@@ -38,7 +38,7 @@ class StatusScreen(gtk.Window):
     implements(IObserver)
 
 
-    def __init__(self, game, username):
+    def __init__(self, game, username, parent):
         gtk.Window.__init__(self)
         self.game = game
         self.username = username
@@ -99,6 +99,8 @@ class StatusScreen(gtk.Window):
         self._init_turn()
 
         self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_title("Game Status - %s" % self.username)
         self.show_all()
         self.default_bg = \
@@ -381,6 +383,6 @@ if __name__ == "__main__":
     player6.create_starting_legion()
     game.players.append(player6)
 
-    status_screen = StatusScreen(game, username)
+    status_screen = StatusScreen(game, username, None)
     status_screen.connect("destroy", guiutils.exit)
     gtk.main()

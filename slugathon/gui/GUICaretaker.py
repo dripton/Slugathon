@@ -8,7 +8,7 @@ import gtk
 from zope.interface import implements
 
 from slugathon.util.Observer import IObserver
-from slugathon.gui import Chit
+from slugathon.gui import Chit, icon
 from slugathon.game import Creature, Action
 from slugathon.data import creaturedata
 from slugathon.util import prefs
@@ -20,7 +20,7 @@ class GUICaretaker(gtk.Window):
 
     implements(IObserver)
 
-    def __init__(self, game, username):
+    def __init__(self, game, username, parent):
         self.username = username
         self.caretaker = game.caretaker
 
@@ -69,6 +69,10 @@ class GUICaretaker(gtk.Window):
                 self.resize(width, height)
 
         self.connect("configure-event", self.cb_configure_event)
+
+        self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_title("Caretaker - %s" % username)
         self.show_all()
 
@@ -160,6 +164,6 @@ if __name__ == "__main__":
     for unused in xrange(10):
         caretaker.take_one("Colossus")
 
-    guicaretaker = GUICaretaker(game, username)
+    guicaretaker = GUICaretaker(game, username, None)
     guicaretaker.connect("destroy", guiutils.exit)
     gtk.main()

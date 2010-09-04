@@ -11,12 +11,14 @@ from slugathon.gui import Chit, Marker, icon
 
 class ShowLegion(gtk.Window):
     """Window to show a legion's contents."""
-    def __init__(self, username, legion, show_marker):
+    def __init__(self, username, legion, show_marker, parent):
         gtk.Window.__init__(self)
         self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
           "legion_name"]
 
         self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_title("ShowLegion - %s" % (username))
 
         vbox = gtk.VBox(spacing=9)
@@ -60,7 +62,7 @@ if __name__ == "__main__":
     player = Player.Player(username, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    showlegion = ShowLegion(username, legion, True)
+    showlegion = ShowLegion(username, legion, True, None)
     showlegion.connect("destroy", guiutils.exit)
 
     gtk.main()

@@ -22,6 +22,8 @@ class LoadGame(gtk.FileChooserDialog):
         self.user = user
         self.username = username
         self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_current_folder(prefs.SAVE_DIR)
         file_filter = gtk.FileFilter()
         # TODO Hoist constants somewhere

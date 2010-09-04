@@ -39,18 +39,18 @@ hexlabel_to_entry_side = {
 }
 
 
-def new(terrain, entry_sides, username=None, scale=None):
+def new(terrain, entry_sides, parent, username=None, scale=None):
     """Create a PickEntrySide dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pick_entry_side = PickEntrySide(terrain, entry_sides, def1, username,
-      scale)
+    pick_entry_side = PickEntrySide(terrain, entry_sides, def1, parent,
+      username, scale)
     return pick_entry_side, def1
 
 
 class PickEntrySide(gtk.Window):
     """Dialog to pick a masterhex entry side."""
 
-    def __init__(self, terrain, entry_sides, def1, username=None,
+    def __init__(self, terrain, entry_sides, def1, parent, username=None,
       scale=None):
         gtk.Window.__init__(self)
 
@@ -61,6 +61,8 @@ class PickEntrySide(gtk.Window):
         self.username = username
 
         self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_title("PickEntrySide - Slugathon - %s" % self.username)
 
         self.vbox = gtk.VBox()
@@ -240,6 +242,6 @@ if __name__ == "__main__":
         log("chose entry side", choice)
         reactor.stop()
 
-    pick_entry_side, def1 = new(terrain, set([1, 3, 5]))
+    pick_entry_side, def1 = new(terrain, set([1, 3, 5]), None)
     def1.addCallback(my_callback)
     reactor.run()

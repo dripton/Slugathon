@@ -53,7 +53,7 @@ class GUIBattleMap(gtk.Window):
     implements(IObserver)
 
     def __init__(self, battlemap, game=None, user=None, username=None,
-      scale=None):
+      parent=None, scale=None):
         gtk.Window.__init__(self)
 
         self.battlemap = battlemap
@@ -65,7 +65,10 @@ class GUIBattleMap(gtk.Window):
         self.selected_chit = None
 
         self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_title("BattleMap - Slugathon - %s" % self.username)
+
         self.connect("configure-event", self.cb_configure_event)
 
         self.vbox = gtk.VBox()

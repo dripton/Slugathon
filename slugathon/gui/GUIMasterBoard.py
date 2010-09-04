@@ -21,7 +21,7 @@ from zope.interface import implements
 from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
   SplitLegion, About, icon, Die, PickRecruit, Flee, Inspector, Chit,
   Negotiate, Proposal, AcquireAngel, GUIBattleMap, SummonAngel, PickEntrySide,
-  PickMoveType, PickTeleportingLord, InfoDialog)
+  PickMoveType, PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker)
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
@@ -98,7 +98,7 @@ class GUIMasterBoard(gtk.Window):
         for hex1 in self.board.hexes.itervalues():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
-        self.inspector = Inspector.Inspector(self.username)
+        self.inspector = Inspector.Inspector(self.username, self)
         self.negotiate = None
         self.proposals = set()
         self.guimap = None
@@ -152,6 +152,16 @@ class GUIMasterBoard(gtk.Window):
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
         self.add_accel_group(self.ui.get_accel_group())
+
+    def _init_status_screen(self):
+        self.status_screen = StatusScreen.StatusScreen(self.game,
+          self.username, self)
+        self.game.add_observer(self.status_screen)
+
+    def _init_caretaker(self):
+        self.guicaretaker = GUICaretaker.GUICaretaker(self.game,
+          self.username, self)
+        self.game.add_observer(self.guicaretaker)
 
 
     # TODO Keep references to other windows so we can destroy them too.
@@ -290,7 +300,7 @@ class GUIMasterBoard(gtk.Window):
                 entry_sides = set([1, 3, 5])
             else:
                 entry_sides = set((move[1] for move in moves))
-            _, def1 = PickEntrySide.new(terrain, entry_sides)
+            _, def1 = PickEntrySide.new(terrain, entry_sides, self)
             def1.addCallback(self._pick_teleporting_lord, legion, moves,
               teleport)
 
@@ -329,7 +339,7 @@ class GUIMasterBoard(gtk.Window):
 
     def clicked_on_marker(self, area, event, marker):
         if event.button >= 2:
-            ShowLegion.ShowLegion(self.username, marker.legion, True)
+            ShowLegion.ShowLegion(self.username, marker.legion, True, self)
 
         else: # left button
             phase = self.game.phase
@@ -861,7 +871,11 @@ class GUIMasterBoard(gtk.Window):
         log("failure", arg)
 
     def update(self, observed, action):
-        if isinstance(action, Action.CreateStartingLegion):
+        if isinstance(action, Action.PickedColor):
+            self._init_status_screen()
+            self._init_caretaker()
+
+        elif isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
             self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_tall_legions()
@@ -1038,8 +1052,8 @@ class GUIMasterBoard(gtk.Window):
             self.destroy_negotiate()
             self.unselect_all()
             if self.guimap is None:
-                self.guimap = GUIBattleMap.GUIBattleMap(
-                  self.game.battlemap, self.game, self.user, self.username)
+                self.guimap = GUIBattleMap.GUIBattleMap(self.game.battlemap,
+                  self.game, self.user, self.username, self)
                 self.game.add_observer(self.guimap)
 
         elif isinstance(action, Action.BattleOver):

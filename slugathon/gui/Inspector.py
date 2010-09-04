@@ -12,12 +12,14 @@ from slugathon.util import prefs
 
 class Inspector(gtk.Window):
     """Window to show a legion's contents."""
-    def __init__(self, username):
+    def __init__(self, username, parent):
         gtk.Window.__init__(self)
 
         self.username = username
 
         self.set_icon(icon.pixbuf)
+        self.set_transient_for(parent)
+        self.set_destroy_with_parent(True)
         self.set_title("Inspector - %s" % (username))
 
         vbox = gtk.VBox(spacing=9)
@@ -99,7 +101,7 @@ if __name__ == "__main__":
     player = Player.Player(username, None, None)
     player.color = random.choice(playercolordata.colors)
     abbrev = player.color_abbrev
-    inspector = Inspector(username)
+    inspector = Inspector(username, None)
 
     legion = Legion.Legion(player, "%s01" % abbrev, creatures, 1)
     inspector.show_legion(legion)
