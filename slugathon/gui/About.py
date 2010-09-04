@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2009 David Ripton"
+__copyright__ = "Copyright (c) 2005-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -14,12 +14,13 @@ from slugathon.util import guiutils
 
 
 class About(gtk.AboutDialog):
-    def __init__(self):
+    def __init__(self, parent):
         gtk.AboutDialog.__init__(self)
         self.set_icon(icon.pixbuf)
         self.set_position(gtk.WIN_POS_MOUSE)
+        self.set_transient_for(parent)
         self.set_name("Slugathon")
-        self.set_copyright("Copyright (c) 2003-2009 David Ripton")
+        self.set_copyright("Copyright (c) 2003-2010 David Ripton")
 
         license_fn = guiutils.basedir("docs/COPYING.txt")
         with open(license_fn) as fil:
@@ -46,6 +47,6 @@ class About(gtk.AboutDialog):
 
 
 if __name__ == "__main__":
-    about = About()
+    about = About(None)
     about.connect("response", guiutils.exit)
     gtk.main()

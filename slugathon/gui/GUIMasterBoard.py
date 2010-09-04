@@ -777,7 +777,7 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_about(self, action):
-        About.About()
+        About.About(self)
 
     def cb_undo(self, action):
         if self.game:
