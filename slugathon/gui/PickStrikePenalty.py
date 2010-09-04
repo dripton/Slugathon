@@ -105,8 +105,8 @@ if __name__ == "__main__":
     player1.assign_starting_tower(100)
     game.sort_players()
     game.started = True
-    game.assign_color("p0", "Red")
     game.assign_color("p1", "Blue")
+    game.assign_color("p0", "Red")
     game.assign_first_marker("p0", "Rd01")
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
