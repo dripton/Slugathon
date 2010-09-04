@@ -17,6 +17,7 @@ class InfoDialog(gtk.MessageDialog):
         self.set_title(title)
         self.set_icon(icon.pixbuf)
         self.set_position(gtk.WIN_POS_MOUSE)
+        self.set_transient_for(parent)
         self.connect("response", self.cb_response)
         self.show_all()
 
