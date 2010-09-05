@@ -104,6 +104,9 @@ class GUIMasterBoard(gtk.Window):
         self.guimap = None
         self.acquire_angel = None
         self.game_over = None
+        self.status_screen = None
+        self.guicaretaker = None
+
         # Set of hexlabels of hexes to redraw.
         # If set to all hexlabels then we redraw the whole window.
         # Used to combine nearly simultaneous redraws into one.
@@ -154,14 +157,16 @@ class GUIMasterBoard(gtk.Window):
         self.add_accel_group(self.ui.get_accel_group())
 
     def _init_status_screen(self):
-        self.status_screen = StatusScreen.StatusScreen(self.game,
-          self.username, self)
-        self.game.add_observer(self.status_screen)
+        if not self.status_screen:
+            self.status_screen = StatusScreen.StatusScreen(self.game,
+              self.username, self)
+            self.game.add_observer(self.status_screen)
 
     def _init_caretaker(self):
-        self.guicaretaker = GUICaretaker.GUICaretaker(self.game,
-          self.username, self)
-        self.game.add_observer(self.guicaretaker)
+        if not self.guicaretaker:
+            self.guicaretaker = GUICaretaker.GUICaretaker(self.game,
+              self.username, self)
+            self.game.add_observer(self.guicaretaker)
 
 
     # TODO Keep references to other windows so we can destroy them too.
