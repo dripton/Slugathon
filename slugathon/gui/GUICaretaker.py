@@ -114,7 +114,7 @@ class GUICaretaker(gtk.Window):
             for creature_name in set(creaturedata.starting_creature_names):
                 self.update_creature(creature_name)
 
-        elif isinstance(action, Action.RecruitCreature or
+        elif (isinstance(action, Action.RecruitCreature) or
           isinstance(action, Action.UndoRecruit)):
             creature_name = action.creature_name
             self.update_creature(creature_name)
