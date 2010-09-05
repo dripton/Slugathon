@@ -27,6 +27,7 @@ class About(gtk.AboutDialog):
         with open(license_fn) as fil:
             st = fil.read()
         self.set_license(st)
+        self.set_wrap_license(False)
 
         version_fn = guiutils.basedir("docs/version.txt")
         try:
@@ -44,10 +45,14 @@ class About(gtk.AboutDialog):
 
         self.set_logo(icon.pixbuf)
         self.set_website("http://github.com/dripton/Slugathon")
+        self.connect("response", self.cb_response)
         self.show()
+
+    def cb_response(self, widget, event):
+        self.destroy()
 
 
 if __name__ == "__main__":
     about = About(None)
-    about.connect("response", guiutils.exit)
+    about.connect("destroy", guiutils.exit)
     gtk.main()
