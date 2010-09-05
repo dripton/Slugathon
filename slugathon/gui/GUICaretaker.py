@@ -12,7 +12,6 @@ from slugathon.gui import Chit, icon
 from slugathon.game import Creature, Action
 from slugathon.data import creaturedata
 from slugathon.util import prefs
-from slugathon.util.log import log
 
 
 class GUICaretaker(gtk.Window):
@@ -108,7 +107,6 @@ class GUICaretaker(gtk.Window):
           dead_count)
 
     def update(self, observed, action):
-        log("update", observed, action)
         if isinstance(action, Action.CreateStartingLegion):
             for creature_name in set(creaturedata.starting_creature_names):
                 self.update_creature(creature_name)
