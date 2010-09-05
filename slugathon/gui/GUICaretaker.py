@@ -100,7 +100,6 @@ class GUICaretaker(gtk.Window):
           "/<span foreground='red'>%d</span>" % dead_count)
 
     def update_creature(self, creature_name):
-        log("update_creature", creature_name)
         left_count = self.caretaker.counts[creature_name]
         max_count = self.caretaker.max_counts[creature_name]
         dead_count = self.caretaker.graveyard[creature_name]

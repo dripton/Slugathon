@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 
 from slugathon.data import creaturedata
 from slugathon.game import Creature
-from slugathon.util.log import log
 
 
 class Caretaker(object):
@@ -29,7 +28,6 @@ class Caretaker(object):
     def take_one(self, creature_name):
         """Take one of creature_name off the stack.  Need to ensure that one
         remains before calling this."""
-        log("take_one", creature_name)
         if self.counts[creature_name] >= 1:
             self.counts[creature_name] -= 1
         else:
@@ -37,7 +35,6 @@ class Caretaker(object):
 
     def put_one_back(self, creature_name):
         """Put one of creature_name back onto the stack."""
-        log("put_one_back", creature_name)
         creature = Creature.Creature(creature_name)
         if self.counts[creature_name] >= creature.max_count:
             raise AssertionError("Put too many %s back" % creature_name)
