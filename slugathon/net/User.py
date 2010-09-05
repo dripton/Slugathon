@@ -220,23 +220,12 @@ class User(pb.Avatar):
 
     def add_observer(self, mind):
         def1 = self.client.callRemote("set_name", self.name)
-        def1.addCallback(self.did_set_name)
         def1.addErrback(self.failure)
         def2 = self.client.callRemote("ping", time.time())
-        def2.addCallback(self.did_ping)
         def2.addErrback(self.failure)
-
-    def did_set_name(self, arg):
-        pass
-
-    def success(self, arg):
-        pass
 
     def failure(self, arg):
         log("failure", arg)
-
-    def did_ping(self, arg):
-        pass
 
     def logout(self):
         self.server.remove_observer(self)
