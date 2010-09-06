@@ -362,6 +362,7 @@ class Legion(Observed):
             self.creatures.append(creature)
             self.recruiter_names_list.append(recruiter_names)
             creature.legion = self
+            log(self, "setting recruited")
             self.recruited = True
             action = Action.RecruitCreature(player.game.name, player.name,
               self.markername, creature.name, tuple(recruiter_names))
