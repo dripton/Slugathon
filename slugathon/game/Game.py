@@ -877,28 +877,34 @@ class Game(Observed):
           carries)
         if not self.pending_carry:
             log("no carry pending; continuing to avoid confusing AI")
-            carries = 0
-        action = self.pending_carry
-        self.pending_carry = None
-        if action and carries > action.carries:
-            carries = action.carries
-        striker = self.creatures_in_battle_hex(action.striker_hexlabel).pop()
-        target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
-        carry_target = self.creatures_in_battle_hex(
-          carry_target_hexlabel).pop()
-        assert carry_target in striker.engaged_enemies
-        assert striker.number_of_dice(carry_target) >= action.num_dice
-        assert striker.strike_number(carry_target) <= action.strike_number
-        carry_target.hits += carries
-        if carry_target.hits > carry_target.power:
-            carries_left = carry_target.hits - carry_target.power
-            carry_target.hits -= carries_left
+            carries = carries_left = 0
+            action2 = Action.Carry(self.name, playername, "" "", "", "",
+              carry_target_name, carry_target_hexlabel, 0, 0,
+              carries, carries_left)
         else:
-            carries_left = 0
-        action2 = Action.Carry(self.name, playername, striker.name,
-          striker.hexlabel, target.name, target.hexlabel, carry_target.name,
-          carry_target.hexlabel, action.num_dice, action.strike_number,
-          carries, carries_left)
+            action = self.pending_carry
+            self.pending_carry = None
+            if carries > action.carries:
+                carries = action.carries
+            striker = self.creatures_in_battle_hex(
+              action.striker_hexlabel).pop()
+            target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
+            carry_target = self.creatures_in_battle_hex(
+              carry_target_hexlabel).pop()
+            assert carry_target in striker.engaged_enemies
+            assert striker.number_of_dice(carry_target) >= action.num_dice
+            assert striker.strike_number(carry_target) <= action.strike_number
+            carry_target.hits += carries
+            if carry_target.hits > carry_target.power:
+                carries_left = carry_target.hits - carry_target.power
+                carry_target.hits -= carries_left
+            else:
+                carries_left = 0
+            action2 = Action.Carry(self.name, playername, striker.name,
+              striker.hexlabel, target.name, target.hexlabel,
+              carry_target.name, carry_target.hexlabel, action.num_dice,
+              action.strike_number,
+              carries, carries_left)
         self.notify(action2)
 
     @property
