@@ -1032,6 +1032,7 @@ class GUIMasterBoard(gtk.Window):
             if donor:
                 lst.append(donor.hexlabel)
             self.repaint(lst)
+            self.highlight_engagements()
 
         elif isinstance(action, Action.CanAcquire):
             if (self.acquire_angel is None and action.playername ==
