@@ -345,8 +345,10 @@ class Legion(Observed):
 
     def recruit(self, creature, recruiter_names):
         """Recruit creature, and notify observers."""
+        log("recruit")
         player = self.player
         if self.recruited:
+            log("already recruited")
             if self.creatures[-1].name == creature.name:
                 # okay, don't do it twice
                 pass
@@ -362,7 +364,7 @@ class Legion(Observed):
             self.creatures.append(creature)
             self.recruiter_names_list.append(recruiter_names)
             creature.legion = self
-            log(self, "setting recruited")
+            log(self, "setting self.recruited")
             self.recruited = True
             action = Action.RecruitCreature(player.game.name, player.name,
               self.markername, creature.name, tuple(recruiter_names))

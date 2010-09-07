@@ -669,6 +669,7 @@ class GUIBattleMap(gtk.Window):
                 hexlabel = legion.hexlabel
                 mterrain = self.game.board.hexes[hexlabel].terrain
                 if legion.can_recruit:
+                    log("PickRecruit.new (battle turn 4)")
                     _, def1 = PickRecruit.new(self.username, legion, mterrain,
                       caretaker, self)
                     def1.addCallback(self.picked_reinforcement)

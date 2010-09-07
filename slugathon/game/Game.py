@@ -801,6 +801,7 @@ class Game(Observed):
         legion = player.legions[markername]
         # Avoid double recruit
         if not legion.recruited:
+            log("legion has not recruited")
             creature = Creature.Creature(creature_name)
             legion.recruit(creature, recruiter_names)
             if self.phase == Phase.FIGHT:
@@ -1342,7 +1343,6 @@ class Game(Observed):
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.dead:
-                    log("dead", creature)
                     if (self.first_attacker_kill is None
                       and creature.legion is self.defender_legion
                       and creature.hexlabel != "DEFENDER"

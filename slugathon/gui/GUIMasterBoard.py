@@ -415,6 +415,7 @@ class GUIMasterBoard(gtk.Window):
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
                     if legion.can_recruit:
+                        log("PickRecruit.new (muster)")
                         _, def1 = PickRecruit.new(self.username, legion,
                           mterrain, caretaker, self)
                         def1.addCallback(self.picked_recruit)
@@ -1085,6 +1086,7 @@ class GUIMasterBoard(gtk.Window):
                         caretaker = self.game.caretaker
                         mterrain = masterhex.terrain
                         if legion.can_recruit:
+                            log("PickRecruit.new (after)")
                             _, def1 = PickRecruit.new(self.username, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)
