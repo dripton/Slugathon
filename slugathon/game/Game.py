@@ -1403,6 +1403,7 @@ class Game(Observed):
             self.phase = Phase.MOVE
             # Possibly redundant, but harmless
             player.movement_roll = action.movement_roll
+            player.mulligans_left = action.mulligans_left
 
         elif isinstance(action, Action.MoveLegion):
             player = self.get_player_by_name(action.playername)

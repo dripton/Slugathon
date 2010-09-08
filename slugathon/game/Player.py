@@ -182,7 +182,7 @@ class Player(Observed):
     def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
         action = Action.RollMovement(self.game.name, self.name,
-          self.movement_roll)
+          self.movement_roll, self.mulligans_left)
         self.notify(action)
 
     def done_with_splits(self):

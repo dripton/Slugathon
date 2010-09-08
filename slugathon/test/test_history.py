@@ -156,8 +156,10 @@ SplitLegion {'playername': 'tchula', 'child_creature_names': \
 ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
 'child_markername': 'Bu06', 'parent_creature_names': \
 ('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Bu11'}
-RollMovement {'playername': 'tchula', 'game_name': 'a', 'movement_roll': 5}
-RollMovement {'playername': 'tchula', 'game_name': 'a', 'movement_roll': 6}
+RollMovement {'playername': 'tchula', 'game_name': 'a', 'movement_roll': 5, \
+'mulligans_left': 1}
+RollMovement {'playername': 'tchula', 'game_name': 'a', 'movement_roll': 6, \
+'mulligans_left': 0}
 MoveLegion {'markername': 'Bu11', 'entry_side': 1, 'teleport': True, \
 'playername': 'tchula', 'teleporting_lord': 'Titan', 'game_name': 'a', \
 'hexlabel': 300}
@@ -174,7 +176,8 @@ SplitLegion {'playername': 'dripton', 'child_creature_names': \
 ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
 'child_markername': 'Rd02', 'parent_creature_names': \
 ('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Rd04'}
-RollMovement {'playername': 'dripton', 'game_name': 'a', 'movement_roll': 6}
+RollMovement {'playername': 'dripton', 'game_name': 'a', 'movement_roll': 6, \
+'mulligans_left': 1}
 MoveLegion {'markername': 'Rd04', 'entry_side': 1, 'teleport': True, \
 'playername': 'dripton', 'teleporting_lord': 'Titan', 'game_name': 'a', \
 'hexlabel': 200}
