@@ -103,6 +103,17 @@ class CleverBot(DimBot.DimBot):
                       (score, legion, hexlabel, entry_side))
             self.best_moves.sort()
 
+            if player.can_take_mulligan:
+                legions_with_good_moves = set()
+                for (score, legion, _, _) in self.best_moves:
+                    if score > 0:
+                        legions_with_good_moves.add(legion)
+                if len(legions_with_good_moves) < 2:
+                    log("taking a mulligan")
+                    def1 = self.user.callRemote("take_mulligan", game.name)
+                    def1.addErrback(self.failure)
+                    return
+
         log("best moves", self.best_moves)
         while self.best_moves:
             score, legion, hexlabel, entry_side = self.best_moves.pop()
