@@ -301,7 +301,6 @@ class StatusScreen(gtk.Window):
           isinstance(action, Action.BattleOver) or
           isinstance(action, Action.GameOver) or
           isinstance(action, Action.StartMusterPhase) or
-          isinstance(action, Action.RecruitCreature) or
           isinstance(action, Action.DoNotReinforce) or
           isinstance(action, Action.SummonAngel) or
           isinstance(action, Action.DoNotSummon)):
