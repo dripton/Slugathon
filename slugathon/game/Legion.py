@@ -378,6 +378,7 @@ class Legion(Observed):
         player = self.player
         creature = self.creatures.pop()
         recruiter_names = self.recruiter_names_list.pop()
+        log(self, "clearing self.recruited")
         self.recruited = False
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
