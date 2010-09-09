@@ -1053,6 +1053,8 @@ class GUIMasterBoard(gtk.Window):
             lst = []
             if legion:
                 lst.append(legion.hexlabel)
+                self._create_recruitchits(legion, legion.hexlabel,
+                  [action.creature_name])
             if donor:
                 lst.append(donor.hexlabel)
             self.repaint(lst)
@@ -1075,6 +1077,8 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Acquire):
             markername = action.markername
             legion = self.game.find_legion(markername)
+            self._create_recruitchits(legion, legion.hexlabel,
+              action.angel_names)
             self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
 
