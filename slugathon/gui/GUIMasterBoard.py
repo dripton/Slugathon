@@ -150,7 +150,8 @@ class GUIMasterBoard(gtk.Window):
           ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
           ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan",
             self.cb_mulligan),
-          ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits", "c",            "Clear Recruit Chits", self.clear_recruitchits),
+          ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits", "c",
+           "Clear Recruit Chits", self.clear_recruitchits),
           ("HelpMenu", None, "_Help"),
           ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]

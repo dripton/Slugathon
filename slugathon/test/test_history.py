@@ -150,8 +150,10 @@ AssignTower {'playername': 'tchula', 'tower_num': 500, 'game_name': 'a'}
 AssignedAllTowers {'game_name': 'a'}
 PickedColor {'playername': 'dripton', 'color': 'Red', 'game_name': 'a'}
 PickedColor {'playername': 'tchula', 'color': 'Blue', 'game_name': 'a'}
-CreateStartingLegion {'playername': 'tchula', 'markername': 'Bu11', 'game_name': 'a'}
-CreateStartingLegion {'playername': 'dripton', 'markername': 'Rd04', 'game_name': 'a'}
+CreateStartingLegion {'playername': 'tchula', 'markername': 'Bu11', \
+'game_name': 'a'}
+CreateStartingLegion {'playername': 'dripton', 'markername': 'Rd04', \
+'game_name': 'a'}
 SplitLegion {'playername': 'tchula', 'child_creature_names': \
 ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
 'child_markername': 'Bu06', 'parent_creature_names': \

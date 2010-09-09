@@ -147,8 +147,8 @@ class GUIBattleHex(object):
         input_height = input_surface.get_height()
         output_width = myboxsize[0]
         output_height = myboxsize[1]
-        self.hex_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, output_width,
-          output_height)
+        self.hex_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+          output_width, output_height)
         ctx = cairo.Context(self.hex_surface)
         ctx.scale(float(output_width) / input_width,
           float(output_height) / input_height)

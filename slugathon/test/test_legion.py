@@ -184,9 +184,9 @@ def test_available_recruits_and_recruiters():
       ("Gorgon", "Cyclops", "Cyclops")]
     log(legion4.available_recruits_and_recruiters("Jungle", caretaker))
     assert legion4.available_recruits_and_recruiters("Jungle", caretaker) == [
-      ("Gargoyle", "Cyclops"), ("Gargoyle", "Behemoth"), ("Cyclops", "Cyclops"),
-      ("Cyclops", "Behemoth"), ("Behemoth", "Cyclops", "Cyclops", "Cyclops"),
-      ("Behemoth", "Behemoth"),
+      ("Gargoyle", "Cyclops"), ("Gargoyle", "Behemoth"),
+      ("Cyclops", "Cyclops"), ("Cyclops", "Behemoth"), ("Behemoth", "Cyclops",
+      "Cyclops", "Cyclops"), ("Behemoth", "Behemoth"),
     ]
 
 
