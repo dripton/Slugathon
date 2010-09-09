@@ -1281,7 +1281,7 @@ class Game(Observed):
 
     def _end_dead_player_turn(self):
         """If the active player is dead then advance phases if possible."""
-        if self.active_player.dead:
+        if self.active_player.dead and not self.pending_acquires:
             self.active_player.done_with_engagements()
             self.active_player.done_with_recruits()
 
