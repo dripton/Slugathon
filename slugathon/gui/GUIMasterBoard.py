@@ -26,6 +26,7 @@ from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
 from slugathon.util.log import log
+from slugathon.util.bag import bag
 
 
 SQRT3 = math.sqrt(3.0)
@@ -570,12 +571,24 @@ class GUIMasterBoard(gtk.Window):
         player = legion.player
         guihex = self.guihexes[hexlabel]
         recruitchit_scale = self.scale * Chit.CHIT_SCALE_FACTOR / 4
+        # If there are already recruitchits here (because we reinforced
+        # without clearing them), use a bag and take the maximum number
+        # of each creature.
+        old_chits = bag()
+        for (chit, hexlabel2) in self.recruitchits:
+            if hexlabel == hexlabel2:
+                old_chits.add(chit.creature.name)
+        new_chits = bag()
+        for name in recruit_names:
+            new_chits.add(name)
+        diff = new_chits.difference(old_chits)
         chits = []
-        for recruit_name in recruit_names:
-            recruit = Creature.Creature(recruit_name)
-            chit = Chit.Chit(recruit, player.color, recruitchit_scale)
-            chits.append(chit)
-            self.recruitchits.append((chit, hexlabel))
+        for name, number in diff.iteritems():
+            for unused in xrange(number):
+                recruit = Creature.Creature(name)
+                chit = Chit.Chit(recruit, player.color, recruitchit_scale)
+                chits.append(chit)
+                self.recruitchits.append((chit, hexlabel))
         self._place_chits(chits, guihex)
 
     def draw_recruitchits(self, ctx):
