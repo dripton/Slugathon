@@ -231,9 +231,9 @@ class CleverBot(DimBot.DimBot):
         battlemap = game.battlemap
         score = 0
         prev_hexlabel = creature.hexlabel
-        # XXX Modifying game state is probably a bad idea.
-        creature.hexlabel = hexlabel
         try:
+            # XXX Modifying game state is probably a bad idea.
+            creature.hexlabel = hexlabel
             engaged = creature.engaged_enemies
             probable_kill = False
             max_mean_hits = 0.0
