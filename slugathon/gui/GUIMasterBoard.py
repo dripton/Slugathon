@@ -44,6 +44,7 @@ ui_string = """<ui>
       <menuitem action="Redo"/>
       <separator/>
       <menuitem action="Mulligan"/>
+      <menuitem action="Clear Recruit Chits"/>
     </menu>
     <menu action="HelpMenu">
       <menuitem action="About"/>
@@ -56,6 +57,7 @@ ui_string = """<ui>
     <toolitem action="Redo"/>
     <separator/>
     <toolitem action="Mulligan"/>
+    <toolitem action="Clear Recruit Chits"/>
   </toolbar>
 </ui>"""
 
@@ -147,6 +149,7 @@ class GUIMasterBoard(gtk.Window):
           ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
           ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan",
             self.cb_mulligan),
+          ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits", "c",            "Clear Recruit Chits", self.clear_recruitchits),
           ("HelpMenu", None, "_Help"),
           ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]
@@ -578,7 +581,7 @@ class GUIMasterBoard(gtk.Window):
     def draw_recruitchits(self, ctx):
         if not self.game:
             return
-        # Draw in forward order so the last recruitchits in the list is on top.
+        # Draw in forward order so the last recruitchit in the list is on top.
         for (chit, unused) in self.recruitchits:
             self._render_marker(chit, ctx)
 
@@ -679,7 +682,7 @@ class GUIMasterBoard(gtk.Window):
                 self.repaint_hexlabels.add(guihex.masterhex.label)
         self.repaint()
 
-    def clear_recruitchits(self):
+    def clear_recruitchits(self, *unused):
         if self.recruitchits:
             hexlabels = set((tup[1] for tup in self.recruitchits))
             self.recruitchits = []
@@ -919,7 +922,8 @@ class GUIMasterBoard(gtk.Window):
                 self.repaint()
 
         elif isinstance(action, Action.StartFightPhase):
-            self.clear_recruitchits()
+            if action.playername == self.username:
+                self.clear_recruitchits()
             self.highlight_engagements()
             player = self.game.active_player
             if self.username == player.name:
@@ -929,7 +933,8 @@ class GUIMasterBoard(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.StartMusterPhase):
-            self.clear_recruitchits()
+            if action.playername == self.username:
+                self.clear_recruitchits()
             self.highlight_recruits()
             player = self.game.active_player
             if self.username == player.name:
@@ -1012,6 +1017,10 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(action.markername)
             if legion:
                 self.repaint_hexlabels.add(legion.hexlabel)
+                creature_names = list(action.recruiter_names)
+                creature_names.append(action.creature_name)
+                self._create_recruitchits(legion, legion.hexlabel,
+                  creature_names)
             self.highlight_recruits()
 
         elif isinstance(action, Action.StartSplitPhase):
