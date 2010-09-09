@@ -356,6 +356,7 @@ class Creature(object):
                 max_carries += creature.power - creature.hits
         return max_carries
 
+    # TODO Handle special case for striking up dune hexside
     def valid_strike_penalties(self, target):
         """Return a set of all valid tuples (num_dice, strike_number) that
         this creature can use to strike target."""
@@ -367,9 +368,13 @@ class Creature(object):
             if creature is not target:
                 num_dice2 = self.number_of_dice(creature)
                 strike_number2 = self.strike_number(creature)
-                if num_dice2 < num_dice or strike_number2 > strike_number:
-                    if num_dice2 > target.power - target.hits:
-                        result.add((num_dice2, strike_number2))
+                # It needs to be a penalty, it needs to still be a valid
+                # strike against the original target, and there needs to be
+                # a chance to carry.
+                if ((num_dice2 < num_dice or strike_number2 > strike_number)
+                  and num_dice2 <= num_dice and strike_number2 >= strike_number
+                  and num_dice2 > target.power - target.hits):
+                    result.add((num_dice2, strike_number2))
         return result
 
     def can_take_strike_penalty(self, target):
