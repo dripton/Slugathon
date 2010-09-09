@@ -1251,17 +1251,17 @@ class Game(Observed):
         award points, and heal surviving creatures in the winning legion."""
         log("_end_battle2")
         if self.battle_turn > 7:
-            #defender wins on time loss, possible reinforcement
+            #defender wins on time loss
             self.attacker_legion.die(self.defender_legion, False, True)
         elif self.attacker_legion.dead and self.defender_legion.dead:
             #mutual kill
             self.attacker_legion.die(self.defender_legion, False, True, False)
             self.defender_legion.die(self.attacker_legion, False, True)
         elif self.attacker_legion.dead:
-            #defender wins, possible reinforcement
+            #defender wins
             self.attacker_legion.die(self.defender_legion, False, False)
         elif self.defender_legion.dead:
-            #attacker wins, possible summon
+            #attacker wins
             self.defender_legion.die(self.attacker_legion, False, False)
         else:
             assert False, "bug in Game._end_battle2"
