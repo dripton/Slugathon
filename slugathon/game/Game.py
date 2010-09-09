@@ -86,14 +86,6 @@ class Game(Observed):
         except AttributeError:
             return None
 
-    @property
-    def pending_acquires(self):
-        """Return True if we have to wait for a player to acquire."""
-        for player in self.players:
-            if player.angels_pending or player.archangels_pending:
-                return True
-        return False
-
     def _init_battle(self, attacker_legion, defender_legion):
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
@@ -1281,7 +1273,7 @@ class Game(Observed):
 
     def _end_dead_player_turn(self):
         """If the active player is dead then advance phases if possible."""
-        if self.active_player.dead and not self.pending_acquires:
+        if self.active_player.dead and not self.pending_acquire:
             self.active_player.done_with_engagements()
             self.active_player.done_with_recruits()
 
