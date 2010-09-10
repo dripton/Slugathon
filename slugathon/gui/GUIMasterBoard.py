@@ -665,11 +665,12 @@ class GUIMasterBoard(gtk.Window):
             ctx.rectangle(0, 0, width, height)
             ctx.fill()
         for hexlabel in self.repaint_hexlabels:
-            ctx.set_source_rgb(0, 0, 0)
-            guihex = self.guihexes[hexlabel]
-            x, y, width, height = guihex.bounding_rect
-            ctx.rectangle(x, y, width, height)
-            ctx.fill()
+            if hexlabel:
+                ctx.set_source_rgb(0, 0, 0)
+                guihex = self.guihexes[hexlabel]
+                x, y, width, height = guihex.bounding_rect
+                ctx.rectangle(x, y, width, height)
+                ctx.fill()
         for guihex in self.guihexes.itervalues():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
@@ -1051,11 +1052,11 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(action.markername)
             donor = self.game.find_legion(action.donor_markername)
             lst = []
-            if legion:
+            if legion and legion.hexlabel:
                 lst.append(legion.hexlabel)
                 self._create_recruitchits(legion, legion.hexlabel,
                   [action.creature_name])
-            if donor:
+            if donor and donor.hexlabel:
                 lst.append(donor.hexlabel)
             self.repaint(lst)
             self.highlight_engagements()
@@ -1077,9 +1078,10 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Acquire):
             markername = action.markername
             legion = self.game.find_legion(markername)
-            self._create_recruitchits(legion, legion.hexlabel,
-              action.angel_names)
-            self.repaint_hexlabels.add(legion.hexlabel)
+            if legion and legion.hexlabel and action.angel_names:
+                self._create_recruitchits(legion, legion.hexlabel,
+                  action.angel_names)
+                self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
 
         elif isinstance(action, Action.Fight):
