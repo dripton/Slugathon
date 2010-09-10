@@ -436,7 +436,7 @@ class Legion(Observed):
         height = len(self)
         if can_acquire:
             archangels = 0
-            while (height + archangels < 7 and
+            if (height < 7 and
               score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
                 archangels += 1
                 score1 -= ANGEL_POINTS
