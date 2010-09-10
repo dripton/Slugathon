@@ -1096,9 +1096,10 @@ class GUIMasterBoard(gtk.Window):
             legion = self.game.find_legion(action.winner_markername)
             if legion:
                 player = legion.player
-                if player == self.game.active_player:
-                    # attacker can possibly summon
-                    if player.name == self.username:
+                if (player.name == self.username and
+                  self.game.phase == Phase.FIGHT):
+                    if player == self.game.active_player:
+                        # attacker can possibly summon
                         if legion.can_summon:
                             _, def1 = SummonAngel.new(self.username, legion,
                               self)
@@ -1108,9 +1109,8 @@ class GUIMasterBoard(gtk.Window):
                             def1 = self.user.callRemote("do_not_summon",
                               self.game.name, legion.markername)
                             def1.addErrback(self.failure)
-                else:
-                    # defender can possibly reinforce
-                    if player.name == self.username:
+                    else:
+                        # defender can possibly reinforce
                         masterhex = self.game.board.hexes[legion.hexlabel]
                         caretaker = self.game.caretaker
                         mterrain = masterhex.terrain
