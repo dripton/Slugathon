@@ -931,6 +931,8 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
+            self.recruitchits = [(chit, hexlabel) for (chit, hexlabel)
+              in self.recruitchits if hexlabel != legion.previous_hexlabel]
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
             else:
