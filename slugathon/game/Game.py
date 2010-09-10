@@ -788,7 +788,8 @@ class Game(Observed):
     def recruit_creature(self, playername, markername, creature_name,
       recruiter_names):
         """Called from Server and update"""
-        log("recruit_creature")
+        log("recruit_creature", playername, markername, creature_name,
+          recruiter_names)
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
         # Avoid double recruit
