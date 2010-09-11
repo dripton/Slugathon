@@ -19,7 +19,7 @@ from zope.interface import implements
 
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (icon, GUIBattleHex, Chit, PickRecruit, SummonAngel,
-  PickCarry, PickStrikePenalty)
+  PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
 from slugathon.util.log import log
@@ -113,7 +113,6 @@ class GUIBattleMap(gtk.Window):
 
     def create_ui(self):
         ag = gtk.ActionGroup("BattleActions")
-        # TODO confirm concession
         actions = [
           ("PhaseMenu", None, "_Phase"),
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
@@ -452,22 +451,35 @@ class GUIBattleMap(gtk.Window):
                     def1 = self.user.callRemote("done_with_strikes",
                       self.game.name)
                     def1.addErrback(self.failure)
+                else:
+                    InfoDialog.InfoDialog(self, "Info",
+                      "Forced strikes remain")
             elif self.game.battle_phase == Phase.COUNTERSTRIKE:
                 if not self.game.battle_active_legion.forced_strikes:
                     def1 = self.user.callRemote("done_with_counterstrikes",
                       self.game.name)
                     def1.addErrback(self.failure)
+                else:
+                    InfoDialog.InfoDialog(self, "Info",
+                      "Forced strikes remain")
 
     def cb_concede(self, event):
-        log("cb_concede", event)
-        for legion in self.game.battle_legions:
-            if legion.player.name == self.username:
-                friend = legion
-            else:
-                enemy = legion
-        def1 = self.user.callRemote("concede", self.game.name,
-          friend.markername, enemy.markername, friend.hexlabel)
+        confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+          "Are you sure you want to concede?")
+        def1.addCallback(self.cb_concede2)
         def1.addErrback(self.failure)
+
+    def cb_concede2(self, confirmed):
+        log("cb_concede2", confirmed)
+        if confirmed:
+            for legion in self.game.battle_legions:
+                if legion.player.name == self.username:
+                    friend = legion
+                else:
+                    enemy = legion
+            def1 = self.user.callRemote("concede", self.game.name,
+              friend.markername, enemy.markername, friend.hexlabel)
+            def1.addErrback(self.failure)
 
     def bounding_rect_for_hexlabels(self, hexlabels):
         """Return the minimum bounding rectangle that encloses all
