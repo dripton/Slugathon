@@ -4,6 +4,11 @@ __copyright__ = "Copyright (c) 2008-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
 import gtk
 
 from slugathon.gui import icon
@@ -50,10 +55,10 @@ class LoadGame(gtk.FileChooserDialog):
 
 
 if __name__ == "__main__":
-    from slugathon.util import guiutils
+    from twisted.internet import reactor
 
     user = NullUser()
     username = "test user"
     loadgame = LoadGame(user, username, None)
-    loadgame.connect("destroy", guiutils.exit)
-    gtk.main()
+    loadgame.connect("destroy", lambda x: reactor.stop())
+    reactor.run()

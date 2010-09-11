@@ -6,8 +6,13 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
 from twisted.internet import reactor
+import gtk
 from zope.interface import implements
 
 from slugathon.util.Observer import IObserver
@@ -203,5 +208,5 @@ if __name__ == "__main__":
     username = "Player 1"
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
     wfp = WaitingForPlayers(user, username, game, None)
-
-    gtk.main()
+    wfp.connect("destroy", lambda x: reactor.stop())
+    reactor.run()
