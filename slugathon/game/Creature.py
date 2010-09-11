@@ -334,11 +334,24 @@ class Creature(object):
         strike_number = min(strike_number, 6)
         return strike_number
 
-    # TODO Handle special case for natives striking up dune hexside
     def can_carry_to(self, carry_target, original_target, num_dice,
       strike_number):
         """Return whether a strike at original_target using num_dice and
         strike number can carry to carry_target"""
+        # Natives to dunes may not carry over damage up dune hexsides when
+        # their strike is not up a dune hexside (even though they do not roll
+        # less dice striking up dunes).  -- Bruno's clarifications
+        map1 = self.legion.player.game.battlemap
+        hex1 = map1.hexes[self.hexlabel]
+        hex2 = map1.hexes[original_target.hexlabel]
+        hex3 = map1.hexes[carry_target.hexlabel]
+        hexside = hex1.neighbor_to_hexside(hex2)
+        border = hex1.opposite_border(hexside)
+        if border != "Dune":
+            hexside2 = hex1.neighbor_to_hexside(hex3)
+            border2 = hex1.opposite_border(hexside2)
+            if border2 == "Dune" and self.is_native(border2):
+                return False
         return (carry_target is not original_target and
           carry_target in self.engaged_enemies and
           self.number_of_dice(carry_target) >= num_dice and
@@ -356,7 +369,6 @@ class Creature(object):
                 max_carries += creature.power - creature.hits
         return max_carries
 
-    # TODO Handle special case for striking up dune hexside
     def valid_strike_penalties(self, target):
         """Return a set of all valid tuples (num_dice, strike_number) that
         this creature can use to strike target."""
@@ -368,10 +380,23 @@ class Creature(object):
             if creature is not target:
                 num_dice2 = self.number_of_dice(creature)
                 strike_number2 = self.strike_number(creature)
+                # Neither natives nor non-natives to dunes may roll one less
+                # die, when their strike is not up a dune hexside, in order to
+                # allow carry over up a dune hexside.
+                map1 = self.legion.player.game.battlemap
+                hex1 = map1.hexes[self.hexlabel]
+                hex2 = map1.hexes[target.hexlabel]
+                hex3 = map1.hexes[creature.hexlabel]
+                hexside = hex1.neighbor_to_hexside(hex2)
+                border = hex1.opposite_border(hexside)
+                hexside2 = hex1.neighbor_to_hexside(hex3)
+                border2 = hex1.opposite_border(hexside2)
+                if border != "Dune" and border2 == "Dune":
+                    pass
                 # It needs to be a penalty, it needs to still be a valid
                 # strike against the original target, and there needs to be
                 # a chance to carry.
-                if ((num_dice2 < num_dice or strike_number2 > strike_number)
+                elif ((num_dice2 < num_dice or strike_number2 > strike_number)
                   and num_dice2 <= num_dice and strike_number2 >= strike_number
                   and num_dice2 > target.power - target.hits):
                     result.add((num_dice2, strike_number2))
