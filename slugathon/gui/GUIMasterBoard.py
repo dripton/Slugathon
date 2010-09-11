@@ -1169,7 +1169,8 @@ def main():
     from slugathon.game import MasterBoard
 
     board = MasterBoard.MasterBoard()
-    GUIMasterBoard(board)
+    guiboard = GUIMasterBoard(board)
+    guiboard.connect("destroy", lambda x: reactor.stop())
     reactor.run()
 
 if __name__ == "__main__":
