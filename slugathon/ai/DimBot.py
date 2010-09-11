@@ -232,6 +232,21 @@ class DimBot(object):
         log("strike")
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
+        # First do the strikers with only one target.
+        for striker in legion.sorted_creatures:
+            if striker.can_strike:
+                hexlabels = striker.find_target_hexlabels()
+                if len(hexlabels) == 1:
+                    hexlabel = hexlabels.pop()
+                    target = game.creatures_in_battle_hex(hexlabel).pop()
+                    num_dice = striker.number_of_dice(target)
+                    strike_number = striker.strike_number(target)
+                    def1 = self.user.callRemote("strike", game.name,
+                      striker.name, striker.hexlabel, target.name,
+                      target.hexlabel, num_dice, strike_number)
+                    def1.addErrback(self.failure)
+                    return
+        # Then do the ones that have to choose a target.
         for striker in legion.sorted_creatures:
             if striker.can_strike:
                 hexlabels = striker.find_target_hexlabels()
