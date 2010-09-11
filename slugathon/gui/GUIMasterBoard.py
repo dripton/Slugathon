@@ -784,16 +784,28 @@ class GUIMasterBoard(gtk.Window):
                     def1 = self.user.callRemote("done_with_splits",
                       self.game.name)
                     def1.addErrback(self.failure)
+                else:
+                    InfoDialog.InfoDialog(self, "Info",
+                      "Must split initial legion 4-4")
             elif self.game.phase == Phase.MOVE:
                 if player.can_exit_move_phase:
                     def1 = self.user.callRemote("done_with_moves",
                       self.game.name)
                     def1.addErrback(self.failure)
+                elif not player.moved_legions:
+                    InfoDialog.InfoDialog(self, "Info",
+                      "Must move at least one legion")
+                else:
+                    InfoDialog.InfoDialog(self, "Info",
+                      "Must separate split legions")
             elif self.game.phase == Phase.FIGHT:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
                       self.game.name)
                     def1.addErrback(self.failure)
+                else:
+                    InfoDialog.InfoDialog(self, "Info",
+                      "Must resolve engagements")
             elif self.game.phase == Phase.MUSTER:
                 def1 = self.user.callRemote("done_with_recruits",
                   self.game.name)
