@@ -415,8 +415,6 @@ class Player(Observed):
         action = Action.EliminatePlayer(self.game.name,
           scoring_legion.player.name, self.name)
         self.notify(action)
-        if check_for_victory:
-            self.game.check_for_victory()
 
     def update(self, observed, action):
         """Pass updates up to the game"""

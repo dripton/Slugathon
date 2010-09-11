@@ -1581,5 +1581,6 @@ class Game(Observed):
             winner_player = self.get_player_by_name(action.winner_playername)
             loser_player = self.get_player_by_name(action.loser_playername)
             winner_player.eliminated_colors.add(loser_player.color_abbrev)
+            self.check_for_victory()
 
         self.notify(action)
