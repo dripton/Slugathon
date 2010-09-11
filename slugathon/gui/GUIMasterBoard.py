@@ -151,7 +151,7 @@ class GUIMasterBoard(gtk.Window):
           ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan",
             self.cb_mulligan),
           ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits", "c",
-           "Clear Recruit Chits", self.clear_recruitchits),
+           "Clear Recruit Chits", self.clear_all_recruitchits),
           ("HelpMenu", None, "_Help"),
           ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]
@@ -260,7 +260,7 @@ class GUIMasterBoard(gtk.Window):
                       guihex.masterhex.label]
                     self._pick_move_type(legion, moves)
                 self.selected_marker = None
-                self.clear_recruitchits()
+                self.clear_all_recruitchits()
                 self.unselect_all()
                 self.highlight_unmoved_legions()
             elif phase == Phase.MOVE:
@@ -384,7 +384,7 @@ class GUIMasterBoard(gtk.Window):
                     self.clicked_on_hex(area, event, guihex)
                     return
                 self.unselect_all()
-                self.clear_recruitchits()
+                self.clear_all_recruitchits()
                 if legion.moved:
                     moves = []
                 else:
@@ -697,11 +697,17 @@ class GUIMasterBoard(gtk.Window):
                 self.repaint_hexlabels.add(guihex.masterhex.label)
         self.repaint()
 
-    def clear_recruitchits(self, *unused):
+    def clear_all_recruitchits(self, *unused):
         if self.recruitchits:
             hexlabels = set((tup[1] for tup in self.recruitchits))
             self.recruitchits = []
             self.repaint(hexlabels)
+
+    def clear_recruitchits(self, hexlabel):
+        """Clear recruitchits in one hex."""
+        self.recruitchits = [(chit, hexlabel2) for (chit, hexlabel2)
+          in self.recruitchits if hexlabel2 != hexlabel]
+        self.repaint([hexlabel])
 
     def highlight_tall_legions(self):
         """Highlight all hexes containing a legion of height 7 or more
@@ -722,7 +728,7 @@ class GUIMasterBoard(gtk.Window):
         active, current player."""
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
-            self.clear_recruitchits()
+            self.clear_all_recruitchits()
             self.unselect_all()
             hexlabels = set()
             for legion in player.legions.itervalues():
@@ -931,8 +937,7 @@ class GUIMasterBoard(gtk.Window):
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
-            self.recruitchits = [(chit, hexlabel) for (chit, hexlabel)
-              in self.recruitchits if hexlabel != legion.previous_hexlabel]
+            self.clear_recruitchits(legion.previous_hexlabel)
             if action.playername == self.username:
                 self.highlight_unmoved_legions()
             else:
@@ -940,7 +945,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.StartFightPhase):
             if action.playername == self.username:
-                self.clear_recruitchits()
+                self.clear_all_recruitchits()
             self.highlight_engagements()
             player = self.game.active_player
             if self.username == player.name:
@@ -951,7 +956,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.StartMusterPhase):
             if action.playername == self.username:
-                self.clear_recruitchits()
+                self.clear_all_recruitchits()
             self.highlight_recruits()
             player = self.game.active_player
             if self.username == player.name:
@@ -1029,8 +1034,7 @@ class GUIMasterBoard(gtk.Window):
                   defender, self)
                 def1.addCallback(self.cb_negotiate)
 
-        elif isinstance(action, Action.RecruitCreature) or isinstance(action,
-          Action.UndoRecruit):
+        elif isinstance(action, Action.RecruitCreature):
             legion = self.game.find_legion(action.markername)
             if legion:
                 self.repaint_hexlabels.add(legion.hexlabel)
@@ -1038,6 +1042,13 @@ class GUIMasterBoard(gtk.Window):
                 creature_names.append(action.creature_name)
                 self._create_recruitchits(legion, legion.hexlabel,
                   creature_names)
+            self.highlight_recruits()
+
+        elif isinstance(action, Action.UndoRecruit):
+            legion = self.game.find_legion(action.markername)
+            if legion:
+                self.repaint_hexlabels.add(legion.hexlabel)
+                self.clear_recruitchits(legion.hexlabel)
             self.highlight_recruits()
 
         elif isinstance(action, Action.StartSplitPhase):
