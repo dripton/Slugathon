@@ -70,12 +70,12 @@ class StatusScreen(gtk.Window):
           "Markers", "Creatures", "Titan Power", "Eliminated", "Score"]):
             add_label(self.player_table, 1, row, text)
 
-        for col, num in enumerate(xrange(len(self.game.players))):
+        for col in xrange(len(self.game.players)):
             for row, st in enumerate(["name%d_label", "tower%d_label",
               "color%d_label", "legions%d_label", "markers%d_label",
               "creatures%d_label", "titan_power%d_label", "eliminated%d_label",
               "score%d_label"]):
-                name = st % num
+                name = st % col
                 label = add_label(self.player_table, col + 2, row)
                 setattr(self, name, label)
 
