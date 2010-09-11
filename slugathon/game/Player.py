@@ -312,6 +312,17 @@ class Player(Observed):
                 return True
         return False
 
+    def done_with_battle_phase(self):
+        """Finish whatever battle phase it currently is."""
+        if self.game.battle_phase == Phase.REINFORCE:
+            self.done_with_reinforcements()
+        elif self.game.battle_phase == Phase.MANEUVER:
+            self.done_with_maneuvers()
+        elif self.game.battle_phase == Phase.STRIKE:
+            self.done_with_strikes()
+        elif self.game.battle_phase == Phase.COUNTERSTRIKE:
+            self.done_with_counterstrikes()
+
     def done_with_recruits(self):
         (player, turn) = self.game.get_next_player_and_turn()
         action = Action.StartSplitPhase(self.game.name, player.name, turn)

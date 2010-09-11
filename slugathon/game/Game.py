@@ -588,6 +588,9 @@ class Game(Observed):
             # conceding during battle
             for creature in legion.creatures:
                 creature.kill()
+            player = legion.player
+            if player == self.battle_active_player:
+                player.done_with_battle_phase()
         else:
             # conceding before battle
             legion.die(legion2, False, False)
