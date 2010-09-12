@@ -19,7 +19,7 @@ from zope.interface import implements
 
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (icon, GUIBattleHex, Chit, PickRecruit, SummonAngel,
-  PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog)
+  PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog, Marker)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
 from slugathon.util.log import log
@@ -96,7 +96,20 @@ class GUIBattleMap(gtk.Window):
         self.create_ui()
         self.vbox.pack_start(self.ui.get_widget("/Menubar"), False, False, 0)
         self.vbox.pack_start(self.ui.get_widget("/Toolbar"), False, False, 0)
-        self.vbox.pack_start(self.area)
+        self.hbox = gtk.HBox()
+        attacker_marker = None
+        defender_marker = None
+        if game:
+            attacker_marker = Marker.Marker(game.attacker_legion, True,
+              self.scale / 2)
+            defender_marker = Marker.Marker(game.defender_legion, True,
+              self.scale / 2)
+        self.vbox.pack_start(self.hbox)
+        if attacker_marker:
+            self.hbox.pack_start(attacker_marker.event_box)
+        self.hbox.pack_start(self.area)
+        if defender_marker:
+            self.hbox.pack_start(defender_marker.event_box)
 
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.itervalues():
