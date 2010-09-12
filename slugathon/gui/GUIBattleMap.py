@@ -96,20 +96,43 @@ class GUIBattleMap(gtk.Window):
         self.create_ui()
         self.vbox.pack_start(self.ui.get_widget("/Menubar"), False, False, 0)
         self.vbox.pack_start(self.ui.get_widget("/Toolbar"), False, False, 0)
-        self.hbox = gtk.HBox()
-        attacker_marker = None
-        defender_marker = None
+        self.hbox1 = gtk.HBox()
+        self.hbox2 = gtk.HBox()
+        self.hbox3 = gtk.HBox()
+        self.vbox.pack_start(self.hbox1)
+        self.vbox.pack_start(self.hbox2)
+        self.vbox.pack_start(self.hbox3)
         if game:
+            gtkcolor = gtk.gdk.color_parse("white")
             attacker_marker = Marker.Marker(game.attacker_legion, True,
               self.scale / 2)
+            attacker_marker.event_box.modify_bg(gtk.STATE_NORMAL, gtkcolor)
             defender_marker = Marker.Marker(game.defender_legion, True,
               self.scale / 2)
-        self.vbox.pack_start(self.hbox)
-        if attacker_marker:
-            self.hbox.pack_start(attacker_marker.event_box)
-        self.hbox.pack_start(self.area)
-        if defender_marker:
-            self.hbox.pack_start(defender_marker.event_box)
+            defender_marker.event_box.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+            entry_side = self.battlemap.entry_side
+            board = game.board
+            hexlabel = game.defender_legion.hexlabel
+            masterhex = board.hexes[hexlabel]
+            own_hex_label = self.masterhex_label(masterhex)
+            came_from = masterhex.find_came_from(entry_side)
+            left_hex = masterhex.neighbors[came_from]
+            left_hex_label = self.masterhex_label(left_hex)
+            top_hex = masterhex.neighbors[(came_from + 2) % 6]
+            top_hex_label = self.masterhex_label(top_hex)
+            bottom_hex = masterhex.neighbors[(came_from + 4) % 6]
+            bottom_hex_label = self.masterhex_label(bottom_hex)
+            spacer_label = self.masterhex_label(None)
+            self.hbox1.pack_start(own_hex_label)
+            self.hbox1.pack_start(top_hex_label)
+            self.hbox3.pack_start(spacer_label)
+            self.hbox3.pack_start(bottom_hex_label)
+        if game:
+            self.hbox2.pack_start(left_hex_label)
+            self.hbox2.pack_start(attacker_marker.event_box)
+        self.hbox2.pack_start(self.area)
+        if game:
+            self.hbox2.pack_start(defender_marker.event_box)
 
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.itervalues():
@@ -162,6 +185,20 @@ class GUIBattleMap(gtk.Window):
         """Return the height of the map in pixels."""
         return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 *
           SQRT3))
+
+    def masterhex_label(self, masterhex):
+        """Return a gtk.Label describing masterhex, inside a white
+        gtk.EventBox."""
+        eventbox = gtk.EventBox()
+        if masterhex:
+            text = "%s hex %d" % (masterhex.terrain, masterhex.label)
+        else:
+            text = ""
+        label = gtk.Label(text)
+        eventbox.add(label)
+        gtkcolor = gtk.gdk.color_parse("white")
+        eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        return eventbox
 
     def unselect_all(self):
         """Unselect all guihexes."""
