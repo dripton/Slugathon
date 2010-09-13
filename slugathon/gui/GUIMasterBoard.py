@@ -174,10 +174,8 @@ class GUIMasterBoard(gtk.Window):
             self.game.add_observer(self.guicaretaker)
 
 
-    # TODO Keep references to other windows so we can destroy them too.
     def cb_destroy(self, event):
-        for widget in [self.inspector, self.negotiate, self.guimap,
-          self.acquire_angel, self.game_over]:
+        for widget in [self.guimap]:
             if widget is not None:
                 widget.destroy()
         self.destroy()
@@ -1114,7 +1112,7 @@ class GUIMasterBoard(gtk.Window):
             self.unselect_all()
             if self.guimap is None:
                 self.guimap = GUIBattleMap.GUIBattleMap(self.game.battlemap,
-                  self.game, self.user, self.username, self)
+                  self.game, self.user, self.username)
                 self.game.add_observer(self.guimap)
 
         elif isinstance(action, Action.BattleOver):
