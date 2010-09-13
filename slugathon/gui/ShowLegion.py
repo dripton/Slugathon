@@ -13,8 +13,6 @@ class ShowLegion(gtk.Window):
     """Window to show a legion's contents."""
     def __init__(self, username, legion, show_marker, parent):
         gtk.Window.__init__(self)
-        self.widget_names = ["show_legion_window", "marker_hbox", "chits_hbox",
-          "legion_name"]
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)

@@ -26,9 +26,6 @@ class PickTeleportingLord(gtk.Dialog):
         self.legion = legion
         self.deferred = def1
 
-        self.widget_names = ["top_label",
-          "bottom_label", "vbox1"]
-
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
