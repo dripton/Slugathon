@@ -19,7 +19,7 @@ from zope.interface import implements
 
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (icon, GUIBattleHex, Chit, PickRecruit, SummonAngel,
-  PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog, Marker)
+  PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog, Marker, TurnTrack)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
 from slugathon.util.log import log
@@ -78,6 +78,14 @@ class GUIBattleMap(gtk.Window):
             self.scale = scale
         self.area = gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
+        if game:
+            self.turn_track = TurnTrack.TurnTrack(game.attacker_legion,
+                                                 game.defender_legion,
+                                                 game,
+                                                 self.scale)
+            game.add_observer(self.turn_track)
+        else:
+            self.turn_track = None
 
         if self.username:
             tup = prefs.load_window_position(self.username,
@@ -120,10 +128,9 @@ class GUIBattleMap(gtk.Window):
             top_hex_label = self.masterhex_label(top_hex)
             bottom_hex = masterhex.neighbors[(came_from + 4) % 6]
             bottom_hex_label = self.masterhex_label(bottom_hex)
-            spacer_label = self.masterhex_label(None)
             self.hbox1.pack_start(own_hex_label)
             self.hbox1.pack_start(top_hex_label)
-            self.hbox3.pack_start(spacer_label)
+            self.hbox3.pack_start(self.turn_track)
             self.hbox3.pack_start(bottom_hex_label)
             self.hbox2.pack_start(left_hex_label)
             self.hbox2.pack_start(attacker_marker.event_box)
@@ -168,20 +175,21 @@ class GUIBattleMap(gtk.Window):
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
         # Fudge factor to leave room on the sides.
-        xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 5
+        xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 6
         # Fudge factor for menus and toolbars.
         yscale = math.floor(height / (2 * SQRT3 *
-          self.battlemap.hex_height())) - 11
+          self.battlemap.hex_height())) - 13
         return int(min(xscale, yscale))
 
     def compute_width(self):
         """Return the width of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_width() * 3.2))
+        return int(math.ceil(self.scale * (self.battlemap.hex_width() + 1) *
+          3.2))
 
     def compute_height(self):
         """Return the height of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 *
-          SQRT3))
+        return int((math.ceil(self.scale * self.battlemap.hex_height() + 2) *
+          2 * SQRT3))
 
     def masterhex_label(self, masterhex):
         """Return a gtk.Label describing masterhex, inside a white
