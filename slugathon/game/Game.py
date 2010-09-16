@@ -809,8 +809,6 @@ class Game(Observed):
     def undo_recruit(self, playername, markername):
         player = self.get_player_by_name(playername)
         legion = player.legions[markername]
-        if player is not self.active_player:
-            raise AssertionError("recruiting out of turn")
         legion.undo_recruit()
 
     def done_with_recruits(self, playername):
@@ -866,6 +864,13 @@ class Game(Observed):
         self.pending_reinforcement = False
         if self.is_battle_over():
             self._end_battle2()
+
+    def _unreinforce(self, playername, markername):
+        """Called from update"""
+        player = self.get_player_by_name(playername)
+        legion = player.legions[markername]
+        legion.unreinforce()
+
 
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
       carries):
@@ -1332,8 +1337,12 @@ class Game(Observed):
                     if not creature.dead:
                         hex1 = self.battlemap.hexes[creature.hexlabel]
                         if hex1.entrance:
-                            # TODO Unsummon / unrecruit instead if needed
-                            creature.kill()
+                            if self.battle_turn == 1:
+                                creature.kill()
+                            elif legion == self.attacker_legion:
+                                legion.player.unsummon(legion, creature.name)
+                            else:
+                                legion.unreinforce()
 
     def cleanup_dead_creatures(self):
         for legion in self.battle_legions:
@@ -1463,6 +1472,9 @@ class Game(Observed):
         elif isinstance(action, Action.DoNotReinforce):
             self._do_not_reinforce(action.playername, action.markername)
 
+        elif isinstance(action, Action.UnReinforce):
+            self._unreinforce(action.playername, action.markername)
+
         elif isinstance(action, Action.StartSplitPhase):
             self.turn = action.turn
             self.phase = Phase.SPLIT
@@ -1474,6 +1486,11 @@ class Game(Observed):
         elif isinstance(action, Action.SummonAngel):
             self.summon_angel(action.playername, action.markername,
               action.donor_markername, action.creature_name)
+
+        elif isinstance(action, Action.UnSummon):
+            player = self.get_player_by_name(action.playername)
+            legion = player.legions[action.markername]
+            player.unsummon(legion, action.creature_name)
 
         elif isinstance(action, Action.DoNotSummon):
             self._do_not_summon(action.playername, action.markername)

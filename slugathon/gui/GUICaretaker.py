@@ -112,7 +112,8 @@ class GUICaretaker(gtk.Window):
                 self.update_creature(creature_name)
 
         elif (isinstance(action, Action.RecruitCreature) or
-          isinstance(action, Action.UndoRecruit)):
+          isinstance(action, Action.UndoRecruit) or
+          isinstance(action, Action.UnReinforce)):
             creature_name = action.creature_name
             self.update_creature(creature_name)
 

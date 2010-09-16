@@ -252,7 +252,6 @@ class RecruitCreature(Action):
 
 pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)
 
-
 class DoNotReinforce(Action):
     def __init__(self, game_name, playername, markername):
         self.game_name = game_name
@@ -261,6 +260,15 @@ class DoNotReinforce(Action):
 
 pb.setUnjellyableForClass(DoNotReinforce, DoNotReinforce)
 
+class UnReinforce(UndoAction):
+    def __init__(self, game_name, playername, markername, creature_name,
+      recruiter_names):
+        self.game_name = game_name
+        self.playername = playername
+        self.markername = markername
+        self.creature_name = creature_name
+        self.recruiter_names = recruiter_names
+pb.setUnjellyableForClass(UnReinforce, UnReinforce)
 
 class UndoRecruit(UndoAction):
     def __init__(self, game_name, playername, markername, creature_name,
@@ -476,6 +484,16 @@ class SummonAngel(Action):
         self.donor_markername = donor_markername
         self.creature_name = creature_name
 pb.setUnjellyableForClass(SummonAngel, SummonAngel)
+
+class UnSummon(Action):
+    def __init__(self, game_name, playername, markername, donor_markername,
+      creature_name):
+        self.game_name = game_name
+        self.playername = playername
+        self.markername = markername
+        self.donor_markername = donor_markername
+        self.creature_name = creature_name
+pb.setUnjellyableForClass(UnSummon, UnSummon)
 
 class DoNotSummon(Action):
     def __init__(self, game_name, playername, markername):

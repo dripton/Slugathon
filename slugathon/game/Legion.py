@@ -387,6 +387,22 @@ class Legion(Observed):
           self.markername, creature.name, recruiter_names)
         self.notify(action)
 
+    def unreinforce(self):
+        """Undo reinforcement, and notify observers."""
+        # Avoid double undo
+        if not self.recruited:
+            return
+        player = self.player
+        creature = self.creatures.pop()
+        recruiter_names = self.recruiter_names_list.pop()
+        log(self, "clearing self.recruited")
+        self.recruited = False
+        caretaker = self.player.game.caretaker
+        caretaker.put_one_back(creature.name)
+        action = Action.UnReinforce(player.game.name, player.name,
+          self.markername, creature.name, recruiter_names)
+        self.notify(action)
+
     @property
     def score(self):
         """Return the point value of this legion."""

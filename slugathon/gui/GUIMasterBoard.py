@@ -1054,7 +1054,8 @@ class GUIMasterBoard(gtk.Window):
                   creature_names)
             self.highlight_recruits()
 
-        elif isinstance(action, Action.UndoRecruit):
+        elif (isinstance(action, Action.UndoRecruit) or
+              isinstance(action, Action.UnReinforce)):
             legion = self.game.find_legion(action.markername)
             if legion:
                 self.repaint_hexlabels.add(legion.hexlabel)
@@ -1079,6 +1080,18 @@ class GUIMasterBoard(gtk.Window):
                 lst.append(legion.hexlabel)
                 self._create_recruitchits(legion, legion.hexlabel,
                   [action.creature_name])
+            if donor and donor.hexlabel:
+                lst.append(donor.hexlabel)
+            self.repaint(lst)
+            self.highlight_engagements()
+
+        elif isinstance(action, Action.UnSummon):
+            legion = self.game.find_legion(action.markername)
+            donor = self.game.find_legion(action.donor_markername)
+            lst = []
+            if legion and legion.hexlabel:
+                lst.append(legion.hexlabel)
+                self.clear_recruitchits(legion.hexlabel)
             if donor and donor.hexlabel:
                 lst.append(donor.hexlabel)
             self.repaint(lst)

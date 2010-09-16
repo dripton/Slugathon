@@ -394,12 +394,14 @@ class GUIBattleMap(gtk.Window):
     # TODO Move to graveyard area rather than removing.
     def _remove_dead_chits(self):
         for chit in reversed(self.chits):
-            if chit.creature.dead:
+            if (chit.creature.dead or
+              chit.creature.hexlabel in ["ATTACKER", "DEFENDER"]):
+                self.chits.remove(chit)
                 hexlabel = (chit.creature.hexlabel or
                   chit.creature.previous_hexlabel)
+                chit.hexlabel = None
                 if hexlabel is not None:
                     self.repaint([hexlabel])
-                self.chits.remove(chit)
 
     def _compute_chit_locations(self, hexlabel):
         chits = self.chits_in_hex(hexlabel)
@@ -791,6 +793,13 @@ class GUIBattleMap(gtk.Window):
                 if legion.markername == action.markername:
                     break
             self.repaint([creature.hexlabel for creature in legion.creatures])
+
+        elif isinstance(action, Action.UnReinforce):
+            self.repaint(["DEFENDER"])
+
+        elif isinstance(action, Action.UnSummon):
+            self.repaint(["ATTACKER"])
+
 
     def picked_reinforcement(self, (legion, creature, recruiter_names)):
         def1 = self.user.callRemote("recruit_creature", self.game.name,

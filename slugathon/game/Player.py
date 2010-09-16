@@ -48,6 +48,7 @@ class Player(Observed):
         self.movement_roll = None
         self.summoned = False
         self.eliminated_colors = set()
+        self.last_donor = None
 
     @property
     def dead(self):
@@ -365,7 +366,26 @@ class Player(Observed):
         creature = legion.creatures[-1]
         creature.legion = legion
         self.summoned = True
+        self.last_donor = donor
         action = Action.SummonAngel(self.game.name, self.name,
+          legion.markername, donor.markername, creature.name)
+        self.notify(action)
+
+    def unsummon(self, legion, creature_name):
+        donor = self.last_donor
+        # Avoid doing it twice.
+        if not self.summoned or donor is None or len(donor) >= 7:
+            return
+        # Can be done during battle, so it matters which of this creature.
+        if not legion.creatures or legion.creatures[-1].name != creature_name:
+            return
+        legion.creatures.pop()
+        donor.add_creature_by_name(creature_name)
+        creature = donor.creatures[-1]
+        creature.legion = donor
+        self.summoned = False
+        self.last_donor = None
+        action = Action.UnSummon(self.game.name, self.name,
           legion.markername, donor.markername, creature.name)
         self.notify(action)
 
@@ -385,6 +405,7 @@ class Player(Observed):
         self.selected_markername = None
         self.movement_roll = None
         self.summoned = False
+        self.last_donor = None
         for legion in self.legions.itervalues():
             legion.moved = False
             legion.teleported = False
