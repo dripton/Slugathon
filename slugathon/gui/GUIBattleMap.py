@@ -85,10 +85,11 @@ class GUIBattleMap(gtk.Window):
                                                  game,
                                                  self.scale)
             game.add_observer(self.turn_track)
+            self.battle_dice = BattleDice.BattleDice(self.scale)
+            game.add_observer(self.battle_dice)
         else:
             self.turn_track = None
-        self.battle_dice = BattleDice.BattleDice(self.scale)
-        game.add_observer(self.battle_dice)
+            self.battle_dice = None
 
         if self.username:
             tup = prefs.load_window_position(self.username,
