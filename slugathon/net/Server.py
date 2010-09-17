@@ -129,7 +129,7 @@ class Server(Observed):
     def start_game(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
-            if username != game.get_owner().name:
+            if username != game.owner.name:
                 raise AssertionError, "Game.start %s called by non-owner %s" \
                   % (self.name, username)
             if game.num_players_joined < game.min_players:
@@ -145,7 +145,7 @@ class Server(Observed):
         set1.discard(ainame)
         if not set1:
             game = self.name_to_game(game_name)
-            reactor.callLater(1, game.start, game.get_owner().name)
+            reactor.callLater(1, game.start, game.owner.name)
 
     def _passwd_for_username(self, username):
         fil = open(self.passwd_path)

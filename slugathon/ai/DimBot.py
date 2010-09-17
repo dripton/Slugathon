@@ -24,8 +24,8 @@ class DimBot(object):
 
     def maybe_pick_color(self, game):
         log("maybe_pick_color")
-        if game.next_playername_to_pick_color() == self.playername:
-            color = random.choice(game.colors_left())
+        if game.next_playername_to_pick_color == self.playername:
+            color = random.choice(game.colors_left)
             def1 = self.user.callRemote("pick_color", game.name, color)
             def1.addErrback(self.failure)
 

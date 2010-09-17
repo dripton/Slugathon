@@ -125,7 +125,8 @@ class Game(Observed):
     def __repr__(self):
         return "Game %s" % self.name
 
-    def get_owner(self):
+    @property
+    def owner(self):
         """The owner of the game is the remaining player who joined first."""
         min_join_order = maxint
         owner = None
@@ -149,7 +150,7 @@ class Game(Observed):
 
     def to_gui_tuple(self):
         """Return state as a tuple of strings for GUI presentation."""
-        return (self.name, self.get_owner().name, time.ctime(self.create_time),
+        return (self.name, self.owner.name, time.ctime(self.create_time),
           time.ctime(self.start_time), self.min_players, self.max_players,
           ", ".join(self.get_playernames()))
 
@@ -220,7 +221,7 @@ class Game(Observed):
         """Begin the game.
 
         Called only on server side, and only by game owner."""
-        if playername != self.get_owner().name:
+        if playername != self.owner.name:
             raise AssertionError, "Game.start %s called by non-owner %s" % (
               self.name, playername)
         self.started = True
@@ -246,6 +247,7 @@ class Game(Observed):
                 return False
         return True
 
+    @property
     def next_playername_to_pick_color(self):
         """Return the name of the player whose turn it is to pick a color."""
         if not self.done_assigning_towers():
@@ -260,6 +262,7 @@ class Game(Observed):
         else:
             return None
 
+    @property
     def colors_left(self):
         """Return a list of player colors that aren't taken yet."""
         left = playercolordata.colors[:]
@@ -274,10 +277,10 @@ class Game(Observed):
         # Just abort if we've already done this.  Simplifies timing.
         if player.color == color:
             return
-        if playername != self.next_playername_to_pick_color():
+        if playername != self.next_playername_to_pick_color:
             log("illegal assign_color attempt", playername, color)
             return
-        if color not in self.colors_left():
+        if color not in self.colors_left:
             raise AssertionError, "tried to take unavailable color"
         player.assign_color(color)
 

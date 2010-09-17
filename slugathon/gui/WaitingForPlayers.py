@@ -115,7 +115,7 @@ class WaitingForPlayers(gtk.Window):
         vbox1.pack_start(self.start_button, expand=False)
         self.start_button.connect("button-press-event", self.cb_click_start)
         self.start_button.set_sensitive(self.username ==
-          self.game.get_owner().name)
+          self.game.owner.name)
         # TODO Start button should automatically be triggered when max
         # players have joined, or min players have joined and time is up.
 
@@ -179,7 +179,7 @@ class WaitingForPlayers(gtk.Window):
         while len(self.player_store) > leng:
             del self.player_store[leng]
         self.start_button.set_sensitive(self.username ==
-          self.game.get_owner().name)
+          self.game.owner.name)
 
     def failure(self, arg):
         log("failure", arg)
