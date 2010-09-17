@@ -174,6 +174,7 @@ class Server(Observed):
                 "--playername", ainame,
                 "--port", str(self.port),
                 "--game-name", game.name,
+                # XXX Add portability shim around /tmp
                 "--log-path", "/tmp/slugathon-%s-%s.log" % (game.name, ainame)
             ]
             if not self.no_passwd:
