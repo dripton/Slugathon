@@ -17,7 +17,7 @@ from slugathon.net import config
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase
-from slugathon.util.log import log
+from slugathon.util.log import log, log_to_path
 from slugathon.ai import DimBot, CleverBot
 
 
@@ -25,7 +25,8 @@ class Client(pb.Referenceable, Observed):
 
     implements(IObserver)
 
-    def __init__(self, username, password, host, port, delay, aitype):
+    def __init__(self, username, password, host, port, delay, aitype,
+      game_name, log_path):
         Observed.__init__(self)
         self.username = username
         self.playername = username # In case the same user logs in twice
@@ -44,6 +45,10 @@ class Client(pb.Referenceable, Observed):
             self.ai = DimBot.DimBot(self.playername)
         else:
             raise ValueError("invalid aitype %s" % aitype)
+        self.game_name = game_name
+        if log_path:
+            log_to_path(log_path)
+        log("__init__ done", game_name, username)
 
     def remote_set_name(self, name):
         self.playername = name
@@ -89,11 +94,13 @@ class Client(pb.Referenceable, Observed):
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
-        # For now, AI joins all games.
+        # If game_name is set, AI only tries to join game with that name.
+        # If game_name is null, AI tries to join all games,
         for game in self.games:
-            log("joining game", game.name)
-            def1 = self.user.callRemote("join_game", game.name)
-            def1.addErrback(self.failure)
+            if not self.game_name or game.name == self.game_name:
+                log("joining game", game.name)
+                def1 = self.user.callRemote("join_game", game.name)
+                def1.addErrback(self.failure)
 
     def name_to_game(self, game_name):
         for game in self.games:
@@ -112,9 +119,9 @@ class Client(pb.Referenceable, Observed):
         for playername in playernames[1:]:
             game.add_player(playername)
         self.games.append(game)
-        # For now, AI joins all games.
-        def1 = self.user.callRemote("join_game", game.name)
-        def1.addErrback(self.failure)
+        if not self.game_name or game.name == self.game_name:
+            def1 = self.user.callRemote("join_game", game.name)
+            def1.addErrback(self.failure)
 
     def remove_game(self, game_name):
         game = self.name_to_game(game_name)
@@ -407,6 +414,8 @@ def main():
       default=config.DEFAULT_AI_DELAY)
     op.add_option("-t", "--aitype", action="store", type="str",
       default="CleverBot")
+    op.add_option("-g", "--game-name", action="store", type="str")
+    op.add_option("-l", "--log-path", action="store", type="str")
     opts, args = op.parse_args()
     if args:
         op.error("got illegal argument")
@@ -414,7 +423,7 @@ def main():
     if opts.aitype not in valid_ai_types:
         op.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     client = Client(opts.playername, opts.password, opts.server, opts.port,
-      opts.delay, opts.aitype)
+      opts.delay, opts.aitype, opts.game_name, opts.log_path)
     client.connect()
     reactor.run()
 

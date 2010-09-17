@@ -4,12 +4,13 @@ __copyright__ = "Copyright (c) 2003-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import os
 import time
 from optparse import OptionParser
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
-from twisted.internet import reactor
+from twisted.internet import reactor, protocol
 from zope.interface import implements
 
 from slugathon.net import Realm, config
@@ -27,10 +28,15 @@ class Server(Observed):
 
     implements(IObserver)
 
-    def __init__(self):
+    def __init__(self, no_passwd, passwd_path, port):
         Observed.__init__(self)
+        self.no_passwd = no_passwd
+        self.passwd_path = passwd_path
+        self.port = port
         self.games = []
         self.name_to_user = {}
+        # {game_name: set(ainame) we're waiting for
+        self.game_to_ais = {}
 
     def add_observer(self, user):
         username = user.name
@@ -97,8 +103,8 @@ class Server(Observed):
         if game:
             try:
                 game.add_player(username)
-            except AssertionError:
-                pass
+            except AssertionError, ex:
+                log("join_game caught", ex)
             else:
                 action = Action.JoinGame(username, game.name)
                 self.notify(action)
@@ -123,7 +129,57 @@ class Server(Observed):
     def start_game(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
-            game.start(username)
+            if username != game.get_owner().name:
+                raise AssertionError, "Game.start %s called by non-owner %s" \
+                  % (self.name, username)
+            if game.num_players_joined < game.min_players:
+                self._spawn_ais(game)
+            else:
+                game.start(username)
+
+    def ai_started(self, game_name, ainame):
+        """Will be called by AIProcessProtocol when a spawned AI has
+        started."""
+        log("ai_started", game_name, ainame)
+        set1 = self.game_to_ais[game_name]
+        set1.discard(ainame)
+        if not set1:
+            game = self.name_to_game(game_name)
+            reactor.callLater(1, game.start, game.get_owner().name)
+
+    def _passwd_for_username(self, username):
+        fil = open(self.passwd_path)
+        for line in fil:
+            user, passwd = line.strip().split(":")
+            if user == username:
+                return passwd
+        return None
+
+    def _spawn_ais(self, game):
+        num_ais = game.min_players - game.num_players_joined
+        ainames = ["ai%d" % ii for ii in xrange(1, num_ais + 1)]
+        self.game_to_ais[game.name] = set()
+        # Add all AIs to the wait list first, to avoid a race.
+        for ainame in ainames:
+            self.game_to_ais[game.name].add(ainame)
+        for ainame in ainames:
+            if self.no_passwd:
+                aipass = None
+            else:
+                aipass = self._passwd_for_username(ainame)
+            log("ainame", ainame)
+            pp = AIProcessProtocol(self, game.name, ainame)
+            args = [
+                "slugathon-aiclient",
+                "--playername", ainame,
+                "--port", str(self.port),
+                "--game-name", game.name,
+                "--log-path", "/tmp/slugathon-%s-%s.log" % (game.name, ainame)
+            ]
+            if not self.no_passwd:
+                args.extend(["--password", aipass])
+            reactor.spawnProcess(pp, "slugathon-aiclient", args=args,
+              env=os.environ)
 
     def pick_color(self, username, game_name, color):
         game = self.name_to_game(game_name)
@@ -337,6 +393,18 @@ class Server(Observed):
         else:
             self.notify(action)
 
+
+class AIProcessProtocol(protocol.ProcessProtocol):
+    def __init__(self, server, game_name, ainame):
+        self.server = server
+        self.game_name = game_name
+        self.ainame = ainame
+
+    def connectionMade(self):
+        log("AIProcessProtocol.connectionMade", self.game_name, self.ainame)
+        self.server.ai_started(self.game_name, self.ainame)
+
+
 def main():
     op = OptionParser()
     op.add_option("-p", "--port", action="store", type="int",
@@ -347,7 +415,7 @@ def main():
       help="do not check passwords")
     opts, args = op.parse_args()
     port = opts.port
-    server = Server()
+    server = Server(opts.no_passwd, opts.passwd, opts.port)
     realm = Realm.Realm(server)
     if opts.no_passwd:
         checker = UniqueNoPassword(None, server=server)
