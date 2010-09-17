@@ -8,7 +8,16 @@ __license__ = "GNU GPL v2"
 import inspect
 import time
 import os
+import sys
 
+
+outstream = sys.stdout
+
+def log_to_path(path):
+    """Create a logfile at path, and log to it from now on."""
+    global outstream
+    fil = open(path, "w")
+    outstream = fil
 
 def log(*args):
     tup = inspect.stack()[1]
@@ -21,5 +30,6 @@ def log(*args):
     local = time.localtime(now)
     print time.strftime("%H:%M:%S", local) + sfract, fn, line,
     for arg in args:
-        print arg,
-    print
+        print >> outstream, arg,
+    print >> outstream
+    outstream.flush()
