@@ -28,7 +28,7 @@ def log(*args):
     fract = now - int(now)
     sfract = ("%.2f" % fract)[1:]
     local = time.localtime(now)
-    print time.strftime("%H:%M:%S", local) + sfract, fn, line,
+    print >> outstream, time.strftime("%H:%M:%S", local) + sfract, fn, line,
     for arg in args:
         print >> outstream, arg,
     print >> outstream
