@@ -356,7 +356,7 @@ class Legion(Observed):
                 raise AssertionError("legion tried to recruit twice")
         else:
             if len(self) >= 7:
-                log(self.living_creature_names)
+                log(self)
                 raise AssertionError("legion too tall to recruit")
             caretaker = self.player.game.caretaker
             if not caretaker.num_left(creature.name):
@@ -424,6 +424,7 @@ class Legion(Observed):
         return sum([creature.sort_value for creature in self.living_creatures])
 
     def die(self, scoring_legion, fled, no_points, check_for_victory=True):
+        log("die", self, scoring_legion, fled, no_points, check_for_victory)
         if scoring_legion is not None and not no_points:
             points = self.score
             if fled:
@@ -441,7 +442,7 @@ class Legion(Observed):
             self.player.die(scoring_legion, check_for_victory)
 
     def add_points(self, points, can_acquire):
-        log("add_points", points, can_acquire)
+        log("add_points", self, points, can_acquire)
         # TODO Move these to a data file
         ARCHANGEL_POINTS = 500
         ANGEL_POINTS = 100

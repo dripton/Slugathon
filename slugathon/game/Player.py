@@ -424,7 +424,7 @@ class Player(Observed):
             self.markernames.add(markername)
 
     def die(self, scoring_legion, check_for_victory):
-        log("die", scoring_legion, check_for_victory)
+        log("die", self, scoring_legion, check_for_victory)
         points = sum(legion.score for legion in self.legions.itervalues())
         half_points = points // 2
         scoring_legion.add_points(half_points, False)
