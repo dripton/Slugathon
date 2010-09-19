@@ -39,26 +39,28 @@ hexlabel_to_entry_side = {
 }
 
 
-def new(terrain, entry_sides, parent, username=None, scale=None):
+def new(board, masterhex, entry_sides, parent, username=None, scale=None):
     """Create a PickEntrySide dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pick_entry_side = PickEntrySide(terrain, entry_sides, def1, parent,
-      username, scale)
+    pick_entry_side = PickEntrySide(board, masterhex, entry_sides, def1,
+      parent, username, scale)
     return pick_entry_side, def1
 
 
 class PickEntrySide(gtk.Window):
     """Dialog to pick a masterhex entry side."""
 
-    def __init__(self, terrain, entry_sides, def1, parent, username=None,
-      scale=None):
+    def __init__(self, board, masterhex, entry_sides, def1, parent,
+      username=None, scale=None):
         gtk.Window.__init__(self)
 
+        terrain = masterhex.terrain
         # We always orient the map as if for entry side 5.
         self.battlemap = BattleMap.BattleMap(terrain, 5)
         self.entry_sides = entry_sides
         self.deferred = def1
         self.username = username
+        self.board = board
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -67,6 +69,12 @@ class PickEntrySide(gtk.Window):
 
         self.vbox = gtk.VBox()
         self.add(self.vbox)
+        self.hbox1 = gtk.HBox(homogeneous=True)
+        self.hbox2 = gtk.HBox()
+        self.hbox3 = gtk.HBox()
+        self.vbox.pack_start(self.hbox1, expand=False)
+        self.vbox.pack_start(self.hbox2, fill=True)
+        self.vbox.pack_start(self.hbox3, expand=False)
 
         if scale is None:
             self.scale = self.compute_scale()
@@ -87,7 +95,20 @@ class PickEntrySide(gtk.Window):
                 width, height = tup
                 self.resize(width, height)
 
-        self.vbox.pack_start(self.area)
+        own_hex_label = self.masterhex_label(masterhex)
+        left_hex = masterhex.neighbors[4]
+        left_hex_label = self.masterhex_label(left_hex)
+        top_hex = masterhex.neighbors[0]
+        top_hex_label = self.masterhex_label(top_hex)
+        bottom_hex = masterhex.neighbors[2]
+        bottom_hex_label = self.masterhex_label(bottom_hex)
+        spacer_label = self.masterhex_label(None)
+        self.hbox1.pack_start(own_hex_label)
+        self.hbox1.pack_start(top_hex_label)
+        self.hbox2.pack_start(left_hex_label)
+        self.hbox2.pack_start(self.area)
+        self.hbox3.pack_start(spacer_label)
+        self.hbox3.pack_start(bottom_hex_label)
 
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.itervalues():
@@ -132,6 +153,20 @@ class PickEntrySide(gtk.Window):
         """Return the height of the map in pixels."""
         return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 *
           SQRT3))
+
+    def masterhex_label(self, masterhex):
+        """Return a gtk.Label describing masterhex, inside a white
+        gtk.EventBox."""
+        eventbox = gtk.EventBox()
+        if masterhex:
+            text = "%s hex %d" % (masterhex.terrain, masterhex.label)
+        else:
+            text = ""
+        label = gtk.Label(text)
+        eventbox.add(label)
+        gtkcolor = gtk.gdk.color_parse("white")
+        eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        return eventbox
 
     def cb_area_expose(self, area, event):
         self.update_gui(event=event)
@@ -229,19 +264,18 @@ class PickEntrySide(gtk.Window):
 
 if __name__ == "__main__":
     import random
-    from sys import argv
-    from slugathon.data import battlemapdata
-
-    entry_side = None
-    if len(argv) > 1:
-        terrain = argv[1].title()
-    else:
-        terrain = random.choice(battlemapdata.data.keys())
+    from slugathon.game import MasterBoard
 
     def my_callback(choice):
         log("chose entry side", choice)
         reactor.stop()
 
-    pick_entry_side, def1 = new(terrain, set([1, 3, 5]), None)
+    board = MasterBoard.MasterBoard()
+    while True:
+        masterhex = random.choice(board.hexes.values())
+        if (masterhex.neighbors[0] and masterhex.neighbors[2] and
+          masterhex.neighbors[4]):
+            break
+    pick_entry_side, def1 = new(board, masterhex, set([1, 3, 5]), None)
     def1.addCallback(my_callback)
     reactor.run()

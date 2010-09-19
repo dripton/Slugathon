@@ -308,7 +308,8 @@ class GUIMasterBoard(gtk.Window):
                 entry_sides = set([1, 3, 5])
             else:
                 entry_sides = set((move[1] for move in moves))
-            _, def1 = PickEntrySide.new(terrain, entry_sides, self)
+            _, def1 = PickEntrySide.new(self.board, masterhex, entry_sides,
+              self)
             def1.addCallback(self._pick_teleporting_lord, legion, moves,
               teleport)
 
