@@ -96,11 +96,11 @@ class PickEntrySide(gtk.Window):
                 self.resize(width, height)
 
         own_hex_label = self.masterhex_label(masterhex)
-        left_hex = masterhex.neighbors[4]
+        left_hex = masterhex.neighbors[4] or masterhex.neighbors[5]
         left_hex_label = self.masterhex_label(left_hex)
-        top_hex = masterhex.neighbors[0]
+        top_hex = masterhex.neighbors[0] or masterhex.neighbors[1]
         top_hex_label = self.masterhex_label(top_hex)
-        bottom_hex = masterhex.neighbors[2]
+        bottom_hex = masterhex.neighbors[2] or masterhex.neighbors[3]
         bottom_hex_label = self.masterhex_label(bottom_hex)
         spacer_label = self.masterhex_label(None)
         self.hbox1.pack_start(own_hex_label)
@@ -271,11 +271,15 @@ if __name__ == "__main__":
         reactor.stop()
 
     board = MasterBoard.MasterBoard()
-    while True:
-        masterhex = random.choice(board.hexes.values())
-        if (masterhex.neighbors[0] and masterhex.neighbors[2] and
-          masterhex.neighbors[4]):
-            break
+    masterhex = random.choice(board.hexes.values())
+    log("masterhex", masterhex)
+    entry_sides = set()
+    for side, neighbor in enumerate(masterhex.neighbors):
+        if neighbor is not None:
+            if side & 1:
+                entry_sides.add(side)
+            else:
+                entry_sides.add(side + 1)
     pick_entry_side, def1 = new(board, masterhex, set([1, 3, 5]), None)
     def1.addCallback(my_callback)
     reactor.run()
