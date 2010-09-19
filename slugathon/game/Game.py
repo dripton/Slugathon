@@ -741,10 +741,8 @@ class Game(Observed):
             return
         attacker_legion = self.find_legion(attacker_markername)
         defender_legion = self.find_legion(defender_markername)
-        log("attacker", attacker_legion)
-        log("defender", defender_legion)
-        log(attacker_legion.player.name)
-        log(defender_legion.player.name)
+        log("attacker", attacker_legion, attacker_legion.player.name)
+        log("defender", defender_legion, defender_legion.player.name)
         if playername not in [attacker_legion.player.name,
           defender_legion.player.name]:
             log("illegal fight call from", playername)
@@ -1098,6 +1096,7 @@ class Game(Observed):
                 break
         else:
             raise AssertionError("no %s in %s" % (creature_name, old_hexlabel))
+        log("move creature", creature, "to", new_hexlabel)
         creature.move(new_hexlabel)
         action = Action.MoveCreature(self.name, playername, creature_name,
           old_hexlabel, new_hexlabel)
@@ -1201,7 +1200,6 @@ class Game(Observed):
         action = Action.Strike(self.name, playername, striker_name,
           striker_hexlabel, target_name, target_hexlabel, num_dice,
           strike_number, rolls, hits, carries)
-        log("action", action)
         if carries:
             self.pending_carry = action
         self.notify(action)
