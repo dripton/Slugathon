@@ -291,8 +291,8 @@ class GUIMasterBoard(gtk.Window):
             self.highlight_unmoved_legions()
             return
         hexlabel = moves[0][0]
-        battlehex = self.game.board.hexes[hexlabel]
-        terrain = battlehex.terrain
+        masterhex = self.game.board.hexes[hexlabel]
+        terrain = masterhex.terrain
         if terrain == "Tower":
             entry_sides = set([5])
         elif teleport:
