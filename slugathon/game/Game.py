@@ -1275,6 +1275,7 @@ class Game(Observed):
                     if creature.dead:
                         creature_names_to_remove.append(creature.name)
                     creature.heal()
+                    creature.hexlabel = None
                 for creature_name in creature_names_to_remove:
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
