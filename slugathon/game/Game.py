@@ -881,7 +881,7 @@ class Game(Observed):
         if not self.pending_carry:
             log("no carry pending; continuing to avoid confusing AI")
             carries = carries_left = 0
-            action2 = Action.Carry(self.name, playername, "" "", "", "",
+            action2 = Action.Carry(self.name, playername, "", "", "", "",
               carry_target_name, carry_target_hexlabel, 0, 0,
               carries, carries_left)
         else:
