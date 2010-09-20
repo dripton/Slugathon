@@ -487,6 +487,9 @@ class Legion(Observed):
           num_archangels)
         if not okay:
             log("not enough angels pending")
+            log("angels", angels)
+            log("angels_pending", self.angels_pending)
+            log("archangels_pending", self.archangels_pending)
             return
         if len(self) + num_angels + num_archangels > 7:
             raise AssertionError("legion too tall to acquire")

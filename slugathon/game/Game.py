@@ -543,8 +543,7 @@ class Game(Observed):
                 attacker = legion
             else:
                 defender = legion
-        log("resolve_engagement; reset_angels_pending")
-        player.reset_angels_pending()
+        log("resolve_engagement")
         # Reveal attacker only to defender
         action = Action.RevealLegion(self.name, attacker.markername,
           attacker.creature_names)
@@ -1458,10 +1457,9 @@ class Game(Observed):
               action.defender_creature_names)
 
         elif isinstance(action, Action.StartMusterPhase):
-            log("StartMusterPhase; reset_angels_pending")
+            log("StartMusterPhase")
             self.phase = Phase.MUSTER
             for player in self.players:
-                player.reset_angels_pending()
                 player.remove_empty_legions()
 
         elif isinstance(action, Action.RecruitCreature):
