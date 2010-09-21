@@ -205,10 +205,12 @@ class GUIBattleMap(gtk.Window):
         gtk.EventBox."""
         eventbox = gtk.EventBox()
         if masterhex:
-            text = "%s hex %d" % (masterhex.terrain, masterhex.label)
+            text = '<span size="large" weight="bold">%s hex %d</span>' % (
+              masterhex.terrain, masterhex.label)
         else:
             text = ""
-        label = gtk.Label(text)
+        label = gtk.Label()
+        label.set_markup(text)
         eventbox.add(label)
         gtkcolor = gtk.gdk.color_parse("white")
         eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
