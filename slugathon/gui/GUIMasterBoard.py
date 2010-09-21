@@ -1168,6 +1168,12 @@ class GUIMasterBoard(gtk.Window):
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
 
+        elif isinstance(action, Action.EliminatePlayer):
+            player = self.game.get_player_by_name(action.loser_playername)
+            for legion in player.legions.itervalues():
+                self.repaint_hexlabels.add(legion.hexlabel)
+            self.repaint()
+
         elif isinstance(action, Action.GameOver):
             if self.game_over is None:
                 if action.winner_names:
