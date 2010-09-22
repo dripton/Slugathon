@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 import os
 import time
 from optparse import OptionParser
+import tempfile
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
@@ -159,6 +160,7 @@ class Server(Observed):
         num_ais = game.min_players - game.num_players_joined
         ainames = ["ai%d" % ii for ii in xrange(1, num_ais + 1)]
         self.game_to_ais[game.name] = set()
+        tempdir = tempfile.gettempdir()
         # Add all AIs to the wait list first, to avoid a race.
         for ainame in ainames:
             self.game_to_ais[game.name].add(ainame)
@@ -174,8 +176,8 @@ class Server(Observed):
                 "--playername", ainame,
                 "--port", str(self.port),
                 "--game-name", game.name,
-                # XXX Add portability shim around /tmp
-                "--log-path", "/tmp/slugathon-%s-%s.log" % (game.name, ainame)
+                "--log-path", os.path.join(tempdir, "slugathon-%s-%s.log" %
+                  (game.name, ainame))
             ]
             if not self.no_passwd:
                 args.extend(["--password", aipass])
