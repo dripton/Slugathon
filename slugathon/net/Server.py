@@ -149,11 +149,11 @@ class Server(Observed):
             reactor.callLater(1, game.start, game.owner.name)
 
     def _passwd_for_username(self, username):
-        fil = open(self.passwd_path)
-        for line in fil:
-            user, passwd = line.strip().split(":")
-            if user == username:
-                return passwd
+        with open(self.passwd_path) as fil:
+            for line in fil:
+                user, passwd = line.strip().split(":")
+                if user == username:
+                    return passwd
         return None
 
     def _spawn_ais(self, game):
