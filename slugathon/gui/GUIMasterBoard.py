@@ -47,6 +47,11 @@ ui_string = """<ui>
       <menuitem action="Mulligan"/>
       <menuitem action="Clear Recruit Chits"/>
     </menu>
+    <menu name="OptionsMenu" action="OptionsMenu">
+      <menuitem action="Auto strike single target"/>
+      <menuitem action="Auto rangestrike single target"/>
+      <menuitem action="Auto carry single target"/>
+    </menu>
     <menu action="HelpMenu">
       <menuitem action="About"/>
     </menu>
@@ -152,14 +157,28 @@ class GUIMasterBoard(gtk.Window):
             self.cb_mulligan),
           ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits", "c",
            "Clear Recruit Chits", self.clear_all_recruitchits),
+          ("OptionsMenu", None, "_Options"),
           ("HelpMenu", None, "_Help"),
           ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]
         ag.add_actions(actions)
+        toggle_actions = [
+          ("Auto strike single target", None,
+            "Auto strike single target", None,
+            None, self.cb_auto_strike_single, False),
+          ("Auto rangestrike single target", None,
+            "Auto rangestrike single target", None,
+            None, self.cb_auto_rangestrike_single, False),
+          ("Auto carry single target", None,
+            "Auto carry single target", None,
+            None, self.cb_auto_carry_single, False),
+        ]
+        ag.add_toggle_actions(toggle_actions)
         self.ui = gtk.UIManager()
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
         self.add_accel_group(self.ui.get_accel_group())
+
 
     def _init_status_screen(self):
         if not self.status_screen:
@@ -825,6 +844,15 @@ class GUIMasterBoard(gtk.Window):
             else:
                 def1 = self.user.callRemote("take_mulligan", self.game.name)
                 def1.addErrback(self.failure)
+
+    def cb_auto_strike_single(self, action):
+        log("cb_auto_strike_single")
+
+    def cb_auto_rangestrike_single(self, action):
+        log("cb_auto_rangestrike_single")
+
+    def cb_auto_carry_single(self, action):
+        log("cb_auto_carry_single")
 
     def cb_about(self, action):
         About.About(self)
