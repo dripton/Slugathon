@@ -16,9 +16,15 @@ PREFS_DIR = os.path.join(SLUGATHON_DIR, "prefs")
 GLOBAL_PREFS_DIR = os.path.join(SLUGATHON_DIR, "globalprefs")
 SAVE_DIR = os.path.join(SLUGATHON_DIR, "save")
 
+AUTO_STRIKE_SINGLE_TARGET = "Auto strike single target"
+AUTO_RANGESTRIKE_SINGLE_TARGET = "Auto rangestrike single target"
+AUTO_CARRY_TO_SINGLE_TARGET = "Auto carry to single target"
+
 
 def player_prefs_dir(playername):
     """Return the path to the player prefs directory for playername."""
+    if playername is None:
+        playername = getpass.getuser()
     return os.path.join(PREFS_DIR, playername)
 
 def window_position_path(playername, window_name):
@@ -66,6 +72,22 @@ def load_window_size(playername, window_name):
         height = int(tokens[1])
         return width, height
     except (OSError, IOError, ValueError):
+        return None
+
+def option_path(playername, option):
+    return os.path.join(player_prefs_dir(playername), option)
+
+def save_bool_option(playername, option, value):
+    with open(option_path(playername, option), "w") as fil:
+        fil.write("%s\n" % value)
+
+def load_bool_option(playername, option):
+    try:
+        with open(option_path(playername, option)) as fil:
+            tokens = fil.read().split()
+            value = bool(tokens[0])
+            return value
+    except (OSError, IOError, ValueError, AttributeError):
         return None
 
 def server_path():
