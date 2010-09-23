@@ -221,6 +221,31 @@ class Creature(object):
                     hexlabels.add(target.hexlabel)
         return hexlabels
 
+    def find_adjacent_target_hexlabels(self):
+        """Return a set of hexlabels containing creatures that this creature
+        can strike normally."""
+        hexlabels = set()
+        if not self.struck:
+            for target in self.engaged_enemies:
+                hexlabels.add(target.hexlabel)
+        return hexlabels
+
+    def find_rangestrike_target_hexlabels(self):
+        """Return a set of hexlabels containing creatures that this creature
+        can rangestrike."""
+        hexlabels = set()
+        legion = self.legion
+        player = legion.player
+        game = player.game
+        if (not self.struck and
+          self.rangestrikes and
+          game.battle_phase == Phase.STRIKE and
+          not self.engaged_enemies and
+          not self.dead_adjacent_enemies):
+            for target in self.rangestrike_targets:
+                hexlabels.add(target.hexlabel)
+        return hexlabels
+
     @property
     def engaged(self):
         """Return True iff this creature is engaged with an adjacent enemy."""
@@ -357,6 +382,15 @@ class Creature(object):
           not carry_target.dead and
           self.number_of_dice(carry_target) >= num_dice and
           self.strike_number(carry_target) <= strike_number)
+
+    def carry_targets(self, original_target, num_dice, strike_number):
+        """Return a set of valid carry targets for this strike."""
+        results = set()
+        for target in self.engaged_enemies:
+            if self.can_carry_to(target, original_target, num_dice,
+              strike_number):
+                results.add(target)
+        return results
 
     def max_possible_carries(self, target, num_dice, strike_number):
         """Return the maximum number of useful carries for the given target,
