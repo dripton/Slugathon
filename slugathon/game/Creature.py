@@ -354,6 +354,7 @@ class Creature(object):
                 return False
         return (carry_target is not original_target and
           carry_target in self.engaged_enemies and
+          not carry_target.dead and
           self.number_of_dice(carry_target) >= num_dice and
           self.strike_number(carry_target) <= strike_number)
 
