@@ -256,9 +256,59 @@ class GUIBattleMap(gtk.Window):
 
     def strike(self, striker, target, num_dice, strike_number):
         """Have striker strike target."""
-        self.user.callRemote("strike", self.game.name, striker.name,
+        def1 = self.user.callRemote("strike", self.game.name, striker.name,
           striker.hexlabel, target.name, target.hexlabel, num_dice,
           strike_number)
+        def1.addErrback(self.failure)
+
+    def _do_auto_strike(self):
+        """Do an automatic strike if appropriate.
+
+        Return True iff we did one.
+        """
+        auto_strike = prefs.load_bool_option(self.username,
+          prefs.AUTO_STRIKE_SINGLE_TARGET)
+        auto_rangestrike = prefs.load_bool_option(self.username,
+          prefs.AUTO_RANGESTRIKE_SINGLE_TARGET)
+        if auto_strike or auto_rangestrike:
+            strikers = self.game.battle_active_legion.strikers
+            for striker in strikers:
+                hexlabels = striker.find_target_hexlabels()
+                if len(hexlabels) == 1:
+                    hexlabel = hexlabels.pop()
+                    if ((auto_strike and hexlabel in
+                      striker.find_adjacent_target_hexlabels()) or
+                      (auto_rangestrike and hexlabel in
+                      striker.find_rangestrike_target_hexlabels())):
+                        chits = self.chits_in_hex(hexlabel)
+                        assert len(chits) == 1
+                        chit = chits[0]
+                        target = chit.creature
+                        num_dice = striker.number_of_dice(target)
+                        strike_number = striker.strike_number( target)
+                        self.strike(striker, target, num_dice, strike_number)
+                        return True
+        return False
+
+
+    def _do_auto_carry(self, striker, target, num_dice, strike_number,
+      carries):
+        """Automatically carry if appropriate.
+
+        Return True iff we carried.
+        """
+        auto_carry = prefs.load_bool_option(self.username,
+          prefs.AUTO_CARRY_TO_SINGLE_TARGET)
+        if auto_carry:
+            carry_targets = striker.carry_targets(target, num_dice,
+              strike_number)
+            if len(carry_targets) == 1:
+                carry_target = carry_targets.pop()
+                def1 = self.user.callRemote("carry", self.game.name,
+                  carry_target.name, carry_target.hexlabel, carries)
+                def1.addErrback(self.failure)
+                return True
+        return False
 
     def cb_configure_event(self, event, unused):
         if self.username:
@@ -632,6 +682,12 @@ class GUIBattleMap(gtk.Window):
             self.repaint_hexlabels.update(hexlabels)
         reactor.callLater(0, self.update_gui)
 
+    def build_chit_image(self, hexlabel):
+        for chit in self.chits:
+            if chit.creature.hexlabel == hexlabel:
+                chit.build_image()
+        self.repaint([hexlabel])
+
     def update(self, observed, action):
         log("update", observed, action)
 
@@ -654,22 +710,21 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.StartStrikeBattlePhase):
             self.highlight_strikers()
             if self.game.battle_active_player.name == self.username:
-                if not self.game.battle_active_legion.strikers:
+                strikers = self.game.battle_active_legion.strikers
+                if not strikers:
                     def1 = self.user.callRemote("done_with_strikes",
                       self.game.name)
                     def1.addErrback(self.failure)
+                else:
+                    self._do_auto_strike()
 
         elif isinstance(action, Action.Strike):
             if self.pickcarry is not None:
                 self.pickcarry.destroy()
                 self.pickcarry = None
-            # XXX clean this up
             if action.hits > 0:
-                for chit in self.chits:
-                    if chit.creature.hexlabel == action.target_hexlabel:
-                        chit.build_image()
+                self.build_chit_image(action.target_hexlabel)
             self.highlight_strikers()
-            self.repaint([action.target_hexlabel])
             if (action.carries and self.game.battle_active_player.name ==
               self.username):
                 striker = self.game.creatures_in_battle_hex(
@@ -681,55 +736,71 @@ class GUIBattleMap(gtk.Window):
                 num_dice = action.num_dice
                 strike_number = action.strike_number
                 carries = action.carries
+
+                if self._do_auto_carry(striker, target, num_dice,
+                  strike_number, carries):
+                    return
                 self.pickcarry, def1 = PickCarry.new(self.username,
                   self.game.name, striker, target, num_dice, strike_number,
                   carries, self)
                 def1.addCallback(self.picked_carry)
                 self.unselect_all()
-                for creature in striker.engaged_enemies:
-                    if striker.can_carry_to(creature, target, num_dice,
-                      strike_number):
-                        self.guihexes[creature.hexlabel].selected = True
-                        self.repaint([creature.hexlabel])
+                for creature in striker.carry_targets(target, num_dice,
+                  strike_number):
+                    self.guihexes[creature.hexlabel].selected = True
+                    self.repaint([creature.hexlabel])
+            elif (self.game.battle_active_player.name == self.username):
+                strikers = self.game.battle_active_legion.strikers
+                if not strikers:
+                    def1 = self.user.callRemote("done_with_strikes",
+                      self.game.name)
+                    def1.addErrback(self.failure)
+                else:
+                    self._do_auto_strike()
 
         elif isinstance(action, Action.DriftDamage):
-            for chit in self.chits:
-                if chit.creature.hexlabel == action.target_hexlabel:
-                    chit.build_image()
-            self.repaint([action.target_hexlabel])
+            self.build_chit_image(action.target_hexlabel)
 
         elif isinstance(action, Action.Carry):
             if self.pickcarry is not None:
                 self.pickcarry.destroy()
                 self.pickcarry = None
-            # XXX clean this up
             if action.carries > 0:
-                for chit in self.chits:
-                    if chit.creature.hexlabel == action.carry_target_hexlabel:
-                        chit.build_image()
+                self.build_chit_image(action.carry_target_hexlabel)
             self.highlight_strikers()
-            self.repaint([action.carry_target_hexlabel])
             if (action.carries_left and self.game.battle_active_player.name ==
               self.username):
                 striker = self.game.creatures_in_battle_hex(
                   action.striker_hexlabel).pop()
                 assert striker.name == action.striker_name
+                target = self.game.creatures_in_battle_hex(
+                  action.target_hexlabel).pop()
                 carry_target = self.game.creatures_in_battle_hex(
                   action.carry_target_hexlabel).pop()
                 assert carry_target.name == action.carry_target_name
                 num_dice = action.num_dice
                 strike_number = action.strike_number
                 carries_left = action.carries_left
+                if self._do_auto_carry(striker, target, num_dice,
+                  strike_number, carries_left):
+                    return
                 self.pickcarry, def1 = PickCarry.new(self.username,
                   self.game.name, striker, target, num_dice, strike_number,
                   carries_left, self)
                 def1.addCallback(self.picked_carry)
                 self.unselect_all()
-                for creature in striker.engaged_enemies:
-                    if striker.can_carry_to(creature, target, num_dice,
-                      strike_number):
-                        self.guihexes[creature.hexlabel].selected = True
-                        self.repaint([creature.hexlabel])
+                for creature in striker.carry_targets(target, num_dice,
+                  strike_number):
+                    self.guihexes[creature.hexlabel].selected = True
+                    self.repaint([creature.hexlabel])
+            elif (self.game.battle_active_player.name == self.username):
+                strikers = self.game.battle_active_legion.strikers
+                if not strikers:
+                    def1 = self.user.callRemote("done_with_strikes",
+                      self.game.name)
+                    def1.addErrback(self.failure)
+                else:
+                    self._do_auto_strike()
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             self.highlight_strikers()
@@ -738,6 +809,8 @@ class GUIBattleMap(gtk.Window):
                     def1 = self.user.callRemote("done_with_counterstrikes",
                       self.game.name)
                     def1.addErrback(self.failure)
+                else:
+                    self._do_auto_strike()
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             self._remove_dead_chits()
