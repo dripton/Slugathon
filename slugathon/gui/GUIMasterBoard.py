@@ -284,8 +284,9 @@ class GUIMasterBoard(gtk.Window):
                 self.highlight_unmoved_legions()
             elif phase == Phase.FIGHT:
                 if guihex.selected:
-                    self.user.callRemote("resolve_engagement", self.game.name,
-                      guihex.masterhex.label)
+                    def1 = self.user.callRemote("resolve_engagement",
+                      self.game.name, guihex.masterhex.label)
+                    def1.addErrback(self.failure)
             elif phase == Phase.MUSTER:
                 self.highlight_recruits()
 
@@ -427,8 +428,9 @@ class GUIMasterBoard(gtk.Window):
                 legion = marker.legion
                 guihex = self.guihexes[legion.hexlabel]
                 if guihex.selected and self.game.battle_masterhex is None:
-                    self.user.callRemote("resolve_engagement", self.game.name,
-                      guihex.masterhex.label)
+                    def1 = self.user.callRemote("resolve_engagement",
+                      self.game.name, guihex.masterhex.label)
+                    def1.addErrback(self.failure)
 
             elif phase == Phase.MUSTER:
                 self.unselect_all()
@@ -886,10 +888,12 @@ class GUIMasterBoard(gtk.Window):
 
     def cb_maybe_flee(self, (attacker, defender, fled)):
         if fled:
-            self.user.callRemote("flee", self.game.name, defender.markername)
-        else:
-            self.user.callRemote("do_not_flee", self.game.name,
+            def1 = self.user.callRemote("flee", self.game.name,
               defender.markername)
+        else:
+            def1 = self.user.callRemote("do_not_flee", self.game.name,
+              defender.markername)
+        def1.addErrback(self.failure)
 
     def cb_negotiate(self, (attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, response_id)):
@@ -903,30 +907,35 @@ class GUIMasterBoard(gtk.Window):
         else:
             enemy_legion = attacker_legion
         if response_id == Negotiate.CONCEDE:
-            self.user.callRemote("concede", self.game.name,
+            def1 = self.user.callRemote("concede", self.game.name,
               friendly_legion.markername, enemy_legion.markername, hexlabel)
+            def1.addErrback(self.failure)
         elif response_id == Negotiate.MAKE_PROPOSAL:
-            self.user.callRemote("make_proposal", self.game.name,
+            def1 = self.user.callRemote("make_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
+            def1.addErrback(self.failure)
         elif response_id == Negotiate.DONE_PROPOSING:
             # TODO no more proposals
             pass
         elif response_id == Negotiate.FIGHT:
-            self.user.callRemote("fight", self.game.name,
+            def1 = self.user.callRemote("fight", self.game.name,
               attacker_legion.markername, defender_legion.markername)
+            def1.addErrback(self.failure)
 
     def cb_proposal(self, (attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, response_id)):
         """Callback from Proposal dialog."""
         if response_id == Proposal.ACCEPT:
-            self.user.callRemote("accept_proposal", self.game.name,
+            def1 = self.user.callRemote("accept_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
+            def1.addErrback(self.failure)
         elif response_id == Proposal.REJECT:
-            self.user.callRemote("reject_proposal", self.game.name,
+            def1 = self.user.callRemote("reject_proposal", self.game.name,
               attacker_legion.markername, attacker_creature_names,
               defender_legion.markername, defender_creature_names)
+            def1.addErrback(self.failure)
 
     def destroy_negotiate(self):
         if self.negotiate is not None:
