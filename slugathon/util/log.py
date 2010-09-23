@@ -11,13 +11,18 @@ import os
 import sys
 
 
-outstream = sys.stdout
+outstreams = [sys.stdout]
 
 def log_to_path(path):
-    """Create a logfile at path, and log to it from now on."""
-    global outstream
+    """Create a logfile at path, and log only to it from now on."""
     fil = open(path, "w")
-    outstream = fil
+    global outstreams
+    outstreams = [fil]
+
+def tee_to_path(path):
+    """Create a logfile at path, and also log to it from now on."""
+    fil = open(path, "w")
+    outstreams.append(fil)
 
 def log(*args):
     tup = inspect.stack()[1]
@@ -28,8 +33,9 @@ def log(*args):
     fract = now - int(now)
     sfract = ("%.2f" % fract)[1:]
     local = time.localtime(now)
-    print >> outstream, time.strftime("%H:%M:%S", local) + sfract, fn, line,
-    for arg in args:
-        print >> outstream, arg,
-    print >> outstream
-    outstream.flush()
+    for out in outstreams:
+        print >> out, time.strftime("%H:%M:%S", local) + sfract, fn, line,
+        for arg in args:
+            print >> out, arg,
+        print >> out
+        out.flush()
