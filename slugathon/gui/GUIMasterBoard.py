@@ -48,9 +48,9 @@ ui_string = """<ui>
       <menuitem action="Clear Recruit Chits"/>
     </menu>
     <menu name="OptionsMenu" action="OptionsMenu">
-      <menuitem action="Auto strike single target"/>
-      <menuitem action="Auto rangestrike single target"/>
-      <menuitem action="Auto carry single target"/>
+      <menuitem action="%s"/>
+      <menuitem action="%s"/>
+      <menuitem action="%s"/>
     </menu>
     <menu action="HelpMenu">
       <menuitem action="About"/>
@@ -65,7 +65,9 @@ ui_string = """<ui>
     <toolitem action="Mulligan"/>
     <toolitem action="Clear Recruit Chits"/>
   </toolbar>
-</ui>"""
+</ui>""" % (prefs.AUTO_STRIKE_SINGLE_TARGET,
+            prefs.AUTO_RANGESTRIKE_SINGLE_TARGET,
+            prefs.AUTO_CARRY_TO_SINGLE_TARGET)
 
 
 class GUIMasterBoard(gtk.Window):
@@ -147,6 +149,7 @@ class GUIMasterBoard(gtk.Window):
           ("Save", gtk.STOCK_SAVE, "_Save", "s", "Save", self.cb_save),
           ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
             guiutils.exit),
+
           ("PhaseMenu", None, "_Phase"),
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
           ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
@@ -157,21 +160,29 @@ class GUIMasterBoard(gtk.Window):
             self.cb_mulligan),
           ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits", "c",
            "Clear Recruit Chits", self.clear_all_recruitchits),
+
           ("OptionsMenu", None, "_Options"),
+
           ("HelpMenu", None, "_Help"),
           ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]
         ag.add_actions(actions)
         toggle_actions = [
-          ("Auto strike single target", None,
-            "Auto strike single target", None,
-            None, self.cb_auto_strike_single, False),
-          ("Auto rangestrike single target", None,
-            "Auto rangestrike single target", None,
-            None, self.cb_auto_rangestrike_single, False),
-          ("Auto carry single target", None,
-            "Auto carry single target", None,
-            None, self.cb_auto_carry_single, False),
+          (
+            prefs.AUTO_STRIKE_SINGLE_TARGET, None,
+            prefs.AUTO_STRIKE_SINGLE_TARGET, None, None,
+            self.cb_auto_strike_single, False
+          ),
+          (
+            prefs.AUTO_RANGESTRIKE_SINGLE_TARGET, None,
+            prefs.AUTO_RANGESTRIKE_SINGLE_TARGET, None, None,
+            self.cb_auto_rangestrike_single, False
+          ),
+          (
+            prefs.AUTO_CARRY_TO_SINGLE_TARGET, None,
+            prefs.AUTO_CARRY_TO_SINGLE_TARGET, None, None,
+            self.cb_auto_carry_single, False
+          ),
         ]
         ag.add_toggle_actions(toggle_actions)
         self.ui = gtk.UIManager()
@@ -179,6 +190,13 @@ class GUIMasterBoard(gtk.Window):
         self.ui.add_ui_from_string(ui_string)
         self.add_accel_group(self.ui.get_accel_group())
 
+        for tup in toggle_actions:
+            option = tup[0]
+            value = prefs.load_bool_option(self.username, option)
+            if value is True:
+                checkmenuitem = self.ui.get_widget(
+                  "/Menubar/OptionsMenu/%s" % option)
+                checkmenuitem.set_active(True)
 
     def _init_status_screen(self):
         if not self.status_screen:
@@ -847,14 +865,27 @@ class GUIMasterBoard(gtk.Window):
                 def1 = self.user.callRemote("take_mulligan", self.game.name)
                 def1.addErrback(self.failure)
 
+    def _cb_checkbox_helper(self, option):
+        checkmenuitem = self.ui.get_widget("/Menubar/OptionsMenu/%s" % option)
+        active = checkmenuitem.get_active()
+        prev = prefs.load_bool_option(self.username, option)
+        if active != prev:
+            prefs.save_bool_option(self.username, option, active)
+
     def cb_auto_strike_single(self, action):
         log("cb_auto_strike_single")
+        option = prefs.AUTO_STRIKE_SINGLE_TARGET
+        self._cb_checkbox_helper(option)
 
     def cb_auto_rangestrike_single(self, action):
         log("cb_auto_rangestrike_single")
+        option = prefs.AUTO_RANGESTRIKE_SINGLE_TARGET
+        self._cb_checkbox_helper(option)
 
     def cb_auto_carry_single(self, action):
         log("cb_auto_carry_single")
+        option = prefs.AUTO_CARRY_TO_SINGLE_TARGET
+        self._cb_checkbox_helper(option)
 
     def cb_about(self, action):
         About.About(self)
