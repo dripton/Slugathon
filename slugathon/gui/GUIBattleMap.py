@@ -752,9 +752,14 @@ class GUIBattleMap(gtk.Window):
             elif (self.game.battle_active_player.name == self.username):
                 strikers = self.game.battle_active_legion.strikers
                 if not strikers:
-                    def1 = self.user.callRemote("done_with_strikes",
-                      self.game.name)
-                    def1.addErrback(self.failure)
+                    if self.game.battle_phase == Phase.STRIKE:
+                        def1 = self.user.callRemote("done_with_strikes",
+                          self.game.name)
+                        def1.addErrback(self.failure)
+                    else:
+                        def1 = self.user.callRemote("done_with_counterstrikes",
+                          self.game.name)
+                        def1.addErrback(self.failure)
                 else:
                     self._do_auto_strike()
 
@@ -796,9 +801,14 @@ class GUIBattleMap(gtk.Window):
             elif (self.game.battle_active_player.name == self.username):
                 strikers = self.game.battle_active_legion.strikers
                 if not strikers:
-                    def1 = self.user.callRemote("done_with_strikes",
-                      self.game.name)
-                    def1.addErrback(self.failure)
+                    if self.game.battle_phase == Phase.STRIKE:
+                        def1 = self.user.callRemote("done_with_strikes",
+                          self.game.name)
+                        def1.addErrback(self.failure)
+                    else:
+                        def1 = self.user.callRemote("done_with_counterstrikes",
+                          self.game.name)
+                        def1.addErrback(self.failure)
                 else:
                     self._do_auto_strike()
 
