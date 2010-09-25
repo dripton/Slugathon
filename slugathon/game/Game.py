@@ -1332,6 +1332,7 @@ class Game(Observed):
                 creature.struck = False
 
     def cleanup_offboard_creatures(self):
+        log("cleanup_offboard_creatures")
         for legion in self.battle_legions:
             if legion != self.battle_active_legion:
                 for creature in legion.creatures:
@@ -1346,6 +1347,7 @@ class Game(Observed):
                                 legion.unreinforce()
 
     def cleanup_dead_creatures(self):
+        log("cleanup_dead_creatures")
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.dead:
