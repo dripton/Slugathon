@@ -5,6 +5,9 @@ __license__ = "GNU GPL v2"
 
 
 from optparse import OptionParser
+import os
+import tempfile
+import random
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
@@ -15,12 +18,13 @@ import gobject
 
 from slugathon.gui import Client, icon
 from slugathon.util import guiutils, prefs
+from slugathon.util.log import tee_to_path
 
 
 class Connect(gtk.Window):
     """GUI for connecting to a server."""
     def __init__(self, playername, password, server_name, server_port,
-      connect_now):
+      connect_now, log_path):
         gtk.Window.__init__(self)
 
         self.playernames = set()
@@ -88,6 +92,9 @@ class Connect(gtk.Window):
         self.connect("destroy", guiutils.exit)
         self.set_icon(icon.pixbuf)
         self.show_all()
+
+        if log_path:
+            tee_to_path(log_path)
 
         if connect_now:
             reactor.callWhenRunning(self.on_connect_button_clicked)
@@ -172,17 +179,22 @@ class Connect(gtk.Window):
 
 
 def main():
+    tempdir = tempfile.gettempdir()
     op = OptionParser()
     op.add_option("-n", "--playername", action="store", type="str")
     op.add_option("-a", "--password", action="store", type="str")
     op.add_option("-s", "--server", action="store", type="str")
     op.add_option("-p", "--port", action="store", type="int")
     op.add_option("-c", "--connect", action="store_true")
+    op.add_option("-l", "--log-path", action="store", type="str",
+      default=os.path.join(tempdir, "slugathon-client-%d.log" %
+      random.randrange(100000, 1000000)),
+      help="path to logfile")
     opts, args = op.parse_args()
     if args:
         op.error("got illegal argument")
     Connect(opts.playername, opts.password, opts.server, opts.port,
-      opts.connect)
+      opts.connect, opts.log_path)
     reactor.run()
 
 if __name__ == "__main__":
