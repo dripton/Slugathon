@@ -21,7 +21,10 @@ from slugathon.util.Observer import IObserver
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
 from slugathon.net.UniqueNoPassword import UniqueNoPassword
 from slugathon.util import prefs
-from slugathon.util.log import log
+from slugathon.util.log import log, tee_to_path
+
+
+TEMPDIR = tempfile.gettempdir()
 
 
 class Server(Observed):
@@ -29,7 +32,7 @@ class Server(Observed):
 
     implements(IObserver)
 
-    def __init__(self, no_passwd, passwd_path, port):
+    def __init__(self, no_passwd, passwd_path, port, log_path):
         Observed.__init__(self)
         self.no_passwd = no_passwd
         self.passwd_path = passwd_path
@@ -38,6 +41,8 @@ class Server(Observed):
         self.name_to_user = {}
         # {game_name: set(ainame) we're waiting for
         self.game_to_ais = {}
+        if log_path:
+            tee_to_path(log_path)
 
     def add_observer(self, user):
         username = user.name
@@ -160,7 +165,6 @@ class Server(Observed):
         num_ais = game.min_players - game.num_players_joined
         ainames = ["ai%d" % ii for ii in xrange(1, num_ais + 1)]
         self.game_to_ais[game.name] = set()
-        tempdir = tempfile.gettempdir()
         # Add all AIs to the wait list first, to avoid a race.
         for ainame in ainames:
             self.game_to_ais[game.name].add(ainame)
@@ -176,7 +180,7 @@ class Server(Observed):
                 "--playername", ainame,
                 "--port", str(self.port),
                 "--game-name", game.name,
-                "--log-path", os.path.join(tempdir, "slugathon-%s-%s.log" %
+                "--log-path", os.path.join(TEMPDIR, "slugathon-%s-%s.log" %
                   (game.name, ainame))
             ]
             if not self.no_passwd:
@@ -416,9 +420,12 @@ def main():
       default=prefs.passwd_path(), help="path to passwd file")
     op.add_option("--no-passwd", "-n", action="store_true",
       help="do not check passwords")
+    op.add_option("--log-path", "-l", action="store", type="str",
+      default=os.path.join(TEMPDIR, "slugathon-server.log"),
+      help="path to logfile")
     opts, args = op.parse_args()
     port = opts.port
-    server = Server(opts.no_passwd, opts.passwd, opts.port)
+    server = Server(opts.no_passwd, opts.passwd, opts.port, opts.log_path)
     realm = Realm.Realm(server)
     if opts.no_passwd:
         checker = UniqueNoPassword(None, server=server)
