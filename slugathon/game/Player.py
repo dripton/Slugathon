@@ -35,6 +35,7 @@ class Player(Observed):
         self.game = game
         self.join_order = join_order
         self.starting_tower = None    # a numeric hex label
+        self.created_starting_legion = False
         self.score = 0
         self.color = None
         # Currently available markers
@@ -52,7 +53,7 @@ class Player(Observed):
 
     @property
     def dead(self):
-        return self.color and self.starting_tower and not self.legions
+        return self.created_starting_legion and not self.legions
 
     @property
     def teleported(self):
@@ -118,6 +119,7 @@ class Player(Observed):
         caretaker = self.game.caretaker
         for creature in creatures:
             caretaker.take_one(creature.name)
+        self.created_starting_legion = True
         self.notify(action)
 
     @property
