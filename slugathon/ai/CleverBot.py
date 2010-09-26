@@ -267,7 +267,8 @@ class CleverBot(DimBot.DimBot):
                     max_mean_hits = max(mean_hits, max_mean_hits)
 
             # Don't encourage titans to charge early.
-            if creature.name != "Titan" or game.battle_turn >= 4:
+            if (creature.name != "Titan" or game.battle_turn >= 4 or
+              len(legion) == 1):
                 score += HIT_BONUS * max_mean_hits
                 score += KILL_BONUS * probable_kill
             score -= DAMAGE_PENALTY * total_mean_damage_taken
@@ -276,7 +277,7 @@ class CleverBot(DimBot.DimBot):
             # attacker must attack to avoid time loss
             # Don't encourage titans to charge early.
             if legion == game.attacker_legion and (creature.name != "Titan"
-              or game.battle_turn > 4):
+              or game.battle_turn >= 4 or len(legion) == 1):
                 if engaged or targets:
                     score += ATTACKER_AGGRESSION_BONUS
                 else:
