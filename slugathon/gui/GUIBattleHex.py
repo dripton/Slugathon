@@ -173,7 +173,7 @@ class GUIBattleHex(object):
                 if not os.path.exists(border_path):
                     sliceborder.slice_border_image(image_path, border_path,
                       hexsides)
-                input_surface = cairo.ImageSurface.create_from_png(image_path)
+                input_surface = cairo.ImageSurface.create_from_png(border_path)
                 input_width = input_surface.get_width()
                 input_height = input_surface.get_height()
                 output_width = myboxsize[0]
