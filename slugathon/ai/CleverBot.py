@@ -13,7 +13,7 @@ from slugathon.util.log import log
 
 
 SQUASH = 0.6
-BE_SQUASHED = 1.0
+BE_SQUASHED = 0.9
 
 
 class CleverBot(DimBot.DimBot):
