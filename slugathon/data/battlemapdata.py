@@ -92,6 +92,7 @@ data = {
         "E4": ("Plain", 1, {}),
         "E5": ("Plain", 1, {}),
         "F1": ("Plain", 1, {4: "Slope", 5: "Slope"}),
+        "F2": ("Plain", 2, {0: "Slope", 3: "Slope", 4: "Cliff", 5: "Slope"}),
         "F3": ("Plain", 1, {}),
         "F4": ("Plain", 2, {3: "Slope", 4: "Slope", 5: "Slope"}),
     },
