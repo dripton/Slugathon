@@ -48,6 +48,8 @@ data = {
         "D2": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
           4: "Slope", 5: "Slope"}),
         "D6": ("Plain", 1, {2: "Slope", 3: "Slope", 4: "Slope"}),
+        "E3": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
+          4: "Slope", 5: "Slope"}),
         "F2": ("Tree", 1, {}),
     },
 
