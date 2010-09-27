@@ -33,6 +33,7 @@ class GUICaretaker(gtk.Window):
 
         self.max_count_labels = {}
         self.counts_labels = {}
+        self.chits = {}
 
         for ii, (creature_name, left_count) in enumerate(sorted(
           self.caretaker.counts.iteritems())):
@@ -46,8 +47,8 @@ class GUICaretaker(gtk.Window):
             table.attach(vbox, col, col + 1, row, row + 1)
             label = self.max_count_labels[creature_name] = gtk.Label()
             vbox.pack_start(label, expand=False)
-            chit = Chit.Chit(creature, "Black", scale=20,
-              dead=(not left_count))
+            chit = self.chits[creature_name] = Chit.Chit(creature, "Black",
+              scale=20, dead=(not left_count))
             vbox.pack_start(chit.event_box, expand=False)
             label = self.counts_labels[creature_name] = gtk.Label()
             vbox.pack_start(label, expand=False)
@@ -97,6 +98,10 @@ class GUICaretaker(gtk.Window):
         label.set_markup("<span foreground='black'>%d</span>" % left_count +
           "/<span foreground='darkgreen'>%d</span>" % game_count +
           "/<span foreground='red'>%d</span>" % dead_count)
+        if left_count == 0 and creature_name != "Titan":
+            chit = self.chits[creature_name]
+            chit.dead = True
+            chit.build_image()
 
     def update_creature(self, creature_name):
         left_count = self.caretaker.counts[creature_name]
