@@ -7,7 +7,7 @@ __license__ = "GNU GPL v2"
 
 from slugathon.data import creaturedata
 from slugathon.game import Creature
-from slugathon.util import log
+from slugathon.util.log import log
 
 
 class Caretaker(object):
