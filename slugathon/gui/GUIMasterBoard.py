@@ -446,7 +446,7 @@ class GUIMasterBoard(gtk.Window):
                           self.board.hexes[hexlabel].terrain,
                           self.game.caretaker)
                         if recruit_names:
-                            self._create_recruitchits(legion, hexlabel,
+                            self.create_recruitchits(legion, hexlabel,
                               recruit_names)
                 self.repaint()
 
@@ -614,7 +614,7 @@ class GUIMasterBoard(gtk.Window):
                 marker.update_height()
                 self._render_marker(marker, ctx)
 
-    def _create_recruitchits(self, legion, hexlabel, recruit_names):
+    def create_recruitchits(self, legion, hexlabel, recruit_names):
         player = legion.player
         guihex = self.guihexes[hexlabel]
         recruitchit_scale = self.scale * Chit.CHIT_SCALE_FACTOR / 4
@@ -1133,7 +1133,7 @@ class GUIMasterBoard(gtk.Window):
                 self.repaint_hexlabels.add(legion.hexlabel)
                 creature_names = list(action.recruiter_names)
                 creature_names.append(action.creature_name)
-                self._create_recruitchits(legion, legion.hexlabel,
+                self.create_recruitchits(legion, legion.hexlabel,
                   creature_names)
             self.highlight_recruits()
 
@@ -1161,7 +1161,7 @@ class GUIMasterBoard(gtk.Window):
             lst = []
             if legion and legion.hexlabel:
                 lst.append(legion.hexlabel)
-                self._create_recruitchits(legion, legion.hexlabel,
+                self.create_recruitchits(legion, legion.hexlabel,
                   [action.creature_name])
             if donor and donor.hexlabel:
                 lst.append(donor.hexlabel)
@@ -1198,7 +1198,7 @@ class GUIMasterBoard(gtk.Window):
             markername = action.markername
             legion = self.game.find_legion(markername)
             if legion and legion.hexlabel and action.angel_names:
-                self._create_recruitchits(legion, legion.hexlabel,
+                self.create_recruitchits(legion, legion.hexlabel,
                   action.angel_names)
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
