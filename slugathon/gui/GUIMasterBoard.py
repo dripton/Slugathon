@@ -1046,8 +1046,6 @@ class GUIMasterBoard(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.StartMusterPhase):
-            if action.playername == self.username:
-                self.clear_all_recruitchits()
             self.highlight_recruits()
             player = self.game.active_player
             if self.username == player.name:
@@ -1245,7 +1243,12 @@ class GUIMasterBoard(gtk.Window):
             self.game.remove_observer(self.guimap)
             del self.guimap
             self.guimap = None
-            self.repaint_hexlabels.add(action.hexlabel)
+            hexlabel = action.hexlabel
+            self.clear_recruitchits(hexlabel)
+            if legion:
+                self.create_recruitchits(legion, hexlabel,
+                  legion.creature_names)
+            self.repaint_hexlabels.add(hexlabel)
             self.highlight_engagements()
 
         elif isinstance(action, Action.EliminatePlayer):
