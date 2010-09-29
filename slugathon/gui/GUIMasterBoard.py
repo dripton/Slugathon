@@ -21,7 +21,8 @@ from zope.interface import implements
 from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
   SplitLegion, About, icon, Die, PickRecruit, Flee, Inspector, Chit,
   Negotiate, Proposal, AcquireAngel, GUIBattleMap, SummonAngel, PickEntrySide,
-  PickMoveType, PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker)
+  PickMoveType, PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker,
+  ConfirmDialog)
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
@@ -85,6 +86,7 @@ class GUIMasterBoard(gtk.Window):
 
         self.set_icon(icon.pixbuf)
         self.set_title("Masterboard - Slugathon - %s" % self.username)
+        self.connect("delete-event", self.cb_delete_event)
         self.connect("destroy", self.cb_destroy)
         self.connect("configure-event", self.cb_configure_event)
 
@@ -143,12 +145,11 @@ class GUIMasterBoard(gtk.Window):
 
     def create_ui(self):
         ag = gtk.ActionGroup("MasterActions")
-        # TODO confirm quit
         actions = [
           ("GameMenu", None, "_Game"),
           ("Save", gtk.STOCK_SAVE, "_Save", "s", "Save", self.cb_save),
           ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
-            guiutils.exit),
+            self.cb_quit),
 
           ("PhaseMenu", None, "_Phase"),
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
@@ -210,12 +211,19 @@ class GUIMasterBoard(gtk.Window):
               self.username, self)
             self.game.add_observer(self.guicaretaker)
 
+    def cb_delete_event(self, widget, event):
+        confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+          "Are you sure you want to quit?")
+        def1.addCallback(self.cb_destroy)
+        def1.addErrback(self.failure)
+        return True
 
-    def cb_destroy(self, event):
-        for widget in [self.guimap]:
-            if widget is not None:
-                widget.destroy()
-        self.destroy()
+    def cb_destroy(self, confirmed):
+        if confirmed:
+            for widget in [self.guimap]:
+                if widget is not None:
+                    widget.destroy()
+            self.destroy()
 
     def cb_configure_event(self, event, unused):
         if self.username:
@@ -916,6 +924,12 @@ class GUIMasterBoard(gtk.Window):
                 action = history.undone[-1]
                 def1 = self.user.callRemote("apply_action", action)
                 def1.addErrback(self.failure)
+
+    def cb_quit(self, action):
+        confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+          "Are you sure you want to quit?")
+        def1.addCallback(self.cb_destroy)
+        def1.addErrback(self.failure)
 
     def cb_maybe_flee(self, (attacker, defender, fled)):
         if fled:
