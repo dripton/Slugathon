@@ -639,8 +639,6 @@ class GUIMasterBoard(gtk.Window):
         self._place_chits(chits, guihex)
 
     def draw_recruitchits(self, ctx):
-        if not self.game:
-            return
         # Draw in forward order so the last recruitchit in the list is on top.
         for (chit, unused) in self.recruitchits:
             self._render_marker(chit, ctx)
