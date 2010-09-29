@@ -867,12 +867,20 @@ class GUIBattleMap(gtk.Window):
               self.game.defender_legion.creatures):
                 self.game.defender_legion.creatures[-1].hexlabel = "DEFENDER"
                 self.repaint(["DEFENDER"])
+                if self.game.battle_active_player.name == self.username:
+                    def1 = self.user.callRemote("done_with_reinforcements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.SummonAngel):
             if (self.game.attacker_legion and
               self.game.attacker_legion.creatures):
                 self.game.attacker_legion.creatures[-1].hexlabel = "ATTACKER"
                 self.repaint(["ATTACKER"])
+                if self.game.battle_active_player.name == self.username:
+                    def1 = self.user.callRemote("done_with_reinforcements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.Concede):
             for legion in self.game.battle_legions:
