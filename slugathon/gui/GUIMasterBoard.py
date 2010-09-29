@@ -1075,6 +1075,12 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Flee):
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotFlee):
             markername = action.markername
@@ -1095,6 +1101,12 @@ class GUIMasterBoard(gtk.Window):
             self.destroy_negotiate()
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.MakeProposal):
             attacker_markername = action.attacker_markername
@@ -1112,6 +1124,12 @@ class GUIMasterBoard(gtk.Window):
             self.destroy_negotiate()
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.RejectProposal):
             attacker_markername = action.attacker_markername
@@ -1163,6 +1181,12 @@ class GUIMasterBoard(gtk.Window):
                 lst.append(donor.hexlabel)
             self.repaint(lst)
             self.highlight_engagements()
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.UnSummon):
             legion = self.game.find_legion(action.markername)
@@ -1198,6 +1222,12 @@ class GUIMasterBoard(gtk.Window):
                   action.angel_names)
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.Fight):
             self.destroy_negotiate()
@@ -1250,6 +1280,12 @@ class GUIMasterBoard(gtk.Window):
                   legion.creature_names)
             self.repaint_hexlabels.add(hexlabel)
             self.highlight_engagements()
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
 
         elif isinstance(action, Action.EliminatePlayer):
             player = self.game.get_player_by_name(action.loser_playername)
