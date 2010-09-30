@@ -163,6 +163,9 @@ class CleverBot(DimBot.DimBot):
             enemy = enemies.pop()
             enemy_sort_value = enemy.sort_value
             legion_sort_value = legion.sort_value
+            log("legion", legion, "hexlabel", hexlabel)
+            log("legion_sort_value", legion_sort_value)
+            log("enemy_sort_value", enemy_sort_value)
             if enemy_sort_value < SQUASH * legion_sort_value:
                 score += enemy.score
             elif enemy_sort_value >= BE_SQUASHED * legion_sort_value:
@@ -175,6 +178,7 @@ class CleverBot(DimBot.DimBot):
                 recruit_name = recruits[-1]
                 recruit = Creature.Creature(recruit_name)
                 score += recruit.sort_value
+                log("recruit value", recruit.sort_value)
         return score
 
 
