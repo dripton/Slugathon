@@ -229,12 +229,14 @@ class CleverBot(DimBot.DimBot):
         NON_NATIVE_DRIFT_PENALTY = 2.0
         NATIVE_VOLCANO_BONUS = 1.0
         ADJACENT_ALLY_BONUS = 0.5
+        RANGESTRIKE_BONUS = 2.0
 
         legion = creature.legion
         legion2 = game.other_battle_legion(legion)
         battlemap = game.battlemap
         score = 0
         prev_hexlabel = creature.hexlabel
+        can_rangestrike = False
         try:
             # XXX Modifying game state is probably a bad idea.
             creature.hexlabel = hexlabel
@@ -269,6 +271,9 @@ class CleverBot(DimBot.DimBot):
                     if mean_hits >= enemy.hits_left:
                         probable_kill = True
                     max_mean_hits = max(mean_hits, max_mean_hits)
+                    can_rangestrike = True
+            if can_rangestrike:
+                score += RANGESTRIKE_BONUS
 
             # Don't encourage titans to charge early.
             if (creature.name != "Titan" or game.battle_turn >= 4 or
