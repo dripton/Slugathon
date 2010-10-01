@@ -488,6 +488,8 @@ class GUIMasterBoard(gtk.Window):
     def try_to_split_legion(self, (old_legion, new_legion1, new_legion2)):
         if old_legion is None:
             # canceled
+            player = self.game.get_player_by_name(self.username)
+            player.selected_markername = None
             return
         def1 = self.user.callRemote("split_legion", self.game.name,
           new_legion1.markername, new_legion2.markername,
