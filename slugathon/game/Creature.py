@@ -119,7 +119,7 @@ class Creature(object):
           + 0.1 * self.magicmissile
           + 0.15 * (self.skill == 2)
           + 0.18 * (self.skill == 4)
-          + 100 * (self.name == "Titan"))
+          + 0.51 * (self.name == "Titan"))
 
     @property
     def is_lord(self):
