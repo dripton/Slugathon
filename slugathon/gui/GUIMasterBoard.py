@@ -1190,6 +1190,16 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
+        elif isinstance(action, Action.DoNotSummon):
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
+                else:
+                    self.highlight_engagements()
+
         elif isinstance(action, Action.UnSummon):
             legion = self.game.find_legion(action.markername)
             donor = self.game.find_legion(action.donor_markername)
@@ -1230,6 +1240,16 @@ class GUIMasterBoard(gtk.Window):
                     def1 = self.user.callRemote("done_with_engagements",
                       self.game.name)
                     def1.addErrback(self.failure)
+
+        elif isinstance(action, Action.DoNotAcquire):
+            player = self.game.get_player_by_name(self.username)
+            if player == self.game.active_player:
+                if player.can_exit_fight_phase:
+                    def1 = self.user.callRemote("done_with_engagements",
+                      self.game.name)
+                    def1.addErrback(self.failure)
+                else:
+                    self.highlight_engagements()
 
         elif isinstance(action, Action.Fight):
             self.destroy_negotiate()
