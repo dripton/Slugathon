@@ -901,9 +901,10 @@ class GUIBattleMap(gtk.Window):
         def1.addErrback(self.failure)
 
     def picked_summon(self, (legion, donor, creature)):
-        def1 = self.user.callRemote("summon_angel", self.game.name,
-          legion.markername, donor.markername, creature.name)
-        def1.addErrback(self.failure)
+        if legion is not None:
+            def1 = self.user.callRemote("summon_angel", self.game.name,
+              legion.markername, donor.markername, creature.name)
+            def1.addErrback(self.failure)
 
     def picked_carry(self, (carry_target, carries)):
         log("picked_carry", carry_target, carries)
