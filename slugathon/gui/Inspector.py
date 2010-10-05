@@ -78,7 +78,7 @@ class Inspector(gtk.Window):
 
         # TODO Handle unknown creatures correctly
         playercolor = legion.player.color
-        for creature in legion.sorted_creatures:
+        for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)
             self.chits_hbox.pack_start(chit.event_box, expand=False)
 
