@@ -63,7 +63,8 @@ class CleverBot(DimBot.DimBot):
                         enemies = player.enemy_legions(hexlabel)
                         if enemies:
                             enemy = enemies.pop()
-                            if enemy.sort_value < SQUASH * legion.sort_value:
+                            if (enemy.combat_value < SQUASH *
+                              legion.combat_value):
                                 safe_split_rolls.add(roll)
                         else:
                             safe_split_rolls.add(roll)
@@ -161,15 +162,15 @@ class CleverBot(DimBot.DimBot):
         if enemies:
             assert len(enemies) == 1
             enemy = enemies.pop()
-            enemy_sort_value = enemy.sort_value
-            legion_sort_value = legion.sort_value
+            enemy_combat_value = enemy.combat_value
+            legion_combat_value = legion.combat_value
             log("legion", legion, "hexlabel", hexlabel)
-            log("legion_sort_value", legion_sort_value)
-            log("enemy_sort_value", enemy_sort_value)
-            if enemy_sort_value < SQUASH * legion_sort_value:
+            log("legion_combat_value", legion_combat_value)
+            log("enemy_combat_value", enemy_combat_value)
+            if enemy_combat_value < SQUASH * legion_combat_value:
                 score += enemy.score
-            elif enemy_sort_value >= BE_SQUASHED * legion_sort_value:
-                score -= legion_sort_value
+            elif enemy_combat_value >= BE_SQUASHED * legion_combat_value:
+                score -= legion_combat_value
         if move and (len(legion) < 7 or enemies):
             masterhex = board.hexes[hexlabel]
             terrain = masterhex.terrain

@@ -423,6 +423,12 @@ class Legion(Observed):
         """Return a rough indication of legion value."""
         return sum([creature.sort_value for creature in self.living_creatures])
 
+    @property
+    def combat_value(self):
+        """Return a rough indication of legion combat value."""
+        return sum([creature.combat_value for creature in
+          self.living_creatures])
+
     def die(self, scoring_legion, fled, no_points, check_for_victory=True):
         log("die", self, scoring_legion, fled, no_points, check_for_victory)
         if scoring_legion is not None and not no_points:

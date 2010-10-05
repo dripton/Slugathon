@@ -119,7 +119,17 @@ class Creature(object):
           + 0.1 * self.magicmissile
           + 0.15 * (self.skill == 2)
           + 0.18 * (self.skill == 4)
-          + 0.51 * (self.name == "Titan"))
+          + 100 * (self.name == "Titan"))
+
+    @property
+    def combat_value(self):
+        """Return a rough indication of creature combat ability, for the AI."""
+        return (self.score
+          + 0.3 * self.flies
+          + 0.25 * self.rangestrikes
+          + 0.1 * self.magicmissile
+          + 0.15 * (self.skill == 2)
+          + 0.18 * (self.skill == 4))
 
     @property
     def is_lord(self):
