@@ -913,7 +913,7 @@ class GUIBattleMap(gtk.Window):
         def1.addErrback(self.failure)
 
     def picked_summon(self, (legion, donor, creature)):
-        if legion is not None:
+        if legion and donor and creature:
             def1 = self.user.callRemote("summon_angel", self.game.name,
               legion.markername, donor.markername, creature.name)
             def1.addErrback(self.failure)
