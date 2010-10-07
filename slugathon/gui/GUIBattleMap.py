@@ -872,6 +872,12 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
+        elif isinstance(action, Action.DoNotReinforce):
+            if self.game.battle_active_player.name == self.username:
+                def1 = self.user.callRemote("done_with_reinforcements",
+                  self.game.name)
+                def1.addErrback(self.failure)
+
         elif isinstance(action, Action.SummonAngel):
             if (self.game.attacker_legion and
               self.game.attacker_legion.creatures):
@@ -881,6 +887,12 @@ class GUIBattleMap(gtk.Window):
                     def1 = self.user.callRemote("done_with_reinforcements",
                       self.game.name)
                     def1.addErrback(self.failure)
+
+        elif isinstance(action, Action.DoNotSummon):
+            if self.game.battle_active_player.name == self.username:
+                def1 = self.user.callRemote("done_with_reinforcements",
+                  self.game.name)
+                def1.addErrback(self.failure)
 
         elif isinstance(action, Action.Concede):
             for legion in self.game.battle_legions:
