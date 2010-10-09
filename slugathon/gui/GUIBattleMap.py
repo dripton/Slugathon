@@ -908,14 +908,23 @@ class GUIBattleMap(gtk.Window):
 
 
     def picked_reinforcement(self, (legion, creature, recruiter_names)):
-        def1 = self.user.callRemote("recruit_creature", self.game.name,
-          legion.markername, creature.name, recruiter_names)
-        def1.addErrback(self.failure)
+        if legion and creature:
+            def1 = self.user.callRemote("recruit_creature", self.game.name,
+              legion.markername, creature.name, recruiter_names)
+            def1.addErrback(self.failure)
+        else:
+            def1 = self.user.callRemote("done_with_reinforcements",
+              self.game.name)
+            def1.addErrback(self.failure)
 
     def picked_summon(self, (legion, donor, creature)):
         if legion and donor and creature:
             def1 = self.user.callRemote("summon_angel", self.game.name,
               legion.markername, donor.markername, creature.name)
+            def1.addErrback(self.failure)
+        else:
+            def1 = self.user.callRemote("done_with_reinforcements",
+              self.game.name)
             def1.addErrback(self.failure)
 
     def picked_carry(self, (carry_target, carries)):
