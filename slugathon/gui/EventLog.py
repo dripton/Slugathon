@@ -64,34 +64,41 @@ class EventLog(gtk.Window):
               action.child_markername, len(action.child_creature_names))
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.RollMovement):
             st = "%s rolls %d for movement" % (action.playername,
               action.movement_roll)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.MoveLegion):
             st = "%s %s to %s" % (action.markername,
               "teleports" if action.teleport else "moves", action.hexlabel)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.Flee):
             st = "%s in %s flees" % (action.markername, action.hexlabel)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.Concede):
             st = "%s in %s concedes" % (action.markername, action.hexlabel)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.SummonAngel):
             st = "%s summons %s from %s" % (action.markername,
               action.creature_name, action.donor_markername)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.RecruitCreature):
             st = "%s recruits %s with %s" % (action.markername,
               action.creature_name, action.recruiter_names)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.Strike):
             st = "%s in %s strikes %s in %s for %d hits and %s carries" % (
               action.striker_name, action.striker_hexlabel,
@@ -99,17 +106,20 @@ class EventLog(gtk.Window):
               action.hits, action.carries)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.Carry):
             st = "%d hits carry to %s in %s, leaving %d carries" % (
               action.carries, action.carry_target_name,
               action.carry_target_hexlabel, action.carries_left)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.DriftDamage):
             st = "%s in %s suffers drift damage" % (
               action.target_name, action.target_hexlabel)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.BattleOver):
             if action.winner_survivors:
                 st = "%s defeats %s in %s" % (action.winner_markername,
@@ -119,10 +129,12 @@ class EventLog(gtk.Window):
                   action.loser_markername, action.hexlabel)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.Acquire):
             st = "%s acquires %s" % (action.markername, action.angel_names)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
         elif isinstance(action, Action.GameOver):
             if len(action.winner_names) == 1:
                 st = "%s wins!"
@@ -130,6 +142,7 @@ class EventLog(gtk.Window):
                 st = "%s draw" % " and ".join(action.winner_names)
             label = gtk.Label(st)
             self.vbox.pack_start(label)
+            label.show()
 
 
 if __name__ == "__main__":

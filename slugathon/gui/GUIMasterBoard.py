@@ -1004,6 +1004,7 @@ class GUIMasterBoard(gtk.Window):
         if isinstance(action, Action.PickedColor):
             self._init_status_screen()
             self._init_caretaker()
+            self._init_event_log()
 
         elif isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
