@@ -22,7 +22,7 @@ from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
   SplitLegion, About, icon, Die, PickRecruit, Flee, Inspector, Chit,
   Negotiate, Proposal, AcquireAngel, GUIBattleMap, SummonAngel, PickEntrySide,
   PickMoveType, PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker,
-  ConfirmDialog)
+  ConfirmDialog, EventLog)
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
@@ -118,6 +118,7 @@ class GUIMasterBoard(gtk.Window):
         self.game_over = None
         self.status_screen = None
         self.guicaretaker = None
+        self.event_log = None
 
         # Set of hexlabels of hexes to redraw.
         # If set to all hexlabels then we redraw the whole window.
@@ -210,6 +211,12 @@ class GUIMasterBoard(gtk.Window):
             self.guicaretaker = GUICaretaker.GUICaretaker(self.game,
               self.username, self)
             self.game.add_observer(self.guicaretaker)
+
+    def _init_event_log(self):
+        if not self.event_log:
+            self.event_log = EventLog.EventLog(self.game, self.username, self)
+            self.game.add_observer(self.event_log)
+
 
     def cb_delete_event(self, widget, event):
         confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
