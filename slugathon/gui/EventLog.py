@@ -22,6 +22,7 @@ class EventLog(gtk.Window):
         gtk.Window.__init__(self)
         self.game = game
         self.username = username
+        self.last_action = None
 
         self.scrolledwindow = gtk.ScrolledWindow()
         self.add(self.scrolledwindow)
@@ -57,7 +58,9 @@ class EventLog(gtk.Window):
         return False
 
     def update(self, observed, action):
-        if isinstance(action, Action.SplitLegion):
+        if action == self.last_action:
+            pass
+        elif isinstance(action, Action.SplitLegion):
             st = "%s splits into %s (%d) and %s (%d)" % (
               action.parent_markername, action.parent_markername,
               len(action.parent_creature_names),
@@ -144,6 +147,7 @@ class EventLog(gtk.Window):
             label = gtk.Label(st)
             self.vbox.pack_start(label)
             label.show()
+        self.last_action = action
 
 
 if __name__ == "__main__":
