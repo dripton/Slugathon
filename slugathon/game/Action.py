@@ -244,7 +244,7 @@ class RecruitCreature(Action):
         self.playername = playername
         self.markername = markername
         self.creature_name = creature_name
-        self.recruiter_names = recruiter_names
+        self.recruiter_names = tuple(recruiter_names)
 
     def undo_action(self):
         return UndoRecruit(self.game_name, self.playername, self.markername,
@@ -267,7 +267,7 @@ class UnReinforce(UndoAction):
         self.playername = playername
         self.markername = markername
         self.creature_name = creature_name
-        self.recruiter_names = recruiter_names
+        self.recruiter_names = tuple(recruiter_names)
 pb.setUnjellyableForClass(UnReinforce, UnReinforce)
 
 class UndoRecruit(UndoAction):
@@ -277,7 +277,7 @@ class UndoRecruit(UndoAction):
         self.playername = playername
         self.markername = markername
         self.creature_name = creature_name
-        self.recruiter_names = recruiter_names
+        self.recruiter_names = tuple(recruiter_names)
 pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)
 
 # TODO Act on this action.  Currently meaningless since all legion contents
@@ -286,7 +286,7 @@ class RevealLegion(Action):
     def __init__(self, game_name, markername, creature_names):
         self.game_name = game_name
         self.markername = markername
-        self.creature_names = creature_names
+        self.creature_names = tuple(creature_names)
 pb.setUnjellyableForClass(RevealLegion, RevealLegion)
 
 
@@ -449,7 +449,7 @@ class Strike(Action):
         self.target_hexlabel = target_hexlabel
         self.num_dice = num_dice
         self.strike_number = strike_number
-        self.rolls = rolls
+        self.rolls = tuple(rolls)
         self.hits = hits
         self.carries = carries
 pb.setUnjellyableForClass(Strike, Strike)
@@ -516,7 +516,7 @@ class Acquire(Action):
         self.game_name = game_name
         self.playername = playername
         self.markername = markername
-        self.angel_names = angel_names
+        self.angel_names = tuple(angel_names)
 pb.setUnjellyableForClass(Acquire, Acquire)
 
 class DoNotAcquire(Action):
@@ -532,11 +532,11 @@ class BattleOver(Action):
       time_loss, hexlabel):
         self.game_name = game_name
         self.winner_markername = winner_markername
-        self.winner_survivors = winner_survivors
-        self.winner_losses = winner_losses
+        self.winner_survivors = tuple(winner_survivors)
+        self.winner_losses = tuple(winner_losses)
         self.loser_markername = loser_markername
-        self.loser_survivors = loser_survivors
-        self.loser_losses = loser_losses
+        self.loser_survivors = tuple(loser_survivors)
+        self.loser_losses = tuple(loser_losses)
         self.time_loss = time_loss
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(BattleOver, BattleOver)
@@ -551,5 +551,5 @@ pb.setUnjellyableForClass(EliminatePlayer, EliminatePlayer)
 class GameOver(Action):
     def __init__(self, game_name, winner_names):
         self.game_name = game_name
-        self.winner_names = winner_names
+        self.winner_names = tuple(winner_names)
 pb.setUnjellyableForClass(GameOver, GameOver)
