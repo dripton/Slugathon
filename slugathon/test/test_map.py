@@ -201,7 +201,7 @@ def test_is_los_blocked():
     assert map1.is_los_blocked("D5", "A2", None)
     assert not map1.is_los_blocked("D5", "F2", None)
     assert map1.is_los_blocked("D5", "E2", None)
-    assert not map1.is_los_blocked("D5", "F1", None)
+    assert map1.is_los_blocked("D5", "F1", None)
     assert not map3.is_los_blocked("C4", "D6", None)
     assert map4.is_los_blocked("D4", "D3", None)
     assert map4.is_los_blocked("D3", "D4", None)
