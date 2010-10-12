@@ -95,7 +95,7 @@ class EventLog(gtk.Window):
             label.show()
         elif isinstance(action, Action.RecruitCreature):
             st = "%s recruits %s with %s" % (action.markername,
-              action.creature_name, action.recruiter_names)
+              action.creature_name, ", ".join(action.recruiter_names))
             label = gtk.Label(st)
             self.vbox.pack_start(label)
             label.show()
@@ -131,7 +131,8 @@ class EventLog(gtk.Window):
             self.vbox.pack_start(label)
             label.show()
         elif isinstance(action, Action.Acquire):
-            st = "%s acquires %s" % (action.markername, action.angel_names)
+            st = "%s acquires %s" % (action.markername,
+              ", ".join(action.angel_names))
             label = gtk.Label(st)
             self.vbox.pack_start(label)
             label.show()
