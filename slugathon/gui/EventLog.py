@@ -25,6 +25,7 @@ class EventLog(gtk.Window):
         self.last_action = None
 
         self.scrolledwindow = gtk.ScrolledWindow()
+        self.vadjustment = self.scrolledwindow.get_vadjustment()
         self.add(self.scrolledwindow)
         self.vbox = gtk.VBox()
         self.scrolledwindow.add_with_viewport(self.vbox)
@@ -148,6 +149,8 @@ class EventLog(gtk.Window):
             self.vbox.pack_start(label)
             label.show()
         self.last_action = action
+        upper = self.vadjustment.get_upper()
+        self.vadjustment.set_value(upper)
 
 
 if __name__ == "__main__":
