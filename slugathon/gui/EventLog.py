@@ -30,6 +30,8 @@ class EventLog(gtk.Window):
         self.vbox = gtk.VBox()
         self.scrolledwindow.add_with_viewport(self.vbox)
 
+        self.connect("configure-event", self.cb_configure_event)
+
         if self.username:
             tup = prefs.load_window_position(self.username,
               self.__class__.__name__)
