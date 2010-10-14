@@ -127,6 +127,8 @@ class EventLog(gtk.Window):
             label = gtk.Label(st)
         self.last_action = action
         if label:
+            # left-align the label
+            label.set_alignment(0.0, 0.5)
             self.vbox.pack_start(label, expand=False, fill=False)
             label.show()
             upper = self.vadjustment.get_upper()
