@@ -79,8 +79,7 @@ class StatusScreen(gtk.Window):
                 label = add_label(self.player_table, col + 2, row)
                 setattr(self, name, label)
 
-        self.connect("configure-event",
-          self.cb_configure_event)
+        self.connect("configure-event", self.cb_configure_event)
 
         if self.username:
             tup = prefs.load_window_position(self.username,
