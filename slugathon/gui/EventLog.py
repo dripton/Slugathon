@@ -61,6 +61,7 @@ class EventLog(gtk.Window):
         return False
 
     def update(self, observed, action):
+        label = None
         if action == self.last_action:
             pass
         elif isinstance(action, Action.SplitLegion):
@@ -69,63 +70,43 @@ class EventLog(gtk.Window):
               len(action.parent_creature_names),
               action.child_markername, len(action.child_creature_names))
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.RollMovement):
             st = "%s rolls %d for movement" % (action.playername,
               action.movement_roll)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.MoveLegion):
             st = "%s %s to %s" % (action.markername,
               "teleports" if action.teleport else "moves", action.hexlabel)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.Flee):
             st = "%s in %s flees" % (action.markername, action.hexlabel)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.Concede):
             st = "%s in %s concedes" % (action.markername, action.hexlabel)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.SummonAngel):
             st = "%s summons %s from %s" % (action.markername,
               action.creature_name, action.donor_markername)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.RecruitCreature):
             st = "%s recruits %s with %s" % (action.markername,
               action.creature_name, ", ".join(action.recruiter_names))
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.Strike):
             st = "%s in %s strikes %s in %s for %d hits and %s carries" % (
               action.striker_name, action.striker_hexlabel,
               action.target_name, action.target_hexlabel,
               action.hits, action.carries)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.Carry):
             st = "%d hits carry to %s in %s, leaving %d carries" % (
               action.carries, action.carry_target_name,
               action.carry_target_hexlabel, action.carries_left)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.DriftDamage):
             st = "%s in %s suffers drift damage" % (
               action.target_name, action.target_hexlabel)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.BattleOver):
             if action.winner_survivors:
                 st = "%s defeats %s in %s" % (action.winner_markername,
@@ -134,25 +115,22 @@ class EventLog(gtk.Window):
                 st = "%s and %s mutual in %s" % (action.winner_markername,
                   action.loser_markername, action.hexlabel)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.Acquire):
             st = "%s acquires %s" % (action.markername,
               ", ".join(action.angel_names))
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         elif isinstance(action, Action.GameOver):
             if len(action.winner_names) == 1:
                 st = "%s wins!"
             else:
                 st = "%s draw" % " and ".join(action.winner_names)
             label = gtk.Label(st)
-            self.vbox.pack_start(label)
-            label.show()
         self.last_action = action
-        upper = self.vadjustment.get_upper()
-        self.vadjustment.set_value(upper)
+        if label:
+            self.vbox.pack_start(label, expand=False, fill=False)
+            label.show()
+            upper = self.vadjustment.get_upper()
+            self.vadjustment.set_value(upper)
 
 
 if __name__ == "__main__":
