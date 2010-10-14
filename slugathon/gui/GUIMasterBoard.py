@@ -1307,7 +1307,7 @@ class GUIMasterBoard(gtk.Window):
             self.clear_recruitchits(hexlabel)
             if legion:
                 self.create_recruitchits(legion, hexlabel,
-                  legion.creature_names)
+                  legion.living_creature_names)
             self.repaint_hexlabels.add(hexlabel)
             self.highlight_engagements()
             player = self.game.get_player_by_name(self.username)
