@@ -121,7 +121,7 @@ class EventLog(gtk.Window):
             label = gtk.Label(st)
         elif isinstance(action, Action.GameOver):
             if len(action.winner_names) == 1:
-                st = "%s wins!"
+                st = "%s wins!" % action.winner_names[0]
             else:
                 st = "%s draw" % " and ".join(action.winner_names)
             label = gtk.Label(st)
