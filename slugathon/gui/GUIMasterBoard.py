@@ -933,10 +933,13 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_quit(self, action):
-        confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
-          "Are you sure you want to quit?")
-        def1.addCallback(self.cb_destroy)
-        def1.addErrback(self.failure)
+        if self.game.over:
+            self.cb_destroy(True)
+        else:
+            confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+              "Are you sure you want to quit?")
+            def1.addCallback(self.cb_destroy)
+            def1.addErrback(self.failure)
 
     def cb_maybe_flee(self, (attacker, defender, fled)):
         if fled:

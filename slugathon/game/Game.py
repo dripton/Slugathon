@@ -43,7 +43,6 @@ class Game(Observed):
         self.min_players = min_players
         self.max_players = max_players
         self.started = False
-        self.over = False
         self.players = []
         self.players_left = []  # Used to track co-winners in a draw
         self.num_players_joined = 0
@@ -194,6 +193,11 @@ class Game(Observed):
     def living_players(self):
         """Return a list of Players still in the game."""
         return [player for player in self.players if not player.dead]
+
+    @property
+    def over(self):
+        """Return True iff the game is over."""
+        return len(self.living_players) <= 1
 
     def get_next_player_and_turn(self):
         """Return the next player and what game turn it will be when
