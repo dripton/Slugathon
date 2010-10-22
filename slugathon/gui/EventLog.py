@@ -93,10 +93,15 @@ class EventLog(gtk.Window):
               action.creature_name, ", ".join(action.recruiter_names))
             label = gtk.Label(st)
         elif isinstance(action, Action.Strike):
-            st = "%s in %s strikes %s in %s for %d hits and %s carries" % (
-              action.striker_name, action.striker_hexlabel,
-              action.target_name, action.target_hexlabel,
-              action.hits, action.carries)
+            if action.carries:
+                st = "%s in %s strikes %s in %s for %d hits and %s carries" % (
+                  action.striker_name, action.striker_hexlabel,
+                  action.target_name, action.target_hexlabel,
+                  action.hits, action.carries)
+            else:
+                st = "%s in %s strikes %s in %s for %d hits" % (
+                  action.striker_name, action.striker_hexlabel,
+                  action.target_name, action.target_hexlabel, action.hits)
             label = gtk.Label(st)
         elif isinstance(action, Action.Carry):
             st = "%d hits carry to %s in %s, leaving %d carries" % (
