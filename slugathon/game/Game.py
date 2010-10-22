@@ -315,7 +315,7 @@ class Game(Observed):
         legions = set()
         for player in self.players:
             for legion in player.legions.itervalues():
-                if hexlabel in (None, legion.hexlabel):
+                if hexlabel in (None, legion.hexlabel) and len(legion):
                     legions.add(legion)
         return legions
 
