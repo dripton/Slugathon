@@ -219,10 +219,13 @@ class GUIMasterBoard(gtk.Window):
 
 
     def cb_delete_event(self, widget, event):
-        confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
-          "Are you sure you want to quit?")
-        def1.addCallback(self.cb_destroy)
-        def1.addErrback(self.failure)
+        if self.game.over:
+            self.cb_destroy(True)
+        else:
+            confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+              "Are you sure you want to quit?")
+            def1.addCallback(self.cb_destroy)
+            def1.addErrback(self.failure)
         return True
 
     def cb_destroy(self, confirmed):
