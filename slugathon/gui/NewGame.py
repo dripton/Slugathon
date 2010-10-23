@@ -55,27 +55,25 @@ class NewGame(gtk.Dialog):
         self.max_players_spin.set_value(6)
         hbox2.pack_start(self.max_players_spin, expand=False)
 
-        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
-        self.add_button("gtk-ok", gtk.RESPONSE_OK)
+        self.cancel_button = self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.cancel_button.connect("button-press-event", self.cancel)
+        self.ok_button = self.add_button("gtk-ok", gtk.RESPONSE_OK)
+        self.ok_button.connect("button-press-event", self.ok)
 
         self.show_all()
 
-        response = self.run()
-        if response == gtk.RESPONSE_OK:
-            self.ok()
-        else:
-            self.cancel()
 
-    def ok(self):
-        self.game_name = self.name_entry.get_text()
-        self.min_players = self.min_players_spin.get_value_as_int()
-        self.max_players = self.max_players_spin.get_value_as_int()
-        def1 = self.user.callRemote("form_game", self.game_name,
-          self.min_players, self.max_players)
-        def1.addErrback(self.failure)
-        self.destroy()
+    def ok(self, widget, event):
+        if self.name_entry.get_text():
+            self.game_name = self.name_entry.get_text()
+            self.min_players = self.min_players_spin.get_value_as_int()
+            self.max_players = self.max_players_spin.get_value_as_int()
+            def1 = self.user.callRemote("form_game", self.game_name,
+              self.min_players, self.max_players)
+            def1.addErrback(self.failure)
+            self.destroy()
 
-    def cancel(self):
+    def cancel(self, widget, event):
         self.destroy()
 
     def failure(self, error):
