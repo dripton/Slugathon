@@ -889,7 +889,8 @@ class GUIBattleMap(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotSummon):
-            if self.game.battle_active_player.name == self.username:
+            if (self.game.battle_active_player and
+              self.game.battle_active_player.name == self.username):
                 def1 = self.user.callRemote("done_with_reinforcements",
                   self.game.name)
                 def1.addErrback(self.failure)
