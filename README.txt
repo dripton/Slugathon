@@ -25,7 +25,7 @@ require root permissions, so use su or sudo.
 "python slugathon-client"
 
 7. If you want multiple human players, then in a third terminal, (on the same
-or a different computer), run "python slugathon-aiclient", picking a different
+or a different computer), run "python slugathon-client", picking a different
 player.
 
 (You can add up to a total of 6 players.)
