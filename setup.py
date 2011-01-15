@@ -61,8 +61,8 @@ setup(
     url = "http://github.com/dripton/Slugathon/",
     download_url = "TODO",
     license = "GPLv2",
-    packages = ["slugathon", "slugathon.data", "slugathon.game",
-      "slugathon.gui", "slugathon.net", "slugathon.util"],
+    packages = ["slugathon", "slugathon.ai", "slugathon.data",
+      "slugathon.game", "slugathon.gui", "slugathon.net", "slugathon.util"],
     data_files = [
         ("slugathon/images/battlehex", glob("slugathon/images/battlehex/*")),
         ("slugathon/images/creature", glob("slugathon/images/creature/*")),
