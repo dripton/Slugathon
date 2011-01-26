@@ -27,13 +27,13 @@ def format_time(secs):
     return time.strftime("%H:%M:%S", tup)
 
 
-class WaitingForPlayers(gtk.Window):
+class WaitingForPlayers(gtk.Dialog):
     """Waiting for players to start game dialog."""
 
     implements(IObserver)
 
     def __init__(self, user, username, game, parent):
-        gtk.Window.__init__(self)
+        gtk.Dialog.__init__(self, "Waiting for Players", parent)
         self.user = user
         self.username = username
         self.game = game
@@ -45,22 +45,19 @@ class WaitingForPlayers(gtk.Window):
         self.set_title("Waiting for Players - %s" % self.username)
         self.set_default_size(-1, 300)
 
-        vbox1 = gtk.VBox()
-        self.add(vbox1)
-
         label1 = gtk.Label(game.name)
-        vbox1.pack_start(label1, expand=False)
+        self.vbox.pack_start(label1, expand=False)
 
         scrolled_window1 = gtk.ScrolledWindow()
         scrolled_window1.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        vbox1.pack_start(scrolled_window1)
+        self.vbox.pack_start(scrolled_window1)
 
         self.player_list = gtk.TreeView()
         # TODO self.player_list.set_height_request(150)
         scrolled_window1.add(self.player_list)
 
         hbox1 = gtk.HBox()
-        vbox1.pack_start(hbox1, expand=False)
+        self.vbox.pack_start(hbox1, expand=False)
 
         vbox2 = gtk.VBox()
         hbox1.pack_start(vbox2)
@@ -104,15 +101,15 @@ class WaitingForPlayers(gtk.Window):
         viewport3.add(self.countdown_entry)
 
         join_button = gtk.Button("Join Game")
-        vbox1.pack_start(join_button, expand=False)
+        self.vbox.pack_start(join_button, expand=False)
         join_button.connect("button-press-event", self.cb_click_join)
 
         drop_button = gtk.Button("Drop out of Game")
-        vbox1.pack_start(drop_button, expand=False)
+        self.vbox.pack_start(drop_button, expand=False)
         drop_button.connect("button-press-event", self.cb_click_drop)
 
         self.start_button = gtk.Button("Start Game Now")
-        vbox1.pack_start(self.start_button, expand=False)
+        self.vbox.pack_start(self.start_button, expand=False)
         self.start_button.connect("button-press-event", self.cb_click_start)
         self.start_button.set_sensitive(self.username ==
           self.game.owner.name)

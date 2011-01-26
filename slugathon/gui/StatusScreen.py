@@ -32,21 +32,19 @@ def set_bg(label, color):
         label.eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
 
 
-class StatusScreen(gtk.Window):
+class StatusScreen(gtk.Dialog):
     """Game status window."""
 
     implements(IObserver)
 
 
     def __init__(self, game, username, parent):
-        gtk.Window.__init__(self)
+        gtk.Dialog.__init__(self, "Status", parent)
         self.game = game
         self.username = username
 
-        vbox1 = gtk.VBox()
-        self.add(vbox1)
         turn_table = gtk.Table(rows=4, columns=3)
-        vbox1.pack_start(turn_table)
+        self.vbox.pack_start(turn_table)
 
         add_label(turn_table, 2, 1, "Game")
         add_label(turn_table, 3, 1, "Battle")
@@ -61,10 +59,10 @@ class StatusScreen(gtk.Window):
         self.battle_phase_label = add_label(turn_table, 3, 4)
 
         hseparator1 = gtk.HSeparator()
-        vbox1.pack_start(hseparator1)
+        self.vbox.pack_start(hseparator1)
         self.player_table = gtk.Table(rows=9, columns=len(self.game.players)
           + 1)
-        vbox1.pack_start(self.player_table)
+        self.vbox.pack_start(self.player_table)
 
         for row, text in enumerate(["Name", "Tower", "Color", "Legions",
           "Markers", "Creatures", "Titan Power", "Eliminated", "Score"]):

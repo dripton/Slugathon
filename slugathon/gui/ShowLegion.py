@@ -9,24 +9,22 @@ import gtk
 from slugathon.gui import Chit, Marker, icon
 
 
-class ShowLegion(gtk.Window):
+class ShowLegion(gtk.Dialog):
     """Window to show a legion's contents."""
     def __init__(self, username, legion, show_marker, parent):
-        gtk.Window.__init__(self)
+        gtk.Dialog.__init__(self, "Show Legion", parent)
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.set_title("ShowLegion - %s" % (username))
 
-        vbox = gtk.VBox(spacing=9)
-        self.add(vbox)
         legion_name = gtk.Label("Legion %s in hex %s (%d points)" % (
           legion.markername, legion.hexlabel, legion.score))
-        vbox.pack_start(legion_name)
+        self.vbox.pack_start(legion_name)
 
         hbox = gtk.HBox(spacing=3)
-        vbox.pack_start(hbox)
+        self.vbox.pack_start(hbox)
 
         marker_hbox = gtk.HBox()
         hbox.pack_start(marker_hbox, expand=False)

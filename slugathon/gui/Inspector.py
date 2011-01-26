@@ -10,10 +10,10 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.util import prefs
 
 
-class Inspector(gtk.Window):
+class Inspector(gtk.Dialog):
     """Window to show a legion's contents."""
     def __init__(self, username, parent):
-        gtk.Window.__init__(self)
+        gtk.Dialog.__init__(self, "Inspector", parent)
 
         self.username = username
 
@@ -22,14 +22,11 @@ class Inspector(gtk.Window):
         self.set_destroy_with_parent(True)
         self.set_title("Inspector - %s" % (username))
 
-        vbox = gtk.VBox(spacing=9)
-        self.add(vbox)
-
         self.legion_name = gtk.Label()
-        vbox.pack_start(self.legion_name)
+        self.vbox.pack_start(self.legion_name)
 
         hbox = gtk.HBox(spacing=3)
-        vbox.pack_start(hbox)
+        self.vbox.pack_start(hbox)
 
         self.marker_hbox = gtk.HBox(spacing=3)
         hbox.pack_start(self.marker_hbox, expand=False)

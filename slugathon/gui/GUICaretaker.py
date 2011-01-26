@@ -14,7 +14,7 @@ from slugathon.data import creaturedata
 from slugathon.util import prefs
 
 
-class GUICaretaker(gtk.Window):
+class GUICaretaker(gtk.Dialog):
     """Caretaker status window."""
 
     implements(IObserver)
@@ -23,13 +23,11 @@ class GUICaretaker(gtk.Window):
         self.username = username
         self.caretaker = game.caretaker
 
-        gtk.Window.__init__(self)
-        vbox1 = gtk.VBox()
-        self.add(vbox1)
+        gtk.Dialog.__init__(self, "Caretaker", parent)
         table = gtk.Table(rows=4, columns=6)
         table.set_row_spacings(9)
         table.set_col_spacings(9)
-        vbox1.pack_start(table, expand=False)
+        self.vbox.pack_start(table, expand=False)
 
         self.max_count_labels = {}
         self.counts_labels = {}

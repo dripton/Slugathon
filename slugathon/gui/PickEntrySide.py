@@ -47,12 +47,12 @@ def new(board, masterhex, entry_sides, parent, username=None, scale=None):
     return pick_entry_side, def1
 
 
-class PickEntrySide(gtk.Window):
+class PickEntrySide(gtk.Dialog):
     """Dialog to pick a masterhex entry side."""
 
     def __init__(self, board, masterhex, entry_sides, def1, parent,
       username=None, scale=None):
-        gtk.Window.__init__(self)
+        gtk.Dialog.__init__(self, "Pick Entry Side", parent)
 
         terrain = masterhex.terrain
         # We always orient the map as if for entry side 5.
@@ -67,8 +67,6 @@ class PickEntrySide(gtk.Window):
         self.set_destroy_with_parent(True)
         self.set_title("PickEntrySide - Slugathon - %s" % self.username)
 
-        self.vbox = gtk.VBox()
-        self.add(self.vbox)
         self.hbox1 = gtk.HBox(homogeneous=True)
         self.hbox2 = gtk.HBox()
         self.hbox3 = gtk.HBox()
