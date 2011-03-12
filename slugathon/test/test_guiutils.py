@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2009-2010 David Ripton"
+__copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -42,14 +42,6 @@ def test_combine_rectangles():
     assert cr(rect3, rect4) == rect4
     assert cr(rect3, rect5) == (0.5, 0.5, 0.5, 0.5)
     assert cr(rect4, rect5) == (0.5, 0.5, 1.5, 1.5)
-
-def test_basedir():
-    assert guiutils.basedir().endswith("/slugathon")
-    assert guiutils.basedir("images").endswith("/slugathon/images")
-    assert guiutils.basedir("images/creature/titan").endswith(
-      "/slugathon/images/creature/titan")
-    assert guiutils.basedir("images", "creature", "titan").endswith(
-      "/slugathon/images/creature/titan")
 
 def test_point_in_polygon1():
     pip = guiutils.point_in_polygon

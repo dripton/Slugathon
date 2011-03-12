@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -10,7 +10,7 @@ import tempfile
 import gtk
 import cairo
 
-from slugathon.util import guiutils
+from slugathon.util import fileutils
 
 
 CHIT_SCALE_FACTOR = 3
@@ -25,7 +25,7 @@ class Die(object):
         self.name = "%s%d" % (("Miss", "Hit")[hit], number)
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
-        path = guiutils.basedir("images/%s/%s.png" % (self.IMAGE_DIR,
+        path = fileutils.basedir("images/%s/%s.png" % (self.IMAGE_DIR,
           self.name))
         input_surface = cairo.ImageSurface.create_from_png(path)
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,

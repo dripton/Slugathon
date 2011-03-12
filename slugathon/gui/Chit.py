@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -13,7 +13,7 @@ import cairo
 import pango
 import pangocairo
 
-from slugathon.util import guiutils, colors
+from slugathon.util import guiutils, colors, fileutils
 
 
 CHIT_SCALE_FACTOR = 3
@@ -62,7 +62,7 @@ class Chit(object):
             color_name = "titan_%s" % playercolor.lower()
         self.rgb = guiutils.rgb_to_float(colors.rgb_colors[color_name])
 
-        self.paths = [guiutils.basedir("images/%s/%s.png" %
+        self.paths = [fileutils.basedir("images/%s/%s.png" %
           (self.IMAGE_DIR, base)) for base in self.bases]
 
         self.event_box = gtk.EventBox()

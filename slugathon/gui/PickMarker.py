@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2004-2010 David Ripton"
+__copyright__ = "Copyright (c) 2004-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -15,7 +15,7 @@ from twisted.internet import reactor, defer
 import gtk
 
 from slugathon.gui import icon
-from slugathon.util import guiutils
+from slugathon.util import fileutils
 from slugathon.util.log import log
 
 
@@ -61,7 +61,7 @@ class PickMarker(gtk.Dialog):
         for ii, button_name in enumerate(sorted_markers(markers_left)):
             button = gtk.Button()
             button.tag = button_name
-            pixbuf = gtk.gdk.pixbuf_new_from_file(guiutils.basedir(
+            pixbuf = gtk.gdk.pixbuf_new_from_file(fileutils.basedir(
               "images/legion/%s.png" % button_name))
             image = gtk.Image()
             image.set_from_pixbuf(pixbuf)

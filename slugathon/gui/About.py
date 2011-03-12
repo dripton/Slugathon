@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -10,7 +10,7 @@ __license__ = "GNU GPL v2"
 import gtk
 
 from slugathon.gui import icon
-from slugathon.util import guiutils
+from slugathon.util import guiutils, fileutils
 
 
 class About(gtk.AboutDialog):
@@ -23,13 +23,13 @@ class About(gtk.AboutDialog):
         self.set_name("Slugathon")
         self.set_copyright("Copyright (c) 2003-2010 David Ripton")
 
-        license_fn = guiutils.basedir("docs/COPYING.txt")
+        license_fn = fileutils.basedir("docs/COPYING.txt")
         with open(license_fn) as fil:
             st = fil.read()
         self.set_license(st)
         self.set_wrap_license(False)
 
-        version_fn = guiutils.basedir("docs/version.txt")
+        version_fn = fileutils.basedir("docs/version.txt")
         try:
             with open(version_fn) as fil:
                 version = fil.read().strip()

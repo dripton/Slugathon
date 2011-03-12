@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -12,7 +12,7 @@ import cairo
 import pango
 import pangocairo
 
-from slugathon.util import guiutils
+from slugathon.util import guiutils, fileutils
 
 
 CHIT_SCALE_FACTOR = 3
@@ -25,7 +25,7 @@ class Marker(object):
         self.name = legion.markername
         self.chit_scale = CHIT_SCALE_FACTOR * scale
         self.show_height = show_height
-        self.image_path = guiutils.basedir("images/legion/%s.png" % self.name)
+        self.image_path = fileutils.basedir("images/legion/%s.png" % self.name)
         self.location = None    # (x, y) of top left corner
         self.build_image()
 

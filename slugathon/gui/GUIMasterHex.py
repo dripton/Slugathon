@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2010 David Ripton"
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -9,7 +9,7 @@ import cairo
 import pango
 import pangocairo
 
-from slugathon.util import guiutils, colors
+from slugathon.util import guiutils, colors, fileutils
 
 
 SQRT3 = math.sqrt(3.0)
@@ -182,7 +182,7 @@ class GUIMasterHex(object):
         self.dest_x = int(round(self.center[0] - myboxsize[0] / 2.))
         self.dest_y = int(round(self.center[1] - myboxsize[1] / 2.))
 
-        image_filename = guiutils.basedir("images/masterhex",
+        image_filename = fileutils.basedir("images/masterhex",
           self.masterhex.overlay_filename)
         input_surface = cairo.ImageSurface.create_from_png(image_filename)
         input_width = input_surface.get_width()

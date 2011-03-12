@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -10,7 +10,7 @@ import cairo
 import pango
 import pangocairo
 
-from slugathon.util import guiutils, colors, sliceborder
+from slugathon.util import guiutils, colors, sliceborder, fileutils
 
 
 SQRT3 = math.sqrt(3.0)
@@ -22,7 +22,7 @@ y_font_position = [0.2, 0.2, 0.8, 0.8, 0.8, 0.2]
 
 rp = guiutils.roundpoint
 
-IMAGE_DIR = guiutils.basedir("images/battlehex")
+IMAGE_DIR = fileutils.basedir("images/battlehex")
 
 
 class GUIBattleHex(object):

@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2010 David Ripton"
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -140,11 +140,3 @@ def combine_rectangles(rect1, rect2):
     max_y = max(y1 + height1, y2 + height2)
     height = max_y - y
     return x, y, width, height
-
-def basedir(*args):
-    """Return an absolute path based on the base slugathon package directory
-    and the passed paths."""
-    parts = [os.path.dirname(__file__), ".."]
-    if args:
-        parts.extend(args)
-    return os.path.abspath(os.path.join(*parts))
