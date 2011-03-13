@@ -85,9 +85,7 @@ class DimBot(object):
                     def1.addErrback(self.failure)
                     return
                 elif len(legion) == 7 and player.markernames:
-                    # split 5-2.  For now, always split.
-                    # TODO consider safety and what can be attacked
-                    # or recruited
+                    # Always split 5-2.  (DimBot is dim.)
                     new_markername = self._choose_marker(player)
                     lst = legion.sorted_creatures
                     keep = lst[:-2]
