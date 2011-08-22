@@ -169,10 +169,6 @@ class Server(Observed):
         for ainame in ainames:
             self.game_to_ais[game.name].add(ainame)
         for ainame in ainames:
-            if self.no_passwd:
-                aipass = None
-            else:
-                aipass = self._passwd_for_username(ainame)
             log("ainame", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
             args = [
@@ -184,7 +180,9 @@ class Server(Observed):
                   (game.name, ainame))
             ]
             if not self.no_passwd:
-                args.extend(["--password", aipass])
+                aipass = self._passwd_for_username(ainame)
+                if aipass is not None:
+                    args.extend(["--password", aipass])
             reactor.spawnProcess(pp, "slugathon-aiclient", args=args,
               env=os.environ)
 
