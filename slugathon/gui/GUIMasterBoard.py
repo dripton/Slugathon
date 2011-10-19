@@ -549,7 +549,7 @@ class GUIMasterBoard(gtk.Window):
         height = gtk.gdk.screen_height()
         xscale = width / (self.board.hex_width() * 4. + 2)
         # Fudge factor to leave room for menus and toolbars.
-        yscale = height / (self.board.hex_height() * 4 * SQRT3) - 2
+        yscale = height / (self.board.hex_height() * 4 * SQRT3) - 4
         return int(min(xscale, yscale))
 
     def compute_width(self):

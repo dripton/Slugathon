@@ -186,7 +186,7 @@ class GUIBattleMap(gtk.Window):
         # Fudge factor to leave room on the sides.
         xscale = width / (2 * self.battlemap.hex_width()) - 8
         # Fudge factor for menus and toolbars.
-        yscale = height / (2 * SQRT3 * self.battlemap.hex_height()) - 7
+        yscale = height / (2 * SQRT3 * self.battlemap.hex_height()) - 15
         return int(min(xscale, yscale))
 
     def compute_width(self):
