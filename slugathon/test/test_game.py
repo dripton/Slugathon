@@ -37,7 +37,6 @@ class TestGame(object):
         assert len(game.all_legions(100)) == 1
         assert len(game.all_legions(300)) == 0
 
-
     def test_find_normal_moves(self):
         game = self.game
         player = self.game.players[0]

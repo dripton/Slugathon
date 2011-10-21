@@ -10,6 +10,7 @@ from slugathon.game import Action
 # TODO Add actions for forming the game and joining the players, to simplify
 # loading?
 
+
 class History(object):
     """Event history tracker, for one game.
 

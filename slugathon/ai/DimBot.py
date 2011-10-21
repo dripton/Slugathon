@@ -281,7 +281,6 @@ class DimBot(object):
           carry_target.name, carry_target.hexlabel, carries)
         def1.addErrback(self.failure)
 
-
     def recruit(self, game):
         log("recruit")
         assert game.active_player.name == self.playername
@@ -304,7 +303,6 @@ class DimBot(object):
                     return
         def1 = self.user.callRemote("done_with_recruits", game.name)
         def1.addErrback(self.failure)
-
 
     def reinforce(self, game):
         """Reinforce, during the REINFORCE battle phase"""
@@ -329,7 +327,6 @@ class DimBot(object):
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
-
     def reinforce_after(self, game):
         """Reinforce, after the battle"""
         legion = game.defender_legion
@@ -351,7 +348,6 @@ class DimBot(object):
         def1 = self.user.callRemote("do_not_reinforce", game.name,
           legion.markername)
         def1.addErrback(self.failure)
-
 
     def summon(self, game):
         """Summon, during the REINFORCE battle phase"""
@@ -384,7 +380,6 @@ class DimBot(object):
 
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
-
 
     def summon_after(self, game):
         """Summon, after the battle is over."""

@@ -51,6 +51,7 @@ def test_friendly_legions():
     assert player.friendly_legions(8) == set([legion1])
     assert player.friendly_legions(200) == set([legion2])
 
+
 def test_can_exit_move_phase():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
@@ -69,6 +70,7 @@ def test_can_exit_move_phase():
     legion2.move(200, True, "Angel", 3)
     assert player.can_exit_move_phase
 
+
 def test_num_creatures():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
@@ -80,6 +82,7 @@ def test_num_creatures():
     assert player.selected_markername == "Rd01"
     player.create_starting_legion()
     assert player.num_creatures == 8
+
 
 def test_teleported():
     now = time.time()

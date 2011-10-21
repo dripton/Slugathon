@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 import os
 
+
 def basedir(*args):
     """Return an absolute path based on the base slugathon package directory
     and the passed paths."""

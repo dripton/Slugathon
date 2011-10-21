@@ -62,7 +62,6 @@ class NewGame(gtk.Dialog):
 
         self.show_all()
 
-
     def ok(self, widget, event):
         if self.name_entry.get_text():
             self.game_name = self.name_entry.get_text()

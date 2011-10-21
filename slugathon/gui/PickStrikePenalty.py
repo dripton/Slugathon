@@ -78,7 +78,6 @@ class PickStrikePenalty(gtk.Dialog):
 
         self.show_all()
 
-
     def cb_click(self, widget, event):
         self.destroy()
         num_dice, strike_number = widget.tup

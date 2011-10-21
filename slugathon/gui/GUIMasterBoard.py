@@ -217,7 +217,6 @@ class GUIMasterBoard(gtk.Window):
             self.event_log = EventLog.EventLog(self.game, self.username, self)
             self.game.add_observer(self.event_log)
 
-
     def cb_delete_event(self, widget, event):
         if self.game.over:
             self.cb_destroy(True)
@@ -326,7 +325,6 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.MUSTER:
                 self.highlight_recruits()
 
-
     def _pick_move_type(self, legion, moves):
         """Figure out whether to teleport, then call _pick_entry_side."""
         if self._all_teleports(moves):
@@ -401,12 +399,11 @@ class GUIMasterBoard(gtk.Window):
           legion.markername, hexlabel, entry_side, teleport, lord_name)
         def1.addErrback(self.failure)
 
-
     def clicked_on_marker(self, area, event, marker):
         if event.button >= 2:
             ShowLegion.ShowLegion(self.username, marker.legion, True, self)
 
-        else: # left button
+        else:  # left button
             phase = self.game.phase
             if phase == Phase.SPLIT:
                 legion = marker.legion
@@ -481,7 +478,6 @@ class GUIMasterBoard(gtk.Window):
                           mterrain, caretaker, self)
                         def1.addCallback(self.picked_recruit)
                 self.highlight_recruits()
-
 
     def picked_marker_presplit(self, (game_name, username, markername),
       legion):
@@ -1069,7 +1065,6 @@ class GUIMasterBoard(gtk.Window):
                     def1 = self.user.callRemote("done_with_recruits",
                       self.game.name)
                     def1.addErrback(self.failure)
-
 
         elif isinstance(action, Action.ResolvingEngagement):
             hexlabel = action.hexlabel

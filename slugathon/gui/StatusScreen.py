@@ -37,7 +37,6 @@ class StatusScreen(gtk.Dialog):
 
     implements(IObserver)
 
-
     def __init__(self, game, username, parent):
         gtk.Dialog.__init__(self, "Status", parent)
         self.game = game

@@ -25,7 +25,7 @@ class Client(pb.Referenceable, Observed):
       port=config.DEFAULT_PORT):
         Observed.__init__(self)
         self.username = username
-        self.playername = username # In case the same user logs in twice
+        self.playername = username  # In case the same user logs in twice
         self.password = password
         self.host = host
         self.port = port

@@ -29,7 +29,7 @@ class Client(pb.Referenceable, Observed):
       game_name, log_path):
         Observed.__init__(self)
         self.username = username
-        self.playername = username # In case the same user logs in twice
+        self.playername = username  # In case the same user logs in twice
         self.password = password
         self.host = host
         self.port = port
@@ -331,7 +331,6 @@ class Client(pb.Referenceable, Observed):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
                       game)
 
-
         elif isinstance(action, Action.DoNotReinforce):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
@@ -399,7 +398,6 @@ class Client(pb.Referenceable, Observed):
 
         else:
             log("got unhandled action", action)
-
 
 
 def main():

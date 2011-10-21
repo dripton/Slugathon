@@ -28,6 +28,7 @@ def test_num_lords():
     assert legion.num_lords == 0
     assert legion.can_flee
 
+
 def test_creature_names():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
@@ -36,6 +37,7 @@ def test_creature_names():
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.creature_names == ["Angel", "Centaur", "Centaur",
       "Gargoyle", "Gargoyle", "Ogre", "Ogre", "Titan"]
+
 
 def test_remove_creature_by_name():
     now = time.time()
@@ -55,7 +57,8 @@ def test_remove_creature_by_name():
     except ValueError:
         pass
     else:
-        raise AssertionError, "should have raised"
+        raise AssertionError("should have raised")
+
 
 def test_add_creature_by_name():
     now = time.time()
@@ -69,7 +72,7 @@ def test_add_creature_by_name():
     except ValueError:
         pass
     else:
-        raise AssertionError, "should have raised"
+        raise AssertionError("should have raised")
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 7
     try:
@@ -77,7 +80,7 @@ def test_add_creature_by_name():
     except ValueError:
         pass
     else:
-        raise AssertionError, "should have raised"
+        raise AssertionError("should have raised")
     assert "Gargoyle" in legion.creature_names
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 6
@@ -85,6 +88,7 @@ def test_add_creature_by_name():
     legion.add_creature_by_name("Troll")
     assert len(legion) == 7
     assert "Troll" in legion.creature_names
+
 
 def test_is_legal_split():
     now = time.time()
@@ -107,6 +111,7 @@ def test_is_legal_split():
     child4 = Legion.Legion(player, "Rd03", Creature.n2c(["Centaur"]), 1)
     assert not parent2.is_legal_split(child3, child4)
 
+
 def test_could_recruit():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
@@ -121,6 +126,7 @@ def test_could_recruit():
     assert legion.could_recruit("Plain", caretaker)
     assert legion.could_recruit("Brush", caretaker)
     assert legion.could_recruit("Tower", caretaker)
+
 
 def test_available_recruits():
     now = time.time()
@@ -137,6 +143,7 @@ def test_available_recruits():
     assert legion.available_recruits("Brush", caretaker) == ["Gargoyle"]
     assert legion.available_recruits("Tower", caretaker) == ["Ogre",
       "Centaur", "Gargoyle", "Warlock"]
+
 
 def test_available_recruits_and_recruiters():
     now = time.time()
@@ -173,7 +180,7 @@ def test_available_recruits_and_recruiters():
       ("Troll", "Colossus"), ("Warbear", "Colossus"), ("Giant", "Colossus"),
       ("Colossus", "Colossus")]
     assert legion3.available_recruits_and_recruiters("Mountains",
-      caretaker) == [ ("Lion", "Colossus"), ("Minotaur", "Colossus"),
+      caretaker) == [("Lion", "Colossus"), ("Minotaur", "Colossus"),
       ("Dragon", "Colossus"), ("Colossus", "Colossus")]
     assert legion3.available_recruits_and_recruiters("Marsh", caretaker) == []
 
@@ -198,6 +205,7 @@ def test_score():
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.score == 120
 
+
 def test_sorted_creatures():
     creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Minotaur"])
@@ -207,6 +215,7 @@ def test_sorted_creatures():
     names = [creature.name for creature in li]
     assert names == ["Archangel", "Serpent", "Ranger", "Minotaur",
       "Gargoyle", "Centaur", "Ogre"]
+
 
 def test_any_summonable():
     creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
@@ -221,6 +230,7 @@ def test_any_summonable():
       "Ogre", "Ranger", "Minotaur"])
     legion = Legion.Legion(None, None, creatures, 1)
     assert not legion.any_summonable
+
 
 def test_engaged():
     now = time.time()
@@ -243,6 +253,7 @@ def test_engaged():
     legion2.move(1, False, None, 1)
     assert legion1.engaged
     assert legion2.engaged
+
 
 def test_can_summon():
     now = time.time()

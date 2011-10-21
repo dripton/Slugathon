@@ -136,8 +136,8 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             if username != game.owner.name:
-                raise AssertionError, "Game.start %s called by non-owner %s" \
-                  % (self.name, username)
+                raise AssertionError("Game.start %s called by non-owner %s"
+                  % (self.name, username))
             if game.num_players_joined < game.min_players:
                 self._spawn_ais(game)
             else:
@@ -317,7 +317,6 @@ class Server(Observed):
             game.strike(username, striker_name, striker_hexlabel,
               target_name, target_hexlabel, num_dice, strike_number)
 
-
     def done_with_strikes(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
@@ -390,7 +389,6 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             game.save(username)
-
 
     def update(self, observed, action):
         if isinstance(action, Action.MakeProposal):

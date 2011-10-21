@@ -21,6 +21,7 @@ y_font_position = [0.1, 0.2, 0.85, 0.95, 0.85, 0.2]
 
 rp = guiutils.roundpoint
 
+
 class GUIMasterHex(object):
     def __init__(self, masterhex, guiboard):
         self.masterhex = masterhex
@@ -69,7 +70,6 @@ class GUIMasterHex(object):
             self.vertexes[3] = rp((cx + 5 * scale, cy + 3 * SQRT3 * scale))
             self.vertexes[4] = rp((cx + scale, cy + 3 * SQRT3 * scale))
             self.vertexes[5] = rp((cx, cy + 2 * SQRT3 * scale))
-
 
     @property
     def bounding_rect(self):
@@ -121,8 +121,6 @@ class GUIMasterHex(object):
             guiutils.draw_polygon(ctx, self.points)
             ctx.stroke()
 
-
-
     def init_gates(self):
         """Setup the entrance and exit gates.
 
@@ -172,7 +170,6 @@ class GUIMasterHex(object):
             return _init_arrows(vx1, vy1, vx2, vy2, theta, unit)
         return None
 
-
     def init_overlay(self):
         """Setup the overlay with terrain name and image."""
         scale = self.guiboard.scale
@@ -198,11 +195,9 @@ class GUIMasterHex(object):
         ctx.set_source_surface(input_surface)
         ctx.paint()
 
-
     def draw_overlay(self, ctx):
         ctx.set_source_surface(self.surface, self.dest_x, self.dest_y)
         ctx.paint()
-
 
     def draw_label(self, ctx):
         """Display the hex label."""
@@ -223,8 +218,6 @@ class GUIMasterHex(object):
         pctx.set_source_rgb(0, 0, 0)
         pctx.move_to(x, y)
         pctx.show_layout(layout)
-
-
 
     def update_gui(self, ctx):
         self.draw_hexagon(ctx)
@@ -261,6 +254,7 @@ def _init_arch(x0, y0, x1, y1, theta, unit):
     xy.append((x1, y1))
 
     return xy
+
 
 def _init_arrow(x0, y0, x1, y1, theta, unit):
     """Return a list of points to make a single arrow."""

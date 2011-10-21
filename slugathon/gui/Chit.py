@@ -21,6 +21,7 @@ CHIT_SCALE_FACTOR = 3
 red = colors.rgb_colors["red"]
 white = colors.rgb_colors["white"]
 
+
 class Chit(object):
     """Clickable GUI creature chit"""
 
@@ -147,7 +148,7 @@ class Chit(object):
         label = str(self.creature.power)
         x = 0.14 * size
         y = 0.77 * size
-        pctx.move_to(x , y)
+        pctx.move_to(x, y)
         layout.set_text(label)
         pctx.show_layout(layout)
 

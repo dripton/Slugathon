@@ -133,7 +133,6 @@ class Anteroom(gtk.Window):
 
         self.show_all()
 
-
     def name_to_game(self, game_name):
         for game in self.games:
             if game.name == game_name:

@@ -92,7 +92,6 @@ class Flee(gtk.Dialog):
         self.connect("response", self.cb_response)
         self.show_all()
 
-
     def cb_response(self, widget, response_id):
         """Fires the deferred, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""

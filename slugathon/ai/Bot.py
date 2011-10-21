@@ -57,4 +57,3 @@ class Bot(Interface):
 
     def acquire_angel(game, markername, num_angels, num_archangels):
         """Acquire angels."""
-

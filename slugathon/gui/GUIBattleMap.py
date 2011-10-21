@@ -284,11 +284,10 @@ class GUIBattleMap(gtk.Window):
                         chit = chits[0]
                         target = chit.creature
                         num_dice = striker.number_of_dice(target)
-                        strike_number = striker.strike_number( target)
+                        strike_number = striker.strike_number(target)
                         self.strike(striker, target, num_dice, strike_number)
                         return True
         return False
-
 
     def _do_auto_carry(self, striker, target, num_dice, strike_number,
       carries):
@@ -373,7 +372,6 @@ class GUIBattleMap(gtk.Window):
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
             self.highlight_strikers()
 
-
     def clicked_on_chit(self, area, event, chit):
         phase = self.game.battle_phase
         if phase == Phase.MANEUVER:
@@ -437,7 +435,7 @@ class GUIBattleMap(gtk.Window):
         for (legion, rotate) in [
           (self.game.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE),
           (self.game.defender_legion, gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
-            for creature in legion.creatures :
+            for creature in legion.creatures:
                 if creature not in chit_creatures and not creature.dead:
                     chit = Chit.Chit(creature, legion.player.color,
                       self.scale / 2, rotate=rotate)
@@ -669,7 +667,6 @@ class GUIBattleMap(gtk.Window):
         ctx2.paint()
 
         self.repaint_hexlabels.clear()
-
 
     def repaint_all(self):
         for hexlabel in self.guihexes:
@@ -905,7 +902,6 @@ class GUIBattleMap(gtk.Window):
 
         elif isinstance(action, Action.UnSummon):
             self.repaint(["ATTACKER"])
-
 
     def picked_reinforcement(self, (legion, creature, recruiter_names)):
         if legion and creature:

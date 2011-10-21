@@ -13,8 +13,8 @@ class TestAssignTowers(object):
         self.game = Game.Game("g1", "p1", now, now, 2, 6)
 
     def _simple_helper(self, num_players):
-        for num in xrange(num_players-1):
-            self.game.add_player("p%d" % (num+2))
+        for num in xrange(num_players - 1):
+            self.game.add_player("p%d" % (num + 2))
         self.game.assign_towers()
         towers = set([player.starting_tower for player in self.game.players])
         assert len(towers) == num_players
@@ -31,8 +31,8 @@ class TestAssignTowers(object):
         trials = 100
         num_towers = 6
         counts = {}
-        for num in xrange(num_players-1):
-            self.game.add_player("p%d" % (num+2))
+        for num in xrange(num_players - 1):
+            self.game.add_player("p%d" % (num + 2))
         for unused in xrange(trials):
             self.game.assign_towers()
             towers = set([player.starting_tower for player in

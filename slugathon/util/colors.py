@@ -209,4 +209,3 @@ contrasting_colors = {
     "Gold": "Black",
     "Red": "White",
 }
-

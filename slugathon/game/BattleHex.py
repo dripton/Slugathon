@@ -81,7 +81,6 @@ class BattleHex(object):
                         if self.x & 1:
                             self.neighbors[4] = hex1
 
-
     def hexsides_with_border(self, border):
         """Return the set of hexsides with this border."""
         result = set()

@@ -74,7 +74,6 @@ class GUICaretaker(gtk.Dialog):
         self.set_title("Caretaker - %s" % username)
         self.show_all()
 
-
     def cb_configure_event(self, event, unused):
         if self.username:
             x, y = self.get_position()
@@ -84,7 +83,6 @@ class GUICaretaker(gtk.Dialog):
             prefs.save_window_size(self.username, self.__class__.__name__,
               width, height)
         return False
-
 
     def update_max_count_label(self, creature_name, max_count):
         label = self.max_count_labels[creature_name]

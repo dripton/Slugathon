@@ -74,7 +74,6 @@ class SplitLegion(gtk.Dialog):
 
         self.show_all()
 
-
     def cb_click(self, widget, event):
         """Move the clicked-on Chit's EventBox to the other hbox."""
         eventbox = widget

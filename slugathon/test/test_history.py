@@ -97,6 +97,7 @@ def test_history_2():
     assert not history.can_undo(playername)
     assert history.can_redo(playername)
 
+
 def test_save():
     game_name = "game"
     playername = "player"
@@ -133,6 +134,7 @@ def test_save():
         lines = fil.readlines()
     assert len(lines) == 2
 
+
 def test_load():
     history = History.History()
     assert history.actions == []
@@ -143,6 +145,7 @@ def test_load():
     for action in history.actions:
         assert isinstance(action, Action.MoveLegion)
     os.remove(tmp_path)
+
 
 savefile_str = """\
 AssignTower {'playername': 'dripton', 'tower_num': 400, 'game_name': 'a'}
@@ -192,6 +195,7 @@ RecruitCreature {'playername': 'dripton', 'markername': 'Rd02', \
 RecruitCreature {'playername': 'dripton', 'markername': 'Rd04', \
 'creature_name': 'Warlock', 'game_name': 'a', 'recruiter_names': ['Titan']}
 """
+
 
 def test_load2():
     history = History.History()

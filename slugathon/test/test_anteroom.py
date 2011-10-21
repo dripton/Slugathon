@@ -15,6 +15,7 @@ client = None
 def setup_module(module):
     utils.getProcessValue("python", ["slugathon-server"])
 
+
 def test_init():
     global client
     client = Client.Client("unittest", "unittest")
@@ -22,14 +23,17 @@ def test_init():
     def1.addCallback(connected)
     def1.addErrback(failure)
 
+
 def connected():
     anteroom = client.anteroom
     assert isinstance(anteroom, Anteroom.Anteroom)
     gtk.main()
 
+
 def failure():
     reactor.stop()
     assert False
+
 
 # TODO Use a process protocol to make this more portable.
 def teardown_module(module):

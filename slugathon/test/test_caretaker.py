@@ -11,11 +11,13 @@ def test_init():
     assert caretaker.num_left("Titan") == 6
     assert caretaker.num_left("Wyvern") == 18
 
+
 def test_take_one():
     caretaker = Caretaker.Caretaker()
     assert caretaker.num_left("Wyvern") == 18
     caretaker.take_one("Wyvern")
     assert caretaker.num_left("Wyvern") == 17
+
 
 def test_put_one_back():
     caretaker = Caretaker.Caretaker()
@@ -24,6 +26,7 @@ def test_put_one_back():
     assert caretaker.num_left("Angel") == 17
     caretaker.put_one_back("Angel")
     assert caretaker.num_left("Angel") == 18
+
 
 def test_kill_one():
     caretaker = Caretaker.Caretaker()
@@ -40,6 +43,7 @@ def test_kill_one():
     caretaker.kill_one("Centaur")
     assert caretaker.num_left("Centaur") == 24
     assert caretaker.graveyard["Centaur"] == 1
+
 
 def test_number_in_play():
     caretaker = Caretaker.Caretaker()

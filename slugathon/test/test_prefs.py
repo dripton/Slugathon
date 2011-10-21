@@ -22,6 +22,7 @@ def test_save_load_window_position():
     assert x2 == x1
     assert y2 == y1
 
+
 def test_save_load_window_size():
     x1 = Dice.roll()[0]
     y1 = Dice.roll()[0]
@@ -30,9 +31,11 @@ def test_save_load_window_size():
     assert x2 == x1
     assert y2 == y1
 
+
 def test_save_server():
     prefs.save_server("localhost", config.DEFAULT_PORT)
     assert ("localhost", config.DEFAULT_PORT) in prefs.load_servers()
+
 
 def test_load_servers():
     entries = prefs.load_servers()
@@ -43,14 +46,17 @@ def test_load_servers():
         assert type(port) == int
     assert ("localhost", config.DEFAULT_PORT) in entries
 
+
 def test_load_playernames():
     playernames = prefs.load_playernames()
     assert playername in playernames
     assert getpass.getuser() in playernames
 
+
 def test_passwd_path():
     assert prefs.passwd_path() == os.path.expanduser(
       "~/.slugathon/globalprefs/passwd")
+
 
 def teardown_module(module):
     shutil.rmtree(prefs.player_prefs_dir(playername))

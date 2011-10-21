@@ -25,6 +25,7 @@ ARROWS_ONLY = -2
 # Entry side constants
 TELEPORT = "TELEPORT"
 
+
 def opposite(direction):
     return (direction + 3) % 6
 
@@ -67,7 +68,6 @@ class Game(Observed):
         self.pending_carry = None
         self.pending_summon = False
         self.pending_reinforcement = False
-
 
     @property
     def battle_legions(self):
@@ -134,7 +134,7 @@ class Game(Observed):
                 owner = player
                 min_join_order = player.join_order
         if owner is None:
-            raise AssertionError, "Game has no owner"
+            raise AssertionError("Game has no owner")
         return owner
 
     def get_playernames(self):
@@ -161,13 +161,13 @@ class Game(Observed):
     def add_player(self, playername):
         """Add a player to this game."""
         if self.started:
-            raise AssertionError, "add_player on started game"
+            raise AssertionError("add_player on started game")
         if playername in self.get_playernames():
-            raise AssertionError, "add_player from %s already in game %s" % (
-              playername, self.name)
+            raise AssertionError("add_player from %s already in game %s" % (
+              playername, self.name))
         if len(self.players) >= self.max_players:
-            raise AssertionError, "%s tried to join full game %s" % (
-              playername, self.name)
+            raise AssertionError("%s tried to join full game %s" % (
+              playername, self.name))
         self.num_players_joined += 1
         player = Player.Player(playername, self, self.num_players_joined)
         self.players.append(player)
@@ -179,7 +179,7 @@ class Game(Observed):
         Not allowed after the game has started.
         """
         if self.started:
-            raise AssertionError, "remove_player on started game"
+            raise AssertionError("remove_player on started game")
         try:
             player = self.get_player_by_name(playername)
         except KeyError:
@@ -226,8 +226,8 @@ class Game(Observed):
 
         Called only on server side, and only by game owner."""
         if playername != self.owner.name:
-            raise AssertionError, "Game.start %s called by non-owner %s" % (
-              self.name, playername)
+            raise AssertionError("Game.start %s called by non-owner %s" % (
+              self.name, playername))
         self.started = True
         self.assign_towers()
         self.sort_players()
@@ -285,7 +285,7 @@ class Game(Observed):
             log("illegal assign_color attempt", playername, color)
             return
         if color not in self.colors_left:
-            raise AssertionError, "tried to take unavailable color"
+            raise AssertionError("tried to take unavailable color")
         player.assign_color(color)
 
     def done_assigning_first_markers(self):
@@ -303,7 +303,7 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         log(player.markernames)
         if markername not in player.markernames:
-            raise AssertionError, "marker not available"
+            raise AssertionError("marker not available")
         player.pick_marker(markername)
         if self.done_assigning_first_markers():
             for player in self.players:
@@ -634,7 +634,6 @@ class Game(Observed):
             self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
 
-
     def flee(self, playername, markername):
         """Called from Server"""
         legion = self.find_legion(markername)
@@ -875,7 +874,6 @@ class Game(Observed):
         legion = player.legions[markername]
         legion.unreinforce()
 
-
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
       carries):
         """Called from Server"""
@@ -964,9 +962,7 @@ class Game(Observed):
         action = Action.GameOver(self.name, winner_names)
         self.notify(action)
 
-
     # Battle methods
-
     def other_battle_legion(self, legion):
         """Return the other legion in the battle."""
         for legion2 in self.battle_legions:

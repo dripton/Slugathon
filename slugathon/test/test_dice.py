@@ -24,6 +24,7 @@ def find_median(rolls):
         return (clone[int(round(midpoint - 0.5))] +
                 clone[int(round(midpoint + 0.5))]) / 2.
 
+
 def convert_to_binary(rolls, median):
     ms = []
     for roll in rolls:
@@ -33,12 +34,14 @@ def convert_to_binary(rolls, median):
             ms.append(1)
     return ms
 
+
 def count_zeros(rolls):
     count = 0
     for roll in rolls:
         if roll == 0:
             count += 1
     return count
+
 
 def count_runs(rolls):
     prev = None
@@ -49,6 +52,7 @@ def count_runs(rolls):
         prev = roll
     return count
 
+
 def count_positive_diffs(rolls):
     prev = 7
     count = 0
@@ -57,6 +61,7 @@ def count_positive_diffs(rolls):
             count += 1
         prev = roll
     return count
+
 
 def count_non_zero_diffs(rolls):
     prev = None
@@ -67,6 +72,7 @@ def count_non_zero_diffs(rolls):
         prev = roll
     return count
 
+
 def trim_zero_runs(rolls):
     """Return the list with runs of identical rolls reduced to just one."""
     li = []
@@ -76,6 +82,7 @@ def trim_zero_runs(rolls):
             li.append(roll)
         prev = roll
     return li
+
 
 def sign(num):
     """Return 1 if num is positive, 0 if zero, -1 if negative."""
@@ -177,7 +184,7 @@ class TestDice(object):
         neg = m - pos
         R = 0. + pos
         mean_R = 1. + (2 * pos * neg) / (pos + neg)
-        var_R = ((( 2. * pos * neg) * (2. * pos * neg - pos - neg)) /
+        var_R = (((2. * pos * neg) * (2. * pos * neg - pos - neg)) /
                 ((pos + neg) * (pos + neg) * (pos + neg - 1)))
         log("Runs test: R =", R, "m = ", m, "mean = ", mean_R, "var =", var_R)
         fail_if_abnormal(R, mean_R, var_R)

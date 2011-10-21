@@ -13,16 +13,19 @@ import sys
 
 outstreams = [sys.stdout]
 
+
 def log_to_path(path):
     """Create a logfile at path, and log only to it from now on."""
     fil = open(path, "w")
     global outstreams
     outstreams = [fil]
 
+
 def tee_to_path(path):
     """Create a logfile at path, and also log to it from now on."""
     fil = open(path, "w")
     outstreams.append(fil)
+
 
 def log(*args):
     tup = inspect.stack()[1]

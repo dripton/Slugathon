@@ -23,6 +23,7 @@ def test_rectangles_intersect():
     assert not ri(rect3, rect5)
     assert not ri(rect4, rect5)
 
+
 def test_combine_rectangles():
     cr = guiutils.combine_rectangles
     rect1 = (0, 0, 0, 0)
@@ -42,6 +43,7 @@ def test_combine_rectangles():
     assert cr(rect3, rect4) == rect4
     assert cr(rect3, rect5) == (0.5, 0.5, 0.5, 0.5)
     assert cr(rect4, rect5) == (0.5, 0.5, 1.5, 1.5)
+
 
 def test_point_in_polygon1():
     pip = guiutils.point_in_polygon
@@ -72,6 +74,7 @@ def test_point_in_polygon1():
     assert not pip((5, 5), v3)
     assert not pip((6, 5), v3)
 
+
 def test_point_in_polygon2():
     pip = guiutils.point_in_polygon
     v4 = [(0, 0), (5, 0), (5, 10), (0, 10)]
@@ -79,6 +82,7 @@ def test_point_in_polygon2():
     assert not pip((5, 10), v4)
     assert not pip((0, 10), v4)
     assert pip((0.001, 0.001), v4)
+
 
 def test_point_in_polygon3():
     pip = guiutils.point_in_polygon

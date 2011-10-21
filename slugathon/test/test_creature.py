@@ -15,6 +15,7 @@ def test_non_existent_creature():
     else:
         assert False, "Should have raised"
 
+
 def test_init():
     creature = Creature.Creature("Ogre")
     assert creature.name == "Ogre"
@@ -30,11 +31,13 @@ def test_init():
     assert creature.max_count == 25
     assert creature.color_name == "ogre_red"
 
+
 def test_score():
     creature = Creature.Creature("Ogre")
     assert creature.score == 12
     creature = Creature.Creature("Colossus")
     assert creature.score == 40
+
 
 def test_native():
     ogre = Creature.Creature("Ogre")
@@ -89,6 +92,7 @@ def test_native():
 
     unicorn = Creature.Creature("Unicorn")
     assert unicorn.is_native("Slope")
+
 
 def test_titan_power():
     now = time.time()

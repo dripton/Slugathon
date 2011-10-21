@@ -132,7 +132,6 @@ class GUIBattleHex(object):
             guiutils.draw_polygon(ctx, self.points)
             ctx.stroke()
 
-
     def init_hex_overlay(self):
         """Setup the overlay with terrain name and image."""
         overlay_filename = "%s.png" % self.battlehex.terrain

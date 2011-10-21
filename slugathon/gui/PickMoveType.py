@@ -69,7 +69,6 @@ class PickMoveType(gtk.Dialog):
 
         self.show_all()
 
-
     def cb_response(self, widget, response_id):
         if response_id == TELEPORT:
             self.deferred.callback(True)

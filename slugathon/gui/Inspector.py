@@ -51,7 +51,6 @@ class Inspector(gtk.Dialog):
         self.connect("delete-event", self.hide_window)
         self.connect("configure-event", self.cb_configure_event)
 
-
     def cb_configure_event(self, event, unused):
         if self.username:
             x, y = self.get_position()

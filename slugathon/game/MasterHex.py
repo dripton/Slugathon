@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 BIGNUM = 99999999
 
+
 class MasterHex(object):
     """A logical MasterBoard hex.  No GUI logic.
 

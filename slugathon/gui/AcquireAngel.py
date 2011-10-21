@@ -19,6 +19,7 @@ def new(username, legion, num_archangels, num_angels, caretaker, parent):
       caretaker, def1, parent)
     return acquire_angel, def1
 
+
 def find_angel_combos(num_archangels, num_angels, archangels_left,
   angels_left):
     """Return a list of tuples of Creatures, corresponding to each
@@ -42,7 +43,6 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
     sorter.sort(reverse=True)
     combos = [combo for (score, combo) in sorter]
     return combos
-
 
 
 class AcquireAngel(gtk.Dialog):

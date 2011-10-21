@@ -16,15 +16,18 @@ def flatten_point_list(points):
             li.append(item)
     return tuple(li)
 
+
 def rgb_to_gtk(rgb):
     """Convert a tuple of 8-bit decimal RGB color values to 16-bit."""
     li = [256 * value for value in rgb]
     return tuple(li)
 
+
 def rgb_to_float(rgb):
     """Convert a tuple of 8-bit decimal RGB color values to 0.0 - 1.0."""
     li = [value / 256.0 for value in rgb]
     return tuple(li)
+
 
 def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     """Return a list of integer 2-tuple points along the semicircle that
@@ -68,9 +71,11 @@ def scale_polygon(vertexes, ratio):
         nv.append((center[0] + deltax, center[1] + deltay))
     return nv
 
+
 def point_in_square(point, topleft, length):
     return (point[0] >= topleft[0] and point[1] >= topleft[1] and
       point[0] < topleft[0] + length and point[1] < topleft[1] + length)
+
 
 def point_in_polygon(point, vertexes):
     """Return True iff the point (a 2-tuple) is in the polygon specified
@@ -96,9 +101,11 @@ def midpoint(point1, point2):
     yy = (point1[1] + point2[1]) / 2.
     return (xx, yy)
 
+
 def roundpoint(point):
     """Return a point with both coordinates rounded to integers."""
     return (int(round(point[0])), int(round(point[1])))
+
 
 def exit(*unused):
     """Quit the program with return status 0.
@@ -111,12 +118,14 @@ def exit(*unused):
     else:
         sys.exit(0)
 
+
 def draw_polygon(ctx, points):
     """Draw a polygon using Cairo"""
     ctx.move_to(*points[0])
     for point in points[1:]:
         ctx.line_to(*point)
     ctx.close_path()
+
 
 def rectangles_intersect(rect1, rect2):
     """Return True iff the two rectangles intersect"""
@@ -127,6 +136,7 @@ def rectangles_intersect(rect1, rect2):
     if y1 + height1 < y2 or y2 + height2 < y1:
         return False
     return True
+
 
 def combine_rectangles(rect1, rect2):
     """Return the smallest rectangle containing both passed rectangles."""

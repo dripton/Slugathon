@@ -18,6 +18,7 @@ def test_fromstring():
     assert obj.game_name == "game"
     assert obj.hexlabel == 1
 
+
 def test_eq():
     obj1 = Action.fromstring("MoveLegion {'markername': 'Rd01', \
 'entry_side': 1, 'teleport': False, 'playername': 'player', \

@@ -10,19 +10,23 @@ board = MasterBoard.MasterBoard()
 hex1 = board.hexes[1]
 hex2 = board.hexes[2]
 
+
 def test_init_hex():
     assert hex1.terrain == "Plain"
     assert hex1.x == 7
     assert hex1.y == 5
+
 
 def test_find_direction():
     """Returns a direction (0 to 5) to the hex with the given label."""
     assert hex1.find_direction(2) == 2
     assert hex1.find_direction(1000) == 0
 
+
 def test_hex_inverted():
     assert hex1.inverted
     assert not board.hexes[2].inverted
+
 
 def test_exits():
     assert hex1.exits[0] == "ARCH"
@@ -59,19 +63,23 @@ def test_neighbors():
     assert hex1.neighbors[4] == board.hexes[42]
     assert hex1.neighbors[5] == None
 
+
 def test_flatten_point_list():
-    vertexes = [(0,1), (2,3), (4,5), (6,7), (8,9), (10,11)]
+    vertexes = [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10, 11)]
     assert (guiutils.flatten_point_list(vertexes) ==
             (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
+
 
 def test_rgb_to_gtk():
     assert guiutils.rgb_to_gtk((0, 0, 0)) == ((0, 0, 0))
     assert guiutils.rgb_to_gtk((255, 255, 255)) == ((65280, 65280, 65280))
     assert guiutils.rgb_to_gtk((189, 0, 24)) == ((48384, 0, 6144))
 
+
 def test_build_overlay_filename():
     assert hex1.overlay_filename == "Plain_i.png"
     assert hex2.overlay_filename == "Woods_n.png"
+
 
 def test_find_label_side():
     assert hex1.find_label_side() == 3
@@ -80,6 +88,7 @@ def test_find_label_side():
     assert board.hexes[300].find_label_side() == 4
     assert board.hexes[5000].find_label_side() == 2
     assert board.hexes[105].find_label_side() == 5
+
 
 def test_get_semicircle_points():
     assert guiutils.get_semicircle_points(0, 0, 1, 1, 0) == []
@@ -112,6 +121,7 @@ def test_get_semicircle_points():
     assert li[2][1] > 100
     assert li[3] == (100, 100)
 
+
 def test_scale_polygon():
     vertexes = [(100, 0), (200, 100), (100, 200), (0, 100)]
     nv = guiutils.scale_polygon(vertexes, 0.5)
@@ -123,6 +133,7 @@ def test_scale_polygon():
     assert int(round(nv[2][1])) == 150
     assert int(round(nv[3][0])) == 50
     assert int(round(nv[3][1])) == 100
+
 
 def test_towers():
     labels = board.get_tower_labels()

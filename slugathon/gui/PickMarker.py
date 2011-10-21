@@ -25,6 +25,7 @@ def new(username, game_name, markers_left, parent):
     pickmarker = PickMarker(username, game_name, markers_left, def1, parent)
     return pickmarker, def1
 
+
 def sorted_markers(markers):
     """Return a copy of markers sorted so that the colors that have the
     fewest markers left come first.
@@ -43,6 +44,7 @@ def sorted_markers(markers):
         augmented.append((count, marker))
     augmented.sort()
     return [marker for count, marker in augmented]
+
 
 class PickMarker(gtk.Dialog):
     """Dialog to pick a legion marker."""

@@ -18,6 +18,7 @@ all_labels = frozenset([
     "ATTACKER", "DEFENDER",
 ])
 
+
 def label_to_coords(label, entry_side, down=False):
     """Convert a hex label to a tuple of X and Y coordinates, starting at the
     top left.
@@ -79,7 +80,7 @@ def label_to_coords(label, entry_side, down=False):
                F1
     """
     if label not in all_labels:
-        raise KeyError, "bad battle hex label"
+        raise KeyError("bad battle hex label")
     l2c = {}
     l2c[1] = {
         "A1": (5, 1), "A2": (5, 2), "A3": (5, 3),
@@ -119,12 +120,13 @@ def label_to_coords(label, entry_side, down=False):
     return result
 
 
-
 EPSILON = 0.000001
+
 
 def close(x, y):
     """Return True iff x and y are within EPSILON."""
     return abs(x - y) <= EPSILON
+
 
 def is_obstacle(border):
     """Return True iff the border feature is an obstacle."""
@@ -413,7 +415,6 @@ class BattleMap(object):
             return self._is_los_blocked_dir(hex1, hex1, hex2,
               self._to_left(delta_x, delta_y), strike_elevation, game=game)
 
-
     def _count_bramble_hexes_dir(self, hex1, hex2, left, count):
         """Return the number of intervening bramble hexes.
 
@@ -465,7 +466,6 @@ class BattleMap(object):
         else:
             return self._count_bramble_hexes_dir(hex1, hex2,
               self._to_left(delta_x, delta_y), 0)
-
 
     # XXX Implementation hardcoded to default Tower map
     def count_walls(self, hexlabel1, hexlabel2, game):

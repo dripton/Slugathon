@@ -131,7 +131,6 @@ class WaitingForPlayers(gtk.Dialog):
 
         self.show_all()
 
-
     def cb_click_join(self, widget, event):
         def1 = self.user.callRemote("join_game", self.game.name)
         def1.addErrback(self.failure)

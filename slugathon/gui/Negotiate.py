@@ -99,7 +99,6 @@ class Negotiate(gtk.Dialog):
 
         self.show_all()
 
-
     def cb_click(self, widget, event):
         """Toggle the clicked-on chit's creature's status."""
         event_box = widget

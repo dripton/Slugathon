@@ -110,7 +110,6 @@ class Proposal(gtk.Dialog):
 
         self.show_all()
 
-
     def cb_response(self, widget, response_id):
         """Fires the Deferred with the attacker, the defender, and
         the response_id."""

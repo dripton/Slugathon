@@ -84,8 +84,6 @@ class CleverBot(DimBot.DimBot):
         def1 = self.user.callRemote("done_with_splits", game.name)
         def1.addErrback(self.failure)
 
-
-
     def move_legions(self, game):
         """Move one or more legions, and then end the Move phase."""
         log("move_legions")
@@ -181,8 +179,6 @@ class CleverBot(DimBot.DimBot):
                 score += recruit.sort_value
                 log("recruit value", recruit.sort_value)
         return score
-
-
 
     def move_creatures(self, game):
         log("move creatures")

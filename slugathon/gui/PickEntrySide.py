@@ -130,7 +130,6 @@ class PickEntrySide(gtk.Dialog):
                 self.guihexes[hexlabel].selected = True
         self.show_all()
 
-
     def compute_scale(self):
         """Return the approximate maximum scale that lets the map fit on the
         screen."""

@@ -24,7 +24,6 @@ class bag(object):
             for item in iterable:
                 self.add(item)
 
-
     def add(self, key):
         """Add one of key."""
         self._dic[key] = self._dic.get(key, 0) + 1
@@ -79,7 +78,7 @@ class bag(object):
     def union(self, other):
         """Return a new bag containing all items in this bag and the other."""
         if not isinstance(other, bag):
-            raise TypeError, "not a bag"
+            raise TypeError("not a bag")
         newbag = bag(self._dic)
         for key, val in other._dic.iteritems():
             newbag[key] += val
@@ -96,7 +95,7 @@ class bag(object):
     def difference(self, other):
         """Return the difference between this bag and other as a new bag."""
         if not isinstance(other, bag):
-            raise TypeError, "not a bag"
+            raise TypeError("not a bag")
         newbag = bag(self._dic)
         for key, val in self._dic.iteritems():
             val2 = other[key]
@@ -107,7 +106,7 @@ class bag(object):
     def intersection(self, other):
         """Return a new bag with the elements that are in both bags."""
         if not isinstance(other, bag):
-            raise TypeError, "not a bag"
+            raise TypeError("not a bag")
         newbag = bag(self._dic)
         for key, val in self._dic.iteritems():
             val2 = other[key]
@@ -117,7 +116,7 @@ class bag(object):
     def issubset(self, other):
         """Report whether the other bag contains everything in this one."""
         if not isinstance(other, bag):
-            raise TypeError, "not a bag"
+            raise TypeError("not a bag")
         for key, val in self._dic.iteritems():
             val2 = other[key]
             if val2 < val:
@@ -127,7 +126,7 @@ class bag(object):
     def issuperset(self, other):
         """Report whether this bag contains everything in the other one."""
         if not isinstance(other, bag):
-            raise TypeError, "not a bag"
+            raise TypeError("not a bag")
         for key, val in other._dic.iteritems():
             val2 = self[key]
             if val2 < val:

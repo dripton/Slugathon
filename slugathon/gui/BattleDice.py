@@ -57,7 +57,7 @@ class BattleDice(gtk.EventBox):
                   self.rows * self.scale + (self.rows - 1) * self.spacing)
             hits = action.hits
             gtkcolor = gtk.gdk.color_parse("white")
-            chit_scale=int(round(self.scale / Die.CHIT_SCALE_FACTOR))
+            chit_scale = int(round(self.scale / Die.CHIT_SCALE_FACTOR))
             for ii, roll in enumerate(rolls):
                 die = Die.Die(roll, ii < hits, scale=chit_scale)
                 die.event_box.modify_bg(gtk.STATE_NORMAL, gtkcolor)

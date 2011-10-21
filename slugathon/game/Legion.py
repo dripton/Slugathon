@@ -147,7 +147,7 @@ class Legion(Observed):
 
     def add_creature_by_name(self, creature_name):
         if len(self) >= 7:
-            raise ValueError, "no room to add another creature"
+            raise ValueError("no room to add another creature")
         creature = Creature.Creature(creature_name)
         creature.legion = self
         self.creatures.append(creature)
@@ -157,7 +157,7 @@ class Legion(Observed):
             if creature.name == creature_name:
                 self.creatures.remove(creature)
                 return
-        raise ValueError, "tried to remove missing creature"
+        raise ValueError("tried to remove missing creature")
 
     def can_be_split(self, turn):
         if turn == 1:
@@ -342,7 +342,6 @@ class Legion(Observed):
         result_list.sort(cmp=cmp_helper)
         return result_list
 
-
     def recruit(self, creature, recruiter_names):
         """Recruit creature, and notify observers."""
         log("recruit")
@@ -484,7 +483,6 @@ class Legion(Observed):
                 action = Action.CanAcquire(self.player.game.name,
                   self.player.name, self.markername, angels, archangels)
                 self.notify(action)
-
 
     def acquire(self, angels):
         """Acquire angels, and notify observers."""

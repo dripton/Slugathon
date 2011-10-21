@@ -905,7 +905,6 @@ class TestBattle(object):
         assert ranger1.number_of_dice(ogre2) == 2
         assert ranger1.strike_number(ogre2) == 2
 
-
     def test_strikes_mountains(self):
         self.rd01.creatures.append(Creature.Creature("Lion"))
         self.rd01.creatures.append(Creature.Creature("Dragon"))

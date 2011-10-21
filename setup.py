@@ -13,6 +13,7 @@ import datetime
 
 VERSION = "0.1a1"
 
+
 class install_data_twisted(install_data):
     """Make sure data files are installed in package.
 
@@ -23,6 +24,7 @@ class install_data_twisted(install_data):
             ("install_lib", "install_dir")
         )
         install_data.finalize_options(self)
+
 
 def head_commit():
     """Return the current commit of HEAD, or "" on failure."""
@@ -36,10 +38,12 @@ def head_commit():
     else:
         return ""
 
+
 def timestamp():
     """Return the current UTC time in YYYYMMDDhhmmss form."""
     utcnow = datetime.datetime.utcnow()
     return utcnow.strftime("%Y%m%d%H%M%S")
+
 
 def write_version_file():
     """Dump a file containing the version, timestamp, and commit to
@@ -53,17 +57,17 @@ def write_version_file():
 write_version_file()
 
 setup(
-    name = "slugathon",
-    version = "%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7]),
-    description = "board game",
-    author = "David Ripton",
-    author_email = "d+slugathon@ripton.net",
-    url = "http://github.com/dripton/Slugathon/",
-    download_url = "TODO",
-    license = "GPLv2",
-    packages = ["slugathon", "slugathon.ai", "slugathon.data",
+    name="slugathon",
+    version="%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7]),
+    description="board game",
+    author="David Ripton",
+    author_email="d+slugathon@ripton.net",
+    url="http://github.com/dripton/Slugathon/",
+    download_url="TODO",
+    license="GPLv2",
+    packages=["slugathon", "slugathon.ai", "slugathon.data",
       "slugathon.game", "slugathon.gui", "slugathon.net", "slugathon.util"],
-    data_files = [
+    data_files=[
         ("slugathon/images/battlehex", glob("slugathon/images/battlehex/*")),
         ("slugathon/images/creature", glob("slugathon/images/creature/*")),
         ("slugathon/images/dice", glob("slugathon/images/dice/*")),
@@ -72,17 +76,17 @@ setup(
         ("slugathon/config", glob("slugathon/config/*")),
         ("slugathon/docs", glob("slugathon/docs/*")),
     ],
-    scripts = [
+    scripts=[
         "bin/slugathon-server",
         "bin/slugathon-client",
         "bin/slugathon-aiclient",
     ],
-    classifiers = [
+    classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: End Users/Desktop",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
     ],
-    cmdclass = {"install_data": install_data_twisted},
+    cmdclass={"install_data": install_data_twisted},
 )

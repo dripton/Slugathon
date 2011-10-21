@@ -19,6 +19,7 @@ def _terrain_to_hazards():
                     set1.add(border)
     return result
 
+
 def _terrain_to_creature_names():
     """Return a dict of masterboard terrain type to a set of all
     Creature names that can be recruited there."""
@@ -32,6 +33,7 @@ def _terrain_to_creature_names():
                 if count:
                     set1.add(creature_name)
     return result
+
 
 def _compute_nativity():
     """Return a dict of creature name to a set of all hazards
@@ -188,7 +190,6 @@ class Creature(object):
                   hex2.borders[(hexside + 3) % 6] != "Cliff"):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
-
 
     def has_los_to(self, hexlabel):
         """Return True iff this creature has line of sight to the

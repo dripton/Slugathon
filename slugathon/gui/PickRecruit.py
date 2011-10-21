@@ -92,7 +92,6 @@ class PickRecruit(gtk.Dialog):
         self.connect("response", self.cb_cancel)
         self.show_all()
 
-
     def cb_click(self, widget, event):
         """Chose a recruit."""
         eventbox = widget

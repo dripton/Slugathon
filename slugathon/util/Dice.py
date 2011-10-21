@@ -11,9 +11,11 @@ import random
 
 _rand = random.Random()
 
+
 def roll(numrolls=1, sides=6):
     """Return a list of numrolls random integers from 1..sides"""
     return [_rand.randint(1, sides) for unused in xrange(numrolls)]
+
 
 def shuffle(lst):
     """Shuffle the list in place.

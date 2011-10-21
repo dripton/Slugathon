@@ -48,9 +48,11 @@ class ConfirmDialog(gtk.MessageDialog):
 if __name__ == "__main__":
     confirm_dialog, def1 = new(parent=None, title="Info",
       message_format="Are we having fun yet?")
+
     def print_arg(arg):
         print arg
         reactor.stop()
+
     def1.addCallback(print_arg)
     def1.addErrback(print_arg)
     reactor.run()

@@ -37,11 +37,11 @@ class About(gtk.AboutDialog):
             version = "unknown"
         self.set_version(version)
 
-        self.set_authors(["David Ripton",])
+        self.set_authors(["David Ripton", ])
         self.set_artists(["Chris Byler", "Keith Carter", "Chris Howe",
           "Klint Hull", "David Lum", "John Lum", "Agustin Martin",
           "Tchula Ripton", "Jerry Reiger", "Josh Smith",
-          "Sakis Spyropoulos", "D. U. Thibault",])
+          "Sakis Spyropoulos", "D. U. Thibault", ])
 
         self.set_logo(icon.pixbuf)
         self.set_website("http://github.com/dripton/Slugathon")
