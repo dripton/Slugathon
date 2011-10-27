@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2008-2009 David Ripton"
+__copyright__ = "Copyright (c) 2008-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -73,6 +73,58 @@ def load_window_size(playername, window_name):
     """Return a preferred window size as (width, height)."""
     try:
         with open(window_size_path(playername, window_name)) as fil:
+            tokens = fil.read().split()
+        width = int(tokens[0])
+        height = int(tokens[1])
+        return width, height
+    except (OSError, IOError, ValueError):
+        return None
+
+
+def global_window_position_path(window_name):
+    """Return the path to the window position prefs file."""
+    return os.path.join(GLOBAL_PREFS_DIR, window_name + "_position")
+
+
+def save_global_window_position(window_name, x, y):
+    """Save (x, y) as a preferred window position."""
+    if not os.path.exists(GLOBAL_PREFS_DIR):
+        os.makedirs(GLOBAL_PREFS_DIR)
+    with open(global_window_position_path(window_name), "w") as fil:
+        fil.write("%d\n" % x)
+        fil.write("%d\n" % y)
+
+
+def load_global_window_position(window_name):
+    """Return a preferred window position as (x, y)."""
+    try:
+        with open(global_window_position_path(window_name)) as fil:
+            tokens = fil.read().split()
+        x = int(tokens[0])
+        y = int(tokens[1])
+        return x, y
+    except (OSError, IOError, ValueError):
+        return None
+
+
+def global_window_size_path(window_name):
+    """Return the path to the window size prefs file."""
+    return os.path.join(GLOBAL_PREFS_DIR, window_name + "_size")
+
+
+def save_global_window_size(window_name, width, height):
+    """Save (width, height) as a preferred window size."""
+    if not os.path.exists(GLOBAL_PREFS_DIR):
+        os.makedirs(GLOBAL_PREFS_DIR)
+    with open(global_window_size_path(window_name), "w") as fil:
+        fil.write("%d\n" % width)
+        fil.write("%d\n" % height)
+
+
+def load_global_window_size(window_name):
+    """Return a preferred window size as (width, height)."""
+    try:
+        with open(global_window_size_path(window_name)) as fil:
             tokens = fil.read().split()
         width = int(tokens[0])
         height = int(tokens[1])
