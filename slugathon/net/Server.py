@@ -41,7 +41,7 @@ class Server(Observed):
         self.games = []
         self.name_to_user = {}
         # {game_name: set(ainame) we're waiting for
-        self.game_to_ais = {}
+        self.game_to_waiting_ais = {}
         if log_path:
             tee_to_path(log_path)
 
@@ -106,6 +106,7 @@ class Server(Observed):
         self.notify(action)
 
     def join_game(self, username, game_name):
+        log("join_game", username, game_name)
         game = self.name_to_game(game_name)
         if game:
             try:
@@ -115,6 +116,12 @@ class Server(Observed):
             else:
                 action = Action.JoinGame(username, game.name)
                 self.notify(action)
+            set1 = self.game_to_waiting_ais[game_name]
+            if set1:
+                set1.discard(username)
+                if not set1:
+                    game = self.name_to_game(game_name)
+                    reactor.callLater(1, game.start, game.owner.name)
 
     def drop_from_game(self, username, game_name):
         game = self.name_to_game(game_name)
@@ -144,16 +151,6 @@ class Server(Observed):
             else:
                 game.start(username)
 
-    def ai_started(self, game_name, ainame):
-        """Will be called by AIProcessProtocol when a spawned AI has
-        started."""
-        log("ai_started", game_name, ainame)
-        set1 = self.game_to_ais[game_name]
-        set1.discard(ainame)
-        if not set1:
-            game = self.name_to_game(game_name)
-            reactor.callLater(1, game.start, game.owner.name)
-
     def _passwd_for_username(self, username):
         with open(self.passwd_path) as fil:
             for line in fil:
@@ -165,10 +162,10 @@ class Server(Observed):
     def _spawn_ais(self, game):
         num_ais = game.min_players - game.num_players_joined
         ainames = ["ai%d" % ii for ii in xrange(1, num_ais + 1)]
-        self.game_to_ais[game.name] = set()
+        self.game_to_waiting_ais[game.name] = set()
         # Add all AIs to the wait list first, to avoid a race.
         for ainame in ainames:
-            self.game_to_ais[game.name].add(ainame)
+            self.game_to_waiting_ais[game.name].add(ainame)
         for ainame in ainames:
             log("ainame", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
@@ -407,7 +404,6 @@ class AIProcessProtocol(protocol.ProcessProtocol):
 
     def connectionMade(self):
         log("AIProcessProtocol.connectionMade", self.game_name, self.ainame)
-        self.server.ai_started(self.game_name, self.ainame)
 
 
 def main():
