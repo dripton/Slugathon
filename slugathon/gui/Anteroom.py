@@ -115,9 +115,9 @@ class Anteroom(gtk.Window):
         self.connect("configure-event", self.cb_configure_event)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
         new_game_button.connect("button-press-event",
-          self.on_new_game_button_click)
+          self.cb_new_game_button_click)
         load_game_button.connect("button-press-event",
-          self.on_load_game_button_click)
+          self.cb_load_game_button_click)
 
         if self.username:
             tup = prefs.load_window_position(self.username,
@@ -215,10 +215,10 @@ class Anteroom(gtk.Window):
                 def1.addErrback(self.failure)
                 self.chat_entry.set_text("")
 
-    def on_new_game_button_click(self, widget, event):
+    def cb_new_game_button_click(self, widget, event):
         NewGame.NewGame(self.user, self.username, self)
 
-    def on_load_game_button_click(self, widget, event):
+    def cb_load_game_button_click(self, widget, event):
         LoadGame.LoadGame(self.user, self.username, self)
 
     def receive_chat_message(self, message):

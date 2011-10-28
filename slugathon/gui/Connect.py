@@ -68,7 +68,7 @@ class Connect(gtk.Window):
 
         connect_button = gtk.Button("Connect to server")
         connect_button.connect("button-press-event",
-          self.on_connect_button_clicked)
+          self.cb_connect_button_clicked)
         vbox1.pack_start(connect_button, expand=False)
 
         hseparator1 = gtk.HSeparator()
@@ -76,7 +76,7 @@ class Connect(gtk.Window):
 
         start_server_button = gtk.Button("Start local server")
         start_server_button.connect("button-press-event",
-          self.on_start_server_button_clicked)
+          self.cb_start_server_button_clicked)
         vbox1.pack_start(start_server_button, expand=False)
 
         hseparator2 = gtk.HSeparator()
@@ -108,7 +108,7 @@ class Connect(gtk.Window):
             tee_to_path(log_path)
 
         if connect_now:
-            reactor.callWhenRunning(self.on_connect_button_clicked)
+            reactor.callWhenRunning(self.cb_connect_button_clicked)
 
     def _init_playernames(self, playername):
         self.playernames.update(prefs.load_playernames())
@@ -165,7 +165,7 @@ class Connect(gtk.Window):
         self.server_port_comboboxentry.set_text_column(0)
         self.server_port_comboboxentry.set_active(active_index)
 
-    def on_connect_button_clicked(self, *args):
+    def cb_connect_button_clicked(self, *args):
         playername = self.playername_comboboxentry.child.get_text()
         password = self.password_entry.get_text()
         server_name = self.server_name_comboboxentry.child.get_text()
@@ -178,7 +178,7 @@ class Connect(gtk.Window):
         def1.addCallback(self.connected)
         def1.addErrback(self.connection_failed)
 
-    def on_start_server_button_clicked(self, *args):
+    def cb_start_server_button_clicked(self, *args):
         utils.getProcessValue("python", ["slugathon-server"])
 
     def save_window_position(self):
