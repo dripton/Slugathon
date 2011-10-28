@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2003-2010 David Ripton"
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -8,6 +8,7 @@ import os
 import time
 from optparse import OptionParser
 import tempfile
+import sys
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
@@ -172,7 +173,9 @@ class Server(Observed):
             log("ainame", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
             args = [
-                "slugathon-aiclient",
+                sys.executable,
+                "-m",
+                "slugathon.ai.AIClient",
                 "--playername", ainame,
                 "--port", str(self.port),
                 "--game-name", game.name,
@@ -183,8 +186,7 @@ class Server(Observed):
                 aipass = self._passwd_for_username(ainame)
                 if aipass is not None:
                     args.extend(["--password", aipass])
-            reactor.spawnProcess(pp, "slugathon-aiclient", args=args,
-              env=os.environ)
+            reactor.spawnProcess(pp, sys.executable, args=args, env=os.environ)
 
     def pick_color(self, username, game_name, color):
         game = self.name_to_game(game_name)
