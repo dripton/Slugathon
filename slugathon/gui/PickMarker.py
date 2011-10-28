@@ -89,6 +89,7 @@ class PickMarker(gtk.Dialog):
 
 
 if __name__ == "__main__":
+
     def my_callback((game_name, username, markername)):
         log("picked", markername)
         reactor.stop()

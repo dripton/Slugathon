@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2009-2010 David Ripton"
+__copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -21,7 +21,7 @@ class install_data_twisted(install_data):
     """
     def finalize_options(self):
         self.set_undefined_options("install",
-            ("install_lib", "install_dir")
+            ("install_lib", "install_dir"),
         )
         install_data.finalize_options(self)
 
