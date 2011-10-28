@@ -181,7 +181,10 @@ class Server(Observed):
             ]
             if not self.no_passwd:
                 aipass = self._passwd_for_username(ainame)
-                if aipass is not None:
+                if aipass is None:
+                    log("user %s is not in %s; ai will fail to join" % (
+                        ainame, self.passwd_path))
+                else:
                     args.extend(["--password", aipass])
             reactor.spawnProcess(pp, sys.executable, args=args, env=os.environ)
 
