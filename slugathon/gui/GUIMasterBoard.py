@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2003-2010 David Ripton"
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 # TODO When we click on a marker, move it to the top of the z-order
