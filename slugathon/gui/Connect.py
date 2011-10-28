@@ -90,7 +90,18 @@ class Connect(gtk.Window):
         self._init_server_names_and_ports(server_name, server_port)
 
         self.connect("destroy", guiutils.exit)
+        self.connect("configure-event", self.cb_configure_event)
         self.set_icon(icon.pixbuf)
+
+        tup = prefs.load_global_window_position(self.__class__.__name__)
+        if tup:
+            x, y = tup
+            self.move(x, y)
+        tup = prefs.load_global_window_size(self.__class__.__name__)
+        if tup:
+            width, height = tup
+            self.resize(width, height)
+
         self.show_all()
 
         if log_path:
@@ -161,6 +172,7 @@ class Connect(gtk.Window):
         server_port = int(self.server_port_comboboxentry.child.get_text())
         prefs.save_server(server_name, server_port)
         prefs.save_last_playername(playername)
+        self.save_window_position()
         client = Client.Client(playername, password, server_name, server_port)
         def1 = client.connect()
         def1.addCallback(self.connected)
@@ -168,6 +180,16 @@ class Connect(gtk.Window):
 
     def on_start_server_button_clicked(self, *args):
         utils.getProcessValue("python", ["slugathon-server"])
+
+    def save_window_position(self):
+        x, y = self.get_position()
+        prefs.save_global_window_position(self.__class__.__name__, x, y)
+        width, height = self.get_size()
+        prefs.save_global_window_size(self.__class__.__name__, width, height)
+
+    def cb_configure_event(self, event, unused):
+        self.save_window_position()
+        return False
 
     def connected(self, user):
         self.hide()
