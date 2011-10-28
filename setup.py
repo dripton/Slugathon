@@ -82,10 +82,16 @@ setup(
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
+        "Environment :: X11 Applications :: GTK",
+        "Framework :: Twisted",
         "Intended Audience :: End Users/Desktop",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Topic :: Games/Entertainment :: Board Games",
     ],
     cmdclass={"install_data": install_data_twisted},
 )
