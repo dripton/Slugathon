@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2010 David Ripton"
+__copyright__ = "Copyright (c) 2010-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -17,6 +17,10 @@ BE_SQUASHED = 1.0
 
 
 class CleverBot(DimBot.DimBot):
+    def __init__(self, playername):
+        DimBot.DimBot.__init__(self, playername)
+        self.best_moves = []
+        self.best_creature_moves = []
 
     def split(self, game):
         """Split if it's my turn."""
@@ -184,28 +188,30 @@ class CleverBot(DimBot.DimBot):
         log("move creatures")
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
+        score_moves = []
         for creature in legion.sorted_creatures:
             if not creature.dead:
+                # TODO ignore mobile allies
                 moves = game.find_battle_moves(creature)
                 if moves:
-                    score_moves = []
                     # Not moving is also an option.
                     if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
                         moves.add(creature.hexlabel)
                     for move in moves:
                         score = self._score_battle_hex(game, creature, move)
-                        score_moves.append((score, move))
-                    score_moves.sort()
-                    log("score_moves", score_moves)
-                    best_score_move = score_moves.pop()
-                    best_move = best_score_move[1]
-                    if best_move is not creature.hexlabel:
-                        log("calling move_creature", creature.name,
-                          creature.hexlabel, best_move)
-                        def1 = self.user.callRemote("move_creature", game.name,
-                          creature.name, creature.hexlabel, best_move)
-                        def1.addErrback(self.failure)
-                        return
+                        score_moves.append((score, creature, move))
+        score_moves.sort()
+        log("score_moves", score_moves)
+        # Loop in case a non-move is best.
+        while score_moves:
+            (score, creature, move) = score_moves.pop()
+            if move is not creature.hexlabel:
+                log("calling move_creature", creature.name,
+                  creature.hexlabel, move)
+                def1 = self.user.callRemote("move_creature", game.name,
+                  creature.name, creature.hexlabel, move)
+                def1.addErrback(self.failure)
+                return
         # No moves, so end the maneuver phase.
         log("calling done_with_maneuvers")
         def1 = self.user.callRemote("done_with_maneuvers", game.name)
@@ -227,6 +233,7 @@ class CleverBot(DimBot.DimBot):
         NATIVE_VOLCANO_BONUS = 1.0
         ADJACENT_ALLY_BONUS = 0.5
         RANGESTRIKE_BONUS = 2.0
+        TITAN_FORWARD_PENALTY = 1.0
 
         legion = creature.legion
         legion2 = game.other_battle_legion(legion)
@@ -292,6 +299,15 @@ class CleverBot(DimBot.DimBot):
                     min_range = min((battlemap.range(creature.hexlabel,
                       hexlabel) for hexlabel in enemy_hexlabels))
                     score -= min_range * ATTACKER_DISTANCE_PENALTY
+
+            # Make titans hang back early.
+            if creature.name == "Titan" and game.battle_turn < 4:
+                if legion == game.attacker_legion:
+                    entrance = "ATTACKER"
+                else:
+                    entrance = "DEFENDER"
+                distance = battlemap.range(creature.hexlabel, entrance) - 2
+                score -= distance * TITAN_FORWARD_PENALTY
 
             # terrain
             battlehex = battlemap.hexes[creature.hexlabel]
