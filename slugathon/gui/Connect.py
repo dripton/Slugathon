@@ -18,8 +18,7 @@ import gtk
 import gobject
 
 from slugathon.gui import Client, icon
-from slugathon.util import guiutils, prefs
-from slugathon.util.log import tee_to_path
+from slugathon.util import guiutils, prefs, log
 
 
 class Connect(gtk.Window):
@@ -106,7 +105,7 @@ class Connect(gtk.Window):
         self.show_all()
 
         if log_path:
-            tee_to_path(log_path)
+            log.tee_to_path(log_path)
 
         if connect_now:
             reactor.callWhenRunning(self.cb_connect_button_clicked)
@@ -180,7 +179,13 @@ class Connect(gtk.Window):
         def1.addErrback(self.connection_failed)
 
     def cb_start_server_button_clicked(self, *args):
-        utils.getProcessValue(sys.executable, ["-m", "slugathon.net.Server"])
+        def1 = utils.getProcessValue(sys.executable, 
+          ["-m", "slugathon.net.Server", "--no-passwd"])
+        def1.addCallback(self.server_exited)
+        def1.addErrback(self.server_failed)
+
+    def server_exited(self, returncode):
+        log("server exited with returncode %d" % returncode)
 
     def save_window_position(self):
         x, y = self.get_position()
@@ -199,6 +204,12 @@ class Connect(gtk.Window):
         self.status_textview.modify_text(gtk.STATE_NORMAL,
           gtk.gdk.color_parse("red"))
         self.status_textview.get_buffer().set_text("Login failed")
+
+    def server_failed(self, arg):
+        self.status_textview.modify_text(gtk.STATE_NORMAL,
+          gtk.gdk.color_parse("red"))
+        self.status_textview.get_buffer().set_text("Server failed %s" % 
+          str(arg))
 
 
 def main():

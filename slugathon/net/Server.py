@@ -431,6 +431,7 @@ def main():
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
+    log("main calling reactor.run")
     reactor.run()
 
 
