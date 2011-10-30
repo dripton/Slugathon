@@ -9,6 +9,7 @@ from distutils.core import setup
 from distutils.command.install_data import install_data
 import subprocess
 import datetime
+import sys
 
 
 VERSION = "0.1a1"
@@ -28,9 +29,16 @@ class install_data_twisted(install_data):
 
 def head_commit():
     """Return the current commit of HEAD, or "" on failure."""
-    cmd = ["git", "rev-list", "--max-count=1", "HEAD"]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    stdout, unused = proc.communicate()
+    if sys.platform == "win32":
+        GIT = "git.exe"
+    else:
+        GIT = "git"
+    cmd = [GIT, "rev-list", "--max-count=1", "HEAD"]
+    try:
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        stdout, unused = proc.communicate()
+    except Exception:
+        return ""
     if proc.returncode != 0:
         return ""
     if stdout:
