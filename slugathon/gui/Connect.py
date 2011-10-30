@@ -8,6 +8,7 @@ from optparse import OptionParser
 import os
 import tempfile
 import random
+import sys
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
@@ -179,7 +180,7 @@ class Connect(gtk.Window):
         def1.addErrback(self.connection_failed)
 
     def cb_start_server_button_clicked(self, *args):
-        utils.getProcessValue("python", ["slugathon-server"])
+        utils.getProcessValue(sys.executable, ["-m", "slugathon.net.Server"])
 
     def save_window_position(self):
         x, y = self.get_position()
