@@ -11,7 +11,7 @@ import getpass
 from slugathon.net import config
 
 
-SLUGATHON_DIR = os.path.expanduser("~/.slugathon/")
+SLUGATHON_DIR = os.path.expanduser(os.path.join("~", ".slugathon"))
 PREFS_DIR = os.path.join(SLUGATHON_DIR, "prefs")
 GLOBAL_PREFS_DIR = os.path.join(SLUGATHON_DIR, "globalprefs")
 SAVE_DIR = os.path.join(SLUGATHON_DIR, "save")

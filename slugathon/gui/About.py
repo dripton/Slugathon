@@ -7,6 +7,8 @@ __license__ = "GNU GPL v2"
 """Help/About dialog, wrapped around gtk.AboutDialog"""
 
 
+import os
+
 import gtk
 
 from slugathon.gui import icon
@@ -23,13 +25,13 @@ class About(gtk.AboutDialog):
         self.set_name("Slugathon")
         self.set_copyright("Copyright (c) 2003-2011 David Ripton")
 
-        license_fn = fileutils.basedir("docs/COPYING.txt")
+        license_fn = fileutils.basedir(os.path.join("docs", "COPYING.txt"))
         with open(license_fn) as fil:
             st = fil.read()
         self.set_license(st)
         self.set_wrap_license(False)
 
-        version_fn = fileutils.basedir("docs/version.txt")
+        version_fn = fileutils.basedir(os.path.join("docs", "version.txt"))
         try:
             with open(version_fn) as fil:
                 version = fil.read().strip()
