@@ -306,7 +306,8 @@ class CleverBot(DimBot.DimBot):
                     entrance = "ATTACKER"
                 else:
                     entrance = "DEFENDER"
-                distance = battlemap.range(creature.hexlabel, entrance) - 2
+                distance = battlemap.range(creature.hexlabel, entrance,
+                  allow_entrance=True) - 2
                 score -= distance * TITAN_FORWARD_PENALTY
 
             # terrain

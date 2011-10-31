@@ -182,6 +182,10 @@ def test_range():
     assert map1.range("A1", "D6") == 6
     assert map1.range("A1", "DEFENDER") == maxint
     assert map1.range("DEFENDER", "A1") == maxint
+    assert map1.range("ATTACKER", "A1", True) == 7
+    assert map1.range("A1", "ATTACKER", True) == 7
+    assert map1.range("A1", "DEFENDER", True) == 2
+    assert map1.range("DEFENDER", "A1", True) == 2
 
 
 def test_opposite_border():

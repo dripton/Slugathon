@@ -177,21 +177,26 @@ class BattleMap(object):
             spun[(key + delta) % 6] = val
         return spun
 
-    def range(self, hexlabel1, hexlabel2):
+    def range(self, hexlabel1, hexlabel2, allow_entrance=False):
         """Return the range from hexlabel1 to hexlabel2.
 
         Titan ranges are inclusive on both ends, so one more than
         you'd expect.
 
-        If either hex is an entrance, return a huge number.
+        If either hex is an entrance, return a huge number, unless
+        allow_entrance is True, in which case return the normal range.
         """
         assert hexlabel1 in self.hexes and hexlabel2 in self.hexes
         if hexlabel1 == hexlabel2:
             return 1
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
-        if hex1.entrance or hex2.entrance:
-            return maxint
+        if (hex1.entrance or hex2.entrance):
+            if not allow_entrance or (hex1.entrance and hex2.entrance):
+                return maxint
+            elif hex2.entrance:
+                # We need to start from the entrance.
+                hex1, hex2 = hex2, hex1
         result = 2
         prev = set([hex1])
         ignore = set()
