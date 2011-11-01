@@ -128,14 +128,14 @@ class GUIBattleMap(gtk.Window):
             board = game.board
             hexlabel = game.defender_legion.hexlabel
             masterhex = board.hexes[hexlabel]
-            own_hex_label = self.masterhex_label(masterhex)
+            own_hex_label = self.masterhex_label(masterhex, "xx-large")
             came_from = masterhex.find_came_from(entry_side)
             left_hex = masterhex.neighbors[came_from]
-            left_hex_label = self.masterhex_label(left_hex)
+            left_hex_label = self.masterhex_label(left_hex, "large")
             top_hex = masterhex.neighbors[(came_from + 2) % 6]
-            top_hex_label = self.masterhex_label(top_hex)
+            top_hex_label = self.masterhex_label(top_hex, "large")
             bottom_hex = masterhex.neighbors[(came_from + 4) % 6]
-            bottom_hex_label = self.masterhex_label(bottom_hex)
+            bottom_hex_label = self.masterhex_label(bottom_hex, "large")
             self.hbox1.pack_start(own_hex_label)
             self.hbox1.pack_start(top_hex_label)
             self.hbox3.pack_start(bottom_hex_label)
@@ -199,12 +199,12 @@ class GUIBattleMap(gtk.Window):
         return int((math.ceil(self.scale * self.battlemap.hex_height() + 2) *
           2 * SQRT3))
 
-    def masterhex_label(self, masterhex):
+    def masterhex_label(self, masterhex, size):
         """Return a gtk.Label describing masterhex, inside a white
         gtk.EventBox."""
         eventbox = gtk.EventBox()
         if masterhex:
-            text = '<span size="large" weight="bold">%s hex %d</span>' % (
+            text = '<span size="%s" weight="bold">%s hex %d</span>' % (size,
               masterhex.terrain, masterhex.label)
         else:
             text = ""
