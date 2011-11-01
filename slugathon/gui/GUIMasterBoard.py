@@ -714,7 +714,8 @@ class GUIMasterBoard(gtk.Window):
         if event is not None:
             ctx.set_source_rgb(0, 0, 0)
             width, height = self.area.size_request()
-            ctx.rectangle(0, 0, width, height)
+            # Overdraw in case window is enlarged.
+            ctx.rectangle(0, 0, 2 * width, 2 * height)
             ctx.fill()
         for hexlabel in self.repaint_hexlabels:
             if hexlabel:
