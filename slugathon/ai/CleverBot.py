@@ -300,8 +300,12 @@ class CleverBot(DimBot.DimBot):
                       hexlabel) for hexlabel in enemy_hexlabels))
                     score -= min_range * ATTACKER_DISTANCE_PENALTY
 
+            battlehex = battlemap.hexes[creature.hexlabel]
+            terrain = battlehex.terrain
+
             # Make titans hang back early.
-            if creature.name == "Titan" and game.battle_turn < 4:
+            if (creature.name == "Titan" and game.battle_turn < 4 and
+              terrain != "Tower"):
                 if legion == game.attacker_legion:
                     entrance = "ATTACKER"
                 else:
@@ -311,8 +315,6 @@ class CleverBot(DimBot.DimBot):
                 score -= distance * TITAN_FORWARD_PENALTY
 
             # terrain
-            battlehex = battlemap.hexes[creature.hexlabel]
-            terrain = battlehex.terrain
             score += battlehex.elevation * ELEVATION_BONUS
             if terrain == "Bramble":
                 if creature.is_native(terrain):
