@@ -218,7 +218,7 @@ class GUIMasterBoard(gtk.Window):
             self.game.add_observer(self.event_log)
 
     def cb_delete_event(self, widget, event):
-        if self.game.over:
+        if self.game is None or self.game.over:
             self.cb_destroy(True)
         else:
             confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
