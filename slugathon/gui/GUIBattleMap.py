@@ -355,6 +355,8 @@ class GUIBattleMap(gtk.Window):
 
     def clicked_on_hex(self, area, event, guihex):
         if not self.game:
+            guihex.selected = not guihex.selected
+            self.repaint(hexlabels=[guihex.battlehex.label])
             return
         phase = self.game.battle_phase
         if phase == Phase.MANEUVER:
