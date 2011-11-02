@@ -166,19 +166,24 @@ class Server(Observed):
         # Add all AIs to the wait list first, to avoid a race.
         for ainame in ainames:
             self.game_to_waiting_ais[game.name].add(ainame)
+        if hasattr(sys, "frozen"):
+            # TODO Find the absolute path.
+            executable = "slugathon-aiclient.exe"
+        else:
+            executable = sys.executable
         for ainame in ainames:
             log("ainame", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
-            args = [
-                sys.executable,
-                "-m",
-                "slugathon.ai.AIClient",
+            args = [executable]
+            if not hasattr(sys, "frozen"):
+                args.extend(["-m", "slugathon.ai.AIClient"])
+            args.extend([
                 "--playername", ainame,
                 "--port", str(self.port),
                 "--game-name", game.name,
                 "--log-path", os.path.join(TEMPDIR, "slugathon-%s-%s.log" %
-                  (game.name, ainame))
-            ]
+                  (game.name, ainame)),
+            ])
             if not self.no_passwd:
                 aipass = self._passwd_for_username(ainame)
                 if aipass is None:
@@ -186,7 +191,7 @@ class Server(Observed):
                         ainame, self.passwd_path))
                 else:
                     args.extend(["--password", aipass])
-            reactor.spawnProcess(pp, sys.executable, args=args, env=os.environ)
+            reactor.spawnProcess(pp, executable, args=args, env=os.environ)
 
     def pick_color(self, username, game_name, color):
         game = self.name_to_game(game_name)

@@ -179,8 +179,13 @@ class Connect(gtk.Window):
         def1.addErrback(self.connection_failed)
 
     def cb_start_server_button_clicked(self, *args):
-        def1 = utils.getProcessValue(sys.executable, 
-          ["-m", "slugathon.net.Server", "--no-passwd"])
+        if hasattr(sys, "frozen"):
+            # TODO Find the absolute path.
+            def1 = utils.getProcessValue("slugathon-server.exe",
+              env=os.environ)
+        else:
+            def1 = utils.getProcessValue(sys.executable,
+              ["-m", "slugathon.net.Server"], env=os.environ)
         def1.addCallback(self.server_exited)
         def1.addErrback(self.server_failed)
 
@@ -208,7 +213,7 @@ class Connect(gtk.Window):
     def server_failed(self, arg):
         self.status_textview.modify_text(gtk.STATE_NORMAL,
           gtk.gdk.color_parse("red"))
-        self.status_textview.get_buffer().set_text("Server failed %s" % 
+        self.status_textview.get_buffer().set_text("Server failed %s" %
           str(arg))
 
 
