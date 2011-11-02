@@ -109,26 +109,15 @@ class GUIBattleHex(object):
 
     def draw_hexagon(self, ctx):
         """Create the polygon, filled with the terrain color."""
+        # inner hex
+        ctx.set_source_rgb(*self.fillcolor)
+        guiutils.draw_polygon(ctx, self.points)
+        ctx.fill()
+
+    def draw_selection(self, ctx):
+        """If the hex is selected, draw the red outline."""
         if self.selected:
-            # outline
-            ctx.set_source_rgb(1, 0, 0)
-            guiutils.draw_polygon(ctx, self.points)
-            ctx.stroke()
-            # outer portion
-            ctx.set_source_rgb(1, 1, 1)
-            guiutils.draw_polygon(ctx, self.points)
-            ctx.fill()
-            # inner hex
-            ctx.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(ctx, self.points)
-            ctx.fill()
-        else:
-            # hex
-            ctx.set_source_rgb(*self.fillcolor)
-            guiutils.draw_polygon(ctx, self.points)
-            ctx.fill()
-            # outline
-            ctx.set_source_rgb(1, 1, 1)
+            ctx.set_source_rgba(1, 0, 0, 0.8)
             guiutils.draw_polygon(ctx, self.points)
             ctx.stroke()
 
@@ -230,6 +219,7 @@ class GUIBattleHex(object):
               self.battlehex.label_side)
             self.draw_label(ctx, self.battlehex.terrain,
               self.battlehex.terrain_side)
+        self.draw_selection(ctx)
 
     def __repr__(self):
         return "GUIBattleHex %s" % self.battlehex.label
