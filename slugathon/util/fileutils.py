@@ -3,13 +3,12 @@ __license__ = "GNU GPL v2"
 
 
 import os
-import sys
 
 
 def basedir(*args):
     """Return an absolute path based on the base slugathon package directory
     and the passed paths."""
-    if "_MEIPASS2" in os.environ: 
+    if "_MEIPASS2" in os.environ:
         # Running from PyInstaller --onefile
         parts = [os.environ["_MEIPASS2"]]
     else:
