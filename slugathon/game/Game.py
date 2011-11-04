@@ -1029,7 +1029,8 @@ class Game(Observed):
                 return maxint
         return 1
 
-    def _find_battle_moves_inner(self, creature, hexlabel, movement_left):
+    def _find_battle_moves_inner(self, creature, hexlabel, movement_left,
+      ignore_mobile_allies=False):
         """Return a set of all hexlabels to which creature can move,
         starting from hexlabel, with movement_left.
 
@@ -1040,7 +1041,12 @@ class Game(Observed):
             return result
         hex1 = self.battlemap.hexes[hexlabel]
         for hexside, hex2 in hex1.neighbors.iteritems():
-            if creature.flies or not self.is_battle_hex_occupied(hex2.label):
+            try:
+                creature2 = self.creatures_in_battle_hex(hex2.label).pop()
+            except KeyError:
+                creature2 = None
+            if (creature.flies or not creature2 or (ignore_mobile_allies and
+              creature2.legion == creature.legion and creature2.mobile)):
                 if hex1.entrance:
                     # Ignore hexside penalties from entrances.  There aren't
                     # any on the standard boards, and this avoids having to
@@ -1051,7 +1057,14 @@ class Game(Observed):
                 cost = self.battle_hex_entry_cost(creature, hex2.terrain,
                   border)
                 if cost <= movement_left:
-                    if not self.is_battle_hex_occupied(hex2.label):
+                    try:
+                        creature2 = self.creatures_in_battle_hex(
+                          hex2.label).pop()
+                    except KeyError:
+                        creature2 = None
+                    if (not creature2 or (ignore_mobile_allies and
+                      creature2.legion == creature.legion and
+                      creature2.mobile)):
                         result.add(hex2.label)
                 if creature.flies:
                     flyover_cost = self.battle_hex_flyover_cost(creature,
@@ -1061,11 +1074,12 @@ class Game(Observed):
                 min_cost = min(cost, flyover_cost)
                 if min_cost < movement_left:
                     result.update(self._find_battle_moves_inner(creature,
-                      hex2.label, movement_left - min_cost))
+                      hex2.label, movement_left - min_cost,
+                      ignore_mobile_allies))
         result.discard(hexlabel)
         return result
 
-    def find_battle_moves(self, creature):
+    def find_battle_moves(self, creature, ignore_mobile_allies=False):
         """Return a set of all hexlabels to which creature can move,
         excluding its current hex"""
         result = set()
@@ -1077,11 +1091,12 @@ class Game(Observed):
         if (self.battle_turn == 1 and creature.legion == self.defender_legion
           and self.battlemap.startlist):
             for hexlabel2 in self.battlemap.startlist:
+                # There can't be any mobile allies there on turn 1.
                 if not self.is_battle_hex_occupied(hexlabel2):
                     result.add(hexlabel2)
             return result
         return self._find_battle_moves_inner(creature, creature.hexlabel,
-          creature.skill)
+          creature.skill, ignore_mobile_allies)
 
     def move_creature(self, playername, creature_name, old_hexlabel,
       new_hexlabel):

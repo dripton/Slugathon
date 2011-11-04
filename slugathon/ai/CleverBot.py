@@ -191,10 +191,10 @@ class CleverBot(DimBot.DimBot):
         score_moves = []
         for creature in legion.sorted_creatures:
             if not creature.dead:
-                # TODO ignore mobile allies
-                moves = game.find_battle_moves(creature)
+                moves = game.find_battle_moves(creature,
+                  ignore_mobile_allies=True)
                 if moves:
-                    # Not moving is also an option.
+                    # Not moving is also an option, unless offboard.
                     if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
                         moves.add(creature.hexlabel)
                     for move in moves:

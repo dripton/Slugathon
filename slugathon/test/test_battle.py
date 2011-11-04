@@ -247,6 +247,37 @@ class TestBattle(object):
         set4 = set(["C1", "D2", "E2", "F2", "B1", "C2", "D3", "E3", "F3"])
         assert self.game.find_battle_moves(gargoyle) == set4
 
+    def test_find_moves_ignore_mobile_allies(self):
+        self.rd01.move(6, False, None, 3)
+        self.bu01.move(6, False, None, 3)
+        self.game._init_battle(self.bu01, self.rd01)
+        defender = self.game.defender_legion
+        titan = defender.creatures[0]
+        assert titan.name == "Titan"
+        set1 = set(["D1", "E1", "F1", "C1", "D2", "E2", "F2", "B1", "C2",
+          "D3", "E3", "F3", "A1", "B2", "C3", "D4", "E4", "F4"])
+        assert self.game.find_battle_moves(titan) == set1
+        # Just Move It, without going through the server
+        titan.move("D1")
+        # And pretend it hasn't moved.
+        titan.moved = False
+        ogre = defender.creatures[1]
+        assert ogre.name == "Ogre"
+        set2 = set(["D1", "E1", "F1", "C1", "D2", "E2", "F2"])
+        assert self.game.find_battle_moves(ogre, True) == set2
+        ogre.move("E1")
+        ogre.moved = False
+        centaur = defender.creatures[2]
+        assert centaur.name == "Centaur"
+        assert self.game.find_battle_moves(centaur, True) == set1
+        centaur.move("F1")
+        centaur.moved = False
+        gargoyle = defender.creatures[3]
+        assert gargoyle.name == "Gargoyle"
+        set4 = set(["D1", "E1", "F1", "C1", "D2", "E2", "F2", "B1", "C2", "D3",
+          "E3", "F3"])
+        assert self.game.find_battle_moves(gargoyle, True) == set4
+
     def test_strikes_plain(self):
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
