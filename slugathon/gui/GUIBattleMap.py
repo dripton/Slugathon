@@ -438,11 +438,12 @@ class GUIBattleMap(gtk.Window):
         for (legion, rotate) in [
           (self.game.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE),
           (self.game.defender_legion, gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
-            for creature in legion.creatures:
-                if creature not in chit_creatures and not creature.dead:
-                    chit = Chit.Chit(creature, legion.player.color,
-                      self.scale / 2, rotate=rotate)
-                    self.chits.append(chit)
+            if legion:
+                for creature in legion.creatures:
+                    if creature not in chit_creatures and not creature.dead:
+                        chit = Chit.Chit(creature, legion.player.color,
+                          self.scale / 2, rotate=rotate)
+                        self.chits.append(chit)
 
     # TODO Move to graveyard area rather than removing.
     def _remove_dead_chits(self):
@@ -701,7 +702,8 @@ class GUIBattleMap(gtk.Window):
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             self.highlight_mobile_chits()
-            if self.game.battle_active_player.name == self.username:
+            if (self.game and self.game.battle_active_player and
+              self.game.battle_active_player.name == self.username):
                 if not self.game.battle_active_legion.mobile_creatures:
                     def1 = self.user.callRemote("done_with_maneuvers",
                       self.game.name)
