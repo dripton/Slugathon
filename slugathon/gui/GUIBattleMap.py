@@ -227,7 +227,8 @@ class GUIBattleMap(gtk.Window):
         """Highlight the hexes containing all creatures that can move now."""
         if not self.game:
             return
-        if self.game.battle_active_player.name != self.username:
+        if (not self.game.battle_active_player or
+          self.game.battle_active_player.name != self.username):
             self.unselect_all()
             return
         hexlabels = set()
