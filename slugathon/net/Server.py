@@ -204,11 +204,11 @@ class Server(Observed):
             game.assign_first_marker(username, markername)
 
     def split_legion(self, username, game_name, parent_markername,
-      child_markername, parent_creaturenames, child_creaturenames):
+      child_markername, parent_creature_names, child_creature_names):
         game = self.name_to_game(game_name)
         if game:
             game.split_legion(username, parent_markername, child_markername,
-              parent_creaturenames, child_creaturenames)
+              parent_creature_names, child_creature_names)
 
     def undo_split(self, username, game_name, parent_markername,
       child_markername):
