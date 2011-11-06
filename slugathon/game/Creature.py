@@ -106,6 +106,9 @@ class Creature(object):
         """All creatures of the same type are equal."""
         return self.name == other.name
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     @property
     def score(self):
         """Return the point value of this creature."""
