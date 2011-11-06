@@ -121,6 +121,9 @@ class Game(Observed):
     def __eq__(self, other):
         return isinstance(other, Game) and self.name == other.name
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __repr__(self):
         return "Game %s" % self.name
 
