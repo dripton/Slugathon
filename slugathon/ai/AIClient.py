@@ -310,7 +310,8 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
-            if game.battle_active_legion.player.name == self.playername:
+            if (game.battle_active_legion and
+              game.battle_active_legion.player.name == self.playername):
                 reactor.callLater(self.delay, self.ai.move_creatures, game)
 
         elif isinstance(action, Action.RecruitCreature):
