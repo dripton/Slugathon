@@ -1395,6 +1395,9 @@ class Game(Observed):
             player = self.get_player_by_name(action.playername)
             if player.starting_tower is None:
                 player.assign_starting_tower(action.tower_num)
+            else:
+                log("player %s already has tower %s" % (player,
+                  player.starting_tower))
 
         elif isinstance(action, Action.AssignedAllTowers):
             self.sort_players()
