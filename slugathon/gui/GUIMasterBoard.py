@@ -1011,7 +1011,8 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markername)
-            self.repaint_hexlabels.add(legion.hexlabel)
+            if legion:
+                self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.SplitLegion):
