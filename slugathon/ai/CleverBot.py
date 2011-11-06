@@ -30,6 +30,7 @@ class CleverBot(DimBot.DimBot):
 
     def split(self, game):
         """Split if it's my turn."""
+        log("split")
         assert game.active_player.name == self.playername
         player = game.active_player
         legions = player.legions.values()

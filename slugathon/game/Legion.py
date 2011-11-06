@@ -344,7 +344,7 @@ class Legion(Observed):
 
     def recruit(self, creature, recruiter_names):
         """Recruit creature, and notify observers."""
-        log("recruit")
+        log("recruit", self, creature, recruiter_names)
         player = self.player
         if self.recruited:
             log("already recruited")
