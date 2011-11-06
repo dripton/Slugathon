@@ -211,42 +211,36 @@ class CleverBot(DimBot.DimBot):
                 for moves in self._gen_legion_moves_inner(movesets1):
                     yield (move,) + moves
 
-    def _gen_legion_moves(self, good_creature_moves):
-        """Yield all possible legion_moves for good_creature_moves.
+    def _gen_legion_moves(self, movesets):
+        """Yield all possible legion_moves for movesets.
 
-        good_creature_moves is a dict of Creature to a list of hexlabels
-        to which that Creature can move.  Like:
-        {titan1: ["A1", "A2", "B1"], ogre1: ["B1", "B2"], troll1: ["B1", "B3"]}
+        movesets is a list of sets of hexlabels to which
+        each Creature can move (or stay), in the same order as
+        Legion.sorted_creatures.
+        Like:
+        creatures [titan1, ogre1, troll1]
+        movesets [{"A1", "A2", "B1"}, {"B1", "B2"}, {"B1", "B3"}]
 
-        A legion_move is a dict of Creature to hexlabel, where each Creature's
-        hexlabel is one from its original list, and no two Creatures have the
-        same hexlabel.  Like:
-        {titan1: "A1", ogre1: "B1", troll1: "B3"}
+        A legion_move is a list of hexlabels, in the same order as
+        creatures, where each Creature's hexlabel is one from its original
+        list, and no two Creatures have the same hexlabel.  Like:
+        ["A1", "B1", "B3"]
         """
-        log("_gen_legion_moves", good_creature_moves)
-        creatures = good_creature_moves.keys()
-        movesets = []
-        for creature in creatures:
-            moveset = set(good_creature_moves[creature])
-            movesets.append(moveset)
+        log("_gen_legion_moves", movesets)
         for moves in self._gen_legion_moves_inner(movesets):
-            legion_move = {}
-            for ii, creature in enumerate(creatures):
-                move = moves[ii]
-                legion_move[creature] = move
-            yield legion_move
+            if len(moves) == len(movesets):
+                yield list(moves)
 
     def _find_move_order(self, game, creature_moves):
         """Return a new list with creature_moves rearranged so that as
         many of the moves as possible can be legally made.
 
-        creature_moves is a list of (Creature, hexlabel) tuples.
+        creature_moves is a list of (Creature, start_hexlabel, finish_hexlabel)
+        tuples.
         """
         log("_find_move_order")
-        prev_hexlabels = {}
         sort_values = {}
-        for creature, move in creature_moves:
-            prev_hexlabels[creature] = creature.hexlabel
+        for creature, start, move in creature_moves:
             sort_values[creature] = creature.sort_value
         max_score = sum(sort_values.itervalues())
         perms = list(itertools.permutations(creature_moves))
@@ -258,7 +252,7 @@ class CleverBot(DimBot.DimBot):
         for perm in perms:
             score = 0
             try:
-                for creature, move in perm:
+                for creature, start, move in perm:
                     if (move == creature.hexlabel or move in
                       game.find_battle_moves(creature)):
                         # XXX Modifying game state
@@ -270,8 +264,8 @@ class CleverBot(DimBot.DimBot):
                     best_score = score
                     best_perm = perm
             finally:
-                for creature, hexlabel in prev_hexlabels.iteritems():
-                    creature.hexlabel = hexlabel
+                for creature, start, move in creature_moves:
+                    creature.hexlabel = start
         return list(best_perm)
 
     def _find_best_creature_moves(self, game):
@@ -291,49 +285,54 @@ class CleverBot(DimBot.DimBot):
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
         log("_find_best_creature_moves", legion)
-        good_creature_moves = {}  # {creature : [moves]}
-        for creature in legion.sorted_creatures:
-            if not creature.dead:
-                moves = game.find_battle_moves(creature,
-                  ignore_mobile_allies=True)
-                if moves:
-                    score_moves = []
-                    # Not moving is also an option, unless offboard.
-                    if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
-                        moves.add(creature.hexlabel)
-                    for move in moves:
-                        try:
-                            # XXX Modifying game state
-                            prev_hexlabel = creature.hexlabel
-                            creature.hexlabel = move
-                            score = self._score_legion_move(game, [creature])
-                            score_moves.append((score, move))
-                        finally:
-                            creature.hexlabel = prev_hexlabel
-                    score_moves.sort()
-                    log("score_moves", creature, score_moves)
-                    # TODO Randomize tie scores
-                    best_score_moves = score_moves[-7:]
-                    good_creature_moves[creature] = []
-                    for score, move in best_score_moves:
-                        good_creature_moves[creature].append(move)
+        movesets = []  # list of a set of hexlabels for each creature
+        creatures = [creature for creature in legion.sorted_creatures if not
+          creature.dead]
+        for creature in creatures:
+            moves = game.find_battle_moves(creature, ignore_mobile_allies=True)
+            if moves:
+                score_moves = []
+                # Not moving is also an option, unless offboard.
+                if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
+                    moves.add(creature.hexlabel)
+                for move in moves:
+                    try:
+                        # XXX Modifying game state
+                        creature.previous_hexlabel = creature.hexlabel
+                        creature.hexlabel = move
+                        score = self._score_legion_move(game, [creature])
+                        score_moves.append((score, move))
+                    finally:
+                        creature.hexlabel = creature.previous_hexlabel
+                score_moves.sort()
+                log("score_moves", creature, score_moves)
+                # TODO Randomize tie scores
+                best_score_moves = score_moves[-7:]
+                moveset = set()
+                for score, move in best_score_moves:
+                    moveset.add(move)
+            else:
+                moveset = set([creature.hexlabel])
+            movesets.append(moveset)
         best_legion_move = None
         now = time.time()
-        legion_moves = list(self._gen_legion_moves(good_creature_moves))
+        legion_moves = list(self._gen_legion_moves(movesets))
         log("found %d legion_moves in %fs" % (len(legion_moves), time.time() -
           now))
         best_score = -maxint
         start = time.time()
         # Scramble the moves, in case we don't have time to look at them all.
         random.shuffle(legion_moves)
+        log("len(creatures) %d len(legion_moves[0]) %d" % (len(creatures),
+          len(legion_moves[0])))
         for legion_move in legion_moves:
             try:
-                prev_hexlabels = {}
-                for creature, move in legion_move.iteritems():
-                    prev_hexlabels[creature] = creature.hexlabel
+                for ii, creature in enumerate(creatures):
+                    move = legion_move[ii]
                     # XXX Modifying game state
-                    creature.hexlabel = legion_move[creature]
-                score = self._score_legion_move(game, legion_move.keys())
+                    creature.previous_hexlabel = creature.hexlabel
+                    creature.hexlabel = move
+                score = self._score_legion_move(game, creatures)
                 if score > best_score:
                     best_legion_move = legion_move
                     best_score = score
@@ -341,12 +340,12 @@ class CleverBot(DimBot.DimBot):
                 if now - start > TIME_LIMIT:
                     break
             finally:
-                for creature, prev_hexlabel in prev_hexlabels.iteritems():
-                    creature.hexlabel = prev_hexlabel
+                for creature in creatures:
+                    creature.hexlabel = creature.previous_hexlabel
         log("found best_legion_move %s in %fs" % (best_legion_move,
           now - start))
-        creature_moves = [(creature, move) for creature, move in
-          best_legion_move.iteritems()]
+        start_hexlabels = [creature.hexlabel for creature in creatures]
+        creature_moves = zip(creatures, start_hexlabels, best_legion_move)
         log("creature_moves", creature_moves)
         ordered_creature_moves = self._find_move_order(game, creature_moves)
         log("ordered_creature_moves", ordered_creature_moves)
@@ -370,12 +369,11 @@ class CleverBot(DimBot.DimBot):
             self.best_creature_moves = self._find_best_creature_moves(game)
         # Loop in case a non-move is best.
         while self.best_creature_moves:
-            (creature, move) = self.best_creature_moves.pop(0)
-            if move is not creature.hexlabel:
-                log("calling move_creature", creature.name,
-                  creature.hexlabel, move)
+            (creature, start, finish) = self.best_creature_moves.pop(0)
+            if finish != start:
+                log("calling move_creature", creature.name, start, finish)
                 def1 = self.user.callRemote("move_creature", game.name,
-                  creature.name, creature.hexlabel, move)
+                  creature.name, start, finish)
                 def1.addErrback(self.failure)
                 return
         # No moves, so end the maneuver phase.
