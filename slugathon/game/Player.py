@@ -90,8 +90,9 @@ class Player(Observed):
         self.notify(action)
 
     def pick_marker(self, markername):
-        if markername in self.markernames:
-            self.selected_markername = markername
+        if markername not in self.markernames:
+            raise AssertionError("pick_marker with bad marker")
+        self.selected_markername = markername
 
     def take_marker(self, markername):
         if markername not in self.markernames:
