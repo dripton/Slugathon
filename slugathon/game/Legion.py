@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 import types
 
 from slugathon.util.bag import bag
-from slugathon.data import recruitdata
+from slugathon.data import recruitdata, markerdata, playercolordata
 from slugathon.game import Creature, Action
 from slugathon.util.Observed import Observed
 from slugathon.util.log import log
@@ -83,9 +83,15 @@ class Legion(Observed):
         """Return True iff this legion is engaged with an enemy legion."""
         return self.hexlabel in self.player.game.engagement_hexlabels
 
+    @property
+    def picname(self):
+        color_name = playercolordata.abbrev_to_name[self.markername[:2]]
+        index = int(self.markername[2:]) - 1
+        return markerdata.data[color_name][index]
+
     def __repr__(self):
-        return "Legion %s in %s %s" % (self.markername, self.hexlabel,
-          self.creatures)
+        return "Legion %s (%s) in %s %s" % (self.markername, self.picname,
+          self.hexlabel, self.creatures)
 
     def __len__(self):
         """Return the number of living creatures in the legion."""

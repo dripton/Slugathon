@@ -274,3 +274,20 @@ def test_can_summon():
     legion2.move(2, False, None, 1)
     assert legion1.can_summon
     assert not legion2.can_summon
+
+
+def test_picname():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("p0", game, 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
+    assert legion.picname == "Cross"
+
+    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
+      "Gargoyle", "Centaur", "Centaur"]), 1)
+    assert legion.picname == "Eagle"
+
+    legion = Legion.Legion(player, "Gr12", Creature.n2c(["Gargoyle",
+      "Gargoyle", "Centaur", "Centaur"]), 1)
+    assert legion.picname == "Ourobouros"
