@@ -32,8 +32,9 @@ class SummonAngel(gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
 
-        top_label = gtk.Label("Summoning an angel into legion %s in hex %s"
-          % (legion.markername, legion.hexlabel))
+        top_label = gtk.Label(
+          "Summoning an angel into legion %s (%s) in hex %s"
+          % (legion.markername, legion.picname, legion.hexlabel))
         self.vbox.set_spacing(9)
         self.vbox.pack_start(top_label)
         middle_label = gtk.Label("Summonable creatures have a red border")

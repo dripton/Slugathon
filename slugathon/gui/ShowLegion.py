@@ -19,8 +19,8 @@ class ShowLegion(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.set_title("ShowLegion - %s" % (username))
 
-        legion_name = gtk.Label("Legion %s in hex %s (%d points)" % (
-          legion.markername, legion.hexlabel, legion.score))
+        legion_name = gtk.Label("Legion %s (%s) in hex %s (%d points)" % (
+          legion.markername, legion.picname, legion.hexlabel, legion.score))
         self.vbox.pack_start(legion_name)
 
         hbox = gtk.HBox(spacing=3)

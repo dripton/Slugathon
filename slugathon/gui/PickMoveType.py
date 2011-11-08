@@ -37,8 +37,8 @@ class PickMoveType(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label(
-          "Pick move type for legion %s in hex %s moving to hex %s" % (
-          legion.markername, legion.hexlabel, hexlabel))
+          "Pick move type for legion %s (%s) in hex %s moving to hex %s" % (
+          legion.markername, legion.picname, legion.hexlabel, hexlabel))
         self.vbox.pack_start(legion_name)
 
         legion_hbox = gtk.HBox(spacing=15)

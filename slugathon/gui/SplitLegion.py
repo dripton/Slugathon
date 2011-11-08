@@ -33,8 +33,8 @@ class SplitLegion(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = gtk.Label("Splitting legion %s in hex %s" % (
-          legion.markername, legion.hexlabel))
+        legion_name = gtk.Label("Splitting legion %s (%s) in hex %s" % (
+          legion.markername, legion.picname, legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
         old_hbox = gtk.HBox(spacing=15)

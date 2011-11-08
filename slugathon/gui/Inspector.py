@@ -62,8 +62,8 @@ class Inspector(gtk.Dialog):
         return False
 
     def show_legion(self, legion):
-        self.legion_name.set_text("Legion %s in hex %s (%d points)" % (
-          legion.markername, legion.hexlabel, legion.score))
+        self.legion_name.set_text("Legion %s (%s) in hex %s (%d points)" % (
+          legion.markername, legion.picname, legion.hexlabel, legion.score))
 
         for hbox in [self.marker_hbox, self.chits_hbox]:
             for child in hbox.get_children():
@@ -90,6 +90,11 @@ if __name__ == "__main__":
     from slugathon.data import creaturedata, playercolordata
     from slugathon.game import Creature, Legion, Player
 
+    def cb_destroy(confirmed):
+        print "destroy"
+        inspector.destroy()
+        gtk.main_quit()
+
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
 
@@ -97,14 +102,16 @@ if __name__ == "__main__":
     player = Player.Player(username, None, None)
     player.color = random.choice(playercolordata.colors)
     abbrev = player.color_abbrev
+    index = random.randrange(1, 12 + 1)
     inspector = Inspector(username, None)
 
-    legion = Legion.Legion(player, "%s01" % abbrev, creatures, 1)
+    legion = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures, 1)
     inspector.show_legion(legion)
 
     creatures2 = [Creature.Creature(name) for name in
       ["Angel", "Giant", "Warbear", "Unicorn"]]
-    legion2 = Legion.Legion(player, "%s02" % abbrev, creatures2, 2)
+    index = random.randrange(1, 12 + 1)
+    legion2 = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures2, 2)
     inspector.show_legion(legion2)
 
     gtk.main()

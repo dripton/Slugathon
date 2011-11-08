@@ -44,8 +44,10 @@ class Negotiate(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = gtk.Label("Legion %s negotiates with %s in hex %s?" % (
-          attacker_legion.markername, defender_legion.markername,
+        legion_name = gtk.Label(
+          "Legion %s (%s) negotiates with %s (%s) in hex %s?" % (
+          attacker_legion.markername, attacker_legion.picname,
+          defender_legion.markername, defender_legion.picname,
           defender_legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
