@@ -246,6 +246,7 @@ class CleverBot(DimBot.DimBot):
         perms = list(itertools.permutations(creature_moves))
         # Scramble the list so we don't get a bunch of similar bad
         # orders jumbled together at the beginning.
+        log("_find_move_order perms %s" % perms)
         random.shuffle(perms)
         best_score = 0
         best_perm = None
@@ -253,12 +254,13 @@ class CleverBot(DimBot.DimBot):
             score = 0
             try:
                 for creature, start, move in perm:
-                    if (move == creature.hexlabel or move in
+                    if (move == start or move in
                       game.find_battle_moves(creature)):
                         # XXX Modifying game state
                         creature.hexlabel = move
                         score += sort_values[creature]
                 if score == max_score:
+                    log("_find_move_order perfect %s" % list(perm))
                     return list(perm)
                 elif score > best_score:
                     best_score = score
@@ -266,6 +268,7 @@ class CleverBot(DimBot.DimBot):
             finally:
                 for creature, start, move in creature_moves:
                     creature.hexlabel = start
+        log("_find_move_order returning %s" % list(best_perm))
         return list(best_perm)
 
     def _find_best_creature_moves(self, game):
