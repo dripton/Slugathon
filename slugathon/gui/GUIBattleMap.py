@@ -134,11 +134,27 @@ class GUIBattleMap(gtk.Window):
             left_hex_label = self.masterhex_label(left_hex, "large")
             top_hex = masterhex.neighbors[(came_from + 2) % 6]
             top_hex_label = self.masterhex_label(top_hex, "large")
+            spacer1 = self.spacer()
+            spacer2 = self.spacer()
+            spacer3 = self.spacer()
+            spacer4 = self.spacer()
+            spacer5 = self.spacer()
+            spacer6 = self.spacer()
+            spacer7 = self.spacer()
             bottom_hex = masterhex.neighbors[(came_from + 4) % 6]
             bottom_hex_label = self.masterhex_label(bottom_hex, "large")
+            bottom_spacer = self.spacer()
+            bottom_spacer.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+            self.hbox1.pack_start(spacer1)
             self.hbox1.pack_start(own_hex_label)
+            self.hbox1.pack_start(spacer2)
             self.hbox1.pack_start(top_hex_label)
+            self.hbox1.pack_start(spacer3)
+            self.hbox1.pack_start(spacer4)
+            self.hbox3.pack_start(spacer5)
+            self.hbox3.pack_start(spacer6)
             self.hbox3.pack_start(bottom_hex_label)
+            self.hbox3.pack_start(spacer7)
             self.hbox4.pack_start(self.turn_track, expand=False)
             self.hbox4.pack_start(self.battle_dice, fill=True)
             self.hbox2.pack_start(left_hex_label)
@@ -211,6 +227,13 @@ class GUIBattleMap(gtk.Window):
         label = gtk.Label()
         label.set_markup(text)
         eventbox.add(label)
+        gtkcolor = gtk.gdk.color_parse("white")
+        eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        return eventbox
+
+    def spacer(self):
+        """Return a white gtk.EventBox."""
+        eventbox = gtk.EventBox()
         gtkcolor = gtk.gdk.color_parse("white")
         eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
         return eventbox
