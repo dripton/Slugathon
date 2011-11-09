@@ -173,17 +173,17 @@ class GUIMasterBoard(gtk.Window):
           (
             prefs.AUTO_STRIKE_SINGLE_TARGET, None,
             prefs.AUTO_STRIKE_SINGLE_TARGET, None, None,
-            self.cb_auto_strike_single, False
+            self.cb_auto_strike_single, False,
           ),
           (
             prefs.AUTO_RANGESTRIKE_SINGLE_TARGET, None,
             prefs.AUTO_RANGESTRIKE_SINGLE_TARGET, None, None,
-            self.cb_auto_rangestrike_single, False
+            self.cb_auto_rangestrike_single, False,
           ),
           (
             prefs.AUTO_CARRY_TO_SINGLE_TARGET, None,
             prefs.AUTO_CARRY_TO_SINGLE_TARGET, None, None,
-            self.cb_auto_carry_single, False
+            self.cb_auto_carry_single, False,
           ),
         ]
         ag.add_toggle_actions(toggle_actions)
