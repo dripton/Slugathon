@@ -251,7 +251,7 @@ class CleverBot(DimBot.DimBot):
         best_score = 0
         best_perm = None
         for perm in perms:
-            score = 0
+            score = -maxint
             try:
                 for creature, start, move in perm:
                     if (move == start or move in
