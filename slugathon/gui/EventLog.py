@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2010 David Ripton"
+__copyright__ = "Copyright (c) 2010-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 import gtk
 from zope.interface import implements
 
-from slugathon.game import Action
+from slugathon.game import Action, Legion
 from slugathon.gui import icon
 from slugathon.util import prefs
 from slugathon.util.Observer import IObserver
@@ -65,31 +65,43 @@ class EventLog(gtk.Window):
         if action == self.last_action:
             pass
         elif isinstance(action, Action.SplitLegion):
-            st = "%s splits into %s (%d) and %s (%d)" % (
-              action.parent_markername, action.parent_markername,
+            st = "%s (%s) splits into %s (%s) (%d) and %s (%s) (%d)" % (
+              action.parent_markername,
+              Legion.find_picname(action.parent_markername),
+              action.parent_markername,
+              Legion.find_picname(action.parent_markername),
               len(action.parent_creature_names),
-              action.child_markername, len(action.child_creature_names))
+              action.child_markername,
+              Legion.find_picname(action.child_markername),
+              len(action.child_creature_names))
             label = gtk.Label(st)
         elif isinstance(action, Action.RollMovement):
             st = "%s rolls %d for movement" % (action.playername,
               action.movement_roll)
             label = gtk.Label(st)
         elif isinstance(action, Action.MoveLegion):
-            st = "%s %s to %s" % (action.markername,
+            st = "%s (%s) %s to %s" % (action.markername,
+              Legion.find_picname(action.markername),
               "teleports" if action.teleport else "moves", action.hexlabel)
             label = gtk.Label(st)
         elif isinstance(action, Action.Flee):
-            st = "%s in %s flees" % (action.markername, action.hexlabel)
+            st = "%s (%s) in %s flees" % (action.markername,
+              Legion.find_picname(action.markername),
+              action.hexlabel)
             label = gtk.Label(st)
         elif isinstance(action, Action.Concede):
-            st = "%s in %s concedes" % (action.markername, action.hexlabel)
+            st = "%s (%s) in %s concedes" % (action.markername,
+              Legion.find_picname(action.markername),
+              action.hexlabel)
             label = gtk.Label(st)
         elif isinstance(action, Action.SummonAngel):
-            st = "%s summons %s from %s" % (action.markername,
+            st = "%s (%s) summons %s from %s" % (action.markername,
+              Legion.find_picname(action.markername),
               action.creature_name, action.donor_markername)
             label = gtk.Label(st)
         elif isinstance(action, Action.RecruitCreature):
-            st = "%s recruits %s with %s" % (action.markername,
+            st = "%s (%s) recruits %s with %s" % (action.markername,
+              Legion.find_picname(action.markername),
               action.creature_name, ", ".join(action.recruiter_names))
             label = gtk.Label(st)
         elif isinstance(action, Action.Strike):
@@ -114,14 +126,23 @@ class EventLog(gtk.Window):
             label = gtk.Label(st)
         elif isinstance(action, Action.BattleOver):
             if action.winner_survivors:
-                st = "%s defeats %s in %s" % (action.winner_markername,
-                  action.loser_markername, action.hexlabel)
+                st = "%s (%s) defeats %s (%s) in %s" % (
+                  action.winner_markername,
+                  Legion.find_picname(action.winner_markername),
+                  action.loser_markername,
+                  Legion.find_picname(action.loser_markername),
+                  action.hexlabel)
             else:
-                st = "%s and %s mutual in %s" % (action.winner_markername,
-                  action.loser_markername, action.hexlabel)
+                st = "%s (%s) and %s (%s) mutual in %s" % (
+                  action.winner_markername,
+                  Legion.find_picname(action.winner_markername),
+                  action.loser_markername,
+                  Legion.find_picname(action.loser_markername),
+                  action.hexlabel)
             label = gtk.Label(st)
         elif isinstance(action, Action.Acquire):
-            st = "%s acquires %s" % (action.markername,
+            st = "%s (%s) acquires %s" % (action.markername,
+              Legion.find_picname(action.markername),
               ", ".join(action.angel_names))
             label = gtk.Label(st)
         elif isinstance(action, Action.GameOver):
