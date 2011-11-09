@@ -32,7 +32,7 @@ class Chit(object):
         self.creature = creature
         if creature is None:
             if name is None:
-                self.name = "QuestionMarkMask"
+                self.name = "QuestionMark"
             else:
                 self.name = name
         else:
