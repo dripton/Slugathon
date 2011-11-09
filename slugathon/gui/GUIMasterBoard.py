@@ -629,15 +629,16 @@ class GUIMasterBoard(gtk.Window):
         # If there are already recruitchits here (because we reinforced
         # without clearing them), use a bag and take the maximum number
         # of each creature.
+        chits = []
         old_chits = bag()
         for (chit, hexlabel2) in self.recruitchits:
             if hexlabel == hexlabel2:
+                chits.append(chit)
                 old_chits.add(chit.creature.name)
         new_chits = bag()
         for name in recruit_names:
             new_chits.add(name)
         diff = new_chits.difference(old_chits)
-        chits = []
         for name, number in diff.iteritems():
             for unused in xrange(number):
                 recruit = Creature.Creature(name)
