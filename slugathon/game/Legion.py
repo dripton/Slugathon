@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2004-2010 David Ripton"
+__copyright__ = "Copyright (c) 2004-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -11,11 +11,18 @@ from slugathon.util.Observed import Observed
 from slugathon.util.log import log
 
 
+def find_picname(markername):
+    color_name = playercolordata.abbrev_to_name[markername[:2]]
+    index = int(markername[2:]) - 1
+    return markerdata.data[color_name][index]
+
+
 class Legion(Observed):
     def __init__(self, player, markername, creatures, hexlabel):
         Observed.__init__(self)
         assert type(hexlabel) == types.IntType
         self.markername = markername
+        self.picname = find_picname(markername)
         self.creatures = creatures
         for creature in self.creatures:
             creature.legion = self
@@ -82,12 +89,6 @@ class Legion(Observed):
     def engaged(self):
         """Return True iff this legion is engaged with an enemy legion."""
         return self.hexlabel in self.player.game.engagement_hexlabels
-
-    @property
-    def picname(self):
-        color_name = playercolordata.abbrev_to_name[self.markername[:2]]
-        index = int(self.markername[2:]) - 1
-        return markerdata.data[color_name][index]
 
     def __repr__(self):
         return "Legion %s (%s) in %s %s" % (self.markername, self.picname,

@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -209,7 +209,7 @@ def test_score():
 def test_sorted_creatures():
     creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Minotaur"])
-    legion = Legion.Legion(None, None, creatures, 1)
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
     li = legion.sorted_creatures
     assert len(li) == len(creatures) == len(legion)
     names = [creature.name for creature in li]
@@ -220,15 +220,15 @@ def test_sorted_creatures():
 def test_any_summonable():
     creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Minotaur"])
-    legion = Legion.Legion(None, None, creatures, 1)
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert legion.any_summonable
     creatures = Creature.n2c(["Angel", "Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Minotaur"])
-    legion = Legion.Legion(None, None, creatures, 1)
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert legion.any_summonable
     creatures = Creature.n2c(["Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Minotaur"])
-    legion = Legion.Legion(None, None, creatures, 1)
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert not legion.any_summonable
 
 
@@ -274,6 +274,12 @@ def test_can_summon():
     legion2.move(2, False, None, 1)
     assert legion1.can_summon
     assert not legion2.can_summon
+
+
+def test_find_picname():
+    assert Legion.find_picname("Rd01") == "Cross"
+    assert Legion.find_picname("Rd02") == "Eagle"
+    assert Legion.find_picname("Gr12") == "Ourobouros"
 
 
 def test_picname():
