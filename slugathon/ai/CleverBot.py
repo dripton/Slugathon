@@ -402,6 +402,7 @@ class CleverBot(DimBot.DimBot):
         ADJACENT_ALLY_BONUS = 0.5
         RANGESTRIKE_BONUS = 2.0
         TITAN_FORWARD_PENALTY = 1.0
+        DEFENDER_FORWARD_PENALTY = 0.5
 
         score = 0
         for creature in creatures:
@@ -478,6 +479,14 @@ class CleverBot(DimBot.DimBot):
                 distance = battlemap.range(creature.hexlabel, entrance,
                   allow_entrance=True) - 2
                 score -= distance * TITAN_FORWARD_PENALTY
+
+            # Make defenders hang back early.
+            if (legion == game.defender_legion and game.battle_turn < 4 and
+              terrain != "Tower"):
+                entrance = "DEFENDER"
+                distance = battlemap.range(creature.hexlabel, entrance,
+                  allow_entrance=True) - 2
+                score -= distance * DEFENDER_FORWARD_PENALTY
 
             # terrain
             score += battlehex.elevation * ELEVATION_BONUS
