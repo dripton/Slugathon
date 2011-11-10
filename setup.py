@@ -10,6 +10,7 @@ from distutils.command.install_data import install_data
 import subprocess
 import datetime
 import sys
+import os
 
 
 VERSION = "0.1a1"
@@ -58,8 +59,12 @@ def write_version_file():
     docs/version.txt"""
     version = "%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7])
     # Need to use a relative path here because we may not have installed yet.
-    with open("slugathon/docs/version.txt", "w") as fil:
+    with open("slugathon/docs/version.txt" , "w") as fil:
         fil.write("%s\n" % version)
+
+
+# cd to the location of the setup.py file so relative paths work.
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 write_version_file()
 
