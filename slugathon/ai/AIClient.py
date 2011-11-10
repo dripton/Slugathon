@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 
 
 from optparse import OptionParser
-import traceback
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -425,11 +424,8 @@ def main():
     client = Client(opts.playername, opts.password, opts.server, opts.port,
       opts.delay, opts.aitype, opts.game_name, opts.log_path)
     client.connect()
-    try:
-        reactor.run()
-    except Exception:
-        log(traceback.format_exc())
-        raise
+    reactor.run()
+
 
 if __name__ == "__main__":
     main()
