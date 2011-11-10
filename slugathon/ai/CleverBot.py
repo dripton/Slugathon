@@ -248,10 +248,10 @@ class CleverBot(DimBot.DimBot):
         # orders jumbled together at the beginning.
         log("_find_move_order perms %s" % perms)
         random.shuffle(perms)
-        best_score = 0
+        best_score = -maxint
         best_perm = None
         for perm in perms:
-            score = -maxint
+            score = 0
             try:
                 for creature, start, move in perm:
                     if (move == start or move in
