@@ -504,9 +504,9 @@ class CleverBot(DimBot.DimBot):
                 score += NATIVE_VOLCANO_BONUS
 
             # allies
-            for neighbor in battlehex.neighbors:
+            for neighbor in battlehex.neighbors.itervalues():
                 for ally in legion.living_creatures:
-                    if ally.hexlabel == neighbor:
+                    if ally.hexlabel == neighbor.label:
                         score += ADJACENT_ALLY_BONUS
 
         return score
