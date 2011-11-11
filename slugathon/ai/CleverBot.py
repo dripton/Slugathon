@@ -373,7 +373,8 @@ class CleverBot(DimBot.DimBot):
         # Loop in case a non-move is best.
         while self.best_creature_moves:
             (creature, start, finish) = self.best_creature_moves.pop(0)
-            if finish != start:
+            log("checking move", creature.name, start, finish)
+            if finish != start and finish in game.find_battle_moves(creature):
                 log("calling move_creature", creature.name, start, finish)
                 def1 = self.user.callRemote("move_creature", game.name,
                   creature.name, start, finish)
