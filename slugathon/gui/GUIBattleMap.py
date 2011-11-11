@@ -884,7 +884,9 @@ class GUIBattleMap(gtk.Window):
                   self.game.name)
                 def1.addErrback(self.failure)
 
-        elif isinstance(action, Action.BattleOver):
+        elif (isinstance(action, Action.BattleOver) or
+          isinstance(action, Action.ResolvingEngagement) or
+          isinstance(action, Action.StartMusterPhase)):
             self.destroy()
 
         elif isinstance(action, Action.RecruitCreature):
