@@ -233,15 +233,12 @@ class CleverBot(DimBot.DimBot):
 
     def _score_perm(self, game, sort_values, perm):
         """Score one move order permutation."""
-        log("_score_perm %s" % str(perm))
         score = 0
         moved_creatures = set()
         try:
             for creature_name, start, move in perm:
-                log(creature_name, start, move)
                 creature = game.creatures_in_battle_hex(start,
                   creature_name).pop()
-                log("creature", creature)
                 if (move == start or move in
                   game.find_battle_moves(creature)):
                     # XXX Modifying game state
