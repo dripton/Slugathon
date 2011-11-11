@@ -553,7 +553,6 @@ class Game(Observed):
                 attacker = legion
             else:
                 defender = legion
-        log("resolve_engagement")
         # Reveal attacker only to defender
         action = Action.RevealLegion(self.name, attacker.markerid,
           attacker.creature_names)
@@ -1165,6 +1164,7 @@ class Game(Observed):
 
         Called from Server
         """
+        log("done_with_maneuvers", playername)
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             raise AssertionError("ending maneuver phase out of turn")
