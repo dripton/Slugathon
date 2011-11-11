@@ -404,6 +404,7 @@ class CleverBot(DimBot.DimBot):
         RANGESTRIKE_BONUS = 2.0
         TITAN_FORWARD_PENALTY = 1.0
         DEFENDER_FORWARD_PENALTY = 0.5
+        TITAN_IN_CENTER_OF_TOWER_BONUS = 2.0
 
         score = 0
         for creature in creatures:
@@ -498,6 +499,8 @@ class CleverBot(DimBot.DimBot):
                     score -= NON_NATIVE_BRAMBLE_PENALTY
             elif terrain == "Tower":
                 score += TOWER_BONUS
+                if creature.name == "Titan" and battlehex.elevation == 2:
+                    score += TITAN_IN_CENTER_OF_TOWER_BONUS
             elif terrain == "Drift":
                 if not creature.is_native(terrain):
                     score -= NON_NATIVE_DRIFT_PENALTY
