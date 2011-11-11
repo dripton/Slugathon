@@ -972,13 +972,17 @@ class Game(Observed):
             if legion2 != legion:
                 return legion2
 
-    def creatures_in_battle_hex(self, hexlabel):
-        """Return a set of all creatures in the battlehex with hexlabel."""
+    def creatures_in_battle_hex(self, hexlabel, name=None):
+        """Return a set of all creatures in the battlehex with hexlabel.
+
+        If name is not None, then return only creatures with that name.
+        """
         creatures = set()
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.hexlabel == hexlabel:
-                    creatures.add(creature)
+                    if name is None or creature.name == name:
+                        creatures.add(creature)
         return creatures
 
     def is_battle_hex_occupied(self, hexlabel):
