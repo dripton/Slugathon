@@ -1368,7 +1368,10 @@ class Game(Observed):
                     if not creature.dead:
                         hex1 = self.battlemap.hexes[creature.hexlabel]
                         if hex1.entrance:
-                            if self.battle_turn == 1:
+                            # We call this at the beginning of the turn, so
+                            # it will actually be turn 2 if the attacker left
+                            # creatures offboard in turn 1.
+                            if self.battle_turn <= 2:
                                 creature.kill()
                             elif legion == self.attacker_legion:
                                 legion.player.unsummon(legion, creature.name)
