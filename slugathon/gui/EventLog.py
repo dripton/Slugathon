@@ -76,8 +76,8 @@ class EventLog(gtk.Window):
               len(action.child_creature_names))
             label = gtk.Label(st)
         elif isinstance(action, Action.RollMovement):
-            st = "%s rolls %d for movement" % (action.playername,
-              action.movement_roll)
+            st = "%s (%s) rolls %d for movement" % (action.playername,
+              action.playercolor, action.movement_roll)
             label = gtk.Label(st)
         elif isinstance(action, Action.MoveLegion):
             st = "%s (%s) %s to %s" % (action.markername,
