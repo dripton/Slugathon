@@ -43,7 +43,8 @@ class SummonAngel(gtk.Dialog):
         self.vbox.pack_start(bottom_label)
 
         for legion2 in player.legions.itervalues():
-            if legion2.any_summonable and not legion2.engaged:
+            if (legion2.any_summonable and not legion2.engaged and
+              legion2 != legion):
                 hbox = gtk.HBox(spacing=3)
                 self.vbox.pack_start(hbox)
                 marker = Marker.Marker(legion2, False, scale=20)
