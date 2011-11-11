@@ -537,12 +537,15 @@ class Game(Observed):
         log("resolve_engagement")
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
-            raise AssertionError("cannot move on to next engagement yet")
+            log("cannot move on to next engagement yet")
+            return
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
-            raise AssertionError("resolving engagement out of turn")
+            log("resolving engagement out of turn")
+            return
         if hexlabel not in self.engagement_hexlabels:
-            raise AssertionError("no engagement to resolve in %s" % hexlabel)
+            log("no engagement to resolve in %s" % hexlabel)
+            return
         legions = self.all_legions(hexlabel)
         assert len(legions) == 2
         for legion in legions:
@@ -784,8 +787,8 @@ class Game(Observed):
         log("done_with_engagements")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
-            raise AssertionError("%s ending fight phase out of turn" %
-              playername)
+            log("%s ending fight phase out of turn" % playername)
+            return
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
             raise AssertionError("cannot end engagements yet",
@@ -1152,7 +1155,8 @@ class Game(Observed):
         """
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
-            raise AssertionError("ending maneuver phase out of turn")
+            log("%s ending maneuver phase out of turn" % playername)
+            return
         if self.battle_phase == Phase.REINFORCE:
             player.done_with_reinforcements()
 
