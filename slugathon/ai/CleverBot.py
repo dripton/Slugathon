@@ -277,6 +277,7 @@ class CleverBot(DimBot.DimBot):
             score = self._score_perm(game, sort_values, perm)
             if score == max_score:
                 best_perm = perm
+                log("_find_move_order found perfect order")
                 break
             elif score > best_score:
                 best_perm = perm
@@ -363,8 +364,10 @@ class CleverBot(DimBot.DimBot):
         creature_names = [creature.name for creature in creatures]
         creature_moves = zip(creature_names, start_hexlabels, best_legion_move)
         log("creature_moves", creature_moves)
+        now = time.time()
         ordered_creature_moves = self._find_move_order(game, creature_moves)
-        log("ordered_creature_moves", ordered_creature_moves)
+        log("found ordered_creature_moves %s in %fs" % (ordered_creature_moves,
+          time.time() - now))
         return ordered_creature_moves
 
     def move_creatures(self, game):
