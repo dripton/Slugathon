@@ -1113,6 +1113,9 @@ class Game(Observed):
                 break
         else:
             raise AssertionError("no %s in %s" % (creature_name, old_hexlabel))
+        if new_hexlabel not in self.find_battle_moves(creature):
+            raise AssertionError("illegal battle move %s %s" % (creature,
+              new_hexlabel))
         log("move creature", creature, "to", new_hexlabel)
         creature.move(new_hexlabel)
         action = Action.MoveCreature(self.name, playername, creature_name,
