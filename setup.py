@@ -59,7 +59,7 @@ def write_version_file():
     docs/version.txt"""
     version = "%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7])
     # Need to use a relative path here because we may not have installed yet.
-    with open("slugathon/docs/version.txt" , "w") as fil:
+    with open("slugathon/docs/version.txt", "w") as fil:
         fil.write("%s\n" % version)
 
 
