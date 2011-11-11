@@ -78,7 +78,7 @@ if __name__ == "__main__":
     creatures1 = [Creature.Creature(name) for name in
       ["Titan", "Archangel", "Angel", "Ogre", "Troll", "Ranger"]]
     legion = Legion.Legion(player, "Rd01", creatures1, 1)
-    player.legions[legion.markername] = legion
+    player.legions[legion.markerid] = legion
 
     def my_callback(creature_name):
         log("Picked", creature_name)

@@ -55,5 +55,5 @@ class Bot(Interface):
     def summon_after(game):
         """Summon angels, after battle."""
 
-    def acquire_angel(game, markername, num_angels, num_archangels):
+    def acquire_angel(game, markerid, num_angels, num_archangels):
         """Acquire angels."""

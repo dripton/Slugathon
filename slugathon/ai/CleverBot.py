@@ -38,7 +38,7 @@ class CleverBot(DimBot.DimBot):
         for legion in legions:
             if len(legion) == 8:
                 # initial split 4-4, one lord per legion
-                new_markername = self._choose_marker(player)
+                new_markerid = self._choose_marker(player)
                 lord = random.choice(["Titan", "Angel"])
                 creatures = ["Centaur", "Gargoyle", "Ogre"]
                 creature1 = random.choice(creatures)
@@ -51,11 +51,11 @@ class CleverBot(DimBot.DimBot):
                 for creature in new_creatures:
                     old_creatures.remove(creature)
                 def1 = self.user.callRemote("split_legion", game.name,
-                  legion.markername, new_markername,
+                  legion.markerid, new_markerid,
                   old_creatures, new_creatures)
                 def1.addErrback(self.failure)
                 return
-            elif len(legion) == 7 and player.markernames:
+            elif len(legion) == 7 and player.markerids:
                 good_recruit_rolls = set()
                 safe_split_rolls = set()
                 lst = legion.sorted_creatures
@@ -84,9 +84,9 @@ class CleverBot(DimBot.DimBot):
                     split_names = [creature.name for creature in split]
                     keep = lst[:-2]
                     keep_names = [creature.name for creature in keep]
-                    new_markername = self._choose_marker(player)
+                    new_markerid = self._choose_marker(player)
                     def1 = self.user.callRemote("split_legion", game.name,
-                      legion.markername, new_markername, keep_names,
+                      legion.markerid, new_markerid, keep_names,
                       split_names)
                     def1.addErrback(self.failure)
                     return
@@ -151,7 +151,7 @@ class CleverBot(DimBot.DimBot):
                     teleport = False
                     teleporting_lord = None
                 def1 = self.user.callRemote("move_legion", game.name,
-                  legion.markername, hexlabel, entry_side, teleport,
+                  legion.markerid, hexlabel, entry_side, teleport,
                   teleporting_lord)
                 def1.addErrback(self.failure)
                 return

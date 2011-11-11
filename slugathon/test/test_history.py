@@ -15,8 +15,8 @@ tmp_path = None
 def test_history_1():
     game_name = "game"
     playername = "player"
-    parent_markername = "Rd01"
-    child_markername = "Rd02"
+    parent_markerid = "Rd01"
+    child_markerid = "Rd02"
     parent_creature_names = 4 * [None]
     child_creature_names = 4 * [None]
 
@@ -26,8 +26,8 @@ def test_history_1():
     assert not history.can_undo(playername)
     assert not history.can_redo(playername)
 
-    action = Action.SplitLegion(game_name, playername, parent_markername,
-      child_markername, parent_creature_names, child_creature_names)
+    action = Action.SplitLegion(game_name, playername, parent_markerid,
+      child_markerid, parent_creature_names, child_creature_names)
     history.update(None, action)
     assert history.actions == [action]
     assert history.undone == []
@@ -35,8 +35,8 @@ def test_history_1():
     assert not history.can_undo("")
     assert not history.can_redo(playername)
 
-    undo_action = Action.UndoSplit(game_name, playername, parent_markername,
-      child_markername, parent_creature_names, child_creature_names)
+    undo_action = Action.UndoSplit(game_name, playername, parent_markerid,
+      child_markerid, parent_creature_names, child_creature_names)
     history.update(None, undo_action)
     assert history.actions == []
     assert history.undone == [action]
@@ -54,8 +54,8 @@ def test_history_1():
 def test_history_2():
     game_name = "game"
     playername = "player"
-    parent_markername = "Rd01"
-    child_markername = "Rd02"
+    parent_markerid = "Rd01"
+    child_markerid = "Rd02"
 
     history = History.History()
     assert history.actions == []
@@ -63,7 +63,7 @@ def test_history_2():
     assert not history.can_undo(playername)
     assert not history.can_redo(playername)
 
-    action1 = Action.MoveLegion(game_name, playername, parent_markername,
+    action1 = Action.MoveLegion(game_name, playername, parent_markerid,
       1, 1, False, None)
     history.update(None, action1)
     assert history.actions == [action1]
@@ -72,7 +72,7 @@ def test_history_2():
     assert not history.can_undo("")
     assert not history.can_redo(playername)
 
-    action2 = Action.MoveLegion(game_name, playername, child_markername,
+    action2 = Action.MoveLegion(game_name, playername, child_markerid,
       2, 3, False, None)
     history.update(None, action2)
     assert history.actions == [action1, action2]
@@ -82,7 +82,7 @@ def test_history_2():
     assert not history.can_redo(playername)
 
     undo_action2 = Action.UndoMoveLegion(game_name, playername,
-      child_markername, 2, 3, False, None)
+      child_markerid, 2, 3, False, None)
     history.update(None, undo_action2)
     assert history.actions == [action1]
     assert history.undone == [action2]
@@ -90,7 +90,7 @@ def test_history_2():
     assert history.can_redo(playername)
 
     undo_action1 = Action.UndoMoveLegion(game_name, playername,
-      parent_markername, 1, 1, False, None)
+      parent_markerid, 1, 1, False, None)
     history.update(None, undo_action1)
     assert history.actions == []
     assert history.undone == [action2, action1]
@@ -101,8 +101,8 @@ def test_history_2():
 def test_save():
     game_name = "game"
     playername = "player"
-    parent_markername = "Rd01"
-    child_markername = "Rd02"
+    parent_markerid = "Rd01"
+    child_markerid = "Rd02"
 
     history = History.History()
     assert history.actions == []
@@ -110,7 +110,7 @@ def test_save():
     assert not history.can_undo(playername)
     assert not history.can_redo(playername)
 
-    action1 = Action.MoveLegion(game_name, playername, parent_markername,
+    action1 = Action.MoveLegion(game_name, playername, parent_markerid,
       1, 1, False, None)
     history.update(None, action1)
     assert history.actions == [action1]
@@ -119,7 +119,7 @@ def test_save():
     assert not history.can_undo("")
     assert not history.can_redo(playername)
 
-    action2 = Action.MoveLegion(game_name, playername, child_markername,
+    action2 = Action.MoveLegion(game_name, playername, child_markerid,
       2, 3, False, None)
     history.update(None, action2)
     assert history.actions == [action1, action2]
@@ -153,46 +153,46 @@ AssignTower {'playername': 'tchula', 'tower_num': 500, 'game_name': 'a'}
 AssignedAllTowers {'game_name': 'a'}
 PickedColor {'playername': 'dripton', 'color': 'Red', 'game_name': 'a'}
 PickedColor {'playername': 'tchula', 'color': 'Blue', 'game_name': 'a'}
-CreateStartingLegion {'playername': 'tchula', 'markername': 'Bu11', \
+CreateStartingLegion {'playername': 'tchula', 'markerid': 'Bu11', \
 'game_name': 'a'}
-CreateStartingLegion {'playername': 'dripton', 'markername': 'Rd04', \
+CreateStartingLegion {'playername': 'dripton', 'markerid': 'Rd04', \
 'game_name': 'a'}
 SplitLegion {'playername': 'tchula', 'child_creature_names': \
 ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
-'child_markername': 'Bu06', 'parent_creature_names': \
-('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Bu11'}
+'child_markerid': 'Bu06', 'parent_creature_names': \
+('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markerid': 'Bu11'}
 RollMovement {'playername': 'tchula', 'playercolor': 'Blue', 'game_name': 'a', \
 'movement_roll': 5, 'mulligans_left': 1}
 RollMovement {'playername': 'tchula', 'playercolor': 'Blue', 'game_name': 'a', \
 'movement_roll': 6, 'mulligans_left': 0}
-MoveLegion {'markername': 'Bu11', 'entry_side': 1, 'teleport': True, \
+MoveLegion {'markerid': 'Bu11', 'entry_side': 1, 'teleport': True, \
 'playername': 'tchula', 'teleporting_lord': 'Titan', 'game_name': 'a', \
 'hexlabel': 300}
-MoveLegion {'markername': 'Bu06', 'entry_side': 1, 'teleport': False, \
+MoveLegion {'markerid': 'Bu06', 'entry_side': 1, 'teleport': False, \
 'playername': 'tchula', 'teleporting_lord': None, 'game_name': 'a', \
 'hexlabel': 36}
 StartMusterPhase {'playername': 'tchula', 'game_name': 'a'}
-RecruitCreature {'playername': 'tchula', 'markername': 'Bu06', \
+RecruitCreature {'playername': 'tchula', 'markerid': 'Bu06', \
 'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}
-RecruitCreature {'playername': 'tchula', 'markername': 'Bu11', \
+RecruitCreature {'playername': 'tchula', 'markerid': 'Bu11', \
 'creature_name': 'Warlock', 'game_name': 'a', 'recruiter_names': ['Titan']}
 StartSplitPhase {'playername': 'dripton', 'game_name': 'a', 'turn': 1}
 SplitLegion {'playername': 'dripton', 'child_creature_names': \
 ('Angel', 'Gargoyle', 'Gargoyle', 'Ogre'), 'game_name': 'a', \
-'child_markername': 'Rd02', 'parent_creature_names': \
-('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markername': 'Rd04'}
+'child_markerid': 'Rd02', 'parent_creature_names': \
+('Centaur', 'Centaur', 'Ogre', 'Titan'), 'parent_markerid': 'Rd04'}
 RollMovement {'playername': 'dripton', 'playercolor': 'Red', 'game_name': 'a', \
 'movement_roll': 6, 'mulligans_left': 1}
-MoveLegion {'markername': 'Rd04', 'entry_side': 1, 'teleport': True, \
+MoveLegion {'markerid': 'Rd04', 'entry_side': 1, 'teleport': True, \
 'playername': 'dripton', 'teleporting_lord': 'Titan', 'game_name': 'a', \
 'hexlabel': 200}
-MoveLegion {'markername': 'Rd02', 'entry_side': 5, 'teleport': False, \
+MoveLegion {'markerid': 'Rd02', 'entry_side': 5, 'teleport': False, \
 'playername': 'dripton', 'teleporting_lord': None, 'game_name': 'a', \
 'hexlabel': 117}
 StartMusterPhase {'playername': 'dripton', 'game_name': 'a'}
-RecruitCreature {'playername': 'dripton', 'markername': 'Rd02', \
+RecruitCreature {'playername': 'dripton', 'markerid': 'Rd02', \
 'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}
-RecruitCreature {'playername': 'dripton', 'markername': 'Rd04', \
+RecruitCreature {'playername': 'dripton', 'markerid': 'Rd04', \
 'creature_name': 'Warlock', 'game_name': 'a', 'recruiter_names': ['Titan']}
 """
 

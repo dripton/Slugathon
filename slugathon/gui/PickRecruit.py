@@ -35,7 +35,7 @@ class PickRecruit(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Pick recruit for legion %s (%s) in hex %s" % (
-          legion.markername, legion.picname, legion.hexlabel))
+          legion.markerid, legion.picname, legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
         legion_hbox = gtk.HBox(spacing=15)

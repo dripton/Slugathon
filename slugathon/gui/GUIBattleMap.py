@@ -620,7 +620,7 @@ class GUIBattleMap(gtk.Window):
                 else:
                     enemy = legion
             def1 = self.user.callRemote("concede", self.game.name,
-              friend.markername, enemy.markername, friend.hexlabel)
+              friend.markerid, enemy.markerid, friend.hexlabel)
             def1.addErrback(self.failure)
 
     def bounding_rect_for_hexlabels(self, hexlabels):
@@ -922,7 +922,7 @@ class GUIBattleMap(gtk.Window):
 
         elif isinstance(action, Action.Concede):
             for legion in self.game.battle_legions:
-                if legion.markername == action.markername:
+                if legion.markerid == action.markerid:
                     break
             self.repaint([creature.hexlabel for creature in legion.creatures])
 
@@ -935,7 +935,7 @@ class GUIBattleMap(gtk.Window):
     def picked_reinforcement(self, (legion, creature, recruiter_names)):
         if legion and creature:
             def1 = self.user.callRemote("recruit_creature", self.game.name,
-              legion.markername, creature.name, recruiter_names)
+              legion.markerid, creature.name, recruiter_names)
             def1.addErrback(self.failure)
         else:
             def1 = self.user.callRemote("done_with_reinforcements",
@@ -945,7 +945,7 @@ class GUIBattleMap(gtk.Window):
     def picked_summon(self, (legion, donor, creature)):
         if legion and donor and creature:
             def1 = self.user.callRemote("summon_angel", self.game.name,
-              legion.markername, donor.markername, creature.name)
+              legion.markerid, donor.markerid, creature.name)
             def1.addErrback(self.failure)
         else:
             def1 = self.user.callRemote("done_with_reinforcements",

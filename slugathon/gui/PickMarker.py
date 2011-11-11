@@ -79,8 +79,8 @@ class PickMarker(gtk.Dialog):
         self.show_all()
 
     def cb_click(self, widget, event):
-        markername = widget.tag
-        self.deferred.callback((self.game_name, self.username, markername))
+        markerid = widget.tag
+        self.deferred.callback((self.game_name, self.username, markerid))
         self.destroy()
 
     def cb_destroy(self, widget):
@@ -90,8 +90,8 @@ class PickMarker(gtk.Dialog):
 
 if __name__ == "__main__":
 
-    def my_callback((game_name, username, markername)):
-        log("picked", markername)
+    def my_callback((game_name, username, markerid)):
+        log("picked", markerid)
         reactor.stop()
 
     username = "test user"

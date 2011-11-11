@@ -46,8 +46,8 @@ class Negotiate(gtk.Dialog):
 
         legion_name = gtk.Label(
           "Legion %s (%s) negotiates with %s (%s) in hex %s?" % (
-          attacker_legion.markername, attacker_legion.picname,
-          defender_legion.markername, defender_legion.picname,
+          attacker_legion.markerid, attacker_legion.picname,
+          defender_legion.markerid, defender_legion.picname,
           defender_legion.hexlabel))
         self.vbox.pack_start(legion_name)
 

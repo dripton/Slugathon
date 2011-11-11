@@ -385,7 +385,7 @@ class Client(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.acquire_angel, game,
-                  action.markername, action.angels, action.archangels)
+                  action.markerid, action.angels, action.archangels)
 
         elif isinstance(action, Action.Acquire):
             game = self.name_to_game(action.game_name)

@@ -34,7 +34,7 @@ class SplitLegion(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Splitting legion %s (%s) in hex %s" % (
-          legion.markername, legion.picname, legion.hexlabel))
+          legion.markerid, legion.picname, legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
         old_hbox = gtk.HBox(spacing=15)
@@ -54,9 +54,9 @@ class SplitLegion(gtk.Dialog):
         old_marker = Marker.Marker(legion, False, scale=20)
         old_marker_hbox.pack_start(old_marker.event_box, expand=False)
 
-        self.new_legion1 = Legion.Legion(player, legion.markername,
+        self.new_legion1 = Legion.Legion(player, legion.markerid,
           legion.sorted_creatures, legion.hexlabel)
-        self.new_legion2 = Legion.Legion(player, player.selected_markername,
+        self.new_legion2 = Legion.Legion(player, player.selected_markerid,
           [], legion.hexlabel)
         self.new_marker = Marker.Marker(self.new_legion2, False, scale=20)
         new_marker_hbox.pack_start(self.new_marker.event_box, expand=False)
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     player = Player.Player(username, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    player.selected_markername = "Rd02"
+    player.selected_markerid = "Rd02"
     splitlegion, def1 = new(username, legion, None)
     def1.addCallback(guiutils.exit)
     splitlegion.connect("destroy", guiutils.exit)

@@ -138,24 +138,24 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
             player = game.get_player_by_name(playername)
-            markernames = sorted(player.markernames.copy())
-            _, def1 = PickMarker.new(self.username, game.name, markernames,
+            markerids = sorted(player.markerids.copy())
+            _, def1 = PickMarker.new(self.username, game.name, markerids,
               self.guiboards[game])
             def1.addCallback(self.pick_marker)
             self.pickcolor = None
 
-    def pick_marker(self, (game_name, username, markername)):
+    def pick_marker(self, (game_name, username, markerid)):
         """Callback from PickMarker."""
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
-        if markername is None:
+        if markerid is None:
             if not player.legions:
                 self._maybe_pick_first_marker(game, username)
         else:
-            player.pick_marker(markername)
+            player.pick_marker(markerid)
             if not player.legions:
                 def1 = self.user.callRemote("pick_first_marker", game_name,
-                  markername)
+                  markerid)
                 def1.addErrback(self.failure)
 
     def _init_guiboard(self, game):

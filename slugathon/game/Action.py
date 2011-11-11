@@ -123,37 +123,37 @@ pb.setUnjellyableForClass(AssignedAllColors, AssignedAllColors)
 
 
 class CreateStartingLegion(Action):
-    def __init__(self, game_name, playername, markername):
+    def __init__(self, game_name, playername, markerid):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
 pb.setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)
 
 
 class SplitLegion(Action):
-    def __init__(self, game_name, playername, parent_markername,
-      child_markername, parent_creature_names, child_creature_names):
+    def __init__(self, game_name, playername, parent_markerid,
+      child_markerid, parent_creature_names, child_creature_names):
         """parent_creature_names and child_creature_names are lists of the
         actual creature names if known, or lists of height * None if not known
         """
         self.game_name = game_name
         self.playername = playername
-        self.parent_markername = parent_markername
-        self.child_markername = child_markername
+        self.parent_markerid = parent_markerid
+        self.child_markerid = child_markerid
         self.parent_creature_names = tuple(parent_creature_names)
         self.child_creature_names = tuple(child_creature_names)
 
     def undo_action(self):
         return UndoSplit(self.game_name, self.playername,
-          self.parent_markername, self.child_markername,
+          self.parent_markerid, self.child_markerid,
           self.parent_creature_names, self.child_creature_names)
 
 pb.setUnjellyableForClass(SplitLegion, SplitLegion)
 
 
 class UndoSplit(UndoAction):
-    def __init__(self, game_name, playername, parent_markername,
-      child_markername, parent_creature_names, child_creature_names):
+    def __init__(self, game_name, playername, parent_markerid,
+      child_markerid, parent_creature_names, child_creature_names):
         """Used for voluntarily undoing a split during the split phase.
 
         parent_creature_names and child_creature_names are lists of the
@@ -161,16 +161,16 @@ class UndoSplit(UndoAction):
         """
         self.game_name = game_name
         self.playername = playername
-        self.parent_markername = parent_markername
-        self.child_markername = child_markername
+        self.parent_markerid = parent_markerid
+        self.child_markerid = child_markerid
         self.parent_creature_names = tuple(parent_creature_names)
         self.child_creature_names = tuple(child_creature_names)
 pb.setUnjellyableForClass(UndoSplit, UndoSplit)
 
 
 class MergeLegions(Action):
-    def __init__(self, game_name, playername, parent_markername,
-      child_markername, parent_creature_names, child_creature_names):
+    def __init__(self, game_name, playername, parent_markerid,
+      child_markerid, parent_creature_names, child_creature_names):
         """Used for involuntarily undoing a split during the movement phase,
         because of a lack of legal non-teleport moves.
 
@@ -179,8 +179,8 @@ class MergeLegions(Action):
         """
         self.game_name = game_name
         self.playername = playername
-        self.parent_markername = parent_markername
-        self.child_markername = child_markername
+        self.parent_markerid = parent_markerid
+        self.child_markerid = child_markerid
         self.parent_creature_names = tuple(parent_creature_names)
         self.child_creature_names = tuple(child_creature_names)
 pb.setUnjellyableForClass(MergeLegions, MergeLegions)
@@ -198,29 +198,29 @@ pb.setUnjellyableForClass(RollMovement, RollMovement)
 
 
 class MoveLegion(Action):
-    def __init__(self, game_name, playername, markername, hexlabel,
+    def __init__(self, game_name, playername, markerid, hexlabel,
       entry_side, teleport, teleporting_lord):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
         self.hexlabel = hexlabel
         self.entry_side = entry_side
         self.teleport = teleport
         self.teleporting_lord = teleporting_lord
 
     def undo_action(self):
-        return UndoMoveLegion(self.game_name, self.playername, self.markername,
+        return UndoMoveLegion(self.game_name, self.playername, self.markerid,
           self.hexlabel, self.entry_side, self.teleport, self.teleporting_lord)
 
 pb.setUnjellyableForClass(MoveLegion, MoveLegion)
 
 
 class UndoMoveLegion(UndoAction):
-    def __init__(self, game_name, playername, markername, hexlabel,
+    def __init__(self, game_name, playername, markerid, hexlabel,
       entry_side, teleport, teleporting_lord):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
         self.hexlabel = hexlabel
         self.entry_side = entry_side
         self.teleport = teleport
@@ -251,47 +251,47 @@ pb.setUnjellyableForClass(StartMusterPhase, StartMusterPhase)
 
 
 class RecruitCreature(Action):
-    def __init__(self, game_name, playername, markername, creature_name,
+    def __init__(self, game_name, playername, markerid, creature_name,
       recruiter_names):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
         self.creature_name = creature_name
         self.recruiter_names = tuple(recruiter_names)
 
     def undo_action(self):
-        return UndoRecruit(self.game_name, self.playername, self.markername,
+        return UndoRecruit(self.game_name, self.playername, self.markerid,
           self.creature_name, self.recruiter_names)
 
 pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)
 
 
 class DoNotReinforce(Action):
-    def __init__(self, game_name, playername, markername):
+    def __init__(self, game_name, playername, markerid):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
 
 pb.setUnjellyableForClass(DoNotReinforce, DoNotReinforce)
 
 
 class UnReinforce(UndoAction):
-    def __init__(self, game_name, playername, markername, creature_name,
+    def __init__(self, game_name, playername, markerid, creature_name,
       recruiter_names):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
         self.creature_name = creature_name
         self.recruiter_names = tuple(recruiter_names)
 pb.setUnjellyableForClass(UnReinforce, UnReinforce)
 
 
 class UndoRecruit(UndoAction):
-    def __init__(self, game_name, playername, markername, creature_name,
+    def __init__(self, game_name, playername, markerid, creature_name,
       recruiter_names):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
         self.creature_name = creature_name
         self.recruiter_names = tuple(recruiter_names)
 pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)
@@ -300,9 +300,9 @@ pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)
 # TODO Act on this action.  Currently meaningless since all legion contents
 # are public.
 class RevealLegion(Action):
-    def __init__(self, game_name, markername, creature_names):
+    def __init__(self, game_name, markerid, creature_names):
         self.game_name = game_name
-        self.markername = markername
+        self.markerid = markerid
         self.creature_names = tuple(creature_names)
 pb.setUnjellyableForClass(RevealLegion, RevealLegion)
 
@@ -315,51 +315,51 @@ pb.setUnjellyableForClass(ResolvingEngagement, ResolvingEngagement)
 
 
 class Flee(Action):
-    def __init__(self, game_name, markername, enemy_markername, hexlabel):
+    def __init__(self, game_name, markerid, enemy_markerid, hexlabel):
         self.game_name = game_name
-        self.markername = markername
-        self.enemy_markername = enemy_markername
+        self.markerid = markerid
+        self.enemy_markerid = enemy_markerid
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(Flee, Flee)
 
 
 class DoNotFlee(Action):
-    def __init__(self, game_name, markername, enemy_markername, hexlabel):
+    def __init__(self, game_name, markerid, enemy_markerid, hexlabel):
         self.game_name = game_name
-        self.markername = markername
-        self.enemy_markername = enemy_markername
+        self.markerid = markerid
+        self.enemy_markerid = enemy_markerid
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(DoNotFlee, DoNotFlee)
 
 
 class Concede(Action):
-    def __init__(self, game_name, markername, enemy_markername, hexlabel):
+    def __init__(self, game_name, markerid, enemy_markerid, hexlabel):
         self.game_name = game_name
-        self.markername = markername
-        self.enemy_markername = enemy_markername
+        self.markerid = markerid
+        self.enemy_markerid = enemy_markerid
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(Concede, Concede)
 
 
 class Fight(Action):
-    def __init__(self, game_name, attacker_markername, defender_markername,
+    def __init__(self, game_name, attacker_markerid, defender_markerid,
       hexlabel):
         self.game_name = game_name
-        self.attacker_markername = attacker_markername
-        self.defender_markername = defender_markername
+        self.attacker_markerid = attacker_markerid
+        self.defender_markerid = defender_markerid
         self.hexlabel = hexlabel
 pb.setUnjellyableForClass(Fight, Fight)
 
 
 class MakeProposal(Action):
     def __init__(self, game_name, playername, other_playername,
-      attacker_markername, attacker_creature_names,
-      defender_markername, defender_creature_names):
+      attacker_markerid, attacker_creature_names,
+      defender_markerid, defender_creature_names):
         self.game_name = game_name
         self.playername = playername
         self.other_playername = other_playername
-        self.attacker_markername = attacker_markername
-        self.defender_markername = defender_markername
+        self.attacker_markerid = attacker_markerid
+        self.defender_markerid = defender_markerid
         self.attacker_creature_names = tuple(attacker_creature_names)
         self.defender_creature_names = tuple(defender_creature_names)
 pb.setUnjellyableForClass(MakeProposal, MakeProposal)
@@ -367,13 +367,13 @@ pb.setUnjellyableForClass(MakeProposal, MakeProposal)
 
 class AcceptProposal(Action):
     def __init__(self, game_name, playername, other_playername,
-      attacker_markername, attacker_creature_names,
-      defender_markername, defender_creature_names, hexlabel):
+      attacker_markerid, attacker_creature_names,
+      defender_markerid, defender_creature_names, hexlabel):
         self.game_name = game_name
         self.playername = playername
         self.other_playername = other_playername
-        self.attacker_markername = attacker_markername
-        self.defender_markername = defender_markername
+        self.attacker_markerid = attacker_markerid
+        self.defender_markerid = defender_markerid
         self.attacker_creature_names = tuple(attacker_creature_names)
         self.defender_creature_names = tuple(defender_creature_names)
         self.hexlabel = hexlabel
@@ -382,13 +382,13 @@ pb.setUnjellyableForClass(AcceptProposal, AcceptProposal)
 
 class RejectProposal(Action):
     def __init__(self, game_name, playername, other_playername,
-      attacker_markername, attacker_creature_names,
-      defender_markername, defender_creature_names):
+      attacker_markerid, attacker_creature_names,
+      defender_markerid, defender_creature_names):
         self.game_name = game_name
         self.playername = playername
         self.other_playername = other_playername
-        self.attacker_markername = attacker_markername
-        self.defender_markername = defender_markername
+        self.attacker_markerid = attacker_markerid
+        self.defender_markerid = defender_markerid
         self.attacker_creature_names = tuple(attacker_creature_names)
         self.defender_creature_names = tuple(defender_creature_names)
 pb.setUnjellyableForClass(RejectProposal, RejectProposal)
@@ -504,71 +504,71 @@ pb.setUnjellyableForClass(Carry, Carry)
 
 
 class SummonAngel(Action):
-    def __init__(self, game_name, playername, markername, donor_markername,
+    def __init__(self, game_name, playername, markerid, donor_markerid,
       creature_name):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
-        self.donor_markername = donor_markername
+        self.markerid = markerid
+        self.donor_markerid = donor_markerid
         self.creature_name = creature_name
 pb.setUnjellyableForClass(SummonAngel, SummonAngel)
 
 
 class UnSummon(Action):
-    def __init__(self, game_name, playername, markername, donor_markername,
+    def __init__(self, game_name, playername, markerid, donor_markerid,
       creature_name):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
-        self.donor_markername = donor_markername
+        self.markerid = markerid
+        self.donor_markerid = donor_markerid
         self.creature_name = creature_name
 pb.setUnjellyableForClass(UnSummon, UnSummon)
 
 
 class DoNotSummon(Action):
-    def __init__(self, game_name, playername, markername):
+    def __init__(self, game_name, playername, markerid):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
 pb.setUnjellyableForClass(DoNotSummon, DoNotSummon)
 
 
 class CanAcquire(Action):
-    def __init__(self, game_name, playername, markername, angels, archangels):
+    def __init__(self, game_name, playername, markerid, angels, archangels):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
         self.angels = angels
         self.archangels = archangels
 pb.setUnjellyableForClass(CanAcquire, CanAcquire)
 
 
 class Acquire(Action):
-    def __init__(self, game_name, playername, markername, angel_names):
+    def __init__(self, game_name, playername, markerid, angel_names):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
         self.angel_names = tuple(angel_names)
 pb.setUnjellyableForClass(Acquire, Acquire)
 
 
 class DoNotAcquire(Action):
-    def __init__(self, game_name, playername, markername):
+    def __init__(self, game_name, playername, markerid):
         self.game_name = game_name
         self.playername = playername
-        self.markername = markername
+        self.markerid = markerid
 pb.setUnjellyableForClass(DoNotAcquire, DoNotAcquire)
 
 
 class BattleOver(Action):
-    def __init__(self, game_name, winner_markername, winner_survivors,
-      winner_losses, loser_markername, loser_survivors, loser_losses,
+    def __init__(self, game_name, winner_markerid, winner_survivors,
+      winner_losses, loser_markerid, loser_survivors, loser_losses,
       time_loss, hexlabel):
         self.game_name = game_name
-        self.winner_markername = winner_markername
+        self.winner_markerid = winner_markerid
         self.winner_survivors = tuple(winner_survivors)
         self.winner_losses = tuple(winner_losses)
-        self.loser_markername = loser_markername
+        self.loser_markerid = loser_markerid
         self.loser_survivors = tuple(loser_survivors)
         self.loser_losses = tuple(loser_losses)
         self.time_loss = time_loss

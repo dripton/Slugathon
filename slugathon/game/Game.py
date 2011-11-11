@@ -294,20 +294,20 @@ class Game(Observed):
     def done_assigning_first_markers(self):
         """Return True iff each player has picked his first marker."""
         for player in self.players:
-            if player.selected_markername is None:
+            if player.selected_markerid is None:
                 return False
         return True
 
-    def assign_first_marker(self, playername, markername):
-        """Use markername for playername's first legion marker.
+    def assign_first_marker(self, playername, markerid):
+        """Use markerid for playername's first legion marker.
 
         Once all players have done this, create the starting legions.
         """
         player = self.get_player_by_name(playername)
-        log(player.markernames)
-        if markername not in player.markernames:
+        log(player.markerids)
+        if markerid not in player.markerids:
             raise AssertionError("marker not available")
-        player.pick_marker(markername)
+        player.pick_marker(markerid)
         if self.done_assigning_first_markers():
             for player in self.players:
                 player.create_starting_legion()
@@ -322,28 +322,28 @@ class Game(Observed):
                     legions.add(legion)
         return legions
 
-    def find_legion(self, markername):
-        """Return the legion called markername, or None."""
+    def find_legion(self, markerid):
+        """Return the legion called markerid, or None."""
         for player in self.players:
-            if markername in player.legions:
-                return player.legions[markername]
+            if markerid in player.legions:
+                return player.legions[markerid]
         return None
 
-    def split_legion(self, playername, parent_markername, child_markername,
+    def split_legion(self, playername, parent_markerid, child_markerid,
       parent_creature_names, child_creature_names):
-        """Split legion child_markername containing child_creature_names off
-        of legion parent_markername, leaving parent_creature_names."""
+        """Split legion child_markerid containing child_creature_names off
+        of legion parent_markerid, leaving parent_creature_names."""
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("splitting out of turn")
-        player.split_legion(parent_markername, child_markername,
+        player.split_legion(parent_markerid, child_markerid,
           parent_creature_names, child_creature_names)
 
-    def undo_split(self, playername, parent_markername, child_markername):
+    def undo_split(self, playername, parent_markerid, child_markerid):
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("splitting out of turn")
-        player.undo_split(parent_markername, child_markername)
+        player.undo_split(parent_markerid, child_markerid)
 
     def done_with_splits(self, playername):
         """Try to end playername's split phase.
@@ -499,26 +499,26 @@ class Game(Observed):
                 return False
         return True
 
-    def move_legion(self, playername, markername, hexlabel, entry_side,
+    def move_legion(self, playername, markerid, hexlabel, entry_side,
       teleport, teleporting_lord):
         """Called from Server"""
-        log("move_legion", playername, markername, hexlabel, entry_side,
+        log("move_legion", playername, markerid, hexlabel, entry_side,
           teleport, teleporting_lord)
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         if not self.can_move_legion(player, legion, hexlabel, entry_side,
           teleport, teleporting_lord):
             raise AssertionError("illegal move attempt")
         legion.move(hexlabel, teleport, teleporting_lord, entry_side)
-        action = Action.MoveLegion(self.name, playername, markername,
+        action = Action.MoveLegion(self.name, playername, markerid,
           hexlabel, entry_side, teleport, teleporting_lord)
         self.notify(action)
 
-    def undo_move_legion(self, playername, markername):
+    def undo_move_legion(self, playername, markerid):
         """Called from Server"""
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
-        action = Action.UndoMoveLegion(self.name, playername, markername,
+        legion = player.legions[markerid]
+        action = Action.UndoMoveLegion(self.name, playername, markerid,
           legion.hexlabel, legion.entry_side, legion.teleported,
           legion.teleporting_lord)
         legion.undo_move()
@@ -552,11 +552,11 @@ class Game(Observed):
                 defender = legion
         log("resolve_engagement")
         # Reveal attacker only to defender
-        action = Action.RevealLegion(self.name, attacker.markername,
+        action = Action.RevealLegion(self.name, attacker.markerid,
           attacker.creature_names)
         self.notify(action, [defender.player.name])
         # Reveal defender only to attacker
-        action = Action.RevealLegion(self.name, defender.markername,
+        action = Action.RevealLegion(self.name, defender.markerid,
           defender.creature_names)
         self.notify(action, [attacker.player.name])
         self.current_engagement_hexlabel = hexlabel
@@ -565,9 +565,9 @@ class Game(Observed):
         self.notify(action)
         # Let clients DTRT: flee, concede, negotiate, fight
 
-    def _flee(self, playername, markername):
+    def _flee(self, playername, markerid):
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         assert legion.can_flee
         hexlabel = legion.hexlabel
         for legion2 in self.all_legions(hexlabel):
@@ -577,13 +577,13 @@ class Game(Observed):
         if legion2 == legion or legion2.player == player:
             return
         legion.die(legion2, True, False)
-        assert markername not in player.legions
+        assert markerid not in player.legions
         for legion in self.all_legions():
-            assert legion.markername != markername
+            assert legion.markerid != markerid
 
-    def _concede(self, playername, markername):
+    def _concede(self, playername, markerid):
         player = self.get_player_by_name(playername)
-        legion = player.legions.get(markername)
+        legion = player.legions.get(markerid)
         if legion is None:
             return
         hexlabel = legion.hexlabel
@@ -603,9 +603,9 @@ class Game(Observed):
         else:
             # conceding before battle
             legion.die(legion2, False, False)
-            assert markername not in player.legions
+            assert markerid not in player.legions
             for legion in self.all_legions():
-                assert legion.markername != markername
+                assert legion.markerid != markerid
 
     def _accept_proposal_helper(self, winning_legion, losing_legion,
       survivors):
@@ -637,9 +637,9 @@ class Game(Observed):
             self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
 
-    def flee(self, playername, markername):
+    def flee(self, playername, markerid):
         """Called from Server"""
-        legion = self.find_legion(markername)
+        legion = self.find_legion(markerid)
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
@@ -648,26 +648,26 @@ class Game(Observed):
         if enemy_legion == legion:
             log("illegal concede before flee")
             return
-        enemy_markername = enemy_legion.markername
-        action = Action.Flee(self.name, markername, enemy_markername, hexlabel)
+        enemy_markerid = enemy_legion.markerid
+        action = Action.Flee(self.name, markerid, enemy_markerid, hexlabel)
         self.notify(action)
-        self._flee(playername, markername)
+        self._flee(playername, markerid)
 
-    def do_not_flee(self, playername, markername):
+    def do_not_flee(self, playername, markerid):
         """Called from Server"""
-        legion = self.find_legion(markername)
+        legion = self.find_legion(markerid)
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
                 break
-        enemy_markername = enemy_legion.markername
-        action = Action.DoNotFlee(self.name, markername, enemy_markername,
+        enemy_markerid = enemy_legion.markerid
+        action = Action.DoNotFlee(self.name, markerid, enemy_markerid,
           hexlabel)
         self.notify(action)
 
-    def concede(self, playername, markername):
+    def concede(self, playername, markerid):
         """Called from Server"""
-        legion = self.find_legion(markername)
+        legion = self.find_legion(markerid)
         if legion is None:
             # Player is already out of the game.
             return
@@ -677,17 +677,17 @@ class Game(Observed):
                 break
         if enemy_legion == legion:
             return
-        enemy_markername = enemy_legion.markername
-        self._concede(playername, markername)
-        action = Action.Concede(self.name, markername, enemy_markername,
+        enemy_markerid = enemy_legion.markerid
+        self._concede(playername, markerid)
+        action = Action.Concede(self.name, markerid, enemy_markerid,
           hexlabel)
         self.notify(action)
 
-    def make_proposal(self, playername, attacker_markername,
-      attacker_creature_names, defender_markername, defender_creature_names):
+    def make_proposal(self, playername, attacker_markerid,
+      attacker_creature_names, defender_markerid, defender_creature_names):
         """Called from Server"""
-        attacker_legion = self.find_legion(attacker_markername)
-        defender_legion = self.find_legion(defender_markername)
+        attacker_legion = self.find_legion(attacker_markerid)
+        defender_legion = self.find_legion(defender_markerid)
         if attacker_legion is None or defender_legion is None:
             return
         attacker_player = attacker_legion.player
@@ -696,15 +696,15 @@ class Game(Observed):
         else:
             other_player = attacker_legion.player
         action = Action.MakeProposal(self.name, playername, other_player.name,
-          attacker_markername, attacker_creature_names,
-          defender_markername, defender_creature_names)
+          attacker_markerid, attacker_creature_names,
+          defender_markerid, defender_creature_names)
         self.notify(action)
 
-    def accept_proposal(self, playername, attacker_markername,
-      attacker_creature_names, defender_markername, defender_creature_names):
+    def accept_proposal(self, playername, attacker_markerid,
+      attacker_creature_names, defender_markerid, defender_creature_names):
         """Called from Server"""
-        attacker_legion = self.find_legion(attacker_markername)
-        defender_legion = self.find_legion(defender_markername)
+        attacker_legion = self.find_legion(attacker_markerid)
+        defender_legion = self.find_legion(defender_markerid)
         if attacker_legion is None or defender_legion is None:
             return
         attacker_player = attacker_legion.player
@@ -715,16 +715,16 @@ class Game(Observed):
         self._accept_proposal(attacker_legion, attacker_creature_names,
           defender_legion, defender_creature_names)
         action = Action.AcceptProposal(self.name, playername,
-          other_player.name, attacker_markername, attacker_creature_names,
-          defender_markername, defender_creature_names,
+          other_player.name, attacker_markerid, attacker_creature_names,
+          defender_markerid, defender_creature_names,
           attacker_legion.hexlabel)
         self.notify(action)
 
-    def reject_proposal(self, playername, attacker_markername,
-      attacker_creature_names, defender_markername, defender_creature_names):
+    def reject_proposal(self, playername, attacker_markerid,
+      attacker_creature_names, defender_markerid, defender_creature_names):
         """Called from Server"""
-        attacker_legion = self.find_legion(attacker_markername)
-        defender_legion = self.find_legion(defender_markername)
+        attacker_legion = self.find_legion(attacker_markerid)
+        defender_legion = self.find_legion(defender_markerid)
         if attacker_legion is None or defender_legion is None:
             return
         attacker_player = attacker_legion.player
@@ -733,19 +733,19 @@ class Game(Observed):
         else:
             other_player = attacker_legion.player
         action = Action.RejectProposal(self.name, playername,
-          other_player.name, attacker_markername, attacker_creature_names,
-          defender_markername, defender_creature_names)
+          other_player.name, attacker_markerid, attacker_creature_names,
+          defender_markerid, defender_creature_names)
         self.notify(action)
 
-    def fight(self, playername, attacker_markername, defender_markername):
+    def fight(self, playername, attacker_markerid, defender_markerid):
         """Called from Server"""
-        log("fight", playername, attacker_markername, defender_markername,
+        log("fight", playername, attacker_markerid, defender_markerid,
           self.battle_turn)
         if self.battle_turn is not None:
             # already fighting, bail
             return
-        attacker_legion = self.find_legion(attacker_markername)
-        defender_legion = self.find_legion(defender_markername)
+        attacker_legion = self.find_legion(attacker_markerid)
+        defender_legion = self.find_legion(defender_markerid)
         log("attacker", attacker_legion, attacker_legion.player.name)
         log("defender", defender_legion, defender_legion.player.name)
         if playername not in [attacker_legion.player.name,
@@ -754,29 +754,29 @@ class Game(Observed):
             return
         hexlabel = attacker_legion.hexlabel
         assert defender_legion.hexlabel == hexlabel
-        action = Action.RevealLegion(self.name, attacker_markername,
+        action = Action.RevealLegion(self.name, attacker_markerid,
           attacker_legion.creature_names)
         self.notify(action)
-        action = Action.RevealLegion(self.name, defender_markername,
+        action = Action.RevealLegion(self.name, defender_markerid,
           defender_legion.creature_names)
         self.notify(action)
         self._init_battle(attacker_legion, defender_legion)
-        action = Action.Fight(self.name, attacker_markername,
-          defender_markername, hexlabel)
+        action = Action.Fight(self.name, attacker_markerid,
+          defender_markerid, hexlabel)
         self.notify(action)
 
-    def acquire_angels(self, playername, markername, angel_names):
+    def acquire_angels(self, playername, markerid, angel_names):
         """Called from Server"""
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         angels = [Creature.Creature(name) for name in angel_names]
         legion.acquire(angels)
 
-    def do_not_acquire(self, playername, markername):
+    def do_not_acquire(self, playername, markerid):
         """Called from Server"""
-        log("do_not_acquire", playername, markername)
+        log("do_not_acquire", playername, markerid)
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         legion.do_not_acquire()
 
     def done_with_engagements(self, playername):
@@ -794,13 +794,13 @@ class Game(Observed):
         if self.phase == Phase.FIGHT:
             player.done_with_engagements()
 
-    def recruit_creature(self, playername, markername, creature_name,
+    def recruit_creature(self, playername, markerid, creature_name,
       recruiter_names):
         """Called from Server and update"""
-        log("recruit_creature", playername, markername, creature_name,
+        log("recruit_creature", playername, markerid, creature_name,
           recruiter_names)
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         # Avoid double recruit
         if not legion.recruited:
             log("legion has not recruited")
@@ -812,9 +812,9 @@ class Game(Observed):
         if self.battle_legions and self.is_battle_over():
             self._end_battle2()
 
-    def undo_recruit(self, playername, markername):
+    def undo_recruit(self, playername, markerid):
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         legion.undo_recruit()
 
     def done_with_recruits(self, playername):
@@ -825,14 +825,14 @@ class Game(Observed):
         if self.phase == Phase.MUSTER:
             player.done_with_recruits()
 
-    def summon_angel(self, playername, markername, donor_markername,
+    def summon_angel(self, playername, markerid, donor_markerid,
       creature_name):
         """Called from Server and update"""
-        log("summon_angel", playername, markername, donor_markername,
+        log("summon_angel", playername, markerid, donor_markerid,
           creature_name)
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
-        donor = player.legions[donor_markername]
+        legion = player.legions[markerid]
+        donor = player.legions[donor_markerid]
         # Avoid double summon
         if not player.summoned:
             player.summon(legion, donor, creature_name)
@@ -843,38 +843,38 @@ class Game(Observed):
         if self.is_battle_over():
             self._end_battle2()
 
-    def do_not_summon(self, playername, markername):
+    def do_not_summon(self, playername, markerid):
         """Called from Server"""
         log("do_not_summon")
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         player.do_not_summon(legion)
 
-    def _do_not_summon(self, playername, markername):
+    def _do_not_summon(self, playername, markerid):
         """Called from update"""
         log("_do_not_summon")
         self.pending_summon = False
         if self.is_battle_over():
             self._end_battle2()
 
-    def do_not_reinforce(self, playername, markername):
+    def do_not_reinforce(self, playername, markerid):
         """Called from Server"""
         log("do_not_reinforce")
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         player.do_not_reinforce(legion)
 
-    def _do_not_reinforce(self, playername, markername):
+    def _do_not_reinforce(self, playername, markerid):
         """Called from update"""
         log("_do_not_reinforce")
         self.pending_reinforcement = False
         if self.is_battle_over():
             self._end_battle2()
 
-    def _unreinforce(self, playername, markername):
+    def _unreinforce(self, playername, markerid):
         """Called from update"""
         player = self.get_player_by_name(playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         legion.unreinforce()
 
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
@@ -1338,9 +1338,9 @@ class Game(Observed):
                 winner = self.attacker_legion
             loser = self.other_battle_legion(winner)
             log("winner", winner, "loser", loser)
-            action = Action.BattleOver(self.name, winner.markername,
+            action = Action.BattleOver(self.name, winner.markerid,
               winner.living_creature_names, winner.dead_creature_names,
-              loser.markername, loser.living_creature_names,
+              loser.markerid, loser.living_creature_names,
               loser.dead_creature_names, time_loss,
               self.current_engagement_hexlabel)
             self.notify(action)
@@ -1416,23 +1416,23 @@ class Game(Observed):
             player = self.get_player_by_name(action.playername)
             # Avoid doing twice
             if not player.legions:
-                player.pick_marker(action.markername)
+                player.pick_marker(action.markerid)
                 player.create_starting_legion()
 
         elif isinstance(action, Action.SplitLegion):
             player = self.get_player_by_name(action.playername)
             # Avoid doing the same split twice.
-            if action.child_markername not in player.legions:
-                self.split_legion(action.playername, action.parent_markername,
-                  action.child_markername, action.parent_creature_names,
+            if action.child_markerid not in player.legions:
+                self.split_legion(action.playername, action.parent_markerid,
+                  action.child_markerid, action.parent_creature_names,
                   action.child_creature_names)
 
         elif isinstance(action, Action.UndoSplit):
             player = self.get_player_by_name(action.playername)
             # Avoid undoing the same split twice.
-            if action.child_markername in player.legions:
-                self.undo_split(action.playername, action.parent_markername,
-                  action.child_markername)
+            if action.child_markerid in player.legions:
+                self.undo_split(action.playername, action.parent_markerid,
+                  action.child_markerid)
 
         elif isinstance(action, Action.RollMovement):
             player = self.get_player_by_name(action.playername)
@@ -1443,22 +1443,22 @@ class Game(Observed):
 
         elif isinstance(action, Action.MoveLegion):
             player = self.get_player_by_name(action.playername)
-            markername = action.markername
-            legion = player.legions[markername]
+            markerid = action.markerid
+            legion = player.legions[markerid]
             hexlabel = action.hexlabel
             # Avoid double move
             if not (legion.moved and legion.hexlabel == hexlabel):
-                self.move_legion(action.playername, markername,
+                self.move_legion(action.playername, markerid,
                   action.hexlabel, action.entry_side, action.teleport,
                   action.teleporting_lord)
 
         elif isinstance(action, Action.UndoMoveLegion):
             player = self.get_player_by_name(action.playername)
-            markername = action.markername
-            legion = player.legions[markername]
+            markerid = action.markerid
+            legion = player.legions[markerid]
             # Avoid double undo
             if legion.moved:
-                self.undo_move_legion(action.playername, markername)
+                self.undo_move_legion(action.playername, markerid)
 
         elif isinstance(action, Action.StartFightPhase):
             self.phase = Phase.FIGHT
@@ -1469,19 +1469,19 @@ class Game(Observed):
                 player.reset_angels_pending()
 
         elif isinstance(action, Action.Flee):
-            legion = self.find_legion(action.markername)
+            legion = self.find_legion(action.markerid)
             playername = legion.player.name
-            self._flee(playername, action.markername)
+            self._flee(playername, action.markerid)
 
         elif isinstance(action, Action.Concede):
-            legion = self.find_legion(action.markername)
+            legion = self.find_legion(action.markerid)
             if legion is not None:
                 playername = legion.player.name
-                self._concede(playername, action.markername)
+                self._concede(playername, action.markerid)
 
         elif isinstance(action, Action.AcceptProposal):
-            attacker_legion = self.find_legion(action.attacker_markername)
-            defender_legion = self.find_legion(action.defender_markername)
+            attacker_legion = self.find_legion(action.attacker_markerid)
+            defender_legion = self.find_legion(action.defender_markerid)
             self._accept_proposal(attacker_legion,
               action.attacker_creature_names, defender_legion,
               action.defender_creature_names)
@@ -1493,17 +1493,17 @@ class Game(Observed):
                 player.remove_empty_legions()
 
         elif isinstance(action, Action.RecruitCreature):
-            self.recruit_creature(action.playername, action.markername,
+            self.recruit_creature(action.playername, action.markerid,
               action.creature_name, action.recruiter_names)
 
         elif isinstance(action, Action.UndoRecruit):
-            self.undo_recruit(action.playername, action.markername)
+            self.undo_recruit(action.playername, action.markerid)
 
         elif isinstance(action, Action.DoNotReinforce):
-            self._do_not_reinforce(action.playername, action.markername)
+            self._do_not_reinforce(action.playername, action.markerid)
 
         elif isinstance(action, Action.UnReinforce):
-            self._unreinforce(action.playername, action.markername)
+            self._unreinforce(action.playername, action.markerid)
 
         elif isinstance(action, Action.StartSplitPhase):
             self.turn = action.turn
@@ -1514,23 +1514,23 @@ class Game(Observed):
                 player.new_turn()
 
         elif isinstance(action, Action.SummonAngel):
-            self.summon_angel(action.playername, action.markername,
-              action.donor_markername, action.creature_name)
+            self.summon_angel(action.playername, action.markerid,
+              action.donor_markerid, action.creature_name)
 
         elif isinstance(action, Action.UnSummon):
             player = self.get_player_by_name(action.playername)
-            legion = player.legions[action.markername]
+            legion = player.legions[action.markerid]
             player.unsummon(legion, action.creature_name)
 
         elif isinstance(action, Action.DoNotSummon):
-            self._do_not_summon(action.playername, action.markername)
+            self._do_not_summon(action.playername, action.markerid)
 
         elif isinstance(action, Action.Fight):
-            attacker_markername = action.attacker_markername
-            attacker = self.find_legion(attacker_markername)
-            defender_markername = action.defender_markername
-            self.fight(attacker.player.name, attacker_markername,
-              defender_markername)
+            attacker_markerid = action.attacker_markerid
+            attacker = self.find_legion(attacker_markerid)
+            defender_markerid = action.defender_markerid
+            self.fight(attacker.player.name, attacker_markerid,
+              defender_markerid)
 
         elif isinstance(action, Action.MoveCreature):
             for creature in self.battle_active_legion.creatures:
@@ -1613,14 +1613,14 @@ class Game(Observed):
 
         elif isinstance(action, Action.Acquire):
             player = self.get_player_by_name(action.playername)
-            legion = player.legions[action.markername]
+            legion = player.legions[action.markerid]
             angels = [Creature.Creature(name) for name in action.angel_names]
             legion.acquire(angels)
             self._end_dead_player_turn()
 
         elif isinstance(action, Action.DoNotAcquire):
             player = self.get_player_by_name(action.playername)
-            legion = player.legions[action.markername]
+            legion = player.legions[action.markerid]
             legion.do_not_acquire()
             self._end_dead_player_turn()
 

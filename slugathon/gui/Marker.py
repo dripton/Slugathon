@@ -22,7 +22,7 @@ class Marker(object):
     """Clickable GUI legion marker"""
     def __init__(self, legion, show_height, scale=15):
         self.legion = legion
-        self.name = legion.markername
+        self.name = legion.markerid
         self.chit_scale = CHIT_SCALE_FACTOR * scale
         self.show_height = show_height
         self.image_path = fileutils.basedir("images/legion/%s.png" % self.name)

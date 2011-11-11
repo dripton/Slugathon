@@ -11,18 +11,18 @@ from slugathon.util.Observed import Observed
 from slugathon.util.log import log
 
 
-def find_picname(markername):
-    color_name = playercolordata.abbrev_to_name[markername[:2]]
-    index = int(markername[2:]) - 1
+def find_picname(markerid):
+    color_name = playercolordata.abbrev_to_name[markerid[:2]]
+    index = int(markerid[2:]) - 1
     return markerdata.data[color_name][index]
 
 
 class Legion(Observed):
-    def __init__(self, player, markername, creatures, hexlabel):
+    def __init__(self, player, markerid, creatures, hexlabel):
         Observed.__init__(self)
         assert type(hexlabel) == types.IntType
-        self.markername = markername
-        self.picname = find_picname(markername)
+        self.markerid = markerid
+        self.picname = find_picname(markerid)
         self.creatures = creatures
         for creature in self.creatures:
             creature.legion = self
@@ -91,7 +91,7 @@ class Legion(Observed):
         return self.hexlabel in self.player.game.engagement_hexlabels
 
     def __repr__(self):
-        return "Legion %s (%s) in %s %s" % (self.markername, self.picname,
+        return "Legion %s (%s) in %s %s" % (self.markerid, self.picname,
           self.hexlabel, self.creatures)
 
     def __len__(self):
@@ -99,7 +99,7 @@ class Legion(Observed):
         return len(self.living_creature_names)
 
     def __eq__(self, other):
-        return self.markername == other.markername
+        return self.markerid == other.markerid
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -374,7 +374,7 @@ class Legion(Observed):
             log(self, "setting self.recruited")
             self.recruited = True
             action = Action.RecruitCreature(player.game.name, player.name,
-              self.markername, creature.name, tuple(recruiter_names))
+              self.markerid, creature.name, tuple(recruiter_names))
             self.notify(action)
 
     def undo_recruit(self):
@@ -390,7 +390,7 @@ class Legion(Observed):
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
         action = Action.UndoRecruit(player.game.name, player.name,
-          self.markername, creature.name, recruiter_names)
+          self.markerid, creature.name, recruiter_names)
         self.notify(action)
 
     def unreinforce(self):
@@ -406,7 +406,7 @@ class Legion(Observed):
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
         action = Action.UnReinforce(player.game.name, player.name,
-          self.markername, creature.name, recruiter_names)
+          self.markerid, creature.name, recruiter_names)
         self.notify(action)
 
     @property
@@ -456,7 +456,7 @@ class Legion(Observed):
             if creature.name == "Titan":
                 log("setting dead_titan")
                 dead_titan = True
-        self.player.remove_legion(self.markername)
+        self.player.remove_legion(self.markerid)
         if dead_titan:
             self.player.die(scoring_legion, check_for_victory)
 
@@ -488,7 +488,7 @@ class Legion(Observed):
             self.archangels_pending = archangels
             if angels + archangels > 0:
                 action = Action.CanAcquire(self.player.game.name,
-                  self.player.name, self.markername, angels, archangels)
+                  self.player.name, self.markerid, angels, archangels)
                 self.notify(action)
 
     def acquire(self, angels):
@@ -524,7 +524,7 @@ class Legion(Observed):
             angel.legion = self
         angel_names = [angel.name for angel in angels]
         action = Action.Acquire(self.player.game.name,
-          self.player.name, self.markername, angel_names)
+          self.player.name, self.markerid, angel_names)
         self.notify(action)
         log("end of acquire", self)
 
@@ -534,7 +534,7 @@ class Legion(Observed):
         if self.angels_pending or self.archangels_pending:
             self.reset_angels_pending()
             action = Action.DoNotAcquire(self.player.game.name,
-              self.player.name, self.markername)
+              self.player.name, self.markerid)
             self.notify(action)
 
     def reset_angels_pending(self):

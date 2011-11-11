@@ -190,7 +190,7 @@ class StatusScreen(gtk.Dialog):
             legions_label.set_text(str(len(player.legions)))
             set_bg(legions_label, bg)
             markers_label = getattr(self, "markers%d_label" % num)
-            markers_label.set_text(str(len(player.markernames)))
+            markers_label.set_text(str(len(player.markerids)))
             set_bg(markers_label, bg)
             creatures_label = getattr(self, "creatures%d_label" % num)
             creatures_label.set_text(str(player.num_creatures))
@@ -256,7 +256,7 @@ class StatusScreen(gtk.Dialog):
             creatures_label = getattr(self, "creatures%d_label" % player_num)
             creatures_label.set_text(str(player.num_creatures))
             markers_label = getattr(self, "markers%d_label" % player_num)
-            markers_label.set_text(str(len(player.markernames)))
+            markers_label.set_text(str(len(player.markerids)))
 
         elif (isinstance(action, Action.SplitLegion) or
           isinstance(action, Action.UndoSplit) or
@@ -267,7 +267,7 @@ class StatusScreen(gtk.Dialog):
             legions_label = getattr(self, "legions%d_label" % player_num)
             legions_label.set_text(str(len(player.legions)))
             markers_label = getattr(self, "markers%d_label" % player_num)
-            markers_label.set_text(str(len(player.markernames)))
+            markers_label.set_text(str(len(player.markerids)))
 
         elif isinstance(action, Action.RollMovement):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
@@ -308,7 +308,7 @@ class StatusScreen(gtk.Dialog):
                 legions_label = getattr(self, "legions%d_label" % num)
                 legions_label.set_text(str(len(player.legions)))
                 markers_label = getattr(self, "markers%d_label" % num)
-                markers_label.set_text(str(len(player.markernames)))
+                markers_label.set_text(str(len(player.markerids)))
                 creatures_label = getattr(self, "creatures%d_label" % num)
                 creatures_label.set_text(str(player.num_creatures))
                 titan_power_label = getattr(self, "titan_power%d_label" % num)

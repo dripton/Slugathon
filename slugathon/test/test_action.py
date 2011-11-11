@@ -6,11 +6,11 @@ from slugathon.game import Action
 
 
 def test_fromstring():
-    obj = Action.fromstring("MoveLegion {'markername': 'Rd01', \
+    obj = Action.fromstring("MoveLegion {'markerid': 'Rd01', \
 'entry_side': 1, 'teleport': False, 'playername': 'player', \
 'teleporting_lord': None, 'game_name': 'game', 'hexlabel': 1}")
     assert isinstance(obj, Action.MoveLegion)
-    assert obj.markername == "Rd01"
+    assert obj.markerid == "Rd01"
     assert obj.entry_side == 1
     assert obj.teleport == False
     assert obj.playername == "player"
@@ -20,14 +20,14 @@ def test_fromstring():
 
 
 def test_eq():
-    obj1 = Action.fromstring("MoveLegion {'markername': 'Rd01', \
+    obj1 = Action.fromstring("MoveLegion {'markerid': 'Rd01', \
 'entry_side': 1, 'teleport': False, 'playername': 'player', \
 'teleporting_lord': None, 'game_name': 'game', 'hexlabel': 1}")
-    obj2 = Action.fromstring("MoveLegion {'markername': 'Rd01', \
+    obj2 = Action.fromstring("MoveLegion {'markerid': 'Rd01', \
 'entry_side': 1, 'teleport': False, 'playername': 'player', \
 'teleporting_lord': None, 'game_name': 'game', 'hexlabel': 1}")
     assert obj1 == obj2
-    obj3 = Action.fromstring("MoveLegion {'markername': 'Rd01', \
+    obj3 = Action.fromstring("MoveLegion {'markerid': 'Rd01', \
 'entry_side': 1, 'teleport': True, 'playername': 'player', \
 'teleporting_lord': None, 'game_name': 'game', 'hexlabel': 1}")
     assert obj1 != obj3

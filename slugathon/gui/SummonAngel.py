@@ -34,7 +34,7 @@ class SummonAngel(gtk.Dialog):
 
         top_label = gtk.Label(
           "Summoning an angel into legion %s (%s) in hex %s"
-          % (legion.markername, legion.picname, legion.hexlabel))
+          % (legion.markerid, legion.picname, legion.hexlabel))
         self.vbox.set_spacing(9)
         self.vbox.pack_start(top_label)
         middle_label = gtk.Label("Summonable creatures have a red border")
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     legion4 = Legion.Legion(player, "Rd04", creatures4, 4)
     legion5 = Legion.Legion(player, "Rd05", creatures5, 4)
     for legion in [legion1, legion2, legion3, legion4, legion5]:
-        player.legions[legion.markername] = legion
+        player.legions[legion.markerid] = legion
 
     def my_callback((legion, donor, creature)):
         log("Will summon", creature, "from", donor, "into", legion)

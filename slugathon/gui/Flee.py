@@ -45,7 +45,7 @@ class Flee(gtk.Dialog):
         hexlabel = defender_legion.hexlabel
         masterhex = defender_legion.player.game.board.hexes[hexlabel]
         self.legion_name = gtk.Label("Flee with legion %s (%s) in %s hex %s?"
-          % (defender_legion.markername, defender_legion.picname,
+          % (defender_legion.markerid, defender_legion.picname,
           masterhex.terrain, hexlabel))
         self.vbox.pack_start(self.legion_name)
 

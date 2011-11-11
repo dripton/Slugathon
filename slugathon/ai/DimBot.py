@@ -33,31 +33,31 @@ class DimBot(object):
         log("maybe_pick_first_marker")
         if playername == self.playername:
             player = game.get_player_by_name(playername)
-            markername = self._choose_marker(player)
-            self._pick_marker(game, self.playername, markername)
+            markerid = self._choose_marker(player)
+            self._pick_marker(game, self.playername, markerid)
 
-    def _pick_marker(self, game, playername, markername):
+    def _pick_marker(self, game, playername, markerid):
         log("pick_marker")
         player = game.get_player_by_name(playername)
-        if markername is None:
+        if markerid is None:
             if not player.legions:
                 self.maybe_pick_first_marker(game, playername)
         else:
-            player.pick_marker(markername)
+            player.pick_marker(markerid)
             if not player.legions:
                 def1 = self.user.callRemote("pick_first_marker", game.name,
-                  markername)
+                  markerid)
                 def1.addErrback(self.failure)
 
     def _choose_marker(self, player):
         """Pick a legion marker randomly, except prefer my own markers
         to captured ones to be less annoying."""
-        own_markernames = [name for name in player.markernames if name[:2] ==
+        own_markerids = [name for name in player.markerids if name[:2] ==
           player.color_abbrev]
-        if own_markernames:
-            return random.choice(own_markernames)
+        if own_markerids:
+            return random.choice(own_markerids)
         else:
-            return random.choice(list(player.markernames))
+            return random.choice(list(player.markerids))
 
     def split(self, game):
         """Split if it's my turn."""
@@ -67,7 +67,7 @@ class DimBot(object):
             for legion in player.legions.itervalues():
                 if len(legion) == 8:
                     # initial split 4-4, one lord per legion
-                    new_markername = self._choose_marker(player)
+                    new_markerid = self._choose_marker(player)
                     lord = random.choice(["Titan", "Angel"])
                     creatures = ["Centaur", "Gargoyle", "Ogre"]
                     creature1 = random.choice(creatures)
@@ -80,20 +80,20 @@ class DimBot(object):
                     for creature in new_creatures:
                         old_creatures.remove(creature)
                     def1 = self.user.callRemote("split_legion", game.name,
-                      legion.markername, new_markername,
+                      legion.markerid, new_markerid,
                       old_creatures, new_creatures)
                     def1.addErrback(self.failure)
                     return
-                elif len(legion) == 7 and player.markernames:
+                elif len(legion) == 7 and player.markerids:
                     # Always split 5-2.  (DimBot is dim.)
-                    new_markername = self._choose_marker(player)
+                    new_markerid = self._choose_marker(player)
                     lst = legion.sorted_creatures
                     keep = lst[:-2]
                     keep_names = [creature.name for creature in keep]
                     split = lst[-2:]
                     split_names = [creature.name for creature in split]
                     def1 = self.user.callRemote("split_legion", game.name,
-                      legion.markername, new_markername, keep_names,
+                      legion.markerid, new_markerid, keep_names,
                       split_names)
                     def1.addErrback(self.failure)
                     return
@@ -134,7 +134,7 @@ class DimBot(object):
             teleport = False
             teleporting_lord = None
         def1 = self.user.callRemote("move_legion", game.name,
-          legion.markername, hexlabel, entry_side, teleport, teleporting_lord)
+          legion.markerid, hexlabel, entry_side, teleport, teleporting_lord)
         def1.addErrback(self.failure)
 
     def choose_engagement(self, game):
@@ -181,17 +181,17 @@ class DimBot(object):
                 if defender.score * 1.5 < attacker.score:
                     log("fleeing")
                     def1 = self.user.callRemote("flee", game.name,
-                      defender.markername)
+                      defender.markerid)
                     def1.addErrback(self.failure)
                 else:
                     log("fighting")
                     def1 = self.user.callRemote("fight", game.name,
-                      attacker.markername, defender.markername)
+                      attacker.markerid, defender.markerid)
                     def1.addErrback(self.failure)
             else:
                 log("fighting")
                 def1 = self.user.callRemote("fight", game.name,
-                  attacker.markername, defender.markername)
+                  attacker.markerid, defender.markerid)
                 def1.addErrback(self.failure)
         elif attacker.player.name == self.playername:
             if defender.can_flee and not did_not_flee:
@@ -201,7 +201,7 @@ class DimBot(object):
             else:
                 log("fighting")
                 def1 = self.user.callRemote("fight", game.name,
-                  attacker.markername, defender.markername)
+                  attacker.markerid, defender.markerid)
                 def1.addErrback(self.failure)
         else:
             log("not my engagement")
@@ -298,7 +298,7 @@ class DimBot(object):
                     recruit = tup[0]
                     recruiters = tup[1:]
                     def1 = self.user.callRemote("recruit_creature", game.name,
-                      legion.markername, recruit, recruiters)
+                      legion.markerid, recruit, recruiters)
                     def1.addErrback(self.failure)
                     return
         def1 = self.user.callRemote("done_with_recruits", game.name)
@@ -320,7 +320,7 @@ class DimBot(object):
                 recruit = tup[0]
                 recruiters = tup[1:]
                 def1 = self.user.callRemote("recruit_creature", game.name,
-                  legion.markername, recruit, recruiters)
+                  legion.markerid, recruit, recruiters)
                 def1.addErrback(self.failure)
                 return
 
@@ -341,12 +341,12 @@ class DimBot(object):
                 recruit = tup[0]
                 recruiters = tup[1:]
                 def1 = self.user.callRemote("recruit_creature", game.name,
-                  legion.markername, recruit, recruiters)
+                  legion.markerid, recruit, recruiters)
                 def1.addErrback(self.failure)
                 return
 
         def1 = self.user.callRemote("do_not_reinforce", game.name,
-          legion.markername)
+          legion.markerid)
         def1.addErrback(self.failure)
 
     def summon(self, game):
@@ -370,12 +370,12 @@ class DimBot(object):
                 summonable = tuples[0][1]
                 donor = summonable.legion
                 def1 = self.user.callRemote("summon_angel", game.name,
-                  legion.markername, donor.markername, summonable.name)
+                  legion.markerid, donor.markerid, summonable.name)
                 def1.addErrback(self.failure)
                 return
 
         def1 = self.user.callRemote("do_not_summon", game.name,
-          legion.markername)
+          legion.markerid)
         def1.addErrback(self.failure)
 
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
@@ -401,18 +401,18 @@ class DimBot(object):
                 summonable = tuples[0][1]
                 donor = summonable.legion
                 def1 = self.user.callRemote("summon_angel", game.name,
-                  legion.markername, donor.markername, summonable.name)
+                  legion.markerid, donor.markerid, summonable.name)
                 def1.addErrback(self.failure)
                 return
 
         def1 = self.user.callRemote("do_not_summon", game.name,
-          legion.markername)
+          legion.markerid)
         def1.addErrback(self.failure)
 
-    def acquire_angel(self, game, markername, num_angels, num_archangels):
-        log("acquire_angel", markername, num_angels, num_archangels)
+    def acquire_angel(self, game, markerid, num_angels, num_archangels):
+        log("acquire_angel", markerid, num_angels, num_archangels)
         player = game.get_player_by_name(self.playername)
-        legion = player.legions[markername]
+        legion = player.legions[markerid]
         starting_height = len(legion)
         acquires = 0
         angel_names = []
@@ -425,14 +425,14 @@ class DimBot(object):
             num_angels -= 1
             acquires += 1
         if angel_names:
-            log("calling acquire_angels", markername, angel_names)
+            log("calling acquire_angels", markerid, angel_names)
             def1 = self.user.callRemote("acquire_angels", game.name,
-              markername, angel_names)
+              markerid, angel_names)
             def1.addErrback(self.failure)
         else:
-            log("calling do_not_acquire", markername)
+            log("calling do_not_acquire", markerid)
             def1 = self.user.callRemote("do_not_acquire", game.name,
-              markername)
+              markerid)
             def1.addErrback(self.failure)
 
     def failure(self, error):

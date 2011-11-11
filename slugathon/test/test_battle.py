@@ -39,8 +39,8 @@ class TestBattle(object):
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         assert self.game.battle_turn == 1
-        assert self.game.defender_legion.markername == "Rd01"
-        assert self.game.attacker_legion.markername == "Bu01"
+        assert self.game.defender_legion.markerid == "Rd01"
+        assert self.game.attacker_legion.markerid == "Bu01"
         assert self.game.battle_phase == Phase.MANEUVER
         assert self.game.battle_active_player == \
           self.game.defender_legion.player

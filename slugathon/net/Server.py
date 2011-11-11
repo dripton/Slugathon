@@ -198,23 +198,23 @@ class Server(Observed):
         if game:
             game.assign_color(username, color)
 
-    def pick_first_marker(self, username, game_name, markername):
+    def pick_first_marker(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.assign_first_marker(username, markername)
+            game.assign_first_marker(username, markerid)
 
-    def split_legion(self, username, game_name, parent_markername,
-      child_markername, parent_creature_names, child_creature_names):
+    def split_legion(self, username, game_name, parent_markerid,
+      child_markerid, parent_creature_names, child_creature_names):
         game = self.name_to_game(game_name)
         if game:
-            game.split_legion(username, parent_markername, child_markername,
+            game.split_legion(username, parent_markerid, child_markerid,
               parent_creature_names, child_creature_names)
 
-    def undo_split(self, username, game_name, parent_markername,
-      child_markername):
+    def undo_split(self, username, game_name, parent_markerid,
+      child_markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.undo_split(username, parent_markername, child_markername)
+            game.undo_split(username, parent_markerid, child_markerid)
 
     def done_with_splits(self, username, game_name):
         game = self.name_to_game(game_name)
@@ -226,17 +226,17 @@ class Server(Observed):
         if game:
             game.take_mulligan(username)
 
-    def move_legion(self, username, game_name, markername, hexlabel,
+    def move_legion(self, username, game_name, markerid, hexlabel,
       entry_side, teleport, teleporting_lord):
         game = self.name_to_game(game_name)
         if game:
-            game.move_legion(username, markername, hexlabel, entry_side,
+            game.move_legion(username, markerid, hexlabel, entry_side,
               teleport, teleporting_lord)
 
-    def undo_move_legion(self, username, game_name, markername):
+    def undo_move_legion(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.undo_move_legion(username, markername)
+            game.undo_move_legion(username, markerid)
 
     def done_with_moves(self, username, game_name):
         game = self.name_to_game(game_name)
@@ -248,51 +248,51 @@ class Server(Observed):
         if game:
             game.resolve_engagement(username, hexlabel)
 
-    def flee(self, username, game_name, markername):
+    def flee(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.flee(username, markername)
+            game.flee(username, markerid)
 
-    def do_not_flee(self, username, game_name, markername):
+    def do_not_flee(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.do_not_flee(username, markername)
+            game.do_not_flee(username, markerid)
 
-    def concede(self, username, game_name, markername, enemy_markername,
+    def concede(self, username, game_name, markerid, enemy_markerid,
       hexlabel):
         game = self.name_to_game(game_name)
         if game:
-            game.concede(username, markername)
+            game.concede(username, markerid)
 
-    def make_proposal(self, username, game_name, attacker_markername,
-      attacker_creature_names, defender_markername, defender_creature_names):
+    def make_proposal(self, username, game_name, attacker_markerid,
+      attacker_creature_names, defender_markerid, defender_creature_names):
         game = self.name_to_game(game_name)
         if game:
-            game.make_proposal(username, attacker_markername,
-              attacker_creature_names, defender_markername,
+            game.make_proposal(username, attacker_markerid,
+              attacker_creature_names, defender_markerid,
               defender_creature_names)
 
-    def accept_proposal(self, username, game_name, attacker_markername,
-      attacker_creature_names, defender_markername, defender_creature_names):
+    def accept_proposal(self, username, game_name, attacker_markerid,
+      attacker_creature_names, defender_markerid, defender_creature_names):
         game = self.name_to_game(game_name)
         if game:
-            game.accept_proposal(username, attacker_markername,
-              attacker_creature_names, defender_markername,
+            game.accept_proposal(username, attacker_markerid,
+              attacker_creature_names, defender_markerid,
               defender_creature_names)
 
-    def reject_proposal(self, username, game_name, attacker_markername,
-      attacker_creature_names, defender_markername, defender_creature_names):
+    def reject_proposal(self, username, game_name, attacker_markerid,
+      attacker_creature_names, defender_markerid, defender_creature_names):
         game = self.name_to_game(game_name)
         if game:
-            game.reject_proposal(username, attacker_markername,
-              attacker_creature_names, defender_markername,
+            game.reject_proposal(username, attacker_markerid,
+              attacker_creature_names, defender_markerid,
               defender_creature_names)
 
-    def fight(self, username, game_name, attacker_markername,
-      defender_markername):
+    def fight(self, username, game_name, attacker_markerid,
+      defender_markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.fight(username, attacker_markername, defender_markername)
+            game.fight(username, attacker_markerid, defender_markerid)
 
     def move_creature(self, username, game_name, creature_name, old_hexlabel,
       new_hexlabel):
@@ -334,55 +334,55 @@ class Server(Observed):
         if game:
             game.done_with_counterstrikes(username)
 
-    def acquire_angels(self, username, game_name, markername, angel_names):
+    def acquire_angels(self, username, game_name, markerid, angel_names):
         game = self.name_to_game(game_name)
         if game:
-            game.acquire_angels(username, markername, angel_names)
+            game.acquire_angels(username, markerid, angel_names)
 
-    def do_not_acquire(self, username, game_name, markername):
-        log("do_not_acquire", self, username, game_name, markername)
+    def do_not_acquire(self, username, game_name, markerid):
+        log("do_not_acquire", self, username, game_name, markerid)
         game = self.name_to_game(game_name)
         if game:
-            game.do_not_acquire(username, markername)
+            game.do_not_acquire(username, markerid)
 
     def done_with_engagements(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
             game.done_with_engagements(username)
 
-    def recruit_creature(self, username, game_name, markername, creature_name,
+    def recruit_creature(self, username, game_name, markerid, creature_name,
       recruiter_names):
         game = self.name_to_game(game_name)
         if game:
-            game.recruit_creature(username, markername, creature_name,
+            game.recruit_creature(username, markerid, creature_name,
               recruiter_names)
 
-    def undo_recruit(self, username, game_name, markername):
+    def undo_recruit(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.undo_recruit(username, markername)
+            game.undo_recruit(username, markerid)
 
     def done_with_recruits(self, username, game_name):
         game = self.name_to_game(game_name)
         if game:
             game.done_with_recruits(username)
 
-    def summon_angel(self, username, game_name, markername, donor_markername,
+    def summon_angel(self, username, game_name, markerid, donor_markerid,
       creature_name):
         game = self.name_to_game(game_name)
         if game:
-            game.summon_angel(username, markername, donor_markername,
+            game.summon_angel(username, markerid, donor_markerid,
               creature_name)
 
-    def do_not_summon(self, username, game_name, markername):
+    def do_not_summon(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.do_not_summon(username, markername)
+            game.do_not_summon(username, markerid)
 
-    def do_not_reinforce(self, username, game_name, markername):
+    def do_not_reinforce(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.do_not_reinforce(username, markername)
+            game.do_not_reinforce(username, markerid)
 
     def carry(self, username, game_name, carry_target_name,
       carry_target_hexlabel, carries):
