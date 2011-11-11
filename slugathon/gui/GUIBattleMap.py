@@ -367,7 +367,7 @@ class GUIBattleMap(gtk.Window):
     def clicked_on_background(self, area, event):
         self.selected_chit = None
         self.unselect_all()
-        if not self.game:
+        if not self.game or not self.game.battle_active_player:
             return
         if self.game.battle_phase == Phase.MANEUVER:
             if self.game.battle_active_player.name == self.username:
