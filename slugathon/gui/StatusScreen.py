@@ -134,14 +134,14 @@ class StatusScreen(gtk.Dialog):
                     bg = "Red"
             except AttributeError:
                 pass
-            player_color = self.default_bg
+            playercolor = self.default_bg
             try:
                 if player.color is not None:
-                    player_color = player.color
+                    playercolor = player.color
             except AttributeError:
                 pass
             name_label = getattr(self, "name%d_label" % num)
-            set_bg(name_label, player_color)
+            set_bg(name_label, playercolor)
             tower_label = getattr(self, "tower%d_label" % num)
             set_bg(tower_label, bg)
             color_label = getattr(self, "color%d_label" % num)
@@ -169,16 +169,16 @@ class StatusScreen(gtk.Dialog):
                     bg = "Red"
             except AttributeError:
                 pass
-            player_color = self.default_bg
+            playercolor = self.default_bg
             try:
                 if player.color is not None:
-                    player_color = player.color
+                    playercolor = player.color
             except AttributeError:
                 pass
             name_label = getattr(self, "name%d_label" % num)
-            set_bg(name_label, player_color)
+            set_bg(name_label, playercolor)
             name_label.set_markup("<span foreground='%s'>%s</span>" % (
-              colors.contrasting_colors.get(str(player_color), "Black"),
+              colors.contrasting_colors.get(str(playercolor), "Black"),
               player.name))
             tower_label = getattr(self, "tower%d_label" % num)
             tower_label.set_text(str(player.starting_tower))
