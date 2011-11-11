@@ -273,6 +273,7 @@ class CleverBot(DimBot.DimBot):
         random.shuffle(perms)
         best_score = -maxint
         best_perm = None
+        start_time = time.time()
         for perm in perms:
             score = self._score_perm(game, sort_values, perm)
             if score == max_score:
@@ -282,6 +283,8 @@ class CleverBot(DimBot.DimBot):
             elif score > best_score:
                 best_perm = perm
                 best_score = score
+            if time.time() - start_time > TIME_LIMIT:
+                break
         log("_find_move_order returning %s" % list(best_perm))
         return list(best_perm)
 
