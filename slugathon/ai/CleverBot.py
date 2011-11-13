@@ -419,9 +419,9 @@ class CleverBot(DimBot.DimBot):
         ATTACKER_AGGRESSION_BONUS = 1.0
         ATTACKER_DISTANCE_PENALTY = 1.0
         HIT_BONUS = 1.0
-        KILL_BONUS = 3.0
+        KILL_MULTIPLIER = 1.0
         DAMAGE_PENALTY = 1.0
-        DEATH_PENALTY = 3.0
+        DEATH_MULTIPLIER = 1.0
         ELEVATION_BONUS = 0.5
         NATIVE_BRAMBLE_BONUS = 0.3
         NON_NATIVE_BRAMBLE_PENALTY = 0.7
@@ -436,12 +436,12 @@ class CleverBot(DimBot.DimBot):
 
         score = 0
         for creature in creatures:
+            kill_bonus = 0
             legion = creature.legion
             legion2 = game.other_battle_legion(legion)
             battlemap = game.battlemap
             can_rangestrike = False
             engaged = creature.engaged_enemies
-            probable_kill = False
             max_mean_hits = 0.0
             total_mean_damage_taken = 0.0
             # melee
@@ -451,7 +451,7 @@ class CleverBot(DimBot.DimBot):
                 strike_number = creature.strike_number(enemy)
                 mean_hits = dice * (7. - strike_number) / 6
                 if mean_hits >= enemy.hits_left:
-                    probable_kill = True
+                    kill_bonus = max(kill_bonus, enemy.sort_value)
                 max_mean_hits = max(mean_hits, max_mean_hits)
                 # Damage we can take.
                 dice = enemy.number_of_dice(creature)
@@ -469,7 +469,7 @@ class CleverBot(DimBot.DimBot):
                     strike_number = creature.strike_number(enemy)
                     mean_hits = dice * (7. - strike_number) / 6
                     if mean_hits >= enemy.hits_left:
-                        probable_kill = True
+                        kill_bonus = max(kill_bonus, enemy.sort_value)
                     max_mean_hits = max(mean_hits, max_mean_hits)
                     can_rangestrike = True
             if can_rangestrike:
@@ -479,9 +479,9 @@ class CleverBot(DimBot.DimBot):
             if (creature.name != "Titan" or game.battle_turn >= 4 or
               len(legion) == 1):
                 score += HIT_BONUS * max_mean_hits
-                score += KILL_BONUS * probable_kill
+                score += KILL_MULTIPLIER * kill_bonus
             score -= DAMAGE_PENALTY * total_mean_damage_taken
-            score -= DEATH_PENALTY * probable_death
+            score -= DEATH_MULTIPLIER * probable_death * creature.sort_value
 
             # attacker must attack to avoid time loss
             # Don't encourage titans to charge early.
