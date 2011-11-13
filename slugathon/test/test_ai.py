@@ -9,7 +9,7 @@ from slugathon.game import Creature, Phase, Game
 
 
 def test_gen_legion_moves():
-    cleverbot = CleverBot.CleverBot("player")
+    cleverbot = CleverBot.CleverBot("player", 1)
 
     movesets = []
     lm = sorted(cleverbot._gen_legion_moves(movesets))
@@ -131,7 +131,7 @@ def test_score_legion_move_bramble():
     ranger1.legion = defender
     gorgon1 = defender.creatures[5]
     gorgon1.legion = defender
-    cleverbot_d = CleverBot.CleverBot("p0")
+    cleverbot_d = CleverBot.CleverBot("p0", 1)
 
     hexlabel = ogre1.hexlabel
     move_to_score = {}
@@ -175,7 +175,7 @@ def test_score_legion_move_bramble():
     gargoyle1.move("F4")
 
     attacker = game.attacker_legion
-    cleverbot_a = CleverBot.CleverBot("p1")
+    cleverbot_a = CleverBot.CleverBot("p1", 1)
     game.battle_active_legion = attacker
     game.battle_phase = Phase.STRIKE
     titan2 = attacker.creatures[0]

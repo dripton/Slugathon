@@ -18,13 +18,12 @@ from slugathon.util.log import log
 
 SQUASH = 0.6
 BE_SQUASHED = 1.0
-# TODO Make this configurable
-TIME_LIMIT = 10
 
 
 class CleverBot(DimBot.DimBot):
-    def __init__(self, playername):
+    def __init__(self, playername, time_limit):
         DimBot.DimBot.__init__(self, playername)
+        self.time_limit = time_limit
         self.best_moves = []
         self.best_creature_moves = None
 
@@ -283,7 +282,7 @@ class CleverBot(DimBot.DimBot):
             elif score > best_score:
                 best_perm = perm
                 best_score = score
-            if time.time() - start_time > TIME_LIMIT:
+            if time.time() - start_time > self.time_limit:
                 break
         log("_find_move_order returning %s" % list(best_perm))
         return list(best_perm)
@@ -356,7 +355,7 @@ class CleverBot(DimBot.DimBot):
                     best_legion_move = legion_move
                     best_score = score
                 now = time.time()
-                if now - start > TIME_LIMIT:
+                if now - start > self.time_limit:
                     break
             finally:
                 for creature in creatures:

@@ -26,7 +26,7 @@ class Client(pb.Referenceable, Observed):
     implements(IObserver)
 
     def __init__(self, username, password, host, port, delay, aitype,
-      game_name, log_path):
+      game_name, log_path, time_limit):
         Observed.__init__(self)
         self.username = username
         self.playername = username  # In case the same user logs in twice
@@ -40,7 +40,7 @@ class Client(pb.Referenceable, Observed):
         self.usernames = set()
         self.games = []
         if aitype == "CleverBot":
-            self.ai = CleverBot.CleverBot(self.playername)
+            self.ai = CleverBot.CleverBot(self.playername, time_limit)
         elif aitype == "DimBot":
             self.ai = DimBot.DimBot(self.playername)
         else:
@@ -48,6 +48,7 @@ class Client(pb.Referenceable, Observed):
         self.game_name = game_name
         if log_path:
             log_to_path(log_path)
+        self.time_limit = time_limit
         log("__init__ done", game_name, username)
 
     def remote_set_name(self, name):
@@ -415,6 +416,8 @@ def main():
       default="CleverBot")
     op.add_option("-g", "--game-name", action="store", type="str")
     op.add_option("-l", "--log-path", action="store", type="str")
+    op.add_option("--time-limit", action="store", type="int",
+      default=config.DEFAULT_AI_TIME_LIMIT)
     opts, args = op.parse_args()
     if args:
         op.error("got illegal argument")
@@ -422,7 +425,7 @@ def main():
     if opts.aitype not in valid_ai_types:
         op.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     client = Client(opts.playername, opts.password, opts.server, opts.port,
-      opts.delay, opts.aitype, opts.game_name, opts.log_path)
+      opts.delay, opts.aitype, opts.game_name, opts.log_path, opts.time_limit)
     client.connect()
     reactor.run()
 
