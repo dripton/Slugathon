@@ -172,11 +172,11 @@ class CleverBot(DimBot.DimBot):
         caretaker = game.caretaker
         board = game.board
         enemies = player.enemy_legions(hexlabel)
+        legion_combat_value = legion.combat_value
         if enemies:
             assert len(enemies) == 1
             enemy = enemies.pop()
             enemy_combat_value = enemy.combat_value
-            legion_combat_value = legion.combat_value
             log("legion", legion, "hexlabel", hexlabel)
             log("legion_combat_value", legion_combat_value)
             log("enemy_combat_value", enemy_combat_value)
@@ -193,6 +193,14 @@ class CleverBot(DimBot.DimBot):
                 recruit = Creature.Creature(recruit_name)
                 score += recruit.sort_value
                 log("recruit value", recruit.sort_value)
+        for enemy in player.enemy_legions():
+            if enemy.combat_value >= BE_SQUASHED * legion_combat_value:
+                for roll in xrange(1, 6 + 1):
+                    moves = game.find_all_moves(enemy,
+                      game.board.hexes[enemy.hexlabel], roll)
+                    hexlabels = set((move[0] for move in moves))
+                    if hexlabel in hexlabels:
+                        score -= legion_combat_value / 6.0
         return score
 
     def _gen_legion_moves_inner(self, movesets):
