@@ -429,7 +429,7 @@ class Game(Observed):
         return moves
 
     def find_tower_teleport_moves(self, legion, masterhex):
-        """Return set of hexlabels describing where legion can tower
+        """Return set of (hexlabel, TELEPORT) describing where legion can tower
         teleport."""
         moves = set()
         if masterhex.tower and legion.num_lords:
@@ -442,7 +442,7 @@ class Game(Observed):
         return moves
 
     def find_titan_teleport_moves(self, legion):
-        """Return set of hexlabels describing where legion can titan
+        """Return set of (hexlabel, TELEPORT) describing where legion can titan
         teleport."""
         player = legion.player
         moves = set()
@@ -454,7 +454,8 @@ class Game(Observed):
         return moves
 
     def find_all_teleport_moves(self, legion, masterhex, roll):
-        """Return set of hexlabels describing where legion can teleport."""
+        """Return set of (hexlabel, TELEPORT) tuples describing where legion
+        can teleport."""
         player = legion.player
         moves = set()
         if roll != 6 or player.teleported:
@@ -464,7 +465,8 @@ class Game(Observed):
         return moves
 
     def find_all_moves(self, legion, masterhex, roll):
-        """Return set of hexlabels describing where legion can move."""
+        """Return set of (hexlabel, entry_side) tuples describing where legion
+        can move."""
         moves = self.find_normal_moves(legion, masterhex, roll)
         moves.update(self.find_all_teleport_moves(legion, masterhex, roll))
         return moves
