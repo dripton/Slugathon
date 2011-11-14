@@ -10,6 +10,7 @@ import copy
 import time
 from sys import maxint
 import itertools
+import traceback
 
 from slugathon.ai import DimBot
 from slugathon.game import Game, Creature
@@ -107,7 +108,11 @@ class CleverBot(DimBot.DimBot):
                 moves = game.find_all_moves(legion, game.board.hexes[
                   legion.hexlabel], player.movement_roll)
                 for hexlabel, entry_side in moves:
-                    score = self._score_move(legion, hexlabel, True)
+                    try:
+                        score = self._score_move(legion, hexlabel, True)
+                    except Exception:
+                        log(traceback.format_exc())
+                        raise
                     self.best_moves.append(
                       (score, legion, hexlabel, entry_side))
             self.best_moves.sort()
@@ -404,7 +409,6 @@ class CleverBot(DimBot.DimBot):
                     def1.addErrback(self.failure)
                     return
         except Exception:
-            import traceback
             log(traceback.format_exc())
             raise
 
