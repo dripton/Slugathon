@@ -436,7 +436,7 @@ class Server(Observed):
           isinstance(action, Action.Strike) or
           isinstance(action, Action.Carry) or
           isinstance(action, Action.SummonAngel) or
-          isinstance(action, Action.Unsummon) or
+          isinstance(action, Action.UnSummon) or
           isinstance(action, Action.DoNotSummon) or
           isinstance(action, Action.CanAcquire) or
           isinstance(action, Action.Acquire) or
