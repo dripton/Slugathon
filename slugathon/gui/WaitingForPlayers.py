@@ -164,14 +164,14 @@ class WaitingForPlayers(gtk.Dialog):
 
     # XXX cleanup
     def update_player_store(self):
-        playernames = self.game.get_playernames()
+        playernames = self.game.playernames
         leng = len(self.player_store)
         for ii, playername in enumerate(playernames):
             if ii < leng:
                 self.player_store[ii, 0] = (playername,)
             else:
                 self.player_store.append((playername,))
-        leng = len(self.game.get_playernames())
+        leng = len(self.game.playernames)
         while len(self.player_store) > leng:
             del self.player_store[leng]
         self.start_button.set_sensitive(self.username ==

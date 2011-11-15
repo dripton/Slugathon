@@ -140,7 +140,8 @@ class Game(Observed):
             raise AssertionError("Game has no owner")
         return owner
 
-    def get_playernames(self):
+    @property
+    def playernames(self):
         return [player.name for player in self.players]
 
     def get_player_by_name(self, name):
@@ -154,18 +155,18 @@ class Game(Observed):
         """Return state as a tuple of strings for GUI presentation."""
         return (self.name, self.owner.name, time.ctime(self.create_time),
           time.ctime(self.start_time), self.min_players, self.max_players,
-          ", ".join(self.get_playernames()))
+          ", ".join(self.playernames))
 
     def to_info_tuple(self):
         """Return state as a tuple of strings for passing to client."""
         return (self.name, self.create_time, self.start_time,
-          self.min_players, self.max_players, self.get_playernames()[:])
+          self.min_players, self.max_players, self.playernames)
 
     def add_player(self, playername):
         """Add a player to this game."""
         if self.started:
             raise AssertionError("add_player on started game")
-        if playername in self.get_playernames():
+        if playername in self.playernames:
             raise AssertionError("add_player from %s already in game %s" % (
               playername, self.name))
         if len(self.players) >= self.max_players:

@@ -445,7 +445,7 @@ class Server(Observed):
           isinstance(action, Action.EliminatePlayer) or
           isinstance(action, Action.GameOver)):
             game = self.name_to_game(action.game_name)
-            self.notify(action, game.get_playernames())
+            self.notify(action, game.playernames)
         else:
             self.notify(action)
 
