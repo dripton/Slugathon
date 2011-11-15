@@ -116,7 +116,7 @@ class Server(Observed):
             else:
                 action = Action.JoinGame(username, game.name)
                 self.notify(action)
-            set1 = self.game_to_waiting_ais[game_name]
+            set1 = self.game_to_waiting_ais.get(game_name)
             if set1:
                 set1.discard(username)
                 if not set1:
@@ -400,6 +400,52 @@ class Server(Observed):
     def update(self, observed, action):
         if isinstance(action, Action.MakeProposal):
             self.notify(action, [action.other_playername])
+        elif (isinstance(action, Action.AssignTower) or
+          isinstance(action, Action.AssignedAllTowers) or
+          isinstance(action, Action.PickedColor) or
+          isinstance(action, Action.AssignedAllColors) or
+          isinstance(action, Action.CreateStartingLegion) or
+          isinstance(action, Action.SplitLegion) or
+          isinstance(action, Action.UndoSplit) or
+          isinstance(action, Action.MergeLegions) or
+          isinstance(action, Action.RollMovement) or
+          isinstance(action, Action.MoveLegion) or
+          isinstance(action, Action.UndoMoveLegion) or
+          isinstance(action, Action.StartSplitPhase) or
+          isinstance(action, Action.StartFightPhase) or
+          isinstance(action, Action.StartMusterPhase) or
+          isinstance(action, Action.RecruitCreature) or
+          isinstance(action, Action.DoNotReinforce) or
+          isinstance(action, Action.UnReinforce) or
+          isinstance(action, Action.UndoRecruit) or
+          isinstance(action, Action.RevealLegion) or
+          isinstance(action, Action.ResolvingEngagement) or
+          isinstance(action, Action.Flee) or
+          isinstance(action, Action.DoNotFlee) or
+          isinstance(action, Action.Concede) or
+          isinstance(action, Action.Fight) or
+          isinstance(action, Action.AcceptProposal) or
+          isinstance(action, Action.RejectProposal) or
+          isinstance(action, Action.MoveCreature) or
+          isinstance(action, Action.UndoMoveCreature) or
+          isinstance(action, Action.StartReinforceBattlePhase) or
+          isinstance(action, Action.StartManeuverBattlePhase) or
+          isinstance(action, Action.StartStrikeBattlePhase) or
+          isinstance(action, Action.StartCounterstrikeBattlePhase) or
+          isinstance(action, Action.DriftDamage) or
+          isinstance(action, Action.Strike) or
+          isinstance(action, Action.Carry) or
+          isinstance(action, Action.SummonAngel) or
+          isinstance(action, Action.Unsummon) or
+          isinstance(action, Action.DoNotSummon) or
+          isinstance(action, Action.CanAcquire) or
+          isinstance(action, Action.Acquire) or
+          isinstance(action, Action.DoNotAcquire) or
+          isinstance(action, Action.BattleOver) or
+          isinstance(action, Action.EliminatePlayer) or
+          isinstance(action, Action.GameOver)):
+            game = self.name_to_game(action.game_name)
+            self.notify(action, game.get_playernames())
         else:
             self.notify(action)
 

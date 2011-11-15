@@ -1397,6 +1397,8 @@ class Game(Observed):
 
     def update(self, observed, action):
         log("update", observed, action)
+        if hasattr(action, "game_name") and action.game_name != self.name:
+            return
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
