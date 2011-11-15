@@ -106,19 +106,26 @@ class EventLog(gtk.Window):
             label = gtk.Label(st)
         elif isinstance(action, Action.Strike):
             if action.carries:
-                st = "%s in %s strikes %s in %s for %d hits and %s carries" % (
+                st = "%s in %s strikes %s in %s for %d %s and %s %s" % (
                   action.striker_name, action.striker_hexlabel,
                   action.target_name, action.target_hexlabel,
-                  action.hits, action.carries)
+                  action.hits,
+                  "hit" if action.hits == 1 else "hits",
+                  action.carries,
+                  "carry" if action.carries == 1 else "carries")
             else:
-                st = "%s in %s strikes %s in %s for %d hits" % (
+                st = "%s in %s strikes %s in %s for %d %s" % (
                   action.striker_name, action.striker_hexlabel,
-                  action.target_name, action.target_hexlabel, action.hits)
+                  action.target_name, action.target_hexlabel, action.hits,
+                  "hit" if action.hits == 1 else "hits")
             label = gtk.Label(st)
         elif isinstance(action, Action.Carry):
-            st = "%d hits carry to %s in %s, leaving %d carries" % (
-              action.carries, action.carry_target_name,
-              action.carry_target_hexlabel, action.carries_left)
+            st = "%d %s to %s in %s, leaving %d %s" % (
+              action.carries,
+              "hit carries" if action.carries == 1 else "hits carry",
+              action.carry_target_name,
+              action.carry_target_hexlabel, action.carries_left,
+              "carry" if action.carries == 1 else "carries")
             label = gtk.Label(st)
         elif isinstance(action, Action.DriftDamage):
             st = "%s in %s suffers drift damage" % (
