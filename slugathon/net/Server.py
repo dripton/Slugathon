@@ -9,6 +9,8 @@ import time
 from optparse import OptionParser
 import tempfile
 import sys
+import random
+import hashlib
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
@@ -157,9 +159,28 @@ class Server(Observed):
                     return passwd
         return None
 
+    def _next_unused_ainames(self, num):
+        ainames = []
+        ii = 1
+        while True:
+            ainame = "ai%d" % ii
+            if ainame not in self.usernames:
+                ainames.append(ainame)
+                if len(ainames) == num:
+                    return ainames
+            ii += 1
+
+    def _add_username_with_random_password(self, ainame):
+        password = hashlib.md5(str(random.random())).hexdigest()
+        with open(self.passwd_path, "a") as fil:
+            fil.write("%s:%s\n" % (ainame, password))
+
     def _spawn_ais(self, game):
         num_ais = game.min_players - game.num_players_joined
-        ainames = ["ai%d" % ii for ii in xrange(1, num_ais + 1)]
+        ainames = self._next_unused_ainames(num_ais)
+        for ainame in ainames:
+            if self._passwd_for_username(ainame) is None:
+                self._add_username_with_random_password(ainame)
         self.game_to_waiting_ais[game.name] = set()
         # Add all AIs to the wait list first, to avoid a race.
         for ainame in ainames:
