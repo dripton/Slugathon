@@ -64,9 +64,6 @@ class Server(Observed):
     def usernames(self):
         return sorted(self.name_to_user.iterkeys())
 
-    def get_games(self):
-        return self.games[:]
-
     def name_to_game(self, game_name):
         for game in self.games:
             if game.name == game_name:

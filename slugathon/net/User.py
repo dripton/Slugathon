@@ -35,7 +35,7 @@ class User(pb.Avatar):
         return self.server.usernames
 
     def perspective_get_games(self):
-        games = self.server.get_games()
+        games = self.server.games
         return [game.to_info_tuple() for game in games]
 
     def perspective_send_chat_message(self, dest, text):
