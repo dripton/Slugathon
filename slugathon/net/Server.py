@@ -60,7 +60,8 @@ class Server(Observed):
             action = Action.DelUsername(username)
             self.notify(action)
 
-    def get_usernames(self):
+    @property
+    def usernames(self):
         return sorted(self.name_to_user.iterkeys())
 
     def get_games(self):

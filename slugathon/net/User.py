@@ -32,7 +32,7 @@ class User(pb.Avatar):
         return self.name
 
     def perspective_get_usernames(self):
-        return self.server.get_usernames()
+        return self.server.usernames
 
     def perspective_get_games(self):
         games = self.server.get_games()
