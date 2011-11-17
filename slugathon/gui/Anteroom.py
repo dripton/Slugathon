@@ -23,6 +23,7 @@ class Anteroom(gtk.Window):
 
     def __init__(self, user, username, usernames, games):
         gtk.Window.__init__(self)
+        self.initialized = False
         self.user = user
         self.username = username
         self.usernames = usernames   # set, aliased from Client
@@ -132,6 +133,7 @@ class Anteroom(gtk.Window):
                 self.resize(width, height)
 
         self.show_all()
+        self.initialized = True
 
     def name_to_game(self, game_name):
         for game in self.games:
@@ -279,8 +281,9 @@ class Anteroom(gtk.Window):
     def cb_game_list_select(self, path, unused):
         index = path[0]
         game = self.games[index]
-        # TODO popup menu
-        if not game.started:
+        if not game.started and self.initialized:
+            # We get a spurious call to this method during initialization,
+            # so don't add a WaitingForPlayers until fully initialized.
             self._add_wfp(game)
         return False
 

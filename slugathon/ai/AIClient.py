@@ -112,10 +112,10 @@ class Client(pb.Referenceable, Observed):
     def add_game(self, game_info_tuple):
         log("add_game", game_info_tuple)
         (name, create_time, start_time, min_players, max_players,
-          playernames) = game_info_tuple
+          playernames, started) = game_info_tuple
         owner = playernames[0]
         game = Game.Game(name, owner, create_time, start_time, min_players,
-          max_players)
+          max_players, started)
         self.add_observer(game)
         for playername in playernames[1:]:
             game.add_player(playername)
@@ -162,7 +162,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
               action.start_time, action.min_players, action.max_players,
-              [action.username])
+              [action.username], False)
             self.add_game(game_info_tuple)
 
         elif isinstance(action, Action.RemoveGame):

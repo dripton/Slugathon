@@ -36,14 +36,14 @@ class Game(Observed):
     implements(IObserver)
 
     def __init__(self, name, owner, create_time, start_time, min_players,
-      max_players):
+      max_players, started=False):
         Observed.__init__(self)
         self.name = name
         self.create_time = create_time
         self.start_time = start_time
         self.min_players = min_players
         self.max_players = max_players
-        self.started = False
+        self.started = started
         self.players = []
         self.players_left = []  # Used to track co-winners in a draw
         self.num_players_joined = 0
@@ -160,18 +160,17 @@ class Game(Observed):
     def to_info_tuple(self):
         """Return state as a tuple of strings for passing to client."""
         return (self.name, self.create_time, self.start_time,
-          self.min_players, self.max_players, self.playernames)
+          self.min_players, self.max_players, self.playernames, self.started)
 
     def add_player(self, playername):
         """Add a player to this game."""
-        if self.started:
-            raise AssertionError("add_player on started game")
         if playername in self.playernames:
-            raise AssertionError("add_player from %s already in game %s" % (
+            log("add_player from %s already in game %s" % (
               playername, self.name))
+            return
         if len(self.players) >= self.max_players:
-            raise AssertionError("%s tried to join full game %s" % (
-              playername, self.name))
+            log("%s tried to join full game %s" % (playername, self.name))
+            return
         self.num_players_joined += 1
         player = Player.Player(playername, self, self.num_players_joined)
         self.players.append(player)
