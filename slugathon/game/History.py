@@ -48,7 +48,7 @@ class History(object):
             # Anything but a redo should clear the whole undone list.
             # A redo only removes the last item, regardless of whether it
             # was accomplished using the redo interface, or by repeating
-            # the the last action that was undone.
+            # the last action that was undone.
             if self.undone:
                 prev = self.undone.pop()
                 if action != prev:
