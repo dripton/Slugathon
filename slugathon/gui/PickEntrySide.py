@@ -136,19 +136,19 @@ class PickEntrySide(gtk.Dialog):
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
         # Fudge factor to leave room on the sides.
-        xscale = math.floor(width / (2 * self.battlemap.hex_width())) - 5
+        xscale = math.floor(width / (2 * self.battlemap.hex_width)) - 5
         # Fudge factor for menus and toolbars.
         yscale = math.floor(height / (2 * SQRT3 *
-          self.battlemap.hex_height())) - 11
+          self.battlemap.hex_height)) - 11
         return int(min(xscale, yscale))
 
     def compute_width(self):
         """Return the width of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_width() * 3.2))
+        return int(math.ceil(self.scale * self.battlemap.hex_width * 3.2))
 
     def compute_height(self):
         """Return the height of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_height() * 2 *
+        return int(math.ceil(self.scale * self.battlemap.hex_height * 2 *
           SQRT3))
 
     def masterhex_label(self, masterhex):

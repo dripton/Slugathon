@@ -37,9 +37,11 @@ class MasterBoard(object):
         hex1 = MasterHex.MasterHex(self, label, x, y, terrain, exits)
         self.hexes[label] = hex1
 
+    @property
     def hex_width(self):
         return self.max_x - self.min_x + 1
 
+    @property
     def hex_height(self):
         return self.max_y - self.min_y + 1
 

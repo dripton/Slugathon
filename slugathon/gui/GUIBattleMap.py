@@ -200,19 +200,19 @@ class GUIBattleMap(gtk.Window):
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
         # Fudge factor to leave room on the sides.
-        xscale = width / (2 * self.battlemap.hex_width()) - 18
+        xscale = width / (2 * self.battlemap.hex_width) - 18
         # Fudge factor for menus and toolbars.
-        yscale = height / (2 * SQRT3 * self.battlemap.hex_height()) - 21
+        yscale = height / (2 * SQRT3 * self.battlemap.hex_height) - 21
         return int(min(xscale, yscale))
 
     def compute_width(self):
         """Return the width of the map in pixels."""
-        return int(math.ceil(self.scale * (self.battlemap.hex_width() + 1) *
+        return int(math.ceil(self.scale * (self.battlemap.hex_width + 1) *
           3.2))
 
     def compute_height(self):
         """Return the height of the map in pixels."""
-        return int((math.ceil(self.scale * self.battlemap.hex_height() + 2) *
+        return int((math.ceil(self.scale * self.battlemap.hex_height + 2) *
           2 * SQRT3))
 
     def masterhex_label(self, masterhex, size):

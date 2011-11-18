@@ -543,18 +543,18 @@ class GUIMasterBoard(gtk.Window):
         the screen."""
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
-        xscale = width / (self.board.hex_width() * 4. + 2)
+        xscale = width / (self.board.hex_width * 4. + 2)
         # Fudge factor to leave room for menus and toolbars.
-        yscale = height / (self.board.hex_height() * 4 * SQRT3) - 4
+        yscale = height / (self.board.hex_height * 4 * SQRT3) - 4
         return int(min(xscale, yscale))
 
     def compute_width(self):
         """Return the width of the board in pixels."""
-        return int(math.ceil(self.scale * (self.board.hex_width() * 4 + 2)))
+        return int(math.ceil(self.scale * (self.board.hex_width * 4 + 2)))
 
     def compute_height(self):
         """Return the height of the board in pixels."""
-        return int(math.ceil(self.scale * self.board.hex_height() * 4 * SQRT3))
+        return int(math.ceil(self.scale * self.board.hex_height * 4 * SQRT3))
 
     def markers_in_hex(self, hexlabel):
         return [marker for marker in self.markers if marker.legion.hexlabel ==
