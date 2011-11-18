@@ -189,9 +189,7 @@ class Client(pb.Referenceable, Observed):
                   " and ".join(action.winner_names)))
             else:
                 log("Game %s over, draw" % action.game_name)
-            # For now, the AI drops when the game ends.  Maybe rethink
-            # this in the future and reuse the same AI process for
-            # multiple games.
+            log("AI exiting")
             reactor.stop()
 
         elif isinstance(action, Action.StartSplitPhase):
@@ -397,6 +395,11 @@ class Client(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
+
+        elif isinstance(action, Action.EliminatePlayer):
+            if action.loser_playername == self.playername:
+                log("Eliminated; AI exiting")
+                reactor.stop()
 
         else:
             log("got unhandled action", action)
