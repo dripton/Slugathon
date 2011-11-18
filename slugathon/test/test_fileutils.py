@@ -2,6 +2,8 @@ __copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import os
+
 from slugathon.util import fileutils
 
 
@@ -12,3 +14,9 @@ def test_basedir():
       "/slugathon/images/creature/titan")
     assert fileutils.basedir("images", "creature", "titan").endswith(
       "/slugathon/images/creature/titan")
+
+
+def test_basedir_MEIPASS2():
+    exepath = "/src/Slugathon/dist/slugathon-server.exe"
+    os.environ["_MEIPASS2"] = exepath
+    assert fileutils.basedir("images").startswith(exepath)
