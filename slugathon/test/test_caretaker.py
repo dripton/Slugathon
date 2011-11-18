@@ -56,3 +56,24 @@ def test_number_in_play():
     caretaker.take_one("Centaur")
     caretaker.kill_one("Centaur")
     assert caretaker.number_in_play("Centaur") == 1
+
+
+def test_take_too_many():
+    caretaker = Caretaker.Caretaker()
+    assert caretaker.num_left("Serpent") == 10
+    for unused in xrange(10):
+        caretaker.take_one("Serpent")
+    assert caretaker.num_left("Serpent") == 0
+    try:
+        caretaker.take_one("Serpent")
+    except Exception:
+        pass
+    else:
+        assert False, "should have raised"
+
+
+def test_put_back_too_many():
+    caretaker = Caretaker.Caretaker()
+    assert caretaker.num_left("Serpent") == 10
+    caretaker.put_one_back("Serpent")
+    assert caretaker.num_left("Serpent") == 10
