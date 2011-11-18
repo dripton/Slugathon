@@ -139,3 +139,11 @@ def test_towers():
     labels = board.get_tower_labels()
     labels.sort()
     assert labels == [100, 200, 300, 400, 500, 600]
+
+
+def test_hex_width():
+    assert board.hex_width == 15
+
+
+def test_hex_height():
+    assert board.hex_height == 8
