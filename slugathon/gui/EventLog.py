@@ -61,9 +61,19 @@ class EventLog(gtk.Window):
         return False
 
     def update(self, observed, action):
-        label = None
+        st = None
         if action == self.last_action:
             pass
+        elif isinstance(action, Action.AssignTower):
+            st = "%s gets tower %d" % (action.playername,
+              action.tower_num)
+        elif isinstance(action, Action.PickedColor):
+            st = "%s gets color %s" % (action.playername,
+              action.color)
+        elif isinstance(action, Action.StartSplitPhase):
+            playercolor = self.game.get_player_by_name(action.playername).color
+            st = "%s (%s) turn %d" % (action.playername,
+              playercolor, action.turn)
         elif isinstance(action, Action.SplitLegion):
             st = "%s (%s) (%d) splits off %s (%s) (%d)" % (
               action.parent_markerid,
@@ -72,45 +82,76 @@ class EventLog(gtk.Window):
               action.child_markerid,
               Legion.find_picname(action.child_markerid),
               len(action.child_creature_names))
-            label = gtk.Label(st)
         elif isinstance(action, Action.UndoSplit):
             st = "%s (%s) (%d) undoes split" % (
               action.parent_markerid,
               Legion.find_picname(action.parent_markerid),
               len(action.parent_creature_names) +
               len(action.child_creature_names))
-            label = gtk.Label(st)
+        elif isinstance(action, Action.MergeLegions):
+            st = "%s (%s) (%d) merges with splitoff" % (
+              action.parent_markerid,
+              Legion.find_picname(action.parent_markerid),
+              len(action.parent_creature_names) +
+              len(action.child_creature_names))
         elif isinstance(action, Action.RollMovement):
+            playercolor = self.game.get_player_by_name(action.playername).color
             st = "%s (%s) rolls %d for movement" % (action.playername,
-              action.playercolor, action.movement_roll)
-            label = gtk.Label(st)
+              playercolor, action.movement_roll)
         elif isinstance(action, Action.MoveLegion):
             st = "%s (%s) %s to %s hex %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               "teleports" if action.teleport else "moves",
               self.game.board.hexes[action.hexlabel].terrain,
               action.hexlabel)
-            label = gtk.Label(st)
+        elif isinstance(action, Action.UndoMoveLegion):
+            st = "%s (%s) undoes move" % (action.markerid,
+              Legion.find_picname(action.markerid))
+        elif isinstance(action, Action.RevealLegion):
+            st = "%s (%s) is revealed as %s" % (action.markerid,
+              Legion.find_picname(action.markerid),
+              ", ".join(action.creature_names))
         elif isinstance(action, Action.Flee):
-            st = "%s (%s) in %s flees" % (action.markerid,
+            st = "%s (%s) in %s hex %s flees" % (action.markerid,
               Legion.find_picname(action.markerid),
+              self.game.board.hexes[action.hexlabel].terrain,
               action.hexlabel)
-            label = gtk.Label(st)
         elif isinstance(action, Action.Concede):
-            st = "%s (%s) in %s concedes" % (action.markerid,
+            st = "%s (%s) in %s hex %s concedes" % (action.markerid,
               Legion.find_picname(action.markerid),
+              self.game.board.hexes[action.hexlabel].terrain,
               action.hexlabel)
-            label = gtk.Label(st)
         elif isinstance(action, Action.SummonAngel):
             st = "%s (%s) summons %s from %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               action.creature_name, action.donor_markerid)
-            label = gtk.Label(st)
         elif isinstance(action, Action.RecruitCreature):
             st = "%s (%s) recruits %s with %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               action.creature_name, ", ".join(action.recruiter_names))
-            label = gtk.Label(st)
+        elif isinstance(action, Action.UndoRecruit):
+            st = "%s (%s) undoes recruit" % (action.markerid,
+              Legion.find_picname(action.markerid))
+        elif isinstance(action, Action.Fight):
+            st = "%s (%s) fights %s (%s) in %s hex %s" % (
+              action.attacker_markerid,
+              Legion.find_picname(action.attacker_markerid),
+              action.defender_markerid,
+              Legion.find_picname(action.defender_markerid),
+              self.game.board.hexes[action.hexlabel].terrain,
+              action.hexlabel)
+        elif isinstance(action, Action.MoveCreature):
+            playercolor = self.game.get_player_by_name(action.playername).color
+            st = "%s (%s) moves %s in %s hex %s to %s hex %s" % (
+              action.playername, playercolor, action.creature_name,
+              self.game.battlemap.hexes[action.old_hexlabel].terrain,
+              action.old_hexlabel,
+              self.game.battlemap.hexes[action.new_hexlabel].terrain,
+              action.new_hexlabel)
+        elif isinstance(action, Action.UndoMoveCreature):
+            st = "%s in %s hex %s undoes move" % (action.creature_name,
+              self.game.battlemap.hexes[action.new_hexlabel].terrain,
+              action.new_hexlabel)
         elif isinstance(action, Action.Strike):
             if action.carries:
                 st = "%s in %s strikes %s in %s for %d %s and %s %s" % (
@@ -125,7 +166,6 @@ class EventLog(gtk.Window):
                   action.striker_name, action.striker_hexlabel,
                   action.target_name, action.target_hexlabel, action.hits,
                   "hit" if action.hits == 1 else "hits")
-            label = gtk.Label(st)
         elif isinstance(action, Action.Carry):
             st = "%d %s to %s in %s, leaving %d %s" % (
               action.carries,
@@ -133,11 +173,9 @@ class EventLog(gtk.Window):
               action.carry_target_name,
               action.carry_target_hexlabel, action.carries_left,
               "carry" if action.carries == 1 else "carries")
-            label = gtk.Label(st)
         elif isinstance(action, Action.DriftDamage):
             st = "%s in %s suffers drift damage" % (
               action.target_name, action.target_hexlabel)
-            label = gtk.Label(st)
         elif isinstance(action, Action.BattleOver):
             if action.winner_survivors:
                 st = "%s (%s) defeats %s (%s) in %s" % (
@@ -153,20 +191,18 @@ class EventLog(gtk.Window):
                   action.loser_markerid,
                   Legion.find_picname(action.loser_markerid),
                   action.hexlabel)
-            label = gtk.Label(st)
         elif isinstance(action, Action.Acquire):
             st = "%s (%s) acquires %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               ", ".join(action.angel_names))
-            label = gtk.Label(st)
         elif isinstance(action, Action.GameOver):
             if len(action.winner_names) == 1:
                 st = "%s wins!" % action.winner_names[0]
             else:
                 st = "%s draw" % " and ".join(action.winner_names)
-            label = gtk.Label(st)
         self.last_action = action
-        if label:
+        if st:
+            label = gtk.Label(st)
             # left-align the label
             label.set_alignment(0.0, 0.5)
             self.vbox.pack_start(label, expand=False, fill=False)
