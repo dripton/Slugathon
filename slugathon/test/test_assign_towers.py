@@ -28,7 +28,7 @@ class TestAssignTowers(object):
         self._simple_helper(6)
 
     def _range_helper(self, num_players):
-        trials = 100
+        trials = 25
         num_towers = 6
         counts = {}
         for num in xrange(num_players - 1):
@@ -40,8 +40,7 @@ class TestAssignTowers(object):
             assert len(towers) == num_players
             for tower in towers:
                 counts[tower] = counts.get(tower, 0) + 1
-        assert len(counts) == num_towers, \
-          "len(counts) is wrong: %s" % counts
+        assert len(counts) == num_towers, "len(counts) is wrong: %s" % counts
         assert sum(counts.itervalues()) == trials * num_players
         for count in counts.itervalues():
             # XXX Do real statistical tests.
