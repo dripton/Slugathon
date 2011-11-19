@@ -65,9 +65,7 @@ class EventLog(gtk.Window):
         if action == self.last_action:
             pass
         elif isinstance(action, Action.SplitLegion):
-            st = "%s (%s) splits into %s (%s) (%d) and %s (%s) (%d)" % (
-              action.parent_markerid,
-              Legion.find_picname(action.parent_markerid),
+            st = "%s (%s) (%d) splits off %s (%s) (%d)" % (
               action.parent_markerid,
               Legion.find_picname(action.parent_markerid),
               len(action.parent_creature_names),
