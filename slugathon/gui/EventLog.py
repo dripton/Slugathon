@@ -85,9 +85,11 @@ class EventLog(gtk.Window):
               action.playercolor, action.movement_roll)
             label = gtk.Label(st)
         elif isinstance(action, Action.MoveLegion):
-            st = "%s (%s) %s to %s" % (action.markerid,
+            st = "%s (%s) %s to %s hex %s" % (action.markerid,
               Legion.find_picname(action.markerid),
-              "teleports" if action.teleport else "moves", action.hexlabel)
+              "teleports" if action.teleport else "moves",
+              self.game.board.hexes[action.hexlabel].terrain,
+              action.hexlabel)
             label = gtk.Label(st)
         elif isinstance(action, Action.Flee):
             st = "%s (%s) in %s flees" % (action.markerid,
