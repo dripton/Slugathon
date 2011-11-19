@@ -73,6 +73,13 @@ class EventLog(gtk.Window):
               Legion.find_picname(action.child_markerid),
               len(action.child_creature_names))
             label = gtk.Label(st)
+        elif isinstance(action, Action.UndoSplit):
+            st = "%s (%s) (%d) undoes split" % (
+              action.parent_markerid,
+              Legion.find_picname(action.parent_markerid),
+              len(action.parent_creature_names) +
+              len(action.child_creature_names))
+            label = gtk.Label(st)
         elif isinstance(action, Action.RollMovement):
             st = "%s (%s) rolls %d for movement" % (action.playername,
               action.playercolor, action.movement_roll)
