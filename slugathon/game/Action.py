@@ -187,11 +187,9 @@ pb.setUnjellyableForClass(MergeLegions, MergeLegions)
 
 
 class RollMovement(Action):
-    def __init__(self, game_name, playername, playercolor, movement_roll,
-      mulligans_left):
+    def __init__(self, game_name, playername, movement_roll, mulligans_left):
         self.game_name = game_name
         self.playername = playername
-        self.playercolor = playercolor
         self.movement_roll = movement_roll
         self.mulligans_left = mulligans_left
 pb.setUnjellyableForClass(RollMovement, RollMovement)
