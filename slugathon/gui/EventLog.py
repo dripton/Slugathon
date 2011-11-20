@@ -140,6 +140,10 @@ class EventLog(gtk.Window):
               Legion.find_picname(action.defender_markerid),
               self.game.board.hexes[action.hexlabel].terrain,
               action.hexlabel)
+        elif isinstance(action, Action.StartReinforceBattlePhase):
+            playercolor = self.game.get_player_by_name(action.playername).color
+            st = "%s (%s) starts battle turn %d" % (action.playername,
+              playercolor, action.battle_turn)
         elif isinstance(action, Action.MoveCreature):
             playercolor = self.game.get_player_by_name(action.playername).color
             st = "%s (%s) moves %s in %s hex %s to %s hex %s" % (
