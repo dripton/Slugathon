@@ -18,7 +18,8 @@ import gtk
 import gobject
 
 from slugathon.gui import Client, icon
-from slugathon.util import guiutils, prefs, log
+from slugathon.util import guiutils, prefs
+from slugathon.util.log import log, tee_to_path
 
 
 class Connect(gtk.Window):
@@ -105,7 +106,7 @@ class Connect(gtk.Window):
         self.show_all()
 
         if log_path:
-            log.tee_to_path(log_path)
+            tee_to_path(log_path)
 
         if connect_now:
             reactor.callWhenRunning(self.cb_connect_button_clicked)
