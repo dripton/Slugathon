@@ -182,7 +182,7 @@ class Anteroom(gtk.Window):
     def update_game_store(self):
         leng = len(self.game_store)
         for ii, game in enumerate(self.games):
-            game_gui_tuple = game.to_gui_tuple()
+            game_gui_tuple = game.gui_tuple
             if ii < leng:
                 self.game_store[ii, 0] = game_gui_tuple
             else:

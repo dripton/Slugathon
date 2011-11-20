@@ -151,13 +151,15 @@ class Game(Observed):
         raise KeyError("No player named %s in players %s" % (
           name, self.players))
 
-    def to_gui_tuple(self):
+    @property
+    def gui_tuple(self):
         """Return state as a tuple of strings for GUI presentation."""
         return (self.name, self.owner.name, time.ctime(self.create_time),
           time.ctime(self.start_time), self.min_players, self.max_players,
           ", ".join(self.playernames))
 
-    def to_info_tuple(self):
+    @property
+    def info_tuple(self):
         """Return state as a tuple of strings for passing to client."""
         return (self.name, self.create_time, self.start_time,
           self.min_players, self.max_players, self.playernames, self.started)
@@ -247,6 +249,7 @@ class Game(Observed):
         self.players.sort(starting_tower_desc)
         self.active_player = self.players[0]
 
+    @property
     def done_assigning_towers(self):
         """Return True iff we're done assigning towers to all players."""
         for player in self.players:
@@ -257,7 +260,7 @@ class Game(Observed):
     @property
     def next_playername_to_pick_color(self):
         """Return the name of the player whose turn it is to pick a color."""
-        if not self.done_assigning_towers():
+        if not self.done_assigning_towers:
             return None
         leader = None
         for player in self.players:
@@ -291,6 +294,7 @@ class Game(Observed):
             raise AssertionError("tried to take unavailable color")
         player.assign_color(color)
 
+    @property
     def done_assigning_first_markers(self):
         """Return True iff each player has picked his first marker."""
         for player in self.players:
@@ -308,7 +312,7 @@ class Game(Observed):
         if markerid not in player.markerids:
             raise AssertionError("marker not available")
         player.pick_marker(markerid)
-        if self.done_assigning_first_markers():
+        if self.done_assigning_first_markers:
             for player in self.players:
                 player.create_starting_legion()
 
@@ -813,7 +817,7 @@ class Game(Observed):
             if self.phase == Phase.FIGHT:
                 creature.hexlabel = "DEFENDER"
         self.pending_reinforcement = False
-        if self.battle_legions and self.is_battle_over():
+        if self.battle_legions and self.battle_is_over:
             self._end_battle2()
 
     def undo_recruit(self, playername, markerid):
@@ -844,7 +848,7 @@ class Game(Observed):
                 creature = legion.creatures[-1]
                 creature.hexlabel = "ATTACKER"
         self.pending_summon = False
-        if self.is_battle_over():
+        if self.battle_is_over:
             self._end_battle2()
 
     def do_not_summon(self, playername, markerid):
@@ -858,7 +862,7 @@ class Game(Observed):
         """Called from update"""
         log("_do_not_summon")
         self.pending_summon = False
-        if self.is_battle_over():
+        if self.battle_is_over:
             self._end_battle2()
 
     def do_not_reinforce(self, playername, markerid):
@@ -872,7 +876,7 @@ class Game(Observed):
         """Called from update"""
         log("_do_not_reinforce")
         self.pending_reinforcement = False
-        if self.is_battle_over():
+        if self.battle_is_over:
             self._end_battle2()
 
     def _unreinforce(self, playername, markerid):
@@ -1245,7 +1249,8 @@ class Game(Observed):
         if self.battle_phase == Phase.STRIKE:
             player.done_with_strikes()
 
-    def is_battle_over(self):
+    @property
+    def battle_is_over(self):
         """Return True iff the battle is over."""
         for legion in self.battle_legions:
             if legion.dead:
@@ -1329,11 +1334,11 @@ class Game(Observed):
             raise AssertionError("ending counterstrike phase out of turn")
         if self.battle_phase != Phase.COUNTERSTRIKE:
             return
-        if (not self.is_battle_over() and
+        if (not self.battle_is_over and
           self.battle_active_legion == self.defender_legion):
             self.battle_turn += 1
             log("bumped battle turn to", self.battle_turn)
-        if self.is_battle_over():
+        if self.battle_is_over:
             log("battle over")
             time_loss = self.battle_turn > 7
             log("time_loss is", time_loss)
