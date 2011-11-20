@@ -23,6 +23,7 @@ class EventLog(gtk.Window):
         self.game = game
         self.username = username
         self.last_action = None
+        self.reveal_actions = set()
 
         self.scrolledwindow = gtk.ScrolledWindow()
         self.vadjustment = self.scrolledwindow.get_vadjustment()
@@ -62,7 +63,7 @@ class EventLog(gtk.Window):
 
     def update(self, observed, action):
         st = None
-        if action == self.last_action:
+        if action == self.last_action or action in self.reveal_actions:
             pass
         elif isinstance(action, Action.AssignTower):
             st = "%s gets tower %d" % (action.playername,
@@ -108,6 +109,7 @@ class EventLog(gtk.Window):
             st = "%s (%s) undoes move" % (action.markerid,
               Legion.find_picname(action.markerid))
         elif isinstance(action, Action.RevealLegion):
+            self.reveal_actions.add(action)
             st = "%s (%s) is revealed as %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               ", ".join(action.creature_names))
