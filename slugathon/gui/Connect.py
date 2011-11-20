@@ -113,10 +113,9 @@ class Connect(gtk.Window):
 
     def _init_playernames(self, playername):
         self.playernames.update(prefs.load_playernames())
-        if playername:
-            self.playernames.add(playername)
-        else:
+        if not playername:
             playername = prefs.last_playername()
+        self.playernames.add(playername)
         store = gtk.ListStore(gobject.TYPE_STRING)
         active_index = 0
         for index, name in enumerate(sorted(self.playernames)):
