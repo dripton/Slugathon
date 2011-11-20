@@ -2,7 +2,7 @@ Slugathon is a free (licensed under the GPLv2; see slugathon/docs/COPYING.txt)
 clone of the classic Avalon Hill boardgame Titan. The focus is on playing
 against other humans across the Internet.
 
-If you want to try it anyway:
+Installation is still kind of rough, but if you want to try it:
 
 1. Install all the dependencies listed at
 http://wiki.github.com/dripton/Slugathon/dependencies.
