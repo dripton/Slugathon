@@ -123,7 +123,7 @@ def test_could_recruit():
 
     assert not legion.could_recruit("Marsh", caretaker)
     assert not legion.could_recruit("Desert", caretaker)
-    assert legion.could_recruit("Plain", caretaker)
+    assert legion.could_recruit("Plains", caretaker)
     assert legion.could_recruit("Brush", caretaker)
     assert legion.could_recruit("Tower", caretaker)
 
@@ -139,7 +139,8 @@ def test_available_recruits():
 
     assert legion.available_recruits("Marsh", caretaker) == []
     assert legion.available_recruits("Desert", caretaker) == ["Lion"]
-    assert legion.available_recruits("Plain", caretaker) == ["Centaur", "Lion"]
+    assert legion.available_recruits("Plains", caretaker) == ["Centaur",
+      "Lion"]
     assert legion.available_recruits("Brush", caretaker) == ["Gargoyle"]
     assert legion.available_recruits("Tower", caretaker) == ["Ogre",
       "Centaur", "Gargoyle", "Warlock"]
@@ -156,7 +157,7 @@ def test_available_recruits_and_recruiters():
 
     assert legion.available_recruits_and_recruiters("Marsh", caretaker) == []
     assert legion.available_recruits_and_recruiters("Desert", caretaker) == []
-    assert legion.available_recruits_and_recruiters("Plain", caretaker) == [
+    assert legion.available_recruits_and_recruiters("Plains", caretaker) == [
       ("Centaur", "Centaur"), ("Lion", "Centaur", "Centaur")]
     assert legion.available_recruits_and_recruiters("Brush", caretaker) == [
       ("Gargoyle", "Gargoyle")]
@@ -164,7 +165,7 @@ def test_available_recruits_and_recruiters():
       ("Ogre",), ("Centaur",), ("Gargoyle",), ("Warlock", "Titan")]
 
     caretaker.counts["Centaur"] = 0
-    assert legion.available_recruits_and_recruiters("Plain", caretaker) == [
+    assert legion.available_recruits_and_recruiters("Plains", caretaker) == [
       ("Lion", "Centaur", "Centaur")]
 
     legion2 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",

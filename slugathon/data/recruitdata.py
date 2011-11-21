@@ -37,7 +37,7 @@ data = {
     "Mountains": [("Lion", 1), ("Minotaur", 2), ("Dragon", 2),
       ("Colossus", 2)],
 
-    "Plain": [("Centaur", 1), ("Lion", 2), ("Ranger", 2)],
+    "Plains": [("Centaur", 1), ("Lion", 2), ("Ranger", 2)],
 
     "Swamp": [("Troll", 1), ("Wyvern", 3), ("Hydra", 2)],
 

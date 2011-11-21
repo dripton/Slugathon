@@ -177,7 +177,7 @@ terrain_colors = {
     "Jungle": "dark_green",
     "Marsh": "sienna",
     "Mountains": "red",
-    "Plain": "yellow",
+    "Plains": "yellow",
     "Swamp": "blue",
     "Tower": "gray",
     "Tundra": "sky_blue",

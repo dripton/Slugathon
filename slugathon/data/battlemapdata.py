@@ -97,7 +97,7 @@ data = {
         "F4": ("Plain", 2, {3: "Slope", 4: "Slope", 5: "Slope"}),
     },
 
-    "Plain": {
+    "Plains": {
     },
 
     "Swamp": {
