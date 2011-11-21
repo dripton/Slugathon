@@ -296,7 +296,8 @@ class Anteroom(gtk.Window):
             game = self.name_to_game(action.game_name)
             if game:
                 self.add_game(game)
-        elif isinstance(action, Action.RemoveGame):
+        elif isinstance(action, Action.RemoveGame) or isinstance(action,
+          Action.GameOver):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.JoinGame):
             self.joined_game(action.username, action.game_name)

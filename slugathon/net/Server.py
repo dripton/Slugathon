@@ -461,8 +461,7 @@ class Server(Observed):
           isinstance(action, Action.Acquire) or
           isinstance(action, Action.DoNotAcquire) or
           isinstance(action, Action.BattleOver) or
-          isinstance(action, Action.EliminatePlayer) or
-          isinstance(action, Action.GameOver)):
+          isinstance(action, Action.EliminatePlayer)):
             game = self.name_to_game(action.game_name)
             self.notify(action, game.playernames)
         else:
