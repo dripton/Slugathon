@@ -219,6 +219,9 @@ class EventLog(gtk.Window):
 
 
 if __name__ == "__main__":
+    from slugathon.util import guiutils
+
     parent = gtk.Window()
     event_log = EventLog(None, None, parent)
+    event_log.connect("destroy", guiutils.exit)
     gtk.main()
