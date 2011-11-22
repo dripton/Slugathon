@@ -98,6 +98,11 @@ class GUICaretaker(gtk.Dialog):
             chit = self.chits[creature_name]
             chit.dead = True
             chit.build_image()
+        elif left_count != 0:
+            chit = self.chits[creature_name]
+            if chit.dead:
+                chit.dead = False
+                chit.build_image()
 
     def update_creature(self, creature_name):
         left_count = self.caretaker.counts[creature_name]
