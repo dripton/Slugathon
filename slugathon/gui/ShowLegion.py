@@ -12,7 +12,7 @@ from slugathon.gui import Chit, Marker, icon
 class ShowLegion(gtk.Dialog):
     """Window to show a legion's contents."""
     def __init__(self, username, legion, show_marker, parent):
-        gtk.Dialog.__init__(self, "Show Legion", parent)
+        gtk.Dialog.__init__(self, "Show Legion - %s" % username, parent)
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)

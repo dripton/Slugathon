@@ -13,7 +13,7 @@ from slugathon.util import prefs
 class Inspector(gtk.Dialog):
     """Window to show a legion's contents."""
     def __init__(self, username, parent):
-        gtk.Dialog.__init__(self, "Inspector", parent)
+        gtk.Dialog.__init__(self, "Inspector - %s" % username, parent)
 
         self.username = username
 

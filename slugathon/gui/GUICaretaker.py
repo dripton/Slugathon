@@ -23,7 +23,7 @@ class GUICaretaker(gtk.Dialog):
         self.username = username
         self.caretaker = game.caretaker
 
-        gtk.Dialog.__init__(self, "Caretaker", parent)
+        gtk.Dialog.__init__(self, "Caretaker - %s" % username, parent)
         table = gtk.Table(rows=4, columns=6)
         table.set_row_spacings(9)
         table.set_col_spacings(9)

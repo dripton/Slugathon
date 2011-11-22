@@ -25,6 +25,7 @@ class EventLog(gtk.Window):
         self.last_action = None
         self.reveal_actions = set()
 
+        self.set_title("Event Log - %s" % username)
         self.scrolledwindow = gtk.ScrolledWindow()
         self.vadjustment = self.scrolledwindow.get_vadjustment()
         self.add(self.scrolledwindow)

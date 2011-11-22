@@ -33,7 +33,8 @@ class WaitingForPlayers(gtk.Dialog):
     implements(IObserver)
 
     def __init__(self, user, username, game, parent):
-        gtk.Dialog.__init__(self, "Waiting for Players", parent)
+        gtk.Dialog.__init__(self, "Waiting for Players - %s" % username,
+          parent)
         self.user = user
         self.username = username
         self.game = game

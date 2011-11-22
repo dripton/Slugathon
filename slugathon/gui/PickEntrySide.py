@@ -52,7 +52,7 @@ class PickEntrySide(gtk.Dialog):
 
     def __init__(self, board, masterhex, entry_sides, def1, parent,
       username=None, scale=None):
-        gtk.Dialog.__init__(self, "Pick Entry Side", parent)
+        gtk.Dialog.__init__(self, "Pick Entry Side - %s" % username, parent)
 
         terrain = masterhex.terrain
         # We always orient the map as if for entry side 5.
