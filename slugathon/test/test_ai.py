@@ -511,3 +511,68 @@ def test_score_legion_move_plain():
     assert move_to_score["A1"] == max(move_to_score.itervalues())
 
     titan2.move("A1")
+
+
+def test_score_move_scary_pursuer():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    game.add_player("p1")
+    player0 = game.players[0]
+    player1 = game.players[1]
+    cleverbot = CleverBot.CleverBot("p1", 5)
+    player0.assign_starting_tower(200)
+    player1.assign_starting_tower(100)
+    game.sort_players()
+    game.started = True
+    game.assign_color("p1", "Blue")
+    game.assign_color("p0", "Red")
+    game.assign_first_marker("p0", "Rd01")
+    game.assign_first_marker("p1", "Bu01")
+    player0.pick_marker("Rd02")
+    player0.split_legion("Rd01", "Rd02",
+      ["Titan", "Centaur", "Ogre", "Gargoyle"],
+      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+    player0.done_with_splits()
+    rd01 = player0.legions["Rd01"]
+    rd02 = player0.legions["Rd02"]
+
+    player1.pick_marker("Bu02")
+    player1.split_legion("Bu01", "Bu02",
+      ["Titan", "Centaur", "Ogre", "Gargoyle"],
+      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+    bu01 = player1.legions["Bu01"]
+    bu02 = player1.legions["Bu02"]
+    player0.done_with_splits()
+
+    bu01.creatures.append(Creature.Creature("Ogre"))
+    rd01.creatures.append(Creature.Creature("Colossus"))
+    rd01.creatures.append(Creature.Creature("Colossus"))
+    rd01.creatures.append(Creature.Creature("Colossus"))
+
+    bu01.hexlabel = 41
+    bu02.hexlabel = 400
+    rd01.hexlabel = 100
+
+    # staying in 41 gives us range 1
+    # moving to 42 gives us range 2
+    # moving to 1 gives us range 3
+    # moving to 2 gives us range 4
+    # moving to 3 gives us range 1
+    # moving to 4 gives us range 2
+    # moving to 5 gives us range 3
+
+    hexlabel_to_score = {}
+    for hexlabel in [41, 42, 1, 2, 3, 4, 5]:
+        hexlabel_to_score[hexlabel] = cleverbot._score_move(bu01, hexlabel,
+          hexlabel != 41)
+    print hexlabel_to_score
+    assert hexlabel_to_score[42] > hexlabel_to_score[41]
+    assert hexlabel_to_score[42] > hexlabel_to_score[3]
+    assert hexlabel_to_score[1] > hexlabel_to_score[42]
+    assert hexlabel_to_score[1] > hexlabel_to_score[4]
+    assert hexlabel_to_score[2] > hexlabel_to_score[1]
+    assert hexlabel_to_score[2] > hexlabel_to_score[5]
+    assert hexlabel_to_score[4] > hexlabel_to_score[41]
+    assert hexlabel_to_score[4] > hexlabel_to_score[3]
+    assert hexlabel_to_score[5] > hexlabel_to_score[42]
+    assert hexlabel_to_score[5] > hexlabel_to_score[4]

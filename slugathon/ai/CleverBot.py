@@ -173,6 +173,8 @@ class CleverBot(DimBot.DimBot):
         board = game.board
         enemies = player.enemy_legions(hexlabel)
         legion_combat_value = legion.combat_value
+        legion_sort_value = legion.sort_value
+
         if enemies:
             assert len(enemies) == 1
             enemy = enemies.pop()
@@ -183,7 +185,7 @@ class CleverBot(DimBot.DimBot):
             if enemy_combat_value < SQUASH * legion_combat_value:
                 score += enemy.score
             elif enemy_combat_value >= BE_SQUASHED * legion_combat_value:
-                score -= legion_combat_value
+                score -= legion_sort_value
         if move and (len(legion) < 7 or enemies):
             masterhex = board.hexes[hexlabel]
             terrain = masterhex.terrain
@@ -192,15 +194,24 @@ class CleverBot(DimBot.DimBot):
                 recruit_name = recruits[-1]
                 recruit = Creature.Creature(recruit_name)
                 score += recruit.sort_value
-                log("recruit value", recruit.sort_value)
-        for enemy in player.enemy_legions():
-            if enemy.combat_value >= BE_SQUASHED * legion_combat_value:
-                for roll in xrange(1, 6 + 1):
-                    moves = game.find_all_moves(enemy,
-                      game.board.hexes[enemy.hexlabel], roll)
-                    hexlabels = set((move[0] for move in moves))
-                    if hexlabel in hexlabels:
-                        score -= legion_combat_value / 6.0
+                log("recruit value", legion.markerid, hexlabel,
+                  recruit.sort_value)
+        try:
+            prev_hexlabel = legion.hexlabel
+            legion.hexlabel = hexlabel
+            for enemy in player.enemy_legions():
+                if enemy.combat_value >= BE_SQUASHED * legion_combat_value:
+                    for roll in xrange(1, 6 + 1):
+                        moves = game.find_normal_moves(enemy,
+                          game.board.hexes[enemy.hexlabel], roll).union(
+                          game.find_titan_teleport_moves(enemy))
+                        hexlabels = set((move[0] for move in moves))
+                        if hexlabel in hexlabels:
+                            log("scared of %s in %s" % (enemy.markerid,
+                              hexlabel))
+                            score -= legion_sort_value / 6.0
+        finally:
+            legion.hexlabel = prev_hexlabel
         return score
 
     def _gen_legion_moves_inner(self, movesets):
