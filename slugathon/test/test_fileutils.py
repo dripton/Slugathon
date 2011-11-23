@@ -17,6 +17,6 @@ def test_basedir():
 
 
 def test_basedir_MEIPASS2():
-    exepath = "/src/Slugathon/dist/slugathon-server.exe"
+    exepath = "/src/Slugathon/dist/slugathon.exe"
     os.environ["_MEIPASS2"] = exepath
     assert fileutils.basedir("images").startswith(exepath)

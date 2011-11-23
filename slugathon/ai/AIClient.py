@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 """Outward-facing facade for AI."""
 
 
-from optparse import OptionParser
+import argparse
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -406,27 +406,25 @@ class Client(pb.Referenceable, Observed):
 
 
 def main():
-    op = OptionParser()
-    op.add_option("-n", "--playername", action="store", type="str")
-    op.add_option("-a", "--password", action="store", type="str")
-    op.add_option("-s", "--server", action="store", type="str",
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--playername", action="store", type=str)
+    parser.add_argument("-a", "--password", action="store", type=str)
+    parser.add_argument("-s", "--server", action="store", type=str,
       default="localhost")
-    op.add_option("-p", "--port", action="store", type="int",
+    parser.add_argument("-p", "--port", action="store", type=int,
       default=config.DEFAULT_PORT)
-    op.add_option("-d", "--delay", action="store", type="float",
+    parser.add_argument("-d", "--delay", action="store", type=float,
       default=config.DEFAULT_AI_DELAY)
-    op.add_option("-t", "--aitype", action="store", type="str",
+    parser.add_argument("-t", "--aitype", action="store", type=str,
       default="CleverBot")
-    op.add_option("-g", "--game-name", action="store", type="str")
-    op.add_option("-l", "--log-path", action="store", type="str")
-    op.add_option("--time-limit", action="store", type="int",
+    parser.add_argument("-g", "--game-name", action="store", type=str)
+    parser.add_argument("-l", "--log-path", action="store", type=str)
+    parser.add_argument("--time-limit", action="store", type=int,
       default=config.DEFAULT_AI_TIME_LIMIT)
-    opts, args = op.parse_args()
-    if args:
-        op.error("got illegal argument")
+    opts, extras = parser.parse_known_args()
     valid_ai_types = ["CleverBot", "DimBot"]
     if opts.aitype not in valid_ai_types:
-        op.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
+        parser.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     client = Client(opts.playername, opts.password, opts.server, opts.port,
       opts.delay, opts.aitype, opts.game_name, opts.log_path, opts.time_limit)
     client.connect()

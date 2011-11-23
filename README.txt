@@ -21,13 +21,13 @@ require root permissions, so use su or sudo.
 4. Add some users and passwords to ~/.slugathon/globalprefs/passwd
 (See slugathon/docs/passwd.txt for an example of the format.)
 
-5. In one terminal, run "python slugathon-server"
+5. In one terminal, run "python slugathon server"
 
 6. In a second terminal (on the same or a different computer) run
-"python slugathon-client"
+"python slugathon client"
 
 7. If you want multiple human players, then in a third terminal, (on the same
-or a different computer), run "python slugathon-client", picking a different
+or a different computer), run "python slugathon client", picking a different
 player.
 
 (You can add up to a total of 6 players.)

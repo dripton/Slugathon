@@ -89,9 +89,7 @@ setup(
         ("slugathon/docs", glob("slugathon/docs/*")),
     ],
     scripts=[
-        "bin/slugathon-server",
-        "bin/slugathon-client",
-        "bin/slugathon-aiclient",
+        "bin/slugathon",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",

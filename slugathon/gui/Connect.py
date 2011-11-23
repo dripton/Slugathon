@@ -4,7 +4,7 @@ __copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from optparse import OptionParser
+import argparse
 import os
 import tempfile
 import random
@@ -181,7 +181,7 @@ class Connect(gtk.Window):
     def cb_start_server_button_clicked(self, *args):
         if hasattr(sys, "frozen"):
             # TODO Find the absolute path.
-            def1 = utils.getProcessValue("slugathon-server.exe",
+            def1 = utils.getProcessValue("slugathon.exe", ["server"],
               env=os.environ)
         else:
             def1 = utils.getProcessValue(sys.executable,
@@ -219,21 +219,19 @@ class Connect(gtk.Window):
 
 def main():
     tempdir = tempfile.gettempdir()
-    op = OptionParser()
-    op.add_option("-n", "--playername", action="store", type="str")
-    op.add_option("-a", "--password", action="store", type="str")
-    op.add_option("-s", "--server", action="store", type="str")
-    op.add_option("-p", "--port", action="store", type="int")
-    op.add_option("-c", "--connect", action="store_true")
-    op.add_option("-l", "--log-path", action="store", type="str",
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--playername", action="store", type=str)
+    parser.add_argument("-a", "--password", action="store", type=str)
+    parser.add_argument("-s", "--server", action="store", type=str)
+    parser.add_argument("-p", "--port", action="store", type=int)
+    parser.add_argument("-c", "--connect", action="store_true")
+    parser.add_argument("-l", "--log-path", action="store", type=str,
       default=os.path.join(tempdir, "slugathon-client-%d.log" %
       random.randrange(100000, 1000000)),
       help="path to logfile")
-    opts, args = op.parse_args()
-    if args:
-        op.error("got illegal argument")
-    Connect(opts.playername, opts.password, opts.server, opts.port,
-      opts.connect, opts.log_path)
+    args, extras = parser.parse_known_args()
+    Connect(args.playername, args.password, args.server, args.port,
+      args.connect, args.log_path)
     reactor.run()
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ client = None
 
 
 def setup_module(module):
-    utils.getProcessValue("python", ["slugathon-server"])
+    utils.getProcessValue("python", ["slugathon server"])
 
 
 def test_init():
@@ -37,4 +37,4 @@ def failure():
 
 # TODO Use a process protocol to make this more portable.
 def teardown_module(module):
-    utils.getProcessValue("pkill", ["-f", "python.*slugathon-server"])
+    utils.getProcessValue("pkill", ["-f", "python.*slugathon server"])

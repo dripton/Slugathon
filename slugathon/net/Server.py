@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 import os
 import time
-from optparse import OptionParser
+import argparse
 import tempfile
 import sys
 import random
@@ -187,14 +187,16 @@ class Server(Observed):
             self.game_to_waiting_ais[game.name].add(ainame)
         if hasattr(sys, "frozen"):
             # TODO Find the absolute path.
-            executable = "slugathon-aiclient.exe"
+            executable = "slugathon.exe"
         else:
             executable = sys.executable
         for ainame in ainames:
             log("ainame", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
             args = [executable]
-            if not hasattr(sys, "frozen"):
+            if hasattr(sys, "frozen"):
+                args.extend(["ai"])
+            else:
                 args.extend(["-m", "slugathon.ai.AIClient"])
             args.extend([
                 "--playername", ainame,
@@ -479,17 +481,17 @@ class AIProcessProtocol(protocol.ProcessProtocol):
 
 
 def main():
-    op = OptionParser()
-    op.add_option("-p", "--port", action="store", type="int",
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--port", action="store", type=int,
       default=config.DEFAULT_PORT, help="listening TCP port")
-    op.add_option("--passwd", "-a", action="store", type="str",
+    parser.add_argument("--passwd", "-a", action="store", type=str,
       default=prefs.passwd_path(), help="path to passwd file")
-    op.add_option("--no-passwd", "-n", action="store_true",
+    parser.add_argument("--no-passwd", "-n", action="store_true",
       help="do not check passwords")
-    op.add_option("--log-path", "-l", action="store", type="str",
+    parser.add_argument("--log-path", "-l", action="store", type=str,
       default=os.path.join(TEMPDIR, "slugathon-server.log"),
       help="path to logfile")
-    opts, args = op.parse_args()
+    opts, extras = parser.parse_known_args()
     port = opts.port
     server = Server(opts.no_passwd, opts.passwd, opts.port, opts.log_path)
     realm = Realm.Realm(server)
