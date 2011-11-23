@@ -657,6 +657,9 @@ class Game(Observed):
             log("illegal concede before flee")
             return
         enemy_markerid = enemy_legion.markerid
+        action = Action.RevealLegion(self.name, markerid,
+          legion.creature_names)
+        self.notify(action)
         action = Action.Flee(self.name, markerid, enemy_markerid, hexlabel)
         self.notify(action)
         self._flee(playername, markerid)
@@ -685,6 +688,9 @@ class Game(Observed):
                 break
         if enemy_legion == legion:
             return
+        action = Action.RevealLegion(self.name, markerid,
+          legion.creature_names)
+        self.notify(action)
         enemy_markerid = enemy_legion.markerid
         self._concede(playername, markerid)
         action = Action.Concede(self.name, markerid, enemy_markerid,
