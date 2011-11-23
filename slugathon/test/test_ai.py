@@ -534,7 +534,6 @@ def test_score_move_scary_pursuer():
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
     player0.done_with_splits()
     rd01 = player0.legions["Rd01"]
-    rd02 = player0.legions["Rd02"]
 
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
