@@ -21,6 +21,28 @@ SQUASH = 0.6
 BE_SQUASHED = 1.0
 
 
+def best7(score_moves):
+    """Return a set of the the best (highest score) (up to) 7 moves from
+    score_moves, which is a sorted list of (score, move) tuples.
+
+    If there's a tie, pick at random.
+    """
+    score_moves = score_moves[:]
+    best_moves = set()
+    while score_moves and len(best_moves) < 7:
+        choices = []
+        best_score = score_moves[-1][0]
+        for (score, move) in reversed(score_moves):
+            if score == best_score:
+                choices.append((score, move))
+            else:
+                break
+        (score, move) = random.choice(choices)
+        score_moves.remove((score, move))
+        best_moves.add(move)
+    return best_moves
+
+
 class CleverBot(DimBot.DimBot):
     def __init__(self, playername, time_limit):
         DimBot.DimBot.__init__(self, playername)
@@ -346,11 +368,7 @@ class CleverBot(DimBot.DimBot):
                         creature.hexlabel = creature.previous_hexlabel
                 score_moves.sort()
                 log("score_moves", creature, score_moves)
-                # TODO Randomize tie scores
-                best_score_moves = score_moves[-7:]
-                moveset = set()
-                for score, move in best_score_moves:
-                    moveset.add(move)
+                moveset = best7(score_moves)
             else:
                 moveset = set([creature.hexlabel])
             movesets.append(moveset)
