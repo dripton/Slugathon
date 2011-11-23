@@ -264,7 +264,6 @@ class CleverBot(DimBot.DimBot):
                   creature_name).pop()
                 if (move == start or move in
                   game.find_battle_moves(creature)):
-                    # XXX Modifying game state
                     creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = move
                     moved_creatures.add(creature)
@@ -339,7 +338,6 @@ class CleverBot(DimBot.DimBot):
                     moves.add(creature.hexlabel)
                 for move in moves:
                     try:
-                        # XXX Modifying game state
                         creature.previous_hexlabel = creature.hexlabel
                         creature.hexlabel = move
                         score = self._score_legion_move(game, [creature])
@@ -371,7 +369,6 @@ class CleverBot(DimBot.DimBot):
             try:
                 for ii, creature in enumerate(creatures):
                     move = legion_move[ii]
-                    # XXX Modifying game state
                     creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = move
                 score = self._score_legion_move(game, creatures)
