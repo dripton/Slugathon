@@ -28,7 +28,7 @@ class TestAssignTowers(object):
         self._simple_helper(6)
 
     def _range_helper(self, num_players):
-        trials = 25
+        trials = 50
         num_towers = 6
         counts = {}
         for num in xrange(num_players - 1):
@@ -42,11 +42,13 @@ class TestAssignTowers(object):
                 counts[tower] = counts.get(tower, 0) + 1
         assert len(counts) == num_towers, "len(counts) is wrong: %s" % counts
         assert sum(counts.itervalues()) == trials * num_players
+        chi_square = 0
+        mean = 1. * trials * num_players / num_towers
         for count in counts.itervalues():
-            # XXX Do real statistical tests.
-            mean = 1. * trials * num_players / num_towers
-            assert math.floor(mean / 3) <= count <= math.ceil(2 * mean), \
-              "counts out of range: %s" % counts
+            chi_square += (count - mean) ** 2.0 / mean
+        chi_square /= (trials - 1)
+        # degrees of freedome = 5, 99.5% chance of randomness
+        assert chi_square < 0.4117
 
     def test_1_player(self):
         self._range_helper(1)
