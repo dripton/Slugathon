@@ -13,24 +13,24 @@ from slugathon.util import prefs
 from slugathon.util.Observer import IObserver
 
 
-class EventLog(gtk.Window):
+class EventLog(gtk.Dialog):
     """Graphical log of game events."""
 
     implements(IObserver)
 
     def __init__(self, game, username, parent):
-        gtk.Window.__init__(self)
+        gtk.Dialog.__init__(self, "Event Log - %s" % username, parent)
         self.game = game
         self.username = username
         self.last_action = None
         self.reveal_actions = set()
 
-        self.set_title("Event Log - %s" % username)
+        self.vbox2 = gtk.VBox()
+
         self.scrolledwindow = gtk.ScrolledWindow()
         self.vadjustment = self.scrolledwindow.get_vadjustment()
-        self.add(self.scrolledwindow)
-        self.vbox = gtk.VBox()
-        self.scrolledwindow.add_with_viewport(self.vbox)
+        self.vbox.add(self.scrolledwindow)
+        self.scrolledwindow.add_with_viewport(self.vbox2)
 
         self.connect("configure-event", self.cb_configure_event)
 
@@ -212,7 +212,7 @@ class EventLog(gtk.Window):
             label = gtk.Label(st)
             # left-align the label
             label.set_alignment(0.0, 0.5)
-            self.vbox.pack_start(label, expand=False, fill=False)
+            self.vbox2.pack_start(label, expand=False, fill=False)
             label.show()
             upper = self.vadjustment.get_upper()
             self.vadjustment.set_value(upper)
