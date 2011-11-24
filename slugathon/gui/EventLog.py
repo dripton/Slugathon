@@ -34,6 +34,8 @@ class EventLog(gtk.Dialog):
 
         self.connect("configure-event", self.cb_configure_event)
 
+        self.set_default_size(400, 200)
+
         if self.username:
             tup = prefs.load_window_position(self.username,
               self.__class__.__name__)
