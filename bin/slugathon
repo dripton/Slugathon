@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+
+
+__copyright__ = "Copyright (c) 2011 David Ripton"
+__license__ = "GNU GPL v2"
+
+
+import argparse
+import os
+import random
+import tempfile
+
+from slugathon.net import config
+from slugathon.util import prefs
+
+
+TEMPDIR = tempfile.gettempdir()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="slugathon")
+    subparsers = parser.add_subparsers(title="subcommands",
+      description="valid subcommands", dest="subparser_name",
+      help="additional help")
+
+    client_parser = subparsers.add_parser("client", help="client help")
+    client_parser.add_argument("-n", "--playername", action="store",
+      type=str)
+    client_parser.add_argument("-a", "--password", action="store", type=str)
+    client_parser.add_argument("-s", "--server", action="store", type=str)
+    client_parser.add_argument("-p", "--port", action="store", type=int)
+    client_parser.add_argument("-c", "--connect", action="store_true")
+    client_parser.add_argument("-l", "--log-path", action="store", type=str,
+      default=os.path.join(TEMPDIR, "slugathon-client-%d.log" %
+      random.randrange(100000, 1000000)),
+      help="path to logfile")
+
+    ai_parser = subparsers.add_parser("ai", help="AI help")
+    ai_parser.add_argument("-n", "--playername", action="store", type=str)
+    ai_parser.add_argument("-a", "--password", action="store", type=str)
+    ai_parser.add_argument("-s", "--server", action="store", type=str,
+      default="localhost")
+    ai_parser.add_argument("-p", "--port", action="store", type=int,
+      default=config.DEFAULT_PORT)
+    ai_parser.add_argument("-d", "--delay", action="store", type=float,
+      default=config.DEFAULT_AI_DELAY)
+    ai_parser.add_argument("-t", "--aitype", action="store", type=str,
+      default="CleverBot")
+    ai_parser.add_argument("-g", "--game-name", action="store", type=str)
+    ai_parser.add_argument("-l", "--log-path", action="store", type=str)
+    ai_parser.add_argument("--time-limit", action="store", type=int,
+      default=config.DEFAULT_AI_TIME_LIMIT)
+
+    server_parser = subparsers.add_parser("server", help="server help")
+    server_parser.add_argument("-p", "--port", action="store", type=int,
+      default=config.DEFAULT_PORT, help="listening TCP port")
+    server_parser.add_argument("--passwd", "-a", action="store", type=str,
+      default=prefs.passwd_path(), help="path to passwd file")
+    server_parser.add_argument("--no-passwd", "-n", action="store_true",
+      help="do not check passwords")
+    server_parser.add_argument("--log-path", "-l", action="store", type=str,
+      default=os.path.join(TEMPDIR, "slugathon-server.log"),
+      help="path to logfile")
+
+    args = parser.parse_args()
+    if args.subparser_name == "client":
+        from slugathon.gui import Connect
+        Connect.main()
+    elif args.subparser_name == "server":
+        from slugathon.net import Server
+        Server.main()
+    elif args.subparser_name == "ai":
+        from slugathon.ai import AIClient
+        AIClient.main()
