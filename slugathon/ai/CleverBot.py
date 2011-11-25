@@ -473,11 +473,11 @@ class CleverBot(DimBot.DimBot):
         TITAN_IN_CENTER_OF_TOWER_BONUS = 2.0
 
         score = 0
+        battlemap = game.battlemap
         for creature in creatures:
             kill_bonus = 0
             legion = creature.legion
             legion2 = game.other_battle_legion(legion)
-            battlemap = game.battlemap
             can_rangestrike = False
             engaged = creature.engaged_enemies
             max_mean_hits = 0.0
