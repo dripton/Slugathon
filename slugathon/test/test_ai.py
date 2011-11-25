@@ -245,17 +245,48 @@ def test_score_legion_move_brush():
         score = cleverbot_a._score_legion_move(game, [ranger2])
         move_to_score[move] = score
     ranger2.move(hexlabel)
+    print move_to_score
     # Should prefer second rank to back rank
     assert move_to_score["A2"] > move_to_score["A1"]
+    assert move_to_score["A2"] > move_to_score["B1"]
+    assert move_to_score["A2"] > move_to_score["C1"]
+    assert move_to_score["C2"] > move_to_score["A1"]
+    assert move_to_score["C2"] > move_to_score["B1"]
+    assert move_to_score["C2"] > move_to_score["C1"]
+    assert move_to_score["E1"] > move_to_score["A1"]
+    assert move_to_score["E1"] > move_to_score["B1"]
+    assert move_to_score["E1"] > move_to_score["C1"]
     assert move_to_score["D2"] > move_to_score["D1"]
     # Should prefer non-bramble to bramble
+    assert move_to_score["A1"] > move_to_score["D1"]
+    assert move_to_score["B1"] > move_to_score["D1"]
     assert move_to_score["C1"] > move_to_score["D1"]
-    # Should prefer third rank to second rank
+    assert move_to_score["A2"] > move_to_score["B2"]
+    assert move_to_score["C2"] > move_to_score["B2"]
+    assert move_to_score["E1"] > move_to_score["B2"]
+    assert move_to_score["A2"] > move_to_score["D2"]
+    assert move_to_score["C2"] > move_to_score["D2"]
+    assert move_to_score["E1"] > move_to_score["D2"]
+    # Should prefer third rank to second rank (modulo better rangestrike)
+    assert move_to_score["B3"] > move_to_score["A2"]
+    assert move_to_score["C3"] > move_to_score["A2"]
+    assert move_to_score["C3"] > move_to_score["C2"]
+    assert move_to_score["C3"] > move_to_score["E1"]
+    assert move_to_score["D3"] > move_to_score["A2"]
     assert move_to_score["D3"] > move_to_score["C2"]
+    assert move_to_score["D3"] > move_to_score["E1"]
+    assert move_to_score["E2"] > move_to_score["A2"]
+    assert move_to_score["E2"] > move_to_score["E1"]
+    assert move_to_score["F1"] > move_to_score["A2"]
     # Should prefer better rangestrike opportunity
+    assert move_to_score["C3"] > move_to_score["F1"]
     assert move_to_score["D3"] > move_to_score["F1"]
+    assert move_to_score["E2"] > move_to_score["F1"]
     # Should prefer rangestrike to melee
     assert move_to_score["D3"] > move_to_score["B4"]
+    assert move_to_score["D3"] > move_to_score["D4"]
+    assert move_to_score["F2"] > move_to_score["B4"]
+    assert move_to_score["F2"] > move_to_score["D4"]
 
     hexlabel = gorgon2.hexlabel
     move_to_score = {}
@@ -267,13 +298,37 @@ def test_score_legion_move_brush():
     gorgon2.move(hexlabel)
     # Should prefer second rank to back rank
     assert move_to_score["A2"] > move_to_score["A1"]
+    assert move_to_score["C2"] > move_to_score["A1"]
+    assert move_to_score["E1"] > move_to_score["A1"]
+    assert move_to_score["B2"] > move_to_score["D1"]
     assert move_to_score["D2"] > move_to_score["D1"]
     # Should prefer bramble to plain
     assert move_to_score["D1"] > move_to_score["C1"]
+    assert move_to_score["D1"] > move_to_score["A1"]
+    assert move_to_score["D1"] > move_to_score["B1"]
+    assert move_to_score["B2"] > move_to_score["A2"]
+    assert move_to_score["B2"] > move_to_score["C2"]
+    assert move_to_score["B2"] > move_to_score["E1"]
+    assert move_to_score["D2"] > move_to_score["A2"]
+    assert move_to_score["D2"] > move_to_score["C2"]
+    assert move_to_score["D2"] > move_to_score["E1"]
     # Should prefer third rank to second rank
+    assert move_to_score["B3"] > move_to_score["C2"]
+    assert move_to_score["C3"] > move_to_score["C2"]
     assert move_to_score["D3"] > move_to_score["C2"]
+    assert move_to_score["E2"] > move_to_score["C2"]
+    assert move_to_score["A3"] > move_to_score["B2"]
+    assert move_to_score["A3"] > move_to_score["D2"]
     # Should prefer rangestrike opportunity to none
+    assert move_to_score["A3"] > move_to_score["F1"]
     assert move_to_score["B3"] > move_to_score["F1"]
+    assert move_to_score["C3"] > move_to_score["F1"]
+    assert move_to_score["D3"] > move_to_score["F1"]
+    assert move_to_score["E2"] > move_to_score["F1"]
+    # Should prefer better rangestrike opportunity
+    assert move_to_score["C3"] > move_to_score["B3"]
+    assert move_to_score["D3"] > move_to_score["B3"]
+    assert move_to_score["E2"] > move_to_score["B3"]
 
     gorgon2.move("A3")
     ranger2.move("B3")
@@ -288,6 +343,9 @@ def test_score_legion_move_brush():
     centaur2.move(hexlabel)
     # Should prefer being next to allies
     assert move_to_score["C3"] > move_to_score["D3"]
+
+    # Avoid 1:2 melee against superior enemies
+    assert move_to_score["C3"] > move_to_score["D4"]
 
     centaur2.move("C3")
 
