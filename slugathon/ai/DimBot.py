@@ -7,17 +7,15 @@ __license__ = "GNU GPL v2"
 
 import random
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.game import Game, Phase
 from slugathon.util.log import log
 from slugathon.ai.Bot import Bot
 
 
+@implementer(Bot)
 class DimBot(object):
-
-    implements(Bot)
-
     def __init__(self, playername):
         self.playername = playername
         self.user = None

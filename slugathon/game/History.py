@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
@@ -11,15 +11,13 @@ from slugathon.game import Action
 # loading?
 
 
+@implementer(IObserver)
 class History(object):
     """Event history tracker, for one game.
 
     Lacks direct undo or redo methods because we need those operations to
     go through the server.
     """
-
-    implements(IObserver)
-
     def __init__(self):
         self.actions = []
         self.undone = []

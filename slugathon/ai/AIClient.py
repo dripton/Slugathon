@@ -11,7 +11,7 @@ import argparse
 from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.net import config
 from slugathon.util.Observer import IObserver
@@ -21,10 +21,8 @@ from slugathon.util.log import log, log_to_path
 from slugathon.ai import DimBot, CleverBot
 
 
+@implementer(IObserver)
 class Client(pb.Referenceable, Observed):
-
-    implements(IObserver)
-
     def __init__(self, username, password, host, port, delay, aitype,
       game_name, log_path, time_limit):
         Observed.__init__(self)

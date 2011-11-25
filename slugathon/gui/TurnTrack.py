@@ -1,23 +1,21 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2010 David Ripton"
+__copyright__ = "Copyright (c) 2010-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 import gtk
 import pango
 import pangocairo
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.gui import Marker
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 
 
+@implementer(IObserver)
 class TurnTrack(gtk.DrawingArea):
     """Widget to show the battle turn."""
-
-    implements(IObserver)
-
     def __init__(self, attacker, defender, game, scale):
         gtk.DrawingArea.__init__(self)
         self.attacker = attacker

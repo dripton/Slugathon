@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.game import Action, Legion
 from slugathon.gui import icon
@@ -13,11 +13,9 @@ from slugathon.util import prefs
 from slugathon.util.Observer import IObserver
 
 
+@implementer(IObserver)
 class EventLog(gtk.Dialog):
     """Graphical log of game events."""
-
-    implements(IObserver)
-
     def __init__(self, game, username, parent):
         gtk.Dialog.__init__(self, "Event Log - %s" % username, parent)
         self.game = game

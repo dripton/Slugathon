@@ -15,7 +15,7 @@ except AssertionError:
 from twisted.internet import reactor
 import gtk
 import cairo
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (icon, GUIBattleHex, Chit, PickRecruit, SummonAngel,
@@ -48,11 +48,9 @@ ui_string = """<ui>
 </ui>"""
 
 
+@implementer(IObserver)
 class GUIBattleMap(gtk.Window):
     """GUI representation of a battlemap."""
-
-    implements(IObserver)
-
     def __init__(self, battlemap, game=None, user=None, username=None,
       scale=None):
         gtk.Window.__init__(self)

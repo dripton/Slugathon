@@ -4,7 +4,7 @@ __license__ = "GNU GPL v2"
 
 import types
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
@@ -15,6 +15,7 @@ from slugathon.util import Dice
 from slugathon.util.log import log
 
 
+@implementer(IObserver)
 class Player(Observed):
     """A person or AI who is (or was) actively playing in a game.
 
@@ -26,9 +27,6 @@ class Player(Observed):
     enough to handle these cases.)  A user might drop his connection, and
     another user might take over his player can continue the game.
     """
-
-    implements(IObserver)
-
     def __init__(self, playername, game, join_order):
         Observed.__init__(self)
         self.name = playername

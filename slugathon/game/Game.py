@@ -6,7 +6,7 @@ from sys import maxint
 import os
 import time
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.game import (Player, MasterBoard, Action, Phase, Caretaker,
   Creature, History, BattleMap)
@@ -30,11 +30,9 @@ def opposite(direction):
     return (direction + 3) % 6
 
 
+@implementer(IObserver)
 class Game(Observed):
     """Central class holding information about one game"""
-
-    implements(IObserver)
-
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players, started=False):
         Observed.__init__(self)

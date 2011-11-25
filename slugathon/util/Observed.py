@@ -1,8 +1,8 @@
-__copyright__ = "Copyright (c) 2004-2008 David Ripton"
+__copyright__ = "Copyright (c) 2004-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 
 
 class IObserved(Interface):
@@ -16,12 +16,10 @@ class IObserved(Interface):
         """Tell observers about this action."""
 
 
+@implementer(IObserved)
 class Observed(object):
     """Inherit from this mixin and call its __init__ to allow the class
     to be observed."""
-
-    implements(IObserved)
-
     def __init__(self):
         self.observers = {}
 

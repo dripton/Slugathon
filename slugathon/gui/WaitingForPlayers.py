@@ -13,7 +13,7 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 import gtk
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
@@ -27,11 +27,9 @@ def format_time(secs):
     return time.strftime("%H:%M:%S", tup)
 
 
+@implementer(IObserver)
 class WaitingForPlayers(gtk.Dialog):
     """Waiting for players to start game dialog."""
-
-    implements(IObserver)
-
     def __init__(self, user, username, game, parent):
         gtk.Dialog.__init__(self, "Waiting for Players - %s" % username,
           parent)

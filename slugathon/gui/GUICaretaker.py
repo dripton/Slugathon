@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.gui import Chit, icon
@@ -14,11 +14,9 @@ from slugathon.data import creaturedata
 from slugathon.util import prefs
 
 
+@implementer(IObserver)
 class GUICaretaker(gtk.Dialog):
     """Caretaker status window."""
-
-    implements(IObserver)
-
     def __init__(self, game, username, parent):
         self.username = username
         self.caretaker = game.caretaker

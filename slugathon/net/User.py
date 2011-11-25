@@ -4,18 +4,16 @@ __license__ = "GNU GPL v2"
 import time
 
 from twisted.spread import pb
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.util.log import log
 
 
+@implementer(IObserver)
 class User(pb.Avatar):
     """Perspective for a player or spectator."""
-
-    implements(IObserver)
-
     def __init__(self, name, server, client):
         self.name = name
         self.server = server

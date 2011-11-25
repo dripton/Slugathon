@@ -16,7 +16,7 @@ except AssertionError:
 from twisted.internet import reactor
 import gtk
 import cairo
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
   SplitLegion, About, icon, Die, PickRecruit, Flee, Inspector, Chit,
@@ -71,11 +71,9 @@ ui_string = """<ui>
             prefs.AUTO_CARRY_TO_SINGLE_TARGET)
 
 
+@implementer(IObserver)
 class GUIMasterBoard(gtk.Window):
     """GUI representation of the masterboard."""
-
-    implements(IObserver)
-
     def __init__(self, board, game=None, user=None, username=None, scale=None):
         gtk.Window.__init__(self)
 

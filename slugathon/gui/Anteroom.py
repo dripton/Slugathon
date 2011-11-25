@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 import gtk
 from twisted.internet import reactor
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.gui import NewGame, LoadGame, WaitingForPlayers, icon
 from slugathon.util.Observer import IObserver
@@ -16,11 +16,9 @@ from slugathon.util.NullUser import NullUser
 from slugathon.util.log import log
 
 
+@implementer(IObserver)
 class Anteroom(gtk.Window):
     """GUI for a multiplayer chat and game finding lobby."""
-
-    implements(IObserver)
-
     def __init__(self, user, username, usernames, games):
         gtk.Window.__init__(self)
         self.initialized = False

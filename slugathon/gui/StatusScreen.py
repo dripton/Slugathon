@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gtk
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.gui import icon
 from slugathon.util.Observer import IObserver
@@ -32,11 +32,9 @@ def set_bg(label, color):
         label.eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
 
 
+@implementer(IObserver)
 class StatusScreen(gtk.Dialog):
     """Game status window."""
-
-    implements(IObserver)
-
     def __init__(self, game, username, parent):
         gtk.Dialog.__init__(self, "Status - %s" % username, parent)
         self.game = game

@@ -15,7 +15,7 @@ import hashlib
 from twisted.spread import pb
 from twisted.cred.portal import Portal
 from twisted.internet import reactor, protocol
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.net import Realm, config
 from slugathon.game import Game, Action
@@ -30,11 +30,9 @@ from slugathon.util.log import log, tee_to_path
 TEMPDIR = tempfile.gettempdir()
 
 
+@implementer(IObserver)
 class Server(Observed):
     """A Slugathon server, which can host multiple games in parallel."""
-
-    implements(IObserver)
-
     def __init__(self, no_passwd, passwd_path, port, log_path):
         Observed.__init__(self)
         self.no_passwd = no_passwd

@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
@@ -11,10 +11,8 @@ from slugathon.util.Observed import Observed
 update_counter = 0
 
 
+@implementer(IObserver)
 class MyObserver():
-
-    implements(IObserver)
-
     def update(self, observed, action):
         global update_counter
         update_counter += 1

@@ -7,7 +7,7 @@ __license__ = "GNU GPL v2"
 from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.net import config
 from slugathon.util.Observer import IObserver
@@ -17,10 +17,8 @@ from slugathon.gui import Anteroom, PickColor, PickMarker, GUIMasterBoard
 from slugathon.util.log import log
 
 
+@implementer(IObserver)
 class Client(pb.Referenceable, Observed):
-
-    implements(IObserver)
-
     def __init__(self, username, password, host="localhost",
       port=config.DEFAULT_PORT):
         Observed.__init__(self)

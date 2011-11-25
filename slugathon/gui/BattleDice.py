@@ -1,21 +1,19 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2010 David Ripton"
+__copyright__ = "Copyright (c) 2010-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 import gtk
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.gui import Die, Chit
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 
 
+@implementer(IObserver)
 class BattleDice(gtk.EventBox):
     """Widget to show die rolls in battle."""
-
-    implements(IObserver)
-
     def __init__(self, scale):
         gtk.EventBox.__init__(self)
         self.scale = scale

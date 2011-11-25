@@ -1,17 +1,16 @@
-__copyright__ = "Copyright (c) 2003-2008 David Ripton"
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 from twisted.cred import portal
 from twisted.spread import pb
-from zope.interface import implements
+from zope.interface import implementer
 
 from slugathon.net import User
 
 
+@implementer(portal.IRealm)
 class Realm(object):
-    implements(portal.IRealm)
-
     def __init__(self, server):
         self.server = server
 
