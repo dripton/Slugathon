@@ -455,21 +455,21 @@ class CleverBot(DimBot.DimBot):
     def _score_legion_move(self, game, creatures):
         """Return a score for creatures in their current hexlabels."""
         ATTACKER_AGGRESSION_BONUS = 1.0
-        ATTACKER_DISTANCE_PENALTY = 1.0
+        ATTACKER_DISTANCE_PENALTY = -1.0
         HIT_BONUS = 1.0
         KILL_MULTIPLIER = 1.0
-        DAMAGE_PENALTY = 1.0
-        DEATH_MULTIPLIER = 1.0
+        DAMAGE_PENALTY = -1.0
+        DEATH_MULTIPLIER = -1.0
         ELEVATION_BONUS = 0.5
         NATIVE_BRAMBLE_BONUS = 0.3
-        NON_NATIVE_BRAMBLE_PENALTY = 0.7
+        NON_NATIVE_BRAMBLE_PENALTY = -0.7
         TOWER_BONUS = 0.5
-        NON_NATIVE_DRIFT_PENALTY = 2.0
+        NON_NATIVE_DRIFT_PENALTY = -2.0
         NATIVE_VOLCANO_BONUS = 1.0
         ADJACENT_ALLY_BONUS = 0.5
         RANGESTRIKE_BONUS = 2.0
-        TITAN_FORWARD_PENALTY = 1.0
-        DEFENDER_FORWARD_PENALTY = 0.5
+        TITAN_FORWARD_PENALTY = -1.0
+        DEFENDER_FORWARD_PENALTY = -0.5
         TITAN_IN_CENTER_OF_TOWER_BONUS = 2.0
 
         score = 0
@@ -512,14 +512,28 @@ class CleverBot(DimBot.DimBot):
                     can_rangestrike = True
             if can_rangestrike:
                 score += RANGESTRIKE_BONUS
+                log(creature, "RANGESTRIKE_BONUS", RANGESTRIKE_BONUS)
 
             # Don't encourage titans to charge early.
             if (creature.name != "Titan" or game.battle_turn >= 4 or
               len(legion) == 1):
-                score += HIT_BONUS * max_mean_hits
-                score += KILL_MULTIPLIER * kill_bonus
-            score -= DAMAGE_PENALTY * total_mean_damage_taken
-            score -= DEATH_MULTIPLIER * probable_death * creature.sort_value
+                if max_mean_hits:
+                    bonus = HIT_BONUS * max_mean_hits
+                    score += bonus
+                    log(creature, "HIT_BONUS", bonus)
+                if kill_bonus:
+                    bonus = KILL_MULTIPLIER * kill_bonus
+                    score += bonus
+                    log(creature, "KILL_BONUS", bonus)
+            if total_mean_damage_taken:
+                penalty = DAMAGE_PENALTY * total_mean_damage_taken
+                score += penalty
+                log(creature, "DAMAGE_PENALTY", penalty)
+            if probable_death:
+                penalty = (DEATH_MULTIPLIER * probable_death *
+                  creature.sort_value)
+                score += penalty
+                log(creature, "DEATH_PENALTY", penalty)
 
             # attacker must attack to avoid time loss
             # Don't encourage titans to charge early.
@@ -527,12 +541,16 @@ class CleverBot(DimBot.DimBot):
               or game.battle_turn >= 4 or len(legion) == 1):
                 if engaged or targets:
                     score += ATTACKER_AGGRESSION_BONUS
+                    log(creature, "ATTACKER_AGGRESSION_BONUS",
+                        ATTACKER_AGGRESSION_BONUS)
                 else:
                     enemy_hexlabels = [enemy.hexlabel for enemy in
                       legion2.living_creatures]
                     min_range = min((battlemap.range(creature.hexlabel,
                       enemy_hexlabel) for enemy_hexlabel in enemy_hexlabels))
-                    score -= min_range * ATTACKER_DISTANCE_PENALTY
+                    penalty = min_range * ATTACKER_DISTANCE_PENALTY
+                    score += penalty
+                    log(creature, "ATTACKER_DISTANCE_PENALTY", penalty)
 
             battlehex = battlemap.hexes[creature.hexlabel]
             terrain = battlehex.terrain
@@ -546,7 +564,9 @@ class CleverBot(DimBot.DimBot):
                     entrance = "DEFENDER"
                 distance = battlemap.range(creature.hexlabel, entrance,
                   allow_entrance=True) - 2
-                score -= distance * TITAN_FORWARD_PENALTY
+                penalty = distance * TITAN_FORWARD_PENALTY
+                score += penalty
+                log(creature, "TITAN_FORWARD_PENALTY", penalty)
 
             # Make defenders hang back early.
             if (legion == game.defender_legion and game.battle_turn < 4 and
@@ -554,29 +574,45 @@ class CleverBot(DimBot.DimBot):
                 entrance = "DEFENDER"
                 distance = battlemap.range(creature.hexlabel, entrance,
                   allow_entrance=True) - 2
-                score -= distance * DEFENDER_FORWARD_PENALTY
+                penalty = distance * DEFENDER_FORWARD_PENALTY
+                score += penalty
+                log(creature, "DEFENDER_FORWARD_PENALTY", penalty)
 
             # terrain
-            score += battlehex.elevation * ELEVATION_BONUS
+            if battlehex.elevation:
+                bonus = battlehex.elevation * ELEVATION_BONUS
+                score += bonus
+                log(creature, "ELEVATION_BONUS", bonus)
             if terrain == "Bramble":
                 if creature.is_native(terrain):
                     score += NATIVE_BRAMBLE_BONUS
+                    log(creature, "NATIVE_BRAMBLE_BONUS", NATIVE_BRAMBLE_BONUS)
                 else:
-                    score -= NON_NATIVE_BRAMBLE_PENALTY
+                    score += NON_NATIVE_BRAMBLE_PENALTY
+                    log(creature, "NON_NATIVE_BRAMBLE_PENALTY",
+                      NON_NATIVE_BRAMBLE_PENALTY)
             elif terrain == "Tower":
+                log(creature, "TOWER_BONUS")
                 score += TOWER_BONUS
                 if creature.name == "Titan" and battlehex.elevation == 2:
                     score += TITAN_IN_CENTER_OF_TOWER_BONUS
+                    log(creature, "TITAN_IN_CENTER_OF_TOWER_BONUS",
+                      TITAN_IN_CENTER_OF_TOWER_BONUS)
             elif terrain == "Drift":
                 if not creature.is_native(terrain):
-                    score -= NON_NATIVE_DRIFT_PENALTY
+                    score += NON_NATIVE_DRIFT_PENALTY
+                    log(creature, "NON_NATIVE_DRIFT_PENALTY",
+                      NON_NATIVE_DRIFT_PENALTY)
             elif terrain == "Volcano":
                 score += NATIVE_VOLCANO_BONUS
+                log(creature, "NATIVE_VOLCANO_BONUS", NATIVE_VOLCANO_BONUS)
 
             # allies
             for neighbor in battlehex.neighbors.itervalues():
                 for ally in legion.living_creatures:
                     if ally.hexlabel == neighbor.label:
                         score += ADJACENT_ALLY_BONUS
+                        log(creature, "ADJACENT_ALLY_BONUS",
+                          ADJACENT_ALLY_BONUS)
 
         return score
