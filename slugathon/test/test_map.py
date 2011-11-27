@@ -20,6 +20,7 @@ hex7 = map2.hexes["C3"]
 
 map3 = BattleMap.BattleMap("Brush", 1)
 map4 = BattleMap.BattleMap("Desert", 5)
+map5 = BattleMap.BattleMap("Jungle", 5)
 
 
 def test_all_labels():
@@ -206,6 +207,7 @@ def test_opposite_border():
 
 
 def test_is_los_blocked():
+    # Mountains
     assert map1.is_los_blocked("D5", "D3", None)
     assert not map1.is_los_blocked("D5", "E3", None)
     assert not map1.is_los_blocked("D5", "E4", None)
@@ -219,10 +221,18 @@ def test_is_los_blocked():
     assert not map1.is_los_blocked("D5", "F2", None)
     assert map1.is_los_blocked("D5", "E2", None)
     assert map1.is_los_blocked("D5", "F1", None)
+    assert map1.is_los_blocked("F3", "E2", None)
+    assert not map1.is_los_blocked("B2", "D4", None)
+
+    # Brush
     assert not map3.is_los_blocked("C4", "D6", None)
+
+    # Desert
     assert map4.is_los_blocked("D4", "D3", None)
     assert map4.is_los_blocked("D3", "D4", None)
     assert not map4.is_los_blocked("D4", "C4", None)
+
+    # Tower
     assert map2.is_los_blocked("D4", "B4", None)
     assert map2.is_los_blocked("B4", "D4", None)
     assert map2.is_los_blocked("D4", "B3", None)
@@ -231,10 +241,28 @@ def test_is_los_blocked():
     assert map2.is_los_blocked("B2", "D4", None)
     assert map2.is_los_blocked("D4", "C2", None)
     assert map2.is_los_blocked("C2", "D4", None)
+    assert map2.is_los_blocked("C2", "E5", None)
+    assert map2.is_los_blocked("D3", "D5", None)
     assert not map2.is_los_blocked("D4", "E1", None)
     assert not map2.is_los_blocked("E1", "D4", None)
     assert not map2.is_los_blocked("D4", "A1", None)
     assert not map2.is_los_blocked("A1", "D4", None)
+    assert not map2.is_los_blocked("A1", "A1", None)
+
+    # Jungle
+    assert map5.is_los_blocked("C2", "E3", None)
+    assert map5.is_los_blocked("E3", "C2", None)
+    assert map5.is_los_blocked("B2", "E3", None)
+    assert not map5.is_los_blocked("B3", "E3", None)
+    assert not map5.is_los_blocked("C2", "E2", None)
+    assert not map5.is_los_blocked("E2", "C2", None)
+    assert not map5.is_los_blocked("C2", "D4", None)
+    assert not map5.is_los_blocked("D4", "C2", None)
+    assert not map5.is_los_blocked("C3", "D2", None)
+    assert not map5.is_los_blocked("D2", "C3", None)
+    assert not map5.is_los_blocked("D4", "E2", None)
+    assert not map5.is_los_blocked("E2", "D4", None)
+    assert not map5.is_los_blocked("E2", "E2", None)
 
 
 def test_battlehex_repr():
@@ -245,3 +273,8 @@ def test_neighbor_to_hexside():
     assert hex1.neighbor_to_hexside(hex2) == 0
     assert hex2.neighbor_to_hexside(hex1) == 3
     assert hex1.neighbor_to_hexside(hex3) == None
+
+
+def test_width_and_height():
+    assert map1.hex_width == 8
+    assert map1.hex_height == 6

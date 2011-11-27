@@ -232,11 +232,10 @@ class BattleMap(object):
 
         Return -1 on error.
         """
-        if hex1 == hex2:
-            return -1
+        assert hex1 != hex2
         # Offboard creatures are not allowed.
-        if hex1.entrance or hex1.entrance:
-            return -1
+        assert not hex1.entrance
+        assert not hex2.entrance
         x1 = hex1.x
         y1 = hex1.y
         x2 = hex2.x
@@ -312,12 +311,11 @@ class BattleMap(object):
         if current_hex == final_hex:
             return False
         # Offboard hexes are not allowed.
-        if current_hex.entrance or final_hex.entrance:
-            return True
+        assert not current_hex.entrance
+        assert not final_hex.entrance
         direction = self._get_direction(current_hex, final_hex, left)
         next_hex = current_hex.neighbors.get(direction)
-        if next_hex is None:
-            return True
+        assert next_hex is not None
         border = current_hex.borders[direction]
         border2 = current_hex.opposite_border(direction)
         if current_hex == initial_hex:
@@ -428,12 +426,11 @@ class BattleMap(object):
         If LOS is along a hexspine, go left if argument left is True, right
         otherwise.   If LOS is blocked, return a large number.
         """
-        if hex1.entrance or hex2.entrance:
-            return maxint
+        assert not hex1.entrance
+        assert not hex2.entrance
         direction = self._get_direction(hex1, hex2, left)
         next_hex = hex1.neighbors.get(direction)
-        if next_hex is None:
-            return maxint
+        assert next_hex is not None
         if next_hex == hex2:
             return count
         if next_hex.terrain == "Bramble":
@@ -446,13 +443,12 @@ class BattleMap(object):
 
         game is optional, but needed to check creatures.
         """
+        assert hexlabel1 != hexlabel2
         assert not self.is_los_blocked(hexlabel1, hexlabel2, game)
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
-        if hex1 == hex2:
-            return 0
-        if hex1.entrance or hex2.entrance:
-            return maxint
+        assert not hex1.entrance
+        assert not hex2.entrance
         x1, y1 = label_to_coords(hexlabel1, self.entry_side, True)
         x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)
         delta_x = x2 - x1
