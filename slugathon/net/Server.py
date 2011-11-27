@@ -478,8 +478,7 @@ class AIProcessProtocol(protocol.ProcessProtocol):
         log("AIProcessProtocol.connectionMade", self.game_name, self.ainame)
 
 
-def main():
-    parser = argparse.ArgumentParser()
+def add_arguments(parser):
     parser.add_argument("-p", "--port", action="store", type=int,
       default=config.DEFAULT_PORT, help="listening TCP port")
     parser.add_argument("--passwd", "-a", action="store", type=str,
@@ -489,6 +488,11 @@ def main():
     parser.add_argument("--log-path", "-l", action="store", type=str,
       default=os.path.join(TEMPDIR, "slugathon-server.log"),
       help="path to logfile")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    add_arguments(parser)
     opts, extras = parser.parse_known_args()
     port = opts.port
     server = Server(opts.no_passwd, opts.passwd, opts.port, opts.log_path)

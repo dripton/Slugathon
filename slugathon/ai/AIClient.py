@@ -403,8 +403,7 @@ class Client(pb.Referenceable, Observed):
             log("got unhandled action", action)
 
 
-def main():
-    parser = argparse.ArgumentParser()
+def add_arguments(parser):
     parser.add_argument("-n", "--playername", action="store", type=str)
     parser.add_argument("-a", "--password", action="store", type=str)
     parser.add_argument("-s", "--server", action="store", type=str,
@@ -419,6 +418,11 @@ def main():
     parser.add_argument("-l", "--log-path", action="store", type=str)
     parser.add_argument("--time-limit", action="store", type=int,
       default=config.DEFAULT_AI_TIME_LIMIT)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    add_arguments(parser)
     opts, extras = parser.parse_known_args()
     valid_ai_types = ["CleverBot", "DimBot"]
     if opts.aitype not in valid_ai_types:
