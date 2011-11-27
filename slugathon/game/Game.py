@@ -627,11 +627,18 @@ class Game(Observed):
       defender_legion, defender_creature_names):
         if not attacker_creature_names and not defender_creature_names:
             for legion in [attacker_legion, defender_legion]:
+                action = Action.RevealLegion(self.name, legion.markerid,
+                  legion.creature_names)
+                self.notify(action)
+            for legion in [attacker_legion, defender_legion]:
                 legion.die(None, False, False)
         elif attacker_creature_names:
             assert not defender_creature_names
             winning_legion = attacker_legion
             losing_legion = defender_legion
+            action = Action.RevealLegion(self.name, losing_legion.markerid,
+              losing_legion.creature_names)
+            self.notify(action)
             survivors = bag(attacker_creature_names)
             self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
@@ -639,6 +646,9 @@ class Game(Observed):
             assert not attacker_creature_names
             winning_legion = defender_legion
             losing_legion = attacker_legion
+            action = Action.RevealLegion(self.name, losing_legion.markerid,
+              losing_legion.creature_names)
+            self.notify(action)
             survivors = bag(defender_creature_names)
             self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
