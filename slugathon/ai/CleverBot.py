@@ -53,7 +53,9 @@ class CleverBot(DimBot.DimBot):
     def split(self, game):
         """Split if it's my turn."""
         log("split")
-        assert game.active_player.name == self.playername
+        if game.active_player.name != self.playername:
+            log("called split out of turn; exiting")
+            return
         player = game.active_player
         legions = player.legions.values()
         caretaker = game.caretaker

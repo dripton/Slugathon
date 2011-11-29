@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 
 
 import argparse
+import random
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -24,7 +25,7 @@ from slugathon.ai import DimBot, CleverBot
 @implementer(IObserver)
 class Client(pb.Referenceable, Observed):
     def __init__(self, username, password, host, port, delay, aitype,
-      game_name, log_path, time_limit):
+      game_name, log_path, time_limit, form_game, min_players, max_players):
         Observed.__init__(self)
         self.username = username
         self.playername = username  # In case the same user logs in twice
@@ -47,6 +48,9 @@ class Client(pb.Referenceable, Observed):
         if log_path:
             log_to_path(log_path)
         self.time_limit = time_limit
+        self.form_game = form_game
+        self.min_players = min_players
+        self.max_players = max_players
         log("__init__ done", game_name, username)
 
     def remote_set_name(self, name):
@@ -93,13 +97,20 @@ class Client(pb.Referenceable, Observed):
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
-        # If game_name is set, AI only tries to join game with that name.
-        # If game_name is null, AI tries to join all games,
-        for game in self.games:
-            if not self.game_name or game.name == self.game_name:
-                log("joining game", game.name)
-                def1 = self.user.callRemote("join_game", game.name)
-                def1.addErrback(self.failure)
+        if self.form_game:
+            if not self.game_name:
+                self.game_name = "Game %d" % random.randrange(1000000)
+            def1 = self.user.callRemote("form_game", self.game_name,
+              self.min_players, self.max_players)
+            def1.addErrback(self.failure)
+        else:
+            # If game_name is set, AI only tries to join game with that name.
+            # If game_name is null, AI tries to join all games.
+            for game in self.games:
+                if not self.game_name or game.name == self.game_name:
+                    log("joining game", game.name)
+                    def1 = self.user.callRemote("join_game", game.name)
+                    def1.addErrback(self.failure)
 
     def name_to_game(self, game_name):
         for game in self.games:
@@ -162,6 +173,9 @@ class Client(pb.Referenceable, Observed):
               action.start_time, action.min_players, action.max_players,
               [action.username], False)
             self.add_game(game_info_tuple)
+            if action.username == self.username:
+                def1 = self.user.callRemote("start_game", self.game_name)
+                def1.addErrback(self.failure)
 
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
@@ -418,6 +432,9 @@ def add_arguments(parser):
     parser.add_argument("-l", "--log-path", action="store", type=str)
     parser.add_argument("--time-limit", action="store", type=int,
       default=config.DEFAULT_AI_TIME_LIMIT)
+    parser.add_argument("--form-game", action="store_true", default=False)
+    parser.add_argument("--min-players", type=int, default=2)
+    parser.add_argument("--max-players", type=int, default=6)
 
 
 def main():
@@ -428,7 +445,8 @@ def main():
     if opts.aitype not in valid_ai_types:
         parser.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     client = Client(opts.playername, opts.password, opts.server, opts.port,
-      opts.delay, opts.aitype, opts.game_name, opts.log_path, opts.time_limit)
+      opts.delay, opts.aitype, opts.game_name, opts.log_path, opts.time_limit,
+      opts.form_game, opts.min_players, opts.max_players)
     client.connect()
     reactor.run()
 
