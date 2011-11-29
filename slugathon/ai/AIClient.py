@@ -12,6 +12,7 @@ import random
 from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor
+from twisted.internet.error import ReactorNotRunning
 from zope.interface import implementer
 
 from slugathon.net import config
@@ -202,7 +203,10 @@ class Client(pb.Referenceable, Observed):
             else:
                 log("Game %s over, draw" % action.game_name)
             log("AI exiting")
-            reactor.stop()
+            try:
+                reactor.stop()
+            except ReactorNotRunning:
+                pass
 
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
@@ -411,7 +415,10 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.EliminatePlayer):
             if action.loser_playername == self.playername:
                 log("Eliminated; AI exiting")
-                reactor.stop()
+                try:
+                    reactor.stop()
+                except ReactorNotRunning:
+                    pass
 
         else:
             log("got unhandled action", action)
