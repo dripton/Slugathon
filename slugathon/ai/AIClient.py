@@ -420,6 +420,10 @@ class Client(pb.Referenceable, Observed):
                 except ReactorNotRunning:
                     pass
 
+        elif isinstance(action, Action.RevealLegion):
+            # TODO Handle this
+            pass
+
         else:
             log("got unhandled action", action)
 
