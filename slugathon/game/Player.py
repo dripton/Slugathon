@@ -329,8 +329,9 @@ class Player(Observed):
 
     def done_with_recruits(self):
         (player, turn) = self.game.get_next_player_and_turn()
-        action = Action.StartSplitPhase(self.game.name, player.name, turn)
-        self.notify(action)
+        if player is not None:
+            action = Action.StartSplitPhase(self.game.name, player.name, turn)
+            self.notify(action)
 
     def done_with_reinforcements(self):
         action = Action.StartManeuverBattlePhase(self.game.name, self.name)

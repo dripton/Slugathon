@@ -205,6 +205,8 @@ class Game(Observed):
     def get_next_player_and_turn(self):
         """Return the next player and what game turn it will be when
         his turn starts."""
+        if self.over:
+            return None, self.turn
         player = self.active_player
         player_num = self.players.index(player)
         turn = self.turn
@@ -1334,6 +1336,7 @@ class Game(Observed):
     def _end_dead_player_turn(self):
         """If the active player is dead then advance phases if possible."""
         if self.active_player.dead and not self.pending_acquire:
+            log("_end_dead_player_turn")
             self.active_player.done_with_engagements()
             self.active_player.done_with_recruits()
 
