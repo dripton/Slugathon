@@ -8,7 +8,11 @@ __license__ = "GNU GPL v2"
 import argparse
 import tempfile
 
-from slugathon.gui.Connect import add_arguments as connect_add_arguments
+connect_add_arguments = None
+try:
+    from slugathon.gui.Connect import add_arguments as connect_add_arguments
+except ImportError:
+    pass
 from slugathon.ai.AIClient import add_arguments as aiclient_add_arguments
 from slugathon.net.Server import add_arguments as server_add_arguments
 
@@ -23,7 +27,8 @@ if __name__ == "__main__":
       help="additional help")
 
     client_parser = subparsers.add_parser("client", help="client help")
-    connect_add_arguments(client_parser)
+    if connect_add_arguments is not None:
+        connect_add_arguments(client_parser)
 
     ai_parser = subparsers.add_parser("ai", help="AI help")
     aiclient_add_arguments(ai_parser)
