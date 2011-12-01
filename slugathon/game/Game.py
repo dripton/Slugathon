@@ -1566,6 +1566,8 @@ class Game(Observed):
               defender_markerid)
 
         elif isinstance(action, Action.MoveCreature):
+            if not self.battle_active_legion:
+                return
             for creature in self.battle_active_legion.creatures:
                 if (creature.name == action.creature_name and
                   creature.hexlabel == action.old_hexlabel):
@@ -1596,16 +1598,18 @@ class Game(Observed):
             self.battle_phase = Phase.STRIKE
 
         elif isinstance(action, Action.Strike):
-            target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
-            target.hits += action.hits
-            target.hits = min(target.hits, target.power)
-            striker = self.creatures_in_battle_hex(
-              action.striker_hexlabel).pop()
-            striker.struck = True
-            if action.carries:
-                self.pending_carry = action
-            else:
-                self.pending_carry = None
+            creatures = self.creatures_in_battle_hex(action.target_hexlabel)
+            if creatures:
+                target = creatures.pop()
+                target.hits += action.hits
+                target.hits = min(target.hits, target.power)
+                striker = self.creatures_in_battle_hex(
+                  action.striker_hexlabel).pop()
+                striker.struck = True
+                if action.carries:
+                    self.pending_carry = action
+                else:
+                    self.pending_carry = None
 
         elif isinstance(action, Action.DriftDamage):
             target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
@@ -1613,19 +1617,22 @@ class Game(Observed):
             target.hits = min(target.hits, target.power)
 
         elif isinstance(action, Action.Carry):
-            carry_target = self.creatures_in_battle_hex(
-              action.carry_target_hexlabel).pop()
-            carry_target.hits += action.carries
-            carry_target.hits = min(carry_target.hits, carry_target.power)
-            if action.carries_left:
-                self.pending_carry = action
-            else:
-                self.pending_carry = None
+            creatures = self.creatures_in_battle_hex(
+              action.carry_target_hexlabel)
+            if creatures:
+                carry_target = creatures.pop()
+                carry_target.hits += action.carries
+                carry_target.hits = min(carry_target.hits, carry_target.power)
+                if action.carries_left:
+                    self.pending_carry = action
+                else:
+                    self.pending_carry = None
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             self.battle_phase = Phase.COUNTERSTRIKE
             # Switch active players before the counterstrike phase.
-            if action.playername == self.defender_legion.player.name:
+            if (self.defender_legion and action.playername ==
+              self.defender_legion.player.name):
                 self.battle_active_legion = self.defender_legion
             else:
                 self.battle_active_legion = self.attacker_legion

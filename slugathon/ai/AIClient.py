@@ -282,7 +282,8 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
-            if game.battle_active_legion.player.name == self.playername:
+            if (game.battle_active_legion and
+              game.battle_active_legion.player.name == self.playername):
                 reactor.callLater(self.delay, self.ai.strike, game)
 
         elif isinstance(action, Action.Strike):
@@ -315,7 +316,8 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
-            if game.battle_active_legion.player.name == self.playername:
+            if (game.battle_active_legion and
+              game.battle_active_legion.player.name == self.playername):
                 legion = game.battle_active_legion
                 if legion == game.defender_legion:
                     reactor.callLater(self.delay, self.ai.reinforce, game)
