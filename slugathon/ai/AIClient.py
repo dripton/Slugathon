@@ -100,7 +100,7 @@ class Client(pb.Referenceable, Observed):
             self.add_game(game_info_tuple)
         if self.form_game:
             if not self.game_name:
-                self.game_name = "Game %d" % random.randrange(1000000)
+                self.game_name = "Game_%d" % random.randrange(1000000)
             def1 = self.user.callRemote("form_game", self.game_name,
               self.min_players, self.max_players)
             def1.addErrback(self.failure)
