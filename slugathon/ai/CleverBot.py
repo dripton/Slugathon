@@ -465,14 +465,16 @@ class CleverBot(DimBot.DimBot):
         ELEVATION_BONUS = 0.5
         NATIVE_BRAMBLE_BONUS = 0.3
         NON_NATIVE_BRAMBLE_PENALTY = -0.7
-        TOWER_BONUS = 0.5
+        TOWER_BONUS = 1.0
+        FRONT_OF_TOWER_BONUS = 0.5
+        CENTER_OF_TOWER_BONUS = 1.0
+        TITAN_IN_CENTER_OF_TOWER_BONUS = 2.0
         NON_NATIVE_DRIFT_PENALTY = -2.0
         NATIVE_VOLCANO_BONUS = 1.0
         ADJACENT_ALLY_BONUS = 0.5
         RANGESTRIKE_BONUS = 2.0
         TITAN_FORWARD_PENALTY = -1.0
         DEFENDER_FORWARD_PENALTY = -0.5
-        TITAN_IN_CENTER_OF_TOWER_BONUS = 2.0
 
         score = 0
         battlemap = game.battlemap
@@ -596,10 +598,20 @@ class CleverBot(DimBot.DimBot):
             elif terrain == "Tower":
                 log(creature, "TOWER_BONUS")
                 score += TOWER_BONUS
-                if creature.name == "Titan" and battlehex.elevation == 2:
-                    score += TITAN_IN_CENTER_OF_TOWER_BONUS
-                    log(creature, "TITAN_IN_CENTER_OF_TOWER_BONUS",
-                      TITAN_IN_CENTER_OF_TOWER_BONUS)
+                if battlehex.elevation == 2:
+                    if creature.name == "Titan":
+                        score += TITAN_IN_CENTER_OF_TOWER_BONUS
+                        log(creature, "TITAN_IN_CENTER_OF_TOWER_BONUS",
+                          TITAN_IN_CENTER_OF_TOWER_BONUS)
+                    else:
+                        score += CENTER_OF_TOWER_BONUS
+                        log(creature, "CENTER_OF_TOWER_BONUS",
+                          CENTER_OF_TOWER_BONUS)
+                elif (creature.name != "Titan" and battlehex.label in
+                  ["C3", "D3"]):
+                    score += FRONT_OF_TOWER_BONUS
+                    log(creature, "FRONT_OF_TOWER_BONUS",
+                      FRONT_OF_TOWER_BONUS)
             elif terrain == "Drift":
                 if not creature.is_native(terrain):
                     score += NON_NATIVE_DRIFT_PENALTY
