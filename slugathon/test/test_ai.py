@@ -603,6 +603,202 @@ def test_score_legion_move_plain():
     titan2.move("A1")
 
 
+def test_score_legion_move_swamp():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    game.add_player("p1")
+    player0 = game.players[0]
+    player1 = game.players[1]
+    player0.assign_starting_tower(200)
+    player1.assign_starting_tower(100)
+    game.sort_players()
+    game.started = True
+    game.assign_color("p1", "Blue")
+    game.assign_color("p0", "Red")
+    game.assign_first_marker("p0", "Rd01")
+    game.assign_first_marker("p1", "Bu01")
+    player0.pick_marker("Rd02")
+    player0.split_legion("Rd01", "Rd02",
+      ["Titan", "Ogre", "Ogre", "Gargoyle"],
+      ["Angel", "Centaur", "Centaur", "Gargoyle"])
+    rd01 = player0.legions["Rd01"]
+    player1.pick_marker("Bu02")
+    player1.split_legion("Bu01", "Bu02",
+      ["Titan", "Centaur", "Gargoyle", "Gargoyle"],
+      ["Angel", "Centaur", "Ogre", "Ogre"])
+    bu01 = player1.legions["Bu01"]
+    rd01.creatures.append(Creature.Creature("Troll"))
+    rd01.creatures.append(Creature.Creature("Troll"))
+    rd01.creatures.append(Creature.Creature("Troll"))
+    bu01.creatures.remove(Creature.Creature("Centaur"))
+    bu01.creatures.append(Creature.Creature("Warlock"))
+    bu01.creatures.append(Creature.Creature("Warlock"))
+    bu01.creatures.append(Creature.Creature("Cyclops"))
+    bu01.creatures.append(Creature.Creature("Cyclops"))
+    rd01.move(132, False, None, 1)
+    bu01.move(132, False, None, 1)
+    game._init_battle(bu01, rd01)
+    defender = game.defender_legion
+    d_titan = defender.creatures[0]
+    d_ogre1 = defender.creatures[1]
+    d_ogre2 = defender.creatures[2]
+    d_gargoyle = defender.creatures[3]
+    d_troll1 = defender.creatures[4]
+    d_troll2 = defender.creatures[5]
+    d_troll3 = defender.creatures[6]
+    for creature in defender.creatures:
+        creature.legion = defender
+    cleverbot_d = CleverBot.CleverBot("p0", 1)
+
+    hexlabel = d_ogre1.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(d_ogre1)
+    for move in moves:
+        d_ogre1.move(move)
+        score = cleverbot_d._score_legion_move(game, [d_ogre1])
+        move_to_score[move] = score
+    d_ogre1.move(hexlabel)
+    # Should prefer back rank to second rank
+    for hexlabel1 in ["A1", "A1", "A3"]:
+        for hexlabel2 in ["B1", "B2", "B3", "B4"]:
+            assert move_to_score[hexlabel1] > move_to_score[hexlabel2]
+
+    hexlabel = d_troll1.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(d_troll1)
+    for move in moves:
+        d_troll1.move(move)
+        score = cleverbot_d._score_legion_move(game, [d_troll1])
+        move_to_score[move] = score
+    d_troll1.move(hexlabel)
+    # Should prefer back rank to second rank
+    for hexlabel1 in ["A1", "A1", "A3"]:
+        for hexlabel2 in ["B1", "B2", "B3", "B4"]:
+            assert move_to_score[hexlabel1] > move_to_score[hexlabel2]
+
+    hexlabel = d_gargoyle.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(d_gargoyle)
+    for move in moves:
+        d_gargoyle.move(move)
+        score = cleverbot_d._score_legion_move(game, [d_gargoyle])
+        move_to_score[move] = score
+    d_gargoyle.move(hexlabel)
+    # Should prefer back rank to second rank to third rank
+    for hexlabel1 in ["A1", "A1", "A3"]:
+        for hexlabel2 in ["B1", "B3", "B4"]:
+            for hexlabel3 in ["C1", "C3"]:
+                assert (move_to_score[hexlabel1] > move_to_score[hexlabel2] >
+                  move_to_score[hexlabel3])
+
+    hexlabel = d_titan.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(d_titan)
+    for move in moves:
+        d_titan.move(move)
+        score = cleverbot_d._score_legion_move(game, [d_titan])
+        move_to_score[move] = score
+    d_titan.move(hexlabel)
+    # Should prefer back rank to second rank to third rank to fourth rank
+    for hexlabel1 in ["A1", "A1", "A3"]:
+        for hexlabel2 in ["B1", "B3", "B4"]:
+            for hexlabel3 in ["C1", "C3"]:
+                for hexlabel4 in ["D2", "D4"]:
+                    assert (move_to_score[hexlabel1] > move_to_score[hexlabel2]
+                      > move_to_score[hexlabel3] > move_to_score[hexlabel4])
+
+    d_troll1.move("B2")
+    d_troll2.move("B4")
+    d_ogre1.move("B1")
+    d_gargoyle.move("B3")
+    d_titan.move("A3")
+    d_troll3.move("A2")
+    d_ogre2.move("A1")
+
+    attacker = game.attacker_legion
+    cleverbot_a = CleverBot.CleverBot("p1", 1)
+    game.battle_active_legion = attacker
+    game.battle_phase = Phase.STRIKE
+    a_titan = attacker.creatures[0]
+    a_gargoyle1 = attacker.creatures[1]
+    a_gargoyle2 = attacker.creatures[2]
+    a_warlock1 = attacker.creatures[3]
+    a_warlock2 = attacker.creatures[4]
+    a_cyclops1 = attacker.creatures[5]
+    a_cyclops2 = attacker.creatures[6]
+    for creature in attacker.creatures:
+        creature.legion = attacker
+
+    hexlabel = a_titan.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(a_titan)
+    for move in moves:
+        a_titan.move(move)
+        score = cleverbot_a._score_legion_move(game, [a_titan])
+        move_to_score[move] = score
+    a_titan.move(hexlabel)
+    # Should prefer back rank to second rank to third rank to fourth rank
+    for hexlabel1 in ["F1", "F3", "F4"]:
+        for hexlabel2 in ["E1", "E2", "E3", "E5"]:
+            for hexlabel3 in ["D2", "D4", "D5", "D6"]:
+                for hexlabel4 in ["C1", "C3"]:
+                    assert (move_to_score[hexlabel1] > move_to_score[hexlabel2]
+                      > move_to_score[hexlabel3] > move_to_score[hexlabel4])
+
+    hexlabel = a_gargoyle1.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(a_gargoyle1)
+    for move in moves:
+        a_gargoyle1.move(move)
+        score = cleverbot_a._score_legion_move(game, [a_gargoyle1])
+        move_to_score[move] = score
+    a_gargoyle1.move(hexlabel)
+    # Should prefer third rank to second rank to back rank
+    for hexlabel1 in ["F1", "F3", "F4"]:
+        for hexlabel2 in ["E1", "E2", "E3", "E5"]:
+            for hexlabel3 in ["D2", "D4", "D5", "D6"]:
+                assert (move_to_score[hexlabel3] > move_to_score[hexlabel2] >
+                  move_to_score[hexlabel1])
+
+    hexlabel = a_cyclops1.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(a_cyclops1)
+    for move in moves:
+        a_cyclops1.move(move)
+        score = cleverbot_a._score_legion_move(game, [a_cyclops1])
+        move_to_score[move] = score
+    a_cyclops1.move(hexlabel)
+    # Should prefer third rank to second rank to back rank
+    for hexlabel1 in ["F1", "F3", "F4"]:
+        for hexlabel2 in ["E1", "E2", "E3", "E5"]:
+            assert move_to_score[hexlabel2] > move_to_score[hexlabel1]
+
+    hexlabel = a_warlock1.hexlabel
+    move_to_score = {}
+    moves = game.find_battle_moves(a_warlock1)
+    for move in moves:
+        a_warlock1.move(move)
+        score = cleverbot_a._score_legion_move(game, [a_warlock1])
+        move_to_score[move] = score
+    a_warlock1.move(hexlabel)
+    # Should prefer third rank to second rank to back rank
+    for hexlabel1 in ["F1", "F3", "F4"]:
+        for hexlabel2 in ["E1", "E2", "E3", "E5"]:
+            assert move_to_score[hexlabel2] > move_to_score[hexlabel1]
+    # Should prefer rangestrike to 1:2 melee
+    assert move_to_score["D4"] > move_to_score["C3"]
+    # Should prefer rangestrike to 1:1 melee
+    assert move_to_score["D2"] > move_to_score["C1"]
+
+    a_warlock1.move("C1")
+    a_warlock2.move("C3")
+    a_gargoyle1.move("D4")
+    a_gargoyle2.move("D5")
+    a_cyclops1.move("E5")
+    a_cyclops2.move("E2")
+    a_titan.move("F4")
+
+
 def test_score_move_scary_pursuer():
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
