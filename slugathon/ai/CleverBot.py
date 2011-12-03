@@ -221,22 +221,26 @@ class CleverBot(DimBot.DimBot):
                 score += recruit.sort_value
                 log("recruit value", legion.markerid, hexlabel,
                   recruit.sort_value)
-        try:
-            prev_hexlabel = legion.hexlabel
-            legion.hexlabel = hexlabel
-            for enemy in player.enemy_legions():
-                if enemy.combat_value >= BE_SQUASHED * legion_combat_value:
-                    for roll in xrange(1, 6 + 1):
-                        moves = game.find_normal_moves(enemy,
-                          game.board.hexes[enemy.hexlabel], roll).union(
-                          game.find_titan_teleport_moves(enemy))
-                        hexlabels = set((move[0] for move in moves))
-                        if hexlabel in hexlabels:
-                            log("scared of %s in %s" % (enemy.markerid,
-                              hexlabel))
-                            score -= legion_sort_value / 6.0
-        finally:
-            legion.hexlabel = prev_hexlabel
+        if game.turn > 1:
+            # Do not fear enemy legions on turn 1.  8-high legions will be
+            # forced to split, and hanging around in the tower to avoid getting
+            # attacked 5-on-4 is too passive.
+            try:
+                prev_hexlabel = legion.hexlabel
+                legion.hexlabel = hexlabel
+                for enemy in player.enemy_legions():
+                    if enemy.combat_value >= BE_SQUASHED * legion_combat_value:
+                        for roll in xrange(1, 6 + 1):
+                            moves = game.find_normal_moves(enemy,
+                              game.board.hexes[enemy.hexlabel], roll).union(
+                              game.find_titan_teleport_moves(enemy))
+                            hexlabels = set((move[0] for move in moves))
+                            if hexlabel in hexlabels:
+                                log("scared of %s in %s" % (enemy.markerid,
+                                  hexlabel))
+                                score -= legion_sort_value / 6.0
+            finally:
+                legion.hexlabel = prev_hexlabel
         return score
 
     def _gen_legion_moves_inner(self, movesets):
