@@ -468,6 +468,7 @@ class CleverBot(DimBot.DimBot):
         NON_NATIVE_BRAMBLE_PENALTY = -0.7
         TOWER_BONUS = 1.0
         FRONT_OF_TOWER_BONUS = 0.5
+        MIDDLE_OF_TOWER_BONUS = 0.25
         CENTER_OF_TOWER_BONUS = 1.0
         TITAN_IN_CENTER_OF_TOWER_BONUS = 2.0
         NON_NATIVE_DRIFT_PENALTY = -2.0
@@ -625,11 +626,17 @@ class CleverBot(DimBot.DimBot):
                         score += CENTER_OF_TOWER_BONUS
                         log(creature, "CENTER_OF_TOWER_BONUS",
                           CENTER_OF_TOWER_BONUS)
+                # XXX Hardcoded to default Tower map
                 elif (creature.name != "Titan" and battlehex.label in
                   ["C3", "D3"]):
                     score += FRONT_OF_TOWER_BONUS
                     log(creature, "FRONT_OF_TOWER_BONUS",
                       FRONT_OF_TOWER_BONUS)
+                elif (creature.name != "Titan" and battlehex.label in
+                  ["C4", "E3"]):
+                    score += MIDDLE_OF_TOWER_BONUS
+                    log(creature, "MIDDLE_OF_TOWER_BONUS",
+                      MIDDLE_OF_TOWER_BONUS)
             elif terrain == "Drift":
                 if not creature.is_native(terrain):
                     score += NON_NATIVE_DRIFT_PENALTY
