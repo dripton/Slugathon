@@ -718,3 +718,38 @@ class CleverBot(DimBot.DimBot):
             def1 = self.user.callRemote("done_with_counterstrikes",
               game.name)
             def1.addErrback(self.failure)
+
+    def carry(self, game, striker_name, striker_hexlabel, target_name,
+      target_hexlabel, num_dice, strike_number, carries):
+        striker = game.creatures_in_battle_hex(striker_hexlabel).pop()
+        target = game.creatures_in_battle_hex(target_hexlabel).pop()
+        carry_targets = []
+        for creature in striker.engaged_enemies:
+            if striker.can_carry_to(creature, target, num_dice, strike_number):
+                carry_targets.append(creature)
+        best_target = None
+        # If there's only one carry target, it's easy.
+        if len(carry_targets) == 1:
+            best_target = carry_targets[0]
+        # First find the best target we can kill.
+        if best_target is None:
+            for carry_target in carry_targets:
+                if carries >= target.hits_left:
+                    if (best_target is None or carry_target.sort_value >
+                      best_target.sort_value):
+                        best_target = carry_target
+        # If we can't kill anything then go after the hardest target to hit.
+        if best_target is None:
+            best_num_dice = None
+            best_strike_number = None
+            for carry_target in carry_targets:
+                num_dice2 = striker.number_of_dice(carry_target)
+                strike_number2 = striker.strike_number(carry_target)
+                if (best_target is None or num_dice2 < best_num_dice
+                  or strike_number2 > best_strike_number):
+                    best_target = carry_target
+                    best_num_dice = num_dice2
+                    best_strike_number = strike_number2
+        def1 = self.user.callRemote("carry", game.name,
+          best_target.name, best_target.hexlabel, carries)
+        def1.addErrback(self.failure)
