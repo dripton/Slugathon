@@ -478,8 +478,29 @@ class CleverBot(DimBot.DimBot):
 
         score = 0
         battlemap = game.battlemap
+        legion = creatures[0].legion
+        legion2 = game.other_battle_legion(legion)
+
+        # For each enemy, figure out the average damage we could do to it if
+        # everyone concentrated on hitting it, and if that's enough to kill it,
+        # give every creature a kill bonus.
+        # (This is not quite right because each creature can only hit one enemy
+        # (modulo carries), but it's a start.)
+        kill_bonus = 0
+        for enemy in legion2.creatures:
+            total_mean_hits = 0
+            for creature in creatures:
+                if (enemy in creature.engaged_enemies or
+                  (not creature.engaged and enemy in
+                  creature.rangestrike_targets)):
+                    dice = creature.number_of_dice(enemy)
+                    strike_number = creature.strike_number(enemy)
+                    mean_hits = dice * (7. - strike_number) / 6
+                    total_mean_hits += mean_hits
+            if total_mean_hits >= enemy.hits_left:
+                kill_bonus += enemy.sort_value
+
         for creature in creatures:
-            kill_bonus = 0
             legion = creature.legion
             legion2 = game.other_battle_legion(legion)
             can_rangestrike = False
@@ -492,8 +513,6 @@ class CleverBot(DimBot.DimBot):
                 dice = creature.number_of_dice(enemy)
                 strike_number = creature.strike_number(enemy)
                 mean_hits = dice * (7. - strike_number) / 6
-                if mean_hits >= enemy.hits_left:
-                    kill_bonus = max(kill_bonus, enemy.sort_value)
                 max_mean_hits = max(mean_hits, max_mean_hits)
                 # Damage we can take.
                 dice = enemy.number_of_dice(creature)
@@ -510,8 +529,6 @@ class CleverBot(DimBot.DimBot):
                     dice = creature.number_of_dice(enemy)
                     strike_number = creature.strike_number(enemy)
                     mean_hits = dice * (7. - strike_number) / 6
-                    if mean_hits >= enemy.hits_left:
-                        kill_bonus = max(kill_bonus, enemy.sort_value)
                     max_mean_hits = max(mean_hits, max_mean_hits)
                     can_rangestrike = True
             if can_rangestrike:
