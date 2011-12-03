@@ -11,9 +11,10 @@ import time
 from sys import maxint
 import itertools
 import traceback
+import collections
 
 from slugathon.ai import DimBot
-from slugathon.game import Game, Creature
+from slugathon.game import Game, Creature, Phase
 from slugathon.util.log import log
 
 
@@ -647,3 +648,73 @@ class CleverBot(DimBot.DimBot):
                           ADJACENT_ALLY_BONUS)
 
         return score
+
+    def strike(self, game):
+        log("strike")
+        assert game.battle_active_player.name == self.playername
+        legion = game.battle_active_legion
+        # First do the strikers with only one target.
+        for striker in legion.sorted_creatures:
+            if striker.can_strike:
+                hexlabels = striker.find_target_hexlabels()
+                if len(hexlabels) == 1:
+                    hexlabel = hexlabels.pop()
+                    target = game.creatures_in_battle_hex(hexlabel).pop()
+                    num_dice = striker.number_of_dice(target)
+                    strike_number = striker.strike_number(target)
+                    def1 = self.user.callRemote("strike", game.name,
+                      striker.name, striker.hexlabel, target.name,
+                      target.hexlabel, num_dice, strike_number)
+                    def1.addErrback(self.failure)
+                    return
+
+        # Then do the ones that have to choose a target.
+        target_to_total_mean_hits = collections.defaultdict(float)
+        best_target = None
+        for striker in legion.sorted_creatures:
+            if striker.can_strike:
+                hexlabels = striker.find_target_hexlabels()
+                for hexlabel in hexlabels:
+                    target = game.creatures_in_battle_hex(hexlabel).pop()
+                    num_dice = striker.number_of_dice(target)
+                    strike_number = striker.strike_number(target)
+                    mean_hits = num_dice * (7. - strike_number) / 6
+                    target_to_total_mean_hits[target] += mean_hits
+        # First find the best target we can kill.
+        for target, total_mean_hits in target_to_total_mean_hits.iteritems():
+            if total_mean_hits >= target.hits_left:
+                if (best_target is None or target.sort_value >
+                  best_target.sort_value):
+                    best_target = target
+        # If we can't kill anything, go after the target we can hurt most.
+        if best_target is None:
+            max_total_mean_hits = 0
+            for target, total_mean_hits in \
+              target_to_total_mean_hits.iteritems():
+                if total_mean_hits >= max_total_mean_hits:
+                    best_target = target
+                    max_total_mean_hits = total_mean_hits
+        # Find the least valuable striker who can hit best_target.
+        for striker in reversed(legion.sorted_creatures):
+            if striker.can_strike:
+                hexlabels = striker.find_target_hexlabels()
+                for hexlabel in hexlabels:
+                    target = game.creatures_in_battle_hex(hexlabel).pop()
+                    if target is best_target:
+                        num_dice = striker.number_of_dice(target)
+                        strike_number = striker.strike_number(target)
+                        def1 = self.user.callRemote("strike", game.name,
+                          striker.name, striker.hexlabel, target.name,
+                          target.hexlabel, num_dice, strike_number)
+                        def1.addErrback(self.failure)
+                        return
+        # No strikes, so end the strike phase.
+        if game.battle_phase == Phase.STRIKE:
+            def1 = self.user.callRemote("done_with_strikes",
+              game.name)
+            def1.addErrback(self.failure)
+        else:
+            assert game.battle_phase == Phase.COUNTERSTRIKE
+            def1 = self.user.callRemote("done_with_counterstrikes",
+              game.name)
+            def1.addErrback(self.failure)
