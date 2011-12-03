@@ -627,12 +627,14 @@ class CleverBot(DimBot.DimBot):
                         log(creature, "CENTER_OF_TOWER_BONUS",
                           CENTER_OF_TOWER_BONUS)
                 # XXX Hardcoded to default Tower map
-                elif (creature.name != "Titan" and battlehex.label in
+                elif (legion == game.defender_legion and
+                  creature.name != "Titan" and battlehex.label in
                   ["C3", "D3"]):
                     score += FRONT_OF_TOWER_BONUS
                     log(creature, "FRONT_OF_TOWER_BONUS",
                       FRONT_OF_TOWER_BONUS)
-                elif (creature.name != "Titan" and battlehex.label in
+                elif (legion == game.defender_legion and
+                  creature.name != "Titan" and battlehex.label in
                   ["C4", "E3"]):
                     score += MIDDLE_OF_TOWER_BONUS
                     log(creature, "MIDDLE_OF_TOWER_BONUS",
