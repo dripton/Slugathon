@@ -3,7 +3,8 @@ __license__ = "GNU GPL v2"
 
 import time
 
-from twisted.spread import pb
+from twisted.spread.pb import Avatar, PBConnectionLost
+from twisted.internet.error import ConnectionLost
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
@@ -12,7 +13,7 @@ from slugathon.util.log import log
 
 
 @implementer(IObserver)
-class User(pb.Avatar):
+class User(Avatar):
     """Perspective for a player or spectator."""
     def __init__(self, name, server, client):
         self.name = name
@@ -45,7 +46,8 @@ class User(pb.Avatar):
 
     def receive_chat_message(self, text):
         def1 = self.client.callRemote("receive_chat_message", text)
-        def1.addErrback(self.failure)
+        def1.addErrback(self.trap_connection_lost)
+        def1.addErrback(self.log_failure)
 
     def perspective_form_game(self, game_name, min_players, max_players):
         self.server.form_game(self.name, game_name, min_players, max_players)
@@ -218,18 +220,27 @@ class User(pb.Avatar):
 
     def add_observer(self, mind):
         def1 = self.client.callRemote("set_name", self.name)
-        def1.addErrback(self.failure)
+        def1.addErrback(self.trap_connection_lost)
+        def1.addErrback(self.log_failure)
         def2 = self.client.callRemote("ping", time.time())
-        def2.addErrback(self.failure)
+        def2.addErrback(self.trap_connection_lost)
+        def2.addErrback(self.log_failure)
 
-    def failure(self, arg):
-        log("failure", arg)
+    def trap_connection_lost(self, failure):
+        failure.trap(ConnectionLost, PBConnectionLost)
+        log("Connection lost for %s; logging out" % self.name)
+        self.logout()
+
+    def log_failure(self, failure):
+        log("failure", failure)
 
     def logout(self):
+        log("logout", self.name)
         self.server.remove_observer(self)
 
     def update(self, observed, action):
         """Defers updates to its client, dropping the observed reference."""
         if not isinstance(action, Action.DriftDamage):
             def1 = self.client.callRemote("update", action)
-            def1.addErrback(self.failure)
+            def1.addErrback(self.trap_connection_lost)
+            def1.addErrback(self.log_failure)
