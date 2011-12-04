@@ -358,27 +358,36 @@ class CleverBot(DimBot.DimBot):
         log("_find_best_creature_moves", legion)
         movesets = []  # list of a set of hexlabels for each creature
         creatures = legion.sorted_living_creatures
+        prev_creature = None
+        moveset = None
         for creature in creatures:
-            moves = game.find_battle_moves(creature, ignore_mobile_allies=True)
-            if moves:
-                score_moves = []
-                # Not moving is also an option, unless offboard.
-                if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
-                    moves.add(creature.hexlabel)
-                for move in moves:
-                    try:
-                        creature.previous_hexlabel = creature.hexlabel
-                        creature.hexlabel = move
-                        score = self._score_legion_move(game, [creature])
-                        score_moves.append((score, move))
-                    finally:
-                        creature.hexlabel = creature.previous_hexlabel
-                score_moves.sort()
-                log("score_moves", creature, score_moves)
-                moveset = best7(score_moves)
+            if (prev_creature and creature.name == prev_creature.name and
+              creature.hexlabel == prev_creature.hexlabel):
+                # Reuse previous moveset
+                moveset = copy.deepcopy(moveset)
             else:
-                moveset = set([creature.hexlabel])
+                moves = game.find_battle_moves(creature,
+                  ignore_mobile_allies=True)
+                if moves:
+                    score_moves = []
+                    # Not moving is also an option, unless offboard.
+                    if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
+                        moves.add(creature.hexlabel)
+                    for move in moves:
+                        try:
+                            creature.previous_hexlabel = creature.hexlabel
+                            creature.hexlabel = move
+                            score = self._score_legion_move(game, [creature])
+                            score_moves.append((score, move))
+                        finally:
+                            creature.hexlabel = creature.previous_hexlabel
+                    score_moves.sort()
+                    log("score_moves", creature, score_moves)
+                    moveset = best7(score_moves)
+                else:
+                    moveset = set([creature.hexlabel])
             movesets.append(moveset)
+            prev_creature = creature
         best_legion_move = None
         now = time.time()
         legion_moves = list(self._gen_legion_moves(movesets))
