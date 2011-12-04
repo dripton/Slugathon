@@ -193,6 +193,6 @@ class Client(pb.Referenceable, Observed):
                   " and ".join(action.winner_names)))
             else:
                 log("Game %s over, draw" % action.game_name)
-            self.remove_game(action.game_name)
+                # XXX When do we call self.remove_game?
 
         self.notify(action)
