@@ -490,6 +490,10 @@ class CleverBot(DimBot.DimBot):
         RANGESTRIKE_BONUS = 2.0
         TITAN_FORWARD_PENALTY = -1.0
         DEFENDER_FORWARD_PENALTY = -0.5
+        NATIVE_SLOPE_BONUS = 0.5
+        NATIVE_DUNE_BONUS = 0.5
+        NON_NATIVE_SLOPE_PENALTY = -0.3
+        NON_NATIVE_DUNE_PENALTY = -0.3
 
         score = 0
         battlemap = game.battlemap
@@ -660,6 +664,23 @@ class CleverBot(DimBot.DimBot):
             elif terrain == "Volcano":
                 score += NATIVE_VOLCANO_BONUS
                 log(creature, "NATIVE_VOLCANO_BONUS", NATIVE_VOLCANO_BONUS)
+
+            if "Slope" in battlehex.borders:
+                if creature.is_native("Slope"):
+                    score += NATIVE_SLOPE_BONUS
+                    log(creature, "NATIVE_SLOPE_BONUS", NATIVE_SLOPE_BONUS)
+                else:
+                    score += NON_NATIVE_SLOPE_PENALTY
+                    log(creature, "NON_NATIVE_SLOPE_PENALTY",
+                      NON_NATIVE_SLOPE_PENALTY)
+            if "Dune" in battlehex.borders:
+                if creature.is_native("Dune"):
+                    score += NATIVE_DUNE_BONUS
+                    log(creature, "NATIVE_DUNE_BONUS", NATIVE_DUNE_BONUS)
+                else:
+                    score += NON_NATIVE_DUNE_PENALTY
+                    log(creature, "NON_NATIVE_DUNE_PENALTY",
+                      NON_NATIVE_DUNE_PENALTY)
 
             # allies
             for neighbor in battlehex.neighbors.itervalues():
