@@ -1217,26 +1217,23 @@ class Game(Observed):
         strikers = self.creatures_in_battle_hex(striker_hexlabel)
         assert len(strikers) == 1
         striker = strikers.pop()
-        log("striker", striker)
         assert striker.can_strike, "illegal strike"
         assert striker.name == striker_name
         targets = self.creatures_in_battle_hex(target_hexlabel)
         assert len(targets) == 1
         target = targets.pop()
         assert target.name == target_name
-        log("target", target)
+        log("striker", striker, "target", target)
         # TODO check for valid strike penalty if not equal
-        log("num_dice", num_dice)
-        log("strike_number", strike_number)
+        log("num_dice", num_dice, "strike_number", strike_number)
         assert num_dice <= striker.number_of_dice(target)
         assert strike_number >= striker.strike_number(target)
         rolls = Dice.roll(num_dice)
-        log("rolls", rolls)
         hits = 0
         for roll in rolls:
             if roll >= strike_number:
                 hits += 1
-        log("hits", hits)
+        log("rolls", rolls, "hits", hits)
         target.hits += hits
         if target.hits > target.power:
             carries = target.hits - target.power
