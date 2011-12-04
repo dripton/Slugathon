@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 from sys import maxint
 import os
 import time
+from collections import defaultdict
 
 from zope.interface import implementer
 
@@ -941,11 +942,11 @@ class Game(Observed):
     @property
     def engagement_hexlabels(self):
         """Return a set of all hexlabels with engagements"""
-        hexlabels_to_legion_colors = {}
+        hexlabels_to_legion_colors = defaultdict(set)
         for legion in self.all_legions():
             hexlabel = legion.hexlabel
             color = legion.player.color
-            hexlabels_to_legion_colors.setdefault(hexlabel, set()).add(color)
+            hexlabels_to_legion_colors[hexlabel].add(color)
         results = set()
         for hexlabel, colorset in hexlabels_to_legion_colors.iteritems():
             if len(colorset) >= 2:

@@ -2,17 +2,19 @@ __copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from collections import defaultdict
+
 from slugathon.data import creaturedata, recruitdata, battlemapdata
 from slugathon.game import Phase
 
 
 def _terrain_to_hazards():
-    """Return a dict of masterboard terrain type to a set of all
+    """Return a defaultdict(set) of masterboard terrain type to a set of all
     battle hazards (hex and hexside) found there."""
-    result = {}
+    result = defaultdict(set)
     for mterrain, dic2 in battlemapdata.data.iteritems():
         for hexlabel, (bterrain, elevation, dic3) in dic2.iteritems():
-            set1 = result.setdefault(mterrain, set())
+            set1 = result[mterrain]
             set1.add(bterrain)
             for hexside, border in dic3.iteritems():
                 if border:
@@ -36,16 +38,16 @@ def _terrain_to_creature_names():
 
 
 def _compute_nativity():
-    """Return a dict of creature name to a set of all hazards
+    """Return a defaultdict(set) of creature name to a set of all hazards
     (battle terrain types and border types) to which it is
     native."""
-    result = {}
+    result = defaultdict(set)
     terrain_to_creature_names = _terrain_to_creature_names()
     terrain_to_hazards = _terrain_to_hazards()
     for terrain, creature_names in terrain_to_creature_names.iteritems():
-        hazards = terrain_to_hazards.get(terrain, set())
+        hazards = terrain_to_hazards[terrain]
         for creature_name in creature_names:
-            set1 = result.setdefault(creature_name, set())
+            set1 = result[creature_name]
             for hazard in hazards:
                 # Special case: Only Dragon is native to Volcano
                 if hazard != "Volcano" or creature_name == "Dragon":
