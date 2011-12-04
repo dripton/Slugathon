@@ -837,6 +837,8 @@ def test_score_move_scary_pursuer():
     bu01.hexlabel = 41
     bu02.hexlabel = 400
     rd01.hexlabel = 100
+    # We ignore fear on turn 1, so set the turn to 2 to test.
+    game.turn = 2
 
     # staying in 41 gives us range 1
     # moving to 42 gives us range 2
