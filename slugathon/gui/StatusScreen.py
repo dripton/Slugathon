@@ -275,6 +275,10 @@ class StatusScreen(gtk.Dialog):
 
         elif isinstance(action, Action.StartMusterPhase):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+            legions_label = getattr(self, "legions%d_label" % player_num)
+            legions_label.set_text(str(len(player.markerid_to_legion)))
+            markers_label = getattr(self, "markers%d_label" % player_num)
+            markers_label.set_text(str(len(player.markerids)))
 
         elif (isinstance(action, Action.RecruitCreature) or
           isinstance(action, Action.UndoRecruit) or
