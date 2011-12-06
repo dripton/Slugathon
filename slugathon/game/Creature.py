@@ -142,6 +142,14 @@ class Creature(object):
     def is_lord(self):
         return self.character_type == "lord"
 
+    @property
+    def is_demilord(self):
+        return self.character_type == "demilord"
+
+    @property
+    def is_creature(self):
+        return self.character_type == "creature"
+
     def _hexlabel_to_enemy(self):
         """Return a dict of hexlabel: live enemy Creature"""
         hexlabel_to_enemy = {}
@@ -216,7 +224,7 @@ class Creature(object):
         for hexlabel, enemy in hexlabel_to_enemy.iteritems():
             if (map1.range(self.hexlabel, hexlabel) <= self.skill and
               (self.magicmissile or self.has_los_to(hexlabel)) and
-              (self.magicmissile or enemy.character_type != "lord")):
+              (self.magicmissile or not enemy.is_lord)):
                 enemies.add(enemy)
         return enemies
 

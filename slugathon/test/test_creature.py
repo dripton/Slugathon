@@ -26,6 +26,9 @@ def test_init():
     assert not creature.rangestrikes
     assert not creature.magicmissile
     assert creature.character_type == "creature"
+    assert creature.is_creature
+    assert not creature.is_lord
+    assert not creature.is_demilord
     assert not creature.summonable
     assert not creature.acquirable
     assert creature.max_count == 25

@@ -105,13 +105,12 @@ class Legion(Observed):
 
     @property
     def num_lords(self):
-        return sum(creature.character_type == "lord" for creature in
-          self.creatures)
+        return sum(creature.is_lord for creature in self.creatures)
 
     @property
     def first_lord_name(self):
         for creature in self.creatures:
-            if creature.character_type == "lord":
+            if creature.is_lord:
                 return creature.name
         return None
 
@@ -127,7 +126,7 @@ class Legion(Observed):
         """Return a set of names of all lords in this legion."""
         types = set()
         for creature in self.creatures:
-            if creature.character_type == "lord":
+            if creature.is_lord:
                 types.add(creature.name)
         return types
 
@@ -233,8 +232,7 @@ class Legion(Observed):
         counts = bag(self.creature_names)
         maximum = 0
         for name, num in counts.iteritems():
-            if (num > maximum and Creature.Creature(name).character_type ==
-              "creature"):
+            if (num > maximum and Creature.Creature(name).is_creature):
                 maximum = num
         return maximum
 
@@ -306,7 +304,7 @@ class Legion(Observed):
                         recruiters = []
                         for name2, num2 in counts.iteritems():
                             if (num2 >= num and Creature.Creature(
-                              name2).character_type == "creature"):
+                              name2).is_creature):
                                 recruiters.append(name2)
                         for jj in xrange(ii + 1):
                             if nums[jj] and caretaker.counts.get(names[jj]):

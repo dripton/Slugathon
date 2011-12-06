@@ -47,7 +47,7 @@ class Caretaker(object):
         """If creature_name is mortal, put it in the graveyard.  Otherwise put
         it back onto the stack."""
         creature = Creature.Creature(creature_name)
-        if creature.character_type == "creature":
+        if creature.is_creature:
             self.graveyard[creature_name] += 1
         else:
             self.put_one_back(creature_name)
