@@ -275,6 +275,9 @@ class StatusScreen(gtk.Dialog):
 
         elif isinstance(action, Action.StartMusterPhase):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
+            playername = action.playername
+            player = self.game.get_player_by_name(playername)
+            player_num = self.game.players.index(player)
             legions_label = getattr(self, "legions%d_label" % player_num)
             legions_label.set_text(str(len(player.markerid_to_legion)))
             markers_label = getattr(self, "markers%d_label" % player_num)
