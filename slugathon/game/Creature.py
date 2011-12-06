@@ -278,7 +278,7 @@ class Creature(object):
         Note that we define nativity even for hazards that don't provide any
         benefit for being native, like Wall and Plain.
         """
-        return hazard in creature_name_to_native_hazards.get(self.name, set())
+        return hazard in creature_name_to_native_hazards[self.name]
 
     def move(self, hexlabel):
         """Move this creature to a new battle hex"""
