@@ -42,7 +42,7 @@ class SummonAngel(gtk.Dialog):
         bottom_label = gtk.Label("Click one to summon it.")
         self.vbox.pack_start(bottom_label)
 
-        for legion2 in player.markerid_to_legion.itervalues():
+        for legion2 in player.legions:
             if (legion2.any_summonable and not legion2.engaged and
               legion2 != legion):
                 hbox = gtk.HBox(spacing=3)

@@ -322,7 +322,7 @@ class Game(Observed):
         game if hexlabel is None"""
         legions = set()
         for player in self.players:
-            for legion in player.markerid_to_legion.itervalues():
+            for legion in player.legions:
                 if hexlabel in (None, legion.hexlabel) and len(legion):
                     legions.add(legion)
         return legions

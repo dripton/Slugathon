@@ -768,7 +768,7 @@ class GUIMasterBoard(gtk.Window):
         if player == self.game.active_player:
             self.unselect_all()
             if player.markerids:
-                for legion in player.markerid_to_legion.itervalues():
+                for legion in player.legions:
                     if len(legion) >= 7:
                         self.repaint_hexlabels.add(legion.hexlabel)
                         guihex = self.guihexes[legion.hexlabel]
@@ -783,7 +783,7 @@ class GUIMasterBoard(gtk.Window):
             self.clear_all_recruitchits()
             self.unselect_all()
             hexlabels = set()
-            for legion in player.markerid_to_legion.itervalues():
+            for legion in player.legions:
                 if not legion.moved:
                     hexlabels.add(legion.hexlabel)
             for hexlabel in hexlabels:
@@ -813,7 +813,7 @@ class GUIMasterBoard(gtk.Window):
         if player == self.game.active_player:
             self.unselect_all()
             hexlabels = set()
-            for legion in player.markerid_to_legion.itervalues():
+            for legion in player.legions:
                 hexlabel = legion.hexlabel
                 if legion.moved and legion.can_recruit:
                     hexlabels.add(hexlabel)
@@ -1321,7 +1321,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.EliminatePlayer):
             player = self.game.get_player_by_name(action.loser_playername)
-            for legion in player.markerid_to_legion.itervalues():
+            for legion in player.legions:
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.repaint()
 

@@ -58,9 +58,8 @@ class CleverBot(DimBot.DimBot):
             log("called split out of turn; exiting")
             return
         player = game.active_player
-        legions = player.markerid_to_legion.values()
         caretaker = game.caretaker
-        for legion in legions:
+        for legion in player.legions:
             if len(legion) == 8:
                 # initial split 4-4, one lord per legion
                 new_markerid = self._choose_marker(player)
@@ -125,11 +124,10 @@ class CleverBot(DimBot.DimBot):
         log("move_legions")
         assert game.active_player.name == self.playername
         player = game.active_player
-        legions = player.markerid_to_legion.values()
         if not player.moved_legions:
             # (score, legion, hexlabel, entry_side)
             self.best_moves = []
-            for legion in legions:
+            for legion in player.legions:
                 moves = game.find_all_moves(legion, game.board.hexes[
                   legion.hexlabel], player.movement_roll)
                 for hexlabel, entry_side in moves:

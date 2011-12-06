@@ -62,7 +62,7 @@ class DimBot(object):
         log("split")
         if game.active_player.name == self.playername:
             player = game.active_player
-            for legion in player.markerid_to_legion.itervalues():
+            for legion in player.legions:
                 if len(legion) == 8:
                     # initial split 4-4, one lord per legion
                     new_markerid = self._choose_marker(player)
@@ -104,9 +104,8 @@ class DimBot(object):
         """For now, try to move all legions."""
         assert game.active_player.name == self.playername
         player = game.active_player
-        legions = player.markerid_to_legion.values()
         move = None
-        for legion in legions:
+        for legion in player.legions:
             if not legion.moved:
                 moves = game.find_all_moves(legion, game.board.hexes[
                   legion.hexlabel], player.movement_roll)
@@ -282,7 +281,7 @@ class DimBot(object):
         log("recruit")
         assert game.active_player.name == self.playername
         player = game.active_player
-        for legion in player.markerid_to_legion.itervalues():
+        for legion in player.legions:
             if legion.moved and legion.can_recruit:
                 masterhex = game.board.hexes[legion.hexlabel]
                 caretaker = game.caretaker
@@ -356,7 +355,7 @@ class DimBot(object):
         summonables = []
         if (legion.can_summon and game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
-            for legion2 in legion.player.markerid_to_legion.itervalues():
+            for legion2 in legion.player.legions:
                 if not legion2.engaged:
                     for creature in legion2.creatures:
                         if creature.summonable:
@@ -387,7 +386,7 @@ class DimBot(object):
         summonables = []
         if (legion.can_summon and game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
-            for legion2 in legion.player.markerid_to_legion.itervalues():
+            for legion2 in legion.player.legions:
                 if not legion2.engaged:
                     for creature in legion2.creatures:
                         if creature.summonable:
