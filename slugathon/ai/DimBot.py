@@ -168,8 +168,10 @@ class DimBot(object):
                 attacker = legion
             else:
                 defender = legion
-        log("attacker", attacker, attacker.player.name)
-        log("defender", defender, defender.player.name)
+        if attacker:
+            log("attacker", attacker, attacker.player.name)
+        if defender:
+            log("defender", defender, defender.player.name)
         if not attacker or not defender:
             log("no attacker or defender; bailing")
             return
