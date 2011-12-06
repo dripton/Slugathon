@@ -42,7 +42,7 @@ class Player(Observed):
         # legion is actually split off with this marker.
         self.selected_markerid = None
         # {str markerid : Legion}
-        self.legions = {}
+        self.markerid_to_legion = {}
         self.mulligans_left = 1
         self.movement_roll = None
         self.summoned = False
@@ -51,13 +51,13 @@ class Player(Observed):
 
     @property
     def dead(self):
-        return self.created_starting_legion and not self.legions
+        return self.created_starting_legion and not self.markerid_to_legion
 
     @property
     def teleported(self):
         """Return True iff any of this player's legions have teleported
         this turn."""
-        for legion in self.legions.itervalues():
+        for legion in self.markerid_to_legion.itervalues():
             if legion.teleported:
                 return True
         return False
@@ -105,13 +105,13 @@ class Player(Observed):
             raise AssertionError("create_starting_legion without marker")
         if markerid not in self.markerids:
             raise AssertionError("create_starting_legion with bad marker")
-        if self.legions:
+        if self.markerid_to_legion:
             raise AssertionError("create_starting_legion but have a legion")
         creatures = [Creature.Creature(name) for name in
           creaturedata.starting_creature_names]
         legion = Legion.Legion(self, self.take_marker(markerid), creatures,
           self.starting_tower)
-        self.legions[markerid] = legion
+        self.markerid_to_legion[markerid] = legion
         legion.add_observer(self)
         action = Action.CreateStartingLegion(self.game.name, self.name,
           markerid)
@@ -125,14 +125,14 @@ class Player(Observed):
     def can_split(self):
         """Return True if this player can split any legions."""
         if self.markerids:
-            for legion in self.legions.itervalues():
+            for legion in self.markerid_to_legion.itervalues():
                 if len(legion) >= 4:
                     return True
         return False
 
     def split_legion(self, parent_markerid, child_markerid,
       parent_creature_names, child_creature_names):
-        parent = self.legions[parent_markerid]
+        parent = self.markerid_to_legion[parent_markerid]
         if child_markerid not in self.markerids:
             raise AssertionError("illegal marker")
         if bag(parent.creature_names) != bag(parent_creature_names).union(
@@ -149,7 +149,7 @@ class Player(Observed):
         self.take_marker(child_markerid)
         for creature_name in child_creature_names:
             parent.remove_creature_by_name(creature_name)
-        self.legions[child_markerid] = new_legion2
+        self.markerid_to_legion[child_markerid] = new_legion2
         # TODO One action for our player with creature names, and a
         # different action for other players without.
         action = Action.SplitLegion(self.game.name, self.name,
@@ -158,13 +158,13 @@ class Player(Observed):
         self.notify(action)
 
     def undo_split(self, parent_markerid, child_markerid):
-        parent = self.legions[parent_markerid]
-        child = self.legions[child_markerid]
+        parent = self.markerid_to_legion[parent_markerid]
+        child = self.markerid_to_legion[child_markerid]
         parent_creature_names = parent.creature_names
         child_creature_names = child.creature_names
         parent.creatures += child.creatures
         child.remove_observer(self)
-        del self.legions[child_markerid]
+        del self.markerid_to_legion[child_markerid]
         self.markerids.add(child.markerid)
         self.selected_markerid = None
         del child
@@ -178,8 +178,8 @@ class Player(Observed):
     @property
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
-        return (self.legions and max([len(legion) for legion in
-          self.legions.itervalues()]) < 8)
+        return (self.markerid_to_legion and max([len(legion) for legion in
+          self.markerid_to_legion.itervalues()]) < 8)
 
     def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
@@ -211,17 +211,18 @@ class Player(Observed):
 
     @property
     def num_creatures(self):
-        return sum(len(legion) for legion in self.legions.itervalues())
+        return sum(len(legion) for legion in
+          self.markerid_to_legion.itervalues())
 
     @property
     def moved_legions(self):
         """Return a set of this players legions that have moved this turn."""
-        return set([legion for legion in self.legions.itervalues() if
-          legion.moved])
+        return set([legion for legion in self.markerid_to_legion.itervalues()
+          if legion.moved])
 
     def friendly_legions(self, hexlabel=None):
         """Return a set of this player's legions, in hexlabel if not None."""
-        return set([legion for legion in self.legions.itervalues()
+        return set([legion for legion in self.markerid_to_legion.itervalues()
           if hexlabel in (None, legion.hexlabel)])
 
     def enemy_legions(self, hexlabel=None):
@@ -278,13 +279,13 @@ class Player(Observed):
 
     @property
     def pending_acquire(self):
-        for legion in self.legions.itervalues():
+        for legion in self.markerid_to_legion.itervalues():
             if legion.angels_pending or legion.archangels_pending:
                 return True
         return False
 
     def reset_angels_pending(self):
-        for legion in self.legions.itervalues():
+        for legion in self.markerid_to_legion.itervalues():
             legion.reset_angels_pending()
 
     def remove_empty_legions(self):
@@ -292,7 +293,7 @@ class Player(Observed):
         the only creature in the legion."""
         # Got RuntimeError: dictionary changed size during iteration,
         # so use values not itervalues.
-        for legion in self.legions.values():
+        for legion in self.markerid_to_legion.values():
             if not legion.creatures:
                 self.remove_legion(legion.markerid)
 
@@ -304,7 +305,7 @@ class Player(Observed):
     @property
     def can_recruit(self):
         """Return True if any of this player's legions can recruit."""
-        for legion in self.legions.itervalues():
+        for legion in self.markerid_to_legion.itervalues():
             if legion.moved and legion.can_recruit:
                 return True
         return False
@@ -410,7 +411,7 @@ class Player(Observed):
         self.movement_roll = None
         self.summoned = False
         self.last_donor = None
-        for legion in self.legions.itervalues():
+        for legion in self.markerid_to_legion.itervalues():
             legion.moved = False
             legion.teleported = False
             legion.entry_side = None
@@ -420,20 +421,21 @@ class Player(Observed):
     def remove_legion(self, markerid):
         """Remove the legion with markerid."""
         assert type(markerid) == str
-        if markerid in self.legions:
-            legion = self.legions[markerid]
+        if markerid in self.markerid_to_legion:
+            legion = self.markerid_to_legion[markerid]
             legion.remove_observer(self)
-            del self.legions[markerid]
+            del self.markerid_to_legion[markerid]
             del legion
             self.markerids.add(markerid)
 
     def die(self, scoring_legion, check_for_victory):
         log("die", self, scoring_legion, check_for_victory)
-        points = sum(legion.score for legion in self.legions.itervalues())
+        points = sum(legion.score for legion in
+          self.markerid_to_legion.itervalues())
         half_points = points // 2
         scoring_legion.add_points(half_points, False)
         # Make a list to avoid changing size while iterating.
-        for legion in self.legions.values():
+        for legion in self.markerid_to_legion.values():
             self.remove_legion(legion.markerid)
         scoring_legion.player.eliminated_colors.add(self.color_abbrev)
         scoring_legion.player.markerids.update(self.markerids)

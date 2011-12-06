@@ -241,13 +241,13 @@ def test_engaged():
     player1.color = "Red"
     game.players.append(player1)
     legion1 = Legion.Legion(player1, "Rd01", creatures, 1)
-    player1.legions[legion1.markerid] = legion1
+    player1.markerid_to_legion[legion1.markerid] = legion1
 
     player2 = Player.Player("p2", game, 1)
     player2.color = "Blue"
     game.players.append(player2)
     legion2 = Legion.Legion(player2, "Bu01", creatures, 2)
-    player2.legions[legion2.markerid] = legion2
+    player2.markerid_to_legion[legion2.markerid] = legion2
     assert not legion1.engaged
     assert not legion2.engaged
 
@@ -264,14 +264,14 @@ def test_can_summon():
     player1.assign_color("Red")
     game.players.append(player1)
     legion1 = Legion.Legion(player1, "Rd01", creatures, 1)
-    player1.legions[legion1.markerid] = legion1
+    player1.markerid_to_legion[legion1.markerid] = legion1
     assert not legion1.can_summon
 
     player1.split_legion("Rd01", "Rd02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
     assert legion1.can_summon
-    legion2 = player1.legions["Rd02"]
+    legion2 = player1.markerid_to_legion["Rd02"]
     legion2.move(2, False, None, 1)
     assert legion1.can_summon
     assert not legion2.can_summon

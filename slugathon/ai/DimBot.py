@@ -38,11 +38,11 @@ class DimBot(object):
         log("pick_marker")
         player = game.get_player_by_name(playername)
         if markerid is None:
-            if not player.legions:
+            if not player.markerid_to_legion:
                 self.maybe_pick_first_marker(game, playername)
         else:
             player.pick_marker(markerid)
-            if not player.legions:
+            if not player.markerid_to_legion:
                 def1 = self.user.callRemote("pick_first_marker", game.name,
                   markerid)
                 def1.addErrback(self.failure)
@@ -62,7 +62,7 @@ class DimBot(object):
         log("split")
         if game.active_player.name == self.playername:
             player = game.active_player
-            for legion in player.legions.itervalues():
+            for legion in player.markerid_to_legion.itervalues():
                 if len(legion) == 8:
                     # initial split 4-4, one lord per legion
                     new_markerid = self._choose_marker(player)
@@ -104,7 +104,7 @@ class DimBot(object):
         """For now, try to move all legions."""
         assert game.active_player.name == self.playername
         player = game.active_player
-        legions = player.legions.values()
+        legions = player.markerid_to_legion.values()
         move = None
         for legion in legions:
             if not legion.moved:
@@ -282,7 +282,7 @@ class DimBot(object):
         log("recruit")
         assert game.active_player.name == self.playername
         player = game.active_player
-        for legion in player.legions.itervalues():
+        for legion in player.markerid_to_legion.itervalues():
             if legion.moved and legion.can_recruit:
                 masterhex = game.board.hexes[legion.hexlabel]
                 caretaker = game.caretaker
@@ -356,7 +356,7 @@ class DimBot(object):
         summonables = []
         if (legion.can_summon and game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
-            for legion2 in legion.player.legions.itervalues():
+            for legion2 in legion.player.markerid_to_legion.itervalues():
                 if not legion2.engaged:
                     for creature in legion2.creatures:
                         if creature.summonable:
@@ -387,7 +387,7 @@ class DimBot(object):
         summonables = []
         if (legion.can_summon and game.first_attacker_kill in
           [game.battle_turn - 1, game.battle_turn]):
-            for legion2 in legion.player.legions.itervalues():
+            for legion2 in legion.player.markerid_to_legion.itervalues():
                 if not legion2.engaged:
                     for creature in legion2.creatures:
                         if creature.summonable:
@@ -409,7 +409,7 @@ class DimBot(object):
     def acquire_angel(self, game, markerid, num_angels, num_archangels):
         log("acquire_angel", markerid, num_angels, num_archangels)
         player = game.get_player_by_name(self.playername)
-        legion = player.legions[markerid]
+        legion = player.markerid_to_legion[markerid]
         starting_height = len(legion)
         acquires = 0
         angel_names = []

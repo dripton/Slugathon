@@ -104,7 +104,7 @@ def test_titan_power():
     player.pick_marker("Rd01")
     assert player.selected_markerid == "Rd01"
     player.create_starting_legion()
-    legion = player.legions["Rd01"]
+    legion = player.markerid_to_legion["Rd01"]
     for creature in legion.creatures:
         if creature.name == "Titan":
             titan = creature

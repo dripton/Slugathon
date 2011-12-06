@@ -79,7 +79,7 @@ class Legion(Observed):
         """
         if len(self) >= 7 or self.player.summoned or self.dead:
             return False
-        for legion in self.player.legions.itervalues():
+        for legion in self.player.markerid_to_legion.itervalues():
             if legion != self and not legion.engaged and legion.any_summonable:
                 return True
         return False

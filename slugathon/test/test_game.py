@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -40,7 +40,7 @@ class TestGame(object):
     def test_find_normal_moves(self):
         game = self.game
         player = self.game.players[0]
-        legion = player.legions["Rd01"]
+        legion = player.markerid_to_legion["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = self.game.find_normal_moves(legion, masterhex, 1)
@@ -64,7 +64,7 @@ class TestGame(object):
     def test_find_all_teleport_moves(self):
         game = self.game
         player = game.players[0]
-        legion = player.legions["Rd01"]
+        legion = player.markerid_to_legion["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = game.find_all_teleport_moves(legion, masterhex, 1)
@@ -73,7 +73,7 @@ class TestGame(object):
     def test_find_all_teleport_moves2(self):
         game = self.game
         player = game.players[0]
-        legion = player.legions["Rd01"]
+        legion = player.markerid_to_legion["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = game.find_all_teleport_moves(legion, masterhex, 6)
@@ -90,7 +90,7 @@ class TestGame(object):
     def test_find_all_moves(self):
         game = self.game
         player = game.players[0]
-        legion = player.legions["Rd01"]
+        legion = player.markerid_to_legion["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = game.find_all_moves(legion, masterhex, 1)
@@ -99,7 +99,7 @@ class TestGame(object):
     def test_find_all_moves2(self):
         game = self.game
         player = game.players[0]
-        legion = player.legions["Rd01"]
+        legion = player.markerid_to_legion["Rd01"]
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = game.find_all_moves(legion, masterhex, 6)
@@ -118,7 +118,7 @@ class TestGame(object):
     def test_can_move_legion(self):
         game = self.game
         player = game.players[0]
-        legion = player.legions["Rd01"]
+        legion = player.markerid_to_legion["Rd01"]
         player.movement_roll = 1
         assert game.can_move_legion(player, legion, 6, 5, False, None)
         assert game.can_move_legion(player, legion, 10, 1, False, None)
@@ -128,7 +128,7 @@ class TestGame(object):
     def test_can_move_legion2(self):
         game = self.game
         player = game.players[0]
-        legion = player.legions["Rd01"]
+        legion = player.markerid_to_legion["Rd01"]
         player.movement_roll = 6
         assert game.can_move_legion(player, legion, 15, 1, False, None)
         assert game.can_move_legion(player, legion, 11, 5, False, None)

@@ -58,7 +58,7 @@ class CleverBot(DimBot.DimBot):
             log("called split out of turn; exiting")
             return
         player = game.active_player
-        legions = player.legions.values()
+        legions = player.markerid_to_legion.values()
         caretaker = game.caretaker
         for legion in legions:
             if len(legion) == 8:
@@ -125,7 +125,7 @@ class CleverBot(DimBot.DimBot):
         log("move_legions")
         assert game.active_player.name == self.playername
         player = game.active_player
-        legions = player.legions.values()
+        legions = player.markerid_to_legion.values()
         if not player.moved_legions:
             # (score, legion, hexlabel, entry_side)
             self.best_moves = []

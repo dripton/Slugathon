@@ -147,11 +147,11 @@ class Client(pb.Referenceable, Observed):
         game = self.name_to_game(game_name)
         player = game.get_player_by_name(username)
         if markerid is None:
-            if not player.legions:
+            if not player.markerid_to_legion:
                 self._maybe_pick_first_marker(game, username)
         else:
             player.pick_marker(markerid)
-            if not player.legions:
+            if not player.markerid_to_legion:
                 def1 = self.user.callRemote("pick_first_marker", game_name,
                   markerid)
                 def1.addErrback(self.failure)

@@ -141,12 +141,12 @@ def test_score_legion_move_brush():
     player0.split_legion("Rd01", "Rd02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
-    rd01 = player0.legions["Rd01"]
+    rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
-    bu01 = player1.legions["Bu01"]
+    bu01 = player1.markerid_to_legion["Bu01"]
     rd01.creatures.append(Creature.Creature("Ranger"))
     rd01.creatures.append(Creature.Creature("Gorgon"))
     bu01.creatures.append(Creature.Creature("Ranger"))
@@ -409,12 +409,12 @@ def test_score_legion_move_plain():
     player0.split_legion("Rd01", "Rd02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
-    rd01 = player0.legions["Rd01"]
+    rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
-    bu01 = player1.legions["Bu01"]
+    bu01 = player1.markerid_to_legion["Bu01"]
     rd01.creatures.append(Creature.Creature("Ranger"))
     rd01.creatures.append(Creature.Creature("Gorgon"))
     bu01.creatures.append(Creature.Creature("Ranger"))
@@ -621,12 +621,12 @@ def test_score_legion_move_swamp():
     player0.split_legion("Rd01", "Rd02",
       ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Centaur", "Gargoyle"])
-    rd01 = player0.legions["Rd01"]
+    rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
       ["Titan", "Centaur", "Gargoyle", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Ogre"])
-    bu01 = player1.legions["Bu01"]
+    bu01 = player1.markerid_to_legion["Bu01"]
     rd01.creatures.append(Creature.Creature("Troll"))
     rd01.creatures.append(Creature.Creature("Troll"))
     rd01.creatures.append(Creature.Creature("Troll"))
@@ -819,14 +819,14 @@ def test_score_move_scary_pursuer():
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
     player0.done_with_splits()
-    rd01 = player0.legions["Rd01"]
+    rd01 = player0.markerid_to_legion["Rd01"]
 
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
-    bu01 = player1.legions["Bu01"]
-    bu02 = player1.legions["Bu02"]
+    bu01 = player1.markerid_to_legion["Bu01"]
+    bu02 = player1.markerid_to_legion["Bu02"]
     player0.done_with_splits()
 
     bu01.creatures.append(Creature.Creature("Ogre"))

@@ -42,7 +42,7 @@ class SummonAngel(gtk.Dialog):
         bottom_label = gtk.Label("Click one to summon it.")
         self.vbox.pack_start(bottom_label)
 
-        for legion2 in player.legions.itervalues():
+        for legion2 in player.markerid_to_legion.itervalues():
             if (legion2.any_summonable and not legion2.engaged and
               legion2 != legion):
                 hbox = gtk.HBox(spacing=3)
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     legion4 = Legion.Legion(player, "Rd04", creatures4, 4)
     legion5 = Legion.Legion(player, "Rd05", creatures5, 4)
     for legion in [legion1, legion2, legion3, legion4, legion5]:
-        player.legions[legion.markerid] = legion
+        player.markerid_to_legion[legion.markerid] = legion
 
     def my_callback((legion, donor, creature)):
         log("Will summon", creature, "from", donor, "into", legion)

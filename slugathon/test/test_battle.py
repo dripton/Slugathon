@@ -27,12 +27,12 @@ class TestBattle(object):
         self.player0.split_legion("Rd01", "Rd02",
           ["Titan", "Centaur", "Ogre", "Gargoyle"],
           ["Angel", "Centaur", "Ogre", "Gargoyle"])
-        self.rd01 = self.player0.legions["Rd01"]
+        self.rd01 = self.player0.markerid_to_legion["Rd01"]
         self.player1.pick_marker("Bu02")
         self.player1.split_legion("Bu01", "Bu02",
           ["Titan", "Centaur", "Ogre", "Gargoyle"],
           ["Angel", "Centaur", "Ogre", "Gargoyle"])
-        self.bu01 = self.player1.legions["Bu01"]
+        self.bu01 = self.player1.markerid_to_legion["Bu01"]
 
     def test_battle_init(self):
         self.rd01.move(6, False, None, 3)
@@ -422,9 +422,9 @@ class TestBattle(object):
     def test_strikes_plain2(self):
         rd02 = Legion.Legion(self.player0, "Rd02", Creature.n2c(["Angel",
           "Ranger"]), 1)
-        self.player0.legions["Rd02"] = rd02
+        self.player0.markerid_to_legion["Rd02"] = rd02
         bu02 = Legion.Legion(self.player0, "Bu02", Creature.n2c(["Troll"]), 1)
-        self.player1.legions["Bu02"] = bu02
+        self.player1.markerid_to_legion["Bu02"] = bu02
         troll1 = bu02.creatures[0]
         angel1 = rd02.creatures[0]
         ranger1 = rd02.creatures[1]

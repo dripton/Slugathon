@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2009-2010 David Ripton"
+__copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -87,12 +87,12 @@ if __name__ == "__main__":
     player0.split_legion("Rd01", "Rd02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
-    rd01 = player0.legions["Rd01"]
+    rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
       ["Titan", "Centaur", "Ogre", "Gargoyle"],
       ["Angel", "Centaur", "Ogre", "Gargoyle"])
-    bu01 = player1.legions["Bu01"]
+    bu01 = player1.markerid_to_legion["Bu01"]
 
     rd01.move(6, False, None, 3)
     bu01.move(6, False, None, 3)

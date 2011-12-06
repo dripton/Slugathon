@@ -17,7 +17,7 @@ def test_can_exit_split_phase():
     player.pick_marker("Rd01")
     assert player.selected_markerid == "Rd01"
     player.create_starting_legion()
-    assert len(player.legions) == 1
+    assert len(player.markerid_to_legion) == 1
     assert not player.can_exit_split_phase
 
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
@@ -33,10 +33,10 @@ def test_friendly_legions():
     player.assign_color("Red")
     player.pick_marker("Rd01")
     player.create_starting_legion()
-    legion1 = player.legions["Rd01"]
+    legion1 = player.markerid_to_legion["Rd01"]
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Gargoyle", "Centaur", "Centaur"])
-    legion2 = player.legions["Rd02"]
+    legion2 = player.markerid_to_legion["Rd02"]
     assert player.friendly_legions() == set([legion1, legion2])
     assert player.friendly_legions(100) == set([legion1, legion2])
     assert player.friendly_legions(200) == set()
@@ -60,10 +60,10 @@ def test_can_exit_move_phase():
     player.assign_color("Red")
     player.pick_marker("Rd01")
     player.create_starting_legion()
-    legion1 = player.legions["Rd01"]
+    legion1 = player.markerid_to_legion["Rd01"]
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Gargoyle", "Centaur", "Centaur"])
-    legion2 = player.legions["Rd02"]
+    legion2 = player.markerid_to_legion["Rd02"]
     assert not player.can_exit_move_phase
     legion1.move(8, False, None, 1)
     assert player.can_exit_move_phase
@@ -98,8 +98,8 @@ def test_teleported():
     assert not player.teleported
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
       ["Angel", "Gargoyle", "Centaur", "Centaur"])
-    legion1 = player.legions["Rd01"]
-    legion2 = player.legions["Rd02"]
+    legion1 = player.markerid_to_legion["Rd01"]
+    legion2 = player.markerid_to_legion["Rd02"]
     legion1.move(8, False, None, 1)
     assert not player.teleported
     legion2.move(200, True, "Angel", 3)
