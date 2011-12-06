@@ -560,18 +560,18 @@ class GUIMasterBoard(gtk.Window):
 
     def _add_missing_markers(self):
         """Add markers for any legions that lack them."""
-        markerids_left = set((marker.name for marker in self.markers))
+        markerids = set((marker.name for marker in self.markers))
         for legion in self.game.all_legions():
-            if legion.markerid not in markerids_left:
+            if legion.markerid not in markerids:
                 marker = Marker.Marker(legion, True, self.scale)
                 self.markers.append(marker)
 
     def _remove_extra_markers(self):
         """Remove markers for any legions that are no longer there."""
-        all_markerids_left = set([legion.markerid for legion in
+        all_markerids = set([legion.markerid for legion in
           self.game.all_legions()])
         hitlist = [marker for marker in self.markers
-          if marker.name not in all_markerids_left]
+          if marker.name not in all_markerids]
         for marker in hitlist:
             self.markers.remove(marker)
 
