@@ -26,7 +26,6 @@ class Legion(Observed):
         self.creatures = creatures
         for creature in self.creatures:
             creature.legion = self
-        # TODO Should we store the actual MasterHex instead?
         self.hexlabel = hexlabel  # an int not a str
         self.player = player
         self.moved = False

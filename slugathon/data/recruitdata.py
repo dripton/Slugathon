@@ -18,7 +18,6 @@ An empty tuple in the list is a break.  Neither up- or
 down-recruiting can cross a break.
 """
 
-# TODO First-class functions rather than magic constants?
 ANYTHING = "anything"
 CREATURE = "creature"
 

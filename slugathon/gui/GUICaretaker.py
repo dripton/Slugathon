@@ -121,7 +121,6 @@ class GUICaretaker(gtk.Dialog):
             creature_name = action.creature_name
             self.update_creature(creature_name)
 
-        # TODO Flee and Concede should reveal loser's creatures
         elif isinstance(action, Action.Flee or
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal) or
