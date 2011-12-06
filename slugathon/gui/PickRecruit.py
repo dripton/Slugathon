@@ -51,10 +51,9 @@ class PickRecruit(gtk.Dialog):
         marker_hbox.pack_start(marker.event_box, expand=False,
           fill=False)
 
-        for creature in legion.sorted_creatures:
-            if not creature.dead:
-                chit = Chit.Chit(creature, player.color, scale=20)
-                chits_hbox.pack_start(chit.event_box, expand=False)
+        for creature in legion.sorted_living_creatures:
+            chit = Chit.Chit(creature, player.color, scale=20)
+            chits_hbox.pack_start(chit.event_box, expand=False)
 
         recruit_tups = legion.available_recruits_and_recruiters(mterrain,
           caretaker)

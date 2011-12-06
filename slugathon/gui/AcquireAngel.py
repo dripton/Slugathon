@@ -75,12 +75,11 @@ class AcquireAngel(gtk.Dialog):
         chits_hbox = gtk.HBox(spacing=3)
         legion_hbox.pack_start(chits_hbox, expand=True)
 
-        for creature in legion.sorted_creatures:
+        for creature in legion.sorted_living_creatures:
             # XXX This is the wrong place to do this.
-            if not creature.dead:
-                creature.heal()
-                chit = Chit.Chit(creature, player.color, scale=20)
-                chits_hbox.pack_start(chit.event_box, expand=False)
+            creature.heal()
+            chit = Chit.Chit(creature, player.color, scale=20)
+            chits_hbox.pack_start(chit.event_box, expand=False)
 
         angel_combos = find_angel_combos(num_archangels, num_angels,
           caretaker.num_left("Archangel"), caretaker.num_left("Angel"))

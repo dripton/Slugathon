@@ -53,10 +53,9 @@ class PickMoveType(gtk.Dialog):
         chits_hbox = gtk.HBox(spacing=3)
         legion_hbox.pack_start(chits_hbox)
 
-        for creature in legion.sorted_creatures:
-            if not creature.dead:
-                chit = Chit.Chit(creature, player.color, scale=20)
-                chits_hbox.pack_start(chit.event_box, expand=False)
+        for creature in legion.sorted_living_creatures:
+            chit = Chit.Chit(creature, player.color, scale=20)
+            chits_hbox.pack_start(chit.event_box, expand=False)
 
         button_hbox = gtk.HBox(homogeneous=True)
         self.vbox.pack_start(button_hbox)
