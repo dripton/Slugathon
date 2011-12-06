@@ -309,8 +309,8 @@ class Game(Observed):
         Once all players have done this, create the starting legions.
         """
         player = self.get_player_by_name(playername)
-        log(player.markerids)
-        if markerid not in player.markerids:
+        log(player.markerids_left)
+        if markerid not in player.markerids_left:
             raise AssertionError("marker not available")
         player.pick_marker(markerid)
         if self.done_assigning_first_markers:

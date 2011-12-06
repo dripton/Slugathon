@@ -417,12 +417,12 @@ class GUIMasterBoard(gtk.Window):
                 elif player.selected_markerid:
                     self.split_legion(legion)
                 else:
-                    if not player.markerids:
+                    if not player.markerids_left:
                         InfoDialog.InfoDialog(self, "Info",
                           "No markers available")
                         return
                     _, def1 = PickMarker.new(self.username, self.game.name,
-                      player.markerids, self)
+                      player.markerids_left, self)
                     def1.addCallback(self.picked_marker_presplit, legion)
 
             elif phase == Phase.MOVE:
@@ -560,18 +560,18 @@ class GUIMasterBoard(gtk.Window):
 
     def _add_missing_markers(self):
         """Add markers for any legions that lack them."""
-        markerids = set((marker.name for marker in self.markers))
+        markerids_left = set((marker.name for marker in self.markers))
         for legion in self.game.all_legions():
-            if legion.markerid not in markerids:
+            if legion.markerid not in markerids_left:
                 marker = Marker.Marker(legion, True, self.scale)
                 self.markers.append(marker)
 
     def _remove_extra_markers(self):
         """Remove markers for any legions that are no longer there."""
-        all_markerids = set([legion.markerid for legion in
+        all_markerids_left = set([legion.markerid for legion in
           self.game.all_legions()])
         hitlist = [marker for marker in self.markers
-          if marker.name not in all_markerids]
+          if marker.name not in all_markerids_left]
         for marker in hitlist:
             self.markers.remove(marker)
 
@@ -767,7 +767,7 @@ class GUIMasterBoard(gtk.Window):
         player = self.game.get_player_by_name(self.username)
         if player == self.game.active_player:
             self.unselect_all()
-            if player.markerids:
+            if player.markerids_left:
                 for legion in player.legions:
                     if len(legion) >= 7:
                         self.repaint_hexlabels.add(legion.hexlabel)

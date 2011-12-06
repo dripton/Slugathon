@@ -13,7 +13,7 @@ def test_can_exit_split_phase():
     player = Player.Player("p0", game, 0)
     player.assign_starting_tower(600)
     player.assign_color("Red")
-    assert len(player.markerids) == 12
+    assert len(player.markerids_left) == 12
     player.pick_marker("Rd01")
     assert player.selected_markerid == "Rd01"
     player.create_starting_legion()
@@ -77,7 +77,7 @@ def test_num_creatures():
     player = Player.Player("p0", game, 0)
     player.assign_starting_tower(600)
     player.assign_color("Red")
-    assert len(player.markerids) == 12
+    assert len(player.markerids_left) == 12
     player.pick_marker("Rd01")
     assert player.selected_markerid == "Rd01"
     player.create_starting_legion()
@@ -90,7 +90,7 @@ def test_teleported():
     player = Player.Player("p0", game, 0)
     player.assign_starting_tower(600)
     player.assign_color("Red")
-    assert len(player.markerids) == 12
+    assert len(player.markerids_left) == 12
     player.pick_marker("Rd01")
     assert player.selected_markerid == "Rd01"
     player.create_starting_legion()

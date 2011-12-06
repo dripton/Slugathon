@@ -50,12 +50,12 @@ class DimBot(object):
     def _choose_marker(self, player):
         """Pick a legion marker randomly, except prefer my own markers
         to captured ones to be less annoying."""
-        own_markerids = [name for name in player.markerids if name[:2] ==
-          player.color_abbrev]
-        if own_markerids:
-            return random.choice(own_markerids)
+        own_markerids_left = [name for name in player.markerids_left if
+          name[:2] == player.color_abbrev]
+        if own_markerids_left:
+            return random.choice(own_markerids_left)
         else:
-            return random.choice(list(player.markerids))
+            return random.choice(list(player.markerids_left))
 
     def split(self, game):
         """Split if it's my turn."""
@@ -82,7 +82,7 @@ class DimBot(object):
                       old_creatures, new_creatures)
                     def1.addErrback(self.failure)
                     return
-                elif len(legion) == 7 and player.markerids:
+                elif len(legion) == 7 and player.markerids_left:
                     # Always split 5-2.  (DimBot is dim.)
                     new_markerid = self._choose_marker(player)
                     lst = legion.sorted_creatures

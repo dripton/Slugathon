@@ -136,8 +136,8 @@ class Client(pb.Referenceable, Observed):
     def _maybe_pick_first_marker(self, game, playername):
         if playername == self.username:
             player = game.get_player_by_name(playername)
-            markerids = sorted(player.markerids.copy())
-            _, def1 = PickMarker.new(self.username, game.name, markerids,
+            markerids_left = sorted(player.markerids_left.copy())
+            _, def1 = PickMarker.new(self.username, game.name, markerids_left,
               self.guiboards[game])
             def1.addCallback(self.pick_marker)
             self.pickcolor = None

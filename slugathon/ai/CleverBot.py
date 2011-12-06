@@ -79,7 +79,7 @@ class CleverBot(DimBot.DimBot):
                   old_creatures, new_creatures)
                 def1.addErrback(self.failure)
                 return
-            elif len(legion) == 7 and player.markerids:
+            elif len(legion) == 7 and player.markerids_left:
                 good_recruit_rolls = set()
                 safe_split_rolls = set()
                 lst = legion.sorted_creatures
