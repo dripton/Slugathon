@@ -605,8 +605,9 @@ class CleverBot(DimBot.DimBot):
                 distance = battlemap.range(creature.hexlabel, entrance,
                   allow_entrance=True) - 2
                 penalty = distance * TITAN_FORWARD_PENALTY
-                score += penalty
-                log(creature, "TITAN_FORWARD_PENALTY", penalty)
+                if penalty:
+                    score += penalty
+                    log(creature, "TITAN_FORWARD_PENALTY", penalty)
 
             # Make defenders hang back early.
             if (legion == game.defender_legion and game.battle_turn < 4 and
@@ -615,8 +616,9 @@ class CleverBot(DimBot.DimBot):
                 distance = battlemap.range(creature.hexlabel, entrance,
                   allow_entrance=True) - 2
                 penalty = distance * DEFENDER_FORWARD_PENALTY
-                score += penalty
-                log(creature, "DEFENDER_FORWARD_PENALTY", penalty)
+                if penalty:
+                    score += penalty
+                    log(creature, "DEFENDER_FORWARD_PENALTY", penalty)
 
             # terrain
             if battlehex.elevation:
@@ -683,12 +685,15 @@ class CleverBot(DimBot.DimBot):
                       NON_NATIVE_DUNE_PENALTY)
 
             # allies
+            num_adjacent_allies = 0
             for neighbor in battlehex.neighbors.itervalues():
                 for ally in legion.living_creatures:
                     if ally.hexlabel == neighbor.label:
-                        score += ADJACENT_ALLY_BONUS
-                        log(creature, "ADJACENT_ALLY_BONUS",
-                          ADJACENT_ALLY_BONUS)
+                        num_adjacent_allies += 1
+            adjacent_allies_bonus = num_adjacent_allies * ADJACENT_ALLY_BONUS
+            if adjacent_allies_bonus:
+                score += adjacent_allies_bonus
+                log(creature, "ADJACENT_ALLY_BONUS", adjacent_allies_bonus)
 
         return score
 
