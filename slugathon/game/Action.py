@@ -134,7 +134,7 @@ class SplitLegion(Action):
     def __init__(self, game_name, playername, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names):
         """parent_creature_names and child_creature_names are lists of the
-        actual creature names if known, or lists of height * None if not known
+        actual creature names or "Unknown".
         """
         self.game_name = game_name
         self.playername = playername
@@ -295,8 +295,6 @@ class UndoRecruit(UndoAction):
 pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)
 
 
-# TODO Act on this action.  Currently meaningless since all legion contents
-# are public.
 class RevealLegion(Action):
     def __init__(self, game_name, markerid, creature_names):
         self.game_name = game_name

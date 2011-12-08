@@ -106,10 +106,16 @@ def test_is_legal_split():
 
     parent2 = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
       "Gargoyle", "Ogre", "Troll", "Centaur"]), 1)
-    child3 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
+    child3 = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
       "Gargoyle", "Ogre", "Troll"]), 1)
     child4 = Legion.Legion(player, "Rd03", Creature.n2c(["Centaur"]), 1)
     assert not parent2.is_legal_split(child3, child4)
+
+    child5 = Legion.Legion(player, "Rd01", Creature.n2c(["Unknown",
+      "Unknown", "Unknown", "Unknown"]), 1)
+    child6 = Legion.Legion(player, "Rd03", Creature.n2c(["Unknown",
+      "Unknown", "Unknown", "Unknown"]), 1)
+    assert parent.is_legal_split(child5, child6)
 
 
 def test_could_recruit():

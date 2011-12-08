@@ -193,13 +193,16 @@ class Legion(Observed):
             return False
         if len(child1) < 2 or len(child2) < 2:
             return False
-        if not bag(self.creature_names) == bag(child1.creature_names +
-          child2.creature_names):
+        if bag(self.creature_names) != bag(child1.creature_names +
+          child2.creature_names) and bag(child1.creature_names).union(bag(
+          child2.creature_names)) != bag({"Unknown": len(self)}):
             return False
         if len(self) == 8:
             if len(child1) != 4 or len(child2) != 4:
                 return False
-            if child1.num_lords != 1 or child2.num_lords != 1:
+            if ((child1.num_lords != 1 or child2.num_lords != 1) and
+              ((bag(child1.creature_names) != bag({"Unknown": 4}) or
+              bag(child2.creature_names) != bag({"Unknown": 4})))):
                 return False
         return True
 
@@ -379,6 +382,17 @@ class Legion(Observed):
             if not caretaker.num_left(creature.name):
                 raise AssertionError("none of creature left")
             caretaker.take_one(creature.name)
+            if self.any_unknown:
+                bag1 = bag(self.creature_names)
+                bag2 = bag(recruiter_names)
+                for creature_name, count2 in bag2.iteritems():
+                    count1 = bag1[creature_name]
+                    while count2 > count1 and self.any_unknown:
+                        self.creatures.remove(Creature.Creature("Unknown"))
+                        recruiter = Creature.Creature(creature_name)
+                        self.creatures.append(recruiter)
+                        recruiter.legion = self
+                        count2 -= 1
             self.creatures.append(creature)
             self.recruiter_names_list.append(recruiter_names)
             creature.legion = self

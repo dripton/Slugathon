@@ -337,7 +337,10 @@ class Game(Observed):
     def split_legion(self, playername, parent_markerid, child_markerid,
       parent_creature_names, child_creature_names):
         """Split legion child_markerid containing child_creature_names off
-        of legion parent_markerid, leaving parent_creature_names."""
+        of legion parent_markerid, leaving parent_creature_names.
+
+        Called from Server.
+        """
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("splitting out of turn")
@@ -1498,6 +1501,10 @@ class Game(Observed):
             log("ResolvingEngagement; reset_angels_pending")
             for player in self.players:
                 player.reset_angels_pending()
+
+        elif isinstance(action, Action.RevealLegion):
+            legion = self.find_legion(action.markerid)
+            legion.creatures = Creature.n2c(action.creature_names)
 
         elif isinstance(action, Action.Flee):
             legion = self.find_legion(action.markerid)

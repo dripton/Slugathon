@@ -74,12 +74,14 @@ class CleverBot(DimBot.DimBot):
                 old_creatures = legion.creature_names
                 for creature in new_creatures:
                     old_creatures.remove(creature)
+                log("new_creatures", new_creatures, "old_creatures",
+                  old_creatures)
                 def1 = self.user.callRemote("split_legion", game.name,
-                  legion.markerid, new_markerid,
-                  old_creatures, new_creatures)
+                  legion.markerid, new_markerid, old_creatures, new_creatures)
                 def1.addErrback(self.failure)
                 return
             elif len(legion) == 7 and player.markerids_left:
+                log("7-high")
                 good_recruit_rolls = set()
                 safe_split_rolls = set()
                 lst = legion.sorted_creatures
@@ -353,9 +355,9 @@ class CleverBot(DimBot.DimBot):
         """
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
-        log("_find_best_creature_moves", legion)
-        movesets = []  # list of a set of hexlabels for each creature
         creatures = legion.sorted_living_creatures
+        log("_find_best_creature_moves", legion, creatures)
+        movesets = []  # list of a set of hexlabels for each creature
         prev_creature = None
         moveset = None
         for creature in creatures:
