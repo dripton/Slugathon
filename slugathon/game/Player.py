@@ -316,7 +316,9 @@ class Player(Observed):
                 self.remove_legion(legion.markerid)
 
     def done_with_engagements(self):
+        log("done_with_engagements")
         if self.can_exit_fight_phase:
+            log("can exit fight phase")
             action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 

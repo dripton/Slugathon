@@ -62,6 +62,7 @@ class CleverBot(DimBot.DimBot):
         for legion in player.legions:
             if len(legion) == 8:
                 # initial split 4-4, one lord per legion
+                log("initial split")
                 new_markerid = self._choose_marker(player)
                 lord = random.choice(["Titan", "Angel"])
                 creatures = ["Centaur", "Gargoyle", "Ogre"]
