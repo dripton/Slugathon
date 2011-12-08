@@ -97,7 +97,7 @@ def test_is_legal_split():
     player = Player.Player("p0", game, 0)
 
     parent = Legion.Legion(player, "Rd01", creatures, 1)
-    child1 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
+    child1 = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
       "Gargoyle", "Ogre", "Ogre"]), 1)
     child2 = Legion.Legion(player, "Rd03", Creature.n2c(["Angel",
       "Gargoyle", "Centaur", "Centaur"]), 1)
@@ -231,6 +231,25 @@ def test_any_summonable():
       "Ogre", "Ranger", "Minotaur"])
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert not legion.any_summonable
+
+
+def test_unknown():
+    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
+      "Ogre", "Ranger", "Minotaur"])
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    assert not legion.any_unknown
+    assert not legion.all_unknown
+
+    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
+      "Ogre", "Ranger", "Unknown"])
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    assert legion.any_unknown
+    assert not legion.all_unknown
+
+    creatures = Creature.n2c(8 * ["Unknown"])
+    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    assert legion.any_unknown
+    assert legion.all_unknown
 
 
 def test_engaged():

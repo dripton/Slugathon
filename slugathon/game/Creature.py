@@ -150,6 +150,10 @@ class Creature(object):
     def is_creature(self):
         return self.character_type == "creature"
 
+    @property
+    def is_unknown(self):
+        return self.character_type == "unknown"
+
     def _hexlabel_to_enemy(self):
         """Return a dict of hexlabel: live enemy Creature"""
         hexlabel_to_enemy = {}

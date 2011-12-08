@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2010 David Ripton"
+__copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -18,9 +18,10 @@ class Caretaker(object):
         self.graveyard = {}
         for creature_name in creaturedata.data:
             creature = Creature.Creature(creature_name)
-            self.counts[creature.name] = creature.max_count
-            self.max_counts[creature.name] = creature.max_count
-            self.graveyard[creature.name] = 0
+            if not creature.is_unknown:
+                self.counts[creature.name] = creature.max_count
+                self.max_counts[creature.name] = creature.max_count
+                self.graveyard[creature.name] = 0
 
     def num_left(self, creature_name):
         """Return the number of creature_name left in the stacks."""
