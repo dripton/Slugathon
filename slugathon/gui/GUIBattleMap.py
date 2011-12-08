@@ -710,8 +710,8 @@ class GUIBattleMap(gtk.Window):
                 chit.build_image()
         self.repaint([hexlabel])
 
-    def update(self, observed, action):
-        log("update", observed, action)
+    def update(self, observed, action, names):
+        log("update", observed, action, names)
 
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):

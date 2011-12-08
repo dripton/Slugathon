@@ -109,14 +109,14 @@ class Client(pb.Referenceable, Observed):
     def remote_receive_chat_message(self, text):
         self.anteroom.receive_chat_message(text)
 
-    def remote_update(self, action):
+    def remote_update(self, action, names):
         """Near-IObserver on the remote User, except observed is
         not passed remotely.
 
         Delegates to update to honor the interface.
         """
         observed = None
-        self.update(observed, action)
+        self.update(observed, action, names)
 
     def _maybe_pick_color(self, game):
         if (game.next_playername_to_pick_color == self.username and
@@ -161,7 +161,7 @@ class Client(pb.Referenceable, Observed):
           self.user, self.username)
         game.add_observer(self.guiboards[game])
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
         log("update", action)
@@ -195,4 +195,4 @@ class Client(pb.Referenceable, Observed):
                 log("Game %s over, draw" % action.game_name)
                 # XXX When do we call self.remove_game?
 
-        self.notify(action)
+        self.notify(action, names)

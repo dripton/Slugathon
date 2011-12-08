@@ -40,7 +40,7 @@ class BattleDice(gtk.EventBox):
         column = ii % self.columns
         return (row, column)
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         if isinstance(action, Action.Strike):
             rolls = sorted(action.rolls, reverse=True)
             changed = False

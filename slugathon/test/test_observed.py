@@ -13,7 +13,7 @@ update_counter = 0
 
 @implementer(IObserver)
 class MyObserver():
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         global update_counter
         update_counter += 1
 
@@ -28,7 +28,7 @@ def test_observed():
     observed = MyObserved()
 
     assert update_counter == 0
-    observer.update(None, None)
+    observer.update(None, None, None)
     assert update_counter == 1
 
     assert len(observed.observers) == 0

@@ -1002,7 +1002,7 @@ class GUIMasterBoard(gtk.Window):
     def failure(self, arg):
         log("failure", arg)
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         if isinstance(action, Action.PickedColor):
             self._init_status_screen()
             self._init_caretaker()

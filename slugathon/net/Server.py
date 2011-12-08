@@ -416,10 +416,9 @@ class Server(Observed):
         if game:
             game.save(username)
 
-    def update(self, observed, action):
-        if isinstance(action, Action.MakeProposal):
-            self.notify(action, [action.other_playername])
-        elif (isinstance(action, Action.AssignTower) or
+    def update(self, observed, action, names):
+        log("update", observed, action, names)
+        if (isinstance(action, Action.AssignTower) or
           isinstance(action, Action.AssignedAllTowers) or
           isinstance(action, Action.PickedColor) or
           isinstance(action, Action.AssignedAllColors) or
@@ -443,6 +442,7 @@ class Server(Observed):
           isinstance(action, Action.DoNotFlee) or
           isinstance(action, Action.Concede) or
           isinstance(action, Action.Fight) or
+          isinstance(action, Action.MakeProposal) or
           isinstance(action, Action.AcceptProposal) or
           isinstance(action, Action.RejectProposal) or
           isinstance(action, Action.MoveCreature) or
@@ -463,9 +463,9 @@ class Server(Observed):
           isinstance(action, Action.BattleOver) or
           isinstance(action, Action.EliminatePlayer)):
             game = self.name_to_game(action.game_name)
-            self.notify(action, game.playernames)
+            self.notify(action, names or game.playernames)
         else:
-            self.notify(action)
+            self.notify(action, names)
 
 
 class AIProcessProtocol(protocol.ProcessProtocol):

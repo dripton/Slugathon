@@ -110,7 +110,7 @@ class GUICaretaker(gtk.Dialog):
         self.update_counts_label(creature_name, left_count, game_count,
           dead_count)
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         if isinstance(action, Action.CreateStartingLegion):
             for creature_name in set(creaturedata.starting_creature_names):
                 self.update_creature(creature_name)

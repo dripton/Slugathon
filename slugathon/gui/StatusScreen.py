@@ -224,7 +224,7 @@ class StatusScreen(gtk.Dialog):
         self.battle_player_label.set_text("")
         self.battle_phase_label.set_text("")
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         if isinstance(action, Action.AssignedAllTowers):
             # Players got renumbered, so re-init everything.
             self._init_players()

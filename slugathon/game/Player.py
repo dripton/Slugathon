@@ -159,7 +159,15 @@ class Player(Observed):
         action = Action.SplitLegion(self.game.name, self.name,
           parent_markerid, child_markerid, parent_creature_names,
           child_creature_names)
-        self.notify(action)
+        log("action", action)
+        self.notify(action, names=[self.name])
+        action = Action.SplitLegion(self.game.name, self.name,
+          parent_markerid, child_markerid, len(parent_creature_names) *
+          ["Unknown"], len(child_creature_names) * ["Unknown"])
+        log("action", action)
+        other_playernames = self.game.playernames
+        other_playernames.remove(self.name)
+        self.notify(action, names=other_playernames)
 
     def undo_split(self, parent_markerid, child_markerid):
         parent = self.markerid_to_legion[parent_markerid]
@@ -172,12 +180,18 @@ class Player(Observed):
         self.markerids_left.add(child.markerid)
         self.selected_markerid = None
         del child
-        # TODO One action for our player with creature names, and a
+        # One action for our player with creature names, and a
         # different action for other players without.
         action = Action.UndoSplit(self.game.name, self.name,
           parent_markerid, child_markerid, parent_creature_names,
           child_creature_names)
-        self.notify(action)
+        self.notify(action, names=[self.name])
+        action = Action.UndoSplit(self.game.name, self.name,
+          parent_markerid, child_markerid, len(parent_creature_names) *
+          ["Unknown"], len(child_creature_names) * ["Unknown"])
+        other_playernames = self.game.playernames
+        other_playernames.remove(self.name)
+        self.notify(action, names=other_playernames)
 
     @property
     def can_exit_split_phase(self):
@@ -443,6 +457,6 @@ class Player(Observed):
           scoring_legion.player.name, self.name)
         self.notify(action)
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         """Pass updates up to the game"""
-        self.notify(action)
+        self.notify(action, names)

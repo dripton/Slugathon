@@ -183,7 +183,7 @@ class WaitingForPlayers(gtk.Dialog):
         self.game.remove_observer(self)
         self.destroy()
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         if isinstance(action, Action.RemoveGame):
             if action.game_name == self.game.name:
                 self.shutdown()

@@ -285,7 +285,7 @@ class Anteroom(gtk.Window):
             self._add_wfp(game)
         return False
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         if isinstance(action, Action.AddUsername):
             self.update_user_store()
         elif isinstance(action, Action.DelUsername):

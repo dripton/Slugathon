@@ -238,9 +238,9 @@ class User(Avatar):
         log("logout", self.name)
         self.server.remove_observer(self)
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         """Defers updates to its client, dropping the observed reference."""
         if not isinstance(action, Action.DriftDamage):
-            def1 = self.client.callRemote("update", action)
+            def1 = self.client.callRemote("update", action, names)
             def1.addErrback(self.trap_connection_lost)
             def1.addErrback(self.log_failure)

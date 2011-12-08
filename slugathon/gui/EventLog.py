@@ -62,7 +62,7 @@ class EventLog(gtk.Dialog):
               width, height)
         return False
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         st = None
         if action == self.last_action or action in self.reveal_actions:
             pass

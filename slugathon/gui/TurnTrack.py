@@ -105,7 +105,7 @@ class TurnTrack(gtk.DrawingArea):
     def repaint(self):
         self.update_gui()
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         if isinstance(action, Action.StartReinforceBattlePhase):
             self.battle_turn = action.battle_turn
             if action.playername == self.defender.player.name:

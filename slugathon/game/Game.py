@@ -1415,7 +1415,7 @@ class Game(Observed):
                     creature.hexlabel = None
                     # TODO Move to graveyard instead
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         log("update", observed, action)
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
@@ -1668,4 +1668,4 @@ class Game(Observed):
             winner_player.eliminated_colors.add(loser_player.color_abbrev)
             self.check_for_victory()
 
-        self.notify(action)
+        self.notify(action, names)

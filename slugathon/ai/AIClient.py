@@ -146,22 +146,22 @@ class Client(pb.Referenceable, Observed):
     def remote_receive_chat_message(self, text):
         pass
 
-    def remote_update(self, action):
+    def remote_update(self, action, names):
         """Near-IObserver on the remote User, except observed is
         not passed remotely.
 
         Delegates to update to honor the interface.
         """
         observed = None
-        self.update(observed, action)
+        self.update(observed, action, names)
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
         log("update", action)
 
         # Update the Game first, then act.
-        self.notify(action)
+        self.notify(action, names)
 
         if isinstance(action, Action.AddUsername):
             self.usernames.add(action.username)

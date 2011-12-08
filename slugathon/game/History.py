@@ -34,7 +34,7 @@ class History(object):
             return
         self.undone.append(self.actions.pop())
 
-    def update(self, observed, action):
+    def update(self, observed, action, names):
         """Update history with a new action.
 
         observed is part of the interface, but we don't need it.
