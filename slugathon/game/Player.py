@@ -428,6 +428,8 @@ class Player(Observed):
             del legion
             self.markerids_left.add(markerid)
 
+    # XXX Half points for engaged legions go to the player they're engaged
+    # with, not necessarily to scoring_legion
     def die(self, scoring_legion, check_for_victory):
         log("die", self, scoring_legion, check_for_victory)
         points = sum(legion.score for legion in self.legions)
