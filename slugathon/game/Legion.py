@@ -206,6 +206,22 @@ class Legion(Observed):
                 return False
         return True
 
+    def reveal_creatures(self, creature_names):
+        """Reveal the creatures from creature_names, if they're not
+        already known to be in this legion."""
+        log("reveal_creatures", creature_names)
+        if self.any_unknown:
+            bag1 = bag(self.creature_names)
+            bag2 = bag(creature_names)
+            for creature_name, count2 in bag2.iteritems():
+                count1 = bag1[creature_name]
+                while count2 > count1 and self.any_unknown:
+                    self.creatures.remove(Creature.Creature("Unknown"))
+                    creature = Creature.Creature(creature_name)
+                    self.creatures.append(creature)
+                    creature.legion = self
+                    count2 -= 1
+
     def move(self, hexlabel, teleport, teleporting_lord, entry_side):
         """Move this legion on the masterboard"""
         self.moved = True
@@ -214,6 +230,8 @@ class Legion(Observed):
         self.teleported = teleport
         self.teleporting_lord = teleporting_lord
         self.entry_side = entry_side
+        if teleporting_lord:
+            self.reveal_creatures([teleporting_lord])
 
     def undo_move(self):
         """Undo this legion's last masterboard move"""
@@ -382,20 +400,10 @@ class Legion(Observed):
             if not caretaker.num_left(creature.name):
                 raise AssertionError("none of creature left")
             caretaker.take_one(creature.name)
-            if self.any_unknown:
-                bag1 = bag(self.creature_names)
-                bag2 = bag(recruiter_names)
-                for creature_name, count2 in bag2.iteritems():
-                    count1 = bag1[creature_name]
-                    while count2 > count1 and self.any_unknown:
-                        self.creatures.remove(Creature.Creature("Unknown"))
-                        recruiter = Creature.Creature(creature_name)
-                        self.creatures.append(recruiter)
-                        recruiter.legion = self
-                        count2 -= 1
             self.creatures.append(creature)
             self.recruiter_names_list.append(recruiter_names)
             creature.legion = self
+            self.reveal_creatures([creature.name] + list(recruiter_names))
             log(self, "setting self.recruited")
             self.recruited = True
             action = Action.RecruitCreature(player.game.name, player.name,

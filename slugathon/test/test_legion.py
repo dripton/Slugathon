@@ -323,3 +323,31 @@ def test_picname():
     legion = Legion.Legion(player, "Gr12", Creature.n2c(["Gargoyle",
       "Gargoyle", "Centaur", "Centaur"]), 1)
     assert legion.picname == "Ourobouros"
+
+
+def test_reveal_creatures():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+
+    legion = Legion.Legion(player, "Rd01", Creature.n2c(["Unknown",
+      "Unknown", "Unknown", "Unknown"]), 1)
+    legion.reveal_creatures(["Ogre"])
+    assert legion.creature_names == ["Ogre", "Unknown", "Unknown", "Unknown"]
+    legion.reveal_creatures(["Ogre", "Ogre"])
+    assert legion.creature_names == ["Ogre", "Ogre", "Unknown", "Unknown"]
+    legion.reveal_creatures(["Ogre", "Ogre", "Troll"])
+    assert legion.creature_names == ["Ogre", "Ogre", "Troll", "Unknown"]
+    legion.reveal_creatures(["Troll"])
+    assert legion.creature_names == ["Ogre", "Ogre", "Troll", "Unknown"]
+    legion.reveal_creatures(["Troll", "Troll"])
+    assert legion.creature_names == ["Ogre", "Ogre", "Troll", "Troll"]
+    legion.add_creature_by_name("Ranger")
+    legion.reveal_creatures(["Troll", "Troll", "Ranger"])
+    assert legion.creature_names == ["Ogre", "Ogre", "Ranger", "Troll",
+      "Troll"]
+
+    legion = Legion.Legion(player, "Rd01", Creature.n2c(["Unknown",
+      "Unknown", "Unknown", "Unknown"]), 1)
+    legion.reveal_creatures(["Centaur", "Centaur", "Lion"])
+    assert legion.creature_names == ["Centaur", "Centaur", "Lion", "Unknown"]
