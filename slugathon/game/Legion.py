@@ -112,7 +112,7 @@ class Legion(Observed):
         return len(self.living_creature_names)
 
     def __eq__(self, other):
-        return self.markerid == other.markerid
+        return hasattr(other, "markerid") and self.markerid == other.markerid
 
     def __ne__(self, other):
         return not self.__eq__(other)
