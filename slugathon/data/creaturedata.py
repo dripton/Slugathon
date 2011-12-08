@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2009 David Ripton"
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -37,6 +37,7 @@ data = {
 "Warlock": ("Warlocks", 5, 4, 2, 0, "demilord", 0, 0, 6, "hydra_orange"),
 "Wyvern": ("Wyverns", 7, 3, 0, 1, "creature", 0, 0, 18, "colossus_pink"),
 
+"Unknown": ("Unknowns", 6, 2, 0, 0, "unknown", 0, 0, 99, "black"),
 }
 
 starting_creature_names = ("Titan", "Angel", "Ogre", "Ogre", "Centaur",
