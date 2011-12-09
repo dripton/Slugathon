@@ -151,6 +151,7 @@ class Player(Observed):
           Creature.n2c(child_creature_names), parent.hexlabel)
         if not parent.is_legal_split(new_legion1, new_legion2):
             raise AssertionError("illegal split")
+        del new_legion1
         parent.creatures = Creature.n2c(parent_creature_names)
         for creature in parent.creatures:
             creature.legion = parent
