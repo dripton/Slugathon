@@ -155,13 +155,14 @@ def test_score_legion_move_brush():
     bu01.move(3, False, None, 5)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
-    titan1 = defender.creatures[0]
-    ogre1 = defender.creatures[1]
-    centaur1 = defender.creatures[2]
-    gargoyle1 = defender.creatures[3]
-    ranger1 = defender.creatures[4]
+    titan1 = defender.sorted_creatures[0]
+    gorgon1 = defender.sorted_creatures[1]
+    ranger1 = defender.sorted_creatures[2]
+    gargoyle1 = defender.sorted_creatures[3]
+    centaur1 = defender.sorted_creatures[4]
+    assert centaur1.name == "Centaur"
+    ogre1 = defender.sorted_creatures[5]
     ranger1.legion = defender
-    gorgon1 = defender.creatures[5]
     gorgon1.legion = defender
     cleverbot_d = CleverBot.CleverBot("p0", 1)
 
@@ -210,13 +211,14 @@ def test_score_legion_move_brush():
     cleverbot_a = CleverBot.CleverBot("p1", 1)
     game.battle_active_legion = attacker
     game.battle_phase = Phase.STRIKE
-    titan2 = attacker.creatures[0]
-    ogre2 = attacker.creatures[1]
-    centaur2 = attacker.creatures[2]
-    gargoyle2 = attacker.creatures[3]
-    ranger2 = attacker.creatures[4]
+    titan2 = attacker.sorted_creatures[0]
+    gorgon2 = attacker.sorted_creatures[1]
+    ranger2 = attacker.sorted_creatures[2]
+    gargoyle2 = attacker.sorted_creatures[3]
+    centaur2 = attacker.sorted_creatures[4]
+    assert centaur2.name == "Centaur"
+    ogre2 = attacker.sorted_creatures[5]
     ranger2.legion = attacker
-    gorgon2 = attacker.creatures[5]
     gorgon2.legion = attacker
 
     hexlabel = titan2.hexlabel
@@ -472,13 +474,13 @@ def test_score_legion_move_plain():
     cleverbot_a = CleverBot.CleverBot("p1", 1)
     game.battle_active_legion = attacker
     game.battle_phase = Phase.STRIKE
-    titan2 = attacker.creatures[0]
-    ogre2 = attacker.creatures[1]
-    centaur2 = attacker.creatures[2]
-    gargoyle2 = attacker.creatures[3]
-    ranger2 = attacker.creatures[4]
+    titan2 = attacker.sorted_creatures[0]
+    gorgon2 = attacker.sorted_creatures[1]
+    ranger2 = attacker.sorted_creatures[2]
+    gargoyle2 = attacker.sorted_creatures[3]
+    centaur2 = attacker.sorted_creatures[4]
+    ogre2 = attacker.sorted_creatures[5]
     ranger2.legion = attacker
-    gorgon2 = attacker.creatures[5]
     gorgon2.legion = attacker
 
     hexlabel = titan2.hexlabel
