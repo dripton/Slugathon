@@ -145,20 +145,22 @@ class Chit(object):
             pctx.show_layout(layout)
 
         # Power
-        label = str(self.creature.power)
-        x = 0.14 * size
-        y = 0.77 * size
-        pctx.move_to(x, y)
-        layout.set_text(label)
-        pctx.show_layout(layout)
+        if not self.creature.is_unknown:
+            label = str(self.creature.power)
+            x = 0.14 * size
+            y = 0.77 * size
+            pctx.move_to(x, y)
+            layout.set_text(label)
+            pctx.show_layout(layout)
 
         # Skill
-        label = str(self.creature.skill)
-        x = 0.9 * size
-        y = 0.77 * size
-        pctx.move_to(x, y)
-        layout.set_text(label)
-        pctx.show_layout(layout)
+        if not self.creature.is_unknown:
+            label = str(self.creature.skill)
+            x = 0.9 * size
+            y = 0.77 * size
+            pctx.move_to(x, y)
+            layout.set_text(label)
+            pctx.show_layout(layout)
 
     def _render_x(self, surface):
         """Add a big red X through a Cairo surface"""
