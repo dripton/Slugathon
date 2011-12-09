@@ -249,6 +249,12 @@ class Server(Observed):
       entry_side, teleport, teleporting_lord):
         game = self.name_to_game(game_name)
         if game:
+            player = game.get_player_by_name(username)
+            legion = player.markerid_to_legion[markerid]
+            if not game.can_move_legion(player, legion, hexlabel, entry_side,
+              teleport, teleporting_lord):
+                raise AssertionError("illegal move attempt",
+                  game.all_legions())
             game.move_legion(username, markerid, hexlabel, entry_side,
               teleport, teleporting_lord)
 

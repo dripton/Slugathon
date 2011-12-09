@@ -524,9 +524,6 @@ class Game(Observed):
           teleport, teleporting_lord)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
-        if not self.can_move_legion(player, legion, hexlabel, entry_side,
-          teleport, teleporting_lord):
-            raise AssertionError("illegal move attempt")
         legion.move(hexlabel, teleport, teleporting_lord, entry_side)
         action = Action.MoveLegion(self.name, playername, markerid,
           hexlabel, entry_side, teleport, teleporting_lord)
