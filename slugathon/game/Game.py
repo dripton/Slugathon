@@ -1605,9 +1605,15 @@ class Game(Observed):
                 target = creatures.pop()
                 target.hits += action.hits
                 target.hits = min(target.hits, target.power)
-                striker = self.creatures_in_battle_hex(
-                  action.striker_hexlabel).pop()
-                striker.struck = True
+                strikers = self.creatures_in_battle_hex(
+                  action.striker_hexlabel)
+                if strikers:
+                    striker = strikers.pop()
+                    striker.struck = True
+                else:
+                    log("no strikers in", action.striker_hexlabel)
+                    raise AssertionError("no strikers in %s" %
+                      action.striker_hexlabel)
                 if action.carries:
                     self.pending_carry = action
                 else:
