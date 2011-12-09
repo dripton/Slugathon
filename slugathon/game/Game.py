@@ -380,7 +380,6 @@ class Game(Observed):
         If block == ARROWS_ONLY, use only arrows.
         Return a set of (hexlabel, entry_side) tuples.
         """
-        log("find_normal_moves", legion, masterhex, roll, block, came_from)
         if block is None:
             block = masterhex.find_block()
             if block is None:
@@ -392,7 +391,6 @@ class Game(Observed):
         # as a legal move, and stop.
         if player.enemy_legions(hexlabel):
             if not player.friendly_legions(hexlabel):
-                log("enemy and no friendly", player.enemy_legions(hexlabel))
                 moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif roll == 0:
             # Final destination
@@ -401,7 +399,6 @@ class Game(Observed):
             allies = set(player.friendly_legions(hexlabel))
             allies.discard(legion)
             if not allies:
-                log("roll is 0 and no friendly")
                 moves.add((hexlabel, masterhex.find_entry_side(came_from)))
         elif block >= 0:
             moves.update(self.find_normal_moves(legion,
@@ -485,14 +482,9 @@ class Game(Observed):
     def can_move_legion(self, player, legion, hexlabel, entry_side, teleport,
       teleporting_lord):
         """Return True iff player can legally move this legion."""
-        log("can_move_legion", player, legion, hexlabel, entry_side,
-          teleport, teleporting_lord)
         if player is not self.active_player or player is not legion.player:
-            log("player", player, "active player", self.active_player,
-              "legion.player", legion.player)
             return False
         if legion.moved:
-            log("moved")
             return False
         masterhex = self.board.hexes[legion.hexlabel]
         if teleport:
@@ -511,9 +503,7 @@ class Game(Observed):
         else:
             moves = self.find_normal_moves(legion, masterhex,
               player.movement_roll)
-            log("moves", moves)
             if (hexlabel, entry_side) not in moves:
-                log(hexlabel, entry_side, "not in moves")
                 return False
         return True
 
