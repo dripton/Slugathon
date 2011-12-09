@@ -3,6 +3,7 @@ __license__ = "GNU GPL v2"
 
 
 import types
+from collections import defaultdict
 
 from zope.interface import implementer
 
@@ -449,19 +450,30 @@ class Player(Observed):
             del legion
             self.markerids_left.add(markerid)
 
-    # XXX Half points for engaged legions go to the player they're engaged
-    # with, not necessarily to scoring_legion
-    def die(self, scoring_legion, check_for_victory):
-        log("die", self, scoring_legion, check_for_victory)
-        points = sum(legion.score for legion in self.legions)
-        half_points = points // 2
-        scoring_legion.add_points(half_points, False)
+    def die(self, scoring_player, check_for_victory):
+        """Die and give half points to scoring_player, except for legions
+        which are engaged with someone else.
+        """
+        log("die", self, scoring_player, check_for_victory)
+        player_to_full_points = defaultdict(int)
+        for legion in self.legions:
+            if legion.engaged:
+                player = self.enemy_legions(legion.hexlabel).pop().player
+            else:
+                player = scoring_player
+            player_to_full_points[player] += legion.score
+        for player, full_points in player_to_full_points.iteritems():
+            half_points = full_points // 2
+            # Any of that player's legions will do since it can't acquire.
+            if player.legions:
+                legion2 = player.legions[0]
+                legion2.add_points(half_points, False)
         for legion in self.legions:
             self.remove_legion(legion.markerid)
-        scoring_legion.player.eliminated_colors.add(self.color_abbrev)
-        scoring_legion.player.markerids_left.update(self.markerids_left)
-        action = Action.EliminatePlayer(self.game.name,
-          scoring_legion.player.name, self.name)
+        scoring_player.eliminated_colors.add(self.color_abbrev)
+        scoring_player.markerids_left.update(self.markerids_left)
+        action = Action.EliminatePlayer(self.game.name, scoring_player.name,
+          self.name)
         self.notify(action)
 
     def update(self, observed, action, names):

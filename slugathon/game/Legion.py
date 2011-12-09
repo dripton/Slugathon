@@ -491,7 +491,7 @@ class Legion(Observed):
                 dead_titan = True
         self.player.remove_legion(self.markerid)
         if dead_titan:
-            self.player.die(scoring_legion, check_for_victory)
+            self.player.die(scoring_legion.player, check_for_victory)
 
     def add_points(self, points, can_acquire):
         log("add_points", self, points, can_acquire)
