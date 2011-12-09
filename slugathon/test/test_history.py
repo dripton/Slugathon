@@ -28,7 +28,7 @@ def test_history_1():
 
     action = Action.SplitLegion(game_name, playername, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names)
-    history.update(None, action)
+    history.update(None, action, None)
     assert history.actions == [action]
     assert history.undone == []
     assert history.can_undo(playername)
@@ -37,13 +37,13 @@ def test_history_1():
 
     undo_action = Action.UndoSplit(game_name, playername, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names)
-    history.update(None, undo_action)
+    history.update(None, undo_action, None)
     assert history.actions == []
     assert history.undone == [action]
     assert not history.can_undo(playername)
     assert history.can_redo(playername)
 
-    history.update(None, action)
+    history.update(None, action, None)
     assert history.actions == [action]
     assert history.undone == []
     assert history.can_undo(playername)
@@ -65,7 +65,7 @@ def test_history_2():
 
     action1 = Action.MoveLegion(game_name, playername, parent_markerid,
       1, 1, False, None)
-    history.update(None, action1)
+    history.update(None, action1, None)
     assert history.actions == [action1]
     assert history.undone == []
     assert history.can_undo(playername)
@@ -74,7 +74,7 @@ def test_history_2():
 
     action2 = Action.MoveLegion(game_name, playername, child_markerid,
       2, 3, False, None)
-    history.update(None, action2)
+    history.update(None, action2, None)
     assert history.actions == [action1, action2]
     assert history.undone == []
     assert history.can_undo(playername)
@@ -83,7 +83,7 @@ def test_history_2():
 
     undo_action2 = Action.UndoMoveLegion(game_name, playername,
       child_markerid, 2, 3, False, None)
-    history.update(None, undo_action2)
+    history.update(None, undo_action2, None)
     assert history.actions == [action1]
     assert history.undone == [action2]
     assert history.can_undo(playername)
@@ -91,7 +91,7 @@ def test_history_2():
 
     undo_action1 = Action.UndoMoveLegion(game_name, playername,
       parent_markerid, 1, 1, False, None)
-    history.update(None, undo_action1)
+    history.update(None, undo_action1, None)
     assert history.actions == []
     assert history.undone == [action2, action1]
     assert not history.can_undo(playername)
@@ -112,7 +112,7 @@ def test_save():
 
     action1 = Action.MoveLegion(game_name, playername, parent_markerid,
       1, 1, False, None)
-    history.update(None, action1)
+    history.update(None, action1, None)
     assert history.actions == [action1]
     assert history.undone == []
     assert history.can_undo(playername)
@@ -121,7 +121,7 @@ def test_save():
 
     action2 = Action.MoveLegion(game_name, playername, child_markerid,
       2, 3, False, None)
-    history.update(None, action2)
+    history.update(None, action2, None)
     assert history.actions == [action1, action2]
 
     global tmp_path
@@ -217,7 +217,7 @@ def test_undo_nothing():
     history = History.History()
     undo_action = Action.UndoSplit(game_name, playername, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names)
-    history.update(None, undo_action)
+    history.update(None, undo_action, None)
     assert history.actions == []
     assert history.undone == []
     assert not history.can_undo(playername)
@@ -239,8 +239,8 @@ def test_undo_non_matching_action():
     wrong_undo_action = Action.UndoSplit(game_name, playername,
       parent_markerid, other_markerid, parent_creature_names,
       child_creature_names)
-    history.update(None, action)
-    history.update(None, wrong_undo_action)
+    history.update(None, action, None)
+    history.update(None, wrong_undo_action, None)
     assert history.actions == [action]
     assert history.undone == []
     assert history.can_undo(playername)
@@ -261,7 +261,7 @@ def test_find_last_split():
     assert history.find_last_split(playername, parent_markerid,
       child_markerid) is None
 
-    history.update(None, action)
+    history.update(None, action, None)
     assert history.find_last_split(playername, parent_markerid,
       child_markerid) == action
     assert history.find_last_split(playername, "Rd03", "Rd04") is None
@@ -279,15 +279,15 @@ def test_undo_then_do_different():
     history = History.History()
     action = Action.SplitLegion(game_name, playername, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names)
-    history.update(None, action)
+    history.update(None, action, None)
 
     undo_action = Action.UndoSplit(game_name, playername, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names)
-    history.update(None, undo_action)
+    history.update(None, undo_action, None)
 
     action2 = Action.SplitLegion(game_name, playername, parent_markerid,
       other_markerid, parent_creature_names, child_creature_names)
-    history.update(None, action2)
+    history.update(None, action2, None)
     assert history.actions == [action2]
     assert history.undone == []
     assert history.can_undo(playername)
