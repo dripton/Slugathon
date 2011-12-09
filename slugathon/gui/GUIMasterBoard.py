@@ -438,6 +438,9 @@ class GUIMasterBoard(gtk.Window):
                 if legion.moved:
                     moves = []
                 else:
+                    if player.movement_roll is None:
+                        log("movement_roll is None; timing problem?")
+                        moves = []
                     moves = self.game.find_all_moves(legion, self.board.hexes[
                       legion.hexlabel], player.movement_roll)
                 if moves:
