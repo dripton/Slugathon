@@ -503,8 +503,8 @@ class Legion(Observed):
         score1 = score0 + points
         player.score = score1
         log(player, "now has score", player.score)
-        height = len(self)
         if can_acquire:
+            height = len(self)
             archangels = 0
             if (height < 7 and
               score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
