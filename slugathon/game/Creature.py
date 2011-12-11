@@ -6,6 +6,7 @@ from collections import defaultdict
 
 from slugathon.data import creaturedata, recruitdata, battlemapdata
 from slugathon.game import Phase
+from slugathon.util.log import log
 
 
 def _terrain_to_hazards():
@@ -405,11 +406,14 @@ class Creature(object):
             border2 = hex1.opposite_border(hexside2)
             if border2 == "Dune" and self.is_native(border2):
                 return False
-        return (carry_target is not original_target and
+        retval = (carry_target is not original_target and
           carry_target in self.engaged_enemies and
           not carry_target.dead and
           self.number_of_dice(carry_target) >= num_dice and
           self.strike_number(carry_target) <= strike_number)
+        log("can_carry_to", carry_target, original_target, num_dice,
+          strike_number, "returning", retval)
+        return retval
 
     def carry_targets(self, original_target, num_dice, strike_number):
         """Return a set of valid carry targets for this strike."""
