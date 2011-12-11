@@ -423,8 +423,9 @@ class Client(pb.Referenceable, Observed):
                     pass
 
         elif isinstance(action, Action.RevealLegion):
-            # TODO Handle this
-            pass
+            game = self.name_to_game(action.game_name)
+            legion = game.find_legion(action.markerid)
+            legion.reveal_creatures(action.creature_names)
 
         else:
             log("got unhandled action", action)
