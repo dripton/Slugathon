@@ -277,58 +277,83 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.MoveCreature):
             game = self.name_to_game(action.game_name)
-            if game.battle_active_legion.player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.move_creatures, game)
+            legion = game.battle_active_legion
+            if legion:
+                if legion.player.name == self.playername:
+                    reactor.callLater(self.delay, self.ai.move_creatures, game)
+            else:
+                log("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
-            if (game.battle_active_legion and
-              game.battle_active_legion.player.name == self.playername):
-                reactor.callLater(self.delay, self.ai.strike, game)
+            legion = game.battle_active_legion
+            if legion:
+                if legion.player.name == self.playername:
+                    reactor.callLater(self.delay, self.ai.strike, game)
+            else:
+                log("game.battle_active_legion not found")
 
         elif isinstance(action, Action.Strike):
             game = self.name_to_game(action.game_name)
-            if game.battle_active_legion.player.name == self.playername:
-                if action.carries:
-                    reactor.callLater(self.delay, self.ai.carry, game,
-                      action.striker_name, action.striker_hexlabel,
-                      action.target_name, action.target_hexlabel,
-                      action.num_dice, action.strike_number, action.carries)
-                else:
-                    reactor.callLater(self.delay, self.ai.strike, game)
+            legion = game.battle_active_legion
+            if legion:
+                if legion.player.name == self.playername:
+                    if action.carries:
+                        reactor.callLater(self.delay, self.ai.carry, game,
+                          action.striker_name, action.striker_hexlabel,
+                          action.target_name, action.target_hexlabel,
+                          action.num_dice, action.strike_number,
+                          action.carries)
+                    else:
+                        reactor.callLater(self.delay, self.ai.strike, game)
+            else:
+                log("game.battle_active_legion not found")
 
         elif isinstance(action, Action.Carry):
             game = self.name_to_game(action.game_name)
-            if game.battle_active_legion.player.name == self.playername:
-                if action.carries_left:
-                    reactor.callLater(self.delay, self.ai.carry, game,
-                      action.striker_name, action.striker_hexlabel,
-                      action.target_name, action.target_hexlabel,
-                      action.num_dice, action.strike_number,
-                      action.carries_left)
-                else:
-                    reactor.callLater(self.delay, self.ai.strike, game)
+            legion = game.battle_active_legion
+            if legion:
+                if legion.player.name == self.playername:
+                    if action.carries_left:
+                        reactor.callLater(self.delay, self.ai.carry, game,
+                          action.striker_name, action.striker_hexlabel,
+                          action.target_name, action.target_hexlabel,
+                          action.num_dice, action.strike_number,
+                          action.carries_left)
+                    else:
+                        reactor.callLater(self.delay, self.ai.strike, game)
+            else:
+                log("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             game = self.name_to_game(action.game_name)
-            if game.battle_active_legion.player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.strike, game)
+            legion = game.battle_active_legion
+            if legion:
+                if legion.player.name == self.playername:
+                    reactor.callLater(self.delay, self.ai.strike, game)
+            else:
+                log("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
-            if (game.battle_active_legion and
-              game.battle_active_legion.player.name == self.playername):
-                legion = game.battle_active_legion
-                if legion == game.defender_legion:
-                    reactor.callLater(self.delay, self.ai.reinforce, game)
-                else:
-                    reactor.callLater(self.delay, self.ai.summon, game)
+            legion = game.battle_active_legion
+            if legion:
+                if legion.player.name == self.playername:
+                    if legion == game.defender_legion:
+                        reactor.callLater(self.delay, self.ai.reinforce, game)
+                    else:
+                        reactor.callLater(self.delay, self.ai.summon, game)
+            else:
+                log("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
-            if (game.battle_active_legion and
-              game.battle_active_legion.player.name == self.playername):
-                reactor.callLater(self.delay, self.ai.move_creatures, game)
+            legion = game.battle_active_legion
+            if legion:
+                if legion.player.name == self.playername:
+                    reactor.callLater(self.delay, self.ai.move_creatures, game)
+            else:
+                log("game.battle_active_legion not found")
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
