@@ -1491,6 +1491,8 @@ class Game(Observed):
 
         elif isinstance(action, Action.StartFightPhase):
             self.phase = Phase.FIGHT
+            for player in self.players:
+                player.reset_angels_pending()
 
         elif isinstance(action, Action.ResolvingEngagement):
             log("ResolvingEngagement; reset_angels_pending")
