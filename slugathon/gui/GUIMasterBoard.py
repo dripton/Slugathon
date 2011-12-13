@@ -862,6 +862,7 @@ class GUIMasterBoard(gtk.Window):
                     InfoDialog.InfoDialog(self, "Info",
                       "Must resolve engagements")
             elif self.game.phase == Phase.MUSTER:
+                player.forget_enemy_legions()
                 def1 = self.user.callRemote("done_with_recruits",
                   self.game.name)
                 def1.addErrback(self.failure)
@@ -1066,6 +1067,7 @@ class GUIMasterBoard(gtk.Window):
             player = self.game.active_player
             if self.username == player.name:
                 if not player.can_recruit:
+                    player.forget_enemy_legions()
                     def1 = self.user.callRemote("done_with_recruits",
                       self.game.name)
                     def1.addErrback(self.failure)

@@ -476,6 +476,12 @@ class Player(Observed):
           self.name)
         self.notify(action)
 
+    def forget_enemy_legions(self):
+        """Forget the contents of all enemy legions."""
+        log("forget_enemy_legions")
+        for legion in self.enemy_legions():
+            legion.forget_creatures()
+
     def update(self, observed, action, names):
         """Pass updates up to the game"""
         self.notify(action, names)

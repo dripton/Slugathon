@@ -222,6 +222,13 @@ class Legion(Observed):
                     creature.legion = self
                     count2 -= 1
 
+    def forget_creatures(self):
+        """Make all creatures Unknown."""
+        log("forget_creatures")
+        self.creatures = Creature.n2c(len(self) * ["Unknown"])
+        for creature in self.creatures:
+            creature.legion = self
+
     def move(self, hexlabel, teleport, teleporting_lord, entry_side):
         """Move this legion on the masterboard"""
         self.moved = True
