@@ -1545,8 +1545,7 @@ class Game(Observed):
         elif isinstance(action, Action.StartSplitPhase):
             self.turn = action.turn
             self.phase = Phase.SPLIT
-            self.active_player = self.get_player_by_name(
-              action.playername)
+            self.active_player = self.get_player_by_name(action.playername)
             for player in self.players:
                 player.new_turn()
 
