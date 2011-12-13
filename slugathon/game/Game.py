@@ -1640,11 +1640,13 @@ class Game(Observed):
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             self.battle_phase = Phase.COUNTERSTRIKE
             # Switch active players before the counterstrike phase.
-            if (self.defender_legion and action.playername ==
-              self.defender_legion.player.name):
-                self.battle_active_legion = self.defender_legion
+            if self.defender_legion and self.attacker_legion:
+                if action.playername == self.defender_legion.player.name:
+                    self.battle_active_legion = self.defender_legion
+                else:
+                    self.battle_active_legion = self.attacker_legion
             else:
-                self.battle_active_legion = self.attacker_legion
+                log("missing defender_legion or attacker_legion")
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             self.clear_battle_flags()
