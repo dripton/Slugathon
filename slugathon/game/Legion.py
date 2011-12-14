@@ -281,8 +281,10 @@ class Legion(Observed):
     @property
     def can_recruit(self):
         """Return True iff the legion can currently recruit, if it moved
-        or defended in a battle."""
-        log("can_recruit", self, "len", len(self), "recruited", self.recruited,           "dead", self.dead)
+        or defended in a battle.
+        """
+        log("can_recruit", self, "len", len(self), "recruited",
+          self.recruited, "dead", self.dead)
         if len(self) >= 7 or self.recruited or self.dead:
             return False
         game = self.player.game
