@@ -872,10 +872,10 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         donor = player.markerid_to_legion[donor_markerid]
-        if donor.any_unknown:
-            donor.reveal_creatures([creature_name])
         # Avoid double summon
         if not player.summoned:
+            if donor.any_unknown:
+                donor.reveal_creatures([creature_name])
             player.summon(legion, donor, creature_name)
             if self.phase == Phase.FIGHT:
                 creature = legion.creatures[-1]
