@@ -460,6 +460,15 @@ class Player(Observed):
         which are engaged with someone else.
         """
         log("die", self, scoring_player, check_for_victory)
+        # First reveal all this player's legions so that all clients will
+        # get the half-points correct.
+        for legion in self.legions:
+            if not legion.any_unknown:
+                # Only reveal the legion if we're sure about its contents,
+                # to avoid spreading disinformation.
+                action = Action.RevealLegion(self.game.name, legion.markerid,
+                  legion.creature_names)
+                self.notify(action)
         player_to_full_points = defaultdict(int)
         for legion in self.legions:
             if legion.engaged:
