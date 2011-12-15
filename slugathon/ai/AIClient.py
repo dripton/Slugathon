@@ -450,7 +450,8 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.RevealLegion):
             game = self.name_to_game(action.game_name)
             legion = game.find_legion(action.markerid)
-            legion.reveal_creatures(action.creature_names)
+            if legion:
+                legion.reveal_creatures(action.creature_names)
 
         else:
             log("got unhandled action", action)
