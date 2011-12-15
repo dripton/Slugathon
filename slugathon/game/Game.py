@@ -1525,7 +1525,8 @@ class Game(Observed):
 
         elif isinstance(action, Action.RevealLegion):
             legion = self.find_legion(action.markerid)
-            legion.reveal_creatures(action.creature_names)
+            if legion:
+                legion.reveal_creatures(action.creature_names)
 
         elif isinstance(action, Action.Flee):
             legion = self.find_legion(action.markerid)
