@@ -835,9 +835,10 @@ class Game(Observed):
         log("recruit_creature", playername, markerid, creature_name,
           recruiter_names)
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        if player:
+            legion = player.markerid_to_legion.get(markerid)
         # Avoid double recruit
-        if not legion.recruited:
+        if legion and not legion.recruited:
             log("legion has not recruited")
             creature = Creature.Creature(creature_name)
             legion.recruit(creature, recruiter_names)
@@ -1300,16 +1301,17 @@ class Game(Observed):
         log("_end_battle1")
         if self.battle_turn > 7:
             #defender wins on time loss, possible reinforcement
-            if self.defender_legion.can_recruit:
+            if self.defender_legion and self.defender_legion.can_recruit:
                 self.pending_reinforcement = True
-        elif self.attacker_legion.dead and self.defender_legion.dead:
+        elif (self.attacker_legion and self.attacker_legion.dead and
+          self.defender_legion and self.defender_legion.dead):
             #mutual kill
             pass
-        elif self.attacker_legion.dead:
+        elif self.attacker_legion and self.attacker_legion.dead:
             #defender wins, possible reinforcement
             if self.defender_legion.can_recruit:
                 self.pending_reinforcement = True
-        elif self.defender_legion.dead:
+        elif self.defender_legion and self.defender_legion.dead:
             #attacker wins, possible summon
             if self.attacker_legion.can_summon:
                 self.pending_summon = True
@@ -1530,8 +1532,9 @@ class Game(Observed):
 
         elif isinstance(action, Action.Flee):
             legion = self.find_legion(action.markerid)
-            playername = legion.player.name
-            self._flee(playername, action.markerid)
+            if legion:
+                playername = legion.player.name
+                self._flee(playername, action.markerid)
 
         elif isinstance(action, Action.Concede):
             legion = self.find_legion(action.markerid)
@@ -1542,9 +1545,10 @@ class Game(Observed):
         elif isinstance(action, Action.AcceptProposal):
             attacker_legion = self.find_legion(action.attacker_markerid)
             defender_legion = self.find_legion(action.defender_markerid)
-            self._accept_proposal(attacker_legion,
-              action.attacker_creature_names, defender_legion,
-              action.defender_creature_names)
+            if attacker_legion and defender_legion:
+                self._accept_proposal(attacker_legion,
+                  action.attacker_creature_names, defender_legion,
+                  action.defender_creature_names)
 
         elif isinstance(action, Action.StartMusterPhase):
             log("StartMusterPhase")
