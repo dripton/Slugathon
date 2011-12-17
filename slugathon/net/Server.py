@@ -422,6 +422,11 @@ class Server(Observed):
         if game:
             game.save(username)
 
+    def withdraw(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.withdraw(username)
+
     def update(self, observed, action, names):
         log("update", observed, action, names)
         if (isinstance(action, Action.AssignTower) or

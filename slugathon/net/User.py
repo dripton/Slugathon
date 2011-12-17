@@ -215,6 +215,9 @@ class User(Avatar):
     def perspective_save(self, game_name):
         self.server.save(self.name, game_name)
 
+    def perspective_withdraw(self, game_name):
+        self.server.withdraw(self.name, game_name)
+
     def __repr__(self):
         return "User " + self.name
 

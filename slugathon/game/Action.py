@@ -572,6 +572,13 @@ class BattleOver(Action):
 pb.setUnjellyableForClass(BattleOver, BattleOver)
 
 
+class Withdraw(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(Withdraw, Withdraw)
+
+
 class EliminatePlayer(Action):
     def __init__(self, game_name, winner_playername, loser_playername):
         self.game_name = game_name

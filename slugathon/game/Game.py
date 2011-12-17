@@ -1439,6 +1439,22 @@ class Game(Observed):
                     creature.hexlabel = None
                     # TODO Move to graveyard instead
 
+    # TODO
+    def withdraw(self, playername):
+        """Withdraw playername from this game.
+
+        Called from Server.
+        """
+        player = self.get_player_by_name(playername)
+        if player.dead:
+            return
+        # First concede the current battle if applicable.
+        for legion in self.battle_legions:
+            if legion.player.name == playername:
+                self.concede(playername, legion.markerid)
+        action = Action.Withdraw(self.name, playername)
+        self.notify(action)
+
     def update(self, observed, action, names):
         log("update", observed, action)
         if hasattr(action, "game_name") and action.game_name != self.name:
