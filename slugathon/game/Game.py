@@ -1309,11 +1309,11 @@ class Game(Observed):
             pass
         elif self.attacker_legion and self.attacker_legion.dead:
             #defender wins, possible reinforcement
-            if self.defender_legion.can_recruit:
+            if self.defender_legion and self.defender_legion.can_recruit:
                 self.pending_reinforcement = True
         elif self.defender_legion and self.defender_legion.dead:
             #attacker wins, possible summon
-            if self.attacker_legion.can_summon:
+            if self.attacker_legion and self.attacker_legion.can_summon:
                 self.pending_summon = True
         else:
             assert False, "bug in Game._end_battle1"
