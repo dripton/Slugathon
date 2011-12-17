@@ -463,7 +463,7 @@ class Player(Observed):
         # First reveal all this player's legions so that all clients will
         # get the half-points correct.
         for legion in self.legions:
-            if not legion.any_unknown:
+            if legion.all_known:
                 # Only reveal the legion if we're sure about its contents,
                 # to avoid spreading disinformation.
                 action = Action.RevealLegion(self.game.name, legion.markerid,

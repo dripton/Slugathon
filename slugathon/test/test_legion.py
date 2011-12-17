@@ -244,17 +244,20 @@ def test_unknown():
       "Ogre", "Ranger", "Minotaur"])
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert not legion.any_unknown
+    assert legion.all_known
     assert not legion.all_unknown
 
     creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
       "Ogre", "Ranger", "Unknown"])
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert legion.any_unknown
+    assert not legion.all_known
     assert not legion.all_unknown
 
     creatures = Creature.n2c(8 * ["Unknown"])
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert legion.any_unknown
+    assert not legion.all_known
     assert legion.all_unknown
 
 

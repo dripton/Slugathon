@@ -784,11 +784,11 @@ class Game(Observed):
             return
         hexlabel = attacker_legion.hexlabel
         assert defender_legion.hexlabel == hexlabel
-        if not attacker_legion.any_unknown:
+        if attacker_legion.all_known:
             action = Action.RevealLegion(self.name, attacker_markerid,
               attacker_legion.creature_names)
             self.notify(action)
-        if not defender_legion.any_unknown:
+        if defender_legion.all_known:
             action = Action.RevealLegion(self.name, defender_markerid,
               defender_legion.creature_names)
             self.notify(action)

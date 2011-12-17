@@ -87,6 +87,13 @@ class Legion(Observed):
         return True
 
     @property
+    def all_known(self):
+        for creature in self.creatures:
+            if creature.is_unknown:
+                return False
+        return True
+
+    @property
     def can_summon(self):
         """Return True if this legion's player has not already summoned this
         turn and any of this player's other unengaged legions has a summonable.
