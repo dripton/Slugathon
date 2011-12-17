@@ -640,7 +640,7 @@ class Game(Observed):
                   legion.creature_names)
                 self.notify(action)
             for legion in [attacker_legion, defender_legion]:
-                legion.die(None, False, False)
+                legion.die(None, False, True)
         elif attacker_creature_names:
             assert not defender_creature_names
             winning_legion = attacker_legion
