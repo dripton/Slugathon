@@ -58,6 +58,16 @@ def test_remove_creature_by_name():
         pass
     else:
         raise AssertionError("should have raised")
+    legion.remove_creature_by_name("Ogre")
+    legion.remove_creature_by_name("Ogre")
+    legion.remove_creature_by_name("Centaur")
+    legion.remove_creature_by_name("Centaur")
+    legion.remove_creature_by_name("Titan")
+    assert len(legion) == 1
+    assert legion
+    legion.remove_creature_by_name("Angel")
+    assert len(legion) == 0
+    assert legion
 
 
 def test_add_creature_by_name():

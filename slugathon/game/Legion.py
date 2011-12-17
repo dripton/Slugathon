@@ -118,6 +118,10 @@ class Legion(Observed):
         """Return the number of living creatures in the legion."""
         return len(self.living_creature_names)
 
+    def __nonzero__(self):
+        """Zero height legions should not be False."""
+        return True
+
     def __eq__(self, other):
         return hasattr(other, "markerid") and self.markerid == other.markerid
 
@@ -166,8 +170,7 @@ class Legion(Observed):
     @property
     def forced_strikes(self):
         for creature in self.creatures:
-            if (not creature.dead and not creature.struck and
-              creature.engaged_enemies):
+            if not creature.struck and creature.engaged_enemies:
                 return True
         return False
 
