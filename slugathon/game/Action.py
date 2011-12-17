@@ -580,10 +580,12 @@ pb.setUnjellyableForClass(Withdraw, Withdraw)
 
 
 class EliminatePlayer(Action):
-    def __init__(self, game_name, winner_playername, loser_playername):
+    def __init__(self, game_name, winner_playername, loser_playername,
+      check_for_victory):
         self.game_name = game_name
         self.winner_playername = winner_playername
         self.loser_playername = loser_playername
+        self.check_for_victory = check_for_victory
 pb.setUnjellyableForClass(EliminatePlayer, EliminatePlayer)
 
 

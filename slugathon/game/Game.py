@@ -1720,6 +1720,9 @@ class Game(Observed):
             winner_player = self.get_player_by_name(action.winner_playername)
             loser_player = self.get_player_by_name(action.loser_playername)
             winner_player.eliminated_colors.add(loser_player.color_abbrev)
-            self.check_for_victory()
+            winner_player.markerids_left.update(loser_player.markerids_left)
+            loser_player.remove_all_legions()
+            if action.check_for_victory:
+                self.check_for_victory()
 
         self.notify(action, names)
