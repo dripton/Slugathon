@@ -1716,6 +1716,10 @@ class Game(Observed):
             legion.do_not_acquire()
             self._end_dead_player_turn()
 
+        elif isinstance(action, Action.AddPoints):
+            player = self.get_player_by_name(action.playername)
+            player.add_points(action.points)
+
         elif isinstance(action, Action.EliminatePlayer):
             winner_player = self.get_player_by_name(action.winner_playername)
             loser_player = self.get_player_by_name(action.loser_playername)

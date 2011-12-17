@@ -478,17 +478,18 @@ class Player(Observed):
             player_to_full_points[player] += legion.score
         for player, full_points in player_to_full_points.iteritems():
             half_points = full_points // 2
-            # Any of that player's legions will do since it can't acquire.
-            if player.legions:
-                legion2 = player.legions[0]
-                legion2.add_points(half_points, False)
-        for legion in self.legions:
-            self.remove_legion(legion.markerid)
-        scoring_player.eliminated_colors.add(self.color_abbrev)
-        scoring_player.markerids_left.update(self.markerids_left)
+            action = Action.AddPoints(self.game.name, player.name, half_points)
+            self.notify(action)
         action = Action.EliminatePlayer(self.game.name, scoring_player.name,
-          self.name)
+          self.name, check_for_victory)
         self.notify(action)
+
+    def add_points(self, points):
+        """Add points.  Do not acquire.
+
+        This is only used for half points when eliminating a player.
+        """
+        self.score += points
 
     def forget_enemy_legions(self):
         """Forget the contents of all enemy legions."""
