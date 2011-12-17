@@ -96,7 +96,7 @@ class Server(Observed):
         now = time.time()
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
-          min_players, max_players)
+          min_players, max_players, master=True)
         self.games.append(game)
         game.add_observer(self)
         action = Action.FormGame(username, game.name, game.create_time,

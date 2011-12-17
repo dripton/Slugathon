@@ -455,13 +455,21 @@ class Player(Observed):
             del legion
             self.markerids_left.add(markerid)
 
+    def remove_all_legions(self):
+        """Remove all legions, after being eliminated from the game."""
+        for legion in self.legions:
+            self.remove_legion(legion.markerid)
+
     def die(self, scoring_player, check_for_victory):
         """Die and give half points to scoring_player, except for legions
         which are engaged with someone else.
         """
         log("die", self, scoring_player, check_for_victory)
-        # First reveal all this player's legions so that all clients will
-        # get the half-points correct.
+        # Only do this on the Server's game, to avoid duplicate points and
+        # points based on incorrect legion contents.
+        if not self.game.master:
+            return
+        # First reveal all this player's legions.
         for legion in self.legions:
             if legion.all_known:
                 # Only reveal the legion if we're sure about its contents,

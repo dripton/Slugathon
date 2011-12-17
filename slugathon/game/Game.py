@@ -35,7 +35,7 @@ def opposite(direction):
 class Game(Observed):
     """Central class holding information about one game"""
     def __init__(self, name, owner, create_time, start_time, min_players,
-      max_players, started=False):
+      max_players, started=False, master=False):
         Observed.__init__(self)
         self.name = name
         self.create_time = create_time
@@ -67,6 +67,7 @@ class Game(Observed):
         self.pending_carry = None
         self.pending_summon = False
         self.pending_reinforcement = False
+        self.master = master
 
     @property
     def battle_legions(self):
