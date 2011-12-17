@@ -1315,8 +1315,6 @@ class Game(Observed):
             #attacker wins, possible summon
             if self.attacker_legion and self.attacker_legion.can_summon:
                 self.pending_summon = True
-        else:
-            assert False, "bug in Game._end_battle1"
         if not self.pending_reinforcement and not self.pending_summon:
             self._end_battle2()
 
