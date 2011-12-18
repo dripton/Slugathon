@@ -1720,6 +1720,7 @@ class Game(Observed):
         elif isinstance(action, Action.AddPoints):
             player = self.get_player_by_name(action.playername)
             player.add_points(action.points)
+            log("Player %s now has score %d" % (player.name, player.score))
 
         elif isinstance(action, Action.EliminatePlayer):
             winner_player = self.get_player_by_name(action.winner_playername)
