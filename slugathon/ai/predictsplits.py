@@ -514,7 +514,6 @@ class Node(object):
 
     def remove_creature(self, creature_name):
         """Remove a Creature by its name."""
-        print "remove_creature", self, creature_name
         if not self:
             raise ValueError("Tried removing from 0-high legion")
         self.reveal_creatures([creature_name])
