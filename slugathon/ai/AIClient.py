@@ -18,9 +18,10 @@ from zope.interface import implementer
 from slugathon.net import config
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
-from slugathon.game import Action, Game, Phase
+from slugathon.game import Action, Game, Phase, Creature
 from slugathon.util.log import log, log_to_path
-from slugathon.ai import DimBot, CleverBot
+from slugathon.ai import DimBot, CleverBot, predictsplits
+from slugathon.data.creaturedata import starting_creature_names
 
 
 @implementer(IObserver)
@@ -52,6 +53,7 @@ class Client(pb.Referenceable, Observed):
         self.form_game = form_game
         self.min_players = min_players
         self.max_players = max_players
+        self.aps = predictsplits.AllPredictSplits()
         log("__init__ done", game_name, username)
 
     def remote_set_name(self, name):
@@ -140,6 +142,17 @@ class Client(pb.Referenceable, Observed):
             self.remove_observer(game)
             self.games.remove(game)
 
+    # TODO Restrict to one player.
+    def update_creatures(self, game):
+        """Update creatures in self.game from self.aps."""
+        for legion in game.all_legions():
+            markerid = legion.markerid
+            node = self.aps.get_leaf(markerid)
+            if node.creature_names != legion.creature_names:
+                legion.creatures = Creature.n2c(node.creature_names)
+                for creature in legion.creatures:
+                    creature.legion = legion
+
     def failure(self, error):
         log("failure", self, error)
 
@@ -215,13 +228,31 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
+            ps = predictsplits.PredictSplits(action.playername,
+              action.markerid, starting_creature_names)
+            self.aps.append(ps)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
+            self.aps.get_leaf(action.parent_markerid).split(
+              len(action.child_creature_names), action.child_markerid,
+              game.turn)
+            if action.parent_creature_names[0] != "Unknown":
+                self.aps.get_leaf(action.parent_markerid).reveal_creatures(
+                  list(action.parent_creature_names))
+                self.aps.get_leaf(action.child_markerid).reveal_creatures(
+                  list(action.child_creature_names))
+            self.update_creatures(game)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)
+
+        elif isinstance(action, Action.UndoSplit):
+            game = self.name_to_game(action.game_name)
+            self.aps.get_leaf(action.parent_markerid).merge(
+              action.child_markerid, game.turn)
+            self.update_creatures(game)
 
         elif isinstance(action, Action.RollMovement):
             game = self.name_to_game(action.game_name)
@@ -357,6 +388,11 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
+            self.aps.get_leaf(action.markerid).reveal_creatures(
+              list(action.recruiter_names))
+            self.aps.get_leaf(action.markerid).add_creature(
+              action.creature_name)
+            self.update_creatures(game)
             if action.playername == self.playername:
                 if game.phase == Phase.MUSTER:
                     if game.active_player.name == self.playername:
@@ -374,6 +410,18 @@ class Client(pb.Referenceable, Observed):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
                       game)
 
+        elif isinstance(action, Action.UndoRecruit):
+            game = self.name_to_game(action.game_name)
+            self.aps.get_leaf(action.markerid).remove_creature(
+              action.creature_name)
+            self.update_creatures(game)
+
+        elif isinstance(action, Action.UnReinforce):
+            game = self.name_to_game(action.game_name)
+            self.aps.get_leaf(action.markerid).remove_creature(
+              action.creature_name)
+            self.update_creatures(game)
+
         elif isinstance(action, Action.DoNotReinforce):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
@@ -387,6 +435,13 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
+            self.aps.get_leaf(action.donor_markerid).reveal_creatures(
+              [action.creature_name])
+            self.aps.get_leaf(action.donor_markerid).remove_creature(
+              action.creature_name)
+            self.aps.get_leaf(action.markerid).add_creature(
+              action.creature_name)
+            self.update_creatures(game)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
                     reactor.callLater(self.delay, self.ai.summon, game)
@@ -405,6 +460,13 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
+            if action.winner_losses:
+                self.aps.get_leaf(action.winner_markerid).remove_creatures(
+                  list(action.winner_losses))
+            if action.loser_losses:
+                self.aps.get_leaf(action.loser_markerid).remove_creatures(
+                  list(action.loser_losses))
+            self.update_creatures(game)
             if game.active_player.name == self.playername:
                 if game.attacker_legion:
                     legion = game.attacker_legion
@@ -431,6 +493,9 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.Acquire):
             game = self.name_to_game(action.game_name)
+            for angel_name in action.angel_names:
+                self.aps.get_leaf(action.markerid).add_creature(angel_name)
+            self.update_creatures(game)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
@@ -452,6 +517,9 @@ class Client(pb.Referenceable, Observed):
             legion = game.find_legion(action.markerid)
             if legion:
                 legion.reveal_creatures(action.creature_names)
+            self.aps.get_leaf(action.markerid).reveal_creatures(
+              action.creature_names)
+            self.update_creatures(game)
 
         else:
             log("got unhandled action", action)
