@@ -219,6 +219,11 @@ class Node(object):
     def __len__(self):
         return len(self.creatures)
 
+    @property
+    def creature_names(self):
+        """Return this node's creatures' names, in sorted order."""
+        return sorted((creature.name for creature in self.creatures))
+
     def reveal_creatures(self, cnl):
         """Reveal all creatures in the creature name list as certain.
 
@@ -296,7 +301,7 @@ class Node(object):
         """Return True if this Node is a valid turn 1 splitoff."""
         if len(self) != 4:
             return False
-        names = get_creature_names(self.creatures)
+        names = self.creature_names
         return (names.count("Titan") + names.count("Angel") == 1)
 
     def _find_all_possible_splits(self, child_size, known_keep, known_split):
