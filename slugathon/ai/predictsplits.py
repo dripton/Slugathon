@@ -506,8 +506,9 @@ class Node(object):
 
     def add_creature(self, creature_name):
         """Add a Creature by its name."""
-        if len(self) >= 7 and not self.has_split:
-            raise ValueError("Tried adding to 7-high legion")
+        # Allow adding to 7-high legion, to support the case of summoning
+        # into a legion that has lost creatures whose removal has not
+        # been noted yet.
         ci = CreatureInfo(creature_name, True, False)
         self.creatures.append(ci)
 
