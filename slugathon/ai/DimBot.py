@@ -281,7 +281,9 @@ class DimBot(object):
 
     def recruit(self, game):
         log("recruit")
-        assert game.active_player.name == self.playername
+        if game.active_player.name != self.playername:
+            log("not my turn")
+            return
         player = game.active_player
         for legion in player.legions:
             if legion.moved and legion.can_recruit:
