@@ -486,7 +486,8 @@ class Player(Observed):
             player_to_full_points[player] += legion.score
         for player, full_points in player_to_full_points.iteritems():
             half_points = full_points // 2
-            action = Action.AddPoints(self.game.name, player.name, half_points)
+            score = player.score + half_points
+            action = Action.SetScore(self.game.name, player.name, score)
             self.notify(action)
         action = Action.EliminatePlayer(self.game.name, scoring_player.name,
           self.name, check_for_victory)
