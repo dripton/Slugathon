@@ -64,6 +64,7 @@ class Game(Observed):
         self.battle_phase = None
         self.battle_active_legion = None
         self.first_attacker_kill = None
+        self.attacker_entered = False
         self.pending_carry = None
         self.pending_summon = False
         self.pending_reinforcement = False
@@ -99,6 +100,7 @@ class Game(Observed):
         self.defender_legion.enter_battle("DEFENDER")
         self.attacker_legion.enter_battle("ATTACKER")
         self.first_attacker_kill = None
+        self.attacker_entered = False
         self.pending_carry = None
         self.clear_battle_flags()
 
@@ -114,6 +116,7 @@ class Game(Observed):
         self.battle_phase = None
         self.battle_active_legion = None
         self.first_attacker_kill = None
+        self.attacker_entered = False
         self.pending_carry = None
         self.pending_summon = False
         self.pending_reinforcement = False
@@ -1310,7 +1313,8 @@ class Game(Observed):
             pass
         elif self.attacker_legion and self.attacker_legion.dead:
             #defender wins, possible reinforcement
-            if self.defender_legion and self.defender_legion.can_recruit:
+            if (self.defender_legion and self.attacker_entered and
+              self.defender_legion.can_recruit):
                 self.pending_reinforcement = True
         elif self.defender_legion and self.defender_legion.dead:
             #attacker wins, possible summon
@@ -1638,6 +1642,12 @@ class Game(Observed):
             self.battle_phase = Phase.MANEUVER
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
+            if (not self.attacker_entered and
+              self.battle_active_legion == self.attacker_legion):
+                for creature in self.attacker_legion.creatures:
+                    if not creature.dead and creature.hexlabel != "ATTACKER":
+                        self.attacker_entered = True
+                        break
             self.battle_phase = Phase.DRIFTDAMAGE
             self.apply_drift_damage()
             self.battle_phase = Phase.STRIKE
