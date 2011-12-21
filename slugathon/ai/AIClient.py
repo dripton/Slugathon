@@ -280,7 +280,8 @@ class Client(pb.Referenceable, Observed):
               action.hexlabel, False)
 
         elif (isinstance(action, Action.Flee) or
-          isinstance(action, Action.Concede)):
+          isinstance(action, Action.Concede) or
+          isinstance(action, Action.SetScore)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 if game.battle_legions:
