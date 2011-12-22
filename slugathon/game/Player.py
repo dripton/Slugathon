@@ -202,6 +202,8 @@ class Player(Observed):
     @property
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
+        if self.dead:
+            return True
         return (self.markerid_to_legion and max((len(legion) for legion in
           self.legions)) < 8)
 
@@ -255,6 +257,8 @@ class Player(Observed):
     @property
     def can_exit_move_phase(self):
         """Return True iff this player can finish the move phase."""
+        if self.dead:
+            return True
         if not self.moved_legions:
             return False
         for legion in self.friendly_legions():
@@ -485,11 +489,16 @@ class Player(Observed):
                 player = scoring_player
             player_to_full_points[player] += legion.score
         for player, full_points in player_to_full_points.iteritems():
-            half_points = full_points // 2
-            score = player.score + half_points
-            action = Action.SetScore(self.game.name, player.name, score)
-            self.notify(action)
-        action = Action.EliminatePlayer(self.game.name, scoring_player.name,
+            if player is not None:
+                half_points = full_points // 2
+                score = player.score + half_points
+                action = Action.SetScore(self.game.name, player.name, score)
+                self.notify(action)
+        if scoring_player is None:
+            scoring_player_name = ""
+        else:
+            scoring_player_name = scoring_player.name
+        action = Action.EliminatePlayer(self.game.name, scoring_player_name,
           self.name, check_for_victory)
         self.notify(action)
 
@@ -505,6 +514,11 @@ class Player(Observed):
         log("forget_enemy_legions")
         for legion in self.enemy_legions():
             legion.forget_creatures()
+
+    def withdraw(self):
+        """Withdraw from the game."""
+        action = Action.Withdraw(self.game.name, self.name)
+        self.notify(action)
 
     def update(self, observed, action, names):
         """Pass updates up to the game"""

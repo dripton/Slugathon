@@ -38,6 +38,7 @@ ui_string = """<ui>
     <menu action="GameMenu">
       <menuitem action="Save"/>
       <menuitem action="Quit"/>
+      <menuitem action="Withdraw"/>
     </menu>
     <menu action="PhaseMenu">
       <menuitem action="Done"/>
@@ -117,6 +118,7 @@ class GUIMasterBoard(gtk.Window):
         self.status_screen = None
         self.guicaretaker = None
         self.event_log = None
+        self.destroyed = False
 
         # Set of hexlabels of hexes to redraw.
         # If set to all hexlabels then we redraw the whole window.
@@ -149,6 +151,8 @@ class GUIMasterBoard(gtk.Window):
           ("Save", gtk.STOCK_SAVE, "_Save", "s", "Save", self.cb_save),
           ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
             self.cb_quit),
+          ("Withdraw", gtk.STOCK_DISCONNECT, "_Withdraw", "<control>W",
+              "Withdraw from the game", self.cb_withdraw),
 
           ("PhaseMenu", None, "_Phase"),
           ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
@@ -226,11 +230,23 @@ class GUIMasterBoard(gtk.Window):
         return True
 
     def cb_destroy(self, confirmed):
+        """Withdraw from the game, and destroy the GUIMasterBoard."""
         if confirmed:
+            self.destroyed = True
+            if self.game:
+                def1 = self.user.callRemote("withdraw", self.game.name)
+                def1.addErrback(self.failure)
             for widget in [self.guimap]:
                 if widget is not None:
                     widget.destroy()
             self.destroy()
+
+    def cb_withdraw2(self, confirmed):
+        """Withdraw from the game, but do not destroy the GUIMasterBoard."""
+        if confirmed:
+            if self.game:
+                def1 = self.user.callRemote("withdraw", self.game.name)
+                def1.addErrback(self.failure)
 
     def cb_configure_event(self, event, unused):
         if self.username:
@@ -693,6 +709,8 @@ class GUIMasterBoard(gtk.Window):
         Compute the dirty rectangle from the union of
         self.repaint_hexlabels and the event's area.
         """
+        if self.destroyed:
+            return
         if event is None:
             if not self.repaint_hexlabels:
                 return
@@ -936,12 +954,25 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_quit(self, action):
-        if self.game.over:
+        """Quit the game, destroy the board and map, and unsubscribe from this
+        game's events."""
+        if self.game and (self.game.over or self.username not in
+          self.game.living_playernames):
             self.cb_destroy(True)
         else:
             confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
               "Are you sure you want to quit?")
             def1.addCallback(self.cb_destroy)
+            def1.addErrback(self.failure)
+
+    def cb_withdraw(self, action):
+        """Withdraw from the game but keep watching it."""
+        if self.game and self.game.over:
+            self.cb_destroy(True)
+        else:
+            confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+              "Are you sure you want to withdraw?")
+            def1.addCallback(self.cb_withdraw2)
             def1.addErrback(self.failure)
 
     def cb_maybe_flee(self, (attacker, defender, fled)):
@@ -1269,7 +1300,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Fight):
             self.destroy_negotiate()
             self.unselect_all()
-            if self.guimap is None:
+            if self.guimap is None and not self.destroyed:
                 self.guimap = GUIBattleMap.GUIBattleMap(self.game.battlemap,
                   self.game, self.user, self.username)
                 self.game.add_observer(self.guimap)

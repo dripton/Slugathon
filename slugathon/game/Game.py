@@ -203,6 +203,11 @@ class Game(Observed):
         return [player for player in self.players if not player.dead]
 
     @property
+    def living_playernames(self):
+        """Return a list of playernames for Players still in the game."""
+        return [player.name for player in self.players if not player.dead]
+
+    @property
     def over(self):
         """Return True iff the game is over."""
         return len(self.living_players) <= 1
@@ -1362,6 +1367,8 @@ class Game(Observed):
         """If the active player is dead then advance phases if possible."""
         if self.active_player.dead and not self.pending_acquire:
             log("_end_dead_player_turn")
+            self.active_player.done_with_splits()
+            self.active_player.done_with_moves()
             self.active_player.done_with_engagements()
             self.active_player.done_with_recruits()
 
@@ -1442,7 +1449,6 @@ class Game(Observed):
                     creature.hexlabel = None
                     # TODO Move to graveyard instead
 
-    # TODO
     def withdraw(self, playername):
         """Withdraw playername from this game.
 
@@ -1455,8 +1461,7 @@ class Game(Observed):
         for legion in self.battle_legions:
             if legion.player.name == playername:
                 self.concede(playername, legion.markerid)
-        action = Action.Withdraw(self.name, playername)
-        self.notify(action)
+        player.withdraw()
 
     def update(self, observed, action, names):
         log("update", observed, action)
@@ -1733,12 +1738,23 @@ class Game(Observed):
             log("Player %s now has score %d" % (player.name, player.score))
 
         elif isinstance(action, Action.EliminatePlayer):
-            winner_player = self.get_player_by_name(action.winner_playername)
+            try:
+                winner_player = self.get_player_by_name(
+                  action.winner_playername)
+            except KeyError:
+                winner_player = None
             loser_player = self.get_player_by_name(action.loser_playername)
-            winner_player.eliminated_colors.add(loser_player.color_abbrev)
-            winner_player.markerids_left.update(loser_player.markerids_left)
+            if winner_player:
+                winner_player.eliminated_colors.add(loser_player.color_abbrev)
+                winner_player.markerids_left.update(
+                  loser_player.markerids_left)
             loser_player.remove_all_legions()
             if action.check_for_victory:
                 self.check_for_victory()
+
+        elif isinstance(action, Action.Withdraw):
+            player = self.get_player_by_name(action.playername)
+            player.die(None, True)
+            self._end_dead_player_turn()
 
         self.notify(action, names)
