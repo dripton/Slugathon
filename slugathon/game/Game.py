@@ -212,7 +212,8 @@ class Game(Observed):
         """Return True iff the game is over."""
         return len(self.living_players) <= 1
 
-    def get_next_player_and_turn(self):
+    @property
+    def next_player_and_turn(self):
         """Return the next player and what game turn it will be when
         his turn starts."""
         if self.over:

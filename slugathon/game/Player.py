@@ -360,7 +360,7 @@ class Player(Observed):
             self.done_with_counterstrikes()
 
     def done_with_recruits(self):
-        (player, turn) = self.game.get_next_player_and_turn()
+        (player, turn) = self.game.next_player_and_turn
         if player is not None:
             action = Action.StartSplitPhase(self.game.name, player.name, turn)
             self.notify(action)

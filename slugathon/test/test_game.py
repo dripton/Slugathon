@@ -140,11 +140,11 @@ class TestGame(object):
         assert not game.can_move_legion(player, legion, 16, 4, True, "Titan")
         assert game.can_move_legion(player, legion, 4000, 1, True, "Titan")
 
-    def test_get_next_player_and_turn(self):
+    def test_next_player_and_turn(self):
         game = self.game
         player0 = game.players[0]
         player1 = game.players[1]
         assert game.turn == 1
         assert game.active_player == player0
-        assert game.get_next_player_and_turn() == (player1, 1)
+        assert game.next_player_and_turn == (player1, 1)
         player0.done_with_splits()
