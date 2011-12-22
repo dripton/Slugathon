@@ -782,13 +782,14 @@ class Game(Observed):
           self.battle_turn)
         if self.battle_turn is not None:
             # already fighting, bail
+            log("already fighting")
             return
         attacker_legion = self.find_legion(attacker_markerid)
         defender_legion = self.find_legion(defender_markerid)
-        log("attacker", attacker_legion, attacker_legion.player.name)
-        log("defender", defender_legion, defender_legion.player.name)
-        if playername not in [attacker_legion.player.name,
-          defender_legion.player.name]:
+        log("attacker", attacker_legion)
+        log("defender", defender_legion)
+        if (not attacker_legion or not defender_legion or playername not in
+          [attacker_legion.player.name, defender_legion.player.name]):
             log("illegal fight call from", playername)
             return
         hexlabel = attacker_legion.hexlabel
