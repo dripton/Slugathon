@@ -700,7 +700,8 @@ class CleverBot(DimBot.DimBot):
 
     def strike(self, game):
         log("strike")
-        assert game.battle_active_player.name == self.playername
+        if game.battle_active_player.name != self.playername:
+            log("called strike for wrong player")
         legion = game.battle_active_legion
         # First do the strikers with only one target.
         for striker in legion.sorted_creatures:
@@ -763,7 +764,8 @@ class CleverBot(DimBot.DimBot):
               game.name)
             def1.addErrback(self.failure)
         else:
-            assert game.battle_phase == Phase.COUNTERSTRIKE
+            if game.battle_phase != Phase.COUNTERSTRIKE:
+                log("wrong phase")
             def1 = self.user.callRemote("done_with_counterstrikes",
               game.name)
             def1.addErrback(self.failure)
