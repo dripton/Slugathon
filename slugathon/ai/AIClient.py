@@ -281,7 +281,7 @@ class Client(pb.Referenceable, Observed):
 
         elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede) or
-          isinstance(action, Action.SetScore)):
+          isinstance(action, Action.AddPoints)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 if game.battle_legions:
