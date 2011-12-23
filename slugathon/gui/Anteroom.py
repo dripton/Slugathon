@@ -4,6 +4,8 @@ __copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import time
+
 import gtk
 from twisted.internet import reactor
 from zope.interface import implementer
@@ -37,13 +39,31 @@ class Anteroom(gtk.Window):
         vbox1 = gtk.VBox()
         self.add(vbox1)
 
+        label5 = gtk.Label("New Games")
+        vbox1.pack_start(label5)
         scrolled_window1 = gtk.ScrolledWindow()
         scrolled_window1.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         vbox1.pack_start(scrolled_window1)
+        label6 = gtk.Label("Current Games")
+        vbox1.pack_start(label6)
+        scrolled_window4 = gtk.ScrolledWindow()
+        scrolled_window4.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        vbox1.pack_start(scrolled_window4)
+        label7 = gtk.Label("Old Games")
+        vbox1.pack_start(label7)
+        scrolled_window5 = gtk.ScrolledWindow()
+        scrolled_window5.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        vbox1.pack_start(scrolled_window5)
 
-        self.game_list = gtk.TreeView()
-        self.game_list.set_enable_search(False)
-        scrolled_window1.add(self.game_list)
+        self.new_game_list = gtk.TreeView()
+        self.new_game_list.set_enable_search(False)
+        self.current_game_list = gtk.TreeView()
+        self.current_game_list.set_enable_search(False)
+        self.old_game_list = gtk.TreeView()
+        self.old_game_list.set_enable_search(False)
+        scrolled_window1.add(self.new_game_list)
+        scrolled_window4.add(self.current_game_list)
+        scrolled_window5.add(self.old_game_list)
 
         hbox1 = gtk.HBox(spacing=10)
         vbox1.pack_start(hbox1, expand=False)
@@ -106,8 +126,10 @@ class Anteroom(gtk.Window):
         self.user_list.set_enable_search(False)
         scrolled_window3.add(self.user_list)
 
-        self.user_store = None       # ListStore
-        self.game_store = None       # ListStore
+        self.user_store = None          # ListStore
+        self.new_game_store = None      # ListStore
+        self.current_game_store = None  # ListStore
+        self.old_game_store = None      # ListStore
         self._init_liststores()
 
         self.connect("destroy", guiutils.exit)
@@ -134,6 +156,7 @@ class Anteroom(gtk.Window):
         self.initialized = True
 
     def name_to_game(self, game_name):
+        """Return the Game with game_name, or None."""
         for game in self.games:
             if game.name == game_name:
                 return game
@@ -151,17 +174,35 @@ class Anteroom(gtk.Window):
           text=0)
         self.user_list.append_column(column)
 
-        self.game_store = gtk.ListStore(str, str, str, str, int, int, str)
-        self.update_game_store()
-        self.game_list.set_model(self.game_store)
-        selection = self.game_list.get_selection()
+        self.new_game_store = gtk.ListStore(str, str, str, str, int, int, str)
+        self.current_game_store = gtk.ListStore(str, str, str, str)
+        self.old_game_store = gtk.ListStore(str, str, str, str, str)
+        self.update_game_stores()
+        self.new_game_list.set_model(self.new_game_store)
+        self.current_game_list.set_model(self.current_game_store)
+        self.old_game_list.set_model(self.old_game_store)
+        selection = self.new_game_list.get_selection()
         selection.set_select_function(self.cb_game_list_select, None)
-        headers = ["Game Name", "Owner", "Create Time", "Start Time",
+
+        new_headers = ["Game Name", "Owner", "Create Time", "Start Time",
           "Min Players", "Max Players", "Players"]
-        for (ii, title) in enumerate(headers):
+        for (ii, title) in enumerate(new_headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
               text=ii)
-            self.game_list.append_column(column)
+            self.new_game_list.append_column(column)
+        current_headers = ["Game Name", "Start Time", "Living Players",
+          "Dead Players"]
+        for (ii, title) in enumerate(current_headers):
+            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+              text=ii)
+            self.current_game_list.append_column(column)
+        old_headers = ["Game Name", "Start Time", "Finish Time", "Winners",
+          "Losers"]
+        for (ii, title) in enumerate(old_headers):
+            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+              text=ii)
+            self.old_game_list.append_column(column)
+
         for game in self.games:
             self.add_game(game)
 
@@ -177,17 +218,78 @@ class Anteroom(gtk.Window):
         while len(self.user_store) > leng:
             del self.user_store[leng]
 
-    def update_game_store(self):
-        leng = len(self.game_store)
-        for ii, game in enumerate(self.games):
-            game_gui_tuple = game.gui_tuple
-            if ii < leng:
-                self.game_store[ii, 0] = game_gui_tuple
-            else:
-                self.game_store.append(game_gui_tuple)
-        leng = len(self.games)
-        while len(self.game_store) > leng:
-            del self.game_store[leng]
+    def update_game_stores(self):
+        self.update_new_game_store()
+        self.update_current_game_store()
+        self.update_old_game_store()
+
+    def update_new_game_store(self):
+        length = len(self.new_game_store)
+        ii = -1
+        for game in self.games:
+            if not game.started:
+                ii += 1
+                name = game.name
+                owner = game.owner.name
+                create_time = time.ctime(game.create_time)
+                start_time = time.ctime(game.start_time)
+                min_players = game.min_players
+                max_players = game.max_players
+                players = ", ".join(playername for playername in
+                  game.playernames)
+                tup = (name, owner, create_time, start_time, min_players,
+                  max_players, players)
+                if ii < length:
+                    self.new_game_store[ii, 0] = tup
+                else:
+                    self.new_game_store.append(tup)
+        length = ii + 1
+        while len(self.new_game_store) > length:
+            del self.new_game_store[length]
+
+    def update_current_game_store(self):
+        length = len(self.current_game_store)
+        ii = -1
+        for game in self.games:
+            if game.started and not game.over:
+                ii += 1
+                name = game.name
+                start_time = time.ctime(game.start_time)
+                living_players = ", ".join(playername for playername in
+                  game.living_playernames)
+                dead_players = ", ".join(playername for playername in
+                  game.dead_playernames)
+                tup = (name, start_time, living_players, dead_players)
+                if ii < length:
+                    self.current_game_store[ii, 0] = tup
+                else:
+                    self.current_game_store.append(tup)
+        length = ii + 1
+        while len(self.current_game_store) > length:
+            del self.current_game_store[length]
+
+    def update_old_game_store(self):
+        length = len(self.old_game_store)
+        ii = -1
+        for game in self.games:
+            if game.started and game.over:
+                ii += 1
+                name = game.name
+                start_time = time.ctime(game.start_time)
+                finish_time = time.ctime(game.finish_time)
+                living_players = ", ".join(playername for playername in
+                  game.living_playernames)
+                dead_players = ", ".join(playername for playername in
+                  game.dead_playernames)
+                tup = (name, start_time, finish_time, living_players,
+                  dead_players)
+                if ii < length:
+                    self.old_game_store[ii, 0] = tup
+                else:
+                    self.old_game_store.append(tup)
+        length = ii + 1
+        while len(self.old_game_store) > length:
+            del self.old_game_store[length]
 
     def failure(self, error):
         log("failure", self, error)
@@ -248,23 +350,23 @@ class Anteroom(gtk.Window):
 
     def add_game(self, game):
         game.add_observer(self, self.username)
-        self.update_game_store()
+        self.update_game_stores()
         if not game.started and self.username in game.playernames:
             self._add_wfp(game)
 
     def remove_game(self, game_name):
-        self.update_game_store()
+        self.update_game_stores()
         game = self.name_to_game(game_name)
         if game:
             game.remove_observer(self)
 
     def joined_game(self, playername, game_name):
-        self.update_game_store()
+        self.update_game_stores()
 
     def dropped_from_game(self, game_name, username):
         if username == self.username:
             self._remove_wfp(game_name)
-        self.update_game_store()
+        self.update_game_stores()
 
     def cb_user_list_select(self, selection, model, path, is_selected, unused):
         index = path[0]
@@ -294,8 +396,7 @@ class Anteroom(gtk.Window):
             game = self.name_to_game(action.game_name)
             if game:
                 self.add_game(game)
-        elif isinstance(action, Action.RemoveGame) or isinstance(action,
-          Action.GameOver):
+        elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.JoinGame):
             self.joined_game(action.username, action.game_name)
@@ -304,10 +405,15 @@ class Anteroom(gtk.Window):
         elif isinstance(action, Action.AssignTower):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
+        elif isinstance(action, Action.AssignedAllTowers):
+            self.update_game_stores()
+        elif isinstance(action, Action.GameOver):
+            self.update_game_stores()
+        elif isinstance(action, Action.EliminatePlayer):
+            self.update_game_stores()
 
 
 if __name__ == "__main__":
-    import time
     from slugathon.game import Game
 
     now = time.time()

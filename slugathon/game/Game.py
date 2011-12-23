@@ -40,6 +40,7 @@ class Game(Observed):
         self.name = name
         self.create_time = create_time
         self.start_time = start_time
+        self.finish_time = None
         self.min_players = min_players
         self.max_players = max_players
         self.started = started
@@ -155,13 +156,6 @@ class Game(Observed):
           name, self.players))
 
     @property
-    def gui_tuple(self):
-        """Return state as a tuple of strings for GUI presentation."""
-        return (self.name, self.owner.name, time.ctime(self.create_time),
-          time.ctime(self.start_time), self.min_players, self.max_players,
-          ", ".join(self.playernames))
-
-    @property
     def info_tuple(self):
         """Return state as a tuple of strings for passing to client."""
         return (self.name, self.create_time, self.start_time,
@@ -208,6 +202,11 @@ class Game(Observed):
         return [player.name for player in self.players if not player.dead]
 
     @property
+    def dead_playernames(self):
+        """Return a list of playernames for Players out of the game."""
+        return [player.name for player in self.players if player.dead]
+
+    @property
     def over(self):
         """Return True iff the game is over."""
         return len(self.living_players) <= 1
@@ -240,12 +239,13 @@ class Game(Observed):
     def start(self, playername):
         """Begin the game.
 
-        Called only on server side, and only by game owner.
+        Called from Server, only by game owner.
         """
         if playername != self.owner.name:
             raise AssertionError("Game.start %s called by non-owner %s" % (
               self.name, playername))
         self.started = True
+        self.start_time = time.time()
         self.assign_towers()
         self.sort_players()
         action = Action.AssignedAllTowers(self.name)
@@ -674,6 +674,9 @@ class Game(Observed):
     def flee(self, playername, markerid):
         """Called from Server."""
         legion = self.find_legion(markerid)
+        if not legion:
+            log("no legion", markerid)
+            return
         hexlabel = legion.hexlabel
         for enemy_legion in self.all_legions(hexlabel):
             if enemy_legion != legion:
@@ -1015,6 +1018,7 @@ class Game(Observed):
         else:
             # draw
             winner_names = []
+        self.finish_time = time.time()
         log("game over", winner_names)
         action = Action.GameOver(self.name, winner_names)
         self.notify(action)
@@ -1424,17 +1428,21 @@ class Game(Observed):
             if legion != self.battle_active_legion:
                 for creature in legion.creatures:
                     if not creature.dead:
-                        hex1 = self.battlemap.hexes[creature.hexlabel]
-                        if hex1.entrance:
-                            # We call this at the beginning of the turn, so
-                            # it will actually be turn 2 if the attacker left
-                            # creatures offboard in turn 1.
-                            if self.battle_turn <= 2:
-                                creature.kill()
-                            elif legion == self.attacker_legion:
-                                legion.player.unsummon(legion, creature.name)
-                            else:
-                                legion.unreinforce()
+                        if creature.hexlabel:
+                            hex1 = self.battlemap.hexes[creature.hexlabel]
+                            if hex1.entrance:
+                                # We call this at the beginning of the turn, so
+                                # it will actually be turn 2 if the attacker
+                                # left creatures offboard in turn 1.
+                                if self.battle_turn <= 2:
+                                    creature.kill()
+                                elif legion == self.attacker_legion:
+                                    legion.player.unsummon(legion,
+                                      creature.name)
+                                else:
+                                    legion.unreinforce()
+                        else:
+                            log(creature, "has hexlabel None")
 
     def cleanup_dead_creatures(self):
         log("cleanup_dead_creatures")
