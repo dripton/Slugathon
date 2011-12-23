@@ -1467,6 +1467,8 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         if player.dead:
             return
+        if self.over:
+            return
         # First concede the current battle if applicable.
         for legion in self.battle_legions:
             if legion.player.name == playername:
