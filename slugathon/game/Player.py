@@ -491,8 +491,8 @@ class Player(Observed):
         for player, full_points in player_to_full_points.iteritems():
             if player is not None:
                 half_points = full_points // 2
-                score = player.score + half_points
-                action = Action.SetScore(self.game.name, player.name, score)
+                action = Action.AddPoints(self.game.name, player.name,
+                  half_points)
                 self.notify(action)
         if scoring_player is None:
             scoring_player_name = ""

@@ -579,13 +579,13 @@ class Withdraw(Action):
 pb.setUnjellyableForClass(Withdraw, Withdraw)
 
 
-class SetScore(Action):
+class AddPoints(Action):
     """Only used for half points when a player is eliminated."""
-    def __init__(self, game_name, playername, score):
+    def __init__(self, game_name, playername, points):
         self.game_name = game_name
         self.playername = playername
-        self.score = score
-pb.setUnjellyableForClass(SetScore, SetScore)
+        self.points = points
+pb.setUnjellyableForClass(AddPoints, AddPoints)
 
 
 class EliminatePlayer(Action):

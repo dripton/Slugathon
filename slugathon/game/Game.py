@@ -1744,9 +1744,9 @@ class Game(Observed):
             legion.do_not_acquire()
             self._end_dead_player_turn()
 
-        elif isinstance(action, Action.SetScore):
+        elif isinstance(action, Action.AddPoints):
             player = self.get_player_by_name(action.playername)
-            player.score = action.score
+            player.add_points(action.points)
             log("Player %s now has score %d" % (player.name, player.score))
 
         elif isinstance(action, Action.EliminatePlayer):
