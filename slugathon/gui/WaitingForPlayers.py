@@ -12,6 +12,7 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor
+from twisted.python import log
 import gtk
 from zope.interface import implementer
 
@@ -19,7 +20,6 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.gui import icon
 from slugathon.util.NullUser import NullUser
-from slugathon.util.log import log
 
 
 def format_time(secs):
@@ -177,7 +177,7 @@ class WaitingForPlayers(gtk.Dialog):
           self.game.owner.name)
 
     def failure(self, arg):
-        log("failure", arg)
+        log.err(arg)
 
     def shutdown(self):
         self.game.remove_observer(self)

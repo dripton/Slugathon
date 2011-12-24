@@ -13,12 +13,12 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
+from twisted.python import log
 import gtk
 
 from slugathon.game import BattleMap
 from slugathon.gui import icon, GUIBattleHex
 from slugathon.util import guiutils, prefs
-from slugathon.util.log import log
 
 
 SQRT3 = math.sqrt(3.0)
@@ -266,12 +266,12 @@ if __name__ == "__main__":
     from slugathon.game import MasterBoard
 
     def my_callback(choice):
-        log("chose entry side", choice)
+        log.msg("chose entry side", choice)
         reactor.stop()
 
     board = MasterBoard.MasterBoard()
     masterhex = random.choice(board.hexes.values())
-    log("masterhex", masterhex)
+    log.msg("masterhex", masterhex)
     entry_sides = set()
     for side, neighbor in enumerate(masterhex.neighbors):
         if neighbor is not None:

@@ -14,6 +14,7 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor
+from twisted.python import log
 import gtk
 import cairo
 from zope.interface import implementer
@@ -26,7 +27,6 @@ from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
-from slugathon.util.log import log
 from slugathon.util.bag import bag
 
 
@@ -434,7 +434,7 @@ class GUIMasterBoard(gtk.Window):
                     self.split_legion(legion)
                 else:
                     if not player.markerids_left:
-                        InfoDialog.InfoDialog(self, "Info",
+                        InfoDialog.InfoDialog.msg(self, "Info",
                           "No markers available")
                         return
                     _, def1 = PickMarker.new(self.username, self.game.name,
@@ -455,7 +455,7 @@ class GUIMasterBoard(gtk.Window):
                     moves = []
                 else:
                     if player.movement_roll is None:
-                        log("movement_roll is None; timing problem?")
+                        log.msg("movement_roll is None; timing problem?")
                         moves = []
                     moves = self.game.find_all_moves(legion, self.board.hexes[
                       legion.hexlabel], player.movement_roll)
@@ -490,7 +490,7 @@ class GUIMasterBoard(gtk.Window):
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
                     if legion.can_recruit:
-                        log("PickRecruit.new (muster)")
+                        log.msg("PickRecruit.new (muster)")
                         _, def1 = PickRecruit.new(self.username, legion,
                           mterrain, caretaker, self)
                         def1.addCallback(self.picked_recruit)
@@ -543,10 +543,10 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_angels(self, (legion, angels)):
         """Callback from AcquireAngel"""
-        log("picked_angels", legion, angels)
+        log.msg("picked_angels", legion, angels)
         self.acquire_angel = None
         if not angels:
-            log("calling do_not_acquire", legion)
+            log.msg("calling do_not_acquire", legion)
             def1 = self.user.callRemote("do_not_acquire", self.game.name,
               legion.markerid)
             def1.addErrback(self.failure)
@@ -858,7 +858,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog.msg(self, "Info",
                       "Must split initial legion 4-4")
             elif self.game.phase == Phase.MOVE:
                 if player.can_exit_move_phase:
@@ -866,10 +866,10 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 elif not player.moved_legions:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog.msg(self, "Info",
                       "Must move at least one legion")
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog.msg(self, "Info",
                       "Must separate split legions")
             elif self.game.phase == Phase.FIGHT:
                 if player.can_exit_fight_phase:
@@ -877,7 +877,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog.msg(self, "Info",
                       "Must resolve engagements")
             elif self.game.phase == Phase.MUSTER:
                 player.forget_enemy_legions()
@@ -909,17 +909,17 @@ class GUIMasterBoard(gtk.Window):
             prefs.save_bool_option(self.username, option, active)
 
     def cb_auto_strike_single(self, action):
-        log("cb_auto_strike_single")
+        log.msg("cb_auto_strike_single")
         option = prefs.AUTO_STRIKE_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
     def cb_auto_rangestrike_single(self, action):
-        log("cb_auto_rangestrike_single")
+        log.msg("cb_auto_rangestrike_single")
         option = prefs.AUTO_RANGESTRIKE_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
     def cb_auto_carry_single(self, action):
-        log("cb_auto_carry_single")
+        log.msg("cb_auto_carry_single")
         option = prefs.AUTO_CARRY_TO_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
@@ -1035,7 +1035,7 @@ class GUIMasterBoard(gtk.Window):
         self.proposals.clear()
 
     def failure(self, arg):
-        log("failure", arg)
+        log.err(arg)
 
     def update(self, observed, action, names):
         if isinstance(action, Action.PickedColor):
@@ -1318,7 +1318,7 @@ class GUIMasterBoard(gtk.Window):
                               self)
                             def1.addCallback(self.picked_summon)
                         else:
-                            log("calling do_not_summon")
+                            log.msg("calling do_not_summon")
                             def1 = self.user.callRemote("do_not_summon",
                               self.game.name, legion.markerid)
                             def1.addErrback(self.failure)
@@ -1328,12 +1328,12 @@ class GUIMasterBoard(gtk.Window):
                         caretaker = self.game.caretaker
                         mterrain = masterhex.terrain
                         if legion.can_recruit:
-                            log("PickRecruit.new (after)")
+                            log.msg("PickRecruit.new (after)")
                             _, def1 = PickRecruit.new(self.username, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)
                         else:
-                            log("calling do_not_reinforce")
+                            log.msg("calling do_not_reinforce")
                             def1 = self.user.callRemote("do_not_reinforce",
                               self.game.name, legion.markerid)
                             def1.addErrback(self.failure)
@@ -1367,7 +1367,8 @@ class GUIMasterBoard(gtk.Window):
                     message = "Game over.  %s wins." % action.winner_names[0]
                 else:
                     message = "Game over.  Draw."
-                self.game_over = InfoDialog.InfoDialog(self, "Info", message)
+                self.game_over = InfoDialog.InfoDialog.msg(self, "Info",
+                  message)
 
 
 def main():

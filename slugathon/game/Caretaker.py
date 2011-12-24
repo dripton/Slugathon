@@ -5,9 +5,10 @@ __license__ = "GNU GPL v2"
 """Tracks creatures remaining, onboard, and dead."""
 
 
+from twisted.python import log
+
 from slugathon.data import creaturedata
 from slugathon.game import Creature
-from slugathon.util.log import log
 
 
 class Caretaker(object):
@@ -39,7 +40,7 @@ class Caretaker(object):
         """Put one of creature_name back onto the stack."""
         creature = Creature.Creature(creature_name)
         if self.counts[creature_name] >= creature.max_count:
-            log("Tried to put too many %s back" % creature_name)
+            log.msg("Tried to put too many %s back" % creature_name)
             self.counts[creature_name] = self.max_counts[creature_name]
         else:
             self.counts[creature_name] += 1

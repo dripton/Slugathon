@@ -13,13 +13,13 @@ from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor
 from twisted.internet.error import ReactorNotRunning
+from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.net import config
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase, Creature
-from slugathon.util.log import log, log_to_path
 from slugathon.ai import DimBot, CleverBot, predictsplits
 from slugathon.data.creaturedata import starting_creature_names
 
@@ -48,13 +48,13 @@ class Client(pb.Referenceable, Observed):
             raise ValueError("invalid aitype %s" % aitype)
         self.game_name = game_name
         if log_path:
-            log_to_path(log_path)
+            log.startLogging(open(log_path, "w"), setStdout=False)
         self.time_limit = time_limit
         self.form_game = form_game
         self.min_players = min_players
         self.max_players = max_players
         self.aps = predictsplits.AllPredictSplits()
-        log("__init__ done", game_name, username)
+        log.msg("__init__ done", game_name, username)
 
     def remote_set_name(self, name):
         self.playername = name
@@ -73,7 +73,7 @@ class Client(pb.Referenceable, Observed):
         def1.addErrback(self.connection_failed)
 
     def connected(self, user):
-        log("connected")
+        log.msg("connected")
         if user:
             self.user = user
             self.ai.user = user
@@ -82,11 +82,11 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def connection_failed(self, arg):
-        log("connection failed")
+        log.err(arg)
 
     def got_usernames(self, usernames):
         """Only called when the client first connects to the server."""
-        log("got usernames", usernames)
+        log.msg("got usernames", usernames)
         self.usernames.clear()
         for username in usernames:
             self.usernames.add(username)
@@ -96,7 +96,7 @@ class Client(pb.Referenceable, Observed):
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""
-        log("got games", game_info_tuples)
+        log.msg("got games", game_info_tuples)
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
@@ -111,7 +111,7 @@ class Client(pb.Referenceable, Observed):
             # If game_name is null, AI tries to join all games.
             for game in self.games:
                 if not self.game_name or game.name == self.game_name:
-                    log("joining game", game.name)
+                    log.msg("joining game", game.name)
                     def1 = self.user.callRemote("join_game", game.name)
                     def1.addErrback(self.failure)
 
@@ -122,7 +122,7 @@ class Client(pb.Referenceable, Observed):
         return None
 
     def add_game(self, game_info_tuple):
-        log("add_game", game_info_tuple)
+        log.msg("add_game", game_info_tuple)
         (name, create_time, start_time, min_players, max_players,
           playernames, started) = game_info_tuple
         owner = playernames[0]
@@ -154,7 +154,7 @@ class Client(pb.Referenceable, Observed):
                     creature.legion = legion
 
     def failure(self, error):
-        log("failure", self, error)
+        log.err(error)
 
     def remote_receive_chat_message(self, text):
         pass
@@ -171,7 +171,7 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        log("update", action)
+        log.msg("update", action)
 
         # Update the Game first, then act.
         self.notify(action, names)
@@ -211,11 +211,11 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
-                log("Game %s over, won by %s" % (action.game_name,
+                log.msg("Game %s over, won by %s" % (action.game_name,
                   " and ".join(action.winner_names)))
             else:
-                log("Game %s over, draw" % action.game_name)
-            log("AI exiting")
+                log.msg("Game %s over, draw" % action.game_name)
+            log.msg("AI exiting")
             try:
                 reactor.stop()
             except ReactorNotRunning:
@@ -314,7 +314,7 @@ class Client(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.move_creatures, game)
             else:
-                log("game.battle_active_legion not found")
+                log.msg("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -323,7 +323,7 @@ class Client(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log("game.battle_active_legion not found")
+                log.msg("game.battle_active_legion not found")
 
         elif isinstance(action, Action.Strike):
             game = self.name_to_game(action.game_name)
@@ -339,7 +339,7 @@ class Client(pb.Referenceable, Observed):
                     else:
                         reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log("game.battle_active_legion not found")
+                log.msg("game.battle_active_legion not found")
 
         elif isinstance(action, Action.Carry):
             game = self.name_to_game(action.game_name)
@@ -355,7 +355,7 @@ class Client(pb.Referenceable, Observed):
                     else:
                         reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log("game.battle_active_legion not found")
+                log.msg("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -364,7 +364,7 @@ class Client(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log("game.battle_active_legion not found")
+                log.msg("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -376,7 +376,7 @@ class Client(pb.Referenceable, Observed):
                     else:
                         reactor.callLater(self.delay, self.ai.summon, game)
             else:
-                log("game.battle_active_legion not found")
+                log.msg("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -385,7 +385,7 @@ class Client(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.move_creatures, game)
             else:
-                log("game.battle_active_legion not found")
+                log.msg("game.battle_active_legion not found")
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
@@ -507,7 +507,7 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.EliminatePlayer):
             if action.loser_playername == self.playername:
-                log("Eliminated; AI exiting")
+                log.msg("Eliminated; AI exiting")
                 try:
                     reactor.stop()
                 except ReactorNotRunning:
@@ -523,7 +523,7 @@ class Client(pb.Referenceable, Observed):
             self.update_creatures(game)
 
         else:
-            log("got unhandled action", action)
+            log.msg("got unhandled action", action)
 
 
 def add_arguments(parser):

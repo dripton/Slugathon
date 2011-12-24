@@ -7,11 +7,11 @@ __license__ = "GNU GPL v2"
 
 import gtk
 from twisted.internet import defer
+from twisted.python import log
 
 from slugathon.data.playercolordata import colors
 from slugathon.gui import icon
 from slugathon.util.colors import contrasting_colors
-from slugathon.util.log import log
 
 
 def new(username, game, colors_left, parent):
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     def my_callback((game, color)):
-        log("picked", color)
+        log.msg("picked", color)
         guiutils.exit()
 
     now = time.time()

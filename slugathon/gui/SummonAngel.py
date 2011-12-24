@@ -5,10 +5,10 @@ __license__ = "GNU GPL v2"
 
 
 from twisted.internet import defer
+from twisted.python import log
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.util.log import log
 
 
 def new(username, legion, parent):
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         player.markerid_to_legion[legion.markerid] = legion
 
     def my_callback((legion, donor, creature)):
-        log("Will summon", creature, "from", donor, "into", legion)
+        log.msg("Will summon", creature, "from", donor, "into", legion)
         guiutils.exit()
 
     summonangel, def1 = new(username, legion1, None)

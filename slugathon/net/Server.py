@@ -15,6 +15,7 @@ import hashlib
 from twisted.spread import pb
 from twisted.cred.portal import Portal
 from twisted.internet import reactor, protocol
+from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.net import Realm, config
@@ -24,7 +25,6 @@ from slugathon.util.Observer import IObserver
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
 from slugathon.net.UniqueNoPassword import UniqueNoPassword
 from slugathon.util import prefs
-from slugathon.util.log import log, tee_to_path
 
 
 TEMPDIR = tempfile.gettempdir()
@@ -42,8 +42,9 @@ class Server(Observed):
         self.name_to_user = {}
         # {game_name: set(ainame) we're waiting for
         self.game_to_waiting_ais = {}
+        log.startLogging(sys.stdout)
         if log_path:
-            tee_to_path(log_path)
+            log.startLogging(open(log_path, "w"))
 
     def add_observer(self, user):
         username = user.name
@@ -104,13 +105,13 @@ class Server(Observed):
         self.notify(action)
 
     def join_game(self, username, game_name):
-        log("join_game", username, game_name)
+        log.msg("join_game", username, game_name)
         game = self.name_to_game(game_name)
         if game:
             try:
                 game.add_player(username)
             except AssertionError, ex:
-                log("join_game caught", ex)
+                log.msg("join_game caught", ex)
             else:
                 action = Action.JoinGame(username, game.name)
                 self.notify(action)
@@ -189,7 +190,7 @@ class Server(Observed):
         else:
             executable = sys.executable
         for ainame in ainames:
-            log("ainame", ainame)
+            log.msg("ainame", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
             args = [executable]
             if hasattr(sys, "frozen"):
@@ -206,7 +207,7 @@ class Server(Observed):
             if not self.no_passwd:
                 aipass = self._passwd_for_username(ainame)
                 if aipass is None:
-                    log("user %s is not in %s; ai will fail to join" % (
+                    log.msg("user %s is not in %s; ai will fail to join" % (
                         ainame, self.passwd_path))
                 else:
                     args.extend(["--password", aipass])
@@ -366,7 +367,7 @@ class Server(Observed):
             game.acquire_angels(username, markerid, angel_names)
 
     def do_not_acquire(self, username, game_name, markerid):
-        log("do_not_acquire", self, username, game_name, markerid)
+        log.msg("do_not_acquire", self, username, game_name, markerid)
         game = self.name_to_game(game_name)
         if game:
             game.do_not_acquire(username, markerid)
@@ -412,7 +413,7 @@ class Server(Observed):
 
     def carry(self, username, game_name, carry_target_name,
       carry_target_hexlabel, carries):
-        log("carry", carry_target_name, carry_target_hexlabel, carries)
+        log.msg("carry", carry_target_name, carry_target_hexlabel, carries)
         game = self.name_to_game(game_name)
         if game:
             game.carry(username, carry_target_name, carry_target_hexlabel,
@@ -429,7 +430,7 @@ class Server(Observed):
             game.withdraw(username)
 
     def update(self, observed, action, names):
-        log("update", observed, action, names)
+        log.msg("update", observed, action, names)
         if (isinstance(action, Action.AssignTower) or
           isinstance(action, Action.AssignedAllTowers) or
           isinstance(action, Action.PickedColor) or
@@ -487,7 +488,8 @@ class AIProcessProtocol(protocol.ProcessProtocol):
         self.ainame = ainame
 
     def connectionMade(self):
-        log("AIProcessProtocol.connectionMade", self.game_name, self.ainame)
+        log.msg("AIProcessProtocol.connectionMade", self.game_name,
+          self.ainame)
 
 
 def add_arguments(parser):
@@ -516,7 +518,7 @@ def main():
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
-    log("main calling reactor.run")
+    log.msg("main calling reactor.run")
     reactor.run()
 
 

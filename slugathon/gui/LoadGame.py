@@ -9,12 +9,12 @@ try:
     gtk2reactor.install()
 except AssertionError:
     pass
+from twisted.python import log
 import gtk
 
 from slugathon.gui import icon
 from slugathon.util import prefs
 from slugathon.util.NullUser import NullUser
-from slugathon.util.log import log
 
 
 class LoadGame(gtk.FileChooserDialog):
@@ -51,7 +51,7 @@ class LoadGame(gtk.FileChooserDialog):
         self.destroy()
 
     def failure(self, error):
-        log(error)
+        log.err(error)
 
 
 if __name__ == "__main__":

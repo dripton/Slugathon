@@ -8,9 +8,9 @@ __license__ = "GNU GPL v2"
 import random
 
 from zope.interface import implementer
+from twisted.python import log
 
 from slugathon.game import Game, Phase
-from slugathon.util.log import log
 from slugathon.ai.Bot import Bot
 
 
@@ -21,21 +21,21 @@ class DimBot(object):
         self.user = None
 
     def maybe_pick_color(self, game):
-        log("maybe_pick_color")
+        log.msg("maybe_pick_color")
         if game.next_playername_to_pick_color == self.playername:
             color = random.choice(game.colors_left)
             def1 = self.user.callRemote("pick_color", game.name, color)
             def1.addErrback(self.failure)
 
     def maybe_pick_first_marker(self, game, playername):
-        log("maybe_pick_first_marker")
+        log.msg("maybe_pick_first_marker")
         if playername == self.playername:
             player = game.get_player_by_name(playername)
             markerid = self._choose_marker(player)
             self._pick_marker(game, self.playername, markerid)
 
     def _pick_marker(self, game, playername, markerid):
-        log("pick_marker")
+        log.msg("pick_marker")
         player = game.get_player_by_name(playername)
         if markerid is None:
             if not player.markerid_to_legion:
@@ -59,7 +59,7 @@ class DimBot(object):
 
     def split(self, game):
         """Split if it's my turn."""
-        log("split")
+        log.msg("split")
         if game.active_player.name == self.playername:
             player = game.active_player
             for legion in player.legions:
@@ -136,22 +136,23 @@ class DimBot(object):
 
     def choose_engagement(self, game):
         """Resolve engagements."""
-        log("choose_engagement")
+        log.msg("choose_engagement")
         if (game.pending_summon or game.pending_reinforcement or
           game.pending_acquire):
-            log("choose_engagement bailing early summon", game.pending_summon,
+            log.msg("choose_engagement bailing early summon",
+              game.pending_summon,
               "reinforcement", game.pending_reinforcement,
               "acquire", game.pending_acquire)
             return
         hexlabels = game.engagement_hexlabels
         if hexlabels:
             hexlabel = hexlabels.pop()
-            log("calling resolve_engagement")
+            log.msg("calling resolve_engagement")
             def1 = self.user.callRemote("resolve_engagement", game.name,
               hexlabel)
             def1.addErrback(self.failure)
         else:
-            log("calling done_with_engagements")
+            log.msg("calling done_with_engagements")
             def1 = self.user.callRemote("done_with_engagements", game.name)
             def1.addErrback(self.failure)
 
@@ -160,7 +161,7 @@ class DimBot(object):
 
         For now only know how to flee or concede.
         """
-        log("resolve_engagement", game, hexlabel, did_not_flee)
+        log.msg("resolve_engagement", game, hexlabel, did_not_flee)
         attacker = None
         defender = None
         for legion in game.all_legions(hexlabel):
@@ -169,63 +170,63 @@ class DimBot(object):
             else:
                 defender = legion
         if attacker:
-            log("attacker", attacker, attacker.player.name)
+            log.msg("attacker", attacker, attacker.player.name)
         if defender:
-            log("defender", defender, defender.player.name)
+            log.msg("defender", defender, defender.player.name)
         if not attacker or not defender:
-            log("no attacker or defender; bailing")
+            log.msg("no attacker or defender; bailing")
             return
         if defender.player.name == self.playername:
             if defender.can_flee:
                 if defender.score * 1.5 < attacker.score:
-                    log("fleeing")
+                    log.msg("fleeing")
                     def1 = self.user.callRemote("flee", game.name,
                       defender.markerid)
                     def1.addErrback(self.failure)
                 else:
-                    log("fighting")
+                    log.msg("fighting")
                     def1 = self.user.callRemote("fight", game.name,
                       attacker.markerid, defender.markerid)
                     def1.addErrback(self.failure)
             else:
-                log("fighting")
+                log.msg("fighting")
                 def1 = self.user.callRemote("fight", game.name,
                   attacker.markerid, defender.markerid)
                 def1.addErrback(self.failure)
         elif attacker.player.name == self.playername:
             if defender.can_flee and not did_not_flee:
-                log("waiting for defender")
+                log.msg("waiting for defender")
                 # Wait for the defender to choose before conceding.
                 pass
             else:
-                log("fighting")
+                log.msg("fighting")
                 def1 = self.user.callRemote("fight", game.name,
                   attacker.markerid, defender.markerid)
                 def1.addErrback(self.failure)
         else:
-            log("not my engagement")
+            log.msg("not my engagement")
 
     def move_creatures(self, game):
-        log("move creatures")
+        log.msg("move creatures")
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
         for creature in legion.sorted_living_creatures:
             moves = game.find_battle_moves(creature)
             if moves:
                 move = random.choice(list(moves))
-                log("calling move_creature", creature.name,
+                log.msg("calling move_creature", creature.name,
                   creature.hexlabel, move)
                 def1 = self.user.callRemote("move_creature", game.name,
                   creature.name, creature.hexlabel, move)
                 def1.addErrback(self.failure)
                 return
         # No moves, so end the maneuver phase.
-        log("calling done_with_maneuvers")
+        log.msg("calling done_with_maneuvers")
         def1 = self.user.callRemote("done_with_maneuvers", game.name)
         def1.addErrback(self.failure)
 
     def strike(self, game):
-        log("strike")
+        log.msg("strike")
         assert game.battle_active_player.name == self.playername
         legion = game.battle_active_legion
         # First do the strikers with only one target.
@@ -280,9 +281,9 @@ class DimBot(object):
         def1.addErrback(self.failure)
 
     def recruit(self, game):
-        log("recruit")
+        log.msg("recruit")
         if game.active_player.name != self.playername:
-            log("not my turn")
+            log.msg("not my turn")
             return
         player = game.active_player
         for legion in player.legions:
@@ -383,7 +384,7 @@ class DimBot(object):
 
     def summon_after(self, game):
         """Summon, after the battle is over."""
-        log("summon_after")
+        log.msg("summon_after")
         assert game.active_player.name == self.playername
         legion = game.attacker_legion
         assert legion.player.name == self.playername
@@ -410,7 +411,7 @@ class DimBot(object):
         def1.addErrback(self.failure)
 
     def acquire_angel(self, game, markerid, num_angels, num_archangels):
-        log("acquire_angel", markerid, num_angels, num_archangels)
+        log.msg("acquire_angel", markerid, num_angels, num_archangels)
         player = game.get_player_by_name(self.playername)
         legion = player.markerid_to_legion[markerid]
         starting_height = len(legion)
@@ -425,15 +426,15 @@ class DimBot(object):
             num_angels -= 1
             acquires += 1
         if angel_names:
-            log("calling acquire_angels", markerid, angel_names)
+            log.msg("calling acquire_angels", markerid, angel_names)
             def1 = self.user.callRemote("acquire_angels", game.name,
               markerid, angel_names)
             def1.addErrback(self.failure)
         else:
-            log("calling do_not_acquire", markerid)
+            log.msg("calling do_not_acquire", markerid)
             def1 = self.user.callRemote("do_not_acquire", game.name,
               markerid)
             def1.addErrback(self.failure)
 
     def failure(self, error):
-        log("failure", self, error)
+        log.err(error)

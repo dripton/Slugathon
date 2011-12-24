@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 import types
 from collections import defaultdict
 
+from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.util.Observed import Observed
@@ -13,7 +14,6 @@ from slugathon.game import Action, Creature, Legion, Phase
 from slugathon.data import playercolordata, creaturedata, markerdata
 from slugathon.util.bag import bag
 from slugathon.util import Dice
-from slugathon.util.log import log
 
 
 @implementer(IObserver)
@@ -88,7 +88,7 @@ class Player(Observed):
         num_markers = len(markerdata.data[color])
         for ii in xrange(num_markers):
             self.markerids_left.add("%s%02d" % (abbrev, ii + 1))
-        log(self.markerids_left)
+        log.msg(self.markerids_left)
         action = Action.PickedColor(self.game.name, self.name, color)
         self.notify(action)
 
@@ -137,7 +137,7 @@ class Player(Observed):
 
     def split_legion(self, parent_markerid, child_markerid,
       parent_creature_names, child_creature_names):
-        log("split_legion", parent_markerid, child_markerid,
+        log.msg("split_legion", parent_markerid, child_markerid,
           parent_creature_names, child_creature_names)
         parent = self.markerid_to_legion[parent_markerid]
         if child_markerid not in self.markerids_left:
@@ -165,12 +165,12 @@ class Player(Observed):
         action = Action.SplitLegion(self.game.name, self.name,
           parent_markerid, child_markerid, parent_creature_names,
           child_creature_names)
-        log("action", action)
+        log.msg("action", action)
         self.notify(action, names=[self.name])
         action = Action.SplitLegion(self.game.name, self.name,
           parent_markerid, child_markerid, len(parent_creature_names) *
           ["Unknown"], len(child_creature_names) * ["Unknown"])
-        log("action", action)
+        log.msg("action", action)
         other_playernames = self.game.playernames
         other_playernames.remove(self.name)
         self.notify(action, names=other_playernames)
@@ -299,7 +299,7 @@ class Player(Observed):
     @property
     def can_exit_fight_phase(self):
         """Return True iff this player can finish the move phase."""
-        log("can_exit_fight_phase engagement_hexlabels",
+        log.msg("can_exit_fight_phase engagement_hexlabels",
           self.game.engagement_hexlabels,
           "pending_summon", self.game.pending_summon,
           "pending_reinforcement", self.game.pending_reinforcement,
@@ -327,9 +327,9 @@ class Player(Observed):
                 self.remove_legion(legion.markerid)
 
     def done_with_engagements(self):
-        log("done_with_engagements")
+        log.msg("done_with_engagements")
         if self.can_exit_fight_phase:
-            log("can exit fight phase")
+            log.msg("can exit fight phase")
             action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 
@@ -375,7 +375,7 @@ class Player(Observed):
 
     def done_with_strikes(self):
         if self.has_forced_strikes:
-            log("Forced strikes remain")
+            log.msg("Forced strikes remain")
             return
         player = None
         for legion in self.game.battle_legions:
@@ -387,7 +387,7 @@ class Player(Observed):
 
     def done_with_counterstrikes(self):
         if self.has_forced_strikes:
-            log("Forced strikes remain")
+            log.msg("Forced strikes remain")
             return
         action = Action.StartReinforceBattlePhase(self.game.name, self.name,
           self.game.battle_turn)
@@ -468,7 +468,7 @@ class Player(Observed):
         """Die and give half points to scoring_player, except for legions
         which are engaged with someone else.
         """
-        log("die", self, scoring_player, check_for_victory)
+        log.msg("die", self, scoring_player, check_for_victory)
         # Only do this on the Server's game, to avoid duplicate points and
         # points based on incorrect legion contents.
         if not self.game.master:
@@ -511,7 +511,7 @@ class Player(Observed):
 
     def forget_enemy_legions(self):
         """Forget the contents of all enemy legions."""
-        log("forget_enemy_legions")
+        log.msg("forget_enemy_legions")
         for legion in self.enemy_legions():
             legion.forget_creatures()
 

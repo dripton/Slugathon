@@ -10,10 +10,10 @@ try:
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
+from twisted.python import log
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.util.log import log
 
 
 CONCEDE = 0
@@ -184,7 +184,7 @@ if __name__ == "__main__":
       defender_creatures, 1)
 
     def my_callback(*args):
-        log("callback", args)
+        log.msg("callback", args)
         reactor.stop()
 
     _, def1 = new(defender_username, attacker_legion, defender_legion, None)

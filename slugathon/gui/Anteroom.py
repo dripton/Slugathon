@@ -8,6 +8,7 @@ import time
 
 import gtk
 from twisted.internet import reactor
+from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.gui import NewGame, LoadGame, WaitingForPlayers, icon
@@ -15,7 +16,6 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.util import guiutils, prefs
 from slugathon.util.NullUser import NullUser
-from slugathon.util.log import log
 
 
 @implementer(IObserver)
@@ -292,7 +292,7 @@ class Anteroom(gtk.Window):
             del self.old_game_store[length]
 
     def failure(self, error):
-        log("failure", self, error)
+        log.err(error)
         reactor.stop()
 
     def cb_configure_event(self, event, unused):

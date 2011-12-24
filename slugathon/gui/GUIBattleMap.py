@@ -13,6 +13,7 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor
+from twisted.python import log
 import gtk
 import cairo
 from zope.interface import implementer
@@ -23,7 +24,6 @@ from slugathon.gui import (icon, GUIBattleHex, Chit, PickRecruit, SummonAngel,
   BattleDice)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
-from slugathon.util.log import log
 
 
 SQRT3 = math.sqrt(3.0)
@@ -609,7 +609,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog.msg(self, "Info",
                       "Forced strikes remain")
             elif self.game.battle_phase == Phase.COUNTERSTRIKE:
                 if not self.game.battle_active_legion.forced_strikes:
@@ -617,7 +617,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog.msg(self, "Info",
                       "Forced strikes remain")
 
     def cb_concede(self, event):
@@ -627,7 +627,7 @@ class GUIBattleMap(gtk.Window):
         def1.addErrback(self.failure)
 
     def cb_concede2(self, confirmed):
-        log("cb_concede2", confirmed)
+        log.msg("cb_concede2", confirmed)
         if confirmed:
             for legion in self.game.battle_legions:
                 if legion.player.name == self.username:
@@ -728,7 +728,7 @@ class GUIBattleMap(gtk.Window):
         self.repaint([hexlabel])
 
     def update(self, observed, action, names):
-        log("update", observed, action, names)
+        log.msg("update", observed, action, names)
 
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
@@ -877,7 +877,7 @@ class GUIBattleMap(gtk.Window):
                 hexlabel = legion.hexlabel
                 mterrain = self.game.board.hexes[hexlabel].terrain
                 if legion.can_recruit:
-                    log("PickRecruit.new (battle turn 4)")
+                    log.msg("PickRecruit.new (battle turn 4)")
                     _, def1 = PickRecruit.new(self.username, legion, mterrain,
                       caretaker, self)
                     def1.addCallback(self.picked_reinforcement)
@@ -980,7 +980,7 @@ class GUIBattleMap(gtk.Window):
             def1.addErrback(self.failure)
 
     def picked_carry(self, (carry_target, carries)):
-        log("picked_carry", carry_target, carries)
+        log.msg("picked_carry", carry_target, carries)
         if self.pickcarry is not None:
             self.pickcarry.destroy()
         self.pickcarry = None
@@ -990,7 +990,8 @@ class GUIBattleMap(gtk.Window):
 
     def picked_strike_penalty(self, (striker, target, num_dice,
       strike_number)):
-        log("picked_strike_penalty", striker, target, num_dice, strike_number)
+        log.msg("picked_strike_penalty", striker, target, num_dice,
+          strike_number)
         if striker is None:
             # User cancelled the strike.
             self.unselect_all()
@@ -1003,7 +1004,7 @@ class GUIBattleMap(gtk.Window):
             def1.addErrback(self.failure)
 
     def failure(self, arg):
-        log("failure", arg)
+        log.err(arg)
 
 
 if __name__ == "__main__":

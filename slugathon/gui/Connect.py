@@ -14,12 +14,12 @@ from twisted.internet import gtk2reactor
 gtk2reactor.install()
 from twisted.internet import reactor
 from twisted.internet import utils
+from twisted.python import log
 import gtk
 import gobject
 
 from slugathon.gui import Client, icon
 from slugathon.util import guiutils, prefs
-from slugathon.util.log import log, tee_to_path
 
 
 class Connect(gtk.Window):
@@ -105,8 +105,9 @@ class Connect(gtk.Window):
 
         self.show_all()
 
+        log.startLogging(sys.stdout)
         if log_path:
-            tee_to_path(log_path)
+            log.startLogging(open(log_path, "w"))
 
         if connect_now:
             reactor.callWhenRunning(self.cb_connect_button_clicked)
@@ -190,7 +191,7 @@ class Connect(gtk.Window):
         def1.addErrback(self.server_failed)
 
     def server_exited(self, returncode):
-        log("server exited with returncode %d" % returncode)
+        log.msg("server exited with returncode %d" % returncode)
 
     def save_window_position(self):
         x, y = self.get_position()

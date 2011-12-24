@@ -6,10 +6,10 @@ __license__ = "GNU GPL v2"
 
 import gtk
 from twisted.internet import defer
+from twisted.python import log
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
-from slugathon.util.log import log
 
 
 def new(username, legion, num_archangels, num_angels, caretaker, parent):
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     creatures = Creature.n2c(creature_names)
 
     def my_callback((legion, creature)):
-        log(legion, "acquired", creature)
+        log.msg(legion, "acquired", creature)
         guiutils.exit()
 
     now = time.time()

@@ -4,8 +4,9 @@ __license__ = "GNU GPL v2"
 
 import time
 
+from twisted.python import log
+
 from slugathon.game import Game
-from slugathon.util.log import log
 
 
 class TestGame(object):
@@ -31,7 +32,7 @@ class TestGame(object):
 
     def test_all_legions(self):
         game = self.game
-        log(game.all_legions())
+        log.msg(game.all_legions())
         assert len(game.all_legions()) == 3
         assert len(game.all_legions(200)) == 2
         assert len(game.all_legions(100)) == 1
@@ -80,7 +81,7 @@ class TestGame(object):
         for move in moves:
             assert move[1] == Game.TELEPORT
         hexlabels = set([move[0] for move in moves])
-        log(sorted(hexlabels))
+        log.msg(sorted(hexlabels))
 
         assert hexlabels == set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
           15, 16, 17, 21, 37, 41, 42, 101, 102, 103, 104, 105, 106, 107, 108,
@@ -103,7 +104,7 @@ class TestGame(object):
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = game.find_all_moves(legion, masterhex, 6)
-        log(sorted(moves))
+        log.msg(sorted(moves))
         hexlabels = set([move[0] for move in moves])
         assert hexlabels == set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
           15, 16, 17, 21, 37, 41, 42, 101, 102, 103, 104, 105, 106, 107, 108,

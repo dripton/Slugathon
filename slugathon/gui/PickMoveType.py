@@ -6,10 +6,10 @@ __license__ = "GNU GPL v2"
 
 import gtk
 from twisted.internet import defer
+from twisted.python import log
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
-from slugathon.util.log import log
 
 
 TELEPORT = 1
@@ -87,11 +87,11 @@ if __name__ == "__main__":
 
     def mycallback(teleported):
         if teleported is None:
-            log("canceled")
+            log.msg("canceled")
         elif teleported:
-            log("teleport")
+            log.msg("teleport")
         else:
-            log("normal move")
+            log.msg("normal move")
         guiutils.exit()
 
     now = time.time()

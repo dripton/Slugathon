@@ -5,11 +5,11 @@ import time
 
 from twisted.spread.pb import Avatar, PBConnectionLost
 from twisted.internet.error import ConnectionLost
+from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
-from slugathon.util.log import log
 
 
 @implementer(IObserver)
@@ -151,7 +151,7 @@ class User(Avatar):
           angel_names)
 
     def perspective_do_not_acquire(self, game_name, markerid):
-        log("do_not_acquire", self, game_name, markerid)
+        log.msg("do_not_acquire", self, game_name, markerid)
         self.server.do_not_acquire(self.name, game_name, markerid)
 
     def perspective_done_with_engagements(self, game_name):
@@ -178,7 +178,7 @@ class User(Avatar):
 
     def perspective_carry(self, game_name, carry_target_name,
       carry_target_hexlabel, carries):
-        log("perspective_carry", carry_target_name, carry_target_hexlabel,
+        log.msg("perspective_carry", carry_target_name, carry_target_hexlabel,
           carries)
         self.server.carry(self.name, game_name, carry_target_name,
           carry_target_hexlabel, carries)
@@ -231,14 +231,15 @@ class User(Avatar):
 
     def trap_connection_lost(self, failure):
         failure.trap(ConnectionLost, PBConnectionLost)
-        log("Connection lost for %s; logging out" % self.name)
+        log.err(failure)
+        log.msg("Connection lost for %s; logging out" % self.name)
         self.logout()
 
     def log_failure(self, failure):
-        log("failure", failure)
+        log.err(failure)
 
     def logout(self):
-        log("logout", self.name)
+        log.msg("logout", self.name)
         self.server.remove_observer(self)
 
     def update(self, observed, action, names):
