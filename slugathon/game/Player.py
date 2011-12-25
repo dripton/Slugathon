@@ -449,6 +449,10 @@ class Player(Observed):
             legion.previous_hexlabel = None
             legion.recruited = False
 
+    def clear_recruited(self):
+        for legion in self.legions:
+            legion.recruited = False
+
     def remove_legion(self, markerid):
         """Remove the legion with markerid."""
         assert type(markerid) == str

@@ -1531,6 +1531,9 @@ class Game(Observed):
             # Possibly redundant, but harmless
             player.movement_roll = action.movement_roll
             player.mulligans_left = action.mulligans_left
+            for player in self.players:
+                # Reset recruited again, in case the player reinforced late.
+                player.clear_recruited()
 
         elif isinstance(action, Action.MoveLegion):
             player = self.get_player_by_name(action.playername)
