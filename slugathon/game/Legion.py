@@ -496,6 +496,19 @@ class Legion(Observed):
         return sum([creature.combat_value for creature in
           self.living_creatures])
 
+    # TODO Add for other terrains if enough native creatures.
+    @property
+    def terrain_combat_value(self):
+        """Return a rough indication of legion combat value, considering its
+        current terrain."""
+        TOWER_MULTIPLIER = 1.25
+        base_value = self.combat_value
+        terrain = self.player.game.board.hexes[self.hexlabel].terrain
+        if terrain == "Tower":
+            return TOWER_MULTIPLIER * base_value
+        else:
+            return base_value
+
     def die(self, scoring_legion, fled, no_points, check_for_victory=True):
         log.msg("die", self, scoring_legion, fled, no_points,
           check_for_victory)

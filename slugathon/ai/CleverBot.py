@@ -102,7 +102,7 @@ class CleverBot(DimBot.DimBot):
                         enemies = player.enemy_legions(hexlabel)
                         if enemies:
                             enemy = enemies.pop()
-                            if (enemy.combat_value < SQUASH *
+                            if (enemy.terrain_combat_value < SQUASH *
                               legion.combat_value):
                                 safe_split_rolls.add(roll)
                         else:
@@ -205,7 +205,7 @@ class CleverBot(DimBot.DimBot):
         if enemies:
             assert len(enemies) == 1
             enemy = enemies.pop()
-            enemy_combat_value = enemy.combat_value
+            enemy_combat_value = enemy.terrain_combat_value
             log.msg("legion", legion, "hexlabel", hexlabel)
             log.msg("legion_combat_value", legion_combat_value)
             log.msg("enemy_combat_value", enemy_combat_value)
@@ -231,7 +231,8 @@ class CleverBot(DimBot.DimBot):
                 prev_hexlabel = legion.hexlabel
                 legion.hexlabel = hexlabel
                 for enemy in player.enemy_legions():
-                    if enemy.combat_value >= BE_SQUASHED * legion_combat_value:
+                    if (enemy.terrain_combat_value >= BE_SQUASHED *
+                      legion_combat_value):
                         for roll in xrange(1, 6 + 1):
                             moves = game.find_normal_moves(enemy,
                               game.board.hexes[enemy.hexlabel], roll).union(
