@@ -231,7 +231,6 @@ class User(Avatar):
 
     def trap_connection_lost(self, failure):
         failure.trap(ConnectionLost, PBConnectionLost)
-        log.err(failure)
         log.msg("Connection lost for %s; logging out" % self.name)
         self.logout()
 
