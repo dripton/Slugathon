@@ -1662,7 +1662,7 @@ class Game(Observed):
             self.battle_phase = Phase.MANEUVER
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
-            if (not self.attacker_entered and
+            if (not self.attacker_entered and self.attacker_legion and
               self.battle_active_legion == self.attacker_legion):
                 for creature in self.attacker_legion.creatures:
                     if not creature.dead and creature.hexlabel != "ATTACKER":
