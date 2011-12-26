@@ -434,7 +434,7 @@ class GUIMasterBoard(gtk.Window):
                     self.split_legion(legion)
                 else:
                     if not player.markerids_left:
-                        InfoDialog.InfoDialog.msg(self, "Info",
+                        InfoDialog.InfoDialog(self, "Info",
                           "No markers available")
                         return
                     _, def1 = PickMarker.new(self.username, self.game.name,
@@ -858,7 +858,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog.msg(self, "Info",
+                    InfoDialog.InfoDialog(self, "Info",
                       "Must split initial legion 4-4")
             elif self.game.phase == Phase.MOVE:
                 if player.can_exit_move_phase:
@@ -866,10 +866,10 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 elif not player.moved_legions:
-                    InfoDialog.InfoDialog.msg(self, "Info",
+                    InfoDialog.InfoDialog(self, "Info",
                       "Must move at least one legion")
                 else:
-                    InfoDialog.InfoDialog.msg(self, "Info",
+                    InfoDialog.InfoDialog(self, "Info",
                       "Must separate split legions")
             elif self.game.phase == Phase.FIGHT:
                 if player.can_exit_fight_phase:
@@ -877,7 +877,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog.msg(self, "Info",
+                    InfoDialog.InfoDialog(self, "Info",
                       "Must resolve engagements")
             elif self.game.phase == Phase.MUSTER:
                 player.forget_enemy_legions()
@@ -1367,7 +1367,7 @@ class GUIMasterBoard(gtk.Window):
                     message = "Game over.  %s wins." % action.winner_names[0]
                 else:
                     message = "Game over.  Draw."
-                self.game_over = InfoDialog.InfoDialog.msg(self, "Info",
+                self.game_over = InfoDialog.InfoDialog(self, "Info",
                   message)
 
 

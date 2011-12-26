@@ -609,7 +609,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog.msg(self, "Info",
+                    InfoDialog.InfoDialog(self, "Info",
                       "Forced strikes remain")
             elif self.game.battle_phase == Phase.COUNTERSTRIKE:
                 if not self.game.battle_active_legion.forced_strikes:
@@ -617,7 +617,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog.msg(self, "Info",
+                    InfoDialog.InfoDialog(self, "Info",
                       "Forced strikes remain")
 
     def cb_concede(self, event):
