@@ -245,6 +245,11 @@ class Player(Observed):
         """Return a set of this players legions that have moved this turn."""
         return set([legion for legion in self.legions if legion.moved])
 
+    @property
+    def unmoved_legions(self):
+        """Return a set of this players legions that have not moved."""
+        return set([legion for legion in self.legions if not legion.moved])
+
     def friendly_legions(self, hexlabel=None):
         """Return a set of this player's legions, in hexlabel if not None."""
         return set([legion for legion in self.legions if hexlabel in
