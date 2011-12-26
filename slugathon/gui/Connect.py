@@ -7,8 +7,8 @@ __license__ = "GNU GPL v2"
 import argparse
 import os
 import tempfile
-import random
 import sys
+import time
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
@@ -227,8 +227,7 @@ def add_arguments(parser):
     parser.add_argument("-c", "--connect", action="store_true")
     parser.add_argument("-l", "--log-path", action="store", type=str,
       default=os.path.join(tempdir, "slugathon-client-%d.log" %
-      random.randrange(100000, 1000000)),
-      help="path to logfile")
+      int(time.time()), help="path to logfile"))
 
 
 def main():
