@@ -128,10 +128,10 @@ class CleverBot(DimBot.DimBot):
         log.msg("move_legions")
         assert game.active_player.name == self.playername
         player = game.active_player
-        if not player.moved_legions:
+        while True:
             # (score, legion, hexlabel, entry_side)
             self.best_moves = []
-            for legion in player.legions:
+            for legion in player.unmoved_legions:
                 moves = game.find_all_moves(legion, game.board.hexes[
                   legion.hexlabel], player.movement_roll)
                 for hexlabel, entry_side in moves:
@@ -143,6 +143,7 @@ class CleverBot(DimBot.DimBot):
                     self.best_moves.append(
                       (score, legion, hexlabel, entry_side))
             self.best_moves.sort()
+            log.msg("best moves", self.best_moves)
 
             if player.can_take_mulligan:
                 legions_with_good_moves = set()
@@ -155,41 +156,32 @@ class CleverBot(DimBot.DimBot):
                     def1.addErrback(self.failure)
                     return
 
-        log.msg("best moves", self.best_moves)
-        while self.best_moves:
-            score, legion, hexlabel, entry_side = self.best_moves.pop()
-            if (score > 0 or not player.moved_legions or
-              len(player.friendly_legions(legion.hexlabel)) >= 2):
-                # keeper; remove other moves for this legion, and moves
-                # for other legions to this hex, and other teleports if
-                # this move was a teleport.
-                new_best_moves = [(score2, legion2, hexlabel2, entry_side2)
-                  for (score2, legion2, hexlabel2, entry_side2) in
-                  self.best_moves
-                  if legion2 != legion and hexlabel2 != hexlabel and not
-                  (entry_side == entry_side2 == Game.TELEPORT)]
-                self.best_moves = new_best_moves
-                if entry_side == Game.TELEPORT:
-                    teleport = True
-                    masterhex = game.board.hexes[hexlabel]
-                    terrain = masterhex.terrain
-                    if terrain == "Tower":
-                        entry_side = 5
+            while self.best_moves:
+                score, legion, hexlabel, entry_side = self.best_moves.pop()
+                if (score > 0 or not player.moved_legions or
+                  len(player.friendly_legions(legion.hexlabel)) >= 2):
+                    if entry_side == Game.TELEPORT:
+                        teleport = True
+                        masterhex = game.board.hexes[hexlabel]
+                        terrain = masterhex.terrain
+                        if terrain == "Tower":
+                            entry_side = 5
+                        else:
+                            entry_side = random.choice([1, 3, 5])
+                        teleporting_lord = sorted(legion.lord_types)[-1]
                     else:
-                        entry_side = random.choice([1, 3, 5])
-                    teleporting_lord = sorted(legion.lord_types)[-1]
-                else:
-                    teleport = False
-                    teleporting_lord = None
-                def1 = self.user.callRemote("move_legion", game.name,
-                  legion.markerid, hexlabel, entry_side, teleport,
-                  teleporting_lord)
-                def1.addErrback(self.failure)
-                return
+                        teleport = False
+                        teleporting_lord = None
+                    def1 = self.user.callRemote("move_legion", game.name,
+                      legion.markerid, hexlabel, entry_side, teleport,
+                      teleporting_lord)
+                    def1.addErrback(self.failure)
+                    return
 
-        # No more legions will move.
-        def1 = self.user.callRemote("done_with_moves", game.name)
-        def1.addErrback(self.failure)
+            # No more legions will move.
+            def1 = self.user.callRemote("done_with_moves", game.name)
+            def1.addErrback(self.failure)
+            return
 
     def _score_move(self, legion, hexlabel, move):
         """Return a score for legion moving to (or staying in) hexlabel."""
