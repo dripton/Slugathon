@@ -227,7 +227,7 @@ def add_arguments(parser):
     parser.add_argument("-c", "--connect", action="store_true")
     parser.add_argument("-l", "--log-path", action="store", type=str,
       default=os.path.join(tempdir, "slugathon-client-%d.log" %
-      int(time.time()), help="path to logfile"))
+      int(time.time())), help="path to logfile")
 
 
 def main():
