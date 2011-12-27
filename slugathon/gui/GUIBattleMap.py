@@ -728,7 +728,7 @@ class GUIBattleMap(gtk.Window):
         self.repaint([hexlabel])
 
     def update(self, observed, action, names):
-        log.msg("update", observed, action, names)
+        log.msg("GUIBattleMap.update", observed, action, names)
 
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):

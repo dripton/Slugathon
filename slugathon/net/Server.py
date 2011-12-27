@@ -430,7 +430,7 @@ class Server(Observed):
             game.withdraw(username)
 
     def update(self, observed, action, names):
-        log.msg("update", observed, action, names)
+        log.msg("Server.update", observed, action, names)
         if (isinstance(action, Action.AssignTower) or
           isinstance(action, Action.AssignedAllTowers) or
           isinstance(action, Action.PickedColor) or

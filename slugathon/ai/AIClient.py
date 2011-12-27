@@ -171,7 +171,7 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        log.msg("update", action)
+        log.msg("AIClient.update", action)
 
         # Update the Game first, then act.
         self.notify(action, names)

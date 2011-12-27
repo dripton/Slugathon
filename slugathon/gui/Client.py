@@ -164,7 +164,7 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        log.msg("update", action)
+        log.msg("Client.update", action)
         if isinstance(action, Action.AddUsername):
             self.usernames.add(action.username)
         elif isinstance(action, Action.DelUsername):
