@@ -39,6 +39,8 @@ class Caretaker(object):
     def put_one_back(self, creature_name):
         """Put one of creature_name back onto the stack."""
         creature = Creature.Creature(creature_name)
+        if creature.is_unknown:
+            return
         if self.counts[creature_name] >= creature.max_count:
             log.msg("Tried to put too many %s back" % creature_name)
             self.counts[creature_name] = self.max_counts[creature_name]
