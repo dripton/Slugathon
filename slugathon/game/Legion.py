@@ -568,22 +568,23 @@ class Legion(Observed):
                 num_archangels += 1
             elif angel.name == "Angel":
                 num_angels += 1
-        okay = (num_archangels <= self.archangels_pending and
-          num_angels <= self.angels_pending + self.archangels_pending -
-          num_archangels)
-        if not okay:
-            log.msg("not enough angels pending")
-            log.msg("angels", angels)
-            log.msg("angels_pending", self.angels_pending)
-            log.msg("archangels_pending", self.archangels_pending)
-            return
-        if len(self) + num_angels + num_archangels > 7:
-            raise AssertionError("legion too tall to acquire")
         caretaker = self.player.game.caretaker
-        if caretaker.num_left("Archangel") < num_archangels:
-            raise AssertionError("not enough Archangels left")
-        if caretaker.num_left("Angel") < num_angels:
-            raise AssertionError("not enough Angels left")
+        if self.player.game.master:
+            okay = (num_archangels <= self.archangels_pending and
+              num_angels <= self.angels_pending + self.archangels_pending -
+              num_archangels)
+            if not okay:
+                log.msg("not enough angels pending")
+                log.msg("angels", angels)
+                log.msg("angels_pending", self.angels_pending)
+                log.msg("archangels_pending", self.archangels_pending)
+                return
+            if len(self) + num_angels + num_archangels > 7:
+                raise AssertionError("legion too tall to acquire")
+            if caretaker.num_left("Archangel") < num_archangels:
+                raise AssertionError("not enough Archangels left")
+            if caretaker.num_left("Angel") < num_angels:
+                raise AssertionError("not enough Angels left")
         self.archangels_pending -= num_archangels
         self.angels_pending -= num_angels
         for angel in angels:
