@@ -84,7 +84,12 @@ class GUIMasterBoard(gtk.Window):
         self.game = game
 
         self.set_icon(icon.pixbuf)
-        self.set_title("Masterboard - Slugathon - %s" % self.username)
+        if self.game:
+            game_name = self.game.name
+        else:
+            game_name = "None"
+        self.set_title("Masterboard - Slugathon - %s - %s" % (game_name,
+          self.username))
         self.connect("delete-event", self.cb_delete_event)
         self.connect("destroy", self.cb_destroy)
         self.connect("configure-event", self.cb_configure_event)

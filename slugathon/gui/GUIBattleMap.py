@@ -64,7 +64,12 @@ class GUIBattleMap(gtk.Window):
         self.selected_chit = None
 
         self.set_icon(icon.pixbuf)
-        self.set_title("BattleMap - Slugathon - %s" % self.username)
+        if self.game:
+            game_name = self.game.name
+        else:
+            game_name = "None"
+        self.set_title("BattleMap - Slugathon - %s - %s" % (game_name,
+          self.username))
 
         self.connect("configure-event", self.cb_configure_event)
 
