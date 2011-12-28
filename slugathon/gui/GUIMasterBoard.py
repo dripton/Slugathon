@@ -1362,15 +1362,8 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.EliminatePlayer):
             player = self.game.get_player_by_name(action.loser_playername)
-            hexlabels = set()
             for legion in player.legions:
-                hexlabels.add(legion.hexlabel)
-            new_recruitchits = []
-            for chit, hexlabel in self.recruitchits:
-                if hexlabel not in hexlabels:
-                    new_recruitchits.append(chit, hexlabel)
-            self.recruitchits = new_recruitchits
-            self.repaint_hexlabels.update(hexlabels)
+                self.repaint_hexlabels.add(legion.hexlabel)
             self.repaint()
 
         elif isinstance(action, Action.GameOver):
