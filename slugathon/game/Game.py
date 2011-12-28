@@ -887,6 +887,8 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         donor = player.markerid_to_legion[donor_markerid]
+        log.msg("donor", donor)
+        log.msg("legion", legion)
         # Avoid double summon
         if not player.summoned:
             if donor.any_unknown:
