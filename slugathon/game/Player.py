@@ -94,7 +94,8 @@ class Player(Observed):
 
     def pick_marker(self, markerid):
         if markerid not in self.markerids_left:
-            raise AssertionError("pick_marker with bad marker")
+            log.msg("pick_marker with bad marker")
+            return
         self.selected_markerid = markerid
 
     def take_marker(self, markerid):
