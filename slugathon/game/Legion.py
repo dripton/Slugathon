@@ -586,7 +586,11 @@ class Legion(Observed):
             if caretaker.num_left("Angel") < num_angels:
                 raise AssertionError("not enough Angels left")
         self.archangels_pending -= num_archangels
+        if self.archangels_pending < 0:
+            self.archangels_pending = 0
         self.angels_pending -= num_angels
+        if self.angels_pending < 0:
+            self.rchangels_pending = 0
         for angel in angels:
             caretaker.take_one(angel.name)
             self.creatures.append(angel)
