@@ -173,6 +173,14 @@ class Client(pb.Referenceable, Observed):
         observed set to None."""
         log.msg("AIClient.update", action)
 
+        # Make sure that Game knows that the angel is in the donor
+        # legion before we send the Action to Game.
+        if isinstance(action, Action.SummonAngel):
+            game = self.name_to_game(action.game_name)
+            self.aps.get_leaf(action.donor_markerid).reveal_creatures(
+              [action.creature_name])
+            self.update_creatures(game)
+
         # Update the Game first, then act.
         self.notify(action, names)
 
