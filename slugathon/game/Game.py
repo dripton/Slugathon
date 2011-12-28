@@ -1477,9 +1477,9 @@ class Game(Observed):
         player.withdraw()
 
     def update(self, observed, action, names):
-        log.msg("Game.update", observed, action)
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
+        log.msg("Game.update", observed, action)
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
