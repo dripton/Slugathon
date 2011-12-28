@@ -787,6 +787,22 @@ class GUIMasterBoard(gtk.Window):
           in self.recruitchits if hexlabel2 != hexlabel]
         self.repaint([hexlabel])
 
+    def clear_stray_recruitchits(self, hexlabel):
+        """Clear recruitchits in one hex."""
+        occupied_hexlabels = set()
+        stray_hexlabels = set()
+        new_recruitchits = []
+        for legion in self.game.all_legions():
+            occupied_hexlabels.add(legion.hexlabel)
+        for chit, hexlabel in self.recruitchits:
+            if hexlabel in occupied_hexlabels:
+                new_recruitchits.append((chit, hexlabel))
+            else:
+                stray_hexlabels.add(hexlabel)
+        if stray_hexlabels:
+            self.recruitchits = new_recruitchits
+            self.repaint(stray_hexlabels)
+
     def highlight_tall_legions(self):
         """Highlight all hexes containing a legion of height 7 or more
         belonging to the active, current player."""
@@ -1364,6 +1380,7 @@ class GUIMasterBoard(gtk.Window):
             player = self.game.get_player_by_name(action.loser_playername)
             for legion in player.legions:
                 self.repaint_hexlabels.add(legion.hexlabel)
+            self.clear_stray_recruitchits()
             self.repaint()
 
         elif isinstance(action, Action.GameOver):
