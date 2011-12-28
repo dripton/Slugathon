@@ -891,8 +891,7 @@ class Game(Observed):
         log.msg("legion", legion)
         # Avoid double summon
         if not player.summoned:
-            if donor.any_unknown:
-                donor.reveal_creatures([creature_name])
+            donor.reveal_creatures([creature_name])
             player.summon(legion, donor, creature_name)
             if self.phase == Phase.FIGHT:
                 creature = legion.creatures[-1]

@@ -404,6 +404,7 @@ class Player(Observed):
         """Summon an angel from donor to legion."""
         assert not self.summoned, "player tried to summon twice"
         assert len(legion) < 7, "legion too tall to summon"
+        donor.reveal_creatures([creature_name])
         donor.remove_creature_by_name(creature_name)
         legion.add_creature_by_name(creature_name)
         creature = legion.creatures[-1]
