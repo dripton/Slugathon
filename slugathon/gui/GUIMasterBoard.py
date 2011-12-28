@@ -787,8 +787,8 @@ class GUIMasterBoard(gtk.Window):
           in self.recruitchits if hexlabel2 != hexlabel]
         self.repaint([hexlabel])
 
-    def clear_stray_recruitchits(self, hexlabel):
-        """Clear recruitchits in one hex."""
+    def clear_stray_recruitchits(self):
+        """Clear recruitchits in all empty hexes."""
         occupied_hexlabels = set()
         stray_hexlabels = set()
         new_recruitchits = []
