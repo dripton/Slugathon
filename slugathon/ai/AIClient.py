@@ -251,7 +251,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.UndoSplit):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.parent_markerid).merge(
-              action.child_markerid, game.turn)
+              self.aps.get_leaf(action.child_markerid), game.turn)
             self.update_creatures(game)
 
         elif isinstance(action, Action.RollMovement):
