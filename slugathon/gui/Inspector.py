@@ -72,7 +72,6 @@ class Inspector(gtk.Dialog):
         self.marker = Marker.Marker(legion, True, scale=20)
         self.marker_hbox.pack_start(self.marker.event_box, expand=False)
 
-        # TODO Handle unknown creatures correctly
         playercolor = legion.player.color
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, playercolor, scale=20)

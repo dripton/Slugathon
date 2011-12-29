@@ -36,7 +36,6 @@ class ShowLegion(gtk.Dialog):
             marker = Marker.Marker(legion, True, scale=20)
             marker_hbox.pack_start(marker.event_box, expand=False)
 
-        # TODO Handle unknown creatures correctly
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, legion.player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, expand=False)
