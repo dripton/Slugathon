@@ -48,7 +48,6 @@ class CleverBot(DimBot.DimBot):
     def __init__(self, playername, time_limit):
         DimBot.DimBot.__init__(self, playername)
         self.time_limit = time_limit
-        self.best_moves = []
         self.best_creature_moves = None
 
     def split(self, game):
@@ -127,22 +126,24 @@ class CleverBot(DimBot.DimBot):
         log.msg("move_legions")
         assert game.active_player.name == self.playername
         player = game.active_player
+        non_moves = {}  # markerid: score
         while True:
+            # Score moves
             # (score, legion, hexlabel, entry_side)
-            self.best_moves = []
+            best_moves = []
             for legion in player.unmoved_legions:
                 moves = game.find_all_moves(legion, game.board.hexes[
                   legion.hexlabel], player.movement_roll)
                 for hexlabel, entry_side in moves:
                     score = self._score_move(legion, hexlabel, True)
-                    self.best_moves.append(
+                    best_moves.append(
                       (score, legion, hexlabel, entry_side))
-            self.best_moves.sort()
-            log.msg("best moves", self.best_moves)
+            best_moves.sort()
+            log.msg("best moves", best_moves)
 
             if player.can_take_mulligan:
                 legions_with_good_moves = set()
-                for (score, legion, _, _) in self.best_moves:
+                for (score, legion, _, _) in best_moves:
                     if score > 0:
                         legions_with_good_moves.add(legion)
                 if len(legions_with_good_moves) < 2:
@@ -151,9 +152,18 @@ class CleverBot(DimBot.DimBot):
                     def1.addErrback(self.failure)
                     return
 
-            while self.best_moves:
-                score, legion, hexlabel, entry_side = self.best_moves.pop()
-                if (score > 0 or not player.moved_legions or
+            # Score non-moves
+            # (score, legion, hexlabel, None)
+            # Entry side None means not a move.
+            for legion in player.unmoved_legions:
+                score = self._score_move(legion, legion.hexlabel, False)
+                non_moves[legion.markerid] = score
+            log.msg("non_moves", non_moves)
+
+            while best_moves:
+                score, legion, hexlabel, entry_side = best_moves.pop()
+                non_move_score = non_moves[legion.markerid]
+                if (score > non_move_score or not player.moved_legions or
                   len(player.friendly_legions(legion.hexlabel)) >= 2):
                     if entry_side == Game.TELEPORT:
                         teleport = True
