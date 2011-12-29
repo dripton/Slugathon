@@ -149,3 +149,10 @@ class TestGame(object):
         assert game.active_player == player0
         assert game.next_player_and_turn == (player1, 1)
         player0.done_with_splits()
+
+    def test_eq_ne(self):
+        now = time.time()
+        game2 = Game.Game("g1", "p0", now, now, 2, 6)
+        assert self.game == game2
+        game3 = Game.Game("g2", "p0", now, now, 2, 6)
+        assert self.game != game3
