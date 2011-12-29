@@ -178,7 +178,7 @@ class CleverBot(DimBot.DimBot):
             def1.addErrback(self.failure)
             return
 
-    def _score_move(self, legion, hexlabel, move):
+    def _score_move(self, legion, hexlabel, moved):
         """Return a score for legion moving to (or staying in) hexlabel."""
         score = 0
         player = legion.player
@@ -200,7 +200,7 @@ class CleverBot(DimBot.DimBot):
                 score += enemy.score
             elif enemy_combat_value >= BE_SQUASHED * legion_combat_value:
                 score -= legion_sort_value
-        if move and (len(legion) < 7 or enemies):
+        if moved and (len(legion) < 7 or enemies):
             masterhex = board.hexes[hexlabel]
             terrain = masterhex.terrain
             recruits = legion.available_recruits(terrain, caretaker)
