@@ -131,6 +131,8 @@ class Player(Observed):
     def can_split(self):
         """Return True if this player can split any legions."""
         if self.markerids_left:
+            if self.game.turn == 1:
+                return len(self.legions) == 1
             for legion in self.legions:
                 if len(legion) >= 4:
                     return True

@@ -106,3 +106,88 @@ def test_teleported():
     assert player.teleported
     legion2.undo_move()
     assert not player.teleported
+
+
+def test_pick_marker():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markerids_left) == 12
+    player.pick_marker("Bu01")
+    assert player.selected_markerid is None
+    player.pick_marker("Rd01")
+    assert player.selected_markerid == "Rd01"
+
+
+def test_take_marker():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markerids_left) == 12
+    try:
+        player.take_marker("Bu01")
+    except Exception:
+        pass
+    else:
+        assert False
+    player.take_marker("Rd01")
+    assert len(player.markerids_left) == 11
+
+
+def test_create_starting_legion():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markerids_left) == 12
+    try:
+        player.create_starting_legion()
+    except Exception:
+        pass
+    else:
+        assert False
+    player.selected_markerid = "Bu01"
+    try:
+        player.create_starting_legion()
+    except Exception:
+        pass
+    else:
+        assert False
+    player.pick_marker("Rd01")
+    player.create_starting_legion()
+    player.pick_marker("Rd02")
+    try:
+        player.create_starting_legion()
+    except Exception:
+        pass
+    else:
+        assert False
+
+
+def test_can_split():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markerids_left) == 12
+    player.pick_marker("Rd01")
+    assert player.selected_markerid == "Rd01"
+    player.create_starting_legion()
+    assert player.can_split
+    player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
+      ["Angel", "Centaur", "Centaur", "Gargoyle"])
+    assert not player.can_split
+    game.turn = 2
+    assert player.can_split
+    player.split_legion("Rd01", "Rd03", ["Titan", "Gargoyle"],
+      ["Ogre", "Ogre"])
+    assert player.can_split
+    player.split_legion("Rd02", "Rd04", ["Angel", "Gargoyle"],
+      ["Centaur", "Centaur"])
+    assert not player.can_split
