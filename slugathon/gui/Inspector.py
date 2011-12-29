@@ -8,6 +8,8 @@ import gtk
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import prefs
+from slugathon.data import recruitdata
+from slugathon.game import Creature
 
 
 class Inspector(gtk.Dialog):
@@ -79,6 +81,24 @@ class Inspector(gtk.Dialog):
 
         self.show_all()
 
+    def show_recruit_tree(self, terrain, playercolor):
+        """Show the recruit tree for terrain."""
+        self.legion_name.set_text(terrain)
+        for hbox in [self.marker_hbox, self.chits_hbox]:
+            for child in hbox.get_children():
+                hbox.remove(child)
+        tuples = recruitdata.data[terrain]
+        for tup in tuples:
+            if len(tup) == 2 and tup[1] != 0:
+                creature_name, count = tup
+                if count >= 2:
+                    label = gtk.Label(str(count))
+                    self.chits_hbox.pack_start(label, expand=False)
+                creature = Creature.Creature(creature_name)
+                chit = Chit.Chit(creature, playercolor, scale=20)
+                self.chits_hbox.pack_start(chit.event_box, expand=False)
+        self.show_all()
+
     def hide_window(self, event, unused):
         self.hide()
         return True
@@ -87,7 +107,7 @@ class Inspector(gtk.Dialog):
 if __name__ == "__main__":
     import random
     from slugathon.data import creaturedata, playercolordata
-    from slugathon.game import Creature, Legion, Player
+    from slugathon.game import Legion, Player
 
     def cb_destroy(confirmed):
         print "destroy"

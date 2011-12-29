@@ -285,6 +285,12 @@ class GUIMasterBoard(gtk.Window):
             if marker.point_inside((event.x, event.y)):
                 self.inspector.show_legion(marker.legion)
                 return True
+        for guihex in self.guihexes.itervalues():
+            if guiutils.point_in_polygon((event.x, event.y), guihex.points):
+                player = self.game.get_player_by_name(self.username)
+                self.inspector.show_recruit_tree(guihex.masterhex.terrain,
+                  player.color)
+                return True
         return True
 
     def _all_teleports(self, moves):
