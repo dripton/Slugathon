@@ -26,6 +26,13 @@ def test_put_one_back():
     assert caretaker.num_left("Angel") == 17
     caretaker.put_one_back("Angel")
     assert caretaker.num_left("Angel") == 18
+    caretaker.put_one_back("Unknown")
+    try:
+        caretaker.num_left("Unknown")
+    except Exception:
+        pass
+    else:
+        assert False
 
 
 def test_kill_one():
