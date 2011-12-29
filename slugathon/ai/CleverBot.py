@@ -10,7 +10,6 @@ import copy
 import time
 from sys import maxint
 import itertools
-import traceback
 import collections
 
 from twisted.python import log
@@ -135,11 +134,7 @@ class CleverBot(DimBot.DimBot):
                 moves = game.find_all_moves(legion, game.board.hexes[
                   legion.hexlabel], player.movement_roll)
                 for hexlabel, entry_side in moves:
-                    try:
-                        score = self._score_move(legion, hexlabel, True)
-                    except Exception:
-                        log.msg(traceback.format_exc())
-                        raise
+                    score = self._score_move(legion, hexlabel, True)
                     self.best_moves.append(
                       (score, legion, hexlabel, entry_side))
             self.best_moves.sort()
@@ -435,28 +430,24 @@ class CleverBot(DimBot.DimBot):
         that lets all the creatures reach their assigned hexes without
         blocking their allies' moves.
         """
-        try:
-            log.msg("move creatures")
-            if self.best_creature_moves is None:
-                self.best_creature_moves = self._find_best_creature_moves(game)
-            # Loop in case a non-move is best.
-            while self.best_creature_moves:
-                (creature_name, start, finish) = \
-                  self.best_creature_moves.pop(0)
-                log.msg("checking move", creature_name, start, finish)
-                creature = game.creatures_in_battle_hex(start,
-                  creature_name).pop()
-                if finish != start and finish in game.find_battle_moves(
-                  creature):
-                    log.msg("calling move_creature", creature.name, start,
-                      finish)
-                    def1 = self.user.callRemote("move_creature", game.name,
-                      creature.name, start, finish)
-                    def1.addErrback(self.failure)
-                    return
-        except Exception:
-            log.msg(traceback.format_exc())
-            raise
+        log.msg("move creatures")
+        if self.best_creature_moves is None:
+            self.best_creature_moves = self._find_best_creature_moves(game)
+        # Loop in case a non-move is best.
+        while self.best_creature_moves:
+            (creature_name, start, finish) = \
+              self.best_creature_moves.pop(0)
+            log.msg("checking move", creature_name, start, finish)
+            creature = game.creatures_in_battle_hex(start,
+              creature_name).pop()
+            if finish != start and finish in game.find_battle_moves(
+              creature):
+                log.msg("calling move_creature", creature.name, start,
+                  finish)
+                def1 = self.user.callRemote("move_creature", game.name,
+                  creature.name, start, finish)
+                def1.addErrback(self.failure)
+                return
 
         # No moves, so end the maneuver phase.
         log.msg("calling done_with_maneuvers")
