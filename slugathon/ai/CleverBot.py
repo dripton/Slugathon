@@ -217,9 +217,14 @@ class CleverBot(DimBot.DimBot):
             if recruits:
                 recruit_name = recruits[-1]
                 recruit = Creature.Creature(recruit_name)
-                score += recruit.sort_value
+                # Only give credit for recruiting if we're likely to live.
+                if not enemies or enemy_combat_value < legion_combat_value:
+                    recruit_value = recruit.sort_value
+                elif enemy_combat_value < BE_SQUASHED * legion_combat_value:
+                    recruit_value = 0.5 * recruit.sort_value
                 log.msg("recruit value", legion.markerid, hexlabel,
-                  recruit.sort_value)
+                  recruit_value)
+                score += recruit_value
         if game.turn > 1:
             # Do not fear enemy legions on turn 1.  8-high legions will be
             # forced to split, and hanging around in the tower to avoid getting
