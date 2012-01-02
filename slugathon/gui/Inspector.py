@@ -64,8 +64,9 @@ class Inspector(gtk.Dialog):
         return False
 
     def show_legion(self, legion):
-        self.legion_name.set_text("Legion %s (%s) in hex %s (%d points)" % (
-          legion.markerid, legion.picname, legion.hexlabel, legion.score))
+        self.legion_name.set_text("Legion %s (%s) in hex %s (%d%s points)" % (
+          legion.markerid, legion.picname, legion.hexlabel, legion.score,
+          "+?" if legion.any_unknown else ""))
 
         for hbox in [self.marker_hbox, self.chits_hbox]:
             for child in hbox.get_children():
