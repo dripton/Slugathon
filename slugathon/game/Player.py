@@ -307,7 +307,7 @@ class Player(Observed):
 
     @property
     def can_exit_fight_phase(self):
-        """Return True iff this player can finish the move phase."""
+        """Return True iff this player can finish the fight phase."""
         log.msg("can_exit_fight_phase engagement_hexlabels",
           self.game.engagement_hexlabels,
           "pending_summon", self.game.pending_summon,
