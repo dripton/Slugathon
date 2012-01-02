@@ -241,8 +241,6 @@ class CleverBot(DimBot.DimBot):
                               game.find_titan_teleport_moves(enemy))
                             hexlabels = set((move[0] for move in moves))
                             if hexlabel in hexlabels:
-                                log.msg("scared of %s in %s" % (enemy.markerid,
-                                  hexlabel))
                                 score -= legion_sort_value / 6.0
             finally:
                 legion.hexlabel = prev_hexlabel
