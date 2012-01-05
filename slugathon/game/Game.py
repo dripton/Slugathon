@@ -1236,13 +1236,16 @@ class Game(Observed):
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if not creature.dead:
-                    hex1 = self.battlemap.hexes[creature.hexlabel]
-                    if hex1.terrain == "Drift" and not creature.is_native(
-                      hex1.terrain):
-                        creature.hits += 1
-                        action = Action.DriftDamage(self.name, creature.name,
-                          creature.hexlabel, 1)
-                        self.notify(action)
+                    if creature.hexlabel:
+                        hex1 = self.battlemap.hexes[creature.hexlabel]
+                        if hex1.terrain == "Drift" and not creature.is_native(
+                          hex1.terrain):
+                            creature.hits += 1
+                            action = Action.DriftDamage(self.name,
+                              creature.name, creature.hexlabel, 1)
+                            self.notify(action)
+                    else:
+                        log.msg("creature %s has hexlabel None" % creature)
 
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
