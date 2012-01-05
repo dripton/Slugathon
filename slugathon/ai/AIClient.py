@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2003-2011 David Ripton"
+__copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 """Outward-facing facade for AI."""
@@ -515,11 +515,13 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.EliminatePlayer):
             if action.loser_playername == self.playername:
-                log.msg("Eliminated; AI exiting")
-                try:
-                    reactor.stop()
-                except ReactorNotRunning:
-                    pass
+                game = self.name_to_game(action.game_name)
+                if game.owner.name != self.playername:
+                    log.msg("Eliminated; AI exiting")
+                    try:
+                        reactor.stop()
+                    except ReactorNotRunning:
+                        pass
 
         elif isinstance(action, Action.RevealLegion):
             game = self.name_to_game(action.game_name)
