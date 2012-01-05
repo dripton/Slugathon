@@ -8,6 +8,9 @@ __license__ = "GNU GPL v2"
 
 import argparse
 import random
+import tempfile
+import os
+import sys
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -22,6 +25,9 @@ from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase, Creature
 from slugathon.ai import DimBot, CleverBot, predictsplits
 from slugathon.data.creaturedata import starting_creature_names
+
+
+TEMPDIR = tempfile.gettempdir()
 
 
 @implementer(IObserver)
@@ -47,13 +53,14 @@ class Client(pb.Referenceable, Observed):
         else:
             raise ValueError("invalid aitype %s" % aitype)
         self.game_name = game_name
-        if log_path:
-            log.startLogging(open(log_path, "w"), setStdout=False)
+        self.log_path = log_path
         self.time_limit = time_limit
         self.form_game = form_game
         self.min_players = min_players
         self.max_players = max_players
         self.aps = predictsplits.AllPredictSplits()
+        if log_path:
+            log.startLogging(open(self.log_path, "w"), setStdout=False)
         log.msg("__init__ done", game_name, username)
 
     def remote_set_name(self, name):
@@ -103,6 +110,11 @@ class Client(pb.Referenceable, Observed):
         if self.form_game:
             if not self.game_name:
                 self.game_name = "Game_%d" % random.randrange(1000000)
+            if not self.log_path:
+                self.log_path = os.path.join(TEMPDIR, "slugathon-%s-%s.log" %
+                  (self.game_name, self.playername))
+                log.startLogging(open(self.log_path, "w"), setStdout=False)
+                log.startLogging(sys.stdout)
             def1 = self.user.callRemote("form_game", self.game_name,
               self.min_players, self.max_players)
             def1.addErrback(self.failure)
