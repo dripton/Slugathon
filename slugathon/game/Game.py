@@ -1390,7 +1390,8 @@ class Game(Observed):
         log.msg("done_with_counterstrikes", playername)
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
-            raise AssertionError("ending counterstrike phase out of turn")
+            log.msg("ending counterstrike phase out of turn")
+            return
         if self.battle_phase != Phase.COUNTERSTRIKE:
             return
         if (not self.battle_is_over and
