@@ -8,6 +8,8 @@ __license__ = "GNU GPL v2"
 import copy
 import itertools
 
+from twisted.python import log
+
 from slugathon.game.Creature import Creature
 
 
