@@ -90,6 +90,7 @@ setup(
     ],
     scripts=[
         "bin/slugathon",
+        "bin/stresstest-slugathon",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
