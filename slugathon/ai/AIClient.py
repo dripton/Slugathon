@@ -526,14 +526,23 @@ class Client(pb.Referenceable, Observed):
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
         elif isinstance(action, Action.EliminatePlayer):
+            game = self.name_to_game(action.game_name)
             if action.loser_playername == self.playername:
-                game = self.name_to_game(action.game_name)
                 if game.owner.name != self.playername:
                     log.msg("Eliminated; AI exiting")
                     try:
                         reactor.stop()
                     except ReactorNotRunning:
-                        pass
+                        return
+            # Remove the dead player's PredictSplits from self.aps
+            # to avoid problems later if his markers get reused.
+            player = game.get_player_by_name(action.loser_playername)
+            color_abbrev = player.color_abbrev
+            for ps in self.aps:
+                for node in ps.get_nodes():
+                    if node.markerid.startswith(color_abbrev):
+                        self.aps.remove(ps)
+                        break
 
         elif isinstance(action, Action.RevealLegion):
             game = self.name_to_game(action.game_name)
