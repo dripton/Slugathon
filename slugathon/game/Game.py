@@ -1347,9 +1347,19 @@ class Game(Observed):
             # defender wins on time loss
             self.attacker_legion.die(self.defender_legion, False, True)
         elif self.attacker_legion.dead and self.defender_legion.dead:
-            #mutual kill
-            self.attacker_legion.die(self.defender_legion, False, True, False)
-            self.defender_legion.die(self.attacker_legion, False, True)
+            # mutual kill
+            # Don't to check for victory until both legions are dead,
+            # to avoid prematurely avoiding a victory in a mutual.
+            # But make sure that if there's a titan in only one legion, it
+            # dies last, so we do check for victory.
+            if self.attacker_legion.has_titan:
+                self.defender_legion.die(self.attacker_legion, False, True,
+                  False)
+                self.attacker_legion.die(self.defender_legion, False, True)
+            else:
+                self.attacker_legion.die(self.defender_legion, False, True,
+                  False)
+                self.defender_legion.die(self.attacker_legion, False, True)
         elif self.attacker_legion.dead:
             # defender wins
             self.attacker_legion.die(self.defender_legion, False, False)
