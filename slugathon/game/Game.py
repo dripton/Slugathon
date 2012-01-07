@@ -1319,20 +1319,20 @@ class Game(Observed):
         """
         log.msg("_end_battle1")
         if self.battle_turn > 7:
-            #defender wins on time loss, possible reinforcement
+            # defender wins on time loss, possible reinforcement
             if self.defender_legion and self.defender_legion.can_recruit:
                 self.pending_reinforcement = True
         elif (self.attacker_legion and self.attacker_legion.dead and
           self.defender_legion and self.defender_legion.dead):
-            #mutual kill
+            # mutual kill
             pass
         elif self.attacker_legion and self.attacker_legion.dead:
-            #defender wins, possible reinforcement
+            # defender wins, possible reinforcement
             if (self.defender_legion and self.attacker_entered and
               self.defender_legion.can_recruit):
                 self.pending_reinforcement = True
         elif self.defender_legion and self.defender_legion.dead:
-            #attacker wins, possible summon
+            # attacker wins, possible summon
             if self.attacker_legion and self.attacker_legion.can_summon:
                 self.pending_summon = True
         if not self.pending_reinforcement and not self.pending_summon:
@@ -1344,17 +1344,17 @@ class Game(Observed):
         """
         log.msg("_end_battle2")
         if self.battle_turn > 7:
-            #defender wins on time loss
+            # defender wins on time loss
             self.attacker_legion.die(self.defender_legion, False, True)
         elif self.attacker_legion.dead and self.defender_legion.dead:
             #mutual kill
             self.attacker_legion.die(self.defender_legion, False, True, False)
             self.defender_legion.die(self.attacker_legion, False, True)
         elif self.attacker_legion.dead:
-            #defender wins
+            # defender wins
             self.attacker_legion.die(self.defender_legion, False, False)
         elif self.defender_legion.dead:
-            #attacker wins
+            # attacker wins
             self.defender_legion.die(self.attacker_legion, False, False)
         else:
             assert False, "bug in Game._end_battle2"
