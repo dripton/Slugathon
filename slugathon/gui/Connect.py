@@ -12,8 +12,7 @@ import time
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
-from twisted.internet import reactor
-from twisted.internet import utils
+from twisted.internet import reactor, utils
 from twisted.python import log
 import gtk
 import gobject
