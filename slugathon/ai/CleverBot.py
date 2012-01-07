@@ -702,8 +702,12 @@ class CleverBot(DimBot.DimBot):
 
     def strike(self, game):
         log.msg("strike")
+        if not game.battle_active_player:
+            log.msg("called strike with no battle")
+            return
         if game.battle_active_player.name != self.playername:
             log.msg("called strike for wrong player")
+            return
         legion = game.battle_active_legion
         # First do the strikers with only one target.
         for striker in legion.sorted_creatures:
