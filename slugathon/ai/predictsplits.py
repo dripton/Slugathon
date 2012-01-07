@@ -231,6 +231,7 @@ class Node(object):
 
         Return True iff new information was sent to this legion's parent.
         """
+        log.msg("Node.reveal_creatures", self, cnl)
         if ((not cnl) or
           (superset(get_creature_names(self.certain_creatures), cnl)
           and (self.all_descendents_certain))):
@@ -377,6 +378,7 @@ class Node(object):
 
     def split(self, child_size, other_markerid, turn=-1):
         """Split this legion."""
+        log.msg("Node.split", self, child_size, other_markerid, turn)
         assert len(self) <= 8
 
         if turn == -1:
@@ -494,6 +496,7 @@ class Node(object):
         parent's markerid, then that legion will remain. Otherwise this legion
         will remain.
         """
+        log.msg("Node.merge", self, other, turn)
         parent = self.parent
         assert parent == other.parent
         if (parent.markerid == self.markerid or
@@ -508,6 +511,7 @@ class Node(object):
 
     def add_creature(self, creature_name):
         """Add a Creature by its name."""
+        log.msg("Node.add_creature", self, creature_name)
         # Allow adding to 7-high legion, to support the case of summoning
         # into a legion that has lost creatures whose removal has not
         # been noted yet.
@@ -516,6 +520,7 @@ class Node(object):
 
     def remove_creature(self, creature_name):
         """Remove a Creature by its name."""
+        log.msg("Node.remove_creature", self, creature_name)
         if not self:
             raise ValueError("Tried removing from 0-high legion")
         self.reveal_creatures([creature_name])
@@ -533,6 +538,7 @@ class Node(object):
 
     def remove_creatures(self, creature_names):
         """Remove Creatures by their names."""
+        log.msg("Node.remove_creatures", self, creature_names)
         self.reveal_creatures(creature_names)
         for name in creature_names:
             self.remove_creature(name)
