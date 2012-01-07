@@ -124,7 +124,9 @@ class CleverBot(DimBot.DimBot):
     def move_legions(self, game):
         """Move one or more legions, and then end the Move phase."""
         log.msg("move_legions")
-        assert game.active_player.name == self.playername
+        if game.active_player.name != self.playername:
+            log.msg("not active player; aborting")
+            return
         player = game.active_player
         non_moves = {}  # markerid: score
         while True:
