@@ -8,8 +8,6 @@ __license__ = "GNU GPL v2"
 import copy
 import itertools
 
-from twisted.python import log
-
 from slugathon.game.Creature import Creature
 
 
@@ -252,9 +250,9 @@ class Node(object):
             else:
                 count += 1
 
-        if count > len(self):
-            log.msg("Certainty error in reveal_creatures count=%d height=%d"
-              % (count, len(self)))
+        assert len(self) >= count, \
+            "Certainty error in reveal_creatures count=%d height=%d" \
+              % (count, len(self))
 
         # Then mark passed creatures as certain and then
         # communicate this to the parent, to adjust other legions.
