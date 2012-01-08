@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2010-2011 David Ripton"
+__copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
