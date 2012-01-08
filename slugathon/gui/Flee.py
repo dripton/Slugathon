@@ -13,7 +13,7 @@ from twisted.internet import defer, reactor
 from twisted.python import log
 import gtk
 
-from slugathon.gui import Chit, Marker, icon
+from slugathon.gui import Chit, Marker, icon, ConfirmDialog
 
 
 DO_NOT_FLEE = 0
@@ -94,12 +94,29 @@ class Flee(gtk.Dialog):
         self.show_all()
 
     def cb_response(self, widget, response_id):
-        """Fires the deferred, with the attacker, the defender, and
+        """Fire the deferred, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""
+        if (response_id and (self.defender_legion.combat_value >=
+          self.attacker_legion.combat_value) or (self.defender_legion.score >=
+          self.attacker_legion.score)):
+            confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+              "Are you sure you want to flee with a superior legion?")
+            def1.addCallback(self.cb_response2)
+            def1.addErrback(self.failure)
+            return
         self.destroy()
         self.deferred.callback((self.attacker_legion, self.defender_legion,
           response_id))
 
+    def cb_response2(self, confirmed):
+        """Fire the deferred, with the attacker, the defender, and
+        a boolean which is True iff the user chose to flee."""
+        self.destroy()
+        self.deferred.callback((self.attacker_legion, self.defender_legion,
+          confirmed))
+
+    def failure(self, arg):
+        log.err(arg)
 
 if __name__ == "__main__":
     import time
