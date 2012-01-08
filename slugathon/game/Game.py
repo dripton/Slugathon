@@ -1150,7 +1150,7 @@ class Game(Observed):
         excluding its current hex."""
         result = set()
         if creature.hexlabel is None:
-            log.msg(creature, "has hexlabel None")
+            log.msg("find_battle_moves", creature, "has hexlabel None")
             return result
         if creature.moved or creature.engaged:
             return result
@@ -1245,7 +1245,8 @@ class Game(Observed):
                               creature.name, creature.hexlabel, 1)
                             self.notify(action)
                     else:
-                        log.msg("creature %s has hexlabel None" % creature)
+                        log.msg("apply_drift_damage %s has hexlabel None" %
+                          creature)
 
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
