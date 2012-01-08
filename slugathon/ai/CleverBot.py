@@ -358,7 +358,9 @@ class CleverBot(DimBot.DimBot):
         that lets all the creatures reach their assigned hexes without
         blocking their allies' moves.
         """
-        assert game.battle_active_player.name == self.playername
+        if (game.battle_active_player is None or game.battle_active_player.name
+          != self.playername):
+            return None
         legion = game.battle_active_legion
         creatures = legion.sorted_living_creatures
         log.msg("_find_best_creature_moves", legion, creatures)
