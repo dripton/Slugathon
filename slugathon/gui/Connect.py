@@ -12,13 +12,16 @@ import time
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
-from twisted.internet import reactor, utils
+from twisted.internet import reactor, utils, defer
 from twisted.python import log
 import gtk
 import gobject
 
 from slugathon.gui import Client, icon
 from slugathon.util import guiutils, prefs
+
+
+defer.setDebugging(True)
 
 
 class Connect(gtk.Window):

@@ -14,7 +14,7 @@ import sys
 
 from twisted.spread import pb
 from twisted.cred import credentials
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from twisted.internet.error import ReactorNotRunning
 from twisted.python import log
 from zope.interface import implementer
@@ -28,6 +28,9 @@ from slugathon.data.creaturedata import starting_creature_names
 
 
 TEMPDIR = tempfile.gettempdir()
+
+
+defer.setDebugging(True)
 
 
 @implementer(IObserver)

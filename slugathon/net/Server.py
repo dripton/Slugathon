@@ -14,7 +14,7 @@ import hashlib
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
-from twisted.internet import reactor, protocol
+from twisted.internet import reactor, protocol, defer
 from twisted.python import log
 from zope.interface import implementer
 
@@ -28,6 +28,9 @@ from slugathon.util import prefs
 
 
 TEMPDIR = tempfile.gettempdir()
+
+
+defer.setDebugging(True)
 
 
 @implementer(IObserver)
