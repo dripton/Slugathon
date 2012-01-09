@@ -159,7 +159,7 @@ class Client(pb.Referenceable, Observed):
 
     # TODO Restrict to one player.
     def update_creatures(self, game):
-        """Update creatures in self.game from self.aps."""
+        """Update creatures in game from self.aps."""
         for legion in game.all_legions():
             markerid = legion.markerid
             node = self.aps.get_leaf(markerid)
