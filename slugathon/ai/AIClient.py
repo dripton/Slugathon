@@ -306,8 +306,11 @@ class Client(pb.Referenceable, Observed):
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AddPoints)):
             game = self.name_to_game(action.game_name)
-            if game.active_player.name == self.playername:
-                if game.battle_legions:
+            if game.battle_legions:
+                log.msg("unexpected battle_legions %s %s" %
+                  (game.defender_legion, game.attacker_legion))
+                if (game.battle_active_player and
+                  game.battle_active_player.name == self.playername):
                     if game.battle_phase == Phase.REINFORCE:
                         reactor.callLater(self.ai.reinforce, game)
                     elif game.battle_phase == Phase.MANEUVER:
@@ -315,9 +318,8 @@ class Client(pb.Referenceable, Observed):
                           game)
                     else:
                         reactor.callLater(self.delay, self.ai.strike, game)
-                else:
-                    reactor.callLater(self.delay, self.ai.choose_engagement,
-                      game)
+            elif game.active_player.name == self.playername:
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
