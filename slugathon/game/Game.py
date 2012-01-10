@@ -830,7 +830,7 @@ class Game(Observed):
 
         Called from Server.
         """
-        log.msg("done_with_engagements")
+        log.msg("Game.done_with_engagements")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             log.msg("%s ending fight phase out of turn" % playername)
@@ -1251,7 +1251,7 @@ class Game(Observed):
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
         """Called from Server."""
-        log.msg("strike")
+        log.msg("Game.strike")
         player = self.get_player_by_name(playername)
         assert player == self.battle_active_player, "striking out of turn"
         assert self.battle_phase in [Phase.STRIKE, Phase.COUNTERSTRIKE], \

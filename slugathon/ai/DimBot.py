@@ -152,7 +152,7 @@ class DimBot(object):
               hexlabel)
             def1.addErrback(self.failure)
         else:
-            log.msg("calling done_with_engagements")
+            log.msg("DimBot calling done_with_engagements")
             def1 = self.user.callRemote("done_with_engagements", game.name)
             def1.addErrback(self.failure)
 
