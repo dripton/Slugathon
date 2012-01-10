@@ -493,6 +493,28 @@ class Client(pb.Referenceable, Observed):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
                       game)
 
+        elif isinstance(action, Action.UnSummon):
+            game = self.name_to_game(action.game_name)
+            log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+              (action._markerid, [action.creature_name]))
+            self.aps.get_leaf(action.markerid).reveal_creatures(
+              [action.creature_name])
+            log.msg("self.aps.get_leaf('%s').remove_creature('%s')" %
+              (action.markerid, action.creature_name))
+            self.aps.get_leaf(action.markerid).remove_creature(
+              action.creature_name)
+            log.msg("self.aps.get_leaf('%s').add_creature('%s')" %
+              (action.donor_markerid, action.creature_name))
+            self.aps.get_leaf(action.donor_markerid).add_creature(
+              action.creature_name)
+            self.update_creatures(game)
+            if action.playername == self.playername:
+                if game.battle_phase == Phase.REINFORCE:
+                    reactor.callLater(self.delay, self.ai.summon, game)
+                else:
+                    reactor.callLater(self.delay, self.ai.choose_engagement,
+                      game)
+
         elif isinstance(action, Action.DoNotSummon):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
