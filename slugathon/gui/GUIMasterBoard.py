@@ -287,9 +287,13 @@ class GUIMasterBoard(gtk.Window):
                 return True
         for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
-                player = self.game.get_player_by_name(self.username)
+                if self.game:
+                    player = self.game.get_player_by_name(self.username)
+                    player_color = player.color
+                else:
+                    player_color = "Black"
                 self.inspector.show_recruit_tree(guihex.masterhex.terrain,
-                  player.color)
+                  player_color)
                 return True
         return True
 
