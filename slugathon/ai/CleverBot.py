@@ -400,6 +400,8 @@ class CleverBot(DimBot.DimBot):
         legion_moves = list(self._gen_legion_moves(movesets))
         log.msg("found %d legion_moves in %fs" % (len(legion_moves),
           time.time() - now))
+        if not legion_moves:
+            return None
         best_score = -maxint
         start = time.time()
         # Scramble the moves, in case we don't have time to look at them all.
