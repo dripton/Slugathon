@@ -122,6 +122,18 @@ def test_gen_legion_moves():
         ["B1", "B2", "B3"],
     ])
 
+    movesets = [
+        set(['F1', 'F2', 'F3', 'C1', 'E2', 'E1', 'D1']),
+        set(['F1', 'F2', 'D1', 'E1', 'E2']),
+        set(['F1', 'F2', 'E2', 'E1', 'D1']),
+        set(['F1', 'F2', 'D1', 'E1', 'E2']),
+        set(['F1', 'F2', 'D1', 'E1', 'E2']),
+        set(['F1', 'F2', 'E2', 'E1', 'D1']),
+        set(['F1', 'F2', 'D1', 'E1', 'E2']),
+    ]
+    lm = sorted(cleverbot._gen_legion_moves(movesets))
+    assert lm == []
+
 
 def test_score_legion_move_brush():
     now = time.time()
