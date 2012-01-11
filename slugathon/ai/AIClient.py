@@ -63,7 +63,7 @@ class Client(pb.Referenceable, Observed):
         self.max_players = max_players
         if log_path:
             log.startLogging(open(self.log_path, "w"), setStdout=False)
-        log.msg("self.aps = predictsplits.AllPredictSplits()")
+        log.msg("aps = AllPredictSplits()")
         self.aps = predictsplits.AllPredictSplits()
         log.msg("__init__ done", game_name, username)
 
@@ -193,7 +193,7 @@ class Client(pb.Referenceable, Observed):
         # legion before we send the Action to Game.
         if isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
-            log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
               (action.donor_markerid, [action.creature_name]))
             self.aps.get_leaf(action.donor_markerid).reveal_creatures(
               [action.creature_name])
@@ -254,29 +254,29 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
-            log.msg("ps = predictsplits.PredictSplits('%s', '%s', %s)" %
+            log.msg("ps = PredictSplits('%s', '%s', %s)" %
               (action.playername, action.markerid, starting_creature_names))
             ps = predictsplits.PredictSplits(action.playername,
               action.markerid, starting_creature_names)
-            log.msg("self.aps.append(ps)")
+            log.msg("aps.append(ps)")
             self.aps.append(ps)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
-            log.msg("self.aps.get_leaf('%s').split(%d, '%s', %d)" %
+            log.msg("aps.get_leaf('%s').split(%d, '%s', %d)" %
               (action.parent_markerid, len(action.child_creature_names),
               action.child_markerid, game.turn))
             self.aps.get_leaf(action.parent_markerid).split(
               len(action.child_creature_names), action.child_markerid,
               game.turn)
             if action.parent_creature_names[0] != "Unknown":
-                log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+                log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
                   (action.parent_markerid, list(action.parent_creature_names)))
                 self.aps.get_leaf(action.parent_markerid).reveal_creatures(
                   list(action.parent_creature_names))
-                log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+                log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
                   (action.child_markerid, list(action.child_creature_names)))
                 self.aps.get_leaf(action.child_markerid).reveal_creatures(
                   list(action.child_creature_names))
@@ -418,11 +418,11 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
-            log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
               (action.markerid, list(action.recruiter_names)))
             self.aps.get_leaf(action.markerid).reveal_creatures(
               list(action.recruiter_names))
-            log.msg("self.aps.get_leaf('%s').add_creature('%s')" %
+            log.msg("aps.get_leaf('%s').add_creature('%s')" %
               (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).add_creature(
               action.creature_name)
@@ -446,7 +446,7 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UndoRecruit):
             game = self.name_to_game(action.game_name)
-            log.msg("self.aps.get_leaf('%s').remove_creature('%s')" %
+            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
               (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
@@ -454,7 +454,7 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UnReinforce):
             game = self.name_to_game(action.game_name)
-            log.msg("self.aps.get_leaf('%s').remove_creature('%s')" %
+            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
               (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
@@ -473,15 +473,15 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
-            log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
               (action.donor_markerid, [action.creature_name]))
             self.aps.get_leaf(action.donor_markerid).reveal_creatures(
               [action.creature_name])
-            log.msg("self.aps.get_leaf('%s').remove_creature('%s')" %
+            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
               (action.donor_markerid, action.creature_name))
             self.aps.get_leaf(action.donor_markerid).remove_creature(
               action.creature_name)
-            log.msg("self.aps.get_leaf('%s').add_creature('%s')" %
+            log.msg("aps.get_leaf('%s').add_creature('%s')" %
               (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).add_creature(
               action.creature_name)
@@ -495,15 +495,15 @@ class Client(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UnSummon):
             game = self.name_to_game(action.game_name)
-            log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
               (action._markerid, [action.creature_name]))
             self.aps.get_leaf(action.markerid).reveal_creatures(
               [action.creature_name])
-            log.msg("self.aps.get_leaf('%s').remove_creature('%s')" %
+            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
               (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
-            log.msg("self.aps.get_leaf('%s').add_creature('%s')" %
+            log.msg("aps.get_leaf('%s').add_creature('%s')" %
               (action.donor_markerid, action.creature_name))
             self.aps.get_leaf(action.donor_markerid).add_creature(
               action.creature_name)
@@ -527,12 +527,12 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
             if action.winner_losses:
-                log.msg("self.aps.get_leaf('%s').remove_creatures(%s)" %
+                log.msg("aps.get_leaf('%s').remove_creatures(%s)" %
                   (action.winner_markerid, list(action.winner_losses)))
                 self.aps.get_leaf(action.winner_markerid).remove_creatures(
                   list(action.winner_losses))
             if action.loser_losses:
-                log.msg("self.aps.get_leaf('%s').remove_creatures(%s)" %
+                log.msg("aps.get_leaf('%s').remove_creatures(%s)" %
                   (action.loser_markerid, list(action.loser_losses)))
                 self.aps.get_leaf(action.loser_markerid).remove_creatures(
                   list(action.loser_losses))
@@ -564,7 +564,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.Acquire):
             game = self.name_to_game(action.game_name)
             for angel_name in action.angel_names:
-                log.msg("self.aps.get_leaf('%s').add_creature('%s')" %
+                log.msg("aps.get_leaf('%s').add_creature('%s')" %
                   (action.markerid, angel_name))
                 self.aps.get_leaf(action.markerid).add_creature(angel_name)
             self.update_creatures(game)
@@ -600,7 +600,7 @@ class Client(pb.Referenceable, Observed):
             legion = game.find_legion(action.markerid)
             if legion:
                 legion.reveal_creatures(action.creature_names)
-            log.msg("self.aps.get_leaf('%s').reveal_creatures(%s)" %
+            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
               (action.markerid, action.creature_names))
             self.aps.get_leaf(action.markerid).reveal_creatures(
               action.creature_names)
