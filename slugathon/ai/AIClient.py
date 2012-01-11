@@ -496,7 +496,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.UnSummon):
             game = self.name_to_game(action.game_name)
             log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-              (action._markerid, [action.creature_name]))
+              (action.markerid, [action.creature_name]))
             self.aps.get_leaf(action.markerid).reveal_creatures(
               [action.creature_name])
             log.msg("aps.get_leaf('%s').remove_creature('%s')" %
