@@ -64,7 +64,7 @@ def test_history_2():
     assert not history.can_redo(playername)
 
     action1 = Action.MoveLegion(game_name, playername, parent_markerid,
-      1, 1, False, None)
+      1, 1, False, None, 2)
     history.update(None, action1, None)
     assert history.actions == [action1]
     assert history.undone == []
@@ -73,7 +73,7 @@ def test_history_2():
     assert not history.can_redo(playername)
 
     action2 = Action.MoveLegion(game_name, playername, child_markerid,
-      2, 3, False, None)
+      2, 3, False, None, 3)
     history.update(None, action2, None)
     assert history.actions == [action1, action2]
     assert history.undone == []
@@ -82,7 +82,7 @@ def test_history_2():
     assert not history.can_redo(playername)
 
     undo_action2 = Action.UndoMoveLegion(game_name, playername,
-      child_markerid, 2, 3, False, None)
+      child_markerid, 2, 3, False, None, 3)
     history.update(None, undo_action2, None)
     assert history.actions == [action1]
     assert history.undone == [action2]
@@ -90,7 +90,7 @@ def test_history_2():
     assert history.can_redo(playername)
 
     undo_action1 = Action.UndoMoveLegion(game_name, playername,
-      parent_markerid, 1, 1, False, None)
+      parent_markerid, 1, 1, False, None, 2)
     history.update(None, undo_action1, None)
     assert history.actions == []
     assert history.undone == [action2, action1]
@@ -111,7 +111,7 @@ def test_save():
     assert not history.can_redo(playername)
 
     action1 = Action.MoveLegion(game_name, playername, parent_markerid,
-      1, 1, False, None)
+      1, 1, False, None, 2)
     history.update(None, action1, None)
     assert history.actions == [action1]
     assert history.undone == []
@@ -120,7 +120,7 @@ def test_save():
     assert not history.can_redo(playername)
 
     action2 = Action.MoveLegion(game_name, playername, child_markerid,
-      2, 3, False, None)
+      2, 3, False, None, 3)
     history.update(None, action2, None)
     assert history.actions == [action1, action2]
 
@@ -167,10 +167,10 @@ RollMovement {'playername': 'tchula', 'game_name': 'a', 'movement_roll': 6, \
 'mulligans_left': 0}
 MoveLegion {'markerid': 'Bu11', 'entry_side': 1, 'teleport': True, \
 'playername': 'tchula', 'teleporting_lord': 'Titan', 'game_name': 'a', \
-'hexlabel': 300}
+'hexlabel': 300, 'previous_hexlabel': 200}
 MoveLegion {'markerid': 'Bu06', 'entry_side': 1, 'teleport': False, \
 'playername': 'tchula', 'teleporting_lord': None, 'game_name': 'a', \
-'hexlabel': 36}
+'hexlabel': 36, 'previous_hexlabel': 35}
 StartMusterPhase {'playername': 'tchula', 'game_name': 'a'}
 RecruitCreature {'playername': 'tchula', 'markerid': 'Bu06', \
 'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}
@@ -185,10 +185,10 @@ RollMovement {'playername': 'dripton', 'game_name': 'a', 'movement_roll': 6, \
 'mulligans_left': 1}
 MoveLegion {'markerid': 'Rd04', 'entry_side': 1, 'teleport': True, \
 'playername': 'dripton', 'teleporting_lord': 'Titan', 'game_name': 'a', \
-'hexlabel': 200}
+'hexlabel': 200, 'previous_hexlabel': 100}
 MoveLegion {'markerid': 'Rd02', 'entry_side': 5, 'teleport': False, \
 'playername': 'dripton', 'teleporting_lord': None, 'game_name': 'a', \
-'hexlabel': 117}
+'hexlabel': 117, 'previous_hexlabel': 116}
 StartMusterPhase {'playername': 'dripton', 'game_name': 'a'}
 RecruitCreature {'playername': 'dripton', 'markerid': 'Rd02', \
 'creature_name': 'Ogre', 'game_name': 'a', 'recruiter_names': ['Ogre']}

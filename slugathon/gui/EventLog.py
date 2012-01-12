@@ -102,9 +102,11 @@ class EventLog(gtk.Dialog):
             st = "%s (%s) rolls %d for movement" % (action.playername,
               playercolor, action.movement_roll)
         elif isinstance(action, Action.MoveLegion):
-            st = "%s (%s) %s to %s hex %s" % (action.markerid,
+            st = "%s (%s) %s from %s hex %s to %s hex %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               "teleports" if action.teleport else "moves",
+              self.game.board.hexes[action.previous_hexlabel].terrain,
+              action.previous_hexlabel,
               self.game.board.hexes[action.hexlabel].terrain,
               action.hexlabel)
         elif isinstance(action, Action.UndoMoveLegion):

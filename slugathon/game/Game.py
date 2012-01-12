@@ -528,9 +528,10 @@ class Game(Observed):
           teleport, teleporting_lord)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
+        previous_hexlabel = legion.hexlabel
         legion.move(hexlabel, teleport, teleporting_lord, entry_side)
         action = Action.MoveLegion(self.name, playername, markerid,
-          hexlabel, entry_side, teleport, teleporting_lord)
+          hexlabel, entry_side, teleport, teleporting_lord, previous_hexlabel)
         self.notify(action)
 
     def undo_move_legion(self, playername, markerid):

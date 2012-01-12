@@ -197,7 +197,7 @@ pb.setUnjellyableForClass(RollMovement, RollMovement)
 
 class MoveLegion(Action):
     def __init__(self, game_name, playername, markerid, hexlabel,
-      entry_side, teleport, teleporting_lord):
+      entry_side, teleport, teleporting_lord, previous_hexlabel):
         self.game_name = game_name
         self.playername = playername
         self.markerid = markerid
@@ -205,17 +205,19 @@ class MoveLegion(Action):
         self.entry_side = entry_side
         self.teleport = teleport
         self.teleporting_lord = teleporting_lord
+        self.previous_hexlabel = previous_hexlabel
 
     def undo_action(self):
         return UndoMoveLegion(self.game_name, self.playername, self.markerid,
-          self.hexlabel, self.entry_side, self.teleport, self.teleporting_lord)
+          self.hexlabel, self.entry_side, self.teleport, self.teleporting_lord,
+          self.previous_hexlabel)
 
 pb.setUnjellyableForClass(MoveLegion, MoveLegion)
 
 
 class UndoMoveLegion(UndoAction):
     def __init__(self, game_name, playername, markerid, hexlabel,
-      entry_side, teleport, teleporting_lord):
+      entry_side, teleport, teleporting_lord, previous_hexlabel):
         self.game_name = game_name
         self.playername = playername
         self.markerid = markerid
@@ -223,6 +225,7 @@ class UndoMoveLegion(UndoAction):
         self.entry_side = entry_side
         self.teleport = teleport
         self.teleporting_lord = teleporting_lord
+        self.previous_hexlabel = previous_hexlabel
 pb.setUnjellyableForClass(UndoMoveLegion, UndoMoveLegion)
 
 
