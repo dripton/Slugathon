@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -58,7 +58,7 @@ def test_remove_creature_by_name():
     except ValueError:
         pass
     else:
-        raise AssertionError("should have raised")
+        assert False
     legion.remove_creature_by_name("Ogre")
     legion.remove_creature_by_name("Ogre")
     legion.remove_creature_by_name("Centaur")
@@ -83,7 +83,7 @@ def test_add_creature_by_name():
     except ValueError:
         pass
     else:
-        raise AssertionError("should have raised")
+        assert False
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 7
     try:
@@ -91,7 +91,7 @@ def test_add_creature_by_name():
     except ValueError:
         pass
     else:
-        raise AssertionError("should have raised")
+        assert False
     assert "Gargoyle" in legion.creature_names
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 6
