@@ -232,7 +232,7 @@ class CleverBot(DimBot.DimBot):
             # forced to split, and hanging around in the tower to avoid getting
             # attacked 5-on-4 is too passive.
             try:
-                prev_hexlabel = legion.hexlabel
+                previous_hexlabel = legion.hexlabel
                 legion.hexlabel = hexlabel
                 for enemy in player.enemy_legions():
                     if (enemy.terrain_combat_value >= BE_SQUASHED *
@@ -245,7 +245,7 @@ class CleverBot(DimBot.DimBot):
                             if hexlabel in hexlabels:
                                 score -= legion_sort_value / 6.0
             finally:
-                legion.hexlabel = prev_hexlabel
+                legion.hexlabel = previous_hexlabel
         return score
 
     def _gen_legion_moves_inner(self, movesets):
@@ -365,11 +365,11 @@ class CleverBot(DimBot.DimBot):
         creatures = legion.sorted_living_creatures
         log.msg("_find_best_creature_moves", legion, creatures)
         movesets = []  # list of a set of hexlabels for each creature
-        prev_creature = None
+        previous_creature = None
         moveset = None
         for creature in creatures:
-            if (prev_creature and creature.name == prev_creature.name and
-              creature.hexlabel == prev_creature.hexlabel):
+            if (previous_creature and creature.name == previous_creature.name
+              and creature.hexlabel == previous_creature.hexlabel):
                 # Reuse previous moveset
                 moveset = copy.deepcopy(moveset)
             else:
@@ -394,7 +394,7 @@ class CleverBot(DimBot.DimBot):
                 else:
                     moveset = set([creature.hexlabel])
             movesets.append(moveset)
-            prev_creature = creature
+            previous_creature = creature
         best_legion_move = None
         now = time.time()
         legion_moves = list(self._gen_legion_moves(movesets))

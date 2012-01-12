@@ -58,7 +58,7 @@ class PickMarker(gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
 
-        prev_color = ""
+        previous_color = ""
         hbox = None
         for ii, button_name in enumerate(sorted_markers(markers_left)):
             button = gtk.Button()
@@ -69,8 +69,8 @@ class PickMarker(gtk.Dialog):
             image.set_from_pixbuf(pixbuf)
             button.add(image)
             button.connect("button-press-event", self.cb_click)
-            if button_name[:2] != prev_color:
-                prev_color = button_name[:2]
+            if button_name[:2] != previous_color:
+                previous_color = button_name[:2]
                 hbox = gtk.HBox()
                 self.vbox.add(hbox)
             hbox.add(button)

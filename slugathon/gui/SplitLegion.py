@@ -80,17 +80,17 @@ class SplitLegion(gtk.Dialog):
         if eventbox in self.old_chits_hbox.get_children():
             prev = self.old_chits_hbox
             next = self.new_chits_hbox
-            prev_legion = self.new_legion1
+            previous_legion = self.new_legion1
             next_legion = self.new_legion2
         else:
             prev = self.new_chits_hbox
             next = self.old_chits_hbox
-            prev_legion = self.new_legion2
+            previous_legion = self.new_legion2
             next_legion = self.new_legion1
         prev.remove(eventbox)
         next.pack_start(eventbox, expand=False, fill=False)
         chit = eventbox.chit
-        prev_legion.creatures.remove(chit.creature)
+        previous_legion.creatures.remove(chit.creature)
         next_legion.creatures.append(chit.creature)
         legal = self.old_legion.is_legal_split(self.new_legion1,
           self.new_legion2)
