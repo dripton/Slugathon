@@ -540,7 +540,7 @@ class Game(Observed):
         legion = player.markerid_to_legion[markerid]
         action = Action.UndoMoveLegion(self.name, playername, markerid,
           legion.hexlabel, legion.entry_side, legion.teleported,
-          legion.teleporting_lord)
+          legion.teleporting_lord, legion.previous_hexlabel)
         legion.undo_move()
         self.notify(action)
 
