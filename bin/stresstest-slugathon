@@ -38,7 +38,7 @@ def server_failed(arg):
     log.err("server failed %s" % arg)
 
 
-def start_game(playername, password, min_players, num_games, time_limit):
+def start_game(playername, password, min_players, time_limit, num_games):
     if num_games <= 0:
         log.msg("finished running games")
         reactor.callWhenRunning(reactor.stop)
@@ -84,7 +84,7 @@ def main():
     if args.start_server:
         start_server()
     start_game(args.playername, args.password, args.min_players,
-      args.num_games, args.time_limit)
+      args.time_limit, args.num_games)
     reactor.run()
 
 
