@@ -600,11 +600,11 @@ class Client(pb.Referenceable, Observed):
             legion = game.find_legion(action.markerid)
             if legion:
                 legion.reveal_creatures(action.creature_names)
-            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-              (action.markerid, action.creature_names))
-            self.aps.get_leaf(action.markerid).reveal_creatures(
-              action.creature_names)
-            self.update_creatures(game)
+                log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
+                  (action.markerid, action.creature_names))
+                self.aps.get_leaf(action.markerid).reveal_creatures(
+                  action.creature_names)
+                self.update_creatures(game)
 
         else:
             log.msg("got unhandled action", action)
