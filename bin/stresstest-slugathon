@@ -55,13 +55,14 @@ def start_game(playername, password, min_players, num_games, time_limit):
       ],
       env=os.environ)
     def1.addCallback(game_exited, playername, password, min_players,
-      num_games - 1)
+      time_limit, num_games - 1)
     def1.addErrback(game_failed)
 
 
-def game_exited(returncode, playername, password, min_players, num_games):
+def game_exited(returncode, playername, password, min_players, time_limit,
+  num_games):
     log.msg("game exited with returncode %d" % returncode)
-    start_game(playername, password, min_players, num_games)
+    start_game(playername, password, min_players, time_limit, num_games)
 
 
 def game_failed(arg):
