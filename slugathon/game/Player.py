@@ -501,7 +501,7 @@ class Player(Observed):
                 player = self.enemy_legions(legion.hexlabel).pop().player
             else:
                 player = scoring_player
-            player_to_full_points[player] += legion.score
+            player_to_full_points[player] += legion.living_creatures_score
         for player, full_points in player_to_full_points.iteritems():
             if player is not None:
                 half_points = full_points // 2

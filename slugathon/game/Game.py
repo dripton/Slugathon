@@ -601,7 +601,7 @@ class Game(Observed):
         # Abort if the enemy managed to concede.
         if legion2 == legion or legion2.player == player:
             return
-        legion.die(legion2, True, False)
+        legion.die(legion2, True, False, kill_all_creatures=True)
         assert markerid not in player.markerid_to_legion
         for legion in self.all_legions():
             assert legion.markerid != markerid
@@ -627,7 +627,7 @@ class Game(Observed):
                 player.done_with_battle_phase()
         else:
             # conceding before battle
-            legion.die(legion2, False, False)
+            legion.die(legion2, False, False, kill_all_creatures=True)
             assert markerid not in player.markerid_to_legion
             for legion in self.all_legions():
                 assert legion.markerid != markerid
@@ -640,7 +640,8 @@ class Game(Observed):
             else:
                 winning_legion.remove_creature_by_name(creature_name)
                 self.caretaker.kill_one(creature_name)
-        losing_legion.die(winning_legion, False, False)
+        losing_legion.die(winning_legion, False, False,
+          kill_all_creatures=True)
 
     def _accept_proposal(self, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names):
@@ -650,7 +651,7 @@ class Game(Observed):
                   legion.creature_names)
                 self.notify(action)
             for legion in [attacker_legion, defender_legion]:
-                legion.die(None, False, True)
+                legion.die(None, False, True, kill_all_creatures=True)
         elif attacker_creature_names:
             assert not defender_creature_names
             winning_legion = attacker_legion
@@ -1347,11 +1348,12 @@ class Game(Observed):
         log.msg("_end_battle2")
         if self.battle_turn > 7:
             # defender wins on time loss
-            self.attacker_legion.die(self.defender_legion, False, True)
+            self.attacker_legion.die(self.defender_legion, False, True,
+                    kill_all_creatures=True)
         elif self.attacker_legion.dead and self.defender_legion.dead:
             # mutual kill
             # Don't to check for victory until both legions are dead,
-            # to avoid prematurely avoiding a victory in a mutual.
+            # to avoid prematurely declaring a victory in a mutual.
             # But make sure that if there's a titan in only one legion, it
             # dies last, so we do check for victory.
             if self.attacker_legion.has_titan:
@@ -1776,11 +1778,11 @@ class Game(Observed):
             except KeyError:
                 winner_player = None
             loser_player = self.get_player_by_name(action.loser_playername)
+            loser_player.remove_all_legions()
             if winner_player:
                 winner_player.eliminated_colors.add(loser_player.color_abbrev)
                 winner_player.markerids_left.update(
                   loser_player.markerids_left)
-            loser_player.remove_all_legions()
             if action.check_for_victory:
                 self.check_for_victory()
 

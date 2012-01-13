@@ -466,10 +466,16 @@ class Legion(Observed):
     @property
     def score(self):
         """Return the point value of this legion."""
-        total = 0
-        for creature in self.creatures:
-            total += creature.score
-        return total
+        return sum(creature.score for creature in self.creatures)
+
+    @property
+    def living_creatures_score(self):
+        """Return the point value of living creatures in this legion.
+
+        Used to award half points when a player's titan dies, but some
+        of the creatures in its legion remain alive.
+        """
+        return sum(creature.score for creature in self.living_creatures)
 
     @property
     def sorted_creatures(self):
@@ -488,13 +494,12 @@ class Legion(Observed):
     @property
     def sort_value(self):
         """Return a rough indication of legion value."""
-        return sum([creature.sort_value for creature in self.living_creatures])
+        return sum(creature.sort_value for creature in self.living_creatures)
 
     @property
     def combat_value(self):
         """Return a rough indication of legion combat value."""
-        return sum([creature.combat_value for creature in
-          self.living_creatures])
+        return sum(creature.combat_value for creature in self.living_creatures)
 
     # TODO Add for other terrains if enough native creatures.
     @property
@@ -509,11 +514,21 @@ class Legion(Observed):
         else:
             return base_value
 
-    def die(self, scoring_legion, fled, no_points, check_for_victory=True):
+    def die(self, scoring_legion, fled, no_points, check_for_victory=True,
+      kill_all_creatures=False):
         log.msg("die", self, scoring_legion, fled, no_points,
           check_for_victory)
         if scoring_legion is not None and not no_points:
-            points = self.score
+            # We only give points for dead creatures, not living creatures,
+            # to handle the case where a titan dies but leaves survivors,
+            # who will give half-points later.
+            if kill_all_creatures:
+                points = self.score
+            else:
+                points = 0
+                for creature in self.creatures:
+                    if creature.dead:
+                        points += creature.score
             if fled:
                 points //= 2
             scoring_legion.add_points(points, True)
@@ -524,9 +539,11 @@ class Legion(Observed):
             if creature.name == "Titan":
                 log.msg("setting dead_titan")
                 dead_titan = True
-        self.player.remove_legion(self.markerid)
         if dead_titan:
             self.player.die(scoring_legion.player, check_for_victory)
+        # We do this last, so that any living allies of a dead titan remain
+        # long enough to give half points.
+        self.player.remove_legion(self.markerid)
 
     def add_points(self, points, can_acquire):
         log.msg("add_points", self, points, can_acquire)
