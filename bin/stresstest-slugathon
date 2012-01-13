@@ -16,6 +16,8 @@ import tempfile
 from twisted.internet import reactor, utils
 from twisted.python import log
 
+from slugathon.net import config
+
 
 TEMPDIR = tempfile.gettempdir()
 
@@ -36,7 +38,7 @@ def server_failed(arg):
     log.err("server failed %s" % arg)
 
 
-def start_game(playername, password, min_players, num_games):
+def start_game(playername, password, min_players, num_games, time_limit):
     if num_games <= 0:
         log.msg("finished running games")
         reactor.callWhenRunning(reactor.stop)
@@ -48,6 +50,7 @@ def start_game(playername, password, min_players, num_games):
           "--playername", playername,
           "--password", password,
           "--min-players", str(min_players),
+          "--time-limit", str(time_limit),
           "--game-name", "stresstest_game_%d" % num_games,
       ],
       env=os.environ)
@@ -73,12 +76,14 @@ def main():
     parser.add_argument("-g", "--num-games", action="store", type=int,
       default=10000000)
     parser.add_argument("--min-players", type=int, default=6)
+    parser.add_argument("--time-limit", type=int,
+      default=config.DEFAULT_AI_TIME_LIMIT)
     args = parser.parse_args()
     log.startLogging(sys.stdout)
     if args.start_server:
         start_server()
     start_game(args.playername, args.password, args.min_players,
-      args.num_games)
+      args.num_games, args.time_limit)
     reactor.run()
 
 
