@@ -889,8 +889,7 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         donor = player.markerid_to_legion[donor_markerid]
-        log.msg("donor", donor)
-        log.msg("legion", legion)
+        log.msg("donor", donor, "legion", legion)
         # Avoid double summon
         if not player.summoned:
             donor.reveal_creatures([creature_name])
@@ -1407,6 +1406,7 @@ class Game(Observed):
             log.msg("ending counterstrike phase out of turn")
             return
         if self.battle_phase != Phase.COUNTERSTRIKE:
+            log.msg("ending counterstrike phase out of phase")
             return
         if (not self.battle_is_over and
           self.battle_active_legion == self.defender_legion):
