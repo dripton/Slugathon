@@ -608,8 +608,11 @@ class Client(pb.Referenceable, Observed):
                 legion.reveal_creatures(action.creature_names)
                 log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
                   (action.markerid, action.creature_names))
-                self.aps.get_leaf(action.markerid).reveal_creatures(
-                  action.creature_names)
+                node = self.aps.get_leaf(action.markerid)
+                # XXX There are edge cases where the legion still exists
+                # but the node is gone.
+                if node is not None:
+                    node.reveal_creatures(action.creature_names)
                 self.update_creatures(game)
 
         else:
