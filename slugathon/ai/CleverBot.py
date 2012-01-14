@@ -60,6 +60,8 @@ class CleverBot(DimBot.DimBot):
         caretaker = game.caretaker
         for legion in player.legions:
             if len(legion) == 8:
+                if game.turn != 1:
+                    raise AssertionError("8-high legion", legion)
                 # initial split 4-4, one lord per legion
                 log.msg("initial split")
                 new_markerid = self._choose_marker(player)
