@@ -489,9 +489,12 @@ class Player(Observed):
             return
         # First reveal all this player's legions.
         for legion in self.legions:
-            if legion.all_known:
+            if (legion.all_known and legion not in
+              self.game.battle_legions):
                 # Only reveal the legion if we're sure about its contents,
                 # to avoid spreading disinformation.
+                # Do not reveal the legion that's currently in battle, because
+                # its contents are in flux.
                 action = Action.RevealLegion(self.game.name, legion.markerid,
                   legion.creature_names)
                 self.notify(action)
