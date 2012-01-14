@@ -1611,6 +1611,7 @@ class Game(Observed):
         elif isinstance(action, Action.StartMusterPhase):
             log.msg("StartMusterPhase")
             self.phase = Phase.MUSTER
+            self._cleanup_battle()
             for player in self.players:
                 player.remove_empty_legions()
 
