@@ -544,7 +544,8 @@ class Client(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 if game.attacker_legion:
                     legion = game.attacker_legion
-                    if legion.can_summon:
+                    if (legion.markerid == action.winner_markerid and
+                      legion.can_summon):
                         reactor.callLater(self.delay, self.ai.summon_after,
                           game)
                         return
@@ -552,7 +553,8 @@ class Client(pb.Referenceable, Observed):
                 if game.defender_legion:
                     legion = game.defender_legion
                     if legion.player.name == self.playername:
-                        if legion.can_recruit:
+                        if (legion.markerid == action.winner_markerid and
+                          legion.can_recruit):
                             reactor.callLater(self.delay,
                               self.ai.reinforce_after, game)
                             return
