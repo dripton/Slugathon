@@ -819,6 +819,11 @@ class Game(Observed):
         legion = player.markerid_to_legion[markerid]
         angels = [Creature.Creature(name) for name in angel_names]
         legion.acquire(angels)
+        angel_names = [angel.name for angel in angels]
+        action = Action.Acquire(self.name, player.name, markerid,
+          angel_names)
+        self.notify(action)
+        self._end_dead_player_turn()
 
     def do_not_acquire(self, playername, markerid):
         """Called from Server."""
@@ -1618,7 +1623,6 @@ class Game(Observed):
         elif isinstance(action, Action.StartMusterPhase):
             log.msg("StartMusterPhase")
             self.phase = Phase.MUSTER
-            self._cleanup_battle()
             for player in self.players:
                 player.remove_empty_legions()
 

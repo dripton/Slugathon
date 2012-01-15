@@ -573,7 +573,7 @@ class Legion(Observed):
                 self.notify(action)
 
     def acquire(self, angels):
-        """Acquire angels, and notify observers."""
+        """Acquire angels."""
         log.msg("acquire", angels)
         num_archangels = num_angels = 0
         for angel in angels:
@@ -608,11 +608,6 @@ class Legion(Observed):
             caretaker.take_one(angel.name)
             self.creatures.append(angel)
             angel.legion = self
-        if self.player.game.master:
-            angel_names = [angel.name for angel in angels]
-            action = Action.Acquire(self.player.game.name,
-              self.player.name, self.markerid, angel_names)
-            self.notify(action)
         log.msg("end of acquire", self)
 
     def do_not_acquire(self):
