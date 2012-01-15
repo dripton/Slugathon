@@ -4,7 +4,7 @@ __license__ = "GNU GPL v2"
 
 import time
 
-from slugathon.game import Player, Game
+from slugathon.game import Player, Game, Phase
 
 
 def test_can_exit_split_phase():
@@ -66,8 +66,9 @@ def test_can_exit_move_phase():
     legion2 = player.markerid_to_legion["Rd02"]
     assert not player.can_exit_move_phase
     legion1.move(8, False, None, 1)
-    assert player.can_exit_move_phase
+    assert not player.can_exit_move_phase
     legion2.move(200, True, "Angel", 3)
+    game.phase = Phase.MOVE
     assert player.can_exit_move_phase
 
 
