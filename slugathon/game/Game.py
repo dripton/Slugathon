@@ -1387,12 +1387,17 @@ class Game(Observed):
 
     def _end_dead_player_turn(self):
         """If the active player is dead then advance phases if possible."""
-        if self.active_player.dead and not self.pending_acquire:
-            log.msg("_end_dead_player_turn")
-            self.active_player.done_with_splits()
-            self.active_player.done_with_moves()
-            self.active_player.done_with_engagements()
-            self.active_player.done_with_recruits()
+        if self.master:
+            if self.active_player.dead and not self.pending_acquire:
+                log.msg("_end_dead_player_turn")
+                if self.phase == Phase.SPLIT:
+                    self.active_player.done_with_splits()
+                if self.phase == Phase.MOVE:
+                    self.active_player.done_with_moves()
+                if self.phase == Phase.FIGHT:
+                    self.active_player.done_with_engagements()
+                if self.phase == Phase.MUSTER:
+                    self.active_player.done_with_recruits()
 
     def done_with_counterstrikes(self, playername):
         """Try to end playername's counterstrike battle phase.
