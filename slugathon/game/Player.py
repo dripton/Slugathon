@@ -206,6 +206,8 @@ class Player(Observed):
     @property
     def can_exit_split_phase(self):
         """Return True if legal to exit the split phase"""
+        if self.game.phase != Phase.SPLIT:
+            return False
         if self.dead:
             return True
         return (self.markerid_to_legion and max((len(legion) for legion in
@@ -266,6 +268,8 @@ class Player(Observed):
     @property
     def can_exit_move_phase(self):
         """Return True iff this player can finish the move phase."""
+        if self.game.phase != Phase.MOVE:
+            return False
         if self.dead:
             return True
         if not self.moved_legions:
@@ -308,6 +312,8 @@ class Player(Observed):
     @property
     def can_exit_fight_phase(self):
         """Return True iff this player can finish the fight phase."""
+        if self.game.phase != Phase.FIGHT:
+            return False
         log.msg("can_exit_fight_phase engagement_hexlabels",
           self.game.engagement_hexlabels,
           "pending_summon", self.game.pending_summon,
