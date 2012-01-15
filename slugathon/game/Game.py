@@ -896,6 +896,9 @@ class Game(Observed):
             if self.phase == Phase.FIGHT:
                 creature = legion.creatures[-1]
                 creature.hexlabel = "ATTACKER"
+            action = Action.SummonAngel(self.name, player.name, markerid,
+              donor_markerid, creature_name)
+            self.notify(action)
         self.pending_summon = False
         if self.battle_is_over:
             self._end_battle2()

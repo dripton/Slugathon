@@ -422,9 +422,6 @@ class Player(Observed):
         creature.legion = legion
         self.summoned = True
         self.last_donor = donor
-        action = Action.SummonAngel(self.game.name, self.name,
-          legion.markerid, donor.markerid, creature.name)
-        self.notify(action)
 
     def unsummon(self, legion, creature_name):
         donor = self.last_donor
