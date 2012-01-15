@@ -384,8 +384,11 @@ class Server(Observed):
       recruiter_names):
         game = self.name_to_game(game_name)
         if game:
-            game.recruit_creature(username, markerid, creature_name,
-              recruiter_names)
+            player = game.get_player_by_name(username)
+            if player:
+                action = Action.RecruitCreature(game.name, player.name,
+                  markerid, creature_name, tuple(recruiter_names))
+                game.update(self, action, None)
 
     def undo_recruit(self, username, game_name, markerid):
         game = self.name_to_game(game_name)

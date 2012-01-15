@@ -403,9 +403,8 @@ class Legion(Observed):
         return result_list
 
     def recruit(self, creature, recruiter_names):
-        """Recruit creature, and notify observers."""
+        """Recruit creature."""
         log.msg("recruit", self, creature, recruiter_names)
-        player = self.player
         if self.recruited:
             log.msg("already recruited")
             if self.creatures[-1].name == creature.name:
@@ -427,9 +426,6 @@ class Legion(Observed):
             self.reveal_creatures([creature.name] + list(recruiter_names))
             log.msg(self, "setting self.recruited")
             self.recruited = True
-            action = Action.RecruitCreature(player.game.name, player.name,
-              self.markerid, creature.name, tuple(recruiter_names))
-            self.notify(action)
 
     def undo_recruit(self):
         """Undo last recruit, and notify observers."""

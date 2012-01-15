@@ -847,7 +847,7 @@ class Game(Observed):
 
     def recruit_creature(self, playername, markerid, creature_name,
       recruiter_names):
-        """Called from Server and update."""
+        """Called from update."""
         log.msg("recruit_creature", playername, markerid, creature_name,
           recruiter_names)
         player = self.get_player_by_name(playername)
