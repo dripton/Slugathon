@@ -375,6 +375,9 @@ class Player(Observed):
             self.done_with_counterstrikes()
 
     def done_with_recruits(self):
+        if self.game.active_player != self or self.game.phase != Phase.MUSTER:
+            log.msg("illegal call to done_with_recruits")
+            return
         (player, turn) = self.game.next_player_and_turn
         if player is not None:
             action = Action.StartSplitPhase(self.game.name, player.name, turn)
