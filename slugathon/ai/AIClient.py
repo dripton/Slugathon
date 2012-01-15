@@ -574,6 +574,7 @@ class Client(pb.Referenceable, Observed):
                   (action.markerid, angel_name))
                 self.aps.get_leaf(action.markerid).add_creature(angel_name)
             self.update_creatures(game)
+            log.msg("active player", game.active_player)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
