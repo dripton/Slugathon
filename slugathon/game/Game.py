@@ -1291,9 +1291,7 @@ class Game(Observed):
         for legion in self.battle_legions:
             if legion.dead:
                 return True
-        if self.battle_turn > 7:
-            return True
-        return False
+        return self.battle_turn > 7
 
     def _end_battle1(self):
         """Determine the winner, and set up summoning or reinforcing if
