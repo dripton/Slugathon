@@ -608,6 +608,8 @@ class Legion(Observed):
             caretaker.take_one(angel.name)
             self.creatures.append(angel)
             angel.legion = self
+        self.angels_pending = 0
+        self.archangels_pending = 0
         log.msg("end of acquire", self)
 
     def do_not_acquire(self):
