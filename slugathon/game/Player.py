@@ -6,17 +6,14 @@ import types
 from collections import defaultdict
 
 from twisted.python import log
-from zope.interface import implementer
 
 from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Creature, Legion, Phase
 from slugathon.data import playercolordata, creaturedata, markerdata
 from slugathon.util.bag import bag
 from slugathon.util import Dice
 
 
-@implementer(IObserver)
 class Player(Observed):
     """A person or AI who is (or was) actively playing in a game.
 
@@ -118,7 +115,7 @@ class Player(Observed):
         legion = Legion.Legion(self, self.take_marker(markerid), creatures,
           self.starting_tower)
         self.markerid_to_legion[markerid] = legion
-        legion.add_observer(self)
+        legion.add_observer(self.game)
         action = Action.CreateStartingLegion(self.game.name, self.name,
           markerid)
         caretaker = self.game.caretaker
@@ -161,7 +158,7 @@ class Player(Observed):
         for creature in parent.creatures:
             creature.legion = parent
         self.take_marker(child_markerid)
-        new_legion2.add_observer(self)
+        new_legion2.add_observer(self.game)
         self.markerid_to_legion[child_markerid] = new_legion2
         del parent
         # One action for our player with creature names, and a
@@ -542,7 +539,3 @@ class Player(Observed):
         """Withdraw from the game."""
         action = Action.Withdraw(self.game.name, self.name)
         self.notify(action)
-
-    def update(self, observed, action, names):
-        """Pass updates up to the game"""
-        self.notify(action, names)
