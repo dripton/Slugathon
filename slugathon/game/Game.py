@@ -783,13 +783,11 @@ class Game(Observed):
         self.notify(action)
 
     def fight(self, playername, attacker_markerid, defender_markerid):
-        """Called from Server and update."""
+        """Called from update."""
         log.msg("fight", playername, attacker_markerid, defender_markerid,
           self.battle_turn)
         if self.battle_turn is not None:
-            # already fighting, bail
-            log.msg("already fighting")
-            return
+            log.msg("already fighting, but continuing")
         attacker_legion = self.find_legion(attacker_markerid)
         defender_legion = self.find_legion(defender_markerid)
         log.msg("attacker", attacker_legion)
@@ -809,9 +807,6 @@ class Game(Observed):
               defender_legion.creature_names)
             self.notify(action)
         self._init_battle(attacker_legion, defender_legion)
-        action = Action.Fight(self.name, attacker_markerid,
-          defender_markerid, hexlabel)
-        self.notify(action)
 
     def acquire_angels(self, playername, markerid, angel_names):
         """Called from Server."""

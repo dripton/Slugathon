@@ -322,7 +322,10 @@ class Server(Observed):
       defender_markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.fight(username, attacker_markerid, defender_markerid)
+            legion = game.find_legion(attacker_markerid)
+            action = Action.Fight(game.name, attacker_markerid,
+              defender_markerid, legion.hexlabel)
+            game.update(self, action, None)
 
     def move_creature(self, username, game_name, creature_name, old_hexlabel,
       new_hexlabel):
