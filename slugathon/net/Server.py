@@ -281,7 +281,22 @@ class Server(Observed):
     def flee(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.flee(username, markerid)
+            legion = self.find_legion(markerid)
+            if not legion:
+                log.msg("flee with no legion", markerid)
+                return
+            hexlabel = legion.hexlabel
+            for enemy_legion in self.all_legions(hexlabel):
+                if enemy_legion != legion:
+                    break
+            # XXX Enemy illegally managed to concede before we could flee.
+            if enemy_legion == legion:
+                log.msg("illegal concede before flee")
+                return
+            enemy_markerid = enemy_legion.markerid
+            action = Action.Flee(game.name, markerid, enemy_markerid,
+              legion.hexlabel)
+            game.update(self, action, None)
 
     def do_not_flee(self, username, game_name, markerid):
         game = self.name_to_game(game_name)

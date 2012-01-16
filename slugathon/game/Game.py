@@ -673,28 +673,6 @@ class Game(Observed):
             self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
 
-    def flee(self, playername, markerid):
-        """Called from Server."""
-        legion = self.find_legion(markerid)
-        if not legion:
-            log.msg("no legion", markerid)
-            return
-        hexlabel = legion.hexlabel
-        for enemy_legion in self.all_legions(hexlabel):
-            if enemy_legion != legion:
-                break
-        # XXX Enemy illegally managed to concede before we could flee.
-        if enemy_legion == legion:
-            log.msg("illegal concede before flee")
-            return
-        enemy_markerid = enemy_legion.markerid
-        action = Action.RevealLegion(self.name, markerid,
-          legion.creature_names)
-        self.notify(action)
-        action = Action.Flee(self.name, markerid, enemy_markerid, hexlabel)
-        self.notify(action)
-        self._flee(playername, markerid)
-
     def do_not_flee(self, playername, markerid):
         """Called from Server."""
         legion = self.find_legion(markerid)
