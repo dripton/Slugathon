@@ -49,6 +49,9 @@ class Server(Observed):
         if log_path:
             log.startLogging(open(log_path, "w"))
 
+    def __repr__(self):
+        return "Server"
+
     def add_observer(self, user):
         username = user.name
         Observed.add_observer(self, user, username)
