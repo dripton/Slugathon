@@ -243,7 +243,6 @@ class User(Avatar):
 
     def update(self, observed, action, names):
         """Defers updates to its client, dropping the observed reference."""
-        log.msg("User.update", self, action, names)
         if not isinstance(action, Action.DriftDamage):
             def1 = self.client.callRemote("update", action, names)
             def1.addErrback(self.trap_connection_lost)
