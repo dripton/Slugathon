@@ -284,12 +284,12 @@ class Server(Observed):
     def flee(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            legion = self.find_legion(markerid)
+            legion = game.find_legion(markerid)
             if not legion:
                 log.msg("flee with no legion", markerid)
                 return
             hexlabel = legion.hexlabel
-            for enemy_legion in self.all_legions(hexlabel):
+            for enemy_legion in game.all_legions(hexlabel):
                 if enemy_legion != legion:
                     break
             # XXX Enemy illegally managed to concede before we could flee.
