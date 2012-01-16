@@ -843,7 +843,7 @@ class Game(Observed):
             self._end_battle2()
 
     def undo_recruit(self, playername, markerid):
-        """Called from Server."""
+        """Called from Server and update."""
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         legion.undo_recruit()
