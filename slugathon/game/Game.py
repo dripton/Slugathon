@@ -1339,10 +1339,12 @@ class Game(Observed):
             # defender wins, possible reinforcement
             if (self.defender_legion and self.attacker_entered and
               self.defender_legion.can_recruit):
+                log.msg("sending pending_reinforcement = True")
                 self.pending_reinforcement = True
         elif self.defender_legion and self.defender_legion.dead:
             # attacker wins, possible summon
             if self.attacker_legion and self.attacker_legion.can_summon:
+                log.msg("sending pending_summon = True")
                 self.pending_summon = True
         if not self.pending_reinforcement and not self.pending_summon:
             self._end_battle2()
