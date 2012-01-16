@@ -342,6 +342,7 @@ class CleverBot(DimBot.DimBot):
                 best_perm = perm
                 best_score = score
             if time.time() - start_time > self.time_limit:
+                log.msg("_find_move_order time limit")
                 break
         log.msg("_find_move_order returning %s" % list(best_perm))
         return list(best_perm)
@@ -422,6 +423,7 @@ class CleverBot(DimBot.DimBot):
                     best_score = score
                 now = time.time()
                 if now - start > self.time_limit:
+                    log.msg("_find_best_creature_moves time limit")
                     break
             finally:
                 for creature in creatures:
