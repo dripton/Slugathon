@@ -3,7 +3,6 @@ __license__ = "GNU GPL v2"
 
 
 import types
-from collections import defaultdict
 
 from twisted.python import log
 
@@ -488,11 +487,8 @@ class Player(Observed):
         which are engaged with someone else.
         """
         log.msg("die", self, scoring_player, check_for_victory)
-        # Only do this on the Server's game, to avoid duplicate points and
-        # points based on incorrect legion contents.
-        if not self.game.master:
-            return
         # First reveal all this player's legions.
+        markerid_to_creature_names = {}
         for legion in self.legions:
             if (legion.all_known and legion not in
               self.game.battle_legions):
@@ -503,25 +499,14 @@ class Player(Observed):
                 action = Action.RevealLegion(self.game.name, legion.markerid,
                   legion.creature_names)
                 self.notify(action)
-        player_to_full_points = defaultdict(int)
-        for legion in self.legions:
-            if legion.engaged:
-                player = self.enemy_legions(legion.hexlabel).pop().player
-            else:
-                player = scoring_player
-            player_to_full_points[player] += legion.living_creatures_score
-        for player, full_points in player_to_full_points.iteritems():
-            if player is not None:
-                half_points = full_points // 2
-                action = Action.AddPoints(self.game.name, player.name,
-                  half_points)
-                self.notify(action)
+                markerid_to_creature_names[legion.markerid] = \
+                  legion.creature_names
         if scoring_player is None:
             scoring_player_name = ""
         else:
             scoring_player_name = scoring_player.name
         action = Action.EliminatePlayer(self.game.name, scoring_player_name,
-          self.name, check_for_victory)
+          self.name, check_for_victory, markerid_to_creature_names)
         self.notify(action)
 
     def add_points(self, points):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2006-2011 David Ripton"
+__copyright__ = "Copyright (c) 2006-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -300,7 +300,6 @@ class StatusScreen(gtk.Dialog):
           isinstance(action, Action.Concede) or
           isinstance(action, Action.AcceptProposal) or
           isinstance(action, Action.EliminatePlayer) or
-          isinstance(action, Action.AddPoints) or
           isinstance(action, Action.BattleOver) or
           isinstance(action, Action.GameOver) or
           isinstance(action, Action.StartMusterPhase) or

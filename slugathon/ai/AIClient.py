@@ -319,8 +319,7 @@ class Client(pb.Referenceable, Observed):
               action.hexlabel, False)
 
         elif (isinstance(action, Action.Flee) or
-          isinstance(action, Action.Concede) or
-          isinstance(action, Action.AddPoints)):
+          isinstance(action, Action.Concede)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)

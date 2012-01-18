@@ -1751,12 +1751,12 @@ class Game(Observed):
             legion.do_not_acquire()
             self._end_dead_player_turn()
 
-        elif isinstance(action, Action.AddPoints):
-            player = self.get_player_by_name(action.playername)
-            player.add_points(action.points)
-            log.msg("Player %s now has score %d" % (player.name, player.score))
-
         elif isinstance(action, Action.EliminatePlayer):
+            for markerid, creature_names in \
+              action.markerid_to_creature_names.iteritems():
+                legion = self.find_legion(markerid)
+                if legion is not None:
+                    legion.reveal_creatures(creature_names)
             try:
                 winner_player = self.get_player_by_name(
                   action.winner_playername)
@@ -1768,6 +1768,18 @@ class Game(Observed):
                 winner_player.eliminated_colors.add(loser_player.color_abbrev)
                 winner_player.markerids_left.update(
                   loser_player.markerids_left)
+            player_to_full_points = defaultdict(int)
+            for legion in loser_player.legions:
+                if legion.engaged:
+                    player = loser_player.enemy_legions(
+                      legion.hexlabel).pop().player
+                else:
+                    player = winner_player
+                player_to_full_points[player] += legion.living_creatures_score
+            for player, full_points in player_to_full_points.iteritems():
+                if player is not None:
+                    half_points = full_points // 2
+                    player.add_points(half_points)
             if action.check_for_victory:
                 self.check_for_victory()
 
