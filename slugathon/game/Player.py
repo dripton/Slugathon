@@ -145,8 +145,10 @@ class Player(Observed):
         if bag(parent.creature_names) != bag(parent_creature_names).union(
           bag(child_creature_names)) and bag(parent_creature_names).union(bag(
           child_creature_names)) != bag({"Unknown": len(parent)}):
-            log.msg("parent.creature_names", parent.creature_names)
-            raise AssertionError("wrong creatures")
+            raise AssertionError("wrong creatures",
+              "parent.creature_names", parent.creature_names,
+              "parent_creature_names", parent_creature_names,
+              "child_creature_names", child_creature_names)
         new_legion1 = Legion.Legion(self, parent_markerid,
           Creature.n2c(parent_creature_names), parent.hexlabel)
         new_legion2 = Legion.Legion(self, child_markerid,
