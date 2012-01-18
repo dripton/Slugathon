@@ -461,8 +461,13 @@ class CleverBot(DimBot.DimBot):
             (creature_name, start, finish) = \
               self.best_creature_moves.pop(0)
             log.msg("checking move", creature_name, start, finish)
-            creature = game.creatures_in_battle_hex(start,
-              creature_name).pop()
+            creatures = game.creatures_in_battle_hex(start, creature_name)
+            if creatures:
+                creature = creatures.pop()
+            else:
+                log.msg("best_creature_moves was broken")
+                self.best_creature_moves = self._find_best_creature_moves(game)
+                continue
             if finish != start and finish in game.find_battle_moves(
               creature):
                 log.msg("calling move_creature", creature.name, start,
