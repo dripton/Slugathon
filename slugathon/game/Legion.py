@@ -521,10 +521,8 @@ class Legion(Observed):
             if kill_all_creatures:
                 points = self.score
             else:
-                points = 0
-                for creature in self.creatures:
-                    if creature.dead:
-                        points += creature.score
+                points = sum(creature.score for creature in self.creatures if
+                  creature.dead)
             if fled:
                 points //= 2
             scoring_legion.add_points(points, True)
