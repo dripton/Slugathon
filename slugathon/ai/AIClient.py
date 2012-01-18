@@ -34,7 +34,7 @@ defer.setDebugging(True)
 
 
 @implementer(IObserver)
-class Client(pb.Referenceable, Observed):
+class AIClient(pb.Referenceable, Observed):
     def __init__(self, username, password, host, port, delay, aitype,
       game_name, log_path, time_limit, form_game, min_players, max_players):
         Observed.__init__(self)
@@ -74,7 +74,7 @@ class Client(pb.Referenceable, Observed):
         return True
 
     def __repr__(self):
-        return "Client " + str(self.username)
+        return "AIClient " + str(self.username)
 
     def connect(self):
         user_pass = credentials.UsernamePassword(self.username, self.password)
@@ -646,10 +646,10 @@ def main():
     valid_ai_types = ["CleverBot", "DimBot"]
     if opts.aitype not in valid_ai_types:
         parser.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
-    client = Client(opts.playername, opts.password, opts.server, opts.port,
+    aiclient = AIClient(opts.playername, opts.password, opts.server, opts.port,
       opts.delay, opts.aitype, opts.game_name, opts.log_path, opts.time_limit,
       opts.form_game, opts.min_players, opts.max_players)
-    client.connect()
+    aiclient.connect()
     reactor.run()
 
 
