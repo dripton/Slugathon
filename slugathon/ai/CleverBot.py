@@ -46,6 +46,7 @@ def best7(score_moves):
 
 class CleverBot(DimBot.DimBot):
     def __init__(self, playername, time_limit):
+        log.msg("CleverBot", playername, time_limit)
         DimBot.DimBot.__init__(self, playername)
         self.time_limit = time_limit
         self.best_creature_moves = None

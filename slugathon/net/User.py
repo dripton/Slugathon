@@ -49,8 +49,10 @@ class User(Avatar):
         def1.addErrback(self.trap_connection_lost)
         def1.addErrback(self.log_failure)
 
-    def perspective_form_game(self, game_name, min_players, max_players):
-        self.server.form_game(self.name, game_name, min_players, max_players)
+    def perspective_form_game(self, game_name, min_players, max_players,
+          time_limit):
+        self.server.form_game(self.name, game_name, min_players, max_players,
+          time_limit)
 
     def perspective_join_game(self, game_name):
         self.server.join_game(self.name, game_name)

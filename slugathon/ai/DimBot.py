@@ -17,6 +17,7 @@ from slugathon.ai.Bot import Bot
 @implementer(Bot)
 class DimBot(object):
     def __init__(self, playername):
+        log.msg("DimBot", playername)
         self.playername = playername
         self.user = None
 

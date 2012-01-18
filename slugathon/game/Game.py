@@ -17,6 +17,7 @@ from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.util import prefs, Dice
 from slugathon.util.bag import bag
+from slugathon.net import config
 
 
 # Movement constants
@@ -35,7 +36,8 @@ def opposite(direction):
 class Game(Observed):
     """Central class holding information about one game"""
     def __init__(self, name, owner, create_time, start_time, min_players,
-      max_players, started=False, master=False):
+      max_players, started=False, master=False,
+      time_limit=config.DEFAULT_AI_TIME_LIMIT):
         Observed.__init__(self)
         self.name = name
         self.create_time = create_time
@@ -70,6 +72,7 @@ class Game(Observed):
         self.pending_summon = False
         self.pending_reinforcement = False
         self.master = master
+        self.time_limit = time_limit
 
     @property
     def battle_legions(self):

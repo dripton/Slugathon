@@ -49,6 +49,10 @@ class AIClient(pb.Referenceable, Observed):
         self.user = None
         self.usernames = set()
         self.games = []
+        if log_path:
+            log.startLogging(open(log_path, "w"), setStdout=False)
+        log.msg("AIClient", username, password, host, port, delay, aitype,
+          game_name, log_path, time_limit, form_game, min_players, max_players)
         if aitype == "CleverBot":
             self.ai = CleverBot.CleverBot(self.playername, time_limit)
         elif aitype == "DimBot":
@@ -61,8 +65,6 @@ class AIClient(pb.Referenceable, Observed):
         self.form_game = form_game
         self.min_players = min_players
         self.max_players = max_players
-        if log_path:
-            log.startLogging(open(self.log_path, "w"), setStdout=False)
         log.msg("aps = AllPredictSplits()")
         self.aps = predictsplits.AllPredictSplits()
         log.msg("__init__ done", game_name, username)
@@ -120,7 +122,7 @@ class AIClient(pb.Referenceable, Observed):
                 log.startLogging(open(self.log_path, "w"), setStdout=False)
                 log.startLogging(sys.stdout)
             def1 = self.user.callRemote("form_game", self.game_name,
-              self.min_players, self.max_players)
+              self.min_players, self.max_players, self.time_limit)
             def1.addErrback(self.failure)
         else:
             # If game_name is set, AI only tries to join game with that name.

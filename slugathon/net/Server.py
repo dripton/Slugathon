@@ -92,7 +92,8 @@ class Server(Observed):
             user = self.name_to_user[username]
             user.receive_chat_message(message)
 
-    def form_game(self, username, game_name, min_players, max_players):
+    def form_game(self, username, game_name, min_players, max_players,
+      time_limit):
         if not game_name:
             raise ValueError("Games must be named")
         if game_name in [game.name for game in self.games]:
@@ -103,11 +104,11 @@ class Server(Observed):
         now = time.time()
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
-          min_players, max_players, master=True)
+          min_players, max_players, master=True, time_limit=time_limit)
         self.games.append(game)
         game.add_observer(self)
         action = Action.FormGame(username, game.name, game.create_time,
-          game.start_time, game.min_players, game.max_players)
+          game.start_time, game.min_players, game.max_players, time_limit)
         self.notify(action)
 
     def join_game(self, username, game_name):
@@ -209,6 +210,7 @@ class Server(Observed):
                 "--game-name", game.name,
                 "--log-path", os.path.join(TEMPDIR, "slugathon-%s-%s.log" %
                   (game.name, ainame)),
+                "--time-limit", str(game.time_limit),
             ])
             if not self.no_passwd:
                 aipass = self._passwd_for_username(ainame)
