@@ -18,3 +18,6 @@ exe = EXE( pyz,
           strip=False,
           upx=False,
           console=True )
+app = BUNDLE(exe,
+          name=os.path.join('dist', 'slugathon.app'),
+          version='0.1')
