@@ -9,6 +9,7 @@ from twisted.python import log
 
 from slugathon.gui import icon
 from slugathon.util.NullUser import NullUser
+from slugathon.net import config
 
 
 class NewGame(gtk.Dialog):
@@ -67,8 +68,9 @@ class NewGame(gtk.Dialog):
             self.game_name = self.name_entry.get_text()
             self.min_players = self.min_players_spin.get_value_as_int()
             self.max_players = self.max_players_spin.get_value_as_int()
+            # TODO add AI time limit to dialog
             def1 = self.user.callRemote("form_game", self.game_name,
-              self.min_players, self.max_players)
+              self.min_players, self.max_players, config.DEFAULT_AI_TIME_LIMIT)
             def1.addErrback(self.failure)
             self.destroy()
 
