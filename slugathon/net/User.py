@@ -220,6 +220,12 @@ class User(Avatar):
     def perspective_withdraw(self, game_name):
         self.server.withdraw(self.name, game_name)
 
+    def perspective_pause_ai(self, game_name):
+        self.server.pause_ai(self.name, game_name)
+
+    def perspective_resume_ai(self, game_name):
+        self.server.resume_ai(self.name, game_name)
+
     def __repr__(self):
         return "User " + self.name
 

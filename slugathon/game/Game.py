@@ -1482,6 +1482,14 @@ class Game(Observed):
                 self.concede(playername, legion.markerid)
         player.withdraw()
 
+    def pause_ai(self, playername):
+        action = Action.PauseAI(self.name, playername)
+        self.notify(action)
+
+    def resume_ai(self, playername):
+        action = Action.ResumeAI(self.name, playername)
+        self.notify(action)
+
     def update(self, observed, action, names):
         if hasattr(action, "game_name") and action.game_name != self.name:
             return

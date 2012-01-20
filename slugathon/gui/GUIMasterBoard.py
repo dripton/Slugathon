@@ -48,6 +48,8 @@ ui_string = """<ui>
       <separator/>
       <menuitem action="Mulligan"/>
       <menuitem action="Clear Recruit Chits"/>
+      <menuitem action="Pause AI"/>
+      <menuitem action="Resume AI"/>
     </menu>
     <menu name="OptionsMenu" action="OptionsMenu">
       <menuitem action="%s"/>
@@ -66,6 +68,8 @@ ui_string = """<ui>
     <separator/>
     <toolitem action="Mulligan"/>
     <toolitem action="Clear Recruit Chits"/>
+    <toolitem action="Pause AI"/>
+    <toolitem action="Resume AI"/>
   </toolbar>
 </ui>""" % (prefs.AUTO_STRIKE_SINGLE_TARGET,
             prefs.AUTO_RANGESTRIKE_SINGLE_TARGET,
@@ -169,6 +173,10 @@ class GUIMasterBoard(gtk.Window):
             self.cb_mulligan),
           ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits", "c",
            "Clear Recruit Chits", self.clear_all_recruitchits),
+          ("Pause AI", gtk.STOCK_MEDIA_PAUSE, "_Pause AI", "p",
+           "Pause AI", self.pause_ai),
+          ("Resume AI", gtk.STOCK_MEDIA_PLAY, "_Resume AI", "",
+           "Resume AI", self.resume_ai),
 
           ("OptionsMenu", None, "_Options"),
 
@@ -1056,6 +1064,14 @@ class GUIMasterBoard(gtk.Window):
               attacker_legion.markerid, attacker_creature_names,
               defender_legion.markerid, defender_creature_names)
             def1.addErrback(self.failure)
+
+    def pause_ai(self, action):
+        def1 = self.user.callRemote("pause_ai", self.game.name)
+        def1.addErrback(self.failure)
+
+    def resume_ai(self, action):
+        def1 = self.user.callRemote("resume_ai", self.game.name)
+        def1.addErrback(self.failure)
 
     def destroy_negotiate(self):
         if self.negotiate is not None:

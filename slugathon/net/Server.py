@@ -458,6 +458,16 @@ class Server(Observed):
         if game:
             game.withdraw(username)
 
+    def pause_ai(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.pause_ai(username)
+
+    def resume_ai(self, username, game_name):
+        game = self.name_to_game(game_name)
+        if game:
+            game.resume_ai(username)
+
     def update(self, observed, action, names):
         log.msg("Server.update", observed, action, names)
         if (isinstance(action, Action.AssignTower) or

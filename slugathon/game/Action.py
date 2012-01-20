@@ -599,3 +599,17 @@ class GameOver(Action):
         self.game_name = game_name
         self.winner_names = tuple(winner_names)
 pb.setUnjellyableForClass(GameOver, GameOver)
+
+
+class PauseAI(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(PauseAI, PauseAI)
+
+
+class ResumeAI(Action):
+    def __init__(self, game_name, playername):
+        self.game_name = game_name
+        self.playername = playername
+pb.setUnjellyableForClass(ResumeAI, ResumeAI)

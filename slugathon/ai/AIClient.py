@@ -65,6 +65,8 @@ class AIClient(pb.Referenceable, Observed):
         self.form_game = form_game
         self.min_players = min_players
         self.max_players = max_players
+        self.paused = False
+        self.last_actions = []
         log.msg("aps = AllPredictSplits()")
         self.aps = predictsplits.AllPredictSplits()
         log.msg("__init__ done", game_name, username)
@@ -191,6 +193,13 @@ class AIClient(pb.Referenceable, Observed):
         observed set to None."""
         log.msg("AIClient.update", action)
 
+        if isinstance(action, Action.ResumeAI):
+            self.paused = False
+            while self.last_actions:
+                action = self.last_actions.pop(0)
+                self.update(None, action, None)
+            return
+
         # Make sure that Game knows that the angel is in the donor
         # legion before we send the Action to Game.
         if isinstance(action, Action.SummonAngel):
@@ -203,6 +212,10 @@ class AIClient(pb.Referenceable, Observed):
 
         # Update the Game first, then act.
         self.notify(action, names)
+
+        if self.paused:
+            self.last_actions.append(action)
+            return
 
         if isinstance(action, Action.AddUsername):
             self.usernames.add(action.username)
@@ -616,6 +629,9 @@ class AIClient(pb.Referenceable, Observed):
                 if node is not None:
                     node.reveal_creatures(action.creature_names)
                 self.update_creatures(game)
+
+        elif isinstance(action, Action.PauseAI):
+            self.paused = True
 
         else:
             log.msg("got unhandled action", action)
