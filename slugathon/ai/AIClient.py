@@ -193,6 +193,10 @@ class AIClient(pb.Referenceable, Observed):
         observed set to None."""
         log.msg("AIClient.update", action)
 
+        if (self.game_name is not None and hasattr(action, "game_name")
+          and action.game_name != self.game_name):
+            return
+
         if isinstance(action, Action.ResumeAI):
             self.paused = False
             while self.last_actions:
