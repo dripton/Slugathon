@@ -482,6 +482,7 @@ class TestBattle(object):
         assert angel1.strike_number(troll1) == 2
         assert ranger1.engaged_enemies == set()
         assert ranger1.has_los_to("B2")
+        assert ranger1.potential_rangestrike_targets == set([troll1])
         assert ranger1.rangestrike_targets == set([troll1])
         assert ranger1.number_of_dice(troll1) == 2
         assert ranger1.strike_number(troll1) == 2

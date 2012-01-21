@@ -554,6 +554,14 @@ class CleverBot(DimBot.DimBot):
                 strike_number = enemy.strike_number(creature)
                 mean_hits = dice * (7. - strike_number) / 6
                 total_mean_damage_taken += mean_hits
+            # inbound rangestriking
+            for enemy in legion2.creatures:
+                if enemy not in engaged:
+                    if creature in enemy.potential_rangestrike_targets:
+                        dice = enemy.number_of_dice(creature)
+                        strike_number = enemy.strike_number(creature)
+                        mean_hits = dice * (7. - strike_number) / 6
+                        total_mean_damage_taken += mean_hits
             probable_death = total_mean_damage_taken >= creature.hits_left
 
             # rangestriking

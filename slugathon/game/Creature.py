@@ -218,12 +218,13 @@ class Creature(object):
         return not map1.is_los_blocked(self.hexlabel, hexlabel, game)
 
     @property
-    def rangestrike_targets(self):
-        """Return a set of Creatures that this Creature can rangestrike."""
+    def potential_rangestrike_targets(self):
+        """Return a set of Creatures that this Creature could rangestrike
+        if the phase were correct."""
         game = self.legion.player.game
         enemies = set()
         if (self.offboard or self.hexlabel is None or not self.rangestrikes
-          or game.battle_phase != Phase.STRIKE or self.dead_adjacent_enemies):
+          or self.dead_adjacent_enemies):
             return enemies
         hexlabel_to_enemy = self._hexlabel_to_enemy()
         map1 = game.battlemap
@@ -233,6 +234,15 @@ class Creature(object):
               (self.magicmissile or not enemy.is_lord)):
                 enemies.add(enemy)
         return enemies
+
+    @property
+    def rangestrike_targets(self):
+        """Return a set of Creatures that this Creature can rangestrike."""
+        game = self.legion.player.game
+        if game.battle_phase != Phase.STRIKE:
+            return set()
+        else:
+            return self.potential_rangestrike_targets
 
     def find_target_hexlabels(self):
         """Return a set of hexlabels containing creatures that this creature
@@ -335,7 +345,7 @@ class Creature(object):
             border2 = hex1.opposite_border(hexside)
             if border2 == "Dune" and not self.is_native(border2):
                 dice -= 1
-        elif target in self.rangestrike_targets:
+        elif target in self.potential_rangestrike_targets:
             dice = int(self.power / 2)
             if hex1.terrain == "Volcano" and self.is_native(hex1.terrain):
                 dice += 2
