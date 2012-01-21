@@ -167,6 +167,7 @@ def test_score_legion_move_brush():
     bu01.move(3, False, None, 5)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
+    attacker = game.attacker_legion
     titan1 = defender.sorted_creatures[0]
     gorgon1 = defender.sorted_creatures[1]
     ranger1 = defender.sorted_creatures[2]
@@ -174,8 +175,10 @@ def test_score_legion_move_brush():
     centaur1 = defender.sorted_creatures[4]
     assert centaur1.name == "Centaur"
     ogre1 = defender.sorted_creatures[5]
-    ranger1.legion = defender
-    gorgon1.legion = defender
+    for creature in defender.creatures:
+        creature.legion = defender
+    for creature in attacker.creatures:
+        creature.legion = attacker
     cleverbot_d = CleverBot.CleverBot("p0", 1)
 
     hexlabel = ogre1.hexlabel
@@ -219,7 +222,6 @@ def test_score_legion_move_brush():
     centaur1.move("E5")
     gargoyle1.move("F4")
 
-    attacker = game.attacker_legion
     cleverbot_a = CleverBot.CleverBot("p1", 1)
     game.battle_active_legion = attacker
     game.battle_phase = Phase.STRIKE
@@ -230,8 +232,6 @@ def test_score_legion_move_brush():
     centaur2 = attacker.sorted_creatures[4]
     assert centaur2.name == "Centaur"
     ogre2 = attacker.sorted_creatures[5]
-    ranger2.legion = attacker
-    gorgon2.legion = attacker
 
     hexlabel = titan2.hexlabel
     move_to_score = {}
@@ -437,14 +437,17 @@ def test_score_legion_move_plain():
     bu01.move(101, False, None, 5)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
+    attacker = game.attacker_legion
     titan1 = defender.creatures[0]
     ogre1 = defender.creatures[1]
     centaur1 = defender.creatures[2]
     gargoyle1 = defender.creatures[3]
     ranger1 = defender.creatures[4]
-    ranger1.legion = defender
     gorgon1 = defender.creatures[5]
-    gorgon1.legion = defender
+    for creature in defender.creatures:
+        creature.legion = defender
+    for creature in attacker.creatures:
+        creature.legion = attacker
     cleverbot_d = CleverBot.CleverBot("p0", 1)
 
     hexlabel = ogre1.hexlabel
@@ -482,7 +485,6 @@ def test_score_legion_move_plain():
     centaur1.move("E5")
     gargoyle1.move("F4")
 
-    attacker = game.attacker_legion
     cleverbot_a = CleverBot.CleverBot("p1", 1)
     game.battle_active_legion = attacker
     game.battle_phase = Phase.STRIKE
@@ -492,8 +494,6 @@ def test_score_legion_move_plain():
     gargoyle2 = attacker.sorted_creatures[3]
     centaur2 = attacker.sorted_creatures[4]
     ogre2 = attacker.sorted_creatures[5]
-    ranger2.legion = attacker
-    gorgon2.legion = attacker
 
     hexlabel = titan2.hexlabel
     move_to_score = {}
@@ -653,6 +653,7 @@ def test_score_legion_move_swamp():
     bu01.move(132, False, None, 1)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
+    attacker = game.attacker_legion
     d_titan = defender.creatures[0]
     d_ogre1 = defender.creatures[1]
     d_ogre2 = defender.creatures[2]
@@ -662,6 +663,8 @@ def test_score_legion_move_swamp():
     d_troll3 = defender.creatures[6]
     for creature in defender.creatures:
         creature.legion = defender
+    for creature in attacker.creatures:
+        creature.legion = attacker
     cleverbot_d = CleverBot.CleverBot("p0", 1)
 
     hexlabel = d_ogre1.hexlabel
@@ -729,7 +732,6 @@ def test_score_legion_move_swamp():
     d_troll3.move("A2")
     d_ogre2.move("A1")
 
-    attacker = game.attacker_legion
     cleverbot_a = CleverBot.CleverBot("p1", 1)
     game.battle_active_legion = attacker
     game.battle_phase = Phase.STRIKE
@@ -740,8 +742,6 @@ def test_score_legion_move_swamp():
     a_warlock2 = attacker.creatures[4]
     a_cyclops1 = attacker.creatures[5]
     a_cyclops2 = attacker.creatures[6]
-    for creature in attacker.creatures:
-        creature.legion = attacker
 
     hexlabel = a_titan.hexlabel
     move_to_score = {}
