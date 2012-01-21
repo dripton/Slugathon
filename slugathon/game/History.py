@@ -36,7 +36,7 @@ class History(object):
 
         observed is part of the interface, but we don't need it.
         """
-        if action.__class__.__name__.startswith("Undo"):
+        if isinstance(action, Action.UndoAction):
             self._undo(action)
         elif isinstance(action, Action.EphemeralAction):
             pass
