@@ -50,6 +50,11 @@ class UndoAction(Action):
     pass
 
 
+class EphemeralAction(Action):
+    """Abstract base class for actions that we don't want to save."""
+    pass
+
+
 class AddUsername(Action):
     def __init__(self, username):
         self.username = username
@@ -601,14 +606,14 @@ class GameOver(Action):
 pb.setUnjellyableForClass(GameOver, GameOver)
 
 
-class PauseAI(Action):
+class PauseAI(EphemeralAction):
     def __init__(self, game_name, playername):
         self.game_name = game_name
         self.playername = playername
 pb.setUnjellyableForClass(PauseAI, PauseAI)
 
 
-class ResumeAI(Action):
+class ResumeAI(EphemeralAction):
     def __init__(self, game_name, playername):
         self.game_name = game_name
         self.playername = playername

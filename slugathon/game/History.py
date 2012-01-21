@@ -41,6 +41,8 @@ class History(object):
         """
         if action.__class__.__name__.startswith("Undo"):
             self._undo(action)
+        elif isinstance(action, Action.EphemeralAction):
+            pass
         else:
             self.actions.append(action)
             # Anything but a redo should clear the whole undone list.
