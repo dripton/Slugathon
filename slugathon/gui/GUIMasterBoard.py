@@ -101,6 +101,7 @@ class GUIMasterBoard(gtk.Window):
         self.vbox = gtk.VBox()
         self.add(self.vbox)
         self.create_ui()
+        self.enable_pause_ai()
         self.vbox.pack_start(self.ui.get_widget("/Menubar"), False, False, 0)
         self.vbox.pack_start(self.ui.get_widget("/Toolbar"), False, False, 0)
 
@@ -214,6 +215,35 @@ class GUIMasterBoard(gtk.Window):
                 checkmenuitem = self.ui.get_widget(
                   "/Menubar/OptionsMenu/%s" % option)
                 checkmenuitem.set_active(True)
+
+    def enable_resume_ai(self):
+        """Enable Resume AI and disable Pause AI."""
+        pause_ai_button = self.ui.get_widget("/Toolbar/Pause AI")
+        pause_ai_button.set_sensitive(False)
+        pause_ai_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Pause AI")
+        pause_ai_menuitem.set_sensitive(False)
+        resume_ai_button = self.ui.get_widget("/Toolbar/Resume AI")
+        resume_ai_button.set_sensitive(True)
+        resume_ai_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Resume AI")
+        resume_ai_menuitem.set_sensitive(True)
+
+    def enable_pause_ai(self):
+        """Enable Pause AI and disable Resume AI."""
+        pause_ai_button = self.ui.get_widget("/Toolbar/Pause AI")
+        pause_ai_button.set_sensitive(True)
+        pause_ai_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Pause AI")
+        pause_ai_menuitem.set_sensitive(True)
+        resume_ai_button = self.ui.get_widget("/Toolbar/Resume AI")
+        resume_ai_button.set_sensitive(False)
+        resume_ai_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Resume AI")
+        resume_ai_menuitem.set_sensitive(False)
+
+    def disable_mulligan(self):
+        """Disable taking mulligans."""
+        mulligan_button = self.ui.get_widget("/Toolbar/Mulligan")
+        mulligan_button.set_sensitive(False)
+        mulligan_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Mulligan")
+        mulligan_menuitem.set_sensitive(False)
 
     def _init_status_screen(self):
         if not self.status_screen:
@@ -1111,6 +1141,8 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.RollMovement):
             self.repaint_hexlabels.update(self.board.hexes.keys())
             if action.playername == self.username:
+                if action.mulligans_left == 0:
+                    self.disable_mulligan()
                 self.highlight_unmoved_legions()
             else:
                 self.repaint()
@@ -1417,6 +1449,12 @@ class GUIMasterBoard(gtk.Window):
                     message = "Game over.  Draw."
                 self.game_over = InfoDialog.InfoDialog(self, "Info",
                   message)
+
+        elif isinstance(action, Action.PauseAI):
+            self.enable_resume_ai()
+
+        elif isinstance(action, Action.ResumeAI):
+            self.enable_pause_ai()
 
 
 def main():
