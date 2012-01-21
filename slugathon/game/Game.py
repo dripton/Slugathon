@@ -836,7 +836,6 @@ class Game(Observed):
             legion = player.markerid_to_legion.get(markerid)
         # Avoid double recruit
         if legion and not legion.recruited:
-            log.msg("legion has not recruited")
             creature = Creature.Creature(creature_name)
             legion.recruit(creature, recruiter_names)
             if self.phase == Phase.FIGHT:

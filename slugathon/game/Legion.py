@@ -424,7 +424,6 @@ class Legion(Observed):
             self.recruiter_names_list.append(recruiter_names)
             creature.legion = self
             self.reveal_creatures([creature.name] + list(recruiter_names))
-            log.msg(self, "setting self.recruited")
             self.recruited = True
 
     def undo_recruit(self):
