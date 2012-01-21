@@ -7,9 +7,6 @@ from zope.interface import implementer
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 
-# TODO Add actions for forming the game and joining the players, to simplify
-# loading?
-
 
 @implementer(IObserver)
 class History(object):
