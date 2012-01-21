@@ -1762,11 +1762,6 @@ class Game(Observed):
             self._end_dead_player_turn()
 
         elif isinstance(action, Action.EliminatePlayer):
-            for markerid, creature_names in \
-              action.markerid_to_creature_names.iteritems():
-                legion = self.find_legion(markerid)
-                if legion is not None:
-                    legion.reveal_creatures(creature_names)
             try:
                 winner_player = self.get_player_by_name(
                   action.winner_playername)

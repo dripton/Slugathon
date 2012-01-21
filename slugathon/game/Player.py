@@ -488,7 +488,6 @@ class Player(Observed):
         """
         log.msg("die", self, scoring_player, check_for_victory)
         # First reveal all this player's legions.
-        markerid_to_creature_names = {}
         for legion in self.legions:
             if (legion.all_known and legion not in
               self.game.battle_legions):
@@ -499,14 +498,12 @@ class Player(Observed):
                 action = Action.RevealLegion(self.game.name, legion.markerid,
                   legion.creature_names)
                 self.notify(action)
-                markerid_to_creature_names[legion.markerid] = \
-                  legion.creature_names
         if scoring_player is None:
             scoring_player_name = ""
         else:
             scoring_player_name = scoring_player.name
         action = Action.EliminatePlayer(self.game.name, scoring_player_name,
-          self.name, check_for_victory, markerid_to_creature_names)
+          self.name, check_for_victory)
         self.notify(action)
 
     def add_points(self, points):
