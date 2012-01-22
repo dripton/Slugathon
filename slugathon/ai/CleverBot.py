@@ -510,6 +510,7 @@ class CleverBot(DimBot.DimBot):
         NATIVE_DUNE_BONUS = 0.5
         NON_NATIVE_SLOPE_PENALTY = -0.3
         NON_NATIVE_DUNE_PENALTY = -0.3
+        ENGAGE_RANGESTRIKER_BONUS = 0.5
 
         score = 0
         battlemap = game.battlemap
@@ -542,6 +543,7 @@ class CleverBot(DimBot.DimBot):
             engaged = creature.engaged_enemies
             max_mean_hits = 0.0
             total_mean_damage_taken = 0.0
+            engaged_with_rangestriker = False
             # melee
             for enemy in engaged:
                 # Damage we can do.
@@ -554,6 +556,8 @@ class CleverBot(DimBot.DimBot):
                 strike_number = enemy.strike_number(creature)
                 mean_hits = dice * (7. - strike_number) / 6
                 total_mean_damage_taken += mean_hits
+                if enemy.rangestrikes:
+                    engaged_with_rangestriker = True
             # inbound rangestriking
             for enemy in legion2.creatures:
                 if enemy not in engaged:
@@ -563,6 +567,11 @@ class CleverBot(DimBot.DimBot):
                         mean_hits = dice * (7. - strike_number) / 6
                         total_mean_damage_taken += mean_hits
             probable_death = total_mean_damage_taken >= creature.hits_left
+
+            if engaged_with_rangestriker and not creature.rangestrikes:
+                score += ENGAGE_RANGESTRIKER_BONUS
+                log.msg(creature, "ENGAGE_RANGESTRIKER_BONUS",
+                  ENGAGE_RANGESTRIKER_BONUS)
 
             # rangestriking
             if not engaged:
