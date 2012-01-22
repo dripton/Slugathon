@@ -96,8 +96,8 @@ class Flee(gtk.Dialog):
     def cb_response(self, widget, response_id):
         """Fire the deferred, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""
-        if (response_id and (self.defender_legion.combat_value >=
-          self.attacker_legion.combat_value) or (self.defender_legion.score >=
+        if (response_id == FLEE and (self.defender_legion.combat_value >=
+          self.attacker_legion.combat_value or self.defender_legion.score >=
           self.attacker_legion.score)):
             confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
               "Are you sure you want to flee with a superior legion?")
