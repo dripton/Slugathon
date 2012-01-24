@@ -515,7 +515,7 @@ class AIClient(pb.Referenceable, Observed):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
                       game)
 
-        elif isinstance(action, Action.UnSummon):
+        elif isinstance(action, Action.UnsummonAngel):
             game = self.name_to_game(action.game_name)
             log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
               (action.markerid, [action.creature_name]))
@@ -537,7 +537,7 @@ class AIClient(pb.Referenceable, Observed):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
                       game)
 
-        elif isinstance(action, Action.DoNotSummon):
+        elif isinstance(action, Action.DoNotSummonAngel):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
@@ -579,13 +579,13 @@ class AIClient(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
-        elif isinstance(action, Action.CanAcquire):
+        elif isinstance(action, Action.CanAcquireAngels):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.ai.acquire_angel, game,
+                reactor.callLater(self.delay, self.ai.acquire_angels, game,
                   action.markerid, action.angels, action.archangels)
 
-        elif isinstance(action, Action.Acquire):
+        elif isinstance(action, Action.AcquireAngels):
             game = self.name_to_game(action.game_name)
             for angel_name in action.angel_names:
                 log.msg("aps.get_leaf('%s').add_creature('%s')" %
@@ -596,7 +596,7 @@ class AIClient(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
-        elif isinstance(action, Action.DoNotAcquire):
+        elif isinstance(action, Action.DoNotAcquireAngels):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)

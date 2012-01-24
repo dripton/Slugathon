@@ -421,7 +421,7 @@ class Player(Observed):
         self.summoned = True
         self.last_donor = donor
 
-    def unsummon(self, legion, creature_name):
+    def unsummon_angel(self, legion, creature_name):
         donor = self.last_donor
         # Avoid doing it twice.
         if not self.summoned or donor is None or len(donor) >= 7:
@@ -435,13 +435,13 @@ class Player(Observed):
         creature.legion = donor
         self.summoned = False
         self.last_donor = None
-        action = Action.UnSummon(self.game.name, self.name,
+        action = Action.UnsummonAngel(self.game.name, self.name,
           legion.markerid, donor.markerid, creature.name)
         self.notify(action)
 
-    def do_not_summon(self, legion):
+    def do_not_summon_angel(self, legion):
         """Do not summon an angel into legion."""
-        action = Action.DoNotSummon(self.game.name, self.name,
+        action = Action.DoNotSummonAngel(self.game.name, self.name,
           legion.markerid)
         self.notify(action)
 

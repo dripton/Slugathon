@@ -586,7 +586,7 @@ class GUIMasterBoard(gtk.Window):
     def picked_summon(self, (legion, donor, creature)):
         """Callback from SummonAngel"""
         if donor is None or creature is None:
-            def1 = self.user.callRemote("do_not_summon", self.game.name,
+            def1 = self.user.callRemote("do_not_summon_angel", self.game.name,
               legion.markerid)
             def1.addErrback(self.failure)
         else:
@@ -1315,7 +1315,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
-        elif isinstance(action, Action.DoNotSummon):
+        elif isinstance(action, Action.DoNotSummonAngel):
             player = self.game.get_player_by_name(self.username)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
@@ -1325,7 +1325,7 @@ class GUIMasterBoard(gtk.Window):
                 else:
                     self.highlight_engagements()
 
-        elif isinstance(action, Action.UnSummon):
+        elif isinstance(action, Action.UnsummonAngel):
             legion = self.game.find_legion(action.markerid)
             donor = self.game.find_legion(action.donor_markerid)
             lst = []
@@ -1337,7 +1337,7 @@ class GUIMasterBoard(gtk.Window):
             self.repaint(lst)
             self.highlight_engagements()
 
-        elif isinstance(action, Action.CanAcquire):
+        elif isinstance(action, Action.CanAcquireAngels):
             if (self.acquire_angel is None and action.playername ==
               self.username):
                 markerid = action.markerid
@@ -1351,7 +1351,7 @@ class GUIMasterBoard(gtk.Window):
                     def1.addCallback(self.picked_angels)
                     def1.addErrback(self.failure)
 
-        elif isinstance(action, Action.Acquire):
+        elif isinstance(action, Action.AcquireAngels):
             markerid = action.markerid
             legion = self.game.find_legion(markerid)
             if legion and legion.hexlabel and action.angel_names:
@@ -1397,8 +1397,8 @@ class GUIMasterBoard(gtk.Window):
                               self)
                             def1.addCallback(self.picked_summon)
                         else:
-                            log.msg("calling do_not_summon")
-                            def1 = self.user.callRemote("do_not_summon",
+                            log.msg("calling do_not_summon_angel")
+                            def1 = self.user.callRemote("do_not_summon_angel",
                               self.game.name, legion.markerid)
                             def1.addErrback(self.failure)
                     else:

@@ -203,7 +203,7 @@ class EventLog(gtk.Dialog):
                   action.loser_markerid,
                   Legion.find_picname(action.loser_markerid),
                   action.hexlabel)
-        elif isinstance(action, Action.Acquire):
+        elif isinstance(action, Action.AcquireAngels):
             st = "%s (%s) acquires %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               ", ".join(action.angel_names))

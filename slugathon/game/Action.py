@@ -519,7 +519,7 @@ class SummonAngel(Action):
 pb.setUnjellyableForClass(SummonAngel, SummonAngel)
 
 
-class UnSummon(Action):
+class UnsummonAngel(Action):
     def __init__(self, game_name, playername, markerid, donor_markerid,
       creature_name):
         self.game_name = game_name
@@ -527,42 +527,42 @@ class UnSummon(Action):
         self.markerid = markerid
         self.donor_markerid = donor_markerid
         self.creature_name = creature_name
-pb.setUnjellyableForClass(UnSummon, UnSummon)
+pb.setUnjellyableForClass(UnsummonAngel, UnsummonAngel)
 
 
-class DoNotSummon(Action):
+class DoNotSummonAngel(Action):
     def __init__(self, game_name, playername, markerid):
         self.game_name = game_name
         self.playername = playername
         self.markerid = markerid
-pb.setUnjellyableForClass(DoNotSummon, DoNotSummon)
+pb.setUnjellyableForClass(DoNotSummonAngel, DoNotSummonAngel)
 
 
-class CanAcquire(Action):
+class CanAcquireAngels(Action):
     def __init__(self, game_name, playername, markerid, angels, archangels):
         self.game_name = game_name
         self.playername = playername
         self.markerid = markerid
         self.angels = angels
         self.archangels = archangels
-pb.setUnjellyableForClass(CanAcquire, CanAcquire)
+pb.setUnjellyableForClass(CanAcquireAngels, CanAcquireAngels)
 
 
-class Acquire(Action):
+class AcquireAngels(Action):
     def __init__(self, game_name, playername, markerid, angel_names):
         self.game_name = game_name
         self.playername = playername
         self.markerid = markerid
         self.angel_names = tuple(angel_names)
-pb.setUnjellyableForClass(Acquire, Acquire)
+pb.setUnjellyableForClass(AcquireAngels, AcquireAngels)
 
 
-class DoNotAcquire(Action):
+class DoNotAcquireAngels(Action):
     def __init__(self, game_name, playername, markerid):
         self.game_name = game_name
         self.playername = playername
         self.markerid = markerid
-pb.setUnjellyableForClass(DoNotAcquire, DoNotAcquire)
+pb.setUnjellyableForClass(DoNotAcquireAngels, DoNotAcquireAngels)
 
 
 class BattleOver(Action):

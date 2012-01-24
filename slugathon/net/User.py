@@ -172,8 +172,8 @@ class User(Avatar):
         self.server.summon_angel(self.name, game_name, markerid,
           donor_markerid, creature_name)
 
-    def perspective_do_not_summon(self, game_name, markerid):
-        self.server.do_not_summon(self.name, game_name, markerid)
+    def perspective_do_not_summon_angel(self, game_name, markerid):
+        self.server.do_not_summon_angel(self.name, game_name, markerid)
 
     def perspective_do_not_reinforce(self, game_name, markerid):
         self.server.do_not_reinforce(self.name, game_name, markerid)

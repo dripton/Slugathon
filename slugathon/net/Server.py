@@ -392,11 +392,11 @@ class Server(Observed):
         if game:
             game.acquire_angels(username, markerid, angel_names)
 
-    def do_not_acquire(self, username, game_name, markerid):
-        log.msg("do_not_acquire", self, username, game_name, markerid)
+    def do_not_acquire_angels(self, username, game_name, markerid):
+        log.msg("do_not_acquire_angels", self, username, game_name, markerid)
         game = self.name_to_game(game_name)
         if game:
-            game.do_not_acquire(username, markerid)
+            game.do_not_acquire_angels(username, markerid)
 
     def done_with_engagements(self, username, game_name):
         game = self.name_to_game(game_name)
@@ -430,10 +430,10 @@ class Server(Observed):
             game.summon_angel(username, markerid, donor_markerid,
               creature_name)
 
-    def do_not_summon(self, username, game_name, markerid):
+    def do_not_summon_angel(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.do_not_summon(username, markerid)
+            game.do_not_summon_angel(username, markerid)
 
     def do_not_reinforce(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
@@ -507,11 +507,11 @@ class Server(Observed):
           isinstance(action, Action.Strike) or
           isinstance(action, Action.Carry) or
           isinstance(action, Action.SummonAngel) or
-          isinstance(action, Action.UnSummon) or
-          isinstance(action, Action.DoNotSummon) or
-          isinstance(action, Action.CanAcquire) or
-          isinstance(action, Action.Acquire) or
-          isinstance(action, Action.DoNotAcquire) or
+          isinstance(action, Action.UnsummonAngel) or
+          isinstance(action, Action.DoNotSummonAngel) or
+          isinstance(action, Action.CanAcquireAngels) or
+          isinstance(action, Action.AcquireAngels) or
+          isinstance(action, Action.DoNotAcquireAngels) or
           isinstance(action, Action.BattleOver) or
           isinstance(action, Action.EliminatePlayer)):
             game = self.name_to_game(action.game_name)

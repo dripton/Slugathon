@@ -945,7 +945,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
-        elif isinstance(action, Action.DoNotSummon):
+        elif isinstance(action, Action.DoNotSummonAngel):
             if (self.game.battle_active_player and
               self.game.battle_active_player.name == self.username):
                 def1 = self.user.callRemote("done_with_reinforcements",
@@ -961,7 +961,7 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.UnReinforce):
             self.repaint(["DEFENDER"])
 
-        elif isinstance(action, Action.UnSummon):
+        elif isinstance(action, Action.UnsummonAngel):
             self.repaint(["ATTACKER"])
 
     def picked_reinforcement(self, (legion, creature, recruiter_names)):

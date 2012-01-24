@@ -286,7 +286,7 @@ class StatusScreen(gtk.Dialog):
         elif (isinstance(action, Action.RecruitCreature) or
           isinstance(action, Action.UndoRecruit) or
           isinstance(action, Action.UnReinforce) or
-          isinstance(action, Action.Acquire)):
+          isinstance(action, Action.AcquireAngels)):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
             player_num = self.game.players.index(player)
@@ -305,7 +305,7 @@ class StatusScreen(gtk.Dialog):
           isinstance(action, Action.StartMusterPhase) or
           isinstance(action, Action.DoNotReinforce) or
           isinstance(action, Action.SummonAngel) or
-          isinstance(action, Action.DoNotSummon)):
+          isinstance(action, Action.DoNotSummonAngel)):
             self._clear_battle()
             self._color_player_columns()
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])

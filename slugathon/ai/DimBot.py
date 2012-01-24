@@ -376,7 +376,7 @@ class DimBot(object):
                 def1.addErrback(self.failure)
                 return
 
-        def1 = self.user.callRemote("do_not_summon", game.name,
+        def1 = self.user.callRemote("do_not_summon_angel", game.name,
           legion.markerid)
         def1.addErrback(self.failure)
 
@@ -407,12 +407,12 @@ class DimBot(object):
                 def1.addErrback(self.failure)
                 return
 
-        def1 = self.user.callRemote("do_not_summon", game.name,
+        def1 = self.user.callRemote("do_not_summon_angel", game.name,
           legion.markerid)
         def1.addErrback(self.failure)
 
-    def acquire_angel(self, game, markerid, num_angels, num_archangels):
-        log.msg("acquire_angel", markerid, num_angels, num_archangels)
+    def acquire_angels(self, game, markerid, num_angels, num_archangels):
+        log.msg("acquire_angels", markerid, num_angels, num_archangels)
         player = game.get_player_by_name(self.playername)
         legion = player.markerid_to_legion[markerid]
         starting_height = len(legion)

@@ -794,19 +794,19 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         angels = [Creature.Creature(name) for name in angel_names]
-        legion.acquire(angels)
+        legion.acquire_angels(angels)
         angel_names = [angel.name for angel in angels]
-        action = Action.Acquire(self.name, player.name, markerid,
+        action = Action.AcquireAngels(self.name, player.name, markerid,
           angel_names)
         self.notify(action)
         self._end_dead_player_turn()
 
-    def do_not_acquire(self, playername, markerid):
+    def do_not_acquire_angels(self, playername, markerid):
         """Called from Server."""
         log.msg("do_not_acquire", playername, markerid)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
-        legion.do_not_acquire()
+        legion.do_not_acquire_angels()
 
     def done_with_engagements(self, playername):
         """Try to end playername's fight phase.
@@ -883,16 +883,16 @@ class Game(Observed):
         if self.battle_is_over:
             self._end_battle2()
 
-    def do_not_summon(self, playername, markerid):
+    def do_not_summon_angel(self, playername, markerid):
         """Called from Server."""
-        log.msg("do_not_summon")
+        log.msg("do_not_summon_angel")
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
-        player.do_not_summon(legion)
+        player.do_not_summon_angel(legion)
 
-    def _do_not_summon(self, playername, markerid):
+    def _do_not_summon_angel(self, playername, markerid):
         """Called from update."""
-        log.msg("_do_not_summon")
+        log.msg("_do_not_summon_angel")
         self.pending_summon = False
         if self.battle_is_over:
             self._end_battle2()
@@ -1443,7 +1443,7 @@ class Game(Observed):
                                 if self.battle_turn <= 2:
                                     creature.kill()
                                 elif legion == self.attacker_legion:
-                                    legion.player.unsummon(legion,
+                                    legion.player.unsummon_angel(legion,
                                       creature.name)
                                 else:
                                     legion.unreinforce()
@@ -1633,13 +1633,13 @@ class Game(Observed):
             self.summon_angel(action.playername, action.markerid,
               action.donor_markerid, action.creature_name)
 
-        elif isinstance(action, Action.UnSummon):
+        elif isinstance(action, Action.UnsummonAngel):
             player = self.get_player_by_name(action.playername)
             legion = player.markerid_to_legion[action.markerid]
-            player.unsummon(legion, action.creature_name)
+            player.unsummon_angel(legion, action.creature_name)
 
-        elif isinstance(action, Action.DoNotSummon):
-            self._do_not_summon(action.playername, action.markerid)
+        elif isinstance(action, Action.DoNotSummonAngel):
+            self._do_not_summon_angel(action.playername, action.markerid)
 
         elif isinstance(action, Action.Fight):
             attacker_markerid = action.attacker_markerid
@@ -1748,17 +1748,17 @@ class Game(Observed):
                 self.battle_turn = 8
             self._end_battle1()
 
-        elif isinstance(action, Action.Acquire):
+        elif isinstance(action, Action.AcquireAngels):
             player = self.get_player_by_name(action.playername)
             legion = player.markerid_to_legion[action.markerid]
             angels = [Creature.Creature(name) for name in action.angel_names]
-            legion.acquire(angels)
+            legion.acquire_angels(angels)
             self._end_dead_player_turn()
 
-        elif isinstance(action, Action.DoNotAcquire):
+        elif isinstance(action, Action.DoNotAcquireAngels):
             player = self.get_player_by_name(action.playername)
             legion = player.markerid_to_legion[action.markerid]
-            legion.do_not_acquire()
+            legion.do_not_acquire_angels()
             self._end_dead_player_turn()
 
         elif isinstance(action, Action.EliminatePlayer):

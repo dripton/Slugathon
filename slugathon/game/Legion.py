@@ -538,8 +538,8 @@ class Legion(Observed):
         # long enough to give half points.
         self.player.remove_legion(self.markerid)
 
-    def add_points(self, points, can_acquire):
-        log.msg("add_points", self, points, can_acquire)
+    def add_points(self, points, can_acquire_angels):
+        log.msg("add_points", self, points, can_acquire_angels)
         # TODO Move these to a data file
         ARCHANGEL_POINTS = 500
         ANGEL_POINTS = 100
@@ -548,7 +548,7 @@ class Legion(Observed):
         score1 = score0 + points
         player.score = score1
         log.msg(player, "now has score", player.score)
-        if can_acquire:
+        if can_acquire_angels:
             height = len(self)
             archangels = 0
             if (height < 7 and
@@ -565,13 +565,13 @@ class Legion(Observed):
             self.angels_pending = angels
             self.archangels_pending = archangels
             if angels + archangels > 0:
-                action = Action.CanAcquire(self.player.game.name,
+                action = Action.CanAcquireAngels(self.player.game.name,
                   self.player.name, self.markerid, angels, archangels)
                 self.notify(action)
 
-    def acquire(self, angels):
+    def acquire_angels(self, angels):
         """Acquire angels."""
-        log.msg("acquire", angels)
+        log.msg("acquire_angels", angels)
         num_archangels = num_angels = 0
         for angel in angels:
             if angel.name == "Archangel":
@@ -607,11 +607,11 @@ class Legion(Observed):
             angel.legion = self
         self.angels_pending = 0
         self.archangels_pending = 0
-        log.msg("end of acquire", self)
+        log.msg("end of acquire_angels", self)
 
-    def do_not_acquire(self):
-        """Do not acquire an angel, and notify observers."""
-        log.msg("do_not_acquire", self)
+    def do_not_acquire_angels(self):
+        """Do not acquire any angels, and notify observers."""
+        log.msg("do_not_acquire_angels", self)
         if self.angels_pending or self.archangels_pending:
             self.reset_angels_pending()
             action = Action.DoNotAcquire(self.player.game.name,
