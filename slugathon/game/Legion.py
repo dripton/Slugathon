@@ -402,7 +402,7 @@ class Legion(Observed):
         result_list.sort(cmp=cmp_helper)
         return result_list
 
-    def recruit(self, creature, recruiter_names):
+    def recruit_creature(self, creature, recruiter_names):
         """Recruit creature."""
         log.msg("recruit", self, creature, recruiter_names)
         if self.recruited:

@@ -837,7 +837,7 @@ class Game(Observed):
         # Avoid double recruit
         if legion and not legion.recruited:
             creature = Creature.Creature(creature_name)
-            legion.recruit(creature, recruiter_names)
+            legion.recruit_creature(creature, recruiter_names)
             if self.phase == Phase.FIGHT:
                 creature.hexlabel = "DEFENDER"
         self.pending_reinforcement = False
