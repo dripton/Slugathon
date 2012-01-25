@@ -614,7 +614,7 @@ class Legion(Observed):
         log.msg("do_not_acquire_angels", self)
         if self.angels_pending or self.archangels_pending:
             self.reset_angels_pending()
-            action = Action.DoNotAcquire(self.player.game.name,
+            action = Action.DoNotAcquireAngels(self.player.game.name,
               self.player.name, self.markerid)
             self.notify(action)
 

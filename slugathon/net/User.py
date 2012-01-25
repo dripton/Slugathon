@@ -152,9 +152,9 @@ class User(Avatar):
         self.server.acquire_angels(self.name, game_name, markerid,
           angel_names)
 
-    def perspective_do_not_acquire(self, game_name, markerid):
-        log.msg("do_not_acquire", self, game_name, markerid)
-        self.server.do_not_acquire(self.name, game_name, markerid)
+    def perspective_do_not_acquire_angels(self, game_name, markerid):
+        log.msg("do_not_acquire_angels", self, game_name, markerid)
+        self.server.do_not_acquire_angels(self.name, game_name, markerid)
 
     def perspective_done_with_engagements(self, game_name):
         self.server.done_with_engagements(self.name, game_name)

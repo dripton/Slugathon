@@ -599,9 +599,9 @@ class GUIMasterBoard(gtk.Window):
         log.msg("picked_angels", legion, angels)
         self.acquire_angel = None
         if not angels:
-            log.msg("calling do_not_acquire", legion)
-            def1 = self.user.callRemote("do_not_acquire", self.game.name,
-              legion.markerid)
+            log.msg("calling do_not_acquire_angels", legion)
+            def1 = self.user.callRemote("do_not_acquire_angels",
+              self.game.name, legion.markerid)
             def1.addErrback(self.failure)
         else:
             def1 = self.user.callRemote("acquire_angels", self.game.name,
@@ -1366,7 +1366,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
 
-        elif isinstance(action, Action.DoNotAcquire):
+        elif isinstance(action, Action.DoNotAcquireAngels):
             player = self.game.get_player_by_name(self.username)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:

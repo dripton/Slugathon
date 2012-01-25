@@ -803,7 +803,7 @@ class Game(Observed):
 
     def do_not_acquire_angels(self, playername, markerid):
         """Called from Server."""
-        log.msg("do_not_acquire", playername, markerid)
+        log.msg("do_not_acquire_angels", playername, markerid)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         legion.do_not_acquire_angels()

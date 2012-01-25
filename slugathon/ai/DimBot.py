@@ -438,8 +438,8 @@ class DimBot(object):
               markerid, angel_names)
             def1.addErrback(self.failure)
         else:
-            log.msg("calling do_not_acquire", markerid)
-            def1 = self.user.callRemote("do_not_acquire", game.name,
+            log.msg("DimBot calling do_not_acquire_angels", markerid)
+            def1 = self.user.callRemote("do_not_acquire_angels", game.name,
               markerid)
             def1.addErrback(self.failure)
 
