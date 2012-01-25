@@ -89,15 +89,15 @@ def main():
       help="login name for authorization")
     parser.add_argument("-p", "--password", action="store", type=str,
       help="password for authorization")
-    parser.add_argument("-f", "--file", action="store", type=str,
-      help="local path at which to find the file to upload")
     parser.add_argument("-c", "--commit", action="store", type=str,
       help="Git commit id of this build")
     args = parser.parse_args()
 
-    id_ = "slugathon-dev-%s.exe" % args.commit
-    file_ = "dist/slugathon.exe"
-    description = "dev build for commit %s" % args.commit
+    commit = args.commit[:7]
+
+    id_ = "slugathon-dev-%s.exe" % commit
+    file_ = os.path.join(".", "dist", "slugathon.exe")
+    description = "dev build for commit %s" % commit
 
     delete_excess_uploads(args.login, args.password)
 
