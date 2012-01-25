@@ -20,6 +20,7 @@ class User(Avatar):
         self.server = server
         self.client = client
         self.server.add_observer(self)
+        self.logging_out = False
 
     def attached(self, mind):
         pass
@@ -239,8 +240,10 @@ class User(Avatar):
 
     def trap_connection_lost(self, failure):
         failure.trap(ConnectionLost, PBConnectionLost)
-        log.msg("Connection lost for %s; logging out" % self.name)
-        self.logout()
+        if not self.logging_out:
+            self.logging_out = True
+            log.msg("Connection lost for %s; logging out" % self.name)
+            self.logout()
 
     def log_failure(self, failure):
         log.err(failure)
