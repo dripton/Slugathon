@@ -6,6 +6,7 @@ from sys import maxint
 import os
 import time
 from collections import defaultdict
+import urllib
 
 from twisted.python import log
 from zope.interface import implementer
