@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+
+__copyright__ = "Copyright (c) 2012 David Ripton"
+__license__ = "GNU GPL v2"
+
+
+"""Upload the slugathon.exe file to github.
+
+Delete the oldest slugathon.exe first, if needed to make space.
+
+Used by Jenkins.
+"""
+
+import argparse
+import json
+import re
+import os
+
+import requests
+
+
+BASE_URL = "https://api.github.com"
+USER = "dripton"
+REPO = "Slugathon"
+MAX_UPLOADS = 10
+config = {}
+
+
+def do_list(login, password, user, repo):
+    url = BASE_URL + "/repos/%s/%s/downloads" % (user, repo)
+    req = requests.get(url, auth=(login, password), config=config)
+    lst = json.loads(req.content)
+    print lst
+    return lst
+
+
+def do_upload(login, password, user, repo, id_, file_, description,
+        content_type):
+    url = BASE_URL + "/repos/%s/%s/downloads" % (user, repo)
+    data = {
+        "name": id_,
+        "size": os.path.getsize(file_),
+        "description": description,
+        "content_type": content_type,
+    }
+    js_data = json.dumps(data)
+    req = requests.post(url, auth=(login, password), data=js_data,
+                        config=config)
+    print "status code", req.status_code
+    response = req.content
+    print "content", req.content
+    response_dct = json.loads(response)
+    s3_url = response_dct["s3_url"]
+    # XXX Need to send form parameters in correct order.
+    data2 = {
+        "key": response_dct["path"],
+        "acl": response_dct["acl"],
+        "success_action_status": 201,
+        "Filename": response_dct["name"],
+        "AWSAccessKeyId": response_dct["accesskeyid"],
+        "Policy": response_dct["policy"],
+        "Signature": response_dct["signature"],
+        "Content-Type": response_dct["mime_type"],
+        "file-Type": "@" + response_dct["name"],
+    }
+    js_data2 = json.dumps(data2)
+    req2 = requests.post(s3_url, data=js_data2)
+    print req2.status_code
+
+
+def do_delete(login, password, user, repo, id_):
+    url = BASE_URL + "/repos/%s/%s/downloads/%s" % (user, repo, id_)
+    req = requests.delete(url, auth=(login, password), config=config)
+    print req.status_code
+
+
+def delete_excess_uploads(login, password):
+    lst = do_list(login, password, USER, REPO)
+    date_name_id = sorted((dct["created_at"], dct["name"], dct["id"])
+      for dct in lst if re.search(dct["name"], r"slugathon-dev-\w+\.exe"))
+    while len(date_name_id) >= MAX_UPLOADS:
+        date, name, id_ = date_name_id.pop(0)
+        do_delete(login, password, USER, REPO, id_)
+
+
+def main():
+    parser = argparse.ArgumentParser(prog="upload-exe-to-github")
+    parser.add_argument("-l", "--login", action="store", type=str,
+      help="login name for authorization")
+    parser.add_argument("-p", "--password", action="store", type=str,
+      help="password for authorization")
+    parser.add_argument("-f", "--file", action="store", type=str,
+      help="local path at which to find the file to upload")
+    parser.add_argument("-c", "--commit", action="store", type=str,
+      help="Git commit id of this build")
+    args = parser.parse_args()
+
+    id_ = "slugathon-dev-%s.exe" % args.commit
+    file_ = "dist/slugathon.exe"
+    description = "dev build for commit %s" % args.commit
+
+    delete_excess_uploads(args.login, args.password)
+
+    do_upload(args.login, args.password, USER, REPO, id_, file_, description,
+        "application/exe")
+
+
+if __name__ == "__main__":
+    main()
