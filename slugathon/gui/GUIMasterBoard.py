@@ -21,7 +21,7 @@ from zope.interface import implementer
 
 from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
   SplitLegion, About, icon, Die, PickRecruit, Flee, Inspector, Chit,
-  Negotiate, Proposal, AcquireAngel, GUIBattleMap, SummonAngel, PickEntrySide,
+  Negotiate, Proposal, AcquireAngels, GUIBattleMap, SummonAngel, PickEntrySide,
   PickMoveType, PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker,
   ConfirmDialog, EventLog)
 from slugathon.util import guiutils, prefs
@@ -123,7 +123,7 @@ class GUIMasterBoard(gtk.Window):
         self.negotiate = None
         self.proposals = set()
         self.guimap = None
-        self.acquire_angel = None
+        self.acquire_angels = None
         self.game_over = None
         self.status_screen = None
         self.guicaretaker = None
@@ -595,9 +595,9 @@ class GUIMasterBoard(gtk.Window):
             def1.addErrback(self.failure)
 
     def picked_angels(self, (legion, angels)):
-        """Callback from AcquireAngel"""
+        """Callback from AcquireAngels"""
         log.msg("picked_angels", legion, angels)
-        self.acquire_angel = None
+        self.acquire_angels = None
         if not angels:
             log.msg("calling do_not_acquire_angels", legion)
             def1 = self.user.callRemote("do_not_acquire_angels",
@@ -1338,7 +1338,7 @@ class GUIMasterBoard(gtk.Window):
             self.highlight_engagements()
 
         elif isinstance(action, Action.CanAcquireAngels):
-            if (self.acquire_angel is None and action.playername ==
+            if (self.acquire_angels is None and action.playername ==
               self.username):
                 markerid = action.markerid
                 legion = self.game.find_legion(markerid)
@@ -1346,8 +1346,9 @@ class GUIMasterBoard(gtk.Window):
                 archangels = action.archangels
                 caretaker = self.game.caretaker
                 if angels or archangels:
-                    self.acquire_angel, def1 = AcquireAngel.new(self.username,
-                      legion, archangels, angels, self.game.caretaker, self)
+                    self.acquire_angels, def1 = AcquireAngels.new(
+                      self.username, legion, archangels, angels,
+                      self.game.caretaker, self)
                     def1.addCallback(self.picked_angels)
                     def1.addErrback(self.failure)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2007-2011 David Ripton"
+__copyright__ = "Copyright (c) 2007-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -13,9 +13,9 @@ from slugathon.game import Creature
 
 
 def new(username, legion, num_archangels, num_angels, caretaker, parent):
-    """Create an AcquireAngel dialog and return it and a Deferred."""
+    """Create an AcquireAngels dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    acquire_angel = AcquireAngel(username, legion, num_archangels, num_angels,
+    acquire_angel = AcquireAngels(username, legion, num_archangels, num_angels,
       caretaker, def1, parent)
     return acquire_angel, def1
 
@@ -45,11 +45,11 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
     return combos
 
 
-class AcquireAngel(gtk.Dialog):
+class AcquireAngels(gtk.Dialog):
     """Dialog to acquire an angel."""
     def __init__(self, username, legion, num_archangels, num_angels, caretaker,
       def1, parent):
-        gtk.Dialog.__init__(self, "AcquireAngel - %s" % username, parent)
+        gtk.Dialog.__init__(self, "AcquireAngels - %s" % username, parent)
         self.deferred = def1
         self.legion = legion
         player = legion.player
