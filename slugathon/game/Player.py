@@ -489,8 +489,7 @@ class Player(Observed):
         log.msg("Player.die", self, scoring_player, check_for_victory)
         # First reveal all this player's legions.
         for legion in self.legions:
-            if (legion.all_known and legion not in
-              self.game.battle_legions):
+            if (legion.all_known and legion not in self.game.battle_legions):
                 # Only reveal the legion if we're sure about its contents,
                 # to avoid spreading disinformation.
                 # Do not reveal the legion that's currently in battle, because
