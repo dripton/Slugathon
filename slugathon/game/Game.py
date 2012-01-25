@@ -1753,12 +1753,16 @@ class Game(Observed):
             legion = player.markerid_to_legion[action.markerid]
             angels = [Creature.Creature(name) for name in action.angel_names]
             legion.acquire_angels(angels)
+            if self.battle_is_over:
+                self._end_battle2()
             self._end_dead_player_turn()
 
         elif isinstance(action, Action.DoNotAcquireAngels):
             player = self.get_player_by_name(action.playername)
             legion = player.markerid_to_legion[action.markerid]
             legion.do_not_acquire_angels()
+            if self.battle_is_over:
+                self._end_battle2()
             self._end_dead_player_turn()
 
         elif isinstance(action, Action.EliminatePlayer):
