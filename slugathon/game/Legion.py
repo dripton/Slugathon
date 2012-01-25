@@ -511,7 +511,7 @@ class Legion(Observed):
 
     def die(self, scoring_legion, fled, no_points, check_for_victory=True,
       kill_all_creatures=False):
-        log.msg("die", self, scoring_legion, fled, no_points,
+        log.msg("Legion.die", self, scoring_legion, fled, no_points,
           check_for_victory)
         if scoring_legion is not None and not no_points:
             # We only give points for dead creatures, not living creatures,
@@ -539,7 +539,7 @@ class Legion(Observed):
         self.player.remove_legion(self.markerid)
 
     def add_points(self, points, can_acquire_angels):
-        log.msg("add_points", self, points, can_acquire_angels)
+        log.msg("Legion.add_points", self, points, can_acquire_angels)
         # TODO Move these to a data file
         ARCHANGEL_POINTS = 500
         ANGEL_POINTS = 100

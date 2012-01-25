@@ -308,6 +308,7 @@ class DimBot(object):
 
     def reinforce(self, game):
         """Reinforce, during the REINFORCE battle phase"""
+        log.msg("DimBot.reinforce")
         assert game.battle_active_player.name == self.playername
         assert game.battle_phase == Phase.REINFORCE
         legion = game.defender_legion
@@ -321,16 +322,19 @@ class DimBot(object):
                 tup = lst[-1]
                 recruit = tup[0]
                 recruiters = tup[1:]
+                log.msg("DimBot calling recruit_creature", recruit)
                 def1 = self.user.callRemote("recruit_creature", game.name,
                   legion.markerid, recruit, recruiters)
                 def1.addErrback(self.failure)
                 return
 
+        log.msg("DimBot calling done_with_reinforcements")
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
     def reinforce_after(self, game):
         """Reinforce, after the battle"""
+        log.msg("DimBot.reinforce_after")
         legion = game.defender_legion
         assert legion.player.name == self.playername
         mterrain = game.battlemap.mterrain
@@ -342,11 +346,13 @@ class DimBot(object):
                 tup = lst[-1]
                 recruit = tup[0]
                 recruiters = tup[1:]
+                log.msg("DimBot calling recruit_creature", recruit)
                 def1 = self.user.callRemote("recruit_creature", game.name,
                   legion.markerid, recruit, recruiters)
                 def1.addErrback(self.failure)
                 return
 
+        log.msg("DimBot calling do_not_reinforce", recruit)
         def1 = self.user.callRemote("do_not_reinforce", game.name,
           legion.markerid)
         def1.addErrback(self.failure)
@@ -412,7 +418,7 @@ class DimBot(object):
         def1.addErrback(self.failure)
 
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
-        log.msg("acquire_angels", markerid, num_angels, num_archangels)
+        log.msg("DimBot.acquire_angels", markerid, num_angels, num_archangels)
         player = game.get_player_by_name(self.playername)
         legion = player.markerid_to_legion[markerid]
         starting_height = len(legion)
@@ -427,7 +433,7 @@ class DimBot(object):
             num_angels -= 1
             acquires += 1
         if angel_names:
-            log.msg("calling acquire_angels", markerid, angel_names)
+            log.msg("DimBot calling acquire_angels", markerid, angel_names)
             def1 = self.user.callRemote("acquire_angels", game.name,
               markerid, angel_names)
             def1.addErrback(self.failure)

@@ -486,7 +486,7 @@ class Player(Observed):
         """Die and give half points to scoring_player, except for legions
         which are engaged with someone else.
         """
-        log.msg("die", self, scoring_player, check_for_victory)
+        log.msg("Player.die", self, scoring_player, check_for_victory)
         # First reveal all this player's legions.
         for legion in self.legions:
             if (legion.all_known and legion not in
@@ -511,6 +511,7 @@ class Player(Observed):
 
         This is only used for half points when eliminating a player.
         """
+        log.msg("Player.add_points", self, points)
         self.score += points
 
     def forget_enemy_legions(self):
