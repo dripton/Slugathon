@@ -103,7 +103,9 @@ def main():
 
     if not args.commit:
         commit = get_head_commit_from_git()
-    commit = args.commit[:7]
+    else:
+        commit = args.commit
+    commit = commit[:7]
 
     id_ = "slugathon-dev-%s.exe" % commit
     file_ = os.path.join(".", "dist", "slugathon.exe")
