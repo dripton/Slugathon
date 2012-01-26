@@ -15,6 +15,7 @@ import argparse
 import json
 import re
 import os
+import subprocess
 
 import requests
 
@@ -83,6 +84,13 @@ def delete_excess_uploads(login, password):
         do_delete(login, password, USER, REPO, id_)
 
 
+def get_head_commit_from_git():
+    """Return the head commit id from git."""
+    cmd = ["git", "rev-parse", "HEAD"]
+    commit = subprocess.check_output(cmd)
+    return commit.strip()
+
+
 def main():
     parser = argparse.ArgumentParser(prog="upload-exe-to-github")
     parser.add_argument("-l", "--login", action="store", type=str,
@@ -93,6 +101,8 @@ def main():
       help="Git commit id of this build")
     args = parser.parse_args()
 
+    if not args.commit:
+        commit = get_head_commit_from_git()
     commit = args.commit[:7]
 
     id_ = "slugathon-dev-%s.exe" % commit
