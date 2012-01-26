@@ -872,7 +872,7 @@ class Game(Observed):
         log.msg("donor", donor, "legion", legion)
         # Avoid double summon
         if not player.summoned:
-            player.summon(legion, donor, creature_name)
+            player.summon_angel(legion, donor, creature_name)
             if self.phase == Phase.FIGHT:
                 creature = legion.creatures[-1]
                 creature.hexlabel = "ATTACKER"

@@ -409,7 +409,7 @@ class Player(Observed):
           self.game.battle_turn)
         self.notify(action)
 
-    def summon(self, legion, donor, creature_name):
+    def summon_angel(self, legion, donor, creature_name):
         """Summon an angel from donor to legion."""
         log.msg("Player.summon_angel", legion, donor, creature_name)
         assert not self.summoned, "player tried to summon twice"
