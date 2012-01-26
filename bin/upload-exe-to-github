@@ -86,7 +86,7 @@ def delete_excess_uploads(login, password):
 
 def get_head_commit_from_git():
     """Return the head commit id from git."""
-    cmd = ["git", "rev-parse", "HEAD"]
+    cmd = ["git.cmd", "rev-parse", "HEAD"]
     commit = subprocess.check_output(cmd)
     return commit.strip()
 
