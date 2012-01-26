@@ -220,7 +220,7 @@ class Legion(Observed):
     def reveal_creatures(self, creature_names):
         """Reveal the creatures from creature_names, if they're not
         already known to be in this legion."""
-        log.msg("reveal_creatures", self.markerid, creature_names)
+        log.msg("Legion.reveal_creatures", self.markerid, creature_names)
         if self.any_unknown:
             bag1 = bag(self.creature_names)
             bag2 = bag(creature_names)
@@ -235,7 +235,7 @@ class Legion(Observed):
 
     def forget_creatures(self):
         """Make all creatures Unknown."""
-        log.msg("forget_creatures")
+        log.msg("Legion.forget_creatures")
         self.creatures = Creature.n2c(len(self) * ["Unknown"])
         for creature in self.creatures:
             creature.legion = self
@@ -404,7 +404,7 @@ class Legion(Observed):
 
     def recruit_creature(self, creature, recruiter_names):
         """Recruit creature."""
-        log.msg("recruit", self, creature, recruiter_names)
+        log.msg("Legion.recruit_creature", self, creature, recruiter_names)
         if self.recruited:
             log.msg("already recruited")
             if self.creatures[-1].name == creature.name:

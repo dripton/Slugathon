@@ -454,7 +454,7 @@ class CleverBot(DimBot.DimBot):
         that lets all the creatures reach their assigned hexes without
         blocking their allies' moves.
         """
-        log.msg("move creatures")
+        log.msg("CleverBot.move_creatures")
         if self.best_creature_moves is None:
             self.best_creature_moves = self._find_best_creature_moves(game)
         # Loop in case a non-move is best.

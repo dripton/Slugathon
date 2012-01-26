@@ -829,7 +829,7 @@ class Game(Observed):
     def recruit_creature(self, playername, markerid, creature_name,
       recruiter_names):
         """Called from update."""
-        log.msg("recruit_creature", playername, markerid, creature_name,
+        log.msg("Game.recruit_creature", playername, markerid, creature_name,
           recruiter_names)
         player = self.get_player_by_name(playername)
         if player:
@@ -885,28 +885,28 @@ class Game(Observed):
 
     def do_not_summon_angel(self, playername, markerid):
         """Called from Server."""
-        log.msg("do_not_summon_angel")
+        log.msg("Game.do_not_summon_angel")
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         player.do_not_summon_angel(legion)
 
     def _do_not_summon_angel(self, playername, markerid):
         """Called from update."""
-        log.msg("_do_not_summon_angel")
+        log.msg("Game._do_not_summon_angel")
         self.pending_summon = False
         if self.battle_is_over:
             self._end_battle2()
 
     def do_not_reinforce(self, playername, markerid):
         """Called from Server."""
-        log.msg("do_not_reinforce")
+        log.msg("Game.do_not_reinforce")
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         player.do_not_reinforce(legion)
 
     def _do_not_reinforce(self, playername, markerid):
         """Called from update."""
-        log.msg("_do_not_reinforce")
+        log.msg("Game._do_not_reinforce")
         self.pending_reinforcement = False
         if self.battle_is_over:
             self._end_battle2()
@@ -1312,12 +1312,12 @@ class Game(Observed):
             # defender wins, possible reinforcement
             if (self.defender_legion and self.attacker_entered and
               self.defender_legion.can_recruit):
-                log.msg("sending pending_reinforcement = True")
+                log.msg("setting pending_reinforcement = True")
                 self.pending_reinforcement = True
         elif self.defender_legion and self.defender_legion.dead:
             # attacker wins, possible summon
             if self.attacker_legion and self.attacker_legion.can_summon:
-                log.msg("sending pending_summon = True")
+                log.msg("setting pending_summon = True")
                 self.pending_summon = True
         if not self.pending_reinforcement and not self.pending_summon:
             self._end_battle2()
@@ -1604,7 +1604,6 @@ class Game(Observed):
                   action.defender_creature_names)
 
         elif isinstance(action, Action.StartMusterPhase):
-            log.msg("StartMusterPhase")
             self.phase = Phase.MUSTER
             for player in self.players:
                 player.remove_empty_legions()

@@ -282,7 +282,7 @@ class DimBot(object):
         def1.addErrback(self.failure)
 
     def recruit(self, game):
-        log.msg("recruit")
+        log.msg("DimBot.recruit")
         if game.active_player.name != self.playername:
             log.msg("not my turn")
             return
@@ -299,10 +299,13 @@ class DimBot(object):
                     tup = lst[-1]
                     recruit = tup[0]
                     recruiters = tup[1:]
+                    log.msg("DimBot calling recruit_creature", legion.markerid,
+                      recruit, recruiters)
                     def1 = self.user.callRemote("recruit_creature", game.name,
                       legion.markerid, recruit, recruiters)
                     def1.addErrback(self.failure)
                     return
+        log.msg("DimBot calling done_with_recruits")
         def1 = self.user.callRemote("done_with_recruits", game.name)
         def1.addErrback(self.failure)
 
@@ -359,6 +362,7 @@ class DimBot(object):
 
     def summon(self, game):
         """Summon, during the REINFORCE battle phase"""
+        log.msg("DimBot.summon")
         assert game.active_player.name == self.playername
         if game.battle_phase != Phase.REINFORCE:
             return
@@ -377,21 +381,25 @@ class DimBot(object):
                   for creature in summonables), reverse=True)
                 summonable = tuples[0][1]
                 donor = summonable.legion
+                log.msg("DimBot calling _summon_angel", legion.markerid,
+                  donor.markerid, summonable.name)
                 def1 = self.user.callRemote("summon_angel", game.name,
                   legion.markerid, donor.markerid, summonable.name)
                 def1.addErrback(self.failure)
                 return
 
+        log.msg("DimBot calling do_not_summon_angel", legion.markerid)
         def1 = self.user.callRemote("do_not_summon_angel", game.name,
           legion.markerid)
         def1.addErrback(self.failure)
 
+        log.msg("DimBot calling done_with_reinforcements")
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
     def summon_after(self, game):
         """Summon, after the battle is over."""
-        log.msg("summon_after")
+        log.msg("DimBot.summon_after")
         assert game.active_player.name == self.playername
         legion = game.attacker_legion
         assert legion.player.name == self.playername
@@ -408,11 +416,14 @@ class DimBot(object):
                   for creature in summonables), reverse=True)
                 summonable = tuples[0][1]
                 donor = summonable.legion
+                log.msg("DimBot calling _summon_angel", legion.markerid,
+                  donor.markerid, summonable.name)
                 def1 = self.user.callRemote("summon_angel", game.name,
                   legion.markerid, donor.markerid, summonable.name)
                 def1.addErrback(self.failure)
                 return
 
+        log.msg("DimBot calling do_not_summon_angel", legion.markerid)
         def1 = self.user.callRemote("do_not_summon_angel", game.name,
           legion.markerid)
         def1.addErrback(self.failure)

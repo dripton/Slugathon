@@ -411,6 +411,7 @@ class Player(Observed):
 
     def summon(self, legion, donor, creature_name):
         """Summon an angel from donor to legion."""
+        log.msg("Player.summon_angel", legion, donor, creature_name)
         assert not self.summoned, "player tried to summon twice"
         assert len(legion) < 7, "legion too tall to summon"
         donor.reveal_creatures([creature_name])
@@ -441,12 +442,14 @@ class Player(Observed):
 
     def do_not_summon_angel(self, legion):
         """Do not summon an angel into legion."""
+        log.msg("Player.do_not_summon_angel", legion)
         action = Action.DoNotSummonAngel(self.game.name, self.name,
           legion.markerid)
         self.notify(action)
 
     def do_not_reinforce(self, legion):
         """Do not recruit a reinforcement into legion."""
+        log.msg("Player.do_not_reinforce", legion)
         action = Action.DoNotReinforce(self.game.name, self.name,
           legion.markerid)
         self.notify(action)
