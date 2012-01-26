@@ -539,8 +539,6 @@ class CleverBot(DimBot.DimBot):
                 kill_bonus += enemy.sort_value
 
         for creature in creatures:
-            legion = creature.legion
-            legion2 = game.other_battle_legion(legion)
             can_rangestrike = False
             engaged = creature.engaged_enemies
             max_mean_hits = 0.0
