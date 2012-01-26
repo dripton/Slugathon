@@ -368,6 +368,8 @@ class CleverBot(DimBot.DimBot):
         legion = game.battle_active_legion
         creatures = legion.sorted_living_creatures
         log.msg("_find_best_creature_moves", legion, creatures)
+        if not creatures:
+            return None
         movesets = []  # list of a set of hexlabels for each creature
         previous_creature = None
         moveset = None
