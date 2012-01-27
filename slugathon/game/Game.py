@@ -1771,11 +1771,6 @@ class Game(Observed):
             except KeyError:
                 winner_player = None
             loser_player = self.get_player_by_name(action.loser_playername)
-            loser_player.remove_all_legions()
-            if winner_player:
-                winner_player.eliminated_colors.add(loser_player.color_abbrev)
-                winner_player.markerids_left.update(
-                  loser_player.markerids_left)
             player_to_full_points = defaultdict(int)
             for legion in loser_player.legions:
                 if legion.engaged:
@@ -1788,6 +1783,11 @@ class Game(Observed):
                 if player is not None:
                     half_points = full_points // 2
                     player.add_points(half_points)
+            loser_player.remove_all_legions()
+            if winner_player:
+                winner_player.eliminated_colors.add(loser_player.color_abbrev)
+                winner_player.markerids_left.update(
+                  loser_player.markerids_left)
             if action.check_for_victory:
                 self.check_for_victory()
 
