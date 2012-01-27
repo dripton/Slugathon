@@ -65,6 +65,19 @@ class Player(Observed):
         return False
 
     @property
+    def has_titan(self):
+        """Return True if this player still has his titan.
+
+        Used for catching a problem where the player's titan has died but
+        its surviving allies have not been cleaned up yet, so it appears that
+        the titan legion is still alive.
+        """
+        for legion in self.legions:
+            if legion.has_titan:
+                return True
+        return False
+
+    @property
     def color_abbrev(self):
         return playercolordata.name_to_abbrev.get(self.color)
 

@@ -1296,6 +1296,9 @@ class Game(Observed):
             if legion.dead:
                 log.msg(legion, "is dead")
                 return True
+            elif not legion.player.has_titan:
+                log.msg(legion, legion.player, "has no titan")
+                return True
             else:
                 log.msg(legion, "is not dead")
         return self.battle_turn > 7
