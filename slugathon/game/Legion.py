@@ -220,7 +220,6 @@ class Legion(Observed):
     def reveal_creatures(self, creature_names):
         """Reveal the creatures from creature_names, if they're not
         already known to be in this legion."""
-        log.msg("Legion.reveal_creatures", self.markerid, creature_names)
         if self.any_unknown:
             bag1 = bag(self.creature_names)
             bag2 = bag(creature_names)

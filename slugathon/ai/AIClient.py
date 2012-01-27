@@ -208,8 +208,6 @@ class AIClient(pb.Referenceable, Observed):
         # legion before we send the Action to Game.
         if isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
-            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-              (action.donor_markerid, [action.creature_name]))
             self.aps.get_leaf(action.donor_markerid).reveal_creatures(
               [action.creature_name])
             self.update_creatures(game)
@@ -291,12 +289,8 @@ class AIClient(pb.Referenceable, Observed):
               len(action.child_creature_names), action.child_markerid,
               game.turn)
             if action.parent_creature_names[0] != "Unknown":
-                log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-                  (action.parent_markerid, list(action.parent_creature_names)))
                 self.aps.get_leaf(action.parent_markerid).reveal_creatures(
                   list(action.parent_creature_names))
-                log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-                  (action.child_markerid, list(action.child_creature_names)))
                 self.aps.get_leaf(action.child_markerid).reveal_creatures(
                   list(action.child_creature_names))
             self.update_creatures(game)
@@ -440,8 +434,6 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
-            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-              (action.markerid, list(action.recruiter_names)))
             self.aps.get_leaf(action.markerid).reveal_creatures(
               list(action.recruiter_names))
             log.msg("aps.get_leaf('%s').add_creature('%s')" %
@@ -495,8 +487,6 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
-            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-              (action.donor_markerid, [action.creature_name]))
             self.aps.get_leaf(action.donor_markerid).reveal_creatures(
               [action.creature_name])
             log.msg("aps.get_leaf('%s').remove_creature('%s')" %
@@ -517,8 +507,6 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UnsummonAngel):
             game = self.name_to_game(action.game_name)
-            log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-              (action.markerid, [action.creature_name]))
             self.aps.get_leaf(action.markerid).reveal_creatures(
               [action.creature_name])
             log.msg("aps.get_leaf('%s').remove_creature('%s')" %
@@ -625,8 +613,6 @@ class AIClient(pb.Referenceable, Observed):
             legion = game.find_legion(action.markerid)
             if legion:
                 legion.reveal_creatures(action.creature_names)
-                log.msg("aps.get_leaf('%s').reveal_creatures(%s)" %
-                  (action.markerid, action.creature_names))
                 node = self.aps.get_leaf(action.markerid)
                 # XXX There are edge cases where the legion still exists
                 # but the node is gone.
