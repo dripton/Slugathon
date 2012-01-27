@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 import types
 
+from twisted.internet import reactor
 from twisted.python import log
 
 from slugathon.util.Observed import Observed
@@ -506,7 +507,7 @@ class Player(Observed):
             scoring_player_name = scoring_player.name
         action = Action.EliminatePlayer(self.game.name, scoring_player_name,
           self.name, check_for_victory)
-        self.notify(action)
+        reactor.callLater(0.1, self.notify, action)
 
     def add_points(self, points):
         """Add points.  Do not acquire.

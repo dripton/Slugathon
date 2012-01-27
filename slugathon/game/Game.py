@@ -7,6 +7,7 @@ import os
 import time
 from collections import defaultdict
 
+from twisted.internet import reactor
 from twisted.python import log
 from zope.interface import implementer
 
@@ -799,7 +800,7 @@ class Game(Observed):
         action = Action.AcquireAngels(self.name, player.name, markerid,
           angel_names)
         self.notify(action)
-        self._end_dead_player_turn()
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def do_not_acquire_angels(self, playername, markerid):
         """Called from Server."""
@@ -842,7 +843,7 @@ class Game(Observed):
                 creature.hexlabel = "DEFENDER"
         self.pending_reinforcement = False
         if self.battle_legions and self.battle_is_over:
-            self._end_battle2()
+            reactor.callLater(0, self._end_battle2)
 
     def undo_recruit(self, playername, markerid):
         """Called from Server and update."""
@@ -881,7 +882,7 @@ class Game(Observed):
             self.notify(action)
         self.pending_summon = False
         if self.battle_is_over:
-            self._end_battle2()
+            reactor.callLater(0, self._end_battle2)
 
     def do_not_summon_angel(self, playername, markerid):
         """Called from Server."""
@@ -895,7 +896,7 @@ class Game(Observed):
         log.msg("Game._do_not_summon_angel")
         self.pending_summon = False
         if self.battle_is_over:
-            self._end_battle2()
+            reactor.callLater(0, self._end_battle2)
 
     def do_not_reinforce(self, playername, markerid):
         """Called from Server."""
@@ -909,7 +910,7 @@ class Game(Observed):
         log.msg("Game._do_not_reinforce")
         self.pending_reinforcement = False
         if self.battle_is_over:
-            self._end_battle2()
+            reactor.callLater(0, self._end_battle2)
 
     def _unreinforce(self, playername, markerid):
         """Called from update."""
@@ -1366,7 +1367,7 @@ class Game(Observed):
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
         self._cleanup_battle()
-        self._end_dead_player_turn()
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def _end_dead_player_turn(self):
         """If the active player is dead then advance phases if possible."""
@@ -1753,16 +1754,16 @@ class Game(Observed):
             angels = [Creature.Creature(name) for name in action.angel_names]
             legion.acquire_angels(angels)
             if self.battle_is_over:
-                self._end_battle2()
-            self._end_dead_player_turn()
+                reactor.callLater(0, self._end_battle2)
+            reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.DoNotAcquireAngels):
             player = self.get_player_by_name(action.playername)
             legion = player.markerid_to_legion[action.markerid]
             legion.do_not_acquire_angels()
             if self.battle_is_over:
-                self._end_battle2()
-            self._end_dead_player_turn()
+                reactor.callLater(0, self._end_battle2)
+            reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.EliminatePlayer):
             try:
