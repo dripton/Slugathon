@@ -1291,9 +1291,13 @@ class Game(Observed):
     @property
     def battle_is_over(self):
         """Return True iff the battle is over."""
+        log.msg("Game.battle_is_over battle_legions", self.battle_legions)
         for legion in self.battle_legions:
             if legion.dead:
+                log.msg(legion, "is dead")
                 return True
+            else:
+                log.msg(legion, "is not dead")
         return self.battle_turn > 7
 
     def _end_battle1(self):
