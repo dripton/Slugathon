@@ -282,9 +282,6 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
-            log.msg("aps.get_leaf('%s').split(%d, '%s', %d)" %
-              (action.parent_markerid, len(action.child_creature_names),
-              action.child_markerid, game.turn))
             self.aps.get_leaf(action.parent_markerid).split(
               len(action.child_creature_names), action.child_markerid,
               game.turn)
@@ -436,8 +433,6 @@ class AIClient(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.markerid).reveal_creatures(
               list(action.recruiter_names))
-            log.msg("aps.get_leaf('%s').add_creature('%s')" %
-              (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).add_creature(
               action.creature_name)
             self.update_creatures(game)
@@ -460,16 +455,12 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UndoRecruit):
             game = self.name_to_game(action.game_name)
-            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
-              (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
             self.update_creatures(game)
 
         elif isinstance(action, Action.UnReinforce):
             game = self.name_to_game(action.game_name)
-            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
-              (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
             self.update_creatures(game)
@@ -489,12 +480,8 @@ class AIClient(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.donor_markerid).reveal_creatures(
               [action.creature_name])
-            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
-              (action.donor_markerid, action.creature_name))
             self.aps.get_leaf(action.donor_markerid).remove_creature(
               action.creature_name)
-            log.msg("aps.get_leaf('%s').add_creature('%s')" %
-              (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).add_creature(
               action.creature_name)
             self.update_creatures(game)
@@ -509,12 +496,8 @@ class AIClient(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.markerid).reveal_creatures(
               [action.creature_name])
-            log.msg("aps.get_leaf('%s').remove_creature('%s')" %
-              (action.markerid, action.creature_name))
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
-            log.msg("aps.get_leaf('%s').add_creature('%s')" %
-              (action.donor_markerid, action.creature_name))
             self.aps.get_leaf(action.donor_markerid).add_creature(
               action.creature_name)
             self.update_creatures(game)
@@ -537,13 +520,9 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
             if action.winner_losses:
-                log.msg("aps.get_leaf('%s').remove_creatures(%s)" %
-                  (action.winner_markerid, list(action.winner_losses)))
                 self.aps.get_leaf(action.winner_markerid).remove_creatures(
                   list(action.winner_losses))
             if action.loser_losses:
-                log.msg("aps.get_leaf('%s').remove_creatures(%s)" %
-                  (action.loser_markerid, list(action.loser_losses)))
                 self.aps.get_leaf(action.loser_markerid).remove_creatures(
                   list(action.loser_losses))
             self.update_creatures(game)
@@ -576,8 +555,6 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.AcquireAngels):
             game = self.name_to_game(action.game_name)
             for angel_name in action.angel_names:
-                log.msg("aps.get_leaf('%s').add_creature('%s')" %
-                  (action.markerid, angel_name))
                 self.aps.get_leaf(action.markerid).add_creature(angel_name)
             self.update_creatures(game)
             log.msg("active player", game.active_player)
