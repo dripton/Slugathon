@@ -43,6 +43,8 @@ class Legion(Observed):
     @property
     def dead(self):
         """Return True iff this legion has been eliminated from battle."""
+        if not self.player.has_titan:
+            return True
         alive = False
         for creature in self.creatures:
             if creature.dead:
