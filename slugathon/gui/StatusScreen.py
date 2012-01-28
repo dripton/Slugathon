@@ -205,7 +205,8 @@ class StatusScreen(gtk.Dialog):
             set_bg(score_label, bg)
 
     def _init_battle(self):
-        if self.game.battle_turn is not None:
+        if (self.game.battle_turn is not None and
+          self.game.battle_active_player is not None):
             self.battle_turn_label.set_text(str(self.game.battle_turn))
             if self.game.battle_active_player.name == self.username:
                 set_bg(self.battle_player_label, "Yellow")
