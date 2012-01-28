@@ -46,8 +46,9 @@ class Server(Observed):
         # {game_name: set(ainame) we're waiting for
         self.game_to_waiting_ais = {}
         log.startLogging(sys.stdout)
-        if log_path:
-            log.startLogging(open(log_path, "w"))
+        if not log_path:
+            log_path = os.path.join(TEMPDIR, "slugathon-server-%d.log" % port)
+        log.startLogging(open(log_path, "w"))
 
     def __repr__(self):
         return "Server"
@@ -539,7 +540,6 @@ def add_arguments(parser):
     parser.add_argument("--no-passwd", "-n", action="store_true",
       help="do not check passwords")
     parser.add_argument("--log-path", "-l", action="store", type=str,
-      default=os.path.join(TEMPDIR, "slugathon-server.log"),
       help="path to logfile")
 
 
