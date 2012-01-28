@@ -842,8 +842,6 @@ class Game(Observed):
             if self.phase == Phase.FIGHT:
                 creature.hexlabel = "DEFENDER"
         self.pending_reinforcement = False
-        if self.battle_legions and self.battle_is_over:
-            reactor.callLater(0, self._end_battle2)
 
     def undo_recruit(self, playername, markerid):
         """Called from Server and update."""
@@ -881,8 +879,6 @@ class Game(Observed):
               donor_markerid, creature_name)
             self.notify(action)
         self.pending_summon = False
-        if self.battle_is_over:
-            reactor.callLater(0, self._end_battle2)
 
     def do_not_summon_angel(self, playername, markerid):
         """Called from Server."""
@@ -895,8 +891,6 @@ class Game(Observed):
         """Called from update."""
         log.msg("Game._do_not_summon_angel")
         self.pending_summon = False
-        if self.battle_is_over:
-            reactor.callLater(0, self._end_battle2)
 
     def do_not_reinforce(self, playername, markerid):
         """Called from Server."""
@@ -909,8 +903,6 @@ class Game(Observed):
         """Called from update."""
         log.msg("Game._do_not_reinforce")
         self.pending_reinforcement = False
-        if self.battle_is_over:
-            reactor.callLater(0, self._end_battle2)
 
     def _unreinforce(self, playername, markerid):
         """Called from update."""
@@ -1301,11 +1293,12 @@ class Game(Observed):
             return True
         return False
 
-    def _end_battle1(self):
-        """Determine the winner, and set up summoning or reinforcing if
-        possible, but don't eliminate legions or hand out points yet.
+    def _end_battle(self):
+        """Determine the winner, set up summoning or reinforcing if
+        possible, remove the dead legion(s), award points, and heal surviving
+        creatures in the winning legion.
         """
-        log.msg("_end_battle1")
+        log.msg("_end_battle")
         if self.battle_turn > 7:
             # defender wins on time loss, possible reinforcement
             if self.defender_legion and self.defender_legion.can_recruit:
@@ -1325,14 +1318,7 @@ class Game(Observed):
             if self.attacker_legion and self.attacker_legion.can_summon:
                 log.msg("setting pending_summon = True")
                 self.pending_summon = True
-        if not self.pending_reinforcement and not self.pending_summon:
-            self._end_battle2()
 
-    def _end_battle2(self):
-        """Summoning and reinforcing is done, so remove the dead legion(s)
-        award points, and heal surviving creatures in the winning legion.
-        """
-        log.msg("_end_battle2")
         if self.battle_turn > 7:
             # defender wins on time loss
             self.attacker_legion.die(self.defender_legion, False, True,
@@ -1358,7 +1344,7 @@ class Game(Observed):
             # attacker wins
             self.defender_legion.die(self.attacker_legion, False, False)
         else:
-            assert False, "bug in Game._end_battle2"
+            assert False, "bug in Game._end_battle"
         for legion in self.battle_legions:
             if not legion.dead:
                 creature_names_to_remove = []
@@ -1377,7 +1363,8 @@ class Game(Observed):
     def _end_dead_player_turn(self):
         """If the active player is dead then advance phases if possible."""
         if self.master:
-            if self.active_player.dead and not self.pending_acquire:
+            if (self.active_player.dead and not self.pending_acquire and not
+              self.pending_summon and not self.pending_reinforcement):
                 log.msg("_end_dead_player_turn")
                 if self.phase == Phase.SPLIT:
                     self.active_player.done_with_splits()
@@ -1422,7 +1409,7 @@ class Game(Observed):
               loser.dead_creature_names, time_loss,
               self.current_engagement_hexlabel)
             self.notify(action)
-            self._end_battle1()
+            self._end_battle()
         else:
             player.done_with_counterstrikes()
 
@@ -1751,23 +1738,19 @@ class Game(Observed):
         elif isinstance(action, Action.BattleOver):
             if action.time_loss:
                 self.battle_turn = 8
-            self._end_battle1()
+            self._end_battle()
 
         elif isinstance(action, Action.AcquireAngels):
             player = self.get_player_by_name(action.playername)
             legion = player.markerid_to_legion[action.markerid]
             angels = [Creature.Creature(name) for name in action.angel_names]
             legion.acquire_angels(angels)
-            if self.battle_is_over:
-                reactor.callLater(0, self._end_battle2)
             reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.DoNotAcquireAngels):
             player = self.get_player_by_name(action.playername)
             legion = player.markerid_to_legion[action.markerid]
             legion.do_not_acquire_angels()
-            if self.battle_is_over:
-                reactor.callLater(0, self._end_battle2)
             reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.EliminatePlayer):
