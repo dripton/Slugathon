@@ -619,11 +619,13 @@ class CleverBot(DimBot.DimBot):
                 else:
                     enemy_hexlabels = [enemy.hexlabel for enemy in
                       legion2.living_creatures]
-                    min_range = min((battlemap.range(creature.hexlabel,
-                      enemy_hexlabel) for enemy_hexlabel in enemy_hexlabels))
-                    penalty = min_range * ATTACKER_DISTANCE_PENALTY
-                    score += penalty
-                    log.msg(creature, "ATTACKER_DISTANCE_PENALTY", penalty)
+                    if enemy_hexlabels:
+                        min_range = min((battlemap.range(creature.hexlabel,
+                          enemy_hexlabel) for enemy_hexlabel in
+                          enemy_hexlabels))
+                        penalty = min_range * ATTACKER_DISTANCE_PENALTY
+                        score += penalty
+                        log.msg(creature, "ATTACKER_DISTANCE_PENALTY", penalty)
 
             battlehex = battlemap.hexes[creature.hexlabel]
             terrain = battlehex.terrain
