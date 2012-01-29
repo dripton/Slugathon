@@ -1321,9 +1321,11 @@ class Game(Observed):
 
         if self.battle_turn > 7:
             # defender wins on time loss
-            self.attacker_legion.die(self.defender_legion, False, True,
-                    kill_all_creatures=True)
-        elif self.attacker_legion.dead and self.defender_legion.dead:
+            if self.attacker_legion:
+                self.attacker_legion.die(self.defender_legion, False, True,
+                  kill_all_creatures=True)
+        elif (self.attacker_legion and self.attacker_legion.dead and
+          self.defender_legion and self.defender_legion.dead):
             # mutual kill
             # Don't to check for victory until both legions are dead,
             # to avoid prematurely declaring a victory in a mutual.
@@ -1337,10 +1339,10 @@ class Game(Observed):
                 self.attacker_legion.die(self.defender_legion, False, True,
                   False)
                 self.defender_legion.die(self.attacker_legion, False, True)
-        elif self.attacker_legion.dead:
+        elif self.attacker_legion and self.attacker_legion.dead:
             # defender wins
             self.attacker_legion.die(self.defender_legion, False, False)
-        elif self.defender_legion.dead:
+        elif self.defender_legion and self.defender_legion.dead:
             # attacker wins
             self.defender_legion.die(self.attacker_legion, False, False)
         else:
