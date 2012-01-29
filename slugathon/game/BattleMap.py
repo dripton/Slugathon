@@ -4,6 +4,8 @@ __license__ = "GNU GPL v2"
 
 from sys import maxint
 
+from twisted.python import log
+
 from slugathon.data import battlemapdata
 from slugathon.game import BattleHex
 
@@ -443,12 +445,16 @@ class BattleMap(object):
 
         game is optional, but needed to check creatures.
         """
-        assert hexlabel1 != hexlabel2
+        if hexlabel1 == hexlabel2:
+            log.msg("count_bramble_hexes hexlabel1 == hexlabel2 == %s" %
+              hexlabel1)
+            return 0
         assert not self.is_los_blocked(hexlabel1, hexlabel2, game)
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
-        assert not hex1.entrance
-        assert not hex2.entrance
+        if hex1.entrance or hex2.entrance:
+            log.msg("count_bramble_hexes entrance hex")
+            return 0
         x1, y1 = label_to_coords(hexlabel1, self.entry_side, True)
         x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)
         delta_x = x2 - x1
