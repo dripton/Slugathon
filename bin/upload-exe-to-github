@@ -78,7 +78,7 @@ def do_delete(login, password, user, repo, id_):
 def delete_excess_uploads(login, password):
     lst = do_list(login, password, USER, REPO)
     date_name_id = sorted((dct["created_at"], dct["name"], dct["id"])
-      for dct in lst if re.search(dct["name"], r"slugathon-dev-\w+\.exe"))
+      for dct in lst if re.search(r"slugathon-dev-\w+\.exe", dct["name"]))
     while len(date_name_id) >= MAX_UPLOADS:
         date, name, id_ = date_name_id.pop(0)
         do_delete(login, password, USER, REPO, id_)
