@@ -46,6 +46,7 @@ class Player(Observed):
         self.summoned = False
         self.eliminated_colors = set()
         self.last_donor = None
+        self.has_titan = True
 
     @property
     def legions(self):
@@ -61,19 +62,6 @@ class Player(Observed):
         this turn."""
         for legion in self.legions:
             if legion.teleported:
-                return True
-        return False
-
-    @property
-    def has_titan(self):
-        """Return True if this player still has his titan.
-
-        Used for catching a problem where the player's titan has died but
-        its surviving allies have not been cleaned up yet, so it appears that
-        the titan legion is still alive.
-        """
-        for legion in self.legions:
-            if legion.has_titan:
                 return True
         return False
 
@@ -518,6 +506,7 @@ class Player(Observed):
             scoring_player_name = ""
         else:
             scoring_player_name = scoring_player.name
+        self.has_titan = False
         action = Action.EliminatePlayer(self.game.name, scoring_player_name,
           self.name, check_for_victory)
         reactor.callLater(0.1, self.notify, action)

@@ -1255,6 +1255,8 @@ class Game(Observed):
                 hits += 1
         log.msg("rolls", rolls, "hits", hits)
         target.hits += hits
+        if target.is_titan and target.dead:
+            target.legion.player.has_titan = False
         if target.hits > target.power:
             carries = target.hits - target.power
             target.hits -= carries
@@ -1688,6 +1690,8 @@ class Game(Observed):
                 target = creatures.pop()
                 target.hits += action.hits
                 target.hits = min(target.hits, target.power)
+                if target.is_titan and target.dead:
+                    target.legion.player.has_titan = False
                 strikers = self.creatures_in_battle_hex(
                   action.striker_hexlabel)
                 if strikers:
