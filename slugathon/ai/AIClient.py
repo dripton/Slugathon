@@ -188,6 +188,16 @@ class AIClient(pb.Referenceable, Observed):
         observed = None
         self.update(observed, action, names)
 
+    def exit_unconditionally(self):
+        """Just exit the process, with no tracebacks or other drama."""
+        if reactor.running:
+            try:
+                reactor.stop()
+            except ReactorNotRunning:
+                pass
+        # sys.exit(0) generates ugly tracebacks on the server side.
+        os._exit(0)
+
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
@@ -259,10 +269,7 @@ class AIClient(pb.Referenceable, Observed):
             else:
                 log.msg("Game %s over, draw" % action.game_name)
             log.msg("AI exiting")
-            try:
-                reactor.stop()
-            except ReactorNotRunning:
-                pass
+            self.exit_unconditionally()
 
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
@@ -571,10 +578,7 @@ class AIClient(pb.Referenceable, Observed):
             if action.loser_playername == self.playername:
                 if game.owner.name != self.playername:
                     log.msg("Eliminated; AI exiting")
-                    try:
-                        reactor.stop()
-                    except ReactorNotRunning:
-                        return
+                    self.exit_unconditionally()
             # Remove the dead player's PredictSplits from self.aps
             # to avoid problems later if his markers get reused.
             player = game.get_player_by_name(action.loser_playername)
