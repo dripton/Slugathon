@@ -32,6 +32,7 @@ def test_init():
     assert not creature.is_unknown
     assert not creature.summonable
     assert not creature.acquirable
+    assert not creature.is_titan
     assert creature.max_count == 25
     assert creature.color_name == "ogre_red"
 
@@ -114,6 +115,7 @@ def test_titan_power():
             titan = creature
     assert player.score == 0
     assert titan.power == 6
+    assert titan.is_titan
     player.score = 99
     assert titan.power == 6
     player.score = 100

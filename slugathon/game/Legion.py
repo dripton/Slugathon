@@ -48,7 +48,7 @@ class Legion(Observed):
         alive = False
         for creature in self.creatures:
             if creature.dead:
-                if creature.name == "Titan":
+                if creature.is_titan:
                     return True
             else:
                 alive = True
@@ -145,7 +145,7 @@ class Legion(Observed):
     @property
     def has_titan(self):
         for creature in self.creatures:
-            if creature.name == "Titan":
+            if creature.is_titan:
                 return True
         return False
 
@@ -530,7 +530,7 @@ class Legion(Observed):
         dead_titan = False
         for creature in self.creatures:
             caretaker.kill_one(creature.name)
-            if creature.name == "Titan":
+            if creature.is_titan:
                 log.msg("setting dead_titan")
                 dead_titan = True
         if dead_titan:

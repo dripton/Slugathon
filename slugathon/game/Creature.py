@@ -83,7 +83,7 @@ class Creature(object):
 
     @property
     def power(self):
-        if self.name == "Titan" and self.legion is not None:
+        if self.is_titan and self.legion is not None:
             return self.legion.player.titan_power
         else:
             return self._power
@@ -97,7 +97,7 @@ class Creature(object):
         return max(self.power - self.hits, 0)
 
     def __repr__(self):
-        if self.name == "Titan":
+        if self.is_titan:
             base = "%s(%d)" % (self.name, self.power)
         else:
             base = self.name
@@ -128,7 +128,7 @@ class Creature(object):
           + 0.1 * self.magicmissile
           + 0.15 * (self.skill == 2)
           + 0.18 * (self.skill == 4)
-          + 100 * (self.name == "Titan"))
+          + 100 * (self.is_titan))
 
     @property
     def combat_value(self):
@@ -139,6 +139,10 @@ class Creature(object):
           + 0.1 * self.magicmissile
           + 0.15 * (self.skill == 2)
           + 0.18 * (self.skill == 4))
+
+    @property
+    def is_titan(self):
+        return self.name == "Titan"
 
     @property
     def is_lord(self):

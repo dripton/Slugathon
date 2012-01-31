@@ -631,7 +631,7 @@ class CleverBot(DimBot.DimBot):
             terrain = battlehex.terrain
 
             # Make titans hang back early.
-            if (creature.name == "Titan" and game.battle_turn < 4 and
+            if (creature.is_titan and game.battle_turn < 4 and
               terrain != "Tower"):
                 if legion == game.attacker_legion:
                     entrance = "ATTACKER"
@@ -673,7 +673,7 @@ class CleverBot(DimBot.DimBot):
                 log.msg(creature, "TOWER_BONUS")
                 score += TOWER_BONUS
                 if battlehex.elevation == 2:
-                    if creature.name == "Titan":
+                    if creature.is_titan:
                         score += TITAN_IN_CENTER_OF_TOWER_BONUS
                         log.msg(creature, "TITAN_IN_CENTER_OF_TOWER_BONUS",
                           TITAN_IN_CENTER_OF_TOWER_BONUS)
