@@ -130,9 +130,10 @@ class EventLog(gtk.Dialog):
               self.game.board.hexes[action.hexlabel].terrain,
               action.hexlabel)
         elif isinstance(action, Action.SummonAngel):
-            st = "%s (%s) summons %s from %s" % (action.markerid,
+            st = "%s (%s) summons %s from %s (%s)" % (action.markerid,
               Legion.find_picname(action.markerid),
-              action.creature_name, action.donor_markerid)
+              action.creature_name, action.donor_markerid,
+              Legion.find_picname(action.donor_markerid))
         elif isinstance(action, Action.RecruitCreature):
             st = "%s (%s) recruits %s with %s" % (action.markerid,
               Legion.find_picname(action.markerid),
