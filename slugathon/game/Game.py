@@ -1307,31 +1307,11 @@ class Game(Observed):
             # defender wins on time loss, possible reinforcement
             if self.defender_legion and self.defender_legion.can_recruit:
                 self.pending_reinforcement = True
+            self.attacker_legion.die(self.defender_legion, False, True,
+              kill_all_creatures=True)
         elif (self.attacker_legion and self.attacker_legion.dead and
           self.defender_legion and self.defender_legion.dead):
-            # mutual kill
-            pass
-        elif self.attacker_legion and self.attacker_legion.dead:
-            # defender wins, possible reinforcement
-            if (self.defender_legion and self.attacker_entered and
-              self.defender_legion.can_recruit):
-                log.msg("setting pending_reinforcement = True")
-                self.pending_reinforcement = True
-        elif self.defender_legion and self.defender_legion.dead:
-            # attacker wins, possible summon
-            if self.attacker_legion and self.attacker_legion.can_summon:
-                log.msg("setting pending_summon = True")
-                self.pending_summon = True
-
-        if self.battle_turn > 7:
-            # defender wins on time loss
-            if self.attacker_legion:
-                self.attacker_legion.die(self.defender_legion, False, True,
-                  kill_all_creatures=True)
-        elif (self.attacker_legion and self.attacker_legion.dead and
-          self.defender_legion and self.defender_legion.dead):
-            # mutual kill
-            # Don't to check for victory until both legions are dead,
+            # Don't check for victory until both legions are dead,
             # to avoid prematurely declaring a victory in a mutual.
             # But make sure that if there's a titan in only one legion, it
             # dies last, so we do check for victory.
@@ -1344,10 +1324,17 @@ class Game(Observed):
                   False)
                 self.defender_legion.die(self.attacker_legion, False, True)
         elif self.attacker_legion and self.attacker_legion.dead:
-            # defender wins
+            # defender wins, possible reinforcement
+            if (self.defender_legion and self.attacker_entered and
+              self.defender_legion.can_recruit):
+                log.msg("setting pending_reinforcement = True")
+                self.pending_reinforcement = True
             self.attacker_legion.die(self.defender_legion, False, False)
         elif self.defender_legion and self.defender_legion.dead:
-            # attacker wins
+            # attacker wins, possible summon
+            if self.attacker_legion and self.attacker_legion.can_summon:
+                log.msg("setting pending_summon = True")
+                self.pending_summon = True
             self.defender_legion.die(self.attacker_legion, False, False)
         else:
             assert False, "bug in Game._end_battle"
