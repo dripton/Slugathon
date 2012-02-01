@@ -959,8 +959,6 @@ class Game(Observed):
         for hexlabel, colorset in hexlabels_to_legion_colors.iteritems():
             if len(colorset) >= 2:
                 results.add(hexlabel)
-        if results:
-            log.msg("engagement_hexlabels all_legions %s" % self.all_legions())
         return results
 
     @property
