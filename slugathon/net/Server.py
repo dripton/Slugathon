@@ -518,6 +518,10 @@ class Server(Observed):
             game = self.name_to_game(action.game_name)
             self.notify(action, names or game.playernames)
         else:
+            if isinstance(action, Action.GameOver):
+                game = self.name_to_game(action.game_name)
+                if game in self.games:
+                    self.games.remove(game)
             self.notify(action, names)
 
 
