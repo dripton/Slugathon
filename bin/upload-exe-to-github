@@ -31,7 +31,7 @@ def do_list(login, password, user, repo):
     url = BASE_URL + "/repos/%s/%s/downloads" % (user, repo)
     req = requests.get(url, auth=(login, password), config=config)
     lst = json.loads(req.content)
-    print lst
+    print "do_list returning", lst
     return lst
 
 
@@ -47,9 +47,9 @@ def do_upload(login, password, user, repo, id_, file_, description,
     js_data = json.dumps(data)
     req = requests.post(url, auth=(login, password), data=js_data,
                         config=config)
-    print "status code", req.status_code
+    print "do_upload req.status code", req.status_code
     response = req.content
-    print "content", req.content
+    print "req.content", req.content
     response_dct = json.loads(response)
     s3_url = response_dct["s3_url"]
     # XXX Need to send form parameters in correct order.
@@ -65,14 +65,15 @@ def do_upload(login, password, user, repo, id_, file_, description,
         "file-Type": "@" + response_dct["name"],
     }
     js_data2 = json.dumps(data2)
+    print "js_data2", js_data2
     req2 = requests.post(s3_url, data=js_data2)
-    print req2.status_code
+    print "req2.status_code", req2.status_code
 
 
 def do_delete(login, password, user, repo, id_):
     url = BASE_URL + "/repos/%s/%s/downloads/%s" % (user, repo, id_)
     req = requests.delete(url, auth=(login, password), config=config)
-    print req.status_code
+    print "do_delete status_code", req.status_code
 
 
 def delete_excess_uploads(login, password):
