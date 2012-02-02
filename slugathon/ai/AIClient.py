@@ -68,7 +68,6 @@ class AIClient(pb.Referenceable, Observed):
         self.max_players = max_players
         self.paused = False
         self.last_actions = []
-        log.msg("aps = AllPredictSplits()")
         self.aps = predictsplits.AllPredictSplits()
         log.msg("__init__ done", game_name, username)
 
@@ -284,7 +283,6 @@ class AIClient(pb.Referenceable, Observed):
               (action.playername, action.markerid, starting_creature_names))
             ps = predictsplits.PredictSplits(action.playername,
               action.markerid, starting_creature_names)
-            log.msg("aps.append(ps)")
             self.aps.append(ps)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)
