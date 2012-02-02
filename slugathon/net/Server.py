@@ -20,8 +20,9 @@ from twisted.python import log
 from zope.interface import implementer
 try:
     from meliae import scanner
+    have_meliae = True
 except ImportError:
-    scanner = None
+    have_meliae = False
 
 from slugathon.net import Realm, config
 from slugathon.game import Game, Action
@@ -574,7 +575,7 @@ def main():
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
-    if scanner is not None:
+    if have_meliae:
         log.msg("installing dump_memory signal handler")
         signal.signal(signal.SIGUSR1, dump_memory_and_exit)
     log.msg("main calling reactor.run")
