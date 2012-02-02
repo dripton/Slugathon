@@ -100,7 +100,7 @@ class Server(Observed):
             user.receive_chat_message(message)
 
     def form_game(self, username, game_name, min_players, max_players,
-      time_limit):
+      time_limit, player_type):
         if not game_name:
             raise ValueError("Games must be named")
         if game_name in [game.name for game in self.games]:
@@ -111,23 +111,25 @@ class Server(Observed):
         now = time.time()
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
-          min_players, max_players, master=True, time_limit=time_limit)
+          min_players, max_players, master=True, time_limit=time_limit,
+          player_type=player_type)
         self.games.append(game)
         game.add_observer(self)
         action = Action.FormGame(username, game.name, game.create_time,
-          game.start_time, game.min_players, game.max_players, time_limit)
+          game.start_time, game.min_players, game.max_players, time_limit,
+          player_type)
         self.notify(action)
 
-    def join_game(self, username, game_name):
-        log.msg("join_game", username, game_name)
+    def join_game(self, username, game_name, player_type):
+        log.msg("join_game", username, game_name, player_type)
         game = self.name_to_game(game_name)
         if game:
             try:
-                game.add_player(username)
+                game.add_player(username, player_type)
             except AssertionError, ex:
                 log.msg("join_game caught", ex)
             else:
-                action = Action.JoinGame(username, game.name)
+                action = Action.JoinGame(username, game.name, player_type)
                 self.notify(action)
             set1 = self.game_to_waiting_ais.get(game_name)
             if set1:
@@ -522,11 +524,12 @@ class Server(Observed):
           isinstance(action, Action.BattleOver) or
           isinstance(action, Action.EliminatePlayer)):
             game = self.name_to_game(action.game_name)
-            self.notify(action, names or game.playernames)
+            self.notify(action, names or (game and game.playernames))
         else:
             if isinstance(action, Action.GameOver):
                 game = self.name_to_game(action.game_name)
                 if game in self.games:
+                    game.remove_observer(self)
                     self.games.remove(game)
             self.notify(action, names)
 

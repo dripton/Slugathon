@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2004-2011 David Ripton"
+__copyright__ = "Copyright (c) 2004-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -131,7 +131,7 @@ class WaitingForPlayers(gtk.Dialog):
         self.show_all()
 
     def cb_click_join(self, widget, event):
-        def1 = self.user.callRemote("join_game", self.game.name)
+        def1 = self.user.callRemote("join_game", self.game.name, "Human")
         def1.addErrback(self.failure)
 
     def cb_destroy(self, unused):
