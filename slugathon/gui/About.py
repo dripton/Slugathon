@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -23,7 +23,7 @@ class About(gtk.AboutDialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.set_name("Slugathon")
-        self.set_copyright("Copyright (c) 2003-2011 David Ripton")
+        self.set_copyright("Copyright (c) 2003-2012 David Ripton")
 
         license_fn = fileutils.basedir(os.path.join("docs", "COPYING.txt"))
         with open(license_fn) as fil:
