@@ -1,7 +1,5 @@
 # -*- mode: python -*-
-a = Analysis([os.path.join(HOMEPATH,'support/_mountzlib.py'), 
-             'bin/slugathon',
-             ],
+a = Analysis(['bin/slugathon'],
              pathex=['bin'])
 pyz = PYZ(a.pure)
 images = Tree("slugathon/images", prefix="images")
