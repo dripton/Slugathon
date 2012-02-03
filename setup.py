@@ -13,7 +13,7 @@ import sys
 import os
 
 
-VERSION = "0.1a1"
+VERSION = "0.1"
 
 
 class install_data_twisted(install_data):
