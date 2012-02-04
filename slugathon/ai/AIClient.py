@@ -23,7 +23,7 @@ from slugathon.net import config
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase, Creature
-from slugathon.ai import DimBot, CleverBot, predictsplits
+from slugathon.ai import CleverBot, predictsplits
 from slugathon.data.creaturedata import starting_creature_names
 
 
@@ -56,8 +56,6 @@ class AIClient(pb.Referenceable, Observed):
           game_name, log_path, time_limit, form_game, min_players, max_players)
         if aitype == "CleverBot":
             self.ai = CleverBot.CleverBot(self.playername, time_limit)
-        elif aitype == "DimBot":
-            self.ai = DimBot.DimBot(self.playername)
         else:
             raise ValueError("invalid aitype %s" % aitype)
         self.game_name = game_name
@@ -632,7 +630,7 @@ def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     opts, extras = parser.parse_known_args()
-    valid_ai_types = ["CleverBot", "DimBot"]
+    valid_ai_types = ["CleverBot"]
     if opts.aitype not in valid_ai_types:
         parser.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     aiclient = AIClient(opts.playername, opts.password, opts.server, opts.port,
