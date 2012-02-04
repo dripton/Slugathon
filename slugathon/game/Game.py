@@ -1394,12 +1394,13 @@ class Game(Observed):
             else:
                 winner = self.attacker_legion
             loser = self.other_battle_legion(winner)
-            log.msg("winner", winner, "loser", loser)
+            mutual = self.attacker_legion.dead and self.defender_legion.dead
+            log.msg("winner", winner, "loser", loser, "mutual", mutual)
             action = Action.BattleOver(self.name, winner.markerid,
               winner.living_creature_names, winner.dead_creature_names,
               loser.markerid, loser.living_creature_names,
               loser.dead_creature_names, time_loss,
-              self.current_engagement_hexlabel)
+              self.current_engagement_hexlabel, mutual)
             self.notify(action)
             self._end_battle()
         else:

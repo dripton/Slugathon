@@ -570,7 +570,7 @@ pb.setUnjellyableForClass(DoNotAcquireAngels, DoNotAcquireAngels)
 class BattleOver(Action):
     def __init__(self, game_name, winner_markerid, winner_survivors,
       winner_losses, loser_markerid, loser_survivors, loser_losses,
-      time_loss, hexlabel):
+      time_loss, hexlabel, mutual):
         self.game_name = game_name
         self.winner_markerid = winner_markerid
         self.winner_survivors = tuple(winner_survivors)
@@ -580,6 +580,7 @@ class BattleOver(Action):
         self.loser_losses = tuple(loser_losses)
         self.time_loss = time_loss
         self.hexlabel = hexlabel
+        self.mutual = mutual
 pb.setUnjellyableForClass(BattleOver, BattleOver)
 
 
