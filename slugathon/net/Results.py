@@ -11,7 +11,6 @@ from slugathon.util import prefs
 DB_PATH = os.path.join(prefs.RESULTS_DIR, "slugathon.db")
 
 
-
 ddl = """
 CREATE TABLE game (
     game_id INTEGER PRIMARY KEY ASC,
@@ -40,6 +39,7 @@ CREATE TABLE player_trueskill (
     through_game_id INTEGER REFERENCES game(game_id)
 );
 """
+
 
 class Results(object):
     """Game results tracking using a sqlite database."""
