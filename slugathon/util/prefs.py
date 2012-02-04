@@ -15,6 +15,7 @@ SLUGATHON_DIR = os.path.expanduser(os.path.join("~", ".slugathon"))
 PREFS_DIR = os.path.join(SLUGATHON_DIR, "prefs")
 GLOBAL_PREFS_DIR = os.path.join(SLUGATHON_DIR, "globalprefs")
 SAVE_DIR = os.path.join(SLUGATHON_DIR, "save")
+RESULTS_DIR = os.path.join(SLUGATHON_DIR, "results")
 
 AUTO_STRIKE_SINGLE_TARGET = "Auto strike single target"
 AUTO_RANGESTRIKE_SINGLE_TARGET = "Auto rangestrike single target"
