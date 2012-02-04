@@ -995,6 +995,7 @@ class Game(Observed):
             winner_names = [living[0].name]
         else:
             # draw
+            # XXX TODO Add the last two players to winner_names
             winner_names = []
         self.finish_time = time.time()
         log.msg("game over", winner_names)
