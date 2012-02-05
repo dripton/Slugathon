@@ -153,7 +153,8 @@ class AIClient(pb.Referenceable, Observed):
             game.add_player(playername)
         self.games.append(game)
         if not self.game_name or game.name == self.game_name:
-            def1 = self.user.callRemote("join_game", game.name, self.aitype)
+            def1 = self.user.callRemote("join_game", game.name, self.aitype,
+              self.ai.result_info)
             def1.addErrback(self.failure)
 
     def remove_game(self, game_name):
