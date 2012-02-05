@@ -48,14 +48,9 @@ class Results(object):
     def __init__(self, db_path=DB_PATH):
         exists = os.path.exists(db_path)
         self.connection = sqlite3.connect(db_path)
+        self.enable_foreign_keys()
         if not exists:
             self.create_db()
-        self.enable_foreign_keys()
-
-    def create_db(self):
-        with self.connection:
-            cursor = self.connection.cursor()
-            cursor.execute(ddl)
 
     def enable_foreign_keys(self):
         with self.connection:
