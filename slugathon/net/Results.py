@@ -21,8 +21,9 @@ CREATE TABLE game (
 
 CREATE TABLE player (
     player_id INTEGER PRIMARY KEY ASC,
-    name TEXT,    -- for humans, the name; for AIs, extra parameters
-    type TEXT     -- "Human", "CleverBot", "DimBot", etc.
+    name TEXT,    -- only used for Human
+    type TEXT,    -- "Human", "CleverBot", etc.
+    info TEXT     -- any info that distinguishes AIs of the same type
 );
 
 CREATE TABLE player_game_rank (
@@ -62,20 +63,25 @@ class Results(object):
             query = "PRAGMA foreign_keys = ON"
             cursor.execute(query)
 
+    def create_db(self):
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor.execute(ddl)
+
     def save_game(self, game):
         with self.connection:
             cursor = self.connection.cursor()
             for player in game.players:
                 name = player.name
                 player_type = player.player_type
-                # TODO Add a result_name property to each AI.  It should
-                # include a manually-bumped version and time_limit.
+                result_info = player.result_info
                 query = "SELECT * FROM player WHERE name = ? AND type = ?"
                 cursor.execute(query, name, player_type)
                 row = cursor.fetchone()
                 if row is None:
-                    query = "INSERT INTO player(name, type) VALUES (?, ?)"
-                    cursor.execute(query, name, player_type)
+                    query = \
+                      "INSERT INTO player(name, type, info) VALUES (?, ?, ?)"
+                    cursor.execute(query, name, player_type, result_info)
             query = """"INSERT INTO game(name, start_time, finish_time)
                         VALUES (?, ?, ?)"""
             cursor.execute(query, game.name, game.start_time, game.finish_time)

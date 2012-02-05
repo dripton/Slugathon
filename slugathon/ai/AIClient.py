@@ -122,7 +122,8 @@ class AIClient(pb.Referenceable, Observed):
                 log.startLogging(open(self.log_path, "w"), setStdout=False)
                 log.startLogging(sys.stdout)
             def1 = self.user.callRemote("form_game", self.game_name,
-              self.min_players, self.max_players, self.time_limit, self.aitype)
+              self.min_players, self.max_players, self.time_limit, self.aitype,
+              self.ai.result_info)
             def1.addErrback(self.failure)
         else:
             # If game_name is set, AI only tries to join game with that name.
@@ -131,7 +132,7 @@ class AIClient(pb.Referenceable, Observed):
                 if not self.game_name or game.name == self.game_name:
                     log.msg("joining game", game.name)
                     def1 = self.user.callRemote("join_game", game.name,
-                      self.aitype)
+                      self.aitype, self.ai.result_info)
                     def1.addErrback(self.failure)
 
     def name_to_game(self, game_name):

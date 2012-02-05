@@ -59,6 +59,11 @@ class CleverBot(object):
         self.time_limit = time_limit
         self.best_creature_moves = None
 
+    @property
+    def result_info(self):
+        """Return a string with information for result-tracking purposes."""
+        return str("version=%s time_limit=%s" % (VERSION, self.time_limit))
+
     def maybe_pick_color(self, game):
         log.msg("maybe_pick_color")
         if game.next_playername_to_pick_color == self.playername:

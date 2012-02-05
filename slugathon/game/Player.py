@@ -25,10 +25,12 @@ class Player(Observed):
     enough to handle these cases.)  A user might drop his connection, and
     another user might take over his player can continue the game.
     """
-    def __init__(self, playername, game, join_order, player_type="Human"):
+    def __init__(self, playername, game, join_order, player_type="Human",
+      result_info=""):
         Observed.__init__(self)
         self.name = playername
         self.player_type = player_type
+        self.result_info = result_info
         self.game = game
         self.join_order = join_order
         self.starting_tower = None    # a numeric hex label

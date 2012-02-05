@@ -80,7 +80,8 @@ class NewGame(gtk.Dialog):
             self.max_players = self.max_players_spin.get_value_as_int()
             self.ai_time_limit = self.ai_time_limit_spin.get_value_as_int()
             def1 = self.user.callRemote("form_game", self.game_name,
-              self.min_players, self.max_players, self.ai_time_limit, "Human")
+              self.min_players, self.max_players, self.ai_time_limit, "Human",
+              "")
             def1.addErrback(self.failure)
             self.destroy()
 

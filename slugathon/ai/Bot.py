@@ -9,6 +9,9 @@ from zope.interface import Interface
 
 
 class Bot(Interface):
+    def result_info():
+        """Return a string with information for result-tracking purposes."""
+
     def maybe_pick_color(game):
         """Pick a color if it's my turn."""
 

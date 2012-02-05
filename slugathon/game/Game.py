@@ -38,7 +38,8 @@ class Game(Observed):
     """Central class holding information about one game"""
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players, started=False, master=False,
-      time_limit=config.DEFAULT_AI_TIME_LIMIT, player_type="Human"):
+      time_limit=config.DEFAULT_AI_TIME_LIMIT, player_type="Human",
+      result_info=""):
         Observed.__init__(self)
         self.name = name
         self.create_time = create_time
@@ -50,7 +51,7 @@ class Game(Observed):
         self.players = []
         self.players_left = []  # Used to track co-winners in a draw
         self.num_players_joined = 0
-        self.add_player(owner, player_type)
+        self.add_player(owner, player_type, result_info)
         self.board = MasterBoard.MasterBoard()
         self.turn = 1
         self.phase = Phase.SPLIT
@@ -165,7 +166,7 @@ class Game(Observed):
         return (self.name, self.create_time, self.start_time,
           self.min_players, self.max_players, self.playernames, self.started)
 
-    def add_player(self, playername, player_type="Human"):
+    def add_player(self, playername, player_type="Human", result_info=""):
         """Add a player to this game."""
         if playername in self.playernames:
             log.msg("add_player from %s already in game %s" % (
@@ -176,7 +177,7 @@ class Game(Observed):
             return
         self.num_players_joined += 1
         player = Player.Player(playername, self, self.num_players_joined,
-          player_type)
+          player_type, result_info)
         self.players.append(player)
         player.add_observer(self)
 

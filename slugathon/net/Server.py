@@ -100,7 +100,7 @@ class Server(Observed):
             user.receive_chat_message(message)
 
     def form_game(self, username, game_name, min_players, max_players,
-      time_limit, player_type):
+      time_limit, player_type, result_info):
         if not game_name:
             raise ValueError("Games must be named")
         if game_name in [game.name for game in self.games]:
@@ -112,24 +112,25 @@ class Server(Observed):
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
           min_players, max_players, master=True, time_limit=time_limit,
-          player_type=player_type)
+          player_type=player_type, result_info=result_info)
         self.games.append(game)
         game.add_observer(self)
         action = Action.FormGame(username, game.name, game.create_time,
           game.start_time, game.min_players, game.max_players, time_limit,
-          player_type)
+          player_type, result_info)
         self.notify(action)
 
-    def join_game(self, username, game_name, player_type):
-        log.msg("join_game", username, game_name, player_type)
+    def join_game(self, username, game_name, player_type, result_info):
+        log.msg("join_game", username, game_name, player_type, result_info)
         game = self.name_to_game(game_name)
         if game:
             try:
-                game.add_player(username, player_type)
+                game.add_player(username, player_type, result_info)
             except AssertionError, ex:
                 log.msg("join_game caught", ex)
             else:
-                action = Action.JoinGame(username, game.name, player_type)
+                action = Action.JoinGame(username, game.name, player_type,
+                  result_info)
                 self.notify(action)
             set1 = self.game_to_waiting_ais.get(game_name)
             if set1:
