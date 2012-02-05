@@ -24,7 +24,7 @@ try:
 except ImportError:
     have_meliae = False
 
-from slugathon.net import Realm, config
+from slugathon.net import Realm, config, Results
 from slugathon.game import Game, Action
 from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
@@ -49,6 +49,7 @@ class Server(Observed):
         self.port = port
         self.games = []
         self.name_to_user = {}
+        self.results = Results.Results()
         # {game_name: set(ainame) we're waiting for
         self.game_to_waiting_ais = {}
         log.startLogging(sys.stdout)
@@ -532,6 +533,7 @@ class Server(Observed):
                 if game in self.games:
                     game.remove_observer(self)
                     self.games.remove(game)
+                    self.results.save_game(game)
             self.notify(action, names)
 
 

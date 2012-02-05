@@ -26,13 +26,13 @@ CREATE TABLE player (
     info TEXT     -- any info that distinguishes AIs of the same type
 );
 
-CREATE TABLE player_game_rank (
+CREATE TABLE rank (
     player_id INTEGER REFERENCES player(player_id),
     game_id INTEGER REFERENCES game(game_id),
     rank INTEGER  -- rank in the game from 1 (winner) through 6.  Ties okay.
 );
 
-CREATE TABLE player_trueskill (
+CREATE TABLE trueskill (
     player_id INTEGER REFERENCES player(player_id),
     mu REAL,
     sigma REAL,
@@ -46,38 +46,67 @@ class Results(object):
     """Game results tracking using a sqlite database."""
 
     def __init__(self, db_path=DB_PATH):
-        exists = os.path.exists(db_path)
+        exists = os.path.exists(db_path) and os.path.getsize(db_path) > 0
+        dirname = os.path.dirname(db_path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
         self.connection = sqlite3.connect(db_path)
+        self.connection.row_factory = sqlite3.Row
         self.enable_foreign_keys()
         if not exists:
             self.create_db()
 
     def enable_foreign_keys(self):
-        with self.connection:
-            cursor = self.connection.cursor()
-            query = "PRAGMA foreign_keys = ON"
-            cursor.execute(query)
+        query = "PRAGMA foreign_keys = ON"
+        self.connection.execute(query)
 
     def create_db(self):
-        with self.connection:
-            cursor = self.connection.cursor()
-            cursor.execute(ddl)
+        self.connection.executescript(ddl)
 
     def save_game(self, game):
         with self.connection:
             cursor = self.connection.cursor()
             for player in game.players:
-                name = player.name
-                player_type = player.player_type
-                result_info = player.result_info
-                query = "SELECT * FROM player WHERE name = ? AND type = ?"
-                cursor.execute(query, name, player_type)
+                # See if that player is already in the database
+                name = player.name if player.player_type == "Human" else ""
+                query = """SELECT player_id FROM player
+                           WHERE name = ? AND type = ? AND info = ?"""
+                cursor.execute(query, (name, player.player_type,
+                  player.result_info))
                 row = cursor.fetchone()
+                # If not, insert it.
                 if row is None:
                     query = \
-                      "INSERT INTO player(name, type, info) VALUES (?, ?, ?)"
-                    cursor.execute(query, name, player_type, result_info)
-            query = """"INSERT INTO game(name, start_time, finish_time)
-                        VALUES (?, ?, ?)"""
-            cursor.execute(query, game.name, game.start_time, game.finish_time)
-            # TODO Add Game.finish_order
+                      "INSERT INTO player (name, type, info) VALUES (?, ?, ?)"
+                    cursor.execute(query, (name, player.player_type,
+                      player.result_info))
+            # Add the game.
+            query = """INSERT INTO game (name, start_time, finish_time)
+                       VALUES (?, ?, ?)"""
+            cursor.execute(query, (game.name, int(game.start_time),
+              int(game.finish_time)))
+            self.connection.commit()
+            # Find the game_id for the just-inserted game.
+            query = """SELECT game_id FROM game WHERE
+                       name = ? AND start_time = ? AND finish_time = ?"""
+            cursor.execute(query, (game.name, int(game.start_time),
+              int(game.finish_time)))
+            row = cursor.fetchone()
+            game_id = row["game_id"]
+            rank = 1
+            for tup in game.finish_order:
+                for player in tup:
+                    # Find the player_id
+                    query = """SELECT player_id FROM player
+                               WHERE name = ? AND type = ? AND info = ?"""
+                    name = player.name if player.player_type == "Human" else ""
+                    cursor.execute(query, (name, player.player_type,
+                      player.result_info))
+                    row = cursor.fetchone()
+                    player_id = row["player_id"]
+                    # Add to rank.
+                    query = \
+                      """INSERT INTO rank(player_id, game_id, rank)
+                         VALUES (?, ?, ?)"""
+                    cursor.execute(query, (player_id, game_id, rank))
+                rank += len(tup)

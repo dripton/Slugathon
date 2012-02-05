@@ -75,6 +75,8 @@ class Game(Observed):
         self.pending_reinforcement = False
         self.master = master
         self.time_limit = time_limit
+        # list of tuples of Player like [(winner,), (tied1, tied2), (loser,)]
+        self.finish_order = []
 
     @property
     def battle_legions(self):
@@ -996,8 +998,11 @@ class Game(Observed):
             winner_names = [living[0].name]
         else:
             # draw
-            # XXX TODO Add the last two players to winner_names
-            winner_names = []
+            # Add the last two players to winner_names
+            if (self.attacker_legion and self.attacker_legion.dead and
+              self.defender_legion and self.defender_legion.dead):
+                winner_names = [self.attacker_legion.player,
+                  self.defender_legion.player]
         self.finish_time = time.time()
         log.msg("game over", winner_names)
         action = Action.GameOver(self.name, winner_names)
@@ -1477,6 +1482,26 @@ class Game(Observed):
         action = Action.ResumeAI(self.name, playername)
         self.notify(action)
 
+    def _update_finish_order(self, winner_player, loser_player):
+        # If loser player is already in finish_order, abort.
+        if self.finish_order and loser_player in self.finish_order[0]:
+            return
+        if winner_player is None:
+            # Just one player died, so no tie.
+            self.finish_order.insert(0, (loser_player, ))
+        elif (self.attacker_legion and self.attacker_legion.dead and
+          self.attacker_legion.has_titan and self.defender_legion and
+          self.defender_legion.dead and self.defender_legion.has_titan):
+            # Mutual titan kill, so tie.
+            self.finish_order.insert(0, (winner_player, loser_player))
+        elif self.over:
+            # Game over so insert both the winner and the loser.
+            self.finish_order.insert(0, (loser_player, ))
+            self.finish_order.insert(0, (winner_player, ))
+        else:
+            # Just one player died, so no tie.
+            self.finish_order.insert(0, (loser_player, ))
+
     def update(self, observed, action, names):
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
@@ -1774,6 +1799,7 @@ class Game(Observed):
                 winner_player.eliminated_colors.add(loser_player.color_abbrev)
                 winner_player.markerids_left.update(
                   loser_player.markerids_left)
+            self._update_finish_order(winner_player, loser_player)
             if action.check_for_victory:
                 self.check_for_victory()
 

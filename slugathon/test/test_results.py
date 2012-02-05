@@ -3,12 +3,74 @@ __license__ = "GNU GPL v2"
 
 
 import tempfile
+import os
+import time
+import sqlite3
 
 from slugathon.net import Results
+from slugathon.game import Game
 
 
 def test_db_creation():
     with tempfile.NamedTemporaryFile(prefix="slugathon", suffix=".db",
-      delete=False) as tmp_file:
-        tmp_path = tmp_file.name
-    results = Results.Results(db_path=tmp_path)
+      delete=True) as tmp_file:
+        db_path = tmp_file.name
+        Results.Results(db_path=db_path)
+        assert os.path.getsize(db_path) > 0
+
+
+def test_save_game():
+    with tempfile.NamedTemporaryFile(prefix="slugathon", suffix=".db",
+      delete=True) as tmp_file:
+        db_path = tmp_file.name
+        results = Results.Results(db_path=db_path)
+        now = time.time()
+        game = Game.Game("g1", "p1", now, now, 2, 6)
+        game.add_player("p2")
+        player0 = game.players[0]
+        player1 = game.players[1]
+        game.finish_time = game.start_time + 5
+        game.finish_order = [(player0, ), (player1, )]
+        results.save_game(game)
+        assert os.path.getsize(db_path) > 0
+
+        connection = sqlite3.connect(db_path)
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
+
+        query = "SELECT * FROM game"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        assert len(rows) == 1
+        row = rows[0]
+        assert row["name"] == game.name
+        assert row["start_time"] == int(game.start_time)
+        assert row["finish_time"] == int(game.finish_time)
+
+        query = "SELECT * FROM player ORDER BY name"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        assert len(rows) == 2
+        row = rows[0]
+        assert row["name"] == "p1"
+        assert row["type"] == "Human"
+        assert row["info"] == ""
+        row = rows[1]
+        assert row["name"] == "p2"
+        assert row["type"] == "Human"
+        assert row["info"] == ""
+
+        query = """SELECT g.name as gname, p.name as pname, rank
+                   FROM game g, player p, rank r
+                   WHERE g.game_id = r.game_id
+                   AND p.player_id = r.player_id
+                   ORDER BY r.rank"""
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        assert len(rows) == 2
+        row = rows[0]
+        assert row["pname"] == "p1"
+        assert row["rank"] == 1
+        row = rows[1]
+        assert row["pname"] == "p2"
+        assert row["rank"] == 2
