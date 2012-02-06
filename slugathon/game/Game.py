@@ -987,6 +987,7 @@ class Game(Observed):
 
     def check_for_victory(self):
         """Called from update."""
+        winner_names = []
         living = self.living_players
         if len(living) >= 2:
             # game still going
@@ -1003,6 +1004,9 @@ class Game(Observed):
               self.defender_legion and self.defender_legion.dead):
                 winner_names = [self.attacker_legion.player,
                   self.defender_legion.player]
+            else:
+                # XXX TODO
+                pass
         self.finish_time = time.time()
         log.msg("game over", winner_names)
         action = Action.GameOver(self.name, winner_names)
