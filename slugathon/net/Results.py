@@ -5,6 +5,8 @@ __license__ = "GNU GPL v2"
 import os
 import sqlite3
 
+import trueskill
+
 from slugathon.util import prefs
 
 
@@ -33,11 +35,9 @@ CREATE TABLE rank (
 );
 
 CREATE TABLE trueskill (
-    player_id INTEGER REFERENCES player(player_id),
+    player_id INTEGER PRIMARY KEY REFERENCES player(player_id),
     mu REAL,
-    sigma REAL,
-    trueskill REAL,
-    through_game_id INTEGER REFERENCES game(game_id)
+    sigma REAL
 );
 """
 
@@ -120,3 +120,46 @@ class Results(object):
                          VALUES (?, ?, ?)"""
                     cursor.execute(query, (player_id, game_id, rank))
                 rank += len(tup)
+            # Update trueskill table
+            # There is a slight bias when there are ties, so we process tied
+            # players in random order.
+            query = """SELECT p.player_id, r.rank FROM player p, rank r
+                       WHERE p.player_id = r.player_id AND r.game_id = ?
+                       ORDER BY r.rank, RANDOM()"""
+            cursor.execute(query, (game_id, ))
+            rows = cursor.fetchall()
+            cursor2 = self.connection.cursor()
+            player_ids = []
+            rating_tuples = []
+            ranks = []
+            for row in rows:
+                player_id = row["player_id"]
+                player_ids.append(player_id)
+                rank = row["rank"]
+                ranks.append(rank)
+                query2 = "SELECT mu, sigma FROM trueskill WHERE player_id = ?"
+                cursor2.execute(query2, (player_id, ))
+                row2 = cursor2.fetchone()
+                if row2 is not None:
+                    mu = row2["mu"]
+                    sigma = row2["sigma"]
+                else:
+                    mu = None
+                    sigma = None
+                rating = trueskill.Rating(mu=mu, sigma=sigma)
+                rating_tuples.append((rating, ))
+            rating_tuples2 = trueskill.transform_ratings(rating_tuples, ranks)
+            while player_ids:
+                player_id = player_ids.pop()
+                rank = ranks.pop()
+                rating = rating_tuples2.pop()[0]
+                mu = rating.mu
+                sigma = rating.sigma
+                query = """INSERT INTO trueskill (player_id, mu, sigma)
+                           VALUES (?, ?, ?)"""
+                try:
+                    cursor.execute(query, (player_id, mu, sigma))
+                except Exception:
+                    query = """UPDATE trueskill SET mu = ?, sigma = ?
+                               WHERE player_id = ?"""
+                    cursor.execute(query, (mu, sigma, player_id))
