@@ -1489,15 +1489,14 @@ class Game(Observed):
     def _update_finish_order(self, winner_player, loser_player):
         # If loser player is already in finish_order, abort.
         if self.finish_order and loser_player in self.finish_order[0]:
-            return
-        if winner_player is None:
+            # Avoid inserting duplicates.
+            pass
+        elif winner_player is None:
             # Just one player died, so no tie.
             self.finish_order.insert(0, (loser_player, ))
-        elif (self.attacker_legion and self.attacker_legion.dead and
-          self.attacker_legion.has_titan and self.defender_legion and
-          self.defender_legion.dead and self.defender_legion.has_titan):
+        elif self.finish_order and winner_player in self.finish_order[0]:
             # Mutual titan kill, so tie.
-            self.finish_order.insert(0, (winner_player, loser_player))
+            self.finish_order[0] = (loser_player, winner_player)
         elif self.over:
             # Game over so insert both the winner and the loser.
             self.finish_order.insert(0, (loser_player, ))
