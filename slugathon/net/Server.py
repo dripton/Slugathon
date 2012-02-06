@@ -11,18 +11,12 @@ import tempfile
 import sys
 import random
 import hashlib
-import signal
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
 from twisted.internet import reactor, protocol, defer
 from twisted.python import log
 from zope.interface import implementer
-try:
-    from meliae import scanner
-    have_meliae = True
-except ImportError:
-    have_meliae = False
 
 from slugathon.net import Realm, config, Results
 from slugathon.game import Game, Action
@@ -548,14 +542,6 @@ class AIProcessProtocol(protocol.ProcessProtocol):
           self.ainame)
 
 
-def dump_memory_and_exit(signal_number, stack_frame):
-    """Dump memory to a file using meliae, then exit."""
-    log.msg("dump_memory", signal_number, stack_frame)
-    path = os.path.join(TEMPDIR, "slugathon.meliae")
-    scanner.dump_all_objects(path)
-    sys.exit(0)
-
-
 def add_arguments(parser):
     parser.add_argument("-p", "--port", action="store", type=int,
       default=config.DEFAULT_PORT, help="listening TCP port")
@@ -581,9 +567,6 @@ def main():
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
-    if have_meliae:
-        log.msg("installing dump_memory signal handler")
-        signal.signal(signal.SIGUSR1, dump_memory_and_exit)
     log.msg("main calling reactor.run")
     reactor.run()
 
