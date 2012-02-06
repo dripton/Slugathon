@@ -51,6 +51,7 @@ class Results(object):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
         self.connection = sqlite3.connect(db_path)
+        # Allow accessing row items by name.
         self.connection.row_factory = sqlite3.Row
         self.enable_foreign_keys()
         if not exists:
@@ -64,11 +65,18 @@ class Results(object):
         self.connection.executescript(ddl)
 
     def save_game(self, game):
+        """Save a finished Game to the results database.
+
+        TODO This involves a non-trivial amount of computation and I/O, so
+        perhaps it should be run from a thread.
+        """
         with self.connection:
             cursor = self.connection.cursor()
             for player in game.players:
                 # See if that player is already in the database
-                name = player.name if player.player_type == "Human" else ""
+                #name = player.name if player.player_type == "Human" else ""
+                # XXX Temporarily use name for AI, to avoid duplicates.
+                name = player.name
                 query = """SELECT player_id FROM player
                            WHERE name = ? AND type = ? AND info = ?"""
                 cursor.execute(query, (name, player.player_type,
@@ -85,6 +93,7 @@ class Results(object):
                        VALUES (?, ?, ?)"""
             cursor.execute(query, (game.name, int(game.start_time),
               int(game.finish_time)))
+            # XXX It should not be needed to commit halfway through like this.
             self.connection.commit()
             # Find the game_id for the just-inserted game.
             query = """SELECT game_id FROM game WHERE
@@ -99,7 +108,8 @@ class Results(object):
                     # Find the player_id
                     query = """SELECT player_id FROM player
                                WHERE name = ? AND type = ? AND info = ?"""
-                    name = player.name if player.player_type == "Human" else ""
+                    # XXX Temporarily use name for AI, to avoid duplicates.
+                    name = player.name
                     cursor.execute(query, (name, player.player_type,
                       player.result_info))
                     row = cursor.fetchone()
