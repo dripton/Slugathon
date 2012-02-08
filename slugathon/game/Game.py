@@ -1497,6 +1497,9 @@ class Game(Observed):
         elif self.finish_order and winner_player in self.finish_order[0]:
             # Mutual titan kill, so tie.
             self.finish_order[0] = (loser_player, winner_player)
+        elif self.over and winner_player.dead:
+            # Mutual titan kill, so tie
+            self.finish_order.insert(0, (winner_player, loser_player))
         elif self.over:
             # Game over so insert both the winner and the loser.
             self.finish_order.insert(0, (loser_player, ))
