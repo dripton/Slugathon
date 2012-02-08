@@ -156,3 +156,113 @@ class TestGame(object):
         assert self.game == game2
         game3 = Game.Game("g2", "p0", now, now, 2, 6)
         assert self.game != game3
+
+
+def test_update_finish_order():
+    now = time.time()
+    game = Game.Game("g1", "ai1", now, now, 2, 6)
+    game.add_player("ai2")
+    game.add_player("ai3")
+    game.add_player("ai4")
+    game.add_player("ai5")
+    game.add_player("ai6")
+    ai1 = game.get_player_by_name("ai1")
+    ai2 = game.get_player_by_name("ai2")
+    ai3 = game.get_player_by_name("ai3")
+    ai4 = game.get_player_by_name("ai4")
+    ai5 = game.get_player_by_name("ai5")
+    ai6 = game.get_player_by_name("ai6")
+    ai1.assign_starting_tower(600)
+    ai2.assign_starting_tower(500)
+    ai3.assign_starting_tower(400)
+    ai4.assign_starting_tower(300)
+    ai5.assign_starting_tower(200)
+    ai6.assign_starting_tower(100)
+    ai1.assign_color("Red")
+    ai2.assign_color("Blue")
+    ai3.assign_color("Black")
+    ai4.assign_color("Brown")
+    ai5.assign_color("Green")
+    ai6.assign_color("Gold")
+    for player in game.players:
+        player.pick_marker(player.color_abbrev + "01")
+        player.create_starting_legion()
+    ai3.die(ai5, True)
+    ai3.markerid_to_legion = {}
+    assert ai3.dead
+    game._update_finish_order(ai5, ai3)
+    assert game.finish_order == [(ai3, )]
+    ai6.die(ai2, True)
+    ai6.markerid_to_legion = {}
+    game._update_finish_order(ai2, ai6)
+    assert game.finish_order == [(ai6, ), (ai3, )]
+    ai2.die(ai4, True)
+    ai2.markerid_to_legion = {}
+    game._update_finish_order(ai4, ai2)
+    assert game.finish_order == [(ai2, ), (ai6, ), (ai3, )]
+    ai1.die(ai4, True)
+    ai1.markerid_to_legion = {}
+    game._update_finish_order(ai4, ai1)
+    assert game.finish_order == [(ai1, ), (ai2, ), (ai6, ), (ai3, )]
+    ai5.die(ai4, True)
+    ai5.markerid_to_legion = {}
+    game._update_finish_order(ai4, ai5)
+    assert game.finish_order == [(ai4, ), (ai5, ), (ai1, ), (ai2, ),
+      (ai6, ), (ai3, )]
+
+def test_update_finish_order_3_draws():
+    now = time.time()
+    game = Game.Game("g1", "ai1", now, now, 2, 6)
+    game.add_player("ai2")
+    game.add_player("ai3")
+    game.add_player("ai4")
+    game.add_player("ai5")
+    game.add_player("ai6")
+    ai1 = game.get_player_by_name("ai1")
+    ai2 = game.get_player_by_name("ai2")
+    ai3 = game.get_player_by_name("ai3")
+    ai4 = game.get_player_by_name("ai4")
+    ai5 = game.get_player_by_name("ai5")
+    ai6 = game.get_player_by_name("ai6")
+    ai1.assign_starting_tower(600)
+    ai2.assign_starting_tower(500)
+    ai3.assign_starting_tower(400)
+    ai4.assign_starting_tower(300)
+    ai5.assign_starting_tower(200)
+    ai6.assign_starting_tower(100)
+    ai1.assign_color("Red")
+    ai2.assign_color("Blue")
+    ai3.assign_color("Black")
+    ai4.assign_color("Brown")
+    ai5.assign_color("Green")
+    ai6.assign_color("Gold")
+    for player in game.players:
+        player.pick_marker(player.color_abbrev + "01")
+        player.create_starting_legion()
+    ai3.die(ai5, False)
+    ai3.markerid_to_legion = {}
+    assert ai3.dead
+    ai5.die(ai3, True)
+    ai5.markerid_to_legion = {}
+    assert ai5.dead
+    game._update_finish_order(ai3, ai5)
+    game._update_finish_order(ai5, ai3)
+    assert game.finish_order == [(ai3, ai5)]
+    ai2.die(ai6, False)
+    ai2.markerid_to_legion = {}
+    assert ai2.dead
+    ai6.die(ai2, True)
+    ai6.markerid_to_legion = {}
+    assert ai6.dead
+    game._update_finish_order(ai2, ai6)
+    game._update_finish_order(ai6, ai2)
+    assert game.finish_order == [(ai2, ai6), (ai3, ai5)]
+    ai4.die(ai1, False)
+    ai4.markerid_to_legion = {}
+    assert ai4.dead
+    ai1.die(ai4, True)
+    ai1.markerid_to_legion = {}
+    assert ai1.dead
+    game._update_finish_order(ai4, ai1)
+    game._update_finish_order(ai1, ai4)
+    assert game.finish_order == [(ai4, ai1), (ai2, ai6), (ai3, ai5)]
