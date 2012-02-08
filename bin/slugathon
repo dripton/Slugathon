@@ -6,7 +6,6 @@ __license__ = "GNU GPL v2"
 
 
 import argparse
-import tempfile
 import sys
 
 connect_add_arguments = None
@@ -16,9 +15,6 @@ except ImportError:
     pass
 from slugathon.ai.AIClient import add_arguments as aiclient_add_arguments
 from slugathon.net.Server import add_arguments as server_add_arguments
-
-
-TEMPDIR = tempfile.gettempdir()
 
 
 if __name__ == "__main__":

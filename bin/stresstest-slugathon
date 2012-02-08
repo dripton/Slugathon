@@ -11,15 +11,11 @@ __license__ = "GNU GPL v2"
 import argparse
 import sys
 import os
-import tempfile
 
 from twisted.internet import reactor, utils
 from twisted.python import log
 
 from slugathon.net import config
-
-
-TEMPDIR = tempfile.gettempdir()
 
 
 # XXX We never stop the server.
