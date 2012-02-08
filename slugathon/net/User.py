@@ -234,7 +234,7 @@ class User(Avatar):
         def1 = self.client.callRemote("set_name", self.name)
         def1.addErrback(self.trap_connection_lost)
         def1.addErrback(self.log_failure)
-        def2 = self.client.callRemote("ping", time.time())
+        def2 = self.client.callRemote("ping")
         def2.addErrback(self.trap_connection_lost)
         def2.addErrback(self.log_failure)
 

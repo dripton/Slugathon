@@ -72,7 +72,7 @@ class AIClient(pb.Referenceable, Observed):
     def remote_set_name(self, name):
         self.playername = name
 
-    def remote_ping(self, arg):
+    def remote_ping(self):
         return True
 
     def __repr__(self):

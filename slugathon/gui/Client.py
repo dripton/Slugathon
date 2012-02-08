@@ -40,7 +40,7 @@ class Client(pb.Referenceable, Observed):
         self.playername = name
         return name
 
-    def remote_ping(self, arg):
+    def remote_ping(self):
         return True
 
     def __repr__(self):
