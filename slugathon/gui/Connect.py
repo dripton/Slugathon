@@ -222,13 +222,16 @@ class Connect(gtk.Window):
 
 def add_arguments(parser):
     tempdir = tempfile.gettempdir()
+    logdir = os.path.join(tempdir, "slugathon")
+    if not os.path.exists(logdir):
+        os.makedirs(logdir)
     parser.add_argument("-n", "--playername", action="store", type=str)
     parser.add_argument("-a", "--password", action="store", type=str)
     parser.add_argument("-s", "--server", action="store", type=str)
     parser.add_argument("-p", "--port", action="store", type=int)
     parser.add_argument("-c", "--connect", action="store_true")
     parser.add_argument("-l", "--log-path", action="store", type=str,
-      default=os.path.join(tempdir, "slugathon-client-%d.log" %
+      default=os.path.join(logdir, "slugathon-client-%d.log" %
       int(time.time())), help="path to logfile")
 
 

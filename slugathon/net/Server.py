@@ -48,7 +48,10 @@ class Server(Observed):
         self.game_to_waiting_ais = {}
         log.startLogging(sys.stdout)
         if not log_path:
-            log_path = os.path.join(TEMPDIR, "slugathon-server-%d.log" % port)
+            logdir = os.path.join(TEMPDIR, "slugathon")
+            if not os.path.exists(logdir):
+                os.makedirs(logdir)
+            log_path = os.path.join(logdir, "slugathon-server-%d.log" % port)
         log.startLogging(open(log_path, "w"))
 
     def __repr__(self):
@@ -201,6 +204,9 @@ class Server(Observed):
             executable = "slugathon.exe"
         else:
             executable = sys.executable
+        logdir = os.path.join(TEMPDIR, "slugathon")
+        if not os.path.exists(logdir):
+            os.makedirs(logdir)
         for ainame in ainames:
             log.msg("ainame", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
@@ -213,7 +219,7 @@ class Server(Observed):
                 "--playername", ainame,
                 "--port", str(self.port),
                 "--game-name", game.name,
-                "--log-path", os.path.join(TEMPDIR, "slugathon-%s-%s.log" %
+                "--log-path", os.path.join(logdir, "slugathon-%s-%s.log" %
                   (game.name, ainame)),
                 "--time-limit", str(game.time_limit),
             ])

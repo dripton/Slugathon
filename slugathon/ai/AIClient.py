@@ -117,7 +117,10 @@ class AIClient(pb.Referenceable, Observed):
             if not self.game_name:
                 self.game_name = "Game_%d" % random.randrange(1000000)
             if not self.log_path:
-                self.log_path = os.path.join(TEMPDIR, "slugathon-%s-%s.log" %
+                logdir = os.path.join(TEMPDIR, "slugathon")
+                if not os.path.exists(logdir):
+                    os.makedirs(logdir)
+                self.log_path = os.path.join(logdir, "slugathon-%s-%s.log" %
                   (self.game_name, self.playername))
                 log.startLogging(open(self.log_path, "w"), setStdout=False)
                 log.startLogging(sys.stdout)
