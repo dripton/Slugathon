@@ -449,7 +449,10 @@ class BattleMap(object):
             log.msg("count_bramble_hexes hexlabel1 == hexlabel2 == %s" %
               hexlabel1)
             return 0
-        assert not self.is_los_blocked(hexlabel1, hexlabel2, game)
+        if self.is_los_blocked(hexlabel1, hexlabel2, game):
+            log.msg("count_bramble_hexes %s %s los blocked" % (hexlabel1,
+              hexlabel2))
+            return 0
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
         if hex1.entrance or hex2.entrance:
