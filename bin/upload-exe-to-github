@@ -55,25 +55,16 @@ def do_upload(login, password, user, repo, id_, file_, description,
     # Need to send form parameters in correct order, so we can't
     # just json.dumps the dict.
     data2 = {
-        "key": "%s",
-        "acl": "%s",
+        "key": response_dct["path"],
+        "acl": response_dct["acl"],
         "success_action_status": 201,
-        "Filename": "%s",
-        "AWSAccessKeyId": "%s",
-        "Policy": "%s",
-        "Signature": "%s",
-        "Content-Type": "%s",
-        "file": "@%s",
-    } % (
-        response_dct["path"],
-        response_dct["acl"],
-        response_dct["name"],
-        response_dct["accesskeyid"],
-        response_dct["policy"],
-        response_dct["signature"],
-        response_dct["mime_type"],
-        response_dct["name"],
-    )
+        "Filename": response_dct["name"],
+        "AWSAccessKeyId": response_dct["accesskeyid"],
+        "Policy": response_dct["policy"],
+        "Signature": response_dct["signature"],
+        "Content-Type": response_dct["mime_type"],
+        "file": "@" + response_dct["name"],
+    }
     js_data2 = json.dumps(data2)
     print "js_data2", js_data2
     req2 = requests.post(s3_url, data=js_data2)
