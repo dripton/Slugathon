@@ -210,6 +210,7 @@ def test_update_finish_order():
     assert game.finish_order == [(ai4, ), (ai5, ), (ai1, ), (ai2, ),
       (ai6, ), (ai3, )]
 
+
 def test_update_finish_order_3_draws():
     now = time.time()
     game = Game.Game("g1", "ai1", now, now, 2, 6)
