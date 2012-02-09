@@ -172,7 +172,7 @@ class AIClient(pb.Referenceable, Observed):
         for legion in game.all_legions():
             markerid = legion.markerid
             node = self.aps.get_leaf(markerid)
-            if node.creature_names != legion.creature_names:
+            if node and node.creature_names != legion.creature_names:
                 legion.creatures = Creature.n2c(node.creature_names)
                 for creature in legion.creatures:
                     creature.legion = legion
