@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
-import time
 
 from twisted.spread.pb import Avatar, PBConnectionLost
 from twisted.internet.error import ConnectionLost
