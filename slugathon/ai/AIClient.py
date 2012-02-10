@@ -352,8 +352,6 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)
             player = game.get_player_by_name(self.playername)
-            # XXX We double check the player, in case the last battle didn't
-            # get cleaned up.  (We don't call Game._end_battle2 on the client.)
             if (game.defender_legion and game.defender_legion.player.name ==
               self.playername and action.defender_markerid in
               player.markerid_to_legion):
