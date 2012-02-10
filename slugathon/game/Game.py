@@ -1237,10 +1237,9 @@ class Game(Observed):
         target = targets.pop()
         assert target.name == target_name
         log.msg("striker", striker, "target", target)
-        # TODO check for valid strike penalty if not equal
         log.msg("num_dice", num_dice, "strike_number", strike_number)
-        assert num_dice <= striker.number_of_dice(target)
-        assert strike_number >= striker.strike_number(target)
+        assert (num_dice, strike_number) in striker.valid_strike_penalties(
+          target)
         rolls = Dice.roll(num_dice)
         hits = 0
         for roll in rolls:
