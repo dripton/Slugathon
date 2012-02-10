@@ -987,30 +987,13 @@ class Game(Observed):
 
     def check_for_victory(self):
         """Called from update."""
-        winner_names = []
-        living = self.living_players
-        if len(living) >= 2:
-            # game still going
-            self.players_left = living[:]
-            return
-        elif len(living) == 1:
-            # sole winner
-            self.players_left = living[:]
-            winner_names = [living[0].name]
-        else:
-            # draw
-            # Add the last two players to winner_names
-            if (self.attacker_legion and self.attacker_legion.dead and
-              self.defender_legion and self.defender_legion.dead):
-                winner_names = [self.attacker_legion.player,
-                  self.defender_legion.player]
-            else:
-                # XXX TODO
-                pass
-        self.finish_time = time.time()
-        log.msg("game over", winner_names)
-        action = Action.GameOver(self.name, winner_names)
-        self.notify(action)
+        if self.over:
+            self.finish_time = time.time()
+            winner_players = self.finish_order[0]
+            winner_names = [player.name for player in winner_players]
+            log.msg("game over", winner_names)
+            action = Action.GameOver(self.name, winner_names)
+            self.notify(action)
 
     # Battle methods
     def other_battle_legion(self, legion):
