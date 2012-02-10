@@ -93,8 +93,6 @@ class Results(object):
                        VALUES (?, ?, ?)"""
             cursor.execute(query, (game.name, int(game.start_time),
               int(game.finish_time)))
-            # XXX It should not be needed to commit halfway through like this.
-            self.connection.commit()
             # Find the game_id for the just-inserted game.
             query = """SELECT game_id FROM game WHERE
                        name = ? AND start_time = ? AND finish_time = ?"""
