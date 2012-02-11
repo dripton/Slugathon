@@ -36,12 +36,12 @@ def do_list(login, password, user, repo):
     return lst
 
 
-def do_upload(login, password, user, repo, id_, file_, description,
+def do_upload(login, password, user, repo, id_, path, description,
         content_type):
     url = BASE_URL + "/repos/%s/%s/downloads" % (user, repo)
     data = {
         "name": id_,
-        "size": os.path.getsize(file_),
+        "size": os.path.getsize(path),
         "description": description,
         "content_type": content_type,
     }
@@ -74,10 +74,11 @@ def do_upload(login, password, user, repo, id_, file_, description,
         response_dct["policy"],
         response_dct["signature"],
         response_dct["mime_type"],
-        file_,
     )
     print "js_data2", js_data2
-    req2 = requests.post(s3_url, data=js_data2)
+    fil = open(path, "rb")
+    files = {"slugathon.exe": fil}
+    req2 = requests.post(s3_url, data=js_data2, files=files)
     print "req2.status_code", req2.status_code
 
 
@@ -121,7 +122,7 @@ def main():
 
     id_ = "slugathon-dev-%s.exe" % commit
     old_path = os.path.join(".", "dist", "slugathon.exe")
-    new_path = os.path.join(".", "slugathon.exe")
+    new_path = "slugathon.exe"
     shutil.copy(old_path, new_path)
     description = "dev build for commit %s" % commit
 
