@@ -63,8 +63,7 @@ def do_upload(login, password, user, repo, id_, path, description,
         "AWSAccessKeyId": "%s",
         "Policy": "%s",
         "Signature": "%s",
-        "Content-Type": "%s",
-        "file": "%s"
+        "Content-Type": "%s"
     }
     """ % (
         response_dct["path"],
