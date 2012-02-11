@@ -76,7 +76,7 @@ def do_upload(login, password, user, repo, id_, path, description,
     )
     print "js_data2", js_data2
     fil = open(path, "rb")
-    files = {"slugathon.exe": fil}
+    files = {"file": ("slugathon.exe", fil)}
     req2 = requests.post(s3_url, data=js_data2, files=files)
     print "req2.status_code", req2.status_code
 
