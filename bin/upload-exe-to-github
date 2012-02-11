@@ -54,16 +54,16 @@ def do_upload(login, password, user, repo, id_, path, description,
     response_dct = json.loads(response)
     cmd = [
         r"\curl\curl.exe",
-        "-F", "key=%s" % response_dct["path"],
-        "-F", "acl=%s" % response_dct["acl"],
+        "-F", "key=%s" % str(response_dct["path"]),
+        "-F", "acl=%s" % str(response_dct["acl"]),
         "-F", "success_action_status=201",
-        "-F", "Filename=%s" % response_dct["name"],
-        "-F", "AWSAccessKeyId=%s" % response_dct["accesskeyid"],
-        "-F", "Policy=%s" % response_dct["policy"],
-        "-F", "Signature=%s" % response_dct["signature"],
-        "-F", "Content-Type=%s" % response_dct["mime_type"],
+        "-F", "Filename=%s" % str(response_dct["name"]),
+        "-F", "AWSAccessKeyId=%s" % str(response_dct["accesskeyid"]),
+        "-F", "Policy=%s" % str(response_dct["policy"]),
+        "-F", "Signature=%s" % str(response_dct["signature"]),
+        "-F", "Content-Type=%s" % str(response_dct["mime_type"]),
         "-F", "file=@%s" % path,
-        response_dct["s3_url"]
+        str(response_dct["s3_url"]),
     ]
     print "cmd", cmd
     returncode = subprocess.call(cmd)
