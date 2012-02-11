@@ -52,23 +52,22 @@ def do_upload(login, password, user, repo, id_, path, description,
     response = req.content
     print "req.content", req.content
     response_dct = json.loads(response)
-    s3_url = response_dct["s3_url"]
-    data2 = {
-        "key": response_dct["path"],
-        "acl": response_dct["acl"],
-        "success_action_status": 201,
-        "Filename": response_dct["name"],
-        "AWSAccessKeyId": response_dct["accesskeyid"],
-        "Policy": response_dct["policy"],
-        "Signature": response_dct["signature"],
-        "Content-Type": response_dct["mime_type"],
-    }
-    js_data2 = json.dumps(data2)
-    print "js_data2", js_data2
-    fil = open(path, "rb")
-    files = {"file": ("slugathon.exe", fil)}
-    req2 = requests.post(s3_url, data=js_data2, files=files)
-    print "req2.status_code", req2.status_code
+    cmd = [
+        r"\curl\curl.exe",
+        "-F", "key=%s" % response_dct["path"],
+        "-F", "acl=%s" % response_dct["acl"],
+        "-F", "success_action_status=201",
+        "-F", "Filename=%s" % response_dct["name"],
+        "-F", "AWSAccessKeyId=%s" % response_dct["accesskeyid"],
+        "-F", "Policy=%s" % response_dct["policy"],
+        "-F", "Signature=%s" % response_dct["signature"],
+        "-F", "Content-Type=%s" % response_dct["mime_type"],
+        "-F", "file=@%s" % path,
+        response_dct["s3_url"]
+    ]
+    print "cmd", cmd
+    returncode = subprocess.call(cmd)
+    print "returncode", returncode
 
 
 def do_delete(login, password, user, repo, id_):
