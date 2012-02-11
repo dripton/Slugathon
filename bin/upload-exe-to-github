@@ -54,6 +54,7 @@ def do_upload(login, password, user, repo, id_, path, description,
     response_dct = json.loads(response)
     cmd = [
         r"\curl\curl.exe",
+        "-k",
         "-F", "key=%s" % str(response_dct["path"]),
         "-F", "acl=%s" % str(response_dct["acl"]),
         "-F", "success_action_status=201",
