@@ -63,7 +63,7 @@ def do_upload(login, password, user, repo, id_, file_, description,
         "Policy": "%s",
         "Signature": "%s",
         "Content-Type": "%s",
-        "file": "@dist/slugathon.exe"
+        "file": "@%s"
     }
     """ % (
         response_dct["path"],
