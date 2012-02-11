@@ -236,7 +236,6 @@ class Legion(Observed):
 
     def forget_creatures(self):
         """Make all creatures Unknown."""
-        log.msg("Legion.forget_creatures")
         self.creatures = Creature.n2c(len(self) * ["Unknown"])
         for creature in self.creatures:
             creature.legion = self
