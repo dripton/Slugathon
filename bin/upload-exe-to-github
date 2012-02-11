@@ -16,6 +16,7 @@ import json
 import re
 import os
 import subprocess
+import shutil
 
 import requests
 
@@ -63,7 +64,7 @@ def do_upload(login, password, user, repo, id_, file_, description,
         "Policy": "%s",
         "Signature": "%s",
         "Content-Type": "%s",
-        "file": "@%s"
+        "file": "%s"
     }
     """ % (
         response_dct["path"],
@@ -73,7 +74,7 @@ def do_upload(login, password, user, repo, id_, file_, description,
         response_dct["policy"],
         response_dct["signature"],
         response_dct["mime_type"],
-        response_dct["name"],
+        file_,
     )
     print "js_data2", js_data2
     req2 = requests.post(s3_url, data=js_data2)
@@ -119,13 +120,15 @@ def main():
     commit = commit[:7]
 
     id_ = "slugathon-dev-%s.exe" % commit
-    file_ = os.path.join(".", "dist", "slugathon.exe")
+    old_path = os.path.join(".", "dist", "slugathon.exe")
+    new_path = os.path.join(".", "slugathon.exe")
+    shutil.copy(old_path, new_path)
     description = "dev build for commit %s" % commit
 
     delete_excess_uploads(args.login, args.password)
 
-    do_upload(args.login, args.password, USER, REPO, id_, file_, description,
-        "application/exe")
+    do_upload(args.login, args.password, USER, REPO, id_, new_path,
+      description, "application/exe")
 
 
 if __name__ == "__main__":
