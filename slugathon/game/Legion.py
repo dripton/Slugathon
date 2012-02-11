@@ -589,12 +589,24 @@ class Legion(Observed):
                 log.msg("angels_pending", self.angels_pending)
                 log.msg("archangels_pending", self.archangels_pending)
                 return
-            if len(self) + num_angels + num_archangels > 7:
-                raise AssertionError("legion too tall to acquire")
-            if caretaker.num_left("Archangel") < num_archangels:
-                raise AssertionError("not enough Archangels left")
-            if caretaker.num_left("Angel") < num_angels:
-                raise AssertionError("not enough Angels left")
+            if len(self) >= 7:
+                log.msg("acquire_angels 7 high")
+                self.angels_pending = 0
+                self.archangels_pending = 0
+                return
+            while len(self) + num_angels + num_archangels > 7:
+                log.msg("too many angels; reducing")
+                if num_angels > 0:
+                    num_angels -= 1
+                elif num_archangels > 0:
+                    num_archangels -= 1
+            while caretaker.num_left("Archangel") < num_archangels:
+                log.msg("not enough Archangels left")
+                num_archangels -= 1
+                num_angels += 1
+            while caretaker.num_left("Angel") < num_angels:
+                log.msg("not enough Angels left")
+                num_angels -= 1
         self.archangels_pending -= num_archangels
         if self.archangels_pending < 0:
             self.archangels_pending = 0
