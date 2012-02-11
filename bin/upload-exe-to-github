@@ -73,6 +73,7 @@ def do_upload(login, password, user, repo, id_, file_, description,
         response_dct["policy"],
         response_dct["signature"],
         response_dct["mime_type"],
+        response_dct["name"],
     )
     print "js_data2", js_data2
     req2 = requests.post(s3_url, data=js_data2)
