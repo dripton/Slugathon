@@ -479,7 +479,7 @@ class BattleMap(object):
             return self._count_bramble_hexes_dir(hex1, hex2,
               self._to_left(delta_x, delta_y), 0)
 
-    # XXX Implementation hardcoded to default Tower map
+    # XXX Hardcoded to default Tower map
     def count_walls(self, hexlabel1, hexlabel2, game):
         """Return the number of uphill wall hazards between hexlabel1 and
         hexlabel2.

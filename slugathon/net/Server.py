@@ -305,7 +305,7 @@ class Server(Observed):
             for enemy_legion in game.all_legions(hexlabel):
                 if enemy_legion != legion:
                     break
-            # XXX Enemy illegally managed to concede before we could flee.
+            # Enemy illegally managed to concede before we could flee.
             if enemy_legion == legion:
                 log.msg("illegal concede before flee")
                 return
