@@ -25,14 +25,14 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
     """Return a list of tuples of Creatures, corresponding to each
     possible group of angels and archangels."""
     set1 = set()
-    for archies in xrange(min(num_archangels, archangels_left) + 1):
-        for angies in xrange(min((num_angels + num_archangels),
+    for archangels in xrange(min(num_archangels, archangels_left) + 1):
+        for angels in xrange(min((num_angels + num_archangels),
           angels_left) + 1):
-            if 0 < archies + angies <= num_archangels + num_angels:
+            if 0 < archangels + angels <= num_archangels + num_angels:
                 lst = []
-                for unused in xrange(archies):
+                for unused in xrange(archangels):
                     lst.append(Creature.Creature("Archangel"))
-                for unused in xrange(angies):
+                for unused in xrange(angels):
                     lst.append(Creature.Creature("Angel"))
                 combo = tuple(lst)
                 set1.add(combo)
