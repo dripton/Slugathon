@@ -166,10 +166,9 @@ class AIClient(pb.Referenceable, Observed):
             self.remove_observer(game)
             self.games.remove(game)
 
-    # TODO Restrict to one player.
-    def update_creatures(self, game):
-        """Update creatures in game from self.aps."""
-        for legion in game.all_legions():
+    def update_creatures(self, player):
+        """Update player's creatures from self.aps."""
+        for legion in player.legions:
             markerid = legion.markerid
             node = self.aps.get_leaf(markerid)
             if node and node.creature_names != legion.creature_names:
@@ -222,9 +221,10 @@ class AIClient(pb.Referenceable, Observed):
         # legion before we send the Action to Game.
         if isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             self.aps.get_leaf(action.donor_markerid).reveal_creatures(
               [action.creature_name])
-            self.update_creatures(game)
+            self.update_creatures(player)
 
         # Update the Game first, then act.
         self.notify(action, names)
@@ -292,6 +292,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             self.aps.get_leaf(action.parent_markerid).split(
               len(action.child_creature_names), action.child_markerid,
               game.turn)
@@ -300,18 +301,19 @@ class AIClient(pb.Referenceable, Observed):
                   list(action.parent_creature_names))
                 self.aps.get_leaf(action.child_markerid).reveal_creatures(
                   list(action.child_creature_names))
-            self.update_creatures(game)
+            self.update_creatures(player)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)
 
         elif isinstance(action, Action.UndoSplit):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             log.msg(
               "self.aps.get_leaf('%s').merge(self.aps.get_leaf('%s'), %d)" %
               (action.parent_markerid, action.child_markerid, game.turn))
             self.aps.get_leaf(action.parent_markerid).merge(
               self.aps.get_leaf(action.child_markerid), game.turn)
-            self.update_creatures(game)
+            self.update_creatures(player)
 
         elif isinstance(action, Action.RollMovement):
             game = self.name_to_game(action.game_name)
@@ -439,11 +441,12 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             self.aps.get_leaf(action.markerid).reveal_creatures(
               list(action.recruiter_names))
             self.aps.get_leaf(action.markerid).add_creature(
               action.creature_name)
-            self.update_creatures(game)
+            self.update_creatures(player)
             if action.playername == self.playername:
                 if game.phase == Phase.MUSTER:
                     if game.active_player.name == self.playername:
@@ -463,15 +466,17 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UndoRecruit):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
-            self.update_creatures(game)
+            self.update_creatures(player)
 
         elif isinstance(action, Action.UnReinforce):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
-            self.update_creatures(game)
+            self.update_creatures(player)
 
         elif isinstance(action, Action.DoNotReinforce):
             game = self.name_to_game(action.game_name)
@@ -486,13 +491,14 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             self.aps.get_leaf(action.donor_markerid).reveal_creatures(
               [action.creature_name])
             self.aps.get_leaf(action.donor_markerid).remove_creature(
               action.creature_name)
             self.aps.get_leaf(action.markerid).add_creature(
               action.creature_name)
-            self.update_creatures(game)
+            self.update_creatures(player)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
                     reactor.callLater(self.delay, self.ai.summon, game)
@@ -502,13 +508,14 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UnsummonAngel):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             self.aps.get_leaf(action.markerid).reveal_creatures(
               [action.creature_name])
             self.aps.get_leaf(action.markerid).remove_creature(
               action.creature_name)
             self.aps.get_leaf(action.donor_markerid).add_creature(
               action.creature_name)
-            self.update_creatures(game)
+            self.update_creatures(player)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
                     reactor.callLater(self.delay, self.ai.summon, game)
@@ -533,7 +540,14 @@ class AIClient(pb.Referenceable, Observed):
             if action.loser_losses:
                 self.aps.get_leaf(action.loser_markerid).remove_creatures(
                   list(action.loser_losses))
-            self.update_creatures(game)
+            winner_legion = game.find_legion(action.winner_markerid)
+            if winner_legion:
+                winner_player = winner_legion.player
+                self.update_creatures(winner_player)
+            loser_legion = game.find_legion(action.loser_markerid)
+            if loser_legion:
+                loser_player = loser_legion.player
+                self.update_creatures(loser_player)
             if game.active_player.name == self.playername:
                 if game.attacker_legion:
                     legion = game.attacker_legion
@@ -562,9 +576,10 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.AcquireAngels):
             game = self.name_to_game(action.game_name)
+            player = game.get_player_by_name(action.playername)
             for angel_name in action.angel_names:
                 self.aps.get_leaf(action.markerid).add_creature(angel_name)
-            self.update_creatures(game)
+            self.update_creatures(player)
             log.msg("active player", game.active_player)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
@@ -600,7 +615,8 @@ class AIClient(pb.Referenceable, Observed):
                 # but the node is gone.
                 if node is not None:
                     node.reveal_creatures(action.creature_names)
-                self.update_creatures(game)
+                player = legion.player
+                self.update_creatures(player)
 
         elif isinstance(action, Action.PauseAI):
             self.paused = True
