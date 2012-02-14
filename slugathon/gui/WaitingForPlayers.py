@@ -161,20 +161,17 @@ class WaitingForPlayers(gtk.Dialog):
         if diff > 0:
             reactor.callLater(1, self.update_countdown)
 
-    # XXX cleanup
     def update_player_store(self):
-        playernames = self.game.playernames
-        leng = len(self.player_store)
-        for ii, playername in enumerate(playernames):
-            if ii < leng:
-                self.player_store[ii, 0] = (playername,)
+        length = len(self.player_store)
+        for ii, playername in enumerate(self.game.playernames):
+            if ii < length:
+                self.player_store[(ii, 0)] = (playername,)
             else:
                 self.player_store.append((playername,))
-        leng = len(self.game.playernames)
-        while len(self.player_store) > leng:
-            del self.player_store[leng]
-        self.start_button.set_sensitive(self.username ==
-          self.game.owner.name)
+        length = len(self.game.playernames)
+        while len(self.player_store) > length:
+            del self.player_store[length]
+        self.start_button.set_sensitive(self.username == self.game.owner.name)
 
     def failure(self, arg):
         log.err(arg)
