@@ -76,8 +76,6 @@ class AcquireAngels(gtk.Dialog):
         legion_hbox.pack_start(chits_hbox, expand=True)
 
         for creature in legion.sorted_living_creatures:
-            # XXX This is the wrong place to do this.
-            creature.heal()
             chit = Chit.Chit(creature, player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, expand=False)
 
