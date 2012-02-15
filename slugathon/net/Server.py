@@ -349,6 +349,13 @@ class Server(Observed):
               attacker_creature_names, defender_markerid,
               defender_creature_names)
 
+    def no_more_proposals(self, username, game_name, attacker_markerid,
+      defender_markerid):
+        game = self.name_to_game(game_name)
+        if game:
+            game.no_more_proposals(username, attacker_markerid,
+              defender_markerid)
+
     def fight(self, username, game_name, attacker_markerid,
       defender_markerid):
         game = self.name_to_game(game_name)

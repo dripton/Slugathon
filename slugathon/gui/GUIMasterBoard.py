@@ -1074,8 +1074,9 @@ class GUIMasterBoard(gtk.Window):
               defender_legion.markerid, defender_creature_names)
             def1.addErrback(self.failure)
         elif response_id == Negotiate.DONE_PROPOSING:
-            # TODO no more proposals
-            pass
+            def1 = self.user.callRemote("no_more_proposals", self.game.name,
+              attacker_legion.markerid, defender_legion.markerid)
+            def1.addErrback(self.failure)
         elif response_id == Negotiate.FIGHT:
             def1 = self.user.callRemote("fight", self.game.name,
               attacker_legion.markerid, defender_legion.markerid)

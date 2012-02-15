@@ -768,6 +768,13 @@ class Game(Observed):
           defender_markerid, defender_creature_names)
         self.notify(action)
 
+    def no_more_proposals(self, playername, attacker_markerid,
+      defender_markerid):
+        """Called from Server."""
+        action = Action.NoMoreProposals(self.name, playername,
+          attacker_markerid, defender_markerid)
+        self.notify(action)
+
     def fight(self, playername, attacker_markerid, defender_markerid):
         """Called from update."""
         log.msg("fight", playername, attacker_markerid, defender_markerid,

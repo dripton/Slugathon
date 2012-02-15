@@ -403,6 +403,16 @@ class RejectProposal(Action):
 pb.setUnjellyableForClass(RejectProposal, RejectProposal)
 
 
+class NoMoreProposals(Action):
+    def __init__(self, game_name, playername, attacker_markerid,
+      defender_markerid):
+        self.game_name = game_name
+        self.playername = playername
+        self.attacker_markerid = attacker_markerid
+        self.defender_markerid = defender_markerid
+pb.setUnjellyableForClass(NoMoreProposals, NoMoreProposals)
+
+
 class MoveCreature(Action):
     def __init__(self, game_name, playername, creature_name, old_hexlabel,
       new_hexlabel):

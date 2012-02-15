@@ -120,6 +120,11 @@ class User(Avatar):
           attacker_creature_names, defender_markerid,
           defender_creature_names)
 
+    def perspective_no_more_proposals(self, game_name, attacker_markerid,
+      defender_markerid):
+        self.server.no_more_proposals(self.name, game_name, attacker_markerid,
+          defender_markerid)
+
     def perspective_fight(self, game_name, attacker_markerid,
       defender_markerid):
         self.server.fight(self.name, game_name, attacker_markerid,
