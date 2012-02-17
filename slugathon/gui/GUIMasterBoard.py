@@ -1095,6 +1095,10 @@ class GUIMasterBoard(gtk.Window):
               attacker_legion.markerid, attacker_creature_names,
               defender_legion.markerid, defender_creature_names)
             def1.addErrback(self.failure)
+        elif response_id == Proposal.FIGHT:
+            def1 = self.user.callRemote("fight", self.game.name,
+              attacker_legion.markerid, defender_legion.markerid)
+            def1.addErrback(self.failure)
 
     def pause_ai(self, action):
         def1 = self.user.callRemote("pause_ai", self.game.name)

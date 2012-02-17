@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2006-2011 David Ripton"
+__copyright__ = "Copyright (c) 2006-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -19,6 +19,7 @@ from slugathon.util.bag import bag
 
 ACCEPT = 0
 REJECT = 1
+FIGHT = 2
 
 
 def new(username, attacker_legion, attacker_creature_names,
@@ -108,6 +109,7 @@ class Proposal(gtk.Dialog):
 
         self.add_button("Accept", ACCEPT)
         self.add_button("Reject", REJECT)
+        self.add_button("Fight", FIGHT)
         self.connect("response", self.cb_response)
 
         self.show_all()
