@@ -596,8 +596,6 @@ class AIClient(pb.Referenceable, Observed):
             if legion:
                 legion.reveal_creatures(action.creature_names)
                 node = self.aps.get_leaf(action.markerid)
-                # XXX There are edge cases where the legion still exists
-                # but the node is gone.
                 if node is not None:
                     node.reveal_creatures(action.creature_names)
                 self.update_creatures(game)
