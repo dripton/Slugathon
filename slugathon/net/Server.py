@@ -89,13 +89,10 @@ class Server(Observed):
         If dest is None, send to all users
         """
         message = "%s: %s" % (source, text)
-        if dest is None:
-            dest = self.name_to_user.iterkeys()
-        else:
+        if dest is not None:
             dest.add(source)
-        for username in dest:
-            user = self.name_to_user[username]
-            user.receive_chat_message(message)
+        action = Action.ChatMessage(source, message)
+        self.notify(action, names=dest)
 
     def form_game(self, username, game_name, min_players, max_players,
       time_limit, player_type, result_info):

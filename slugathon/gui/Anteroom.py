@@ -323,13 +323,6 @@ class Anteroom(gtk.Window):
     def cb_load_game_button_click(self, widget, event):
         LoadGame.LoadGame(self.user, self.username, self)
 
-    def receive_chat_message(self, message):
-        buf = self.chat_view.get_buffer()
-        message = message.strip() + "\n"
-        it = buf.get_end_iter()
-        buf.insert(it, message)
-        self.chat_view.scroll_to_mark(buf.get_insert(), 0)
-
     def _add_wfp(self, game):
         wfp = self.wfps.get(game.name)
         if wfp is not None:
@@ -411,6 +404,12 @@ class Anteroom(gtk.Window):
             self.update_game_stores()
         elif isinstance(action, Action.EliminatePlayer):
             self.update_game_stores()
+        elif isinstance(action, Action.ChatMessage):
+            buf = self.chat_view.get_buffer()
+            message = action.message.strip() + "\n"
+            it = buf.get_end_iter()
+            buf.insert(it, message)
+            self.chat_view.scroll_to_mark(buf.get_insert(), 0)
 
 
 if __name__ == "__main__":

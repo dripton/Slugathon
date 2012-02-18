@@ -179,9 +179,6 @@ class AIClient(pb.Referenceable, Observed):
     def failure(self, error):
         log.err(error)
 
-    def remote_receive_chat_message(self, text):
-        pass
-
     def remote_update(self, action, names):
         """Near-IObserver on the remote User, except observed is
         not passed remotely.

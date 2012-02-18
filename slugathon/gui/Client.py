@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2011 David Ripton"
+__copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 """Outward-facing facade for client side."""
@@ -104,10 +104,6 @@ class Client(pb.Referenceable, Observed):
 
     def failure(self, error):
         log.err(error)
-
-    # TODO Make this an Action, after adding a filter on Observed.notify
-    def remote_receive_chat_message(self, text):
-        self.anteroom.receive_chat_message(text)
 
     def remote_update(self, action, names):
         """Near-IObserver on the remote User, except observed is

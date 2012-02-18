@@ -44,11 +44,6 @@ class User(Avatar):
         """
         self.server.send_chat_message(self.name, dest, text)
 
-    def receive_chat_message(self, text):
-        def1 = self.client.callRemote("receive_chat_message", text)
-        def1.addErrback(self.trap_connection_lost)
-        def1.addErrback(self.log_failure)
-
     def perspective_form_game(self, game_name, min_players, max_players,
           time_limit, player_type, result_info):
         self.server.form_game(self.name, game_name, min_players, max_players,

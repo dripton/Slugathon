@@ -632,3 +632,10 @@ class ResumeAI(EphemeralAction):
         self.game_name = game_name
         self.playername = playername
 pb.setUnjellyableForClass(ResumeAI, ResumeAI)
+
+
+class ChatMessage(EphemeralAction):
+    def __init__(self, playername, message):
+        self.playername = playername
+        self.message = message
+pb.setUnjellyableForClass(ChatMessage, ChatMessage)
