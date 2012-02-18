@@ -166,7 +166,6 @@ class AIClient(pb.Referenceable, Observed):
             self.remove_observer(game)
             self.games.remove(game)
 
-    # TODO Restrict to one player.
     def update_creatures(self, game):
         """Update creatures in game from self.aps."""
         for legion in game.all_legions():
