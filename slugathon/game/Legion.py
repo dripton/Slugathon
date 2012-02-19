@@ -496,16 +496,62 @@ class Legion(Observed):
         """Return a rough indication of legion combat value."""
         return sum(creature.combat_value for creature in self.living_creatures)
 
-    # TODO Add for other terrains if enough native creatures.
+    def native_fraction(self, hazard):
+        """Return the fraction of this legion that's native to hazard."""
+        native = 0
+        not_native = 0
+        for creature in self.creatures:
+            if creature.is_native(hazard):
+                native += 1
+            else:
+                not_native += 1
+        total = native + not_native
+        if total == 0:
+            return 0
+        else:
+            return 1.0 * native / total
+
     @property
     def terrain_combat_value(self):
         """Return a rough indication of legion combat value, considering its
         current terrain."""
-        TOWER_MULTIPLIER = 1.25
+        TOWER_BONUS = 0.25
+        BRUSH_BONUS = 0.1
+        JUNGLE_BONUS = 0.1
+        HILLS_BONUS = 0.1
+        SWAMP_BONUS = 0.05
+        MARSH_BONUS = 0.05
+        DESERT_BONUS = 0.1
+        MOUNTAINS_BONUS = 0.1
+        TUNDRA_BONUS = 0.1
         base_value = self.combat_value
         terrain = self.player.game.board.hexes[self.hexlabel].terrain
         if terrain == "Tower":
-            return TOWER_MULTIPLIER * base_value
+            return (1 + TOWER_BONUS) * base_value
+        elif terrain == "Brush":
+            return ((1 + (self.native_fraction("Bramble") * BRUSH_BONUS)) *
+              base_value)
+        elif terrain == "Jungle":
+            return ((1 + (self.native_fraction("Bramble") * JUNGLE_BONUS)) *
+              base_value)
+        elif terrain == "Hills":
+            return ((1 + (self.native_fraction("Slope") * HILLS_BONUS)) *
+              base_value)
+        elif terrain == "Swamp":
+            return ((1 + (self.native_fraction("Bog") * SWAMP_BONUS)) *
+              base_value)
+        elif terrain == "Marsh":
+            return ((1 + (self.native_fraction("Bog") * MARSH_BONUS)) *
+              base_value)
+        elif terrain == "Desert":
+            return ((1 + (self.native_fraction("Dune") * DESERT_BONUS)) *
+              base_value)
+        elif terrain == "Mountain":
+            return ((1 + (self.native_fraction("Slope") * MOUNTAINS_BONUS)) *
+              base_value)
+        elif terrain == "Tundra":
+            return ((1 + (self.native_fraction("Drift") * TUNDRA_BONUS)) *
+              base_value)
         else:
             return base_value
 

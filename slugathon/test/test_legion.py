@@ -365,3 +365,48 @@ def test_reveal_creatures():
       "Unknown", "Unknown", "Unknown"]), 1)
     legion.reveal_creatures(["Centaur", "Centaur", "Lion"])
     assert legion.creature_names == ["Centaur", "Centaur", "Lion", "Unknown"]
+
+
+def test_combat_value():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("p0", game, 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
+
+    assert legion.native_fraction("Dune") == 0
+    assert legion.native_fraction("Bramble") == 0.25
+    assert legion.native_fraction("Tundra") == 0
+
+    # Plains
+    assert legion.terrain_combat_value == legion.combat_value
+    # Woods
+    legion.hexlabel = 2
+    assert legion.terrain_combat_value == legion.combat_value
+    # Brush
+    legion.hexlabel = 3
+    assert legion.terrain_combat_value > legion.combat_value
+    # Hills
+    legion.hexlabel = 4
+    assert legion.terrain_combat_value > legion.combat_value
+    # Jungle
+    legion.hexlabel = 5
+    assert legion.terrain_combat_value > legion.combat_value
+    # Desert
+    legion.hexlabel = 7
+    assert legion.terrain_combat_value == legion.combat_value
+    # Marsh
+    legion.hexlabel = 8
+    assert legion.terrain_combat_value > legion.combat_value
+    # Swamp
+    legion.hexlabel = 14
+    assert legion.terrain_combat_value > legion.combat_value
+    # Tower
+    legion.hexlabel = 100
+    assert legion.terrain_combat_value > legion.combat_value
+    # Mountains
+    legion.hexlabel = 1000
+    assert legion.terrain_combat_value == legion.combat_value
+    # Tundra
+    legion.hexlabel = 2000
+    assert legion.terrain_combat_value == legion.combat_value
