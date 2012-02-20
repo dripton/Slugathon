@@ -157,7 +157,7 @@ class Server(Observed):
             if username != game.owner.name:
                 raise AssertionError("Game.start %s called by non-owner %s"
                   % (self.name, username))
-            if game.num_players_joined < game.min_players:
+            if game.num_players < game.min_players:
                 self._spawn_ais(game)
             else:
                 game.start(username)
@@ -187,7 +187,7 @@ class Server(Observed):
             fil.write("%s:%s\n" % (ainame, password))
 
     def _spawn_ais(self, game):
-        num_ais = game.min_players - game.num_players_joined
+        num_ais = game.min_players - game.num_players
         ainames = self._next_unused_ainames(num_ais)
         for ainame in ainames:
             if self._passwd_for_username(ainame) is None:

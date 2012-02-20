@@ -50,7 +50,6 @@ class Game(Observed):
         self.started = started
         self.players = []
         self.players_left = []  # Used to track co-winners in a draw
-        self.num_players_joined = 0
         self.add_player(owner, player_type, result_info)
         self.board = MasterBoard.MasterBoard()
         self.turn = 1
@@ -155,6 +154,10 @@ class Game(Observed):
     def playernames(self):
         return [player.name for player in self.players]
 
+    @property
+    def num_players(self):
+        return len(self.players)
+
     def get_player_by_name(self, name):
         for player in self.players:
             if player.name == name:
@@ -177,9 +180,8 @@ class Game(Observed):
         if len(self.players) >= self.max_players:
             log.msg("%s tried to join full game %s" % (playername, self.name))
             return
-        self.num_players_joined += 1
-        player = Player.Player(playername, self, self.num_players_joined,
-          player_type, result_info)
+        player = Player.Player(playername, self, self.num_players, player_type,
+          result_info)
         self.players.append(player)
         player.add_observer(self)
 
