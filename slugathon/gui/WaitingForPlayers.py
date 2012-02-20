@@ -37,6 +37,7 @@ class WaitingForPlayers(gtk.Dialog):
         self.username = username
         self.game = game
         self.game.add_observer(self)
+        self.started = False
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -143,8 +144,13 @@ class WaitingForPlayers(gtk.Dialog):
         self.destroy()
 
     def cb_click_start(self, widget, event):
-        def1 = self.user.callRemote("start_game", self.game.name)
-        def1.addErrback(self.failure)
+        self.start_game()
+
+    def start_game(self):
+        if not self.started:
+            self.started = True
+            def1 = self.user.callRemote("start_game", self.game.name)
+            def1.addErrback(self.failure)
 
     # TODO Save the selection and do something useful with it.
     def cb_player_list_select(self, path, unused):
@@ -158,14 +164,12 @@ class WaitingForPlayers(gtk.Dialog):
         self.countdown_entry.set_text(label)
         if diff > 0:
             if self.game.num_players >= self.game.max_players:
-                def1 = self.user.callRemote("start_game", self.game.name)
-                def1.addErrback(self.failure)
+                self.start_game()
             else:
                 reactor.callLater(1, self.update_countdown)
         else:
             if self.game.num_players >= self.game.min_players:
-                def1 = self.user.callRemote("start_game", self.game.name)
-                def1.addErrback(self.failure)
+                self.start_game()
 
     def update_player_store(self):
         length = len(self.player_store)
