@@ -112,8 +112,6 @@ class WaitingForPlayers(gtk.Dialog):
         self.start_button.connect("button-press-event", self.cb_click_start)
         self.start_button.set_sensitive(self.username ==
           self.game.owner.name)
-        # TODO Start button should automatically be triggered when max
-        # players have joined, or min players have joined and time is up.
 
         self.connect("destroy", self.cb_destroy)
 
@@ -159,7 +157,15 @@ class WaitingForPlayers(gtk.Dialog):
         label = str(max(diff, 0))
         self.countdown_entry.set_text(label)
         if diff > 0:
-            reactor.callLater(1, self.update_countdown)
+            if self.game.num_players >= self.game.max_players:
+                def1 = self.user.callRemote("start_game", self.game.name)
+                def1.addErrback(self.failure)
+            else:
+                reactor.callLater(1, self.update_countdown)
+        else:
+            if self.game.num_players >= self.game.min_players:
+                def1 = self.user.callRemote("start_game", self.game.name)
+                def1.addErrback(self.failure)
 
     def update_player_store(self):
         length = len(self.player_store)
