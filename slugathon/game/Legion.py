@@ -7,7 +7,8 @@ import types
 from twisted.python import log
 
 from slugathon.util.bag import bag
-from slugathon.data import recruitdata, markerdata, playercolordata
+from slugathon.data import (recruitdata, markerdata, playercolordata,
+  creaturedata)
 from slugathon.game import Creature, Action
 from slugathon.util.Observed import Observed
 
@@ -586,9 +587,8 @@ class Legion(Observed):
 
     def add_points(self, points, can_acquire_angels):
         log.msg("Legion.add_points", self, points, can_acquire_angels)
-        # TODO Move these to a data file
-        ARCHANGEL_POINTS = 500
-        ANGEL_POINTS = 100
+        ARCHANGEL_POINTS = Creature.Creature("Archangel").acquirable_every
+        ANGEL_POINTS = Creature.Creature("Angel").acquirable_every
         player = self.player
         score0 = player.score
         score1 = score0 + points
