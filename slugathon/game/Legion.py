@@ -7,8 +7,7 @@ import types
 from twisted.python import log
 
 from slugathon.util.bag import bag
-from slugathon.data import (recruitdata, markerdata, playercolordata,
-  creaturedata)
+from slugathon.data import recruitdata, markerdata, playercolordata
 from slugathon.game import Creature, Action
 from slugathon.util.Observed import Observed
 
