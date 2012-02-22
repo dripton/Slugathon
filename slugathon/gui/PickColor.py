@@ -3,7 +3,6 @@
 __copyright__ = "Copyright (c) 2004-2010 David Ripton"
 __license__ = "GNU GPL v2"
 
-# TODO This dialog should always be on top.
 
 import gtk
 from twisted.internet import defer
@@ -37,6 +36,7 @@ class PickColor(gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.set_has_separator(False)
+        self.set_keep_above(True)
 
         hbox = gtk.HBox(len(colors), spacing=3)
         self.vbox.pack_start(hbox)
