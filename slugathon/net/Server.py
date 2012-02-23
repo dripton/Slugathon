@@ -160,7 +160,8 @@ class Server(Observed):
             if game.num_players < game.min_players:
                 self._spawn_ais(game)
             else:
-                game.start(username)
+                if not game.started:
+                    game.start(username)
 
     def _passwd_for_username(self, username):
         with open(self.passwd_path) as fil:
