@@ -3,7 +3,6 @@
 __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
-# TODO When we click on a marker, move it to the top of the z-order
 
 import math
 from sys import maxint
@@ -471,6 +470,10 @@ class GUIMasterBoard(gtk.Window):
             ShowLegion.ShowLegion(self.username, marker.legion, True, self)
 
         else:  # left button
+            # Move to top of Z-order
+            self.markers.remove(marker)
+            self.markers.insert(0, marker)
+
             phase = self.game.phase
             if phase == Phase.SPLIT:
                 legion = marker.legion
