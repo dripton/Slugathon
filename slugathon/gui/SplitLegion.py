@@ -4,8 +4,6 @@ __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-# TODO Need feedback when a split fails for no markers.
-
 from twisted.internet import defer
 import gtk
 
