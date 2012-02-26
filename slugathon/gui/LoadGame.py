@@ -31,8 +31,7 @@ class LoadGame(gtk.FileChooserDialog):
         self.set_destroy_with_parent(True)
         self.set_current_folder(prefs.SAVE_DIR)
         file_filter = gtk.FileFilter()
-        # TODO Hoist constants somewhere
-        file_filter.add_pattern("*.save")
+        file_filter.add_pattern(prefs.SAVE_GLOB)
         self.set_filter(file_filter)
 
         response = self.run()

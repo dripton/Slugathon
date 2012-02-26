@@ -17,6 +17,8 @@ GLOBAL_PREFS_DIR = os.path.join(SLUGATHON_DIR, "globalprefs")
 SAVE_DIR = os.path.join(SLUGATHON_DIR, "save")
 RESULTS_DIR = os.path.join(SLUGATHON_DIR, "results")
 
+SAVE_GLOB = "*.save"
+
 AUTO_STRIKE_SINGLE_TARGET = "Auto strike single target"
 AUTO_RANGESTRIKE_SINGLE_TARGET = "Auto rangestrike single target"
 AUTO_CARRY_TO_SINGLE_TARGET = "Auto carry to single target"
