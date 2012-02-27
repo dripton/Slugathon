@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2008 David Ripton"
+__copyright__ = "Copyright (c) 2008-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -18,7 +18,7 @@ class UniqueFilePasswordDB(FilePasswordDB):
         self.server = server
 
     def requestAvatarId(self, c):
-        if c.username in self.server.name_to_user:
+        if c.username in self.server.usernames:
             # already logged in
             return defer.fail(LoginDenied())
         else:

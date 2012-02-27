@@ -42,7 +42,7 @@ class Server(Observed):
         self.passwd_path = passwd_path
         self.port = port
         self.games = []
-        self.name_to_user = {}
+        self.usernames = set()
         self.results = Results.Results()
         # {game_name: set(ainame) we're waiting for
         self.game_to_waiting_ais = {}
@@ -60,21 +60,17 @@ class Server(Observed):
     def add_observer(self, user):
         username = user.name
         Observed.add_observer(self, user, username)
-        self.name_to_user[username] = user
+        self.usernames.add(username)
         action = Action.AddUsername(username)
         self.notify(action)
 
     def remove_observer(self, user):
         Observed.remove_observer(self, user)
         username = user.name
-        if username in self.name_to_user:
-            del self.name_to_user[username]
+        if username in self.usernames:
+            self.usernames.remove(username)
             action = Action.DelUsername(username)
             self.notify(action)
-
-    @property
-    def usernames(self):
-        return sorted(self.name_to_user.iterkeys())
 
     def name_to_game(self, game_name):
         for game in self.games:

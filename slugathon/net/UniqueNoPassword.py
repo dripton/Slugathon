@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2010 David Ripton"
+__copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -13,7 +13,7 @@ class UniqueNoPassword(UniqueFilePasswordDB):
     user who is already logged in."""
 
     def requestAvatarId(self, credentials):
-        if credentials.username in self.server.name_to_user:
+        if credentials.username in self.server.usernames:
             # already logged in
             return defer.fail(LoginDenied())
         else:
