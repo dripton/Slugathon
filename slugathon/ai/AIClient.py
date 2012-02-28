@@ -218,8 +218,9 @@ class AIClient(pb.Referenceable, Observed):
         # legion before we send the Action to Game.
         if isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
-            self.aps.get_leaf(action.donor_markerid).reveal_creatures(
-              [action.creature_name])
+            node = self.aps.get_leaf(action.donor_markerid)
+            if node:
+                node.reveal_creatures([action.creature_name])
             self.update_creatures(game)
 
         # Update the Game first, then act.
