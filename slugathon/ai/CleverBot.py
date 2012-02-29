@@ -153,12 +153,12 @@ class CleverBot(object):
                       defender.markerid)
                     def1.addErrback(self.failure)
                 else:
-                    log.msg("fighting")
+                    log.msg("could flee; fighting")
                     def1 = self.user.callRemote("fight", game.name,
                       attacker.markerid, defender.markerid)
                     def1.addErrback(self.failure)
             else:
-                log.msg("fighting")
+                log.msg("can't flee; fighting")
                 def1 = self.user.callRemote("fight", game.name,
                   attacker.markerid, defender.markerid)
                 def1.addErrback(self.failure)
@@ -168,7 +168,7 @@ class CleverBot(object):
                 # Wait for the defender to choose before conceding.
                 pass
             else:
-                log.msg("fighting")
+                log.msg("attacker fighting")
                 def1 = self.user.callRemote("fight", game.name,
                   attacker.markerid, defender.markerid)
                 def1.addErrback(self.failure)
