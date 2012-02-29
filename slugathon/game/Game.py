@@ -781,8 +781,12 @@ class Game(Observed):
         """Called from update."""
         log.msg("fight", playername, attacker_markerid, defender_markerid,
           self.battle_turn)
-        if self.battle_turn is not None:
-            log.msg("already fighting, but continuing")
+        if (self.battle_turn is not None and self.attacker_legion and
+          self.attacker_legion.markerid == attacker_markerid and
+          self.defender_legion and self.defender_legion.markerid ==
+          defender_markerid):
+            log.msg("already fighting; abort")
+            return
         attacker_legion = self.find_legion(attacker_markerid)
         defender_legion = self.find_legion(defender_markerid)
         log.msg("attacker", attacker_legion)
