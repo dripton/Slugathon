@@ -190,7 +190,10 @@ class BattleMap(object):
         If either hex is an entrance, return a huge number, unless
         allow_entrance is True, in which case return the normal range.
         """
-        assert hexlabel1 in self.hexes and hexlabel2 in self.hexes
+        if hexlabel1 not in self.hexes or hexlabel2 not in self.hexes:
+            log.msg("BattleMap.range invalid hexlabel %s %s %s" % hexlabel1,
+              hexlabel2, allow_entrance)
+            return maxint
         if hexlabel1 == hexlabel2:
             return 1
         hex1 = self.hexes[hexlabel1]
