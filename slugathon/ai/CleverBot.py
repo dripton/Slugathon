@@ -129,6 +129,7 @@ class CleverBot(object):
         For now only know how to flee or concede.
         """
         log.msg("resolve_engagement", game, hexlabel, did_not_flee)
+        FLEE_RATIO = 1.5
         attacker = None
         defender = None
         for legion in game.all_legions(hexlabel):
@@ -145,7 +146,8 @@ class CleverBot(object):
             return
         if defender.player.name == self.playername:
             if defender.can_flee:
-                if defender.score * 1.5 < attacker.score:
+                if (defender.terrain_combat_value * FLEE_RATIO <
+                  attacker.terrain_combat_value):
                     log.msg("fleeing")
                     def1 = self.user.callRemote("flee", game.name,
                       defender.markerid)
