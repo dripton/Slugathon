@@ -616,7 +616,6 @@ class CleverBot(object):
         creature_moves is a list of (creature_name, start_hexlabel,
         finish_hexlabel) tuples.
         """
-        log.msg("_find_move_order")
         max_score = 0
         sort_values = {}
         for creature_name, start, move in creature_moves:
