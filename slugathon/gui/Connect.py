@@ -169,10 +169,11 @@ class Connect(gtk.Window):
         self.server_port_comboboxentry.set_active(active_index)
 
     def cb_connect_button_clicked(self, *args):
-        playername = self.playername_comboboxentry.child.get_text()
+        playername = self.playername_comboboxentry.get_child().get_text()
         password = self.password_entry.get_text()
-        server_name = self.server_name_comboboxentry.child.get_text()
-        server_port = int(self.server_port_comboboxentry.child.get_text())
+        server_name = self.server_name_comboboxentry.get_child().get_text()
+        server_port = int(self.server_port_comboboxentry.get_child().
+          get_text())
         prefs.save_server(server_name, server_port)
         prefs.save_last_playername(playername)
         self.save_window_position()

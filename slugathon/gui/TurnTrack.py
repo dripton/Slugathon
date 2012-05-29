@@ -84,9 +84,9 @@ class TurnTrack(gtk.DrawingArea):
         return True
 
     def update_gui(self, event=None):
-        if not self.window:
+        if not self.get_window():
             return
-        ctx = self.window.cairo_create()
+        ctx = self.get_window().cairo_create()
         if event:
             clip_rect = event.area
             ctx.rectangle(*clip_rect)

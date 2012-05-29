@@ -808,7 +808,7 @@ class GUIMasterBoard(gtk.Window):
         self.draw_recruitchits(ctx)
         self.draw_movement_die(ctx)
 
-        ctx2 = self.area.window.cairo_create()
+        ctx2 = self.area.get_window().cairo_create()
         ctx2.set_source_surface(surface)
         ctx2.paint()
 

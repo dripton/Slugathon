@@ -672,7 +672,7 @@ class GUIBattleMap(gtk.Window):
         Compute the dirty rectangle from the union of
         self.repaint_hexlabels and the event's area.
         """
-        if not self.area or not self.area.window:
+        if not self.area or not self.area.get_window():
             return
         if event is None:
             if not self.repaint_hexlabels:
@@ -710,7 +710,7 @@ class GUIBattleMap(gtk.Window):
                 guihex.update_gui(ctx)
         self.draw_chits(ctx)
 
-        ctx2 = self.area.window.cairo_create()
+        ctx2 = self.area.get_window().cairo_create()
         ctx2.set_source_surface(surface)
         ctx2.paint()
 

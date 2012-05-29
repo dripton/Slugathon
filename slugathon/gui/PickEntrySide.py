@@ -213,7 +213,7 @@ class PickEntrySide(gtk.Dialog):
         Compute the dirty rectangle from the union of
         self.repaint_hexlabels and the event's area.
         """
-        if not self.area or not self.area.window:
+        if not self.area or not self.area.get_window():
             return
         if event is None:
             if not self.repaint_hexlabels:
@@ -228,7 +228,7 @@ class PickEntrySide(gtk.Dialog):
             else:
                 clip_rect = event.area
 
-        ctx = self.area.window.cairo_create()
+        ctx = self.area.get_window().cairo_create()
         ctx.set_line_width(round(0.2 * self.scale))
         ctx.rectangle(*clip_rect)
         ctx.clip()
