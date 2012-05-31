@@ -67,8 +67,10 @@ def game_failed(arg):
 
 def main():
     parser = argparse.ArgumentParser(prog="stresstest-slugathon")
-    parser.add_argument("-n", "--playername", action="store", type=str)
-    parser.add_argument("-a", "--password", action="store", type=str)
+    parser.add_argument("-n", "--playername", action="store", type=str,
+      default="")
+    parser.add_argument("-a", "--password", action="store", type=str,
+      default="")
     parser.add_argument("-s", "--start-server", action="store_true")
     parser.add_argument("-g", "--num-games", action="store", type=int,
       default=10000000)

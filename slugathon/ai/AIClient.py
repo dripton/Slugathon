@@ -605,8 +605,11 @@ class AIClient(pb.Referenceable, Observed):
 
 
 def add_arguments(parser):
-    parser.add_argument("-n", "--playername", action="store", type=str)
-    parser.add_argument("-a", "--password", action="store", type=str)
+    # Twisted throws a TypeError if username or password is None.
+    parser.add_argument("-n", "--playername", action="store", type=str,
+      default="")
+    parser.add_argument("-a", "--password", action="store", type=str,
+      default="")
     parser.add_argument("-s", "--server", action="store", type=str,
       default="localhost")
     parser.add_argument("-p", "--port", action="store", type=int,
