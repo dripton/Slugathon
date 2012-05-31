@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2012 David Ripton"
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -6,7 +6,6 @@ import sys
 import math
 
 from twisted.internet import reactor
-from twisted.internet.error import ReactorNotRunning
 
 
 def flatten_point_list(points):
@@ -115,11 +114,9 @@ def exit(*unused):
     convenient to pass one through a callback.
     """
     if reactor.running:
-        try:
-            reactor.stop()
-        except ReactorNotRunning:
-            pass
-    sys.exit(0)
+        reactor.stop()
+    else:
+        sys.exit(0)
 
 
 def draw_polygon(ctx, points):
