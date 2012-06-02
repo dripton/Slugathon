@@ -659,6 +659,8 @@ class Legion(Observed):
         if self.angels_pending < 0:
             self.archangels_pending = 0
         for angel in angels:
+            if len(self) >= 7:
+                break
             caretaker.take_one(angel.name)
             self.creatures.append(angel)
             angel.legion = self
