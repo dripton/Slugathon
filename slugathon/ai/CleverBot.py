@@ -254,9 +254,9 @@ class CleverBot(object):
           legion.markerid)
         def1.addErrback(self.failure)
 
-    def summon(self, game):
+    def summon_angel_during(self, game):
         """Summon, during the REINFORCE battle phase"""
-        log.msg("CleverBot.summon")
+        log.msg("CleverBot.summon_angel_during")
         assert game.active_player.name == self.playername
         if game.battle_phase != Phase.REINFORCE:
             return
@@ -291,9 +291,9 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
-    def summon_after(self, game):
+    def summon_angel_after(self, game):
         """Summon, after the battle is over."""
-        log.msg("CleverBot.summon_after")
+        log.msg("CleverBot.summon_angel_after")
         assert game.active_player.name == self.playername
         legion = game.attacker_legion
         assert legion.player.name == self.playername
