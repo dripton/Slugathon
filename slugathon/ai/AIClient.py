@@ -484,12 +484,13 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
-            self.aps.get_leaf(action.donor_markerid).reveal_creatures(
-              [action.creature_name])
-            self.aps.get_leaf(action.donor_markerid).remove_creature(
-              action.creature_name)
-            self.aps.get_leaf(action.markerid).add_creature(
-              action.creature_name)
+            donor = self.aps.get_leaf(action.donor_markerid)
+            if donor:
+                donor.reveal_creatures([action.creature_name])
+                donor.remove_creature(action.creature_name)
+            recipient = self.aps.get_leaf(action.markerid)
+            if recipient:
+                recipient.add_creature(action.creature_name)
             self.update_creatures(game)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
