@@ -333,7 +333,7 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
             reactor.callLater(self.delay, self.ai.resolve_engagement, game,
-              action.hexlabel, False)
+              action.hexlabel)
 
         elif (isinstance(action, Action.Flee) or
           isinstance(action, Action.Concede)):
@@ -344,7 +344,7 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
             reactor.callLater(self.delay, self.ai.resolve_engagement, game,
-              action.hexlabel, True)
+              action.hexlabel)
 
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)

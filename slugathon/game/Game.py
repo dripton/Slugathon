@@ -59,6 +59,7 @@ class Game(Observed):
         self.history = History.History()
         self.add_observer(self.history)
         self.current_engagement_hexlabel = None
+        self.defender_chose_not_to_flee = False
         self.attacker_legion = None
         self.defender_legion = None
         self.battle_masterhex = None
@@ -114,6 +115,7 @@ class Game(Observed):
     def _cleanup_battle(self):
         log.msg("_cleanup_battle")
         self.current_engagement_hexlabel = None
+        self.defender_chose_not_to_flee = False
         self.attacker_legion = None
         self.defender_legion = None
         self.battle_masterhex = None
@@ -602,8 +604,16 @@ class Game(Observed):
 
     def _flee(self, playername, markerid):
         player = self.get_player_by_name(playername)
+        if player == self.active_player:
+            log.msg("attacker tried to flee")
+            return
         legion = player.markerid_to_legion[markerid]
-        assert legion.can_flee
+        if legion.player != player:
+            log.msg("wrong player tried to flee")
+            return
+        if not legion.can_flee:
+            log.msg("illegal flee attempt")
+            return
         hexlabel = legion.hexlabel
         for legion2 in self.all_legions(hexlabel):
             if legion2 != legion:
@@ -683,17 +693,9 @@ class Game(Observed):
             self._accept_proposal_helper(winning_legion, losing_legion,
               survivors)
 
-    def do_not_flee(self, playername, markerid):
-        """Called from Server."""
-        legion = self.find_legion(markerid)
-        hexlabel = legion.hexlabel
-        for enemy_legion in self.all_legions(hexlabel):
-            if enemy_legion != legion:
-                break
-        enemy_markerid = enemy_legion.markerid
-        action = Action.DoNotFlee(self.name, markerid, enemy_markerid,
-          hexlabel)
-        self.notify(action)
+    def _do_not_flee(self, playername, markerid):
+        """Called from update."""
+        self.defender_chose_not_to_flee = True
 
     def concede(self, playername, markerid):
         """Called from Server."""
@@ -777,9 +779,9 @@ class Game(Observed):
           attacker_markerid, defender_markerid)
         self.notify(action)
 
-    def fight(self, playername, attacker_markerid, defender_markerid):
+    def _fight(self, playername, attacker_markerid, defender_markerid):
         """Called from update."""
-        log.msg("fight", playername, attacker_markerid, defender_markerid,
+        log.msg("_fight", playername, attacker_markerid, defender_markerid,
           self.battle_turn)
         if (self.battle_turn is not None and self.attacker_legion and
           self.attacker_legion.markerid == attacker_markerid and
@@ -794,6 +796,9 @@ class Game(Observed):
         if (not attacker_legion or not defender_legion or playername not in
           [attacker_legion.player.name, defender_legion.player.name]):
             log.msg("illegal fight call from", playername)
+            return
+        if defender_legion.can_flee and not self.defender_chose_not_to_flee:
+            log.msg("illegal fight call while defender can still flee")
             return
         hexlabel = attacker_legion.hexlabel
         assert defender_legion.hexlabel == hexlabel
@@ -1603,6 +1608,12 @@ class Game(Observed):
                 playername = legion.player.name
                 self._flee(playername, action.markerid)
 
+        elif isinstance(action, Action.DoNotFlee):
+            legion = self.find_legion(action.markerid)
+            if legion:
+                playername = legion.player.name
+                self._do_not_flee(playername, action.markerid)
+
         elif isinstance(action, Action.Concede):
             legion = self.find_legion(action.markerid)
             if legion is not None:
@@ -1658,7 +1669,7 @@ class Game(Observed):
             attacker_markerid = action.attacker_markerid
             attacker = self.find_legion(attacker_markerid)
             defender_markerid = action.defender_markerid
-            self.fight(attacker.player.name, attacker_markerid,
+            self._fight(attacker.player.name, attacker_markerid,
               defender_markerid)
 
         elif isinstance(action, Action.MoveCreature):

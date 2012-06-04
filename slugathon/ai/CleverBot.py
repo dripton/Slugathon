@@ -123,12 +123,10 @@ class CleverBot(object):
             def1 = self.user.callRemote("done_with_engagements", game.name)
             def1.addErrback(self.failure)
 
-    def resolve_engagement(self, game, hexlabel, did_not_flee):
-        """Resolve the engagement in hexlabel.
-
-        For now only know how to flee or concede.
-        """
-        log.msg("resolve_engagement", game, hexlabel, did_not_flee)
+    # TODO concede, negotiate
+    def resolve_engagement(self, game, hexlabel):
+        """Resolve the engagement in hexlabel."""
+        log.msg("resolve_engagement", game, hexlabel)
         FLEE_RATIO = 1.5
         attacker = None
         defender = None
@@ -145,27 +143,28 @@ class CleverBot(object):
             log.msg("no attacker or defender; bailing")
             return
         if defender.player.name == self.playername:
-            if defender.can_flee:
-                if (defender.terrain_combat_value * FLEE_RATIO <
-                  attacker.terrain_combat_value):
-                    log.msg("fleeing")
-                    def1 = self.user.callRemote("flee", game.name,
+            if not game.defender_chose_not_to_flee:
+                if defender.can_flee:
+                    if (defender.terrain_combat_value * FLEE_RATIO <
+                      attacker.terrain_combat_value):
+                        log.msg("fleeing")
+                        def1 = self.user.callRemote("flee", game.name,
+                          defender.markerid)
+                        def1.addErrback(self.failure)
+                    else:
+                        log.msg("not fleeing")
+                        def1 = self.user.callRemote("do_not_flee", game.name,
+                          defender.markerid)
+                        def1.addErrback(self.failure)
+                else:
+                    log.msg("can't flee")
+                    def1 = self.user.callRemote("do_not_flee", game.name,
                       defender.markerid)
                     def1.addErrback(self.failure)
-                else:
-                    log.msg("could flee; fighting")
-                    def1 = self.user.callRemote("fight", game.name,
-                      attacker.markerid, defender.markerid)
-                    def1.addErrback(self.failure)
-            else:
-                log.msg("can't flee; fighting")
-                def1 = self.user.callRemote("fight", game.name,
-                  attacker.markerid, defender.markerid)
-                def1.addErrback(self.failure)
         elif attacker.player.name == self.playername:
-            if defender.can_flee and not did_not_flee:
+            if defender.can_flee and not game.defender_chose_not_to_flee:
                 log.msg("waiting for defender")
-                # Wait for the defender to choose before conceding.
+                # Wait for the defender to choose whether to flee.
                 pass
             else:
                 log.msg("attacker fighting")

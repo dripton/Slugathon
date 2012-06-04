@@ -303,15 +303,43 @@ class Server(Observed):
             if enemy_legion == legion:
                 log.msg("illegal concede before flee")
                 return
+            player = game.get_player_by_name(username)
+            if player == game.active_player:
+                log.msg("attacker tried to flee")
+                return
+            if legion.player != player:
+                log.msg("wrong player tried to flee")
+                return
+            if not legion.can_flee:
+                log.msg("illegal flee attempt")
+                return
             enemy_markerid = enemy_legion.markerid
             action = Action.Flee(game.name, markerid, enemy_markerid,
               legion.hexlabel)
             game.update(self, action, None)
 
+
     def do_not_flee(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
-            game.do_not_flee(username, markerid)
+            legion = game.find_legion(markerid)
+            hexlabel = legion.hexlabel
+            player = game.get_player_by_name(username)
+            if player == game.active_player:
+                log.msg("attacker tried to not flee")
+                return
+            legion = player.markerid_to_legion[markerid]
+            if legion.player != player:
+                log.msg("wrong player tried to not flee")
+                return
+            for enemy_legion in game.all_legions(hexlabel):
+                if enemy_legion != legion:
+                    break
+            enemy_markerid = enemy_legion.markerid
+            action = Action.DoNotFlee(game.name, markerid, enemy_markerid,
+              hexlabel)
+            game.update(self, action, None)
+
 
     def concede(self, username, game_name, markerid, enemy_markerid,
       hexlabel):
@@ -350,13 +378,22 @@ class Server(Observed):
             game.no_more_proposals(username, attacker_markerid,
               defender_markerid)
 
-    def fight(self, username, game_name, attacker_markerid,
-      defender_markerid):
+    def fight(self, username, game_name, attacker_markerid, defender_markerid):
+        log.msg("Server.fight", username, game_name, attacker_markerid,
+          defender_markerid)
         game = self.name_to_game(game_name)
         if game:
-            legion = game.find_legion(attacker_markerid)
+            attacker_legion = game.find_legion(attacker_markerid)
+            if (game.battle_turn is not None and game.attacker_legion and
+              game.attacker_legion.markerid == attacker_markerid and
+              game.defender_legion and game.defender_legion.markerid ==
+              defender_markerid):
+                log.msg("already fighting; abort")
+                return
+
             action = Action.Fight(game.name, attacker_markerid,
-              defender_markerid, legion.hexlabel)
+              defender_markerid, attacker_legion.hexlabel)
+            log.msg("Server.fight calling game.update")
             game.update(self, action, None)
 
     def move_creature(self, username, game_name, creature_name, old_hexlabel,
