@@ -318,7 +318,6 @@ class Server(Observed):
               legion.hexlabel)
             game.update(self, action, None)
 
-
     def do_not_flee(self, username, game_name, markerid):
         game = self.name_to_game(game_name)
         if game:
@@ -339,7 +338,6 @@ class Server(Observed):
             action = Action.DoNotFlee(game.name, markerid, enemy_markerid,
               hexlabel)
             game.update(self, action, None)
-
 
     def concede(self, username, game_name, markerid, enemy_markerid,
       hexlabel):
