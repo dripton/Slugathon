@@ -92,6 +92,7 @@ class Server(Observed):
 
     def form_game(self, username, game_name, min_players, max_players,
       time_limit, player_type, result_info):
+        """Form a new game."""
         if not game_name:
             raise ValueError("Games must be named")
         if game_name in [game.name for game in self.games]:
@@ -112,6 +113,7 @@ class Server(Observed):
         self.notify(action)
 
     def join_game(self, username, game_name, player_type, result_info):
+        """Join an existing game that hasn't started yet."""
         log.msg("join_game", username, game_name, player_type, result_info)
         game = self.name_to_game(game_name)
         if game:
@@ -131,6 +133,7 @@ class Server(Observed):
                     reactor.callLater(1, game.start, game.owner.name)
 
     def drop_from_game(self, username, game_name):
+        """Drop a user from a game."""
         game = self.name_to_game(game_name)
         if game:
             try:
@@ -148,6 +151,7 @@ class Server(Observed):
                     self.notify(action)
 
     def start_game(self, username, game_name):
+        """Start an existing game."""
         game = self.name_to_game(game_name)
         if game:
             if username != game.owner.name:
@@ -227,17 +231,20 @@ class Server(Observed):
             reactor.spawnProcess(pp, executable, args=args, env=os.environ)
 
     def pick_color(self, username, game_name, color):
+        """Pick a player color."""
         game = self.name_to_game(game_name)
         if game:
             game.assign_color(username, color)
 
     def pick_first_marker(self, username, game_name, markerid):
+        """Pick a player's first legion marker."""
         game = self.name_to_game(game_name)
         if game:
             game.assign_first_marker(username, markerid)
 
     def split_legion(self, username, game_name, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names):
+        """Split a legion."""
         game = self.name_to_game(game_name)
         if game:
             game.split_legion(username, parent_markerid, child_markerid,
@@ -245,22 +252,26 @@ class Server(Observed):
 
     def undo_split(self, username, game_name, parent_markerid,
       child_markerid):
+        """Undo a split."""
         game = self.name_to_game(game_name)
         if game:
             game.undo_split(username, parent_markerid, child_markerid)
 
     def done_with_splits(self, username, game_name):
+        """Finish the split phase."""
         game = self.name_to_game(game_name)
         if game:
             game.done_with_splits(username)
 
     def take_mulligan(self, username, game_name):
+        """Take a mulligan and reroll movement."""
         game = self.name_to_game(game_name)
         if game:
             game.take_mulligan(username)
 
     def move_legion(self, username, game_name, markerid, hexlabel,
       entry_side, teleport, teleporting_lord):
+        """Move one legion on the masterboard."""
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(username)
@@ -274,21 +285,26 @@ class Server(Observed):
               teleport, teleporting_lord)
 
     def undo_move_legion(self, username, game_name, markerid):
+        """Undo one legion move."""
         game = self.name_to_game(game_name)
         if game:
             game.undo_move_legion(username, markerid)
 
     def done_with_moves(self, username, game_name):
+        """Finish the masterboard movement phase."""
+        game = self.name_to_game(game_name)
         game = self.name_to_game(game_name)
         if game:
             game.done_with_moves(username)
 
     def resolve_engagement(self, username, game_name, hexlabel):
+        """Pick the next engagement to resolve."""
         game = self.name_to_game(game_name)
         if game:
             game.resolve_engagement(username, hexlabel)
 
     def flee(self, username, game_name, markerid):
+        """Flee from an engagement."""
         game = self.name_to_game(game_name)
         if game:
             legion = game.find_legion(markerid)
@@ -319,6 +335,7 @@ class Server(Observed):
             game.update(self, action, None)
 
     def do_not_flee(self, username, game_name, markerid):
+        """Do not flee from an engagement."""
         game = self.name_to_game(game_name)
         if game:
             legion = game.find_legion(markerid)
@@ -339,14 +356,15 @@ class Server(Observed):
               hexlabel)
             game.update(self, action, None)
 
-    def concede(self, username, game_name, markerid, enemy_markerid,
-      hexlabel):
+    def concede(self, username, game_name, markerid, enemy_markerid, hexlabel):
+        """Concede an engagement."""
         game = self.name_to_game(game_name)
         if game:
             game.concede(username, markerid)
 
     def make_proposal(self, username, game_name, attacker_markerid,
       attacker_creature_names, defender_markerid, defender_creature_names):
+        """Make a proposal to settle an engagement."""
         game = self.name_to_game(game_name)
         if game:
             game.make_proposal(username, attacker_markerid,
@@ -355,6 +373,7 @@ class Server(Observed):
 
     def accept_proposal(self, username, game_name, attacker_markerid,
       attacker_creature_names, defender_markerid, defender_creature_names):
+        """Accept a previous proposal to settle an engagement."""
         game = self.name_to_game(game_name)
         if game:
             game.accept_proposal(username, attacker_markerid,
@@ -363,6 +382,7 @@ class Server(Observed):
 
     def reject_proposal(self, username, game_name, attacker_markerid,
       attacker_creature_names, defender_markerid, defender_creature_names):
+        """Reject a previous proposal to settle an engagement."""
         game = self.name_to_game(game_name)
         if game:
             game.reject_proposal(username, attacker_markerid,
@@ -371,12 +391,15 @@ class Server(Observed):
 
     def no_more_proposals(self, username, game_name, attacker_markerid,
       defender_markerid):
+        """Indicate that this player will make no more proposals to settle the
+        current engagement."""
         game = self.name_to_game(game_name)
         if game:
             game.no_more_proposals(username, attacker_markerid,
               defender_markerid)
 
     def fight(self, username, game_name, attacker_markerid, defender_markerid):
+        """Fight the current current engagement."""
         log.msg("Server.fight", username, game_name, attacker_markerid,
           defender_markerid)
         game = self.name_to_game(game_name)
@@ -396,6 +419,7 @@ class Server(Observed):
 
     def move_creature(self, username, game_name, creature_name, old_hexlabel,
       new_hexlabel):
+        """Move one creature on the battle map."""
         game = self.name_to_game(game_name)
         if game:
             game.move_creature(username, creature_name, old_hexlabel,
@@ -403,55 +427,65 @@ class Server(Observed):
 
     def undo_move_creature(self, username, game_name, creature_name,
       new_hexlabel):
+        """Undo one creature move on the battle map."""
         game = self.name_to_game(game_name)
         if game:
             game.undo_move_creature(username, creature_name, new_hexlabel)
 
     def done_with_reinforcements(self, username, game_name):
+        """Finish the reinforcement battle phase."""
         game = self.name_to_game(game_name)
         if game:
             game.done_with_reinforcements(username)
 
     def done_with_maneuvers(self, username, game_name):
+        """Finish the maneuver battle phase."""
         game = self.name_to_game(game_name)
         if game:
             game.done_with_maneuvers(username)
 
     def strike(self, username, game_name, striker_name, striker_hexlabel,
       target_name, target_hexlabel, num_dice, strike_number):
+        """Make one battle strike or strikeback."""
         game = self.name_to_game(game_name)
         if game:
             game.strike(username, striker_name, striker_hexlabel,
               target_name, target_hexlabel, num_dice, strike_number)
 
     def done_with_strikes(self, username, game_name):
+        """Finish the strike battle phase."""
         game = self.name_to_game(game_name)
         if game:
             game.done_with_strikes(username)
 
     def done_with_counterstrikes(self, username, game_name):
+        """Finish the counterstrike battle phase."""
         game = self.name_to_game(game_name)
         if game:
             game.done_with_counterstrikes(username)
 
     def acquire_angels(self, username, game_name, markerid, angel_names):
+        """Acquire angels and/or archangels after an engagement."""
         game = self.name_to_game(game_name)
         if game:
             game.acquire_angels(username, markerid, angel_names)
 
     def do_not_acquire_angels(self, username, game_name, markerid):
+        """Do not acquire angels and/or archangels after an engagement."""
         log.msg("do_not_acquire_angels", self, username, game_name, markerid)
         game = self.name_to_game(game_name)
         if game:
             game.do_not_acquire_angels(username, markerid)
 
     def done_with_engagements(self, username, game_name):
+        """Finish the engagement phase."""
         game = self.name_to_game(game_name)
         if game:
             game.done_with_engagements(username)
 
     def recruit_creature(self, username, game_name, markerid, creature_name,
       recruiter_names):
+        """Recruit one creature."""
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(username)
@@ -461,34 +495,40 @@ class Server(Observed):
                 game.update(self, action, None)
 
     def undo_recruit(self, username, game_name, markerid):
+        """Undo one recruit."""
         game = self.name_to_game(game_name)
         if game:
             game.undo_recruit(username, markerid)
 
     def done_with_recruits(self, username, game_name):
+        """Finish the recruitment phase."""
         game = self.name_to_game(game_name)
         if game:
             game.done_with_recruits(username)
 
     def summon_angel(self, username, game_name, markerid, donor_markerid,
       creature_name):
+        """Summon an angel or archangel."""
         game = self.name_to_game(game_name)
         if game:
             game.summon_angel(username, markerid, donor_markerid,
               creature_name)
 
     def do_not_summon_angel(self, username, game_name, markerid):
+        """Do not summon an angel or archangel."""
         game = self.name_to_game(game_name)
         if game:
             game.do_not_summon_angel(username, markerid)
 
     def do_not_reinforce(self, username, game_name, markerid):
+        """Do not recruit a reinforcement."""
         game = self.name_to_game(game_name)
         if game:
             game.do_not_reinforce(username, markerid)
 
     def carry(self, username, game_name, carry_target_name,
       carry_target_hexlabel, carries):
+        """Carry over excess hits to another adjacent enemy."""
         log.msg("carry", carry_target_name, carry_target_hexlabel, carries)
         game = self.name_to_game(game_name)
         if game:
@@ -496,21 +536,25 @@ class Server(Observed):
               carries)
 
     def save(self, username, game_name):
+        """Save the game to a file."""
         game = self.name_to_game(game_name)
         if game:
             game.save(username)
 
     def withdraw(self, username, game_name):
+        """Withdraw a player from the game."""
         game = self.name_to_game(game_name)
         if game:
             game.withdraw(username)
 
     def pause_ai(self, username, game_name):
+        """Pause AI players."""
         game = self.name_to_game(game_name)
         if game:
             game.pause_ai(username)
 
     def resume_ai(self, username, game_name):
+        """Unpause AI players."""
         game = self.name_to_game(game_name)
         if game:
             game.resume_ai(username)
