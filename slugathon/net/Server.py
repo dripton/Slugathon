@@ -419,7 +419,7 @@ class Server(Observed):
                 return
             if (defender_legion.can_flee and not
               game.defender_chose_not_to_flee):
-                log.msg("illegal fight call while defender can still flee")
+                log.msg("Illegal fight call while defender can still flee")
                 return
             action = Action.Fight(game.name, attacker_markerid,
               defender_markerid, attacker_legion.hexlabel)

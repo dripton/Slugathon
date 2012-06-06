@@ -143,8 +143,12 @@ class CleverBot(object):
             log.msg("no attacker or defender; bailing")
             return
         if defender.player.name == self.playername:
-            if not game.defender_chose_not_to_flee:
+            if game.defender_chose_not_to_flee:
+                log.msg("defender already chose not to flee")
+            else:
+                log.msg("defender hasn't chosen whether to flee yet")
                 if defender.can_flee:
+                    log.msg("can flee")
                     if (defender.terrain_combat_value * FLEE_RATIO <
                       attacker.terrain_combat_value):
                         log.msg("fleeing")
