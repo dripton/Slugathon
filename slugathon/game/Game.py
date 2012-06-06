@@ -110,6 +110,7 @@ class Game(Observed):
         self.first_attacker_kill = None
         self.attacker_entered = False
         self.pending_carry = None
+        self.defender_chose_not_to_flee = False
         self.clear_battle_flags()
 
     def _cleanup_battle(self):
@@ -824,6 +825,7 @@ class Game(Observed):
         action = Action.AcquireAngels(self.name, player.name, markerid,
           angel_names)
         self.notify(action)
+        self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
     def do_not_acquire_angels(self, playername, markerid):
@@ -832,6 +834,7 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         legion.do_not_acquire_angels()
+        self._cleanup_battle()
 
     def done_with_engagements(self, playername):
         """Try to end playername's fight phase.
@@ -865,7 +868,11 @@ class Game(Observed):
             legion.recruit_creature(creature, recruiter_names)
             if self.phase == Phase.FIGHT:
                 creature.hexlabel = "DEFENDER"
-        self.pending_reinforcement = False
+        if self.pending_reinforcement:
+            self.pending_reinforcement = False
+            if self.battle_is_over and not self.pending_acquire:
+                self._cleanup_battle()
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def undo_recruit(self, playername, markerid):
         """Called from Server and update."""
@@ -903,6 +910,9 @@ class Game(Observed):
               donor_markerid, creature_name)
             self.notify(action)
         self.pending_summon = False
+        if self.battle_is_over and not self.pending_acquire:
+            self._cleanup_battle()
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def do_not_summon_angel(self, playername, markerid):
         """Called from Server."""
@@ -910,11 +920,15 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         player.do_not_summon_angel(legion)
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def _do_not_summon_angel(self, playername, markerid):
         """Called from update."""
         log.msg("Game._do_not_summon_angel")
         self.pending_summon = False
+        if self.battle_is_over and not self.pending_acquire:
+            self._cleanup_battle()
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def do_not_reinforce(self, playername, markerid):
         """Called from Server."""
@@ -922,11 +936,16 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         player.do_not_reinforce(legion)
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def _do_not_reinforce(self, playername, markerid):
         """Called from update."""
         log.msg("Game._do_not_reinforce")
-        self.pending_reinforcement = False
+        if self.pending_reinforcement:
+            self.pending_reinforcement = False
+            if self.battle_is_over and not self.pending_acquire:
+                self._cleanup_battle()
+        reactor.callLater(1, self._end_dead_player_turn)
 
     def _unreinforce(self, playername, markerid):
         """Called from update."""
@@ -1362,7 +1381,9 @@ class Game(Observed):
                 for creature_name in creature_names_to_remove:
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
-        self._cleanup_battle()
+        if (not self.pending_summon and not self.pending_reinforcement and not
+          self.pending_acquire):
+            self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
     def _end_dead_player_turn(self):
