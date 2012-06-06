@@ -477,6 +477,39 @@ class Server(Observed):
         """Acquire angels and/or archangels after an engagement."""
         game = self.name_to_game(game_name)
         if game:
+            legion = game.find_legion(markerid)
+            if not legion:
+                return
+            num_archangels = num_angels = 0
+            for angel_name in angel_names:
+                if angel_name == "Archangel":
+                    num_archangels += 1
+                elif angel_name == "Angel":
+                    num_angels += 1
+            caretaker = game.caretaker
+            okay = (num_archangels <= legion.archangels_pending and
+              num_angels <= legion.angels_pending + legion.archangels_pending -
+              num_archangels)
+            if not okay:
+                log.msg("not enough angels pending")
+                log.msg("angels", angel_names)
+                log.msg("angels_pending", legion.angels_pending)
+                log.msg("archangels_pending", legion.archangels_pending)
+                return
+            if len(legion) >= 7:
+                log.msg("acquire_angels 7 high")
+                legion.angels_pending = 0
+                legion.archangels_pending = 0
+                return
+            if len(legion) + num_angels + num_archangels > 7:
+                log.msg("acquire_angels would go over 7 high")
+                return
+            while caretaker.num_left("Archangel") < num_archangels:
+                log.msg("not enough Archangels left")
+                return
+            while caretaker.num_left("Angel") < num_angels:
+                log.msg("not enough Angels left")
+                return
             game.acquire_angels(username, markerid, angel_names)
 
     def do_not_acquire_angels(self, username, game_name, markerid):

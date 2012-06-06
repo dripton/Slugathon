@@ -639,19 +639,14 @@ class Legion(Observed):
                 self.angels_pending = 0
                 self.archangels_pending = 0
                 return
-            while len(self) + num_angels + num_archangels > 7:
-                log.msg("too many angels; reducing")
-                if num_angels > 0:
-                    num_angels -= 1
-                elif num_archangels > 0:
-                    num_archangels -= 1
+            if len(self) + num_angels + num_archangels > 7:
+                log.msg("acquire_angels would go over 7 high")
+                return
             while caretaker.num_left("Archangel") < num_archangels:
                 log.msg("not enough Archangels left")
-                num_archangels -= 1
-                num_angels += 1
+                return
             while caretaker.num_left("Angel") < num_angels:
-                log.msg("not enough Angels left")
-                num_angels -= 1
+                return
         self.archangels_pending -= num_archangels
         if self.archangels_pending < 0:
             self.archangels_pending = 0
@@ -659,8 +654,6 @@ class Legion(Observed):
         if self.angels_pending < 0:
             self.archangels_pending = 0
         for angel in angels:
-            if len(self) >= 7:
-                break
             caretaker.take_one(angel.name)
             self.creatures.append(angel)
             angel.legion = self
