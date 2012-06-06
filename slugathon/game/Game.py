@@ -1334,6 +1334,8 @@ class Game(Observed):
         creatures in the winning legion.
         """
         log.msg("_end_battle")
+        # XXX Redundant but fixes timing issues with _cleanup_battle
+        self.defender_chose_not_to_flee = False
         if self.battle_turn > 7:
             # defender wins on time loss, possible reinforcement
             if self.defender_legion and self.defender_legion.can_recruit:
