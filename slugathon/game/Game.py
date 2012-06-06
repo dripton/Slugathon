@@ -180,8 +180,8 @@ class Game(Observed):
               playername, self.name))
             return
         if len(self.players) >= self.max_players:
-            log.msg("%s tried to join full game %s" % (playername, self.name))
-            return
+            raise AssertionError("%s tried to join full game %s" % (playername,
+              self.name))
         player = Player.Player(playername, self, self.num_players, player_type,
           result_info)
         self.players.append(player)
@@ -312,8 +312,8 @@ class Game(Observed):
         if player.color == color:
             return
         if playername != self.next_playername_to_pick_color:
-            log.msg("illegal assign_color attempt", playername, color)
-            return
+            raise AssertionError("illegal assign_color attempt %s %s" %
+              (playername, color))
         if color not in self.colors_left:
             raise AssertionError("tried to take unavailable color")
         player.assign_color(color)
@@ -367,6 +367,8 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
             raise AssertionError("splitting out of turn")
+        if self.phase != Phase.SPLIT:
+            raise AssertionError("splitting out of phase")
         player.split_legion(parent_markerid, child_markerid,
           parent_creature_names, child_creature_names)
 

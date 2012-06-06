@@ -411,7 +411,16 @@ class Server(Observed):
               defender_markerid):
                 log.msg("already fighting; abort")
                 return
-
+            attacker_legion = game.find_legion(attacker_markerid)
+            defender_legion = game.find_legion(defender_markerid)
+            if (not attacker_legion or not defender_legion or username not in
+              [attacker_legion.player.name, defender_legion.player.name]):
+                log.msg("illegal fight call from", username)
+                return
+            if (defender_legion.can_flee and not
+              game.defender_chose_not_to_flee):
+                log.msg("illegal fight call while defender can still flee")
+                return
             action = Action.Fight(game.name, attacker_markerid,
               defender_markerid, attacker_legion.hexlabel)
             log.msg("Server.fight calling game.update")
