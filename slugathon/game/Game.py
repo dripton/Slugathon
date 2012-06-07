@@ -825,7 +825,9 @@ class Game(Observed):
         action = Action.AcquireAngels(self.name, player.name, markerid,
           angel_names)
         self.notify(action)
-        self._cleanup_battle()
+        if (self.battle_is_over and not self.pending_summon and not
+          self.pending_reinforcement):
+            self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
     def do_not_acquire_angels(self, playername, markerid):
@@ -834,7 +836,9 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         legion.do_not_acquire_angels()
-        self._cleanup_battle()
+        if (self.battle_is_over and not self.pending_summon and not
+          self.pending_reinforcement):
+            self._cleanup_battle()
 
     def done_with_engagements(self, playername):
         """Try to end playername's fight phase.
