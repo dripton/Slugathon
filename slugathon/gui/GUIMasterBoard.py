@@ -529,7 +529,7 @@ class GUIMasterBoard(gtk.Window):
             elif phase == Phase.FIGHT:
                 legion = marker.legion
                 guihex = self.guihexes[legion.hexlabel]
-                if guihex.selected and self.game.battle_masterhex is None:
+                if guihex.selected:
                     def1 = self.user.callRemote("resolve_engagement",
                       self.game.name, guihex.masterhex.label)
                     def1.addErrback(self.failure)
