@@ -470,10 +470,6 @@ class GUIMasterBoard(gtk.Window):
             ShowLegion.ShowLegion(self.username, marker.legion, True, self)
 
         else:  # left button
-            # Move to top of Z-order
-            self.markers.remove(marker)
-            self.markers.insert(0, marker)
-
             phase = self.game.phase
             if phase == Phase.SPLIT:
                 legion = marker.legion
