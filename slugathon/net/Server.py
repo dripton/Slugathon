@@ -495,20 +495,25 @@ class Server(Observed):
                 log.msg("angels", angel_names)
                 log.msg("angels_pending", legion.angels_pending)
                 log.msg("archangels_pending", legion.archangels_pending)
+                game.do_not_acquire_angels(username, markerid)
                 return
             if len(legion) >= 7:
                 log.msg("acquire_angels 7 high")
                 legion.angels_pending = 0
                 legion.archangels_pending = 0
+                game.do_not_acquire_angels(username, markerid)
                 return
             if len(legion) + num_angels + num_archangels > 7:
                 log.msg("acquire_angels would go over 7 high")
+                game.do_not_acquire_angels(username, markerid)
                 return
-            while caretaker.num_left("Archangel") < num_archangels:
+            if caretaker.num_left("Archangel") < num_archangels:
                 log.msg("not enough Archangels left")
+                game.do_not_acquire_angels(username, markerid)
                 return
-            while caretaker.num_left("Angel") < num_angels:
+            if caretaker.num_left("Angel") < num_angels:
                 log.msg("not enough Angels left")
+                game.do_not_acquire_angels(username, markerid)
                 return
             game.acquire_angels(username, markerid, angel_names)
 
