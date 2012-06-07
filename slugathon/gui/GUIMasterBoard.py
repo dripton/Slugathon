@@ -723,14 +723,22 @@ class GUIMasterBoard(gtk.Window):
 
     def draw_movement_die(self, ctx):
         try:
-            roll = self.game.active_player.movement_roll
+            phase = self.game.phase
+            if phase == Phase.MOVE:
+                roll = self.game.active_player.movement_roll
+            else:
+                roll = None
         except AttributeError:
             return
-        if not roll:
-            return
-        die = Die.Die(roll, scale=self.scale)
-        ctx.set_source_surface(die.surface, 0, 0)
-        ctx.paint()
+        if roll:
+            die = Die.Die(roll, scale=self.scale)
+            ctx.set_source_surface(die.surface, 0, 0)
+            ctx.paint()
+        else:
+            ctx.set_source_rgb(0, 0, 0)
+            ctx.rectangle(0, 0, Chit.CHIT_SCALE_FACTOR * self.scale,
+              Chit.CHIT_SCALE_FACTOR * self.scale)
+            ctx.fill()
 
     def bounding_rect_for_hexlabels(self, hexlabels):
         """Return the minimum bounding rectangle that encloses all
@@ -1143,6 +1151,7 @@ class GUIMasterBoard(gtk.Window):
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.RollMovement):
+            # show movement die
             self.repaint_hexlabels.update(self.board.hexes.keys())
             if action.playername == self.username:
                 if action.mulligans_left == 0:
@@ -1166,6 +1175,8 @@ class GUIMasterBoard(gtk.Window):
                 self.repaint()
 
         elif isinstance(action, Action.StartFightPhase):
+            # clear movement die
+            self.repaint_hexlabels.update(self.board.hexes.keys())
             if action.playername == self.username:
                 self.clear_all_recruitchits()
             self.highlight_engagements()
@@ -1177,6 +1188,8 @@ class GUIMasterBoard(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.StartMusterPhase):
+            # clear movement die
+            self.repaint_hexlabels.update(self.board.hexes.keys())
             self.highlight_recruits()
             player = self.game.active_player
             if self.username == player.name:
