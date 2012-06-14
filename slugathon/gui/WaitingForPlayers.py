@@ -135,11 +135,11 @@ class WaitingForPlayers(gtk.Dialog):
 
     def cb_destroy(self, unused):
         if self.game:
-            def1 = self.user.callRemote("drop_from_game", self.game.name)
+            def1 = self.user.callRemote("withdraw", self.game.name)
             def1.addErrback(self.failure)
 
     def cb_click_drop(self, widget, event):
-        def1 = self.user.callRemote("drop_from_game", self.game.name)
+        def1 = self.user.callRemote("withdraw", self.game.name)
         def1.addErrback(self.failure)
         self.destroy()
 
@@ -196,7 +196,7 @@ class WaitingForPlayers(gtk.Dialog):
                 self.shutdown()
         elif isinstance(action, Action.JoinGame):
             self.update_player_store()
-        elif isinstance(action, Action.DropFromGame):
+        elif isinstance(action, Action.Withdraw):
             self.update_player_store()
         elif isinstance(action, Action.AssignTower):
             if action.game_name == self.game.name:

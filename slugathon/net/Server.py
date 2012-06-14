@@ -72,6 +72,13 @@ class Server(Observed):
             action = Action.DelUsername(username)
             self.notify(action)
 
+    def logout(self, user):
+        username = user.name
+        self.remove_observer(user)
+        for game in self.games:
+            if username in game.playernames:
+                self.withdraw(username, game.name)
+
     def name_to_game(self, game_name):
         for game in self.games:
             if game.name == game_name:
@@ -131,24 +138,6 @@ class Server(Observed):
                 if not set1:
                     game = self.name_to_game(game_name)
                     reactor.callLater(1, game.start, game.owner.name)
-
-    def drop_from_game(self, username, game_name):
-        """Drop a user from a game."""
-        game = self.name_to_game(game_name)
-        if game:
-            try:
-                game.remove_player(username)
-            except AssertionError:
-                pass
-            else:
-                if len(game.players) == 0:
-                    if game in self.games:
-                        self.games.remove(game)
-                    action = Action.RemoveGame(game.name)
-                    self.notify(action)
-                else:
-                    action = Action.DropFromGame(username, game.name)
-                    self.notify(action)
 
     def start_game(self, username, game_name):
         """Start an existing game."""
@@ -590,7 +579,22 @@ class Server(Observed):
         """Withdraw a player from the game."""
         game = self.name_to_game(game_name)
         if game:
-            game.withdraw(username)
+            if game.started:
+                game.withdraw(username)
+            else:
+                try:
+                    game.remove_player(username)
+                except AssertionError:
+                    pass
+                else:
+                    if len(game.players) == 0:
+                        if game in self.games:
+                            self.games.remove(game)
+                        action = Action.RemoveGame(game.name)
+                        self.notify(action)
+                    else:
+                        action = Action.Withdraw(username, game.name)
+                        self.notify(action)
 
     def pause_ai(self, username, game_name):
         """Pause AI players."""

@@ -356,7 +356,7 @@ class Anteroom(gtk.Window):
     def joined_game(self, playername, game_name):
         self.update_game_stores()
 
-    def dropped_from_game(self, game_name, username):
+    def withdrew_from_game(self, game_name, username):
         if username == self.username:
             self._remove_wfp(game_name)
         self.update_game_stores()
@@ -393,8 +393,8 @@ class Anteroom(gtk.Window):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.JoinGame):
             self.joined_game(action.username, action.game_name)
-        elif isinstance(action, Action.DropFromGame):
-            self.dropped_from_game(action.game_name, action.username)
+        elif isinstance(action, Action.Withdraw):
+            self.withdrew_from_game(action.game_name, action.username)
         elif isinstance(action, Action.AssignTower):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]

@@ -97,13 +97,6 @@ class JoinGame(Action):
 pb.setUnjellyableForClass(JoinGame, JoinGame)
 
 
-class DropFromGame(Action):
-    def __init__(self, username, game_name):
-        self.username = username
-        self.game_name = game_name
-pb.setUnjellyableForClass(DropFromGame, DropFromGame)
-
-
 class AssignTower(Action):
     def __init__(self, game_name, playername, tower_num):
         self.game_name = game_name

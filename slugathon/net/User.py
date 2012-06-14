@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 from twisted.spread.pb import Avatar, PBConnectionLost
 from twisted.internet.error import ConnectionLost
+from twisted.internet.task import LoopingCall
 from twisted.python import log
 from zope.interface import implementer
 
@@ -51,9 +52,6 @@ class User(Avatar):
 
     def perspective_join_game(self, game_name, player_type, result_info):
         self.server.join_game(self.name, game_name, player_type, result_info)
-
-    def perspective_drop_from_game(self, game_name):
-        self.server.drop_from_game(self.name, game_name)
 
     def perspective_start_game(self, game_name):
         self.server.start_game(self.name, game_name)
@@ -230,10 +228,12 @@ class User(Avatar):
         return "User " + self.name
 
     def add_observer(self, mind):
+        log.msg("User.add_observer", self, mind)
         def1 = self.client.callRemote("set_name", self.name)
         def1.addErrback(self.trap_connection_lost)
         def1.addErrback(self.log_failure)
-        def2 = self.client.callRemote("ping")
+        lc = LoopingCall(self.client.callRemote, "ping")
+        def2 = lc.start(30)
         def2.addErrback(self.trap_connection_lost)
         def2.addErrback(self.log_failure)
 
@@ -249,7 +249,7 @@ class User(Avatar):
 
     def logout(self):
         log.msg("logout", self.name)
-        self.server.remove_observer(self)
+        self.server.logout(self)
 
     def update(self, observed, action, names):
         """Defers updates to its client, dropping the observed reference."""

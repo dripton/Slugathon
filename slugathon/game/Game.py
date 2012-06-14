@@ -1496,7 +1496,10 @@ class Game(Observed):
 
         Called from Server.
         """
-        player = self.get_player_by_name(playername)
+        try:
+            player = self.get_player_by_name(playername)
+        except KeyError:
+            return
         if player.dead:
             return
         if self.over:
@@ -1545,10 +1548,6 @@ class Game(Observed):
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
                 self.add_player(action.username, action.player_type)
-
-        elif isinstance(action, Action.DropFromGame):
-            if action.game_name == self.name:
-                self.remove_player(action.username)
 
         elif isinstance(action, Action.AssignTower):
             self.started = True
@@ -1618,11 +1617,13 @@ class Game(Observed):
 
         elif isinstance(action, Action.StartFightPhase):
             self.phase = Phase.FIGHT
+            self._cleanup_battle()
             for player in self.players:
                 player.reset_angels_pending()
 
         elif isinstance(action, Action.ResolvingEngagement):
             log.msg("ResolvingEngagement; reset_angels_pending")
+            self._cleanup_battle()
             for player in self.players:
                 player.reset_angels_pending()
 
@@ -1843,10 +1844,15 @@ class Game(Observed):
             self._update_finish_order(winner_player, loser_player)
             if action.check_for_victory:
                 self.check_for_victory()
+            reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.Withdraw):
-            player = self.get_player_by_name(action.playername)
-            player.die(None, True)
-            self._end_dead_player_turn()
+            if action.game_name == self.name:
+                if not self.started:
+                    self.remove_player(action.username)
+                else:
+                    player = self.get_player_by_name(action.playername)
+                    player.die(None, True)
+                    self._end_dead_player_turn()
 
         self.notify(action, names)
