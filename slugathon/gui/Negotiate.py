@@ -55,6 +55,9 @@ class Negotiate(gtk.Dialog):
         self.vbox.pack_start(attacker_hbox)
         attacker_marker_hbox = gtk.HBox()
         attacker_hbox.pack_start(attacker_marker_hbox, expand=False)
+        attacker_score_label = gtk.Label("%d\n points" %
+          attacker_legion.score)
+        attacker_hbox.pack_start(attacker_score_label, expand=False)
         attacker_chits_hbox = gtk.HBox(spacing=3)
         attacker_hbox.pack_start(attacker_chits_hbox)
 
@@ -63,6 +66,9 @@ class Negotiate(gtk.Dialog):
         defender_marker_hbox = gtk.HBox()
         defender_hbox.pack_start(defender_marker_hbox, expand=False)
         defender_chits_hbox = gtk.HBox(spacing=3)
+        defender_score_label = gtk.Label("%d\n points" %
+          defender_legion.score)
+        defender_hbox.pack_start(defender_score_label, expand=False)
         defender_hbox.pack_start(defender_chits_hbox)
 
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
