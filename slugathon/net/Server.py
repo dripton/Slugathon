@@ -499,8 +499,6 @@ class Server(Observed):
                 return
             if len(legion) >= 7:
                 log.msg("acquire_angels 7 high")
-                legion.angels_pending = 0
-                legion.archangels_pending = 0
                 game.do_not_acquire_angels(username, markerid)
                 return
             if len(legion) + num_angels + num_archangels > 7:

@@ -37,8 +37,8 @@ class Legion(Observed):
         self.recruited = False
         # List of tuples of recruiter names
         self.recruiter_names_list = []
-        self.angels_pending = 0
-        self.archangels_pending = 0
+        self._angels_pending = 0
+        self._archangels_pending = 0
 
     @property
     def dead(self):
@@ -607,12 +607,26 @@ class Legion(Observed):
                 angels += 1
                 score1 -= ANGEL_POINTS
             log.msg("angels %d" % angels)
-            self.angels_pending = angels
-            self.archangels_pending = archangels
+            self._angels_pending = angels
+            self._archangels_pending = archangels
             if angels + archangels > 0:
                 action = Action.CanAcquireAngels(self.player.game.name,
                   self.player.name, self.markerid, angels, archangels)
                 self.notify(action)
+
+    @property
+    def angels_pending(self):
+        if len(self) >= 7:
+            self._angels_pending = 0
+            self._archangels_pending = 0
+        return self._angels_pending
+
+    @property
+    def archangels_pending(self):
+        if len(self) >= 7:
+            self._angels_pending = 0
+            self._archangels_pending = 0
+        return self._archangels_pending
 
     def acquire_angels(self, angels):
         """Acquire angels."""
@@ -636,8 +650,8 @@ class Legion(Observed):
                 return
             if len(self) >= 7:
                 log.msg("acquire_angels 7 high")
-                self.angels_pending = 0
-                self.archangels_pending = 0
+                self._angels_pending = 0
+                self._archangels_pending = 0
                 return
             if len(self) + num_angels + num_archangels > 7:
                 log.msg("acquire_angels would go over 7 high")
@@ -647,18 +661,18 @@ class Legion(Observed):
                 return
             while caretaker.num_left("Angel") < num_angels:
                 return
-        self.archangels_pending -= num_archangels
+        self._archangels_pending -= num_archangels
         if self.archangels_pending < 0:
-            self.archangels_pending = 0
-        self.angels_pending -= num_angels
+            self._archangels_pending = 0
+        self._angels_pending -= num_angels
         if self.angels_pending < 0:
-            self.archangels_pending = 0
+            self._angels_pending = 0
         for angel in angels:
             caretaker.take_one(angel.name)
             self.creatures.append(angel)
             angel.legion = self
-        self.angels_pending = 0
-        self.archangels_pending = 0
+        self._angels_pending = 0
+        self._archangels_pending = 0
         log.msg("end of acquire_angels", self)
 
     def do_not_acquire_angels(self):
@@ -673,8 +687,8 @@ class Legion(Observed):
     def reset_angels_pending(self):
         if self.angels_pending or self.archangels_pending:
             log.msg("reset_angels_pending")
-            self.angels_pending = 0
-            self.archangels_pending = 0
+            self._angels_pending = 0
+            self._archangels_pending = 0
 
     def enter_battle(self, hexlabel):
         for creature in self.creatures:
