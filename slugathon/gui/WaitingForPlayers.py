@@ -134,7 +134,7 @@ class WaitingForPlayers(gtk.Dialog):
         def1.addErrback(self.failure)
 
     def cb_destroy(self, unused):
-        if self.game:
+        if self.game and not self.game.started:
             def1 = self.user.callRemote("withdraw", self.game.name)
             def1.addErrback(self.failure)
 
