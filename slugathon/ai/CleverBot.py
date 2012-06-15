@@ -553,11 +553,11 @@ class CleverBot(object):
         return score
 
     def _gen_legion_moves_inner(self, movesets):
-        """Yield tuples of distinct hexlabels, one from each
-        moveset, in order, with no duplicates.
+        """Yield tuples of distinct hexlabels, one from each moveset, in order,
+        with no duplicates.
 
-        movesets is a list of sets of hexlabels, corresponding
-        to the order of remaining creatures in the legion.
+        movesets is a list of sets of hexlabels, corresponding to the order of
+        remaining creatures in the legion.
         """
         if not movesets:
             yield ()
@@ -575,22 +575,38 @@ class CleverBot(object):
     def _gen_legion_moves(self, movesets):
         """Yield all possible legion_moves for movesets.
 
-        movesets is a list of sets of hexlabels to which
-        each Creature can move (or stay), in the same order as
-        Legion.sorted_creatures.
-        Like:
+        movesets is a list of sets of hexlabels to which each Creature can move
+        (or stay), in the same order as Legion.sorted_creatures.  Like:
         creatures [titan1, ogre1, troll1]
         movesets [{"A1", "A2", "B1"}, {"B1", "B2"}, {"B1", "B3"}]
 
-        A legion_move is a list of hexlabels, in the same order as
-        creatures, where each Creature's hexlabel is one from its original
-        list, and no two Creatures have the same hexlabel.  Like:
+        A legion_move is a list of hexlabels, in the same order as creatures,
+        where each Creature's hexlabel is one from its original list, and no
+        two Creatures have the same hexlabel.  Like:
         ["A1", "B1", "B3"]
         """
         log.msg("_gen_legion_moves", movesets)
         for moves in self._gen_legion_moves_inner(movesets):
             if len(moves) == len(movesets):
                 yield list(moves)
+
+    def _gen_fallback_legion_moves(self, movesets):
+        """Yield all possible legion_moves for movesets, possibly including
+        some missing moves in the case where not all creatures can get onboard.
+
+        movesets is a list of sets of hexlabels to which each Creature can move
+        (or stay), in the same order as Legion.sorted_creatures.  Like:
+        creatures [titan1, ogre1, troll1]
+        movesets [{"A1", "A2", "B1"}, {"B1", "B2"}, {"B1", "B3"}]
+
+        A legion_move is a list of hexlabels, in the same order as creatures,
+        where each Creature's hexlabel is one from its original list, and no
+        two Creatures have the same hexlabel.  Like:
+        ["A1", "B1", "B3"]
+        """
+        log.msg("_gen_legion_moves", movesets)
+        for moves in self._gen_legion_moves_inner(movesets):
+            yield list(moves)
 
     def _score_perm(self, game, sort_values, perm):
         """Score one move order permutation."""
@@ -707,7 +723,9 @@ class CleverBot(object):
         log.msg("found %d legion_moves in %fs" % (len(legion_moves),
           time.time() - now))
         if not legion_moves:
-            return None
+            legion_moves = list(self._gen_fallback_legion_moves(movesets))
+            if not legion_moves:
+                return None
         best_score = -maxint
         start = time.time()
         # Scramble the moves, in case we don't have time to look at them all.
