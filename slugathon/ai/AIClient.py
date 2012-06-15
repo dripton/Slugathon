@@ -576,15 +576,20 @@ class AIClient(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
-        elif isinstance(action, Action.EliminatePlayer):
+        elif isinstance(action, Action.EliminatePlayer) or isinstance(action,
+          Action.Withdraw):
             game = self.name_to_game(action.game_name)
-            if action.loser_playername == self.playername:
+            if hasattr(action, "loser_playername"):
+                playername = action.loser_playername
+            else:
+                playername = action.playername
+            if playername == self.playername:
                 if game.owner.name != self.playername:
                     log.msg("Eliminated; AI exiting")
                     self.exit_unconditionally()
             # Remove the dead player's PredictSplits from self.aps
             # to avoid problems later if his markers get reused.
-            player = game.get_player_by_name(action.loser_playername)
+            player = game.get_player_by_name(playername)
             color_abbrev = player.color_abbrev
             for ps in self.aps:
                 for node in ps.get_nodes():
