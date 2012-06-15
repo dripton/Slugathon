@@ -394,7 +394,7 @@ class Anteroom(gtk.Window):
         elif isinstance(action, Action.JoinGame):
             self.joined_game(action.username, action.game_name)
         elif isinstance(action, Action.Withdraw):
-            self.withdrew_from_game(action.game_name, action.username)
+            self.withdrew_from_game(action.game_name, action.playername)
         elif isinstance(action, Action.AssignTower):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
