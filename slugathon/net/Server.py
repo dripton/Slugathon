@@ -98,7 +98,7 @@ class Server(Observed):
         self.notify(action, names=dest)
 
     def form_game(self, username, game_name, min_players, max_players,
-      time_limit, player_type, result_info):
+      ai_time_limit, player_time_limit, player_type, result_info):
         """Form a new game."""
         if not game_name:
             raise ValueError("Games must be named")
@@ -110,13 +110,14 @@ class Server(Observed):
         now = time.time()
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, username, now, now + GAME_START_DELAY,
-          min_players, max_players, master=True, time_limit=time_limit,
-          player_type=player_type, result_info=result_info)
+          min_players, max_players, master=True, ai_time_limit=ai_time_limit,
+          player_time_limit=player_time_limit, player_type=player_type,
+          result_info=result_info)
         self.games.append(game)
         game.add_observer(self)
         action = Action.FormGame(username, game.name, game.create_time,
-          game.start_time, game.min_players, game.max_players, time_limit,
-          player_type, result_info)
+          game.start_time, game.min_players, game.max_players, ai_time_limit,
+          player_time_limit, player_type, result_info)
         self.notify(action)
 
     def join_game(self, username, game_name, player_type, result_info):
@@ -208,7 +209,7 @@ class Server(Observed):
                 "--game-name", game.name,
                 "--log-path", os.path.join(logdir, "slugathon-%s-%s.log" %
                   (game.name, ainame)),
-                "--time-limit", str(game.time_limit),
+                "--ai-time-limit", str(game.ai_time_limit),
             ])
             if not self.no_passwd:
                 aipass = self._passwd_for_username(ainame)

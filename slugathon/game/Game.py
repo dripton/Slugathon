@@ -38,8 +38,9 @@ class Game(Observed):
     """Central class holding information about one game"""
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players, started=False, master=False,
-      time_limit=config.DEFAULT_AI_TIME_LIMIT, player_type="Human",
-      result_info=""):
+      ai_time_limit=config.DEFAULT_AI_TIME_LIMIT,
+      player_time_limit=config.DEFAULT_PLAYER_TIME_LIMIT,
+      player_type="Human", result_info=""):
         Observed.__init__(self)
         self.name = name
         self.create_time = create_time
@@ -74,7 +75,8 @@ class Game(Observed):
         self.pending_summon = False
         self.pending_reinforcement = False
         self.master = master
-        self.time_limit = time_limit
+        self.ai_time_limit = ai_time_limit
+        self.player_time_limit = player_time_limit
         # list of tuples of Player like [(winner,), (tied1, tied2), (loser,)]
         self.finish_order = []
 

@@ -38,6 +38,8 @@ class NewGame(gtk.Dialog):
         max_adjustment = gtk.Adjustment(6, 2, 6, 1, 0, 0)
         ai_time_limit_adjustment = gtk.Adjustment(config.DEFAULT_AI_TIME_LIMIT,
           1, 99, 1, 0, 0)
+        player_time_limit_adjustment = gtk.Adjustment(
+          config.DEFAULT_PLAYER_TIME_LIMIT, 1, 999, 1, 100, 0)
 
         hbox2 = gtk.HBox()
         self.vbox.pack_start(hbox2)
@@ -65,6 +67,14 @@ class NewGame(gtk.Dialog):
         self.ai_time_limit_spin.set_numeric(True)
         self.ai_time_limit_spin.set_update_policy(gtk.UPDATE_IF_VALID)
         hbox2.pack_start(self.ai_time_limit_spin, expand=False)
+        label5 = gtk.Label("Player time limit")
+        hbox2.pack_start(label5, expand=False)
+        self.player_time_limit_spin = gtk.SpinButton(
+          adjustment=player_time_limit_adjustment,
+          climb_rate=1, digits=0)
+        self.player_time_limit_spin.set_numeric(True)
+        self.player_time_limit_spin.set_update_policy(gtk.UPDATE_IF_VALID)
+        hbox2.pack_start(self.player_time_limit_spin, expand=False)
 
         self.cancel_button = self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
         self.cancel_button.connect("button-press-event", self.cancel)
@@ -79,9 +89,11 @@ class NewGame(gtk.Dialog):
             self.min_players = self.min_players_spin.get_value_as_int()
             self.max_players = self.max_players_spin.get_value_as_int()
             self.ai_time_limit = self.ai_time_limit_spin.get_value_as_int()
+            self.player_time_limit = \
+              self.player_time_limit_spin.get_value_as_int()
             def1 = self.user.callRemote("form_game", self.game_name,
-              self.min_players, self.max_players, self.ai_time_limit, "Human",
-              "")
+              self.min_players, self.max_players, self.ai_time_limit,
+              self.player_time_limit, "Human", "")
             def1.addErrback(self.failure)
             self.destroy()
 

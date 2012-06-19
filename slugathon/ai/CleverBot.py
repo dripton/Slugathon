@@ -52,17 +52,18 @@ def best7(score_moves):
 
 @implementer(Bot)
 class CleverBot(object):
-    def __init__(self, playername, time_limit):
-        log.msg("CleverBot", playername, time_limit)
+    def __init__(self, playername, ai_time_limit):
+        log.msg("CleverBot", playername, ai_time_limit)
         self.playername = playername
         self.user = None
-        self.time_limit = time_limit
+        self.ai_time_limit = ai_time_limit
         self.best_creature_moves = None
 
     @property
     def result_info(self):
         """Return a string with information for result-tracking purposes."""
-        return str("version=%s time_limit=%s" % (VERSION, self.time_limit))
+        return str("version=%s ai_time_limit=%s" % (VERSION,
+          self.ai_time_limit))
 
     def maybe_pick_color(self, game):
         log.msg("maybe_pick_color")
@@ -658,7 +659,7 @@ class CleverBot(object):
             elif score > best_score:
                 best_perm = perm
                 best_score = score
-            if time.time() - start_time > self.time_limit:
+            if time.time() - start_time > self.ai_time_limit:
                 log.msg("_find_move_order time limit")
                 break
         log.msg("_find_move_order returning %s" % list(best_perm))
@@ -743,7 +744,7 @@ class CleverBot(object):
                     best_legion_move = legion_move
                     best_score = score
                 now = time.time()
-                if now - start > self.time_limit:
+                if now - start > self.ai_time_limit:
                     log.msg("_find_best_creature_moves time limit")
                     break
             finally:
