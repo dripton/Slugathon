@@ -36,7 +36,8 @@ defer.setDebugging(True)
 @implementer(IObserver)
 class AIClient(pb.Referenceable, Observed):
     def __init__(self, username, password, host, port, delay, aitype,
-      game_name, log_path, ai_time_limit, form_game, min_players, max_players):
+      game_name, log_path, ai_time_limit, player_time_limit, form_game,
+      min_players, max_players):
         Observed.__init__(self)
         self.username = username
         self.playername = username  # In case the same user logs in twice
@@ -62,6 +63,7 @@ class AIClient(pb.Referenceable, Observed):
         self.game_name = game_name
         self.log_path = log_path
         self.ai_time_limit = ai_time_limit
+        self.player_time_limit = player_time_limit
         self.form_game = form_game
         self.min_players = min_players
         self.max_players = max_players
@@ -127,7 +129,7 @@ class AIClient(pb.Referenceable, Observed):
                 log.startLogging(sys.stdout)
             def1 = self.user.callRemote("form_game", self.game_name,
               self.min_players, self.max_players, self.ai_time_limit,
-              self.aitype, self.ai.result_info)
+              self.player_time_limit, self.aitype, self.ai.result_info)
             def1.addErrback(self.failure)
         else:
             # If game_name is set, AI only tries to join game with that name.
@@ -633,6 +635,8 @@ def add_arguments(parser):
     parser.add_argument("-l", "--log-path", action="store", type=str)
     parser.add_argument("--ai-time-limit", action="store", type=int,
       default=config.DEFAULT_AI_TIME_LIMIT)
+    parser.add_argument("--player-time-limit", action="store", type=int,
+      default=config.DEFAULT_PLAYER_TIME_LIMIT)
     parser.add_argument("--form-game", action="store_true", default=False)
     parser.add_argument("--min-players", type=int, default=2)
     parser.add_argument("--max-players", type=int, default=6)
@@ -647,7 +651,8 @@ def main():
         parser.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     aiclient = AIClient(opts.playername, opts.password, opts.server, opts.port,
       opts.delay, opts.aitype, opts.game_name, opts.log_path,
-      opts.ai_time_limit, opts.form_game, opts.min_players, opts.max_players)
+      opts.ai_time_limit, opts.player_time_limit, opts.form_game,
+      opts.min_players, opts.max_players)
     aiclient.connect()
     reactor.run()
 
