@@ -19,7 +19,7 @@ def test_db_creation():
         assert os.path.getsize(db_path) > 0
 
 
-def test_save_game():
+def test_save_game_and_get_ranking():
     with tempfile.NamedTemporaryFile(prefix="slugathon", suffix=".db",
       delete=True) as tmp_file:
         db_path = tmp_file.name
@@ -74,3 +74,12 @@ def test_save_game():
         row = rows[1]
         assert row["pname"] == "p2"
         assert row["rank"] == 2
+
+        ranking1 = results.get_ranking("p1")
+        ranking2 = results.get_ranking("p2")
+        print ranking1
+        print ranking2
+        assert ranking1.mu > 25. > ranking2.mu
+        assert ranking1.sigma < 25. / 3
+        assert ranking2.sigma < 25. / 3
+        assert ranking1.skill > 0 == ranking2.skill

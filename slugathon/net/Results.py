@@ -4,6 +4,8 @@ __license__ = "GNU GPL v2"
 
 import os
 import sqlite3
+import math
+from collections import namedtuple
 
 import trueskill
 
@@ -40,6 +42,19 @@ CREATE TABLE trueskill (
     sigma REAL
 );
 """
+
+
+class Ranking(namedtuple("Ranking", ["mu", "sigma"])):
+    __slots__ = ()
+
+    @property
+    def skill(self):
+        """Return an integer rating based on mu - 3 * sigma, at least 0."""
+        return max(0, int(math.floor(self.mu - 3 * self.sigma)))
+
+    def __str__(self):
+        return "Ranking: mu=%f sigma=%f skill=%d" % (self.mu, self.sigma,
+          self.skill)
 
 
 class Results(object):
@@ -161,3 +176,26 @@ class Results(object):
                     query = """UPDATE trueskill SET mu = ?, sigma = ?
                                WHERE player_id = ?"""
                     cursor.execute(query, (mu, sigma, player_id))
+
+    def get_ranking(self, playername):
+        """Return a Ranking object for one player name.
+
+        If the player is not found, return default values.
+        """
+        with self.connection:
+            cursor = self.connection.cursor()
+            query = """SELECT t.mu, t.sigma FROM trueskill t, player p
+                       WHERE p.player_id = t.player_id
+                       AND p.name = ?"""
+            cursor.execute(query, (playername, ))
+            rows = cursor.fetchall()
+            if rows:
+                row = rows[0]
+                mu = row["mu"]
+                sigma = row["sigma"]
+            else:
+                rating = trueskill.Rating()
+                mu = rating.mu
+                sigma = rating.sigma
+            ranking = Ranking(mu, sigma)
+            return ranking
