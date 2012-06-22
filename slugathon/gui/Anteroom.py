@@ -16,6 +16,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.util import guiutils, prefs
 from slugathon.util.NullUser import NullUser
+from slugathon.net import Results
 
 
 @implementer(IObserver)
@@ -31,6 +32,7 @@ class Anteroom(gtk.Window):
 
         self.wfps = {}               # game name : WaitingForPlayers
         self.selected_names = set()
+        self.results = Results.Results()
 
         self.set_title("Anteroom - %s" % self.username)
         self.set_default_size(800, 600)
@@ -163,16 +165,18 @@ class Anteroom(gtk.Window):
         return None
 
     def _init_liststores(self):
-        self.user_store = gtk.ListStore(str)
+        self.user_store = gtk.ListStore(str, int)
         self.update_user_store()
         self.user_list.set_model(self.user_store)
         selection = self.user_list.get_selection()
         selection.set_mode(gtk.SELECTION_MULTIPLE)
         selection.set_select_function(self.cb_user_list_select, data=None,
           full=True)
-        column = gtk.TreeViewColumn("User Name", gtk.CellRendererText(),
-          text=0)
-        self.user_list.append_column(column)
+        headers = ["User Name", "Skill"]
+        for (ii, title) in enumerate(headers):
+            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+              text=ii)
+            self.user_list.append_column(column)
 
         self.new_game_store = gtk.ListStore(str, str, str, str, int, int, str)
         self.current_game_store = gtk.ListStore(str, str, str, str)
@@ -210,10 +214,12 @@ class Anteroom(gtk.Window):
         sorted_usernames = sorted(self.usernames)
         leng = len(self.user_store)
         for ii, username in enumerate(sorted_usernames):
+            ranking = self.results.get_ranking(username)
+            skill = ranking.skill
             if ii < leng:
-                self.user_store[ii, 0] = (username,)
+                self.user_store[ii, 0] = (username, skill)
             else:
-                self.user_store.append((username,))
+                self.user_store.append((username, skill))
         leng = len(sorted_usernames)
         while len(self.user_store) > leng:
             del self.user_store[leng]

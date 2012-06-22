@@ -20,6 +20,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.gui import icon
 from slugathon.util.NullUser import NullUser
+from slugathon.net import Results
 
 
 def format_time(secs):
@@ -38,6 +39,8 @@ class WaitingForPlayers(gtk.Dialog):
         self.game = game
         self.game.add_observer(self)
         self.started = False
+
+        self.results = Results.Results()
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -115,16 +118,18 @@ class WaitingForPlayers(gtk.Dialog):
 
         self.connect("destroy", self.cb_destroy)
 
-        self.player_store = gtk.ListStore(str)
+        self.player_store = gtk.ListStore(str, int)
         self.update_player_store()
 
         self.update_countdown()
         self.player_list.set_model(self.player_store)
         selection = self.player_list.get_selection()
         selection.set_select_function(self.cb_player_list_select, None)
-        column = gtk.TreeViewColumn("Player Name", gtk.CellRendererText(),
-          text=0)
-        self.player_list.append_column(column)
+        headers = ["Player Name", "Skill"]
+        for (ii, title) in enumerate(headers):
+            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+              text=ii)
+            self.player_list.append_column(column)
 
         self.show_all()
 
@@ -173,10 +178,12 @@ class WaitingForPlayers(gtk.Dialog):
     def update_player_store(self):
         length = len(self.player_store)
         for ii, playername in enumerate(self.game.playernames):
+            ranking = self.results.get_ranking(playername)
+            skill = ranking.skill
             if ii < length:
-                self.player_store[(ii, 0)] = (playername,)
+                self.player_store[(ii, 0)] = (playername, skill)
             else:
-                self.player_store.append((playername,))
+                self.player_store.append((playername, skill))
         length = len(self.game.playernames)
         while len(self.player_store) > length:
             del self.player_store[length]
