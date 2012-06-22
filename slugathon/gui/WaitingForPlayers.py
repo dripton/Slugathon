@@ -53,7 +53,6 @@ class WaitingForPlayers(gtk.Dialog):
         self.vbox.pack_start(scrolled_window1)
 
         self.player_list = gtk.TreeView()
-        # TODO self.player_list.set_height_request(150)
         scrolled_window1.add(self.player_list)
 
         hbox1 = gtk.HBox()
