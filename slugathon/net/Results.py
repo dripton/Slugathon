@@ -48,8 +48,8 @@ class Ranking(namedtuple("Ranking", ["mu", "sigma"])):
 
     @property
     def skill(self):
-        """Return an integer rating based on mu - 3 * sigma, at least 0."""
-        return max(0, int(math.floor(self.mu - 3 * self.sigma)))
+        """Return an integer rating based on mu - 3 * sigma, at least 1."""
+        return max(1, int(math.floor(self.mu - 3 * self.sigma)))
 
     def __repr__(self):
         return "Ranking: mu=%f sigma=%f skill=%d" % (self.mu, self.sigma,
