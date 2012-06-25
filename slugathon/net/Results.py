@@ -45,7 +45,6 @@ CREATE TABLE trueskill (
 
 
 class Ranking(namedtuple("Ranking", ["mu", "sigma"])):
-    __slots__ = ()
 
     @property
     def skill(self):
