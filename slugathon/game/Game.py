@@ -574,7 +574,7 @@ class Game(Observed):
 
     def resolve_engagement(self, playername, hexlabel):
         """Called from Server."""
-        log.msg("resolve_engagement")
+        log.msg("Game.resolve_engagement")
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
             log.msg("cannot move on to next engagement yet")
@@ -1237,7 +1237,7 @@ class Game(Observed):
 
         Called from Server.
         """
-        log.msg("done_with_maneuvers", playername)
+        log.msg("Game.done_with_maneuvers", playername)
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             raise AssertionError("ending maneuver phase out of turn")

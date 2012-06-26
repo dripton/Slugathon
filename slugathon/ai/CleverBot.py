@@ -169,7 +169,7 @@ class CleverBot(object):
         elif attacker.player.name == self.playername:
             if not game.defender_chose_not_to_flee:
                 # Wait for the defender to choose whether to flee.
-                pass
+                log.msg("waiting for defender")
             else:
                 log.msg("attacker fighting")
                 def1 = self.user.callRemote("fight", game.name,

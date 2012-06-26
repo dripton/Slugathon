@@ -289,6 +289,7 @@ class Server(Observed):
 
     def resolve_engagement(self, username, game_name, hexlabel):
         """Pick the next engagement to resolve."""
+        log.msg("Server.resolve_engagement", username, game_name, hexlabel)
         game = self.name_to_game(game_name)
         if game:
             game.resolve_engagement(username, hexlabel)
