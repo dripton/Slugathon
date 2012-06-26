@@ -82,4 +82,4 @@ def test_save_game_and_get_ranking():
         assert ranking1.mu > 25. > ranking2.mu
         assert ranking1.sigma < 25. / 3
         assert ranking2.sigma < 25. / 3
-        assert ranking1.skill > 0 == ranking2.skill
+        assert ranking1.skill > ranking2.skill > 0
