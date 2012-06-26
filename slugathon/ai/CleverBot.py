@@ -167,8 +167,7 @@ class CleverBot(object):
                       defender.markerid)
                     def1.addErrback(self.failure)
         elif attacker.player.name == self.playername:
-            if defender.can_flee and not game.defender_chose_not_to_flee:
-                log.msg("waiting for defender")
+            if not game.defender_chose_not_to_flee:
                 # Wait for the defender to choose whether to flee.
                 pass
             else:
