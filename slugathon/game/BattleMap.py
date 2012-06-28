@@ -141,6 +141,7 @@ class BattleMap(object):
     """
 
     def __init__(self, mterrain, entry_side):
+        logging.info("mterrain %s entry_side %s", mterrain, entry_side)
         self.hexes = {}
         self.entry_side = entry_side
         self.mterrain = mterrain
