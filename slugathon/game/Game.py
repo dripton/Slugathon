@@ -827,7 +827,7 @@ class Game(Observed):
         action = Action.AcquireAngels(self.name, player.name, markerid,
           angel_names)
         self.notify(action)
-        if (self.battle_is_over and not self.pending_summon and not
+        if (self.is_battle_over and not self.pending_summon and not
           self.pending_reinforcement):
             self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
@@ -838,7 +838,7 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         legion.do_not_acquire_angels()
-        if (self.battle_is_over and not self.pending_summon and not
+        if (self.is_battle_over and not self.pending_summon and not
           self.pending_reinforcement):
             self._cleanup_battle()
 
@@ -876,7 +876,7 @@ class Game(Observed):
                 creature.hexlabel = "DEFENDER"
         if self.pending_reinforcement:
             self.pending_reinforcement = False
-            if self.battle_is_over and not self.pending_acquire:
+            if self.is_battle_over and not self.pending_acquire:
                 self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -916,7 +916,7 @@ class Game(Observed):
               donor_markerid, creature_name)
             self.notify(action)
         self.pending_summon = False
-        if self.battle_is_over and not self.pending_acquire:
+        if self.is_battle_over and not self.pending_acquire:
             self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -932,7 +932,7 @@ class Game(Observed):
         """Called from update."""
         logging.info("")
         self.pending_summon = False
-        if self.battle_is_over and not self.pending_acquire:
+        if self.is_battle_over and not self.pending_acquire:
             self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -949,7 +949,7 @@ class Game(Observed):
         logging.info("")
         if self.pending_reinforcement:
             self.pending_reinforcement = False
-            if self.battle_is_over and not self.pending_acquire:
+            if self.is_battle_over and not self.pending_acquire:
                 self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -1322,7 +1322,7 @@ class Game(Observed):
             player.done_with_strikes()
 
     @property
-    def battle_is_over(self):
+    def is_battle_over(self):
         """Return True iff the battle is over."""
         logging.info("battle_legions %s", self.battle_legions)
         for legion in self.battle_legions:
@@ -1422,11 +1422,11 @@ class Game(Observed):
         if self.battle_phase != Phase.COUNTERSTRIKE:
             logging.info("ending counterstrike phase out of phase")
             return
-        if (not self.battle_is_over and
+        if (not self.is_battle_over and
           self.battle_active_legion == self.defender_legion):
             self.battle_turn += 1
             logging.info("bumped battle turn to %s", self.battle_turn)
-        if self.battle_is_over:
+        if self.is_battle_over:
             logging.info("battle over")
             time_loss = self.battle_turn > 7
             logging.info("time_loss is %s", time_loss)
