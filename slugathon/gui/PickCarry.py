@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2009-2011 David Ripton"
+__copyright__ = "Copyright (c) 2009-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
+
+import logging
 
 from twisted.internet import gtk2reactor
 try:
@@ -10,7 +12,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-from twisted.python import log
 import gtk
 
 from slugathon.gui import icon
@@ -120,7 +121,7 @@ if __name__ == "__main__":
     game.battle_phase = Phase.STRIKE
 
     def my_callback((creature, carries)):
-        log.msg("carry %d hits to %s" % (carries, creature))
+        logging.info("carry %d hits to %s" % (carries, creature))
         reactor.stop()
 
     _, def1 = new(username, game_name, titan2, centaur1, 6, 4, 1, None)

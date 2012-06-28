@@ -1,10 +1,9 @@
-__copyright__ = "Copyright (c) 2003-2010 David Ripton"
+__copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 import math
-
-from twisted.python import log
+import logging
 
 from slugathon.util import Dice
 
@@ -164,7 +163,8 @@ class TestDice(object):
         mean_M = 2. * r * (n - r) / n + 1.
         var_M = (((2. * r) * (n - r) / n ** 2 * ((2. * r) * (n - r) - n)) /
           (n - 1.))
-        log.msg("M test: r =", r, "M = ", M, "mean = ", mean_M, "var =", var_M)
+        logging.info("M test: r = %s M = %s mean = %s var = %s", r, M, mean_M,
+          var_M)
         fail_if_abnormal(M, mean_M, var_M)
 
     def test_sign(self):
@@ -175,8 +175,8 @@ class TestDice(object):
         M = count_non_zero_diffs(self.rolls)
         mean_P = M / 2.
         var_P = M / 12.
-        log.msg("Sign test: P =", P, "M = ", M, "mean = ", mean_P, "var =",
-          var_P)
+        logging.info("Sign test: P = %s M = %s mean = %s var = %s", P, M,
+          mean_P, var_P)
         fail_if_abnormal(P, mean_P, var_P)
 
     def test_runs(self):
@@ -188,8 +188,8 @@ class TestDice(object):
         mean_R = 1. + (2 * pos * neg) / (pos + neg)
         var_R = (((2. * pos * neg) * (2. * pos * neg - pos - neg)) /
                 ((pos + neg) * (pos + neg) * (pos + neg - 1)))
-        log.msg("Runs test: R =", R, "m = ", m, "mean = ", mean_R, "var =",
-          var_R)
+        logging.info("Runs test: R = %s m = %s mean = %s var = %s", R, m,
+          mean_R, var_R)
         fail_if_abnormal(R, mean_R, var_R)
 
     def test_mann_kendall(self):
@@ -201,7 +201,8 @@ class TestDice(object):
                 S += val
         mean_S = 0.
         var_S = (n / 18.) * (n - 1.) * (2. * n + 5.)
-        log.msg("Mann-Kendall test: S =", S, "mean = ", mean_S, "var =", var_S)
+        logging.info("Mann-Kendall test: S = %s mean = %s var = %s", S, mean_S,
+          var_S)
         fail_if_abnormal(S, mean_S, var_S)
 
     def test_shuffle(self):
@@ -221,6 +222,6 @@ class TestDice(object):
             expected = self.trials / 6.0
             chi_square += (num - expected) ** 2.0 / expected
         chi_square /= self.trials - 1
-        log.msg("chi_square is", chi_square)
+        logging.info("chi_square is %s", chi_square)
         # degrees of freedom = 5, 99.5% chance of randomness
         assert chi_square < 0.4117

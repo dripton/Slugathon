@@ -3,9 +3,9 @@ __license__ = "GNU GPL v2"
 
 
 import types
+import logging
 
 from twisted.internet import reactor
-from twisted.python import log
 
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Creature, Legion, Phase
@@ -89,13 +89,13 @@ class Player(Observed):
         num_markers = len(markerdata.data[color])
         for ii in xrange(num_markers):
             self.markerids_left.add("%s%02d" % (abbrev, ii + 1))
-        log.msg(self.markerids_left)
+        logging.info(self.markerids_left)
         action = Action.PickedColor(self.game.name, self.name, color)
         self.notify(action)
 
     def pick_marker(self, markerid):
         if markerid not in self.markerids_left:
-            log.msg("pick_marker with bad marker")
+            logging.info("pick_marker with bad marker")
             return
         self.selected_markerid = markerid
 
@@ -141,8 +141,8 @@ class Player(Observed):
 
     def split_legion(self, parent_markerid, child_markerid,
       parent_creature_names, child_creature_names):
-        log.msg("split_legion", parent_markerid, child_markerid,
-          parent_creature_names, child_creature_names)
+        logging.info("split_legion %s %s %s %s", parent_markerid,
+          child_markerid, parent_creature_names, child_creature_names)
         parent = self.markerid_to_legion[parent_markerid]
         if child_markerid not in self.markerids_left:
             raise AssertionError("illegal marker")
@@ -172,12 +172,12 @@ class Player(Observed):
         action = Action.SplitLegion(self.game.name, self.name,
           parent_markerid, child_markerid, parent_creature_names,
           child_creature_names)
-        log.msg("action", action)
+        logging.info("action %s", action)
         self.notify(action, names=[self.name])
         action = Action.SplitLegion(self.game.name, self.name,
           parent_markerid, child_markerid, len(parent_creature_names) *
           ["Unknown"], len(child_creature_names) * ["Unknown"])
-        log.msg("action", action)
+        logging.info("action %s", action)
         other_playernames = self.game.playernames
         other_playernames.remove(self.name)
         self.notify(action, names=other_playernames)
@@ -317,11 +317,9 @@ class Player(Observed):
         """Return True iff this player can finish the fight phase."""
         if self.game.phase != Phase.FIGHT:
             return False
-        log.msg("can_exit_fight_phase engagement_hexlabels",
-          self.game.engagement_hexlabels,
-          "pending_summon", self.game.pending_summon,
-          "pending_reinforcement", self.game.pending_reinforcement,
-          "pending_acquire", self.pending_acquire)
+        logging.info("can_exit_fight_phase %s %s %s %s",
+          self.game.engagement_hexlabels, self.game.pending_summon,
+          self.game.pending_reinforcement, self.pending_acquire)
         return (not self.game.engagement_hexlabels and not
           self.game.pending_summon and not self.game.pending_reinforcement
           and not self.game.pending_acquire)
@@ -345,9 +343,9 @@ class Player(Observed):
                 self.remove_legion(legion.markerid)
 
     def done_with_engagements(self):
-        log.msg("Player.done_with_engagements")
+        logging.info("Player.done_with_engagements")
         if self.can_exit_fight_phase:
-            log.msg("can exit fight phase")
+            logging.info("can exit fight phase")
             action = Action.StartMusterPhase(self.game.name, self.name)
             self.notify(action)
 
@@ -379,7 +377,7 @@ class Player(Observed):
 
     def done_with_recruits(self):
         if self.game.active_player != self or self.game.phase != Phase.MUSTER:
-            log.msg("illegal call to done_with_recruits")
+            logging.info("illegal call to done_with_recruits")
             return
         (player, turn) = self.game.next_player_and_turn
         if player is not None:
@@ -396,7 +394,7 @@ class Player(Observed):
 
     def done_with_strikes(self):
         if self.has_forced_strikes:
-            log.msg("Forced strikes remain")
+            logging.info("Forced strikes remain")
             return
         player = None
         for legion in self.game.battle_legions:
@@ -408,7 +406,7 @@ class Player(Observed):
 
     def done_with_counterstrikes(self):
         if self.has_forced_strikes:
-            log.msg("Forced strikes remain")
+            logging.info("Forced strikes remain")
             return
         action = Action.StartReinforceBattlePhase(self.game.name, self.name,
           self.game.battle_turn)
@@ -416,7 +414,8 @@ class Player(Observed):
 
     def summon_angel(self, legion, donor, creature_name):
         """Summon an angel from donor to legion."""
-        log.msg("Player.summon_angel", legion, donor, creature_name)
+        logging.info("Player.summon_angel %s %s %s", legion, donor,
+          creature_name)
         assert not self.summoned, "player tried to summon twice"
         assert len(legion) < 7, "legion too tall to summon"
         donor.reveal_creatures([creature_name])
@@ -447,14 +446,14 @@ class Player(Observed):
 
     def do_not_summon_angel(self, legion):
         """Do not summon an angel into legion."""
-        log.msg("Player.do_not_summon_angel", legion)
+        logging.info("Player.do_not_summon_angel %s", legion)
         action = Action.DoNotSummonAngel(self.game.name, self.name,
           legion.markerid)
         self.notify(action)
 
     def do_not_reinforce(self, legion):
         """Do not recruit a reinforcement into legion."""
-        log.msg("Player.do_not_reinforce", legion)
+        logging.info("Player.do_not_reinforce %s", legion)
         action = Action.DoNotReinforce(self.game.name, self.name,
           legion.markerid)
         self.notify(action)
@@ -494,7 +493,8 @@ class Player(Observed):
         """Die and give half points to scoring_player, except for legions
         which are engaged with someone else.
         """
-        log.msg("Player.die", self, scoring_player, check_for_victory)
+        logging.info("Player.die %s %s %s", self, scoring_player,
+          check_for_victory)
         # First reveal all this player's legions.
         for legion in self.legions:
             if (legion.all_known and legion not in self.game.battle_legions):
@@ -519,12 +519,12 @@ class Player(Observed):
 
         This is only used for half points when eliminating a player.
         """
-        log.msg("Player.add_points", self, points)
+        logging.info("Player.add_points %s %s", self, points)
         self.score += points
 
     def forget_enemy_legions(self):
         """Forget the contents of all enemy legions."""
-        log.msg("forget_enemy_legions")
+        logging.info("forget_enemy_legions")
         for legion in self.enemy_legions():
             legion.forget_creatures()
 

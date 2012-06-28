@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2004-2010 David Ripton"
+__copyright__ = "Copyright (c) 2004-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 import gtk
 from twisted.internet import defer
-from twisted.python import log
 
 from slugathon.data.playercolordata import colors
 from slugathon.gui import icon
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     def my_callback((game, color)):
-        log.msg("picked", color)
+        logging.info("picked %s", color)
         guiutils.exit()
 
     now = time.time()

@@ -3,8 +3,7 @@ __license__ = "GNU GPL v2"
 
 
 from sys import maxint
-
-from twisted.python import log
+import logging
 
 from slugathon.data import battlemapdata
 from slugathon.game import BattleHex
@@ -191,8 +190,8 @@ class BattleMap(object):
         allow_entrance is True, in which case return the normal range.
         """
         if hexlabel1 not in self.hexes or hexlabel2 not in self.hexes:
-            log.msg("BattleMap.range invalid hexlabel %s %s %s" % hexlabel1,
-              hexlabel2, allow_entrance)
+            logging.info("BattleMap.range invalid hexlabel %s %s %s" %
+              hexlabel1, hexlabel2, allow_entrance)
             return maxint
         if hexlabel1 == hexlabel2:
             return 1
@@ -449,17 +448,17 @@ class BattleMap(object):
         game is optional, but needed to check creatures.
         """
         if hexlabel1 == hexlabel2:
-            log.msg("count_bramble_hexes hexlabel1 == hexlabel2 == %s" %
+            logging.info("count_bramble_hexes hexlabel1 == hexlabel2 == %s" %
               hexlabel1)
             return 0
         if self.is_los_blocked(hexlabel1, hexlabel2, game):
-            log.msg("count_bramble_hexes %s %s los blocked" % (hexlabel1,
+            logging.info("count_bramble_hexes %s %s los blocked" % (hexlabel1,
               hexlabel2))
             return 0
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
         if hex1.entrance or hex2.entrance:
-            log.msg("count_bramble_hexes entrance hex")
+            logging.info("count_bramble_hexes entrance hex")
             return 0
         x1, y1 = label_to_coords(hexlabel1, self.entry_side, True)
         x2, y2 = label_to_coords(hexlabel2, self.entry_side, True)

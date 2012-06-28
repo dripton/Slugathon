@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2010-2011 David Ripton"
+__copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 from twisted.internet import defer
-from twisted.python import log
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
@@ -104,7 +105,7 @@ if __name__ == "__main__":
         player.markerid_to_legion[legion.markerid] = legion
 
     def my_callback((legion, donor, creature)):
-        log.msg("Will summon", creature, "from", donor, "into", legion)
+        logging.info("Will summon %s from %s into %s", creature, donor, legion)
         guiutils.exit()
 
     summonangel, def1 = new(username, legion1, None)

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2006-2011 David Ripton"
+__copyright__ = "Copyright (c) 2006-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
+
+import logging
 
 from twisted.internet import gtk2reactor
 try:
@@ -10,7 +12,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
-from twisted.python import log
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
@@ -190,7 +191,7 @@ if __name__ == "__main__":
       defender_creatures, 1)
 
     def my_callback(*args):
-        log.msg("callback", args)
+        logging.info("callback %s", args)
         reactor.stop()
 
     _, def1 = new(defender_username, attacker_legion, defender_legion, None)

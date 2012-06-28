@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 import gtk
 from twisted.internet import defer
-from twisted.python import log
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
@@ -14,7 +15,7 @@ from slugathon.game import Creature
 
 def new(username, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
-    log.msg("new", username, legion, mterrain)
+    logging.info("new %s %s %s", username, legion, mterrain)
     def1 = defer.Deferred()
     pickrecruit = PickRecruit(username, legion, mterrain, caretaker, def1,
       parent)
@@ -114,7 +115,7 @@ if __name__ == "__main__":
     creatures = Creature.n2c(creature_names)
 
     def my_callback((legion, creature, recruiter_names)):
-        log.msg(legion, "recruited", creature, recruiter_names)
+        logging.info("%s recruited %s %s", legion, creature, recruiter_names)
         guiutils.exit()
 
     now = time.time()

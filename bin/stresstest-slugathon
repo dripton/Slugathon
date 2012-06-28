@@ -11,6 +11,7 @@ __license__ = "GNU GPL v2"
 import argparse
 import sys
 import os
+import logging
 
 from twisted.internet import reactor, utils
 from twisted.python import log
@@ -27,7 +28,7 @@ def start_server():
 
 
 def server_exited(returncode):
-    log.msg("server exited with returncode %d" % returncode)
+    logging.info("server exited with returncode %d" % returncode)
 
 
 def server_failed(arg):
@@ -36,7 +37,7 @@ def server_failed(arg):
 
 def start_game(playername, password, min_players, ai_time_limit, num_games):
     if num_games <= 0:
-        log.msg("finished running games")
+        logging.info("finished running games")
         reactor.callWhenRunning(reactor.stop)
         return
     def1 = utils.getProcessValue(sys.executable,
@@ -57,7 +58,7 @@ def start_game(playername, password, min_players, ai_time_limit, num_games):
 
 def game_exited(returncode, playername, password, min_players, ai_time_limit,
   num_games):
-    log.msg("game exited with returncode %d" % returncode)
+    logging.info("game exited with returncode %d" % returncode)
     start_game(playername, password, min_players, ai_time_limit, num_games)
 
 
@@ -78,7 +79,16 @@ def main():
     parser.add_argument("--ai-time-limit", type=int,
       default=config.DEFAULT_AI_TIME_LIMIT)
     args = parser.parse_args()
-    log.startLogging(sys.stdout)
+
+    log_observer = log.PythonLoggingObserver()
+    log_observer.start()
+    formatter = logging.Formatter(
+      "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logging.getLogger().addHandler(console_handler)
+    logging.getLogger().setLevel(logging.DEBUG)
+
     if args.start_server:
         start_server()
     start_game(args.playername, args.password, args.min_players,

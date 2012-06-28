@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2009-2011 David Ripton"
+__copyright__ = "Copyright (c) 2009-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 import gtk
 from twisted.internet import defer
-from twisted.python import log
 
 from slugathon.gui import Chit, Marker, icon
 
@@ -81,7 +82,7 @@ if __name__ == "__main__":
     player.markerid_to_legion[legion.markerid] = legion
 
     def my_callback(creature_name):
-        log.msg("Picked", creature_name)
+        logging.info("Picked %s", creature_name)
         guiutils.exit()
 
     pick_teleporting_lord, def1 = new(username, legion, None)

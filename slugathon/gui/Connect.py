@@ -9,6 +9,7 @@ import os
 import tempfile
 import sys
 import time
+import logging
 
 from twisted.internet import gtk2reactor
 gtk2reactor.install()
@@ -107,9 +108,18 @@ class Connect(gtk.Window):
 
         self.show_all()
 
-        log.startLogging(sys.stdout)
+        log_observer = log.PythonLoggingObserver()
+        log_observer.start()
+        formatter = logging.Formatter(
+          "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
         if log_path:
-            log.startLogging(open(log_path, "w"))
+            file_handler = logging.FileHandler(filename=log_path)
+            file_handler.setFormatter(formatter)
+            logging.getLogger().addHandler(file_handler)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logging.getLogger().addHandler(console_handler)
+        logging.getLogger().setLevel(logging.DEBUG)
 
         if connect_now:
             reactor.callWhenRunning(self.cb_connect_button_clicked)
@@ -194,7 +204,7 @@ class Connect(gtk.Window):
         def1.addErrback(self.server_failed)
 
     def server_exited(self, returncode):
-        log.msg("server exited with returncode %d" % returncode)
+        logging.info("server exited with returncode %d" % returncode)
 
     def save_window_position(self):
         x, y = self.get_position()

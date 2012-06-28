@@ -6,6 +6,7 @@ __license__ = "GNU GPL v2"
 
 import math
 from sys import maxint, argv
+import logging
 
 from twisted.internet import gtk2reactor
 try:
@@ -596,7 +597,7 @@ class GUIBattleMap(gtk.Window):
         def1.addErrback(self.failure)
 
     def cb_concede2(self, confirmed):
-        log.msg("cb_concede2", confirmed)
+        logging.info("cb_concede2 %s", confirmed)
         if confirmed:
             for legion in self.game.battle_legions:
                 if legion.player.name == self.username:
@@ -697,7 +698,7 @@ class GUIBattleMap(gtk.Window):
         self.repaint([hexlabel])
 
     def update(self, observed, action, names):
-        log.msg("GUIBattleMap.update", observed, action, names)
+        logging.info("GUIBattleMap.update %s %s %s", observed, action, names)
 
         if isinstance(action, Action.MoveCreature) or isinstance(action,
           Action.UndoMoveCreature):
@@ -846,7 +847,7 @@ class GUIBattleMap(gtk.Window):
                 hexlabel = legion.hexlabel
                 mterrain = self.game.board.hexes[hexlabel].terrain
                 if legion.can_recruit:
-                    log.msg("PickRecruit.new (battle turn 4)")
+                    logging.info("PickRecruit.new (battle turn 4)")
                     _, def1 = PickRecruit.new(self.username, legion, mterrain,
                       caretaker, self)
                     def1.addCallback(self.picked_reinforcement)
@@ -949,7 +950,7 @@ class GUIBattleMap(gtk.Window):
             def1.addErrback(self.failure)
 
     def picked_carry(self, (carry_target, carries)):
-        log.msg("picked_carry", carry_target, carries)
+        logging.info("picked_carry %s %s", carry_target, carries)
         if self.pickcarry is not None:
             self.pickcarry.destroy()
         self.pickcarry = None
@@ -959,8 +960,8 @@ class GUIBattleMap(gtk.Window):
 
     def picked_strike_penalty(self, (striker, target, num_dice,
       strike_number)):
-        log.msg("picked_strike_penalty", striker, target, num_dice,
-          strike_number)
+        logging.info("picked_strike_penalty %s %s %s %s", striker, target,
+          num_dice, strike_number)
         if striker is None:
             # User cancelled the strike.
             self.unselect_all()

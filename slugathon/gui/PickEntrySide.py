@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 import math
 from sys import maxint
+import logging
 
 from twisted.internet import gtk2reactor
 try:
@@ -13,7 +14,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-from twisted.python import log
 import gtk
 
 from slugathon.game import BattleMap
@@ -266,12 +266,12 @@ if __name__ == "__main__":
     from slugathon.game import MasterBoard
 
     def my_callback(choice):
-        log.msg("chose entry side", choice)
+        logging.info("chose entry side %s", choice)
         reactor.stop()
 
     board = MasterBoard.MasterBoard()
     masterhex = random.choice(board.hexes.values())
-    log.msg("masterhex", masterhex)
+    logging.info("masterhex %s", masterhex)
     entry_sides = set()
     for side, neighbor in enumerate(masterhex.neighbors):
         if neighbor is not None:

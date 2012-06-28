@@ -2,6 +2,8 @@ __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 from twisted.spread.pb import Avatar, PBConnectionLost
 from twisted.internet.error import ConnectionLost
 from twisted.internet.task import LoopingCall
@@ -151,7 +153,8 @@ class User(Avatar):
           angel_names)
 
     def perspective_do_not_acquire_angels(self, game_name, markerid):
-        log.msg("do_not_acquire_angels", self, game_name, markerid)
+        logging.info("do_not_acquire_angels %s %s %s", self, game_name,
+          markerid)
         self.server.do_not_acquire_angels(self.name, game_name, markerid)
 
     def perspective_done_with_engagements(self, game_name):
@@ -178,8 +181,8 @@ class User(Avatar):
 
     def perspective_carry(self, game_name, carry_target_name,
       carry_target_hexlabel, carries):
-        log.msg("perspective_carry", carry_target_name, carry_target_hexlabel,
-          carries)
+        logging.info("perspective_carry %s %s %s", carry_target_name,
+          carry_target_hexlabel, carries)
         self.server.carry(self.name, game_name, carry_target_name,
           carry_target_hexlabel, carries)
 
@@ -228,7 +231,7 @@ class User(Avatar):
         return "User " + self.name
 
     def add_observer(self, mind):
-        log.msg("User.add_observer", self, mind)
+        logging.info("User.add_observer %s %s", self, mind)
         def1 = self.client.callRemote("set_name", self.name)
         def1.addErrback(self.trap_connection_lost)
         def1.addErrback(self.log_failure)
@@ -241,14 +244,14 @@ class User(Avatar):
         failure.trap(ConnectionLost, PBConnectionLost)
         if not self.logging_out:
             self.logging_out = True
-            log.msg("Connection lost for %s; logging out" % self.name)
+            logging.info("Connection lost for %s; logging out" % self.name)
             self.logout()
 
     def log_failure(self, failure):
         log.err(failure)
 
     def logout(self):
-        log.msg("logout", self.name)
+        logging.info("logout %s", self.name)
         self.server.logout(self)
 
     def update(self, observed, action, names):

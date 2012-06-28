@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import collections
+import logging
 
 from twisted.internet import gtk2reactor
 try:
@@ -12,7 +13,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-from twisted.python import log
 import gtk
 
 from slugathon.gui import icon
@@ -91,7 +91,7 @@ class PickMarker(gtk.Dialog):
 if __name__ == "__main__":
 
     def my_callback((game_name, username, markerid)):
-        log.msg("picked", markerid)
+        logging.info("picked %s", markerid)
         reactor.stop()
 
     username = "test user"

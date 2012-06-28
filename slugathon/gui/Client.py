@@ -4,6 +4,8 @@ __license__ = "GNU GPL v2"
 """Outward-facing facade for client side."""
 
 
+import logging
+
 from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor
@@ -160,7 +162,7 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        log.msg("Client.update", action)
+        logging.info("%s", action)
         if isinstance(action, Action.AddUsername):
             self.usernames.add(action.username)
         elif isinstance(action, Action.DelUsername):
@@ -185,10 +187,10 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.GameOver):
             # TODO Destroy windows and dialogs?
             if action.winner_names:
-                log.msg("Game %s over, won by %s" % (action.game_name,
+                logging.info("Game %s over, won by %s" % (action.game_name,
                   " and ".join(action.winner_names)))
             else:
-                log.msg("Game %s over, draw" % action.game_name)
+                logging.info("Game %s over, draw" % action.game_name)
                 # XXX When do we call self.remove_game?
 
         self.notify(action, names)

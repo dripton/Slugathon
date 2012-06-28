@@ -6,6 +6,7 @@ __license__ = "GNU GPL v2"
 
 import math
 from sys import maxint
+import logging
 
 from twisted.internet import gtk2reactor
 try:
@@ -507,7 +508,7 @@ class GUIMasterBoard(gtk.Window):
                     moves = []
                 else:
                     if player.movement_roll is None:
-                        log.msg("movement_roll is None; timing problem?")
+                        logging.info("movement_roll is None; timing problem?")
                         moves = []
                     moves = self.game.find_all_moves(legion, self.board.hexes[
                       legion.hexlabel], player.movement_roll)
@@ -542,7 +543,7 @@ class GUIMasterBoard(gtk.Window):
                     mterrain = masterhex.terrain
                     caretaker = self.game.caretaker
                     if legion.can_recruit:
-                        log.msg("PickRecruit.new (muster)")
+                        logging.info("PickRecruit.new (muster)")
                         _, def1 = PickRecruit.new(self.username, legion,
                           mterrain, caretaker, self)
                         def1.addCallback(self.picked_recruit)
@@ -595,10 +596,10 @@ class GUIMasterBoard(gtk.Window):
 
     def picked_angels(self, (legion, angels)):
         """Callback from AcquireAngels"""
-        log.msg("picked_angels", legion, angels)
+        logging.info("picked_angels %s %s", legion, angels)
         self.acquire_angels = None
         if not angels:
-            log.msg("calling do_not_acquire_angels", legion)
+            logging.info("calling do_not_acquire_angels %s", legion)
             def1 = self.user.callRemote("do_not_acquire_angels",
               self.game.name, legion.markerid)
             def1.addErrback(self.failure)
@@ -985,17 +986,17 @@ class GUIMasterBoard(gtk.Window):
             prefs.save_bool_option(self.username, option, active)
 
     def cb_auto_strike_single(self, action):
-        log.msg("cb_auto_strike_single")
+        logging.info("cb_auto_strike_single")
         option = prefs.AUTO_STRIKE_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
     def cb_auto_rangestrike_single(self, action):
-        log.msg("cb_auto_rangestrike_single")
+        logging.info("cb_auto_rangestrike_single")
         option = prefs.AUTO_RANGESTRIKE_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
     def cb_auto_carry_single(self, action):
-        log.msg("cb_auto_carry_single")
+        logging.info("cb_auto_carry_single")
         option = prefs.AUTO_CARRY_TO_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
@@ -1415,7 +1416,7 @@ class GUIMasterBoard(gtk.Window):
                               self)
                             def1.addCallback(self.picked_summon)
                         else:
-                            log.msg("calling do_not_summon_angel")
+                            logging.info("calling do_not_summon_angel")
                             def1 = self.user.callRemote("do_not_summon_angel",
                               self.game.name, legion.markerid)
                             def1.addErrback(self.failure)
@@ -1425,12 +1426,12 @@ class GUIMasterBoard(gtk.Window):
                         caretaker = self.game.caretaker
                         mterrain = masterhex.terrain
                         if legion.can_recruit:
-                            log.msg("PickRecruit.new (after)")
+                            logging.info("PickRecruit.new (after)")
                             _, def1 = PickRecruit.new(self.username, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)
                         else:
-                            log.msg("calling do_not_reinforce")
+                            logging.info("calling do_not_reinforce")
                             def1 = self.user.callRemote("do_not_reinforce",
                               self.game.name, legion.markerid)
                             def1.addErrback(self.failure)

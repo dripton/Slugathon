@@ -4,13 +4,14 @@ __copyright__ = "Copyright (c) 2006-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 from twisted.internet import gtk2reactor
 try:
     gtk2reactor.install()
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
-from twisted.python import log
 import gtk
 
 from slugathon.gui import Chit, Marker, icon
@@ -151,7 +152,7 @@ if __name__ == "__main__":
       defender_creatures, 1)
 
     def my_callback(*args):
-        log.msg("my_callback", args)
+        logging.info("my_callback %s", args)
         reactor.stop()
 
     _, def1 = new(defender_username, attacker_legion, attacker_survivor_names,

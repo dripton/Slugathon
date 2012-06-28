@@ -4,9 +4,10 @@ __copyright__ = "Copyright (c) 2007-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 import gtk
 from twisted.internet import defer
-from twisted.python import log
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
@@ -122,7 +123,7 @@ if __name__ == "__main__":
     creatures = Creature.n2c(creature_names)
 
     def my_callback((legion, creature)):
-        log.msg(legion, "acquired", creature)
+        logging.info("%s acquired %s", legion, creature)
         guiutils.exit()
 
     now = time.time()

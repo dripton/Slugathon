@@ -10,7 +10,7 @@ import argparse
 import random
 import tempfile
 import os
-import sys
+import logging
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -51,9 +51,11 @@ class AIClient(pb.Referenceable, Observed):
         self.user = None
         self.usernames = set()
         self.games = []
-        if log_path:
-            log.startLogging(open(log_path, "w"), setStdout=False)
-        log.msg("AIClient", username, password, host, port, delay, aitype,
+        self.log_path = log_path
+        self._setup_logging()
+
+        logging.info("AIClient %s %s %s %s %s %s %s %s %s %s %s %s %s",
+          username, password, host, port, delay, aitype,
           game_name, log_path, ai_time_limit, form_game, min_players,
           max_players)
         if aitype == "CleverBot":
@@ -61,7 +63,6 @@ class AIClient(pb.Referenceable, Observed):
         else:
             raise ValueError("invalid aitype %s" % aitype)
         self.game_name = game_name
-        self.log_path = log_path
         self.ai_time_limit = ai_time_limit
         self.player_time_limit = player_time_limit
         self.form_game = form_game
@@ -70,7 +71,36 @@ class AIClient(pb.Referenceable, Observed):
         self.paused = False
         self.last_actions = []
         self.aps = predictsplits.AllPredictSplits()
-        log.msg("__init__ done", game_name, username)
+        logging.info("__init__ done %s %s", game_name, username)
+
+    def _setup_logging(self):
+        if self.log_path:
+            log_observer = log.PythonLoggingObserver()
+            log_observer.start()
+            formatter = logging.Formatter(
+              "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+            file_handler = logging.FileHandler(filename=self.log_path)
+            file_handler.setFormatter(formatter)
+            logging.getLogger().addHandler(file_handler)
+            logging.getLogger().setLevel(logging.DEBUG)
+
+    def _setup_logging_form_game(self):
+        log_observer = log.PythonLoggingObserver()
+        log_observer.start()
+        formatter = logging.Formatter(
+          "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+        logdir = os.path.join(TEMPDIR, "slugathon")
+        if not os.path.exists(logdir):
+            os.makedirs(logdir)
+        self.log_path = os.path.join(logdir, "slugathon-%s-%s.log" %
+          (self.game_name, self.playername))
+        file_handler = logging.FileHandler(filename=self.log_path)
+        file_handler.setFormatter(formatter)
+        logging.getLogger().addHandler(file_handler)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logging.getLogger().addHandler(console_handler)
+        logging.getLogger().setLevel(logging.DEBUG)
 
     def remote_set_name(self, name):
         self.playername = name
@@ -89,7 +119,7 @@ class AIClient(pb.Referenceable, Observed):
         def1.addErrback(self.connection_failed)
 
     def connected(self, user):
-        log.msg("connected")
+        logging.info("connected")
         if user:
             self.user = user
             self.ai.user = user
@@ -102,7 +132,7 @@ class AIClient(pb.Referenceable, Observed):
 
     def got_usernames(self, usernames):
         """Only called when the client first connects to the server."""
-        log.msg("got usernames", usernames)
+        logging.info("got usernames %s", usernames)
         self.usernames.clear()
         for username in usernames:
             self.usernames.add(username)
@@ -112,7 +142,7 @@ class AIClient(pb.Referenceable, Observed):
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""
-        log.msg("got games", game_info_tuples)
+        logging.info("got games %s", game_info_tuples)
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
@@ -120,13 +150,7 @@ class AIClient(pb.Referenceable, Observed):
             if not self.game_name:
                 self.game_name = "Game_%d" % random.randrange(1000000)
             if not self.log_path:
-                logdir = os.path.join(TEMPDIR, "slugathon")
-                if not os.path.exists(logdir):
-                    os.makedirs(logdir)
-                self.log_path = os.path.join(logdir, "slugathon-%s-%s.log" %
-                  (self.game_name, self.playername))
-                log.startLogging(open(self.log_path, "w"), setStdout=False)
-                log.startLogging(sys.stdout)
+                self._setup_logging_form_game()
             def1 = self.user.callRemote("form_game", self.game_name,
               self.min_players, self.max_players, self.ai_time_limit,
               self.player_time_limit, self.aitype, self.ai.result_info)
@@ -136,7 +160,7 @@ class AIClient(pb.Referenceable, Observed):
             # If game_name is null, AI tries to join all games.
             for game in self.games:
                 if not self.game_name or game.name == self.game_name:
-                    log.msg("joining game", game.name)
+                    logging.info("joining game %s", game.name)
                     def1 = self.user.callRemote("join_game", game.name,
                       self.aitype, self.ai.result_info)
                     def1.addErrback(self.failure)
@@ -148,7 +172,7 @@ class AIClient(pb.Referenceable, Observed):
         return None
 
     def add_game(self, game_info_tuple):
-        log.msg("add_game", game_info_tuple)
+        logging.info("add_game %s", game_info_tuple)
         (name, create_time, start_time, min_players, max_players,
           playernames, started) = game_info_tuple
         owner = playernames[0]
@@ -204,7 +228,7 @@ class AIClient(pb.Referenceable, Observed):
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        log.msg("AIClient.update", action)
+        logging.info("%s", action)
 
         if (self.game_name is not None and hasattr(action, "game_name")
           and action.game_name != self.game_name):
@@ -268,11 +292,11 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
-                log.msg("Game %s over, won by %s" % (action.game_name,
+                logging.info("Game %s over, won by %s" % (action.game_name,
                   " and ".join(action.winner_names)))
             else:
-                log.msg("Game %s over, draw" % action.game_name)
-            log.msg("AI exiting")
+                logging.info("Game %s over, draw" % action.game_name)
+            logging.info("AI exiting")
             self.exit_unconditionally()
 
         elif isinstance(action, Action.StartSplitPhase):
@@ -282,7 +306,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
-            log.msg("ps = PredictSplits('%s', '%s', %s)" %
+            logging.info("ps = PredictSplits('%s', '%s', %s)" %
               (action.playername, action.markerid, starting_creature_names))
             ps = predictsplits.PredictSplits(action.playername,
               action.markerid, starting_creature_names)
@@ -306,7 +330,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UndoSplit):
             game = self.name_to_game(action.game_name)
-            log.msg(
+            logging.info(
               "self.aps.get_leaf('%s').merge(self.aps.get_leaf('%s'), %d)" %
               (action.parent_markerid, action.child_markerid, game.turn))
             self.aps.get_leaf(action.parent_markerid).merge(
@@ -364,7 +388,7 @@ class AIClient(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.move_creatures, game)
             else:
-                log.msg("game.battle_active_legion not found")
+                logging.info("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -373,7 +397,7 @@ class AIClient(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log.msg("game.battle_active_legion not found")
+                logging.info("game.battle_active_legion not found")
 
         elif isinstance(action, Action.Strike):
             game = self.name_to_game(action.game_name)
@@ -389,7 +413,7 @@ class AIClient(pb.Referenceable, Observed):
                     else:
                         reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log.msg("game.battle_active_legion not found")
+                logging.info("game.battle_active_legion not found")
 
         elif isinstance(action, Action.Carry):
             game = self.name_to_game(action.game_name)
@@ -405,7 +429,7 @@ class AIClient(pb.Referenceable, Observed):
                     else:
                         reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log.msg("game.battle_active_legion not found")
+                logging.info("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -414,7 +438,7 @@ class AIClient(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.strike, game)
             else:
-                log.msg("game.battle_active_legion not found")
+                logging.info("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -427,7 +451,7 @@ class AIClient(pb.Referenceable, Observed):
                         reactor.callLater(self.delay,
                           self.ai.summon_angel_during, game)
             else:
-                log.msg("game.battle_active_legion not found")
+                logging.info("game.battle_active_legion not found")
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
@@ -436,7 +460,7 @@ class AIClient(pb.Referenceable, Observed):
                 if legion.player.name == self.playername:
                     reactor.callLater(self.delay, self.ai.move_creatures, game)
             else:
-                log.msg("game.battle_active_legion not found")
+                logging.info("game.battle_active_legion not found")
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
@@ -570,7 +594,7 @@ class AIClient(pb.Referenceable, Observed):
             for angel_name in action.angel_names:
                 self.aps.get_leaf(action.markerid).add_creature(angel_name)
             self.update_creatures(game)
-            log.msg("active player", game.active_player)
+            logging.info("active player %s", game.active_player)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
@@ -588,7 +612,7 @@ class AIClient(pb.Referenceable, Observed):
                 playername = action.playername
             if playername == self.playername:
                 if game.owner.name != self.playername:
-                    log.msg("Eliminated; AI exiting")
+                    logging.info("Eliminated; AI exiting")
                     self.exit_unconditionally()
             # Remove the dead player's PredictSplits from self.aps
             # to avoid problems later if his markers get reused.
@@ -614,7 +638,7 @@ class AIClient(pb.Referenceable, Observed):
             self.paused = True
 
         else:
-            log.msg("got unhandled action", action)
+            logging.info("got unhandled action %s", action)
 
 
 def add_arguments(parser):

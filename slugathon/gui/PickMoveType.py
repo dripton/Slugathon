@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 import gtk
 from twisted.internet import defer
-from twisted.python import log
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
@@ -87,11 +88,11 @@ if __name__ == "__main__":
 
     def mycallback(teleported):
         if teleported is None:
-            log.msg("canceled")
+            logging.info("canceled")
         elif teleported:
-            log.msg("teleport")
+            logging.info("teleport")
         else:
-            log.msg("normal move")
+            logging.info("normal move")
         guiutils.exit()
 
     now = time.time()

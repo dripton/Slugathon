@@ -11,6 +11,7 @@ import tempfile
 import sys
 import random
 import hashlib
+import logging
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
@@ -46,13 +47,23 @@ class Server(Observed):
         self.results = Results.Results()
         # {game_name: set(ainame) we're waiting for
         self.game_to_waiting_ais = {}
-        log.startLogging(sys.stdout)
+
+        log_observer = log.PythonLoggingObserver()
+        log_observer.start()
+        formatter = logging.Formatter(
+          "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
         if not log_path:
             logdir = os.path.join(TEMPDIR, "slugathon")
             if not os.path.exists(logdir):
                 os.makedirs(logdir)
             log_path = os.path.join(logdir, "slugathon-server-%d.log" % port)
-        log.startLogging(open(log_path, "w"))
+        file_handler = logging.FileHandler(filename=log_path)
+        file_handler.setFormatter(formatter)
+        logging.getLogger().addHandler(file_handler)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logging.getLogger().addHandler(console_handler)
+        logging.getLogger().setLevel(logging.DEBUG)
 
     def __repr__(self):
         return "Server"
@@ -122,13 +133,14 @@ class Server(Observed):
 
     def join_game(self, username, game_name, player_type, result_info):
         """Join an existing game that hasn't started yet."""
-        log.msg("join_game", username, game_name, player_type, result_info)
+        logging.info("join_game %s %s %s %s", username, game_name, player_type,
+          result_info)
         game = self.name_to_game(game_name)
         if game:
             try:
                 game.add_player(username, player_type, result_info)
             except AssertionError, ex:
-                log.msg("join_game caught", ex)
+                logging.exception("join_game caught %s", ex)
             else:
                 action = Action.JoinGame(username, game.name, player_type,
                   result_info)
@@ -196,7 +208,7 @@ class Server(Observed):
         if not os.path.exists(logdir):
             os.makedirs(logdir)
         for ainame in ainames:
-            log.msg("ainame", ainame)
+            logging.info("ainame %s", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
             args = [executable]
             if hasattr(sys, "frozen"):
@@ -214,8 +226,8 @@ class Server(Observed):
             if not self.no_passwd:
                 aipass = self._passwd_for_username(ainame)
                 if aipass is None:
-                    log.msg("user %s is not in %s; ai will fail to join" % (
-                        ainame, self.passwd_path))
+                    logging.info("user %s is not in %s; ai will fail to join" %
+                      (ainame, self.passwd_path))
                 else:
                     args.extend(["--password", aipass])
             reactor.spawnProcess(pp, executable, args=args, env=os.environ)
@@ -289,7 +301,8 @@ class Server(Observed):
 
     def resolve_engagement(self, username, game_name, hexlabel):
         """Pick the next engagement to resolve."""
-        log.msg("Server.resolve_engagement", username, game_name, hexlabel)
+        logging.info("Server.resolve_engagement %s %s %s", username, game_name,
+          hexlabel)
         game = self.name_to_game(game_name)
         if game:
             game.resolve_engagement(username, hexlabel)
@@ -300,7 +313,7 @@ class Server(Observed):
         if game:
             legion = game.find_legion(markerid)
             if not legion:
-                log.msg("flee with no legion", markerid)
+                logging.info("flee with no legion %s", markerid)
                 return
             hexlabel = legion.hexlabel
             for enemy_legion in game.all_legions(hexlabel):
@@ -308,17 +321,17 @@ class Server(Observed):
                     break
             # Enemy illegally managed to concede before we could flee.
             if enemy_legion == legion:
-                log.msg("illegal concede before flee")
+                logging.info("illegal concede before flee")
                 return
             player = game.get_player_by_name(username)
             if player == game.active_player:
-                log.msg("attacker tried to flee")
+                logging.info("attacker tried to flee")
                 return
             if legion.player != player:
-                log.msg("wrong player tried to flee")
+                logging.info("wrong player tried to flee")
                 return
             if not legion.can_flee:
-                log.msg("illegal flee attempt")
+                logging.info("illegal flee attempt")
                 return
             enemy_markerid = enemy_legion.markerid
             action = Action.Flee(game.name, markerid, enemy_markerid,
@@ -333,11 +346,11 @@ class Server(Observed):
             hexlabel = legion.hexlabel
             player = game.get_player_by_name(username)
             if player == game.active_player:
-                log.msg("attacker tried to not flee")
+                logging.info("attacker tried to not flee")
                 return
             legion = player.markerid_to_legion[markerid]
             if legion.player != player:
-                log.msg("wrong player tried to not flee")
+                logging.info("wrong player tried to not flee")
                 return
             for enemy_legion in game.all_legions(hexlabel):
                 if enemy_legion != legion:
@@ -391,8 +404,8 @@ class Server(Observed):
 
     def fight(self, username, game_name, attacker_markerid, defender_markerid):
         """Fight the current current engagement."""
-        log.msg("Server.fight", username, game_name, attacker_markerid,
-          defender_markerid)
+        logging.info("Server.fight %s %s %s %s", username, game_name,
+          attacker_markerid, defender_markerid)
         game = self.name_to_game(game_name)
         if game:
             attacker_legion = game.find_legion(attacker_markerid)
@@ -400,21 +413,22 @@ class Server(Observed):
               game.attacker_legion.markerid == attacker_markerid and
               game.defender_legion and game.defender_legion.markerid ==
               defender_markerid):
-                log.msg("already fighting; abort")
+                logging.info("already fighting; abort")
                 return
             attacker_legion = game.find_legion(attacker_markerid)
             defender_legion = game.find_legion(defender_markerid)
             if (not attacker_legion or not defender_legion or username not in
               [attacker_legion.player.name, defender_legion.player.name]):
-                log.msg("illegal fight call from", username)
+                logging.info("illegal fight call from %s", username)
                 return
             if (defender_legion.can_flee and not
               game.defender_chose_not_to_flee):
-                log.msg("Illegal fight call while defender can still flee")
+                logging.info(
+                  "Illegal fight call while defender can still flee")
                 return
             action = Action.Fight(game.name, attacker_markerid,
               defender_markerid, attacker_legion.hexlabel)
-            log.msg("Server.fight calling game.update")
+            logging.info("Server.fight calling game.update")
             game.update(self, action, None)
 
     def move_creature(self, username, game_name, creature_name, old_hexlabel,
@@ -482,33 +496,35 @@ class Server(Observed):
               num_angels <= legion.angels_pending + legion.archangels_pending -
               num_archangels)
             if not okay:
-                log.msg("not enough angels pending")
-                log.msg("angels", angel_names)
-                log.msg("angels_pending", legion.angels_pending)
-                log.msg("archangels_pending", legion.archangels_pending)
+                logging.info("not enough angels pending")
+                logging.info("angels %s", angel_names)
+                logging.info("angels_pending %s", legion.angels_pending)
+                logging.info("archangels_pending %s",
+                  legion.archangels_pending)
                 game.do_not_acquire_angels(username, markerid)
                 return
             if len(legion) >= 7:
-                log.msg("acquire_angels 7 high")
+                logging.info("acquire_angels 7 high")
                 game.do_not_acquire_angels(username, markerid)
                 return
             if len(legion) + num_angels + num_archangels > 7:
-                log.msg("acquire_angels would go over 7 high")
+                logging.info("acquire_angels would go over 7 high")
                 game.do_not_acquire_angels(username, markerid)
                 return
             if caretaker.num_left("Archangel") < num_archangels:
-                log.msg("not enough Archangels left")
+                logging.info("not enough Archangels left")
                 game.do_not_acquire_angels(username, markerid)
                 return
             if caretaker.num_left("Angel") < num_angels:
-                log.msg("not enough Angels left")
+                logging.info("not enough Angels left")
                 game.do_not_acquire_angels(username, markerid)
                 return
             game.acquire_angels(username, markerid, angel_names)
 
     def do_not_acquire_angels(self, username, game_name, markerid):
         """Do not acquire angels and/or archangels after an engagement."""
-        log.msg("do_not_acquire_angels", self, username, game_name, markerid)
+        logging.info("do_not_acquire_angels %s %s %s %s", self, username,
+          game_name, markerid)
         game = self.name_to_game(game_name)
         if game:
             game.do_not_acquire_angels(username, markerid)
@@ -565,7 +581,8 @@ class Server(Observed):
     def carry(self, username, game_name, carry_target_name,
       carry_target_hexlabel, carries):
         """Carry over excess hits to another adjacent enemy."""
-        log.msg("carry", carry_target_name, carry_target_hexlabel, carries)
+        logging.info("carry %s %s %s", carry_target_name,
+          carry_target_hexlabel, carries)
         game = self.name_to_game(game_name)
         if game:
             game.carry(username, carry_target_name, carry_target_hexlabel,
@@ -611,7 +628,7 @@ class Server(Observed):
             game.resume_ai(username)
 
     def update(self, observed, action, names):
-        log.msg("Server.update", observed, action, names)
+        logging.info("%s %s %s", observed, action, names)
         if (isinstance(action, Action.AssignTower) or
           isinstance(action, Action.AssignedAllTowers) or
           isinstance(action, Action.PickedColor) or
@@ -675,7 +692,7 @@ class AIProcessProtocol(protocol.ProcessProtocol):
         self.ainame = ainame
 
     def connectionMade(self):
-        log.msg("AIProcessProtocol.connectionMade", self.game_name,
+        logging.info("AIProcessProtocol.connectionMade %s %s", self.game_name,
           self.ainame)
 
 
@@ -704,7 +721,7 @@ def main():
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)
-    log.msg("main calling reactor.run")
+    logging.info("main calling reactor.run")
     reactor.run()
 
 

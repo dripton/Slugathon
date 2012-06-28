@@ -3,8 +3,7 @@ __license__ = "GNU GPL v2"
 
 
 from collections import defaultdict
-
-from twisted.python import log
+import logging
 
 from slugathon.data import creaturedata, recruitdata, battlemapdata
 from slugathon.game import Phase
@@ -426,8 +425,8 @@ class Creature(object):
           not carry_target.dead and
           self.number_of_dice(carry_target) >= num_dice and
           self.strike_number(carry_target) <= strike_number)
-        log.msg("can_carry_to", carry_target, original_target, num_dice,
-          strike_number, "returning", retval)
+        logging.info("can_carry_to %s %s %s %s returning %s", carry_target,
+          original_target, num_dice, strike_number, retval)
         return retval
 
     def carry_targets(self, original_target, num_dice, strike_number):

@@ -6,9 +6,9 @@ from sys import maxint
 import os
 import time
 from collections import defaultdict
+import logging
 
 from twisted.internet import reactor
-from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.game import (Player, MasterBoard, Action, Phase, Caretaker,
@@ -116,7 +116,7 @@ class Game(Observed):
         self.clear_battle_flags()
 
     def _cleanup_battle(self):
-        log.msg("_cleanup_battle")
+        logging.info("")
         self.current_engagement_hexlabel = None
         self.defender_chose_not_to_flee = False
         self.attacker_legion = None
@@ -179,7 +179,7 @@ class Game(Observed):
     def add_player(self, playername, player_type="Human", result_info=""):
         """Add a player to this game."""
         if playername in self.playernames:
-            log.msg("add_player from %s already in game %s" % (
+            logging.info("add_player from %s already in game %s" % (
               playername, self.name))
             return
         if len(self.players) >= self.max_players:
@@ -335,7 +335,7 @@ class Game(Observed):
         Once all players have done this, create the starting legions.
         """
         player = self.get_player_by_name(playername)
-        log.msg(player.markerids_left)
+        logging.info(player.markerids_left)
         if markerid not in player.markerids_left:
             raise AssertionError("marker not available")
         player.pick_marker(markerid)
@@ -541,8 +541,8 @@ class Game(Observed):
     def move_legion(self, playername, markerid, hexlabel, entry_side,
       teleport, teleporting_lord):
         """Called from Server and update."""
-        log.msg("move_legion", playername, markerid, hexlabel, entry_side,
-          teleport, teleporting_lord)
+        logging.info("%s %s %s %s %s %s", playername, markerid,
+          hexlabel, entry_side, teleport, teleporting_lord)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         previous_hexlabel = legion.hexlabel
@@ -574,17 +574,17 @@ class Game(Observed):
 
     def resolve_engagement(self, playername, hexlabel):
         """Called from Server."""
-        log.msg("Game.resolve_engagement")
+        logging.info("")
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
-            log.msg("cannot move on to next engagement yet")
+            logging.info("cannot move on to next engagement yet")
             return
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
-            log.msg("resolving engagement out of turn")
+            logging.info("resolving engagement out of turn")
             return
         if hexlabel not in self.engagement_hexlabels:
-            log.msg("no engagement to resolve in %s" % hexlabel)
+            logging.info("no engagement to resolve in %s" % hexlabel)
             return
         legions = self.all_legions(hexlabel)
         assert len(legions) == 2
@@ -610,14 +610,14 @@ class Game(Observed):
     def _flee(self, playername, markerid):
         player = self.get_player_by_name(playername)
         if player == self.active_player:
-            log.msg("attacker tried to flee")
+            logging.info("attacker tried to flee")
             return
         legion = player.markerid_to_legion[markerid]
         if legion.player != player:
-            log.msg("wrong player tried to flee")
+            logging.info("wrong player tried to flee")
             return
         if not legion.can_flee:
-            log.msg("illegal flee attempt")
+            logging.info("illegal flee attempt")
             return
         hexlabel = legion.hexlabel
         for legion2 in self.all_legions(hexlabel):
@@ -786,24 +786,24 @@ class Game(Observed):
 
     def _fight(self, playername, attacker_markerid, defender_markerid):
         """Called from update."""
-        log.msg("_fight", playername, attacker_markerid, defender_markerid,
-          self.battle_turn)
+        logging.info("%s %s %s %s", playername, attacker_markerid,
+          defender_markerid, self.battle_turn)
         if (self.battle_turn is not None and self.attacker_legion and
           self.attacker_legion.markerid == attacker_markerid and
           self.defender_legion and self.defender_legion.markerid ==
           defender_markerid):
-            log.msg("already fighting; abort")
+            logging.info("already fighting; abort")
             return
         attacker_legion = self.find_legion(attacker_markerid)
         defender_legion = self.find_legion(defender_markerid)
-        log.msg("attacker", attacker_legion)
-        log.msg("defender", defender_legion)
+        logging.info("attacker %s", attacker_legion)
+        logging.info("defender %s", defender_legion)
         if (not attacker_legion or not defender_legion or playername not in
           [attacker_legion.player.name, defender_legion.player.name]):
-            log.msg("illegal fight call from", playername)
+            logging.info("illegal fight call from %s", playername)
             return
         if defender_legion.can_flee and not self.defender_chose_not_to_flee:
-            log.msg("illegal fight call while defender can still flee")
+            logging.info("illegal fight call while defender can still flee")
             return
         hexlabel = attacker_legion.hexlabel
         assert defender_legion.hexlabel == hexlabel
@@ -834,7 +834,7 @@ class Game(Observed):
 
     def do_not_acquire_angels(self, playername, markerid):
         """Called from Server."""
-        log.msg("do_not_acquire_angels", playername, markerid)
+        logging.info("do_not_acquire_angels %s %s", playername, markerid)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         legion.do_not_acquire_angels()
@@ -847,10 +847,10 @@ class Game(Observed):
 
         Called from Server.
         """
-        log.msg("Game.done_with_engagements")
+        logging.info("")
         player = self.get_player_by_name(playername)
         if player is not self.active_player:
-            log.msg("%s ending fight phase out of turn" % playername)
+            logging.info("%s ending fight phase out of turn" % playername)
             return
         if (self.pending_summon or self.pending_reinforcement or
           self.pending_acquire):
@@ -863,7 +863,7 @@ class Game(Observed):
     def recruit_creature(self, playername, markerid, creature_name,
       recruiter_names):
         """Called from update."""
-        log.msg("Game.recruit_creature", playername, markerid, creature_name,
+        logging.info("%s %s %s %s", playername, markerid, creature_name,
           recruiter_names)
         player = self.get_player_by_name(playername)
         if player:
@@ -900,12 +900,12 @@ class Game(Observed):
     def summon_angel(self, playername, markerid, donor_markerid,
       creature_name):
         """Called from Server and update."""
-        log.msg("summon_angel", playername, markerid, donor_markerid,
-          creature_name)
+        logging.info("summon_angel %s %s %s %s", playername, markerid,
+          donor_markerid, creature_name)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         donor = player.markerid_to_legion[donor_markerid]
-        log.msg("donor", donor, "legion", legion)
+        logging.info("donor %s legion %s", donor, legion)
         # Avoid double summon
         if not player.summoned:
             player.summon_angel(legion, donor, creature_name)
@@ -922,7 +922,7 @@ class Game(Observed):
 
     def do_not_summon_angel(self, playername, markerid):
         """Called from Server."""
-        log.msg("Game.do_not_summon_angel")
+        logging.info("")
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         player.do_not_summon_angel(legion)
@@ -930,7 +930,7 @@ class Game(Observed):
 
     def _do_not_summon_angel(self, playername, markerid):
         """Called from update."""
-        log.msg("Game._do_not_summon_angel")
+        logging.info("")
         self.pending_summon = False
         if self.battle_is_over and not self.pending_acquire:
             self._cleanup_battle()
@@ -938,7 +938,7 @@ class Game(Observed):
 
     def do_not_reinforce(self, playername, markerid):
         """Called from Server."""
-        log.msg("Game.do_not_reinforce")
+        logging.info("")
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion[markerid]
         player.do_not_reinforce(legion)
@@ -946,7 +946,7 @@ class Game(Observed):
 
     def _do_not_reinforce(self, playername, markerid):
         """Called from update."""
-        log.msg("Game._do_not_reinforce")
+        logging.info("")
         if self.pending_reinforcement:
             self.pending_reinforcement = False
             if self.battle_is_over and not self.pending_acquire:
@@ -962,10 +962,10 @@ class Game(Observed):
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
       carries):
         """Called from Server."""
-        log.msg("carry", playername, carry_target_name, carry_target_hexlabel,
-          carries)
+        logging.info("carry %s %s %s %s", playername, carry_target_name,
+          carry_target_hexlabel, carries)
         if not self.pending_carry:
-            log.msg("no carry pending; continuing to avoid confusing AI")
+            logging.info("no carry pending; continuing to avoid confusing AI")
             carries = carries_left = 0
             action2 = Action.Carry(self.name, playername, "", "", "", "",
               carry_target_name, carry_target_hexlabel, 0, 0,
@@ -1036,7 +1036,7 @@ class Game(Observed):
             self.finish_time = time.time()
             winner_players = self.finish_order[0]
             winner_names = [player.name for player in winner_players]
-            log.msg("game over", winner_names)
+            logging.info("game over %s", winner_names)
             action = Action.GameOver(self.name, winner_names)
             self.notify(action)
 
@@ -1166,7 +1166,7 @@ class Game(Observed):
         excluding its current hex."""
         result = set()
         if creature.hexlabel is None:
-            log.msg("find_battle_moves", creature, "has hexlabel None")
+            logging.info("find_battle_moves %s has hexlabel None", creature)
             return result
         if creature.moved or creature.engaged:
             return result
@@ -1195,7 +1195,7 @@ class Game(Observed):
         if new_hexlabel not in self.find_battle_moves(creature):
             raise AssertionError("illegal battle move %s %s" % (creature,
               new_hexlabel))
-        log.msg("move creature", creature, "to", new_hexlabel)
+        logging.info("move creature %s to %s", creature, new_hexlabel)
         creature.move(new_hexlabel)
         action = Action.MoveCreature(self.name, playername, creature_name,
           old_hexlabel, new_hexlabel)
@@ -1227,7 +1227,7 @@ class Game(Observed):
         """
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
-            log.msg("%s ending maneuver phase out of turn" % playername)
+            logging.info("%s ending maneuver phase out of turn" % playername)
             return
         if self.battle_phase == Phase.REINFORCE:
             player.done_with_reinforcements()
@@ -1237,7 +1237,7 @@ class Game(Observed):
 
         Called from Server.
         """
-        log.msg("Game.done_with_maneuvers", playername)
+        logging.info("%s", playername)
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             raise AssertionError("ending maneuver phase out of turn")
@@ -1261,13 +1261,13 @@ class Game(Observed):
                               creature.name, creature.hexlabel, 1)
                             self.notify(action)
                     else:
-                        log.msg("apply_drift_damage %s has hexlabel None" %
-                          creature)
+                        logging.info("apply_drift_damage %s has hexlabel None"
+                          % creature)
 
     def strike(self, playername, striker_name, striker_hexlabel, target_name,
       target_hexlabel, num_dice, strike_number):
         """Called from Server."""
-        log.msg("Game.strike")
+        logging.info("")
         player = self.get_player_by_name(playername)
         assert player == self.battle_active_player, "striking out of turn"
         assert self.battle_phase in [Phase.STRIKE, Phase.COUNTERSTRIKE], \
@@ -1281,8 +1281,8 @@ class Game(Observed):
         assert len(targets) == 1
         target = targets.pop()
         assert target.name == target_name
-        log.msg("striker", striker, "target", target)
-        log.msg("num_dice", num_dice, "strike_number", strike_number)
+        logging.info("striker %s target %s", striker, target)
+        logging.info("num_dice %s strike_number %s", num_dice, strike_number)
         assert (num_dice, strike_number) in striker.valid_strike_penalties(
           target)
         rolls = Dice.roll(num_dice)
@@ -1290,7 +1290,7 @@ class Game(Observed):
         for roll in rolls:
             if roll >= strike_number:
                 hits += 1
-        log.msg("rolls", rolls, "hits", hits)
+        logging.info("rolls %s hits %s", rolls, hits)
         target.hits += hits
         if target.is_titan and target.dead:
             target.legion.player.has_titan = False
@@ -1324,13 +1324,13 @@ class Game(Observed):
     @property
     def battle_is_over(self):
         """Return True iff the battle is over."""
-        log.msg("Game.battle_is_over battle_legions", self.battle_legions)
+        logging.info("battle_legions %s", self.battle_legions)
         for legion in self.battle_legions:
             if legion.dead:
-                log.msg(legion, "is dead")
+                logging.info("%s is dead", legion)
                 return True
         if self.battle_turn > 7:
-            log.msg("battle_turn > 7; time loss")
+            logging.info("battle_turn > 7; time loss")
             return True
         return False
 
@@ -1339,7 +1339,7 @@ class Game(Observed):
         possible, remove the dead legion(s), award points, and heal surviving
         creatures in the winning legion.
         """
-        log.msg("_end_battle")
+        logging.info("_end_battle")
         # XXX Redundant but fixes timing issues with _cleanup_battle
         self.defender_chose_not_to_flee = False
         if self.battle_turn > 7:
@@ -1366,13 +1366,13 @@ class Game(Observed):
             # defender wins, possible reinforcement
             if (self.defender_legion and self.attacker_entered and
               self.defender_legion.can_recruit):
-                log.msg("setting pending_reinforcement = True")
+                logging.info("setting pending_reinforcement = True")
                 self.pending_reinforcement = True
             self.attacker_legion.die(self.defender_legion, False, False)
         elif self.defender_legion and self.defender_legion.dead:
             # attacker wins, possible summon
             if self.attacker_legion and self.attacker_legion.can_summon:
-                log.msg("setting pending_summon = True")
+                logging.info("setting pending_summon = True")
                 self.pending_summon = True
             self.defender_legion.die(self.attacker_legion, False, False)
         else:
@@ -1399,7 +1399,7 @@ class Game(Observed):
         if self.master:
             if (self.active_player.dead and not self.pending_acquire and not
               self.pending_summon and not self.pending_reinforcement):
-                log.msg("_end_dead_player_turn")
+                logging.info("_end_dead_player_turn")
                 if self.phase == Phase.SPLIT:
                     self.active_player.done_with_splits()
                 if self.phase == Phase.MOVE:
@@ -1414,22 +1414,22 @@ class Game(Observed):
 
         Called from Server.
         """
-        log.msg("done_with_counterstrikes", playername)
+        logging.info("done_with_counterstrikes %s", playername)
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
-            log.msg("ending counterstrike phase out of turn")
+            logging.info("ending counterstrike phase out of turn")
             return
         if self.battle_phase != Phase.COUNTERSTRIKE:
-            log.msg("ending counterstrike phase out of phase")
+            logging.info("ending counterstrike phase out of phase")
             return
         if (not self.battle_is_over and
           self.battle_active_legion == self.defender_legion):
             self.battle_turn += 1
-            log.msg("bumped battle turn to", self.battle_turn)
+            logging.info("bumped battle turn to %s", self.battle_turn)
         if self.battle_is_over:
-            log.msg("battle over")
+            logging.info("battle over")
             time_loss = self.battle_turn > 7
-            log.msg("time_loss is", time_loss)
+            logging.info("time_loss is %s", time_loss)
             # If it's a draw, arbitrarily call the defender the "winner"
             if time_loss or self.attacker_legion.dead:
                 winner = self.defender_legion
@@ -1437,7 +1437,7 @@ class Game(Observed):
                 winner = self.attacker_legion
             loser = self.other_battle_legion(winner)
             mutual = self.attacker_legion.dead and self.defender_legion.dead
-            log.msg("winner", winner, "loser", loser, "mutual", mutual)
+            logging.info("winner %s loser %s mutual %s", winner, loser, mutual)
             action = Action.BattleOver(self.name, winner.markerid,
               winner.living_creature_names, winner.dead_creature_names,
               loser.markerid, loser.living_creature_names,
@@ -1457,7 +1457,7 @@ class Game(Observed):
                 creature.struck = False
 
     def cleanup_offboard_creatures(self):
-        log.msg("cleanup_offboard_creatures")
+        logging.info("cleanup_offboard_creatures")
         for legion in self.battle_legions:
             if legion != self.battle_active_legion:
                 for creature in legion.creatures:
@@ -1476,10 +1476,10 @@ class Game(Observed):
                                 else:
                                     legion.unreinforce()
                         else:
-                            log.msg(creature, "has hexlabel None")
+                            logging.info("%s has hexlabel None", creature)
 
     def cleanup_dead_creatures(self):
-        log.msg("cleanup_dead_creatures")
+        logging.info("cleanup_dead_creatures")
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.dead:
@@ -1488,7 +1488,8 @@ class Game(Observed):
                       and creature.hexlabel != "DEFENDER"
                       and creature.hexlabel is not None):
                         self.first_attacker_kill = self.battle_turn
-                        log.msg("first_attacker_kill", self.battle_turn)
+                        logging.info("first_attacker_kill %s",
+                          self.battle_turn)
                     creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = None
                     # TODO Move to graveyard instead
@@ -1545,7 +1546,7 @@ class Game(Observed):
     def update(self, observed, action, names):
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
-        log.msg("Game.update", observed, action)
+        logging.info("%s %s", observed, action)
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
@@ -1557,7 +1558,7 @@ class Game(Observed):
             if player.starting_tower is None:
                 player.assign_starting_tower(action.tower_num)
             else:
-                log.msg("player %s already has tower %s" % (player,
+                logging.info("player %s already has tower %s" % (player,
                   player.starting_tower))
 
         elif isinstance(action, Action.AssignedAllTowers):
@@ -1624,7 +1625,7 @@ class Game(Observed):
                 player.reset_angels_pending()
 
         elif isinstance(action, Action.ResolvingEngagement):
-            log.msg("ResolvingEngagement; reset_angels_pending")
+            logging.info("ResolvingEngagement; reset_angels_pending")
             self._cleanup_battle()
             for player in self.players:
                 player.reset_angels_pending()
@@ -1756,7 +1757,7 @@ class Game(Observed):
                     striker = strikers.pop()
                     striker.struck = True
                 else:
-                    log.msg("no strikers in", action.striker_hexlabel)
+                    logging.info("no strikers in %s", action.striker_hexlabel)
                     raise AssertionError("no strikers in %s" %
                       action.striker_hexlabel)
                 if action.carries:
@@ -1790,7 +1791,7 @@ class Game(Observed):
                 else:
                     self.battle_active_legion = self.attacker_legion
             else:
-                log.msg("missing defender_legion or attacker_legion")
+                logging.info("missing defender_legion or attacker_legion")
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             self.clear_battle_flags()
