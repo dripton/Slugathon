@@ -348,7 +348,6 @@ class Anteroom(gtk.Window):
             del self.wfps[game_name]
 
     def add_game(self, game):
-        game.add_observer(self, self.username)
         self.update_game_stores()
         if not game.started and self.username in game.playernames:
             self._add_wfp(game)
