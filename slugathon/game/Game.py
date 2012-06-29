@@ -1569,12 +1569,14 @@ class Game(Observed):
                 player.create_starting_legion()
 
         elif isinstance(action, Action.SplitLegion):
-            player = self.get_player_by_name(action.playername)
-            # Avoid doing the same split twice.
-            if action.child_markerid not in player.markerid_to_legion:
-                self.split_legion(action.playername, action.parent_markerid,
-                  action.child_markerid, action.parent_creature_names,
-                  action.child_creature_names)
+            if action.game_name == self.name:
+                player = self.get_player_by_name(action.playername)
+                # Avoid doing the same split twice.
+                if action.child_markerid not in player.markerid_to_legion:
+                    self.split_legion(action.playername,
+                      action.parent_markerid, action.child_markerid,
+                      action.parent_creature_names,
+                      action.child_creature_names)
 
         elif isinstance(action, Action.UndoSplit):
             player = self.get_player_by_name(action.playername)
@@ -1594,23 +1596,25 @@ class Game(Observed):
                 player.clear_recruited()
 
         elif isinstance(action, Action.MoveLegion):
-            player = self.get_player_by_name(action.playername)
-            markerid = action.markerid
-            legion = player.markerid_to_legion[markerid]
-            hexlabel = action.hexlabel
-            # Avoid double move
-            if not (legion.moved and legion.hexlabel == hexlabel):
-                self.move_legion(action.playername, markerid,
-                  action.hexlabel, action.entry_side, action.teleport,
-                  action.teleporting_lord)
+            if action.game_name == self.name:
+                player = self.get_player_by_name(action.playername)
+                markerid = action.markerid
+                legion = player.markerid_to_legion[markerid]
+                hexlabel = action.hexlabel
+                # Avoid double move
+                if not (legion.moved and legion.hexlabel == hexlabel):
+                    self.move_legion(action.playername, markerid,
+                      action.hexlabel, action.entry_side, action.teleport,
+                      action.teleporting_lord)
 
         elif isinstance(action, Action.UndoMoveLegion):
-            player = self.get_player_by_name(action.playername)
-            markerid = action.markerid
-            legion = player.markerid_to_legion[markerid]
-            # Avoid double undo
-            if legion.moved:
-                self.undo_move_legion(action.playername, markerid)
+            if action.game_name == self.name:
+                player = self.get_player_by_name(action.playername)
+                markerid = action.markerid
+                legion = player.markerid_to_legion[markerid]
+                # Avoid double undo
+                if legion.moved:
+                    self.undo_move_legion(action.playername, markerid)
 
         elif isinstance(action, Action.StartFightPhase):
             self.phase = Phase.FIGHT
@@ -1693,11 +1697,12 @@ class Game(Observed):
             self._do_not_summon_angel(action.playername, action.markerid)
 
         elif isinstance(action, Action.Fight):
-            attacker_markerid = action.attacker_markerid
-            attacker = self.find_legion(attacker_markerid)
-            defender_markerid = action.defender_markerid
-            self._fight(attacker.player.name, attacker_markerid,
-              defender_markerid)
+            if action.game_name == self.name:
+                attacker_markerid = action.attacker_markerid
+                attacker = self.find_legion(attacker_markerid)
+                defender_markerid = action.defender_markerid
+                self._fight(attacker.player.name, attacker_markerid,
+                  defender_markerid)
 
         elif isinstance(action, Action.MoveCreature):
             if not self.battle_active_legion:
