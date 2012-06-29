@@ -409,12 +409,6 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             attacker_legion = game.find_legion(attacker_markerid)
-            if (game.battle_turn is not None and game.attacker_legion and
-              game.attacker_legion.markerid == attacker_markerid and
-              game.defender_legion and game.defender_legion.markerid ==
-              defender_markerid):
-                logging.info("already fighting; abort")
-                return
             attacker_legion = game.find_legion(attacker_markerid)
             defender_legion = game.find_legion(defender_markerid)
             if (not attacker_legion or not defender_legion or username not in

@@ -788,12 +788,6 @@ class Game(Observed):
         """Called from update."""
         logging.info("%s %s %s %s", playername, attacker_markerid,
           defender_markerid, self.battle_turn)
-        if (self.battle_turn is not None and self.attacker_legion and
-          self.attacker_legion.markerid == attacker_markerid and
-          self.defender_legion and self.defender_legion.markerid ==
-          defender_markerid):
-            logging.info("already fighting; abort")
-            return
         attacker_legion = self.find_legion(attacker_markerid)
         defender_legion = self.find_legion(defender_markerid)
         logging.info("attacker %s", attacker_legion)
