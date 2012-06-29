@@ -176,8 +176,9 @@ class Client(pb.Referenceable, Observed):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.AssignedAllTowers):
             game = self.name_to_game(action.game_name)
-            self._init_guiboard(game)
-            self._maybe_pick_color(game)
+            if self.playername in game.playernames:
+                self._init_guiboard(game)
+                self._maybe_pick_color(game)
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             # Do this now rather than waiting for game to be notified.
