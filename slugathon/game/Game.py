@@ -1846,7 +1846,7 @@ class Game(Observed):
         elif isinstance(action, Action.Withdraw):
             if action.game_name == self.name:
                 if not self.started:
-                    self.remove_player(action.username)
+                    self.remove_player(action.playername)
                 else:
                     player = self.get_player_by_name(action.playername)
                     player.die(None, True)
