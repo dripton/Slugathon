@@ -21,11 +21,11 @@ from slugathon.gui import Anteroom, PickColor, PickMarker, GUIMasterBoard
 
 @implementer(IObserver)
 class Client(pb.Referenceable, Observed):
-    def __init__(self, username, password, host="localhost",
+    def __init__(self, playername, password, host="localhost",
       port=config.DEFAULT_PORT):
         Observed.__init__(self)
-        self.username = username
-        self.playername = username  # In case the same user logs in twice
+        self.playername = playername
+        self.playername = playername  # In case the same user logs in twice
         self.password = password
         self.host = host
         self.port = port
@@ -33,7 +33,7 @@ class Client(pb.Referenceable, Observed):
         self.factory.unsafeTracebacks = True
         self.user = None
         self.anteroom = None
-        self.usernames = set()
+        self.playernames = set()
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
         self.pickcolor = None
@@ -46,10 +46,11 @@ class Client(pb.Referenceable, Observed):
         return True
 
     def __repr__(self):
-        return "Client " + str(self.username)
+        return "Client " + str(self.playername)
 
     def connect(self):
-        user_pass = credentials.UsernamePassword(self.username, self.password)
+        user_pass = credentials.UsernamePassword(self.playername,
+          self.password)
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
@@ -59,15 +60,15 @@ class Client(pb.Referenceable, Observed):
     def connected(self, user):
         if user:
             self.user = user
-            def1 = user.callRemote("get_usernames")
-            def1.addCallback(self.got_usernames)
+            def1 = user.callRemote("get_playernames")
+            def1.addCallback(self.got_playernames)
             def1.addErrback(self.failure)
 
-    def got_usernames(self, usernames):
+    def got_playernames(self, playernames):
         """Only called when the client first connects to the server."""
-        self.usernames.clear()
-        for username in usernames:
-            self.usernames.add(username)
+        self.playernames.clear()
+        for playername in playernames:
+            self.playernames.add(playername)
         def1 = self.user.callRemote("get_games")
         def1.addCallback(self.got_games)
         def1.addErrback(self.failure)
@@ -77,8 +78,8 @@ class Client(pb.Referenceable, Observed):
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
-        self.anteroom = Anteroom.Anteroom(self.user, self.username,
-          self.usernames, self.games)
+        self.anteroom = Anteroom.Anteroom(self.user, self.playername,
+          self.playernames, self.games)
         self.add_observer(self.anteroom)
 
     def name_to_game(self, game_name):
@@ -117,9 +118,9 @@ class Client(pb.Referenceable, Observed):
         self.update(observed, action, names)
 
     def _maybe_pick_color(self, game):
-        if (game.next_playername_to_pick_color == self.username and
+        if (game.next_playername_to_pick_color == self.playername and
           self.pickcolor is None):
-            self.pickcolor, def1 = PickColor.new(self.username, game,
+            self.pickcolor, def1 = PickColor.new(self.playername, game,
               game.colors_left, self.guiboards[game])
             def1.addCallback(self._cb_pickcolor)
 
@@ -132,21 +133,21 @@ class Client(pb.Referenceable, Observed):
             def1.addErrback(self.failure)
 
     def _maybe_pick_first_marker(self, game, playername):
-        if playername == self.username:
+        if playername == self.playername:
             player = game.get_player_by_name(playername)
             markerids_left = sorted(player.markerids_left.copy())
-            _, def1 = PickMarker.new(self.username, game.name, markerids_left,
-              self.guiboards[game])
+            _, def1 = PickMarker.new(self.playername, game.name,
+              markerids_left, self.guiboards[game])
             def1.addCallback(self.pick_marker)
             self.pickcolor = None
 
-    def pick_marker(self, (game_name, username, markerid)):
+    def pick_marker(self, (game_name, playername, markerid)):
         """Callback from PickMarker."""
         game = self.name_to_game(game_name)
-        player = game.get_player_by_name(username)
+        player = game.get_player_by_name(playername)
         if markerid is None:
             if not player.markerid_to_legion:
-                self._maybe_pick_first_marker(game, username)
+                self._maybe_pick_first_marker(game, playername)
         else:
             player.pick_marker(markerid)
             if not player.markerid_to_legion:
@@ -156,7 +157,7 @@ class Client(pb.Referenceable, Observed):
 
     def _init_guiboard(self, game):
         self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(game.board, game,
-          self.user, self.username)
+          self.user, self.playername)
         game.add_observer(self.guiboards[game])
 
     def update(self, observed, action, names):
@@ -164,13 +165,13 @@ class Client(pb.Referenceable, Observed):
         observed set to None."""
         logging.info("%s", action)
         if isinstance(action, Action.AddUsername):
-            self.usernames.add(action.username)
+            self.playernames.add(action.playername)
         elif isinstance(action, Action.DelUsername):
-            self.usernames.remove(action.username)
+            self.playernames.remove(action.playername)
         elif isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
               action.start_time, action.min_players, action.max_players,
-              [action.username], False)
+              [action.playername], False)
             self.add_game(game_info_tuple)
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)

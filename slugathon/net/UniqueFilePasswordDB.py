@@ -18,7 +18,7 @@ class UniqueFilePasswordDB(FilePasswordDB):
         self.server = server
 
     def requestAvatarId(self, c):
-        if c.username in self.server.usernames:
+        if c.username in self.server.playernames:
             # already logged in
             return defer.fail(LoginDenied())
         else:

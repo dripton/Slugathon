@@ -23,20 +23,20 @@ REJECT = 1
 FIGHT = 2
 
 
-def new(username, attacker_legion, attacker_creature_names,
+def new(playername, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, parent):
     """Create a Proposal dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    proposal = Proposal(username, attacker_legion, attacker_creature_names,
+    proposal = Proposal(playername, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, def1, parent)
     return proposal, def1
 
 
 class Proposal(gtk.Dialog):
     """Dialog to choose whether to accept an opponent's proposal."""
-    def __init__(self, username, attacker_legion, attacker_creature_names,
+    def __init__(self, playername, attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, def1, parent):
-        gtk.Dialog.__init__(self, "Proposal - %s" % username, parent)
+        gtk.Dialog.__init__(self, "Proposal - %s" % playername, parent)
         self.attacker_legion = attacker_legion
         self.attacker_creature_names = attacker_creature_names
         self.defender_legion = defender_legion
@@ -130,9 +130,9 @@ if __name__ == "__main__":
 
     now = time.time()
     game_name = "Game1"
-    attacker_username = "Roar!"
-    game = Game.Game("g1", attacker_username, now, now, 2, 6)
-    attacker_player = Player.Player(attacker_username, game, 0)
+    attacker_playername = "Roar!"
+    game = Game.Game("g1", attacker_playername, now, now, 2, 6)
+    attacker_player = Player.Player(attacker_playername, game, 0)
     attacker_player.color = "Black"
     attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
       "Archangel", "Angel", "Unicorn"]
@@ -142,8 +142,8 @@ if __name__ == "__main__":
     attacker_legion = Legion.Legion(attacker_player, "Bk01",
       attacker_creatures, 1)
 
-    defender_username = "Eek!"
-    defender_player = Player.Player(defender_username, game, 0)
+    defender_playername = "Eek!"
+    defender_player = Player.Player(defender_playername, game, 0)
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_survivor_names = []
@@ -155,7 +155,7 @@ if __name__ == "__main__":
         logging.info("my_callback %s", args)
         reactor.stop()
 
-    _, def1 = new(defender_username, attacker_legion, attacker_survivor_names,
-      defender_legion, defender_survivor_names, None)
+    _, def1 = new(defender_playername, attacker_legion,
+      attacker_survivor_names, defender_legion, defender_survivor_names, None)
     def1.addCallback(my_callback)
     reactor.run()

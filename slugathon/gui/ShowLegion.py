@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -11,13 +11,13 @@ from slugathon.gui import Chit, Marker, icon
 
 class ShowLegion(gtk.Dialog):
     """Window to show a legion's contents."""
-    def __init__(self, username, legion, show_marker, parent):
-        gtk.Dialog.__init__(self, "Show Legion - %s" % username, parent)
+    def __init__(self, playername, legion, show_marker, parent):
+        gtk.Dialog.__init__(self, "Show Legion - %s" % playername, parent)
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("ShowLegion - %s" % (username))
+        self.set_title("ShowLegion - %s" % (playername))
 
         legion_name = gtk.Label("Legion %s (%s) in hex %s (%d points)" % (
           legion.markerid, legion.picname, legion.hexlabel, legion.score))
@@ -52,12 +52,12 @@ if __name__ == "__main__":
     now = time.time()
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
-    username = "test"
-    game = Game.Game("g1", username, now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    playername = "test"
+    game = Game.Game("g1", playername, now, now, 2, 6)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    showlegion = ShowLegion(username, legion, True, None)
+    showlegion = ShowLegion(playername, legion, True, None)
     showlegion.connect("destroy", guiutils.exit)
 
     gtk.main()

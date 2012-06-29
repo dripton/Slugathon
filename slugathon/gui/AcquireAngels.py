@@ -13,11 +13,11 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
 
 
-def new(username, legion, num_archangels, num_angels, caretaker, parent):
+def new(playername, legion, num_archangels, num_angels, caretaker, parent):
     """Create an AcquireAngels dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    acquire_angel = AcquireAngels(username, legion, num_archangels, num_angels,
-      caretaker, def1, parent)
+    acquire_angel = AcquireAngels(playername, legion, num_archangels,
+      num_angels, caretaker, def1, parent)
     return acquire_angel, def1
 
 
@@ -48,9 +48,9 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
 
 class AcquireAngels(gtk.Dialog):
     """Dialog to acquire an angel."""
-    def __init__(self, username, legion, num_archangels, num_angels, caretaker,
-      def1, parent):
-        gtk.Dialog.__init__(self, "AcquireAngels - %s" % username, parent)
+    def __init__(self, playername, legion, num_archangels, num_angels,
+      caretaker, def1, parent):
+        gtk.Dialog.__init__(self, "AcquireAngels - %s" % playername, parent)
         self.deferred = def1
         self.legion = legion
         player = legion.player
@@ -127,13 +127,13 @@ if __name__ == "__main__":
         guiutils.exit()
 
     now = time.time()
-    username = "p0"
+    playername = "p0"
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000
-    acquire_angel, def1 = new(username, legion, 1, 1, game.caretaker, None)
+    acquire_angel, def1 = new(playername, legion, 1, 1, game.caretaker, None)
     acquire_angel.connect("destroy", guiutils.exit)
     def1.addCallback(my_callback)
 

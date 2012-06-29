@@ -79,12 +79,13 @@ ui_string = """<ui>
 @implementer(IObserver)
 class GUIMasterBoard(gtk.Window):
     """GUI representation of the masterboard."""
-    def __init__(self, board, game=None, user=None, username=None, scale=None):
+    def __init__(self, board, game=None, user=None, playername=None,
+      scale=None):
         gtk.Window.__init__(self)
 
         self.board = board
         self.user = user
-        self.username = username
+        self.playername = playername
         self.game = game
 
         self.set_icon(icon.pixbuf)
@@ -93,7 +94,7 @@ class GUIMasterBoard(gtk.Window):
         else:
             game_name = "None"
         self.set_title("Masterboard - Slugathon - %s - %s" % (game_name,
-          self.username))
+          self.playername))
         self.connect("delete-event", self.cb_delete_event)
         self.connect("destroy", self.cb_destroy)
         self.connect("configure-event", self.cb_configure_event)
@@ -119,7 +120,7 @@ class GUIMasterBoard(gtk.Window):
         for hex1 in self.board.hexes.itervalues():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
-        self.inspector = Inspector.Inspector(self.username, self)
+        self.inspector = Inspector.Inspector(self.playername, self)
         self.negotiate = None
         self.proposals = set()
         self.guimap = None
@@ -135,13 +136,13 @@ class GUIMasterBoard(gtk.Window):
         # Used to combine nearly simultaneous redraws into one.
         self.repaint_hexlabels = set()
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup
@@ -210,7 +211,7 @@ class GUIMasterBoard(gtk.Window):
 
         for tup in toggle_actions:
             option = tup[0]
-            value = prefs.load_bool_option(self.username, option)
+            value = prefs.load_bool_option(self.playername, option)
             if value is True:
                 checkmenuitem = self.ui.get_widget(
                   "/Menubar/OptionsMenu/%s" % option)
@@ -248,18 +249,19 @@ class GUIMasterBoard(gtk.Window):
     def _init_status_screen(self):
         if not self.status_screen:
             self.status_screen = StatusScreen.StatusScreen(self.game,
-              self.username, self)
+              self.playername, self)
             self.game.add_observer(self.status_screen)
 
     def _init_caretaker(self):
         if not self.guicaretaker:
             self.guicaretaker = GUICaretaker.GUICaretaker(self.game,
-              self.username, self)
+              self.playername, self)
             self.game.add_observer(self.guicaretaker)
 
     def _init_event_log(self):
         if not self.event_log:
-            self.event_log = EventLog.EventLog(self.game, self.username, self)
+            self.event_log = EventLog.EventLog(self.game, self.playername,
+              self)
             self.game.add_observer(self.event_log)
 
     def cb_delete_event(self, widget, event):
@@ -292,12 +294,12 @@ class GUIMasterBoard(gtk.Window):
                 def1.addErrback(self.failure)
 
     def cb_configure_event(self, event, unused):
-        if self.username:
+        if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.username, self.__class__.__name__,
-              x, y)
+            prefs.save_window_position(self.playername,
+              self.__class__.__name__, x, y)
             width, height = self.get_size()
-            prefs.save_window_size(self.username, self.__class__.__name__,
+            prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
 
@@ -326,7 +328,7 @@ class GUIMasterBoard(gtk.Window):
         for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 if self.game:
-                    player = self.game.get_player_by_name(self.username)
+                    player = self.game.get_player_by_name(self.playername)
                     player_color = player.color
                 else:
                     player_color = "Black"
@@ -400,7 +402,7 @@ class GUIMasterBoard(gtk.Window):
             self._pick_entry_side(False, legion, moves)
         else:
             hexlabel = moves[0][0]
-            _, def1 = PickMoveType.new(self.username, legion, hexlabel, self)
+            _, def1 = PickMoveType.new(self.playername, legion, hexlabel, self)
             def1.addCallback(self._pick_entry_side, legion, moves)
 
     def _pick_entry_side(self, teleport, legion, moves):
@@ -449,7 +451,7 @@ class GUIMasterBoard(gtk.Window):
                 if len(lord_types) == 1:
                     lord_name = lord_types.pop()
                 else:
-                    _, def1 = PickTeleportingLord.new(self.username, legion,
+                    _, def1 = PickTeleportingLord.new(self.playername, legion,
                       self)
                     def1.addCallback(self._do_move_legion, legion, moves,
                       teleport, entry_side)
@@ -468,7 +470,7 @@ class GUIMasterBoard(gtk.Window):
 
     def clicked_on_marker(self, area, event, marker):
         if event.button >= 2:
-            ShowLegion.ShowLegion(self.username, marker.legion, True, self)
+            ShowLegion.ShowLegion(self.playername, marker.legion, True, self)
 
         else:  # left button
             phase = self.game.phase
@@ -476,7 +478,7 @@ class GUIMasterBoard(gtk.Window):
                 legion = marker.legion
                 player = legion.player
                 # Make sure it's this player's legion and turn.
-                if player.name != self.username:
+                if player.name != self.playername:
                     return
                 elif player != self.game.active_player:
                     return
@@ -490,14 +492,14 @@ class GUIMasterBoard(gtk.Window):
                         InfoDialog.InfoDialog(self, "Info",
                           "No markers available")
                         return
-                    _, def1 = PickMarker.new(self.username, self.game.name,
+                    _, def1 = PickMarker.new(self.playername, self.game.name,
                       player.markerids_left, self)
                     def1.addCallback(self.picked_marker_presplit, legion)
 
             elif phase == Phase.MOVE:
                 legion = marker.legion
                 player = legion.player
-                if player.name != self.username:
+                if player.name != self.playername:
                     # Not my marker; ignore it and click on the hex
                     guihex = self.guihexes[legion.hexlabel]
                     self.clicked_on_hex(area, event, guihex)
@@ -544,27 +546,27 @@ class GUIMasterBoard(gtk.Window):
                     caretaker = self.game.caretaker
                     if legion.can_recruit:
                         logging.info("PickRecruit.new (muster)")
-                        _, def1 = PickRecruit.new(self.username, legion,
+                        _, def1 = PickRecruit.new(self.playername, legion,
                           mterrain, caretaker, self)
                         def1.addCallback(self.picked_recruit)
                 self.highlight_recruits()
 
-    def picked_marker_presplit(self, (game_name, username, markerid),
+    def picked_marker_presplit(self, (game_name, playername, markerid),
       legion):
-        player = self.game.get_player_by_name(username)
+        player = self.game.get_player_by_name(playername)
         player.pick_marker(markerid)
         if markerid:
             self.split_legion(legion)
 
     def split_legion(self, legion):
         if legion is not None:
-            _, def1 = SplitLegion.new(self.username, legion, self)
+            _, def1 = SplitLegion.new(self.playername, legion, self)
             def1.addCallback(self.try_to_split_legion)
 
     def try_to_split_legion(self, (old_legion, new_legion1, new_legion2)):
         if old_legion is None:
             # canceled
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             player.selected_markerid = None
             return
         def1 = self.user.callRemote("split_legion", self.game.name,
@@ -862,7 +864,7 @@ class GUIMasterBoard(gtk.Window):
     def highlight_tall_legions(self):
         """Highlight all hexes containing a legion of height 7 or more
         belonging to the active, current player."""
-        player = self.game.get_player_by_name(self.username)
+        player = self.game.get_player_by_name(self.playername)
         if player == self.game.active_player:
             self.unselect_all()
             if player.markerids_left:
@@ -876,7 +878,7 @@ class GUIMasterBoard(gtk.Window):
     def highlight_unmoved_legions(self):
         """Highlight all hexes containing an unmoved legion belonging to the
         active, current player."""
-        player = self.game.get_player_by_name(self.username)
+        player = self.game.get_player_by_name(self.playername)
         if player == self.game.active_player:
             self.clear_all_recruitchits()
             self.unselect_all()
@@ -907,7 +909,7 @@ class GUIMasterBoard(gtk.Window):
 
     def highlight_recruits(self):
         """Highlight all hexes in which the active player can recruit."""
-        player = self.game.get_player_by_name(self.username)
+        player = self.game.get_player_by_name(self.playername)
         if player == self.game.active_player:
             self.unselect_all()
             hexlabels = set()
@@ -927,7 +929,7 @@ class GUIMasterBoard(gtk.Window):
     def cb_done(self, action):
         if not self.game:
             return
-        player = self.game.get_player_by_name(self.username)
+        player = self.game.get_player_by_name(self.playername)
         if player == self.game.active_player:
             if self.game.phase == Phase.SPLIT:
                 if player.can_exit_split_phase:
@@ -965,10 +967,10 @@ class GUIMasterBoard(gtk.Window):
     def cb_mulligan(self, action):
         if not self.game:
             return
-        player = self.game.get_player_by_name(self.username)
+        player = self.game.get_player_by_name(self.playername)
         if player.can_take_mulligan:
             history = self.game.history
-            if history.can_undo(self.username):
+            if history.can_undo(self.playername):
                 last_action = history.actions[-1]
                 def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
@@ -981,9 +983,9 @@ class GUIMasterBoard(gtk.Window):
     def _cb_checkbox_helper(self, option):
         checkmenuitem = self.ui.get_widget("/Menubar/OptionsMenu/%s" % option)
         active = checkmenuitem.get_active()
-        prev = prefs.load_bool_option(self.username, option)
+        prev = prefs.load_bool_option(self.playername, option)
         if active != prev:
-            prefs.save_bool_option(self.username, option, active)
+            prefs.save_bool_option(self.playername, option, active)
 
     def cb_auto_strike_single(self, action):
         logging.info("cb_auto_strike_single")
@@ -1006,7 +1008,7 @@ class GUIMasterBoard(gtk.Window):
     def cb_undo(self, action):
         if self.game:
             history = self.game.history
-            if history.can_undo(self.username):
+            if history.can_undo(self.playername):
                 last_action = history.actions[-1]
                 def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
@@ -1015,7 +1017,7 @@ class GUIMasterBoard(gtk.Window):
     def cb_undo_all(self, action):
         if self.game:
             history = self.game.history
-            if history.can_undo(self.username):
+            if history.can_undo(self.playername):
                 last_action = history.actions[-1]
                 def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
@@ -1025,7 +1027,7 @@ class GUIMasterBoard(gtk.Window):
     def cb_redo(self, action):
         if self.game:
             history = self.game.history
-            if history.can_redo(self.username):
+            if history.can_redo(self.playername):
                 action = history.undone[-1]
                 def1 = self.user.callRemote("apply_action", action)
                 def1.addErrback(self.failure)
@@ -1033,7 +1035,7 @@ class GUIMasterBoard(gtk.Window):
     def cb_quit(self, action):
         """Quit the game, destroy the board and map, and unsubscribe from this
         game's events."""
-        if self.game and (self.game.over or self.username not in
+        if self.game and (self.game.over or self.playername not in
           self.game.living_playernames):
             self.cb_destroy(True)
         else:
@@ -1064,7 +1066,7 @@ class GUIMasterBoard(gtk.Window):
     def cb_negotiate(self, (attacker_legion, attacker_creature_names,
       defender_legion, defender_creature_names, response_id)):
         """Callback from Negotiate dialog."""
-        player = self.game.get_player_by_name(self.username)
+        player = self.game.get_player_by_name(self.playername)
         hexlabel = attacker_legion.hexlabel
         for legion in player.friendly_legions(hexlabel):
             friendly_legion = legion
@@ -1154,7 +1156,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.RollMovement):
             # show movement die
             self.repaint_hexlabels.update(self.board.hexes.keys())
-            if action.playername == self.username:
+            if action.playername == self.playername:
                 if action.mulligans_left == 0:
                     self.disable_mulligan()
                 self.highlight_unmoved_legions()
@@ -1170,7 +1172,7 @@ class GUIMasterBoard(gtk.Window):
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
             self.clear_recruitchits(legion.previous_hexlabel)
-            if action.playername == self.username:
+            if action.playername == self.playername:
                 self.highlight_unmoved_legions()
             else:
                 self.repaint()
@@ -1178,11 +1180,11 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.StartFightPhase):
             # clear movement die
             self.repaint_hexlabels.update(self.board.hexes.keys())
-            if action.playername == self.username:
+            if action.playername == self.playername:
                 self.clear_all_recruitchits()
             self.highlight_engagements()
             player = self.game.active_player
-            if self.username == player.name:
+            if self.playername == player.name:
                 if not self.game.engagement_hexlabels:
                     def1 = self.user.callRemote("done_with_engagements",
                       self.game.name)
@@ -1193,7 +1195,7 @@ class GUIMasterBoard(gtk.Window):
             self.repaint_hexlabels.update(self.board.hexes.keys())
             self.highlight_recruits()
             player = self.game.active_player
-            if self.username == player.name:
+            if self.playername == player.name:
                 if not player.can_recruit:
                     player.forget_enemy_legions()
                     def1 = self.user.callRemote("done_with_recruits",
@@ -1208,9 +1210,10 @@ class GUIMasterBoard(gtk.Window):
                     attacker = legion
                 else:
                     defender = legion
-            if defender.player.name == self.username:
+            if defender.player.name == self.playername:
                 if defender.can_flee:
-                    _, def1 = Flee.new(self.username, attacker, defender, self)
+                    _, def1 = Flee.new(self.playername, attacker, defender,
+                      self)
                     def1.addCallback(self.cb_maybe_flee)
                 else:
                     # Can't flee, so we always send the do_not_flee.
@@ -1220,7 +1223,7 @@ class GUIMasterBoard(gtk.Window):
         elif isinstance(action, Action.Flee):
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
@@ -1236,9 +1239,9 @@ class GUIMasterBoard(gtk.Window):
                 if legion != defender:
                     attacker = legion
             if (attacker is not None and (
-              defender.player.name == self.username or
-              attacker.player.name == self.username)):
-                self.negotiate, def1 = Negotiate.new(self.username, attacker,
+              defender.player.name == self.playername or
+              attacker.player.name == self.playername)):
+                self.negotiate, def1 = Negotiate.new(self.playername, attacker,
                   defender, self)
                 def1.addCallback(self.cb_negotiate)
 
@@ -1246,7 +1249,7 @@ class GUIMasterBoard(gtk.Window):
             self.destroy_negotiate()
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
@@ -1259,7 +1262,7 @@ class GUIMasterBoard(gtk.Window):
             defender_markerid = action.defender_markerid
             defender = self.game.find_legion(defender_markerid)
             if attacker is not None and defender is not None:
-                proposal, def1 = Proposal.new(self.username, attacker,
+                proposal, def1 = Proposal.new(self.playername, attacker,
                   action.attacker_creature_names, defender,
                   action.defender_creature_names, self)
                 def1.addCallback(self.cb_proposal)
@@ -1269,7 +1272,7 @@ class GUIMasterBoard(gtk.Window):
             self.destroy_negotiate()
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
@@ -1281,8 +1284,8 @@ class GUIMasterBoard(gtk.Window):
             attacker = self.game.find_legion(attacker_markerid)
             defender_markerid = action.defender_markerid
             defender = self.game.find_legion(defender_markerid)
-            if (action.other_playername == self.username):
-                self.negotiate, def1 = Negotiate.new(self.username, attacker,
+            if (action.other_playername == self.playername):
+                self.negotiate, def1 = Negotiate.new(self.playername, attacker,
                   defender, self)
                 def1.addCallback(self.cb_negotiate)
 
@@ -1306,7 +1309,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.StartSplitPhase):
             player = self.game.active_player
-            if self.username == player.name:
+            if self.playername == player.name:
                 self.unselect_all()
                 self.highlight_tall_legions()
                 if not player.can_split:
@@ -1326,7 +1329,7 @@ class GUIMasterBoard(gtk.Window):
                 lst.append(donor.hexlabel)
             self.repaint(lst)
             self.highlight_engagements()
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
@@ -1334,7 +1337,7 @@ class GUIMasterBoard(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotSummonAngel):
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
@@ -1357,7 +1360,7 @@ class GUIMasterBoard(gtk.Window):
 
         elif isinstance(action, Action.CanAcquireAngels):
             if (self.acquire_angels is None and action.playername ==
-              self.username):
+              self.playername):
                 markerid = action.markerid
                 legion = self.game.find_legion(markerid)
                 angels = action.angels
@@ -1365,7 +1368,7 @@ class GUIMasterBoard(gtk.Window):
                 caretaker = self.game.caretaker
                 if angels or archangels:
                     self.acquire_angels, def1 = AcquireAngels.new(
-                      self.username, legion, archangels, angels,
+                      self.playername, legion, archangels, angels,
                       self.game.caretaker, self)
                     def1.addCallback(self.picked_angels)
                     def1.addErrback(self.failure)
@@ -1378,7 +1381,7 @@ class GUIMasterBoard(gtk.Window):
                   action.angel_names)
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
@@ -1386,7 +1389,7 @@ class GUIMasterBoard(gtk.Window):
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotAcquireAngels):
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",
@@ -1400,19 +1403,19 @@ class GUIMasterBoard(gtk.Window):
             self.unselect_all()
             if self.guimap is None and not self.destroyed:
                 self.guimap = GUIBattleMap.GUIBattleMap(self.game.battlemap,
-                  self.game, self.user, self.username)
+                  self.game, self.user, self.playername)
                 self.game.add_observer(self.guimap)
 
         elif isinstance(action, Action.BattleOver):
             legion = self.game.find_legion(action.winner_markerid)
             if legion:
                 player = legion.player
-                if (player.name == self.username and
+                if (player.name == self.playername and
                   self.game.phase == Phase.FIGHT):
                     if player == self.game.active_player:
                         # attacker can possibly summon
                         if legion.can_summon:
-                            _, def1 = SummonAngel.new(self.username, legion,
+                            _, def1 = SummonAngel.new(self.playername, legion,
                               self)
                             def1.addCallback(self.picked_summon)
                         else:
@@ -1427,7 +1430,7 @@ class GUIMasterBoard(gtk.Window):
                         mterrain = masterhex.terrain
                         if legion.can_recruit:
                             logging.info("PickRecruit.new (after)")
-                            _, def1 = PickRecruit.new(self.username, legion,
+                            _, def1 = PickRecruit.new(self.playername, legion,
                               mterrain, caretaker, self)
                             def1.addCallback(self.picked_recruit)
                         else:
@@ -1446,7 +1449,7 @@ class GUIMasterBoard(gtk.Window):
                   legion.living_creature_names)
             self.repaint_hexlabels.add(hexlabel)
             self.highlight_engagements()
-            player = self.game.get_player_by_name(self.username)
+            player = self.game.get_player_by_name(self.playername)
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
                     def1 = self.user.callRemote("done_with_engagements",

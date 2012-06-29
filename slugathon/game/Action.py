@@ -56,22 +56,22 @@ class EphemeralAction(Action):
 
 
 class AddUsername(Action):
-    def __init__(self, username):
-        self.username = username
+    def __init__(self, playername):
+        self.playername = playername
 pb.setUnjellyableForClass(AddUsername, AddUsername)
 
 
 class DelUsername(Action):
-    def __init__(self, username):
-        self.username = username
+    def __init__(self, playername):
+        self.playername = playername
 pb.setUnjellyableForClass(DelUsername, DelUsername)
 
 
 class FormGame(Action):
-    def __init__(self, username, game_name, create_time, start_time,
+    def __init__(self, playername, game_name, create_time, start_time,
       min_players, max_players, ai_time_limit, player_time_limit,
       player_type, result_info):
-        self.username = username
+        self.playername = playername
         self.game_name = game_name
         self.create_time = create_time
         self.start_time = start_time
@@ -91,8 +91,8 @@ pb.setUnjellyableForClass(RemoveGame, RemoveGame)
 
 
 class JoinGame(Action):
-    def __init__(self, username, game_name, player_type, result_info):
-        self.username = username
+    def __init__(self, playername, game_name, player_type, result_info):
+        self.playername = playername
         self.game_name = game_name
         self.player_type = player_type
         self.result_info = result_info

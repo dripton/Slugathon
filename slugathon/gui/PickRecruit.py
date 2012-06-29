@@ -13,19 +13,19 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Creature
 
 
-def new(username, legion, mterrain, caretaker, parent):
+def new(playername, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
-    logging.info("new %s %s %s", username, legion, mterrain)
+    logging.info("new %s %s %s", playername, legion, mterrain)
     def1 = defer.Deferred()
-    pickrecruit = PickRecruit(username, legion, mterrain, caretaker, def1,
+    pickrecruit = PickRecruit(playername, legion, mterrain, caretaker, def1,
       parent)
     return pickrecruit, def1
 
 
 class PickRecruit(gtk.Dialog):
     """Dialog to pick a recruit."""
-    def __init__(self, username, legion, mterrain, caretaker, def1, parent):
-        gtk.Dialog.__init__(self, "PickRecruit - %s" % username, parent)
+    def __init__(self, playername, legion, mterrain, caretaker, def1, parent):
+        gtk.Dialog.__init__(self, "PickRecruit - %s" % playername, parent)
         self.legion = legion
         player = legion.player
         self.deferred = def1
@@ -119,15 +119,15 @@ if __name__ == "__main__":
         guiutils.exit()
 
     now = time.time()
-    username = "p0"
+    playername = "p0"
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000
     masterhex = game.board.hexes[legion.hexlabel]
     mterrain = masterhex.terrain
-    pickrecruit, def1 = new(username, legion, mterrain, game.caretaker, None)
+    pickrecruit, def1 = new(playername, legion, mterrain, game.caretaker, None)
     def1.addCallback(my_callback)
     pickrecruit.connect("destroy", guiutils.exit)
 

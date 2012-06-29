@@ -14,15 +14,15 @@ from slugathon.game import Creature
 
 class Inspector(gtk.Dialog):
     """Window to show a legion's contents."""
-    def __init__(self, username, parent):
-        gtk.Dialog.__init__(self, "Inspector - %s" % username, parent)
+    def __init__(self, playername, parent):
+        gtk.Dialog.__init__(self, "Inspector - %s" % playername, parent)
 
-        self.username = username
+        self.playername = playername
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("Inspector - %s" % (username))
+        self.set_title("Inspector - %s" % (playername))
 
         self.legion_name = gtk.Label()
         self.vbox.pack_start(self.legion_name)
@@ -38,13 +38,13 @@ class Inspector(gtk.Dialog):
         self.legion = None
         self.marker = None
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup
@@ -54,12 +54,12 @@ class Inspector(gtk.Dialog):
         self.connect("configure-event", self.cb_configure_event)
 
     def cb_configure_event(self, event, unused):
-        if self.username:
+        if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.username, self.__class__.__name__,
-              x, y)
+            prefs.save_window_position(self.playername,
+              self.__class__.__name__, x, y)
             width, height = self.get_size()
-            prefs.save_window_size(self.username, self.__class__.__name__,
+            prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
 
@@ -118,12 +118,12 @@ if __name__ == "__main__":
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
 
-    username = "test"
-    player = Player.Player(username, None, None)
+    playername = "test"
+    player = Player.Player(playername, None, None)
     player.color = random.choice(playercolordata.colors)
     abbrev = player.color_abbrev
     index = random.randrange(1, 12 + 1)
-    inspector = Inspector(username, None)
+    inspector = Inspector(playername, None)
 
     legion = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures, 1)
     inspector.show_legion(legion)

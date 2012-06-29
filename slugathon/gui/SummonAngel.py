@@ -12,17 +12,17 @@ import gtk
 from slugathon.gui import Chit, Marker, icon
 
 
-def new(username, legion, parent):
+def new(playername, legion, parent):
     """Create a SummonAngel dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    summonangel = SummonAngel(username, legion, def1, parent)
+    summonangel = SummonAngel(playername, legion, def1, parent)
     return summonangel, def1
 
 
 class SummonAngel(gtk.Dialog):
     """Dialog to summon an angel."""
-    def __init__(self, username, legion, def1, parent):
-        gtk.Dialog.__init__(self, "SummonAngel - %s" % username, parent)
+    def __init__(self, playername, legion, def1, parent):
+        gtk.Dialog.__init__(self, "SummonAngel - %s" % playername, parent)
         self.legion = legion
         player = legion.player
         self.deferred = def1
@@ -82,9 +82,9 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     now = time.time()
-    username = "test"
-    game = Game.Game("g1", username, now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    playername = "test"
+    game = Game.Game("g1", playername, now, now, 2, 6)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     creatures1 = [Creature.Creature(name) for name in
       ["Titan", "Ogre", "Troll", "Ranger"]]
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         logging.info("Will summon %s from %s into %s", creature, donor, legion)
         guiutils.exit()
 
-    summonangel, def1 = new(username, legion1, None)
+    summonangel, def1 = new(playername, legion1, None)
     def1.addCallback(my_callback)
     summonangel.connect("destroy", guiutils.exit)
 

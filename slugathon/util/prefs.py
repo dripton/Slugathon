@@ -166,7 +166,7 @@ def last_server_path():
 
 
 def passwd_path():
-    """Return the path to the file that holds usernames and passwords.."""
+    """Return the path to the file that holds playernames and passwords.."""
     return os.path.join(GLOBAL_PREFS_DIR, "passwd")
 
 

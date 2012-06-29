@@ -22,18 +22,18 @@ DO_NOT_FLEE = 0
 FLEE = 1
 
 
-def new(username, attacker_legion, defender_legion, parent):
+def new(playername, attacker_legion, defender_legion, parent):
     """Create a Flee dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    flee = Flee(username, attacker_legion, defender_legion, def1, parent)
+    flee = Flee(playername, attacker_legion, defender_legion, def1, parent)
     return flee, def1
 
 
 class Flee(gtk.Dialog):
     """Dialog to choose whether to flee."""
-    def __init__(self, username, attacker_legion, defender_legion, def1,
+    def __init__(self, playername, attacker_legion, defender_legion, def1,
       parent):
-        gtk.Dialog.__init__(self, "Flee - %s" % (username), parent)
+        gtk.Dialog.__init__(self, "Flee - %s" % (playername), parent)
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.deferred = def1
@@ -125,10 +125,10 @@ if __name__ == "__main__":
     from slugathon.game import Creature, Legion, Player, Game
 
     now = time.time()
-    attacker_username = "Roar!"
-    game = Game.Game("g1", attacker_username, now, now, 2, 6)
+    attacker_playername = "Roar!"
+    game = Game.Game("g1", attacker_playername, now, now, 2, 6)
 
-    attacker_player = Player.Player(attacker_username, game, 0)
+    attacker_player = Player.Player(attacker_playername, game, 0)
     attacker_player.color = "Black"
     attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
       "Archangel", "Angel", "Unicorn"]
@@ -136,8 +136,8 @@ if __name__ == "__main__":
     attacker_legion = Legion.Legion(attacker_player, "Bk01",
       attacker_creatures, 1)
 
-    defender_username = "Eek!"
-    defender_player = Player.Player(defender_username, game, 0)
+    defender_playername = "Eek!"
+    defender_player = Player.Player(defender_playername, game, 0)
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_creatures = Creature.n2c(defender_creature_names)
@@ -148,6 +148,6 @@ if __name__ == "__main__":
         logging.info("fled is %s", fled)
         reactor.stop()
 
-    _, def1 = new(defender_username, attacker_legion, defender_legion, None)
+    _, def1 = new(defender_playername, attacker_legion, defender_legion, None)
     def1.addCallback(my_callback)
     reactor.run()

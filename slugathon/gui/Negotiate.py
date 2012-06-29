@@ -23,19 +23,19 @@ DONE_PROPOSING = 2
 FIGHT = 3
 
 
-def new(username, attacker_legion, defender_legion, parent):
+def new(playername, attacker_legion, defender_legion, parent):
     """Create a Negotiate dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    negotiate = Negotiate(username, attacker_legion, defender_legion, def1,
+    negotiate = Negotiate(playername, attacker_legion, defender_legion, def1,
       parent)
     return negotiate, def1
 
 
 class Negotiate(gtk.Dialog):
     """Dialog to choose whether to concede, negotiate, or fight."""
-    def __init__(self, username, attacker_legion, defender_legion,
+    def __init__(self, playername, attacker_legion, defender_legion,
       def1, parent):
-        gtk.Dialog.__init__(self, "Negotiate - %s" % username, parent)
+        gtk.Dialog.__init__(self, "Negotiate - %s" % playername, parent)
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.deferred = def1
@@ -172,9 +172,9 @@ if __name__ == "__main__":
 
     now = time.time()
     game_name = "Game1"
-    attacker_username = "Roar!"
-    game = Game.Game("g1", attacker_username, now, now, 2, 6)
-    attacker_player = Player.Player(attacker_username, game, 0)
+    attacker_playername = "Roar!"
+    game = Game.Game("g1", attacker_playername, now, now, 2, 6)
+    attacker_player = Player.Player(attacker_playername, game, 0)
     attacker_player.color = "Black"
     attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
       "Archangel", "Angel", "Unicorn"]
@@ -182,8 +182,8 @@ if __name__ == "__main__":
     attacker_legion = Legion.Legion(attacker_player, "Bk01",
       attacker_creatures, 1)
 
-    defender_username = "Eek!"
-    defender_player = Player.Player(defender_username, game, 0)
+    defender_playername = "Eek!"
+    defender_player = Player.Player(defender_playername, game, 0)
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_creatures = Creature.n2c(defender_creature_names)
@@ -194,6 +194,6 @@ if __name__ == "__main__":
         logging.info("callback %s", args)
         reactor.stop()
 
-    _, def1 = new(defender_username, attacker_legion, defender_legion, None)
+    _, def1 = new(defender_playername, attacker_legion, defender_legion, None)
     def1.addCallback(my_callback)
     reactor.run()

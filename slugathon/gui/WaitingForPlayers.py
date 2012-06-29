@@ -31,11 +31,11 @@ def format_time(secs):
 @implementer(IObserver)
 class WaitingForPlayers(gtk.Dialog):
     """Waiting for players to start game dialog."""
-    def __init__(self, user, username, game, parent):
-        gtk.Dialog.__init__(self, "Waiting for Players - %s" % username,
+    def __init__(self, user, playername, game, parent):
+        gtk.Dialog.__init__(self, "Waiting for Players - %s" % playername,
           parent)
         self.user = user
-        self.username = username
+        self.playername = playername
         self.game = game
         self.game.add_observer(self)
         self.started = False
@@ -45,7 +45,7 @@ class WaitingForPlayers(gtk.Dialog):
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("Waiting for Players - %s" % self.username)
+        self.set_title("Waiting for Players - %s" % self.playername)
         self.set_default_size(-1, 300)
 
         label1 = gtk.Label(game.name)
@@ -113,7 +113,7 @@ class WaitingForPlayers(gtk.Dialog):
         self.start_button = gtk.Button("Start Game Now")
         self.vbox.pack_start(self.start_button, expand=False)
         self.start_button.connect("button-press-event", self.cb_click_start)
-        self.start_button.set_sensitive(self.username ==
+        self.start_button.set_sensitive(self.playername ==
           self.game.owner.name)
 
         self.connect("destroy", self.cb_destroy)
@@ -187,7 +187,8 @@ class WaitingForPlayers(gtk.Dialog):
         length = len(self.game.playernames)
         while len(self.player_store) > length:
             del self.player_store[length]
-        self.start_button.set_sensitive(self.username == self.game.owner.name)
+        self.start_button.set_sensitive(self.playername ==
+          self.game.owner.name)
 
     def failure(self, arg):
         log.err(arg)
@@ -213,8 +214,8 @@ if __name__ == "__main__":
 
     now = time.time()
     user = NullUser()
-    username = "Player 1"
+    playername = "Player 1"
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
-    wfp = WaitingForPlayers(user, username, game, None)
+    wfp = WaitingForPlayers(user, playername, game, None)
     wfp.connect("destroy", lambda x: reactor.stop())
     reactor.run()

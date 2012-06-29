@@ -17,11 +17,11 @@ from slugathon.util import prefs
 @implementer(IObserver)
 class GUICaretaker(gtk.Dialog):
     """Caretaker status window."""
-    def __init__(self, game, username, parent):
-        self.username = username
+    def __init__(self, game, playername, parent):
+        self.playername = playername
         self.caretaker = game.caretaker
 
-        gtk.Dialog.__init__(self, "Caretaker - %s" % username, parent)
+        gtk.Dialog.__init__(self, "Caretaker - %s" % playername, parent)
         table = gtk.Table(rows=4, columns=6)
         table.set_row_spacings(9)
         table.set_col_spacings(9)
@@ -52,13 +52,13 @@ class GUICaretaker(gtk.Dialog):
             self.update_counts_label(creature_name, left_count, game_count,
               dead_count)
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup
@@ -69,16 +69,16 @@ class GUICaretaker(gtk.Dialog):
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("Caretaker - %s" % username)
+        self.set_title("Caretaker - %s" % playername)
         self.show_all()
 
     def cb_configure_event(self, event, unused):
-        if self.username:
+        if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.username, self.__class__.__name__,
-              x, y)
+            prefs.save_window_position(self.playername,
+              self.__class__.__name__, x, y)
             width, height = self.get_size()
-            prefs.save_window_size(self.username, self.__class__.__name__,
+            prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
 
@@ -145,8 +145,8 @@ if __name__ == "__main__":
     from slugathon.game import Game, Player
 
     now = time.time()
-    username = "Player 1"
-    game = Game.Game("g1", username, now, now, 2, 6)
+    playername = "Player 1"
+    game = Game.Game("g1", playername, now, now, 2, 6)
 
     player1 = game.players[0]
     player1.assign_starting_tower(600)
@@ -166,6 +166,6 @@ if __name__ == "__main__":
     for unused in xrange(10):
         caretaker.take_one("Colossus")
 
-    guicaretaker = GUICaretaker(game, username, None)
+    guicaretaker = GUICaretaker(game, playername, None)
     guicaretaker.connect("destroy", guiutils.exit)
     gtk.main()

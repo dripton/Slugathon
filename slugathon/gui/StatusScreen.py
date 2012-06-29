@@ -35,10 +35,10 @@ def set_bg(label, color):
 @implementer(IObserver)
 class StatusScreen(gtk.Dialog):
     """Game status window."""
-    def __init__(self, game, username, parent):
-        gtk.Dialog.__init__(self, "Status - %s" % username, parent)
+    def __init__(self, game, playername, parent):
+        gtk.Dialog.__init__(self, "Status - %s" % playername, parent)
         self.game = game
-        self.username = username
+        self.playername = playername
 
         turn_table = gtk.Table(rows=4, columns=3)
         self.vbox.pack_start(turn_table)
@@ -76,13 +76,13 @@ class StatusScreen(gtk.Dialog):
 
         self.connect("configure-event", self.cb_configure_event)
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup
@@ -95,18 +95,18 @@ class StatusScreen(gtk.Dialog):
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("Game Status - %s" % self.username)
+        self.set_title("Game Status - %s" % self.playername)
         self.show_all()
         self.default_bg = \
           self.get_style().copy().bg[gtk.STATE_NORMAL]
 
     def cb_configure_event(self, event, unused):
-        if self.username:
+        if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.username, self.__class__.__name__,
-              x, y)
+            prefs.save_window_position(self.playername,
+              self.__class__.__name__, x, y)
             width, height = self.get_size()
-            prefs.save_window_size(self.username, self.__class__.__name__,
+            prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
 
@@ -114,7 +114,7 @@ class StatusScreen(gtk.Dialog):
         self.game_turn_label.set_text(str(self.game.turn))
         self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
         if self.game.active_player:
-            if self.game.active_player.name == self.username:
+            if self.game.active_player.name == self.playername:
                 set_bg(self.game_player_label, "Yellow")
             else:
                 set_bg(self.game_player_label, self.default_bg)
@@ -208,7 +208,7 @@ class StatusScreen(gtk.Dialog):
         if (self.game.battle_turn is not None and
           self.game.battle_active_player is not None):
             self.battle_turn_label.set_text(str(self.game.battle_turn))
-            if self.game.battle_active_player.name == self.username:
+            if self.game.battle_active_player.name == self.playername:
                 set_bg(self.battle_player_label, "Yellow")
             else:
                 set_bg(self.battle_player_label, self.default_bg)
@@ -339,7 +339,7 @@ if __name__ == "__main__":
     from slugathon.data import creaturedata
 
     now = time.time()
-    username = "p1"
+    playername = "p1"
     creatures = Creature.n2c(creaturedata.starting_creature_names)
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
 
@@ -385,6 +385,6 @@ if __name__ == "__main__":
     player6.create_starting_legion()
     game.players.append(player6)
 
-    status_screen = StatusScreen(game, username, None)
+    status_screen = StatusScreen(game, playername, None)
     status_screen.connect("destroy", guiutils.exit)
     gtk.main()

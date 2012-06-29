@@ -52,14 +52,14 @@ ui_string = """<ui>
 @implementer(IObserver)
 class GUIBattleMap(gtk.Window):
     """GUI representation of a battlemap."""
-    def __init__(self, battlemap, game=None, user=None, username=None,
+    def __init__(self, battlemap, game=None, user=None, playername=None,
       scale=None):
         gtk.Window.__init__(self)
 
         self.battlemap = battlemap
         self.game = game
         self.user = user
-        self.username = username
+        self.playername = playername
 
         self.chits = []
         self.selected_chit = None
@@ -70,7 +70,7 @@ class GUIBattleMap(gtk.Window):
         else:
             game_name = "None"
         self.set_title("BattleMap - Slugathon - %s - %s" % (game_name,
-          self.username))
+          self.playername))
 
         self.connect("configure-event", self.cb_configure_event)
 
@@ -95,13 +95,13 @@ class GUIBattleMap(gtk.Window):
             self.turn_track = None
             self.battle_dice = None
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup
@@ -155,7 +155,7 @@ class GUIBattleMap(gtk.Window):
         self.area.connect("button-press-event", self.cb_click)
         self.show_all()
         if (self.game and self.game.battle_active_player and
-          self.game.battle_active_player.name == self.username):
+          self.game.battle_active_player.name == self.playername):
             self.highlight_mobile_chits()
         self.pickcarry = None
 
@@ -234,7 +234,7 @@ class GUIBattleMap(gtk.Window):
         if not self.game:
             return
         if (not self.game.battle_active_player or
-          self.game.battle_active_player.name != self.username):
+          self.game.battle_active_player.name != self.playername):
             self.unselect_all()
             return
         hexlabels = set()
@@ -250,7 +250,7 @@ class GUIBattleMap(gtk.Window):
         if not self.game:
             return
         if (not self.game.battle_active_player or
-          self.game.battle_active_player.name != self.username):
+          self.game.battle_active_player.name != self.playername):
             self.unselect_all()
             return
         hexlabels = set()
@@ -273,9 +273,9 @@ class GUIBattleMap(gtk.Window):
 
         Return True iff we did one.
         """
-        auto_strike = prefs.load_bool_option(self.username,
+        auto_strike = prefs.load_bool_option(self.playername,
           prefs.AUTO_STRIKE_SINGLE_TARGET)
-        auto_rangestrike = prefs.load_bool_option(self.username,
+        auto_rangestrike = prefs.load_bool_option(self.playername,
           prefs.AUTO_RANGESTRIKE_SINGLE_TARGET)
         if auto_strike or auto_rangestrike:
             strikers = self.game.battle_active_legion.strikers
@@ -303,7 +303,7 @@ class GUIBattleMap(gtk.Window):
 
         Return True iff we carried.
         """
-        auto_carry = prefs.load_bool_option(self.username,
+        auto_carry = prefs.load_bool_option(self.playername,
           prefs.AUTO_CARRY_TO_SINGLE_TARGET)
         if auto_carry:
             carry_targets = striker.carry_targets(target, num_dice,
@@ -317,12 +317,12 @@ class GUIBattleMap(gtk.Window):
         return False
 
     def cb_configure_event(self, event, unused):
-        if self.username:
+        if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.username, self.__class__.__name__,
-              x, y)
+            prefs.save_window_position(self.playername,
+              self.__class__.__name__, x, y)
             width, height = self.get_size()
-            prefs.save_window_size(self.username, self.__class__.__name__,
+            prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
 
@@ -354,11 +354,11 @@ class GUIBattleMap(gtk.Window):
         if not self.game or not self.game.battle_active_player:
             return
         if self.game.battle_phase == Phase.MANEUVER:
-            if self.game.battle_active_player.name == self.username:
+            if self.game.battle_active_player.name == self.playername:
                 self.highlight_mobile_chits()
         elif (self.game.battle_phase == Phase.STRIKE
           or self.game.battle_phase == Phase.COUNTERSTRIKE):
-            if self.game.battle_active_player.name == self.username:
+            if self.game.battle_active_player.name == self.playername:
                 self.highlight_strikers()
 
     def clicked_on_hex(self, area, event, guihex):
@@ -377,7 +377,7 @@ class GUIBattleMap(gtk.Window):
             self.selected_chit = None
             self.unselect_all()
             if (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 self.highlight_mobile_chits()
 
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
@@ -389,7 +389,7 @@ class GUIBattleMap(gtk.Window):
             creature = chit.creature
             legion = creature.legion
             player = legion.player
-            if player.name != self.username:
+            if player.name != self.playername:
                 return
             elif player != self.game.battle_active_player:
                 return
@@ -407,18 +407,18 @@ class GUIBattleMap(gtk.Window):
             player = legion.player
             guihex = self.guihexes[creature.hexlabel]
 
-            if (player.name != self.username and guihex.selected and
+            if (player.name != self.playername and guihex.selected and
               self.pickcarry):
                 # carrying to enemy creature
                 self.picked_carry((creature, self.pickcarry.carries))
 
             elif (self.selected_chit is not None and player.name !=
-              self.username and guihex.selected):
+              self.playername and guihex.selected):
                 # striking enemy creature
                 target = creature
                 striker = self.selected_chit.creature
                 if striker.can_take_strike_penalty(target):
-                    _, def1 = PickStrikePenalty.new(self.username,
+                    _, def1 = PickStrikePenalty.new(self.playername,
                       self.game.name, striker, target, self)
                     def1.addCallback(self.picked_strike_penalty)
                 else:
@@ -428,7 +428,7 @@ class GUIBattleMap(gtk.Window):
 
             else:
                 # picking a striker
-                if player.name != self.username:
+                if player.name != self.playername:
                     return
                 if player != self.game.battle_active_player:
                     return
@@ -536,7 +536,7 @@ class GUIBattleMap(gtk.Window):
     def cb_undo(self, action):
         if self.game:
             history = self.game.history
-            if history.can_undo(self.username):
+            if history.can_undo(self.playername):
                 last_action = history.actions[-1]
                 def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
@@ -545,7 +545,7 @@ class GUIBattleMap(gtk.Window):
     def cb_undo_all(self, action):
         if self.game:
             history = self.game.history
-            if history.can_undo(self.username):
+            if history.can_undo(self.playername):
                 last_action = history.actions[-1]
                 def1 = self.user.callRemote("apply_action",
                   last_action.undo_action())
@@ -555,7 +555,7 @@ class GUIBattleMap(gtk.Window):
     def cb_redo(self, action):
         if self.game:
             history = self.game.history
-            if history.can_redo(self.username):
+            if history.can_redo(self.playername):
                 action = history.undone[-1]
                 def1 = self.user.callRemote("apply_action", action)
                 def1.addErrback(self.failure)
@@ -563,7 +563,7 @@ class GUIBattleMap(gtk.Window):
     def cb_done(self, action):
         if not self.game:
             return
-        player = self.game.get_player_by_name(self.username)
+        player = self.game.get_player_by_name(self.playername)
         if player == self.game.battle_active_player:
             if self.game.battle_phase == Phase.REINFORCE:
                 def1 = self.user.callRemote("done_with_reinforcements",
@@ -600,7 +600,7 @@ class GUIBattleMap(gtk.Window):
         logging.info("cb_concede2 %s", confirmed)
         if confirmed:
             for legion in self.game.battle_legions:
-                if legion.player.name == self.username:
+                if legion.player.name == self.playername:
                     friend = legion
                 else:
                     enemy = legion
@@ -711,7 +711,7 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.StartManeuverBattlePhase):
             self.highlight_mobile_chits()
             if (self.game and self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 if not self.game.battle_active_legion.mobile_creatures:
                     def1 = self.user.callRemote("done_with_maneuvers",
                       self.game.name)
@@ -720,7 +720,7 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.StartStrikeBattlePhase):
             self.highlight_strikers()
             if (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 strikers = self.game.battle_active_legion.strikers
                 if not strikers:
                     def1 = self.user.callRemote("done_with_strikes",
@@ -737,7 +737,7 @@ class GUIBattleMap(gtk.Window):
                 self.build_chit_image(action.target_hexlabel)
             self.highlight_strikers()
             if (action.carries and self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 striker = self.game.creatures_in_battle_hex(
                   action.striker_hexlabel).pop()
                 assert striker.name == action.striker_name
@@ -751,7 +751,7 @@ class GUIBattleMap(gtk.Window):
                 if self._do_auto_carry(striker, target, num_dice,
                   strike_number, carries):
                     return
-                self.pickcarry, def1 = PickCarry.new(self.username,
+                self.pickcarry, def1 = PickCarry.new(self.playername,
                   self.game.name, striker, target, num_dice, strike_number,
                   carries, self)
                 def1.addCallback(self.picked_carry)
@@ -761,7 +761,7 @@ class GUIBattleMap(gtk.Window):
                     self.guihexes[creature.hexlabel].selected = True
                     self.repaint([creature.hexlabel])
             elif (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 strikers = self.game.battle_active_legion.strikers
                 if not strikers:
                     if self.game.battle_phase == Phase.STRIKE:
@@ -786,7 +786,7 @@ class GUIBattleMap(gtk.Window):
                 self.build_chit_image(action.carry_target_hexlabel)
             self.highlight_strikers()
             if (action.carries_left and self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 striker = self.game.creatures_in_battle_hex(
                   action.striker_hexlabel).pop()
                 assert striker.name == action.striker_name
@@ -801,7 +801,7 @@ class GUIBattleMap(gtk.Window):
                 if self._do_auto_carry(striker, target, num_dice,
                   strike_number, carries_left):
                     return
-                self.pickcarry, def1 = PickCarry.new(self.username,
+                self.pickcarry, def1 = PickCarry.new(self.playername,
                   self.game.name, striker, target, num_dice, strike_number,
                   carries_left, self)
                 def1.addCallback(self.picked_carry)
@@ -811,7 +811,7 @@ class GUIBattleMap(gtk.Window):
                     self.guihexes[creature.hexlabel].selected = True
                     self.repaint([creature.hexlabel])
             elif (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 strikers = self.game.battle_active_legion.strikers
                 if not strikers:
                     if self.game.battle_phase == Phase.STRIKE:
@@ -828,7 +828,7 @@ class GUIBattleMap(gtk.Window):
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             self.highlight_strikers()
             if (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 if not self.game.battle_active_legion.strikers:
                     def1 = self.user.callRemote("done_with_counterstrikes",
                       self.game.name)
@@ -840,7 +840,7 @@ class GUIBattleMap(gtk.Window):
             self._remove_dead_chits()
             if (self.game.battle_turn == 4 and
               self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username and
+              self.game.battle_active_player.name == self.playername and
               self.game.battle_active_legion == self.game.defender_legion):
                 legion = self.game.defender_legion
                 caretaker = self.game.caretaker
@@ -848,8 +848,8 @@ class GUIBattleMap(gtk.Window):
                 mterrain = self.game.board.hexes[hexlabel].terrain
                 if legion.can_recruit:
                     logging.info("PickRecruit.new (battle turn 4)")
-                    _, def1 = PickRecruit.new(self.username, legion, mterrain,
-                      caretaker, self)
+                    _, def1 = PickRecruit.new(self.playername, legion,
+                      mterrain, caretaker, self)
                     def1.addCallback(self.picked_reinforcement)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
@@ -857,13 +857,13 @@ class GUIBattleMap(gtk.Window):
                     def1.addErrback(self.failure)
 
             elif (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username and
+              self.game.battle_active_player.name == self.playername and
               self.game.battle_active_legion == self.game.attacker_legion):
                 legion = self.game.attacker_legion
                 if (legion.can_summon and self.game.first_attacker_kill in
                   [self.game.battle_turn - 1, self.game.battle_turn]):
                     self.game.first_attacker_kill = -1
-                    _, def1 = SummonAngel.new(self.username, legion, self)
+                    _, def1 = SummonAngel.new(self.playername, legion, self)
                     def1.addCallback(self.picked_summon)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
@@ -871,7 +871,7 @@ class GUIBattleMap(gtk.Window):
                     def1.addErrback(self.failure)
 
             elif (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 def1 = self.user.callRemote("done_with_reinforcements",
                   self.game.name)
                 def1.addErrback(self.failure)
@@ -887,14 +887,14 @@ class GUIBattleMap(gtk.Window):
                 self.game.defender_legion.creatures[-1].hexlabel = "DEFENDER"
                 self.repaint(["DEFENDER"])
                 if (self.game.battle_active_player and
-                  self.game.battle_active_player.name == self.username):
+                  self.game.battle_active_player.name == self.playername):
                     def1 = self.user.callRemote("done_with_reinforcements",
                       self.game.name)
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotReinforce):
             if (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 def1 = self.user.callRemote("done_with_reinforcements",
                   self.game.name)
                 def1.addErrback(self.failure)
@@ -905,14 +905,14 @@ class GUIBattleMap(gtk.Window):
                 self.game.attacker_legion.creatures[-1].hexlabel = "ATTACKER"
                 self.repaint(["ATTACKER"])
                 if (self.game.battle_active_player and
-                  self.game.battle_active_player.name == self.username):
+                  self.game.battle_active_player.name == self.playername):
                     def1 = self.user.callRemote("done_with_reinforcements",
                       self.game.name)
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotSummonAngel):
             if (self.game.battle_active_player and
-              self.game.battle_active_player.name == self.username):
+              self.game.battle_active_player.name == self.playername):
                 def1 = self.user.callRemote("done_with_reinforcements",
                   self.game.name)
                 def1.addErrback(self.failure)

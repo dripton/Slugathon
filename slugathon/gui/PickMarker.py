@@ -19,10 +19,10 @@ from slugathon.gui import icon
 from slugathon.util import fileutils
 
 
-def new(username, game_name, markers_left, parent):
+def new(playername, game_name, markers_left, parent):
     """Create a PickMarker dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pickmarker = PickMarker(username, game_name, markers_left, def1, parent)
+    pickmarker = PickMarker(playername, game_name, markers_left, def1, parent)
     return pickmarker, def1
 
 
@@ -48,10 +48,10 @@ def sorted_markers(markers):
 
 class PickMarker(gtk.Dialog):
     """Dialog to pick a legion marker."""
-    def __init__(self, username, game_name, markers_left, def1, parent):
-        title = "PickMarker - %s" % username
+    def __init__(self, playername, game_name, markers_left, def1, parent):
+        title = "PickMarker - %s" % playername
         gtk.Dialog.__init__(self, title, parent)
-        self.username = username
+        self.playername = playername
         self.game_name = game_name
         self.deferred = def1
         self.set_icon(icon.pixbuf)
@@ -80,24 +80,24 @@ class PickMarker(gtk.Dialog):
 
     def cb_click(self, widget, event):
         markerid = widget.tag
-        self.deferred.callback((self.game_name, self.username, markerid))
+        self.deferred.callback((self.game_name, self.playername, markerid))
         self.destroy()
 
     def cb_destroy(self, widget):
         if not self.deferred.called:
-            self.deferred.callback((self.game_name, self.username, None))
+            self.deferred.callback((self.game_name, self.playername, None))
 
 
 if __name__ == "__main__":
 
-    def my_callback((game_name, username, markerid)):
+    def my_callback((game_name, playername, markerid)):
         logging.info("picked %s", markerid)
         reactor.stop()
 
-    username = "test user"
+    playername = "test user"
     game_name = "test game"
     markers_left = (["Rd%02d" % ii for ii in xrange(1, 12 + 1)] +
       ["Bu%02d" % ii for ii in xrange(1, 8 + 1)])
-    pickmarker, def1 = new(username, game_name, markers_left, None)
+    pickmarker, def1 = new(playername, game_name, markers_left, None)
     def1.addCallback(my_callback)
     reactor.run()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     now = time.time()
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
-    username = "test"
-    game = Game.Game("g1", username, now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    playername = "test"
+    game = Game.Game("g1", playername, now, now, 2, 6)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     marker = Marker(legion, True, scale=45)

@@ -14,13 +14,13 @@ from slugathon.net import config
 
 class NewGame(gtk.Dialog):
     """Form new game dialog."""
-    def __init__(self, user, username, parent):
-        gtk.Dialog.__init__(self, "Form New Game - %s" % username, parent)
+    def __init__(self, user, playername, parent):
+        gtk.Dialog.__init__(self, "Form New Game - %s" % playername, parent)
         self.game_name = None
         self.min_players = None
         self.max_players = None
         self.user = user
-        self.username = username
+        self.playername = playername
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     user = NullUser()
-    username = "test user"
-    newgame = NewGame(user, username, None)
+    playername = "test user"
+    newgame = NewGame(user, playername, None)
     newgame.connect("destroy", guiutils.exit)
     gtk.main()

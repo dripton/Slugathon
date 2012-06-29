@@ -1544,7 +1544,7 @@ class Game(Observed):
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
-                self.add_player(action.username, action.player_type)
+                self.add_player(action.playername, action.player_type)
 
         elif isinstance(action, Action.AssignTower):
             self.started = True

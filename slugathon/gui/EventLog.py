@@ -16,10 +16,10 @@ from slugathon.util.Observer import IObserver
 @implementer(IObserver)
 class EventLog(gtk.Dialog):
     """Graphical log of game events."""
-    def __init__(self, game, username, parent):
-        gtk.Dialog.__init__(self, "Event Log - %s" % username, parent)
+    def __init__(self, game, playername, parent):
+        gtk.Dialog.__init__(self, "Event Log - %s" % playername, parent)
         self.game = game
-        self.username = username
+        self.playername = playername
         self.last_action = None
         self.reveal_actions = set()
 
@@ -34,13 +34,13 @@ class EventLog(gtk.Dialog):
 
         self.set_default_size(400, 200)
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup
@@ -49,16 +49,16 @@ class EventLog(gtk.Dialog):
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("Event Log - %s" % self.username)
+        self.set_title("Event Log - %s" % self.playername)
         self.show_all()
 
     def cb_configure_event(self, event, unused):
-        if self.username:
+        if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.username, self.__class__.__name__,
-              x, y)
+            prefs.save_window_position(self.playername,
+              self.__class__.__name__, x, y)
             width, height = self.get_size()
-            prefs.save_window_size(self.username, self.__class__.__name__,
+            prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
 

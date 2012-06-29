@@ -39,11 +39,11 @@ hexlabel_to_entry_side = {
 }
 
 
-def new(board, masterhex, entry_sides, parent, username=None, scale=None):
+def new(board, masterhex, entry_sides, parent, playername=None, scale=None):
     """Create a PickEntrySide dialog and return it and a Deferred."""
     def1 = defer.Deferred()
     pick_entry_side = PickEntrySide(board, masterhex, entry_sides, def1,
-      parent, username, scale)
+      parent, playername, scale)
     return pick_entry_side, def1
 
 
@@ -51,21 +51,21 @@ class PickEntrySide(gtk.Dialog):
     """Dialog to pick a masterhex entry side."""
 
     def __init__(self, board, masterhex, entry_sides, def1, parent,
-      username=None, scale=None):
-        gtk.Dialog.__init__(self, "Pick Entry Side - %s" % username, parent)
+      playername=None, scale=None):
+        gtk.Dialog.__init__(self, "Pick Entry Side - %s" % playername, parent)
 
         terrain = masterhex.terrain
         # We always orient the map as if for entry side 5.
         self.battlemap = BattleMap.BattleMap(terrain, 5)
         self.entry_sides = entry_sides
         self.deferred = def1
-        self.username = username
+        self.playername = playername
         self.board = board
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("PickEntrySide - Slugathon - %s" % self.username)
+        self.set_title("PickEntrySide - Slugathon - %s" % self.playername)
 
         self.hbox1 = gtk.HBox(homogeneous=True)
         self.hbox2 = gtk.HBox()
@@ -81,13 +81,13 @@ class PickEntrySide(gtk.Dialog):
         self.area = gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup

@@ -33,15 +33,15 @@ class User(Avatar):
     def perspective_get_name(self, arg):
         return self.name
 
-    def perspective_get_usernames(self):
-        return self.server.usernames
+    def perspective_get_playernames(self):
+        return self.server.playernames
 
     def perspective_get_games(self):
         games = self.server.games
         return [game.info_tuple for game in games]
 
     def perspective_send_chat_message(self, dest, text):
-        """Send chat text to dest, a set of usernames.
+        """Send chat text to dest, a set of playernames.
 
         If dest is None, send to everyone.
         """

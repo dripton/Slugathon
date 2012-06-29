@@ -11,17 +11,17 @@ from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Legion
 
 
-def new(username, legion, parent):
+def new(playername, legion, parent):
     """Create a SplitLegion dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    splitlegion = SplitLegion(username, legion, def1, parent)
+    splitlegion = SplitLegion(playername, legion, def1, parent)
     return splitlegion, def1
 
 
 class SplitLegion(gtk.Dialog):
     """Dialog to split a legion."""
-    def __init__(self, username, legion, def1, parent):
-        gtk.Dialog.__init__(self, "SplitLegion - %s" % username, parent)
+    def __init__(self, playername, legion, def1, parent):
+        gtk.Dialog.__init__(self, "SplitLegion - %s" % playername, parent)
         self.old_legion = legion
         player = legion.player
         self.deferred = def1
@@ -112,13 +112,13 @@ if __name__ == "__main__":
     now = time.time()
     creatures = [Creature.Creature(name) for name in
       creaturedata.starting_creature_names]
-    username = "test"
-    game = Game.Game("g1", username, now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    playername = "test"
+    game = Game.Game("g1", playername, now, now, 2, 6)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     player.selected_markerid = "Rd02"
-    splitlegion, def1 = new(username, legion, None)
+    splitlegion, def1 = new(playername, legion, None)
     def1.addCallback(guiutils.exit)
     splitlegion.connect("destroy", guiutils.exit)
 

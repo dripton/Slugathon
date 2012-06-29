@@ -14,18 +14,18 @@ from slugathon.gui import icon
 from slugathon.util.colors import contrasting_colors
 
 
-def new(username, game, colors_left, parent):
+def new(playername, game, colors_left, parent):
     """Return a PickColor dialog and a Deferred."""
     def1 = defer.Deferred()
-    pickcolor = PickColor(username, game, colors_left, parent, def1)
+    pickcolor = PickColor(playername, game, colors_left, parent, def1)
     return pickcolor, def1
 
 
 class PickColor(gtk.Dialog):
     """Dialog to pick a player color."""
-    def __init__(self, username, game, colors_left, parent, def1):
-        gtk.Dialog.__init__(self, "Pick Color - %s" % username, parent)
-        self.username = username
+    def __init__(self, playername, game, colors_left, parent, def1):
+        gtk.Dialog.__init__(self, "Pick Color - %s" % playername, parent)
+        self.playername = playername
         self.game = game
         self.deferred = def1
 
@@ -75,11 +75,11 @@ if __name__ == "__main__":
         guiutils.exit()
 
     now = time.time()
-    username = "test user"
-    game = Game.Game("test game", username, now, now, 2, 6)
+    playername = "test user"
+    game = Game.Game("test game", playername, now, now, 2, 6)
     colors_left = colors[:]
     colors_left.remove("Black")
-    pickcolor, def1 = new(username, game, colors_left, None)
+    pickcolor, def1 = new(playername, game, colors_left, None)
     def1.addCallback(my_callback)
     pickcolor.connect("destroy", guiutils.exit)
     gtk.main()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__copyright__ = "Copyright (c) 2003-2011 David Ripton"
+__copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -22,19 +22,19 @@ from slugathon.net import Results
 @implementer(IObserver)
 class Anteroom(gtk.Window):
     """GUI for a multiplayer chat and game finding lobby."""
-    def __init__(self, user, username, usernames, games):
+    def __init__(self, user, playername, playernames, games):
         gtk.Window.__init__(self)
         self.initialized = False
         self.user = user
-        self.username = username
-        self.usernames = usernames   # set, aliased from Client
+        self.playername = playername
+        self.playernames = playernames   # set, aliased from Client
         self.games = games           # list, aliased from Client
 
         self.wfps = {}               # game name : WaitingForPlayers
         self.selected_names = set()
         self.results = Results.Results()
 
-        self.set_title("Anteroom - %s" % self.username)
+        self.set_title("Anteroom - %s" % self.playername)
         self.set_default_size(800, 600)
         self.set_icon(icon.pixbuf)
 
@@ -142,13 +142,13 @@ class Anteroom(gtk.Window):
         load_game_button.connect("button-press-event",
           self.cb_load_game_button_click)
 
-        if self.username:
-            tup = prefs.load_window_position(self.username,
+        if self.playername:
+            tup = prefs.load_window_position(self.playername,
               self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.username,
+            tup = prefs.load_window_size(self.playername,
               self.__class__.__name__)
             if tup:
                 width, height = tup
@@ -211,16 +211,16 @@ class Anteroom(gtk.Window):
             self.add_game(game)
 
     def update_user_store(self):
-        sorted_usernames = sorted(self.usernames)
+        sorted_playernames = sorted(self.playernames)
         leng = len(self.user_store)
-        for ii, username in enumerate(sorted_usernames):
-            ranking = self.results.get_ranking(username)
+        for ii, playername in enumerate(sorted_playernames):
+            ranking = self.results.get_ranking(playername)
             skill = ranking.skill
             if ii < leng:
-                self.user_store[ii, 0] = (username, skill)
+                self.user_store[ii, 0] = (playername, skill)
             else:
-                self.user_store.append((username, skill))
-        leng = len(sorted_usernames)
+                self.user_store.append((playername, skill))
+        leng = len(sorted_playernames)
         while len(self.user_store) > leng:
             del self.user_store[leng]
 
@@ -302,12 +302,12 @@ class Anteroom(gtk.Window):
         reactor.stop()
 
     def cb_configure_event(self, event, unused):
-        if self.username:
+        if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.username, self.__class__.__name__,
-              x, y)
+            prefs.save_window_position(self.playername,
+              self.__class__.__name__, x, y)
             width, height = self.get_size()
-            prefs.save_window_size(self.username, self.__class__.__name__,
+            prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
 
@@ -324,10 +324,10 @@ class Anteroom(gtk.Window):
                 self.chat_entry.set_text("")
 
     def cb_new_game_button_click(self, widget, event):
-        NewGame.NewGame(self.user, self.username, self)
+        NewGame.NewGame(self.user, self.playername, self)
 
     def cb_load_game_button_click(self, widget, event):
-        LoadGame.LoadGame(self.user, self.username, self)
+        LoadGame.LoadGame(self.user, self.playername, self)
 
     def _add_wfp(self, game):
         wfp = self.wfps.get(game.name)
@@ -337,7 +337,7 @@ class Anteroom(gtk.Window):
                 return
             else:
                 del wfp
-        wfp = WaitingForPlayers.WaitingForPlayers(self.user, self.username,
+        wfp = WaitingForPlayers.WaitingForPlayers(self.user, self.playername,
           game, self)
         self.wfps[game.name] = wfp
 
@@ -349,7 +349,7 @@ class Anteroom(gtk.Window):
 
     def add_game(self, game):
         self.update_game_stores()
-        if not game.started and self.username in game.playernames:
+        if not game.started and self.playername in game.playernames:
             self._add_wfp(game)
 
     def remove_game(self, game_name):
@@ -361,8 +361,8 @@ class Anteroom(gtk.Window):
     def joined_game(self, playername, game_name):
         self.update_game_stores()
 
-    def withdrew_from_game(self, game_name, username):
-        if username == self.username:
+    def withdrew_from_game(self, game_name, playername):
+        if playername == self.playername:
             self._remove_wfp(game_name)
         self.update_game_stores()
 
@@ -397,7 +397,7 @@ class Anteroom(gtk.Window):
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
         elif isinstance(action, Action.JoinGame):
-            self.joined_game(action.username, action.game_name)
+            self.joined_game(action.playername, action.game_name)
         elif isinstance(action, Action.Withdraw):
             self.withdrew_from_game(action.game_name, action.playername)
         elif isinstance(action, Action.AssignTower):
@@ -422,9 +422,9 @@ if __name__ == "__main__":
 
     now = time.time()
     user = NullUser()
-    username = "Player 1"
+    playername = "Player 1"
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
-    usernames = [username]
+    playernames = [playername]
     games = [game]
-    anteroom = Anteroom(user, username, usernames, games)
+    anteroom = Anteroom(user, playername, playernames, games)
     gtk.main()

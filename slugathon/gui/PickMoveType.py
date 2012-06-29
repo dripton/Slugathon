@@ -17,17 +17,17 @@ TELEPORT = 1
 NORMAL_MOVE = 2
 
 
-def new(username, legion, hexlabel, parent):
+def new(playername, legion, hexlabel, parent):
     """Create a PickMoveType dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pickmovetype = PickMoveType(username, legion, hexlabel, def1, parent)
+    pickmovetype = PickMoveType(playername, legion, hexlabel, def1, parent)
     return pickmovetype, def1
 
 
 class PickMoveType(gtk.Dialog):
     """Dialog to choose whether to teleport."""
-    def __init__(self, username, legion, hexlabel, def1, parent):
-        gtk.Dialog.__init__(self, "PickMoveType - %s" % username, parent)
+    def __init__(self, playername, legion, hexlabel, def1, parent):
+        gtk.Dialog.__init__(self, "PickMoveType - %s" % playername, parent)
         self.deferred = def1
         self.legion = legion
         player = legion.player
@@ -96,16 +96,16 @@ if __name__ == "__main__":
         guiutils.exit()
 
     now = time.time()
-    username = "p0"
+    playername = "p0"
     game = Game.Game("g1", "p0", now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 100
     hexlabel = 101
     masterhex = game.board.hexes[legion.hexlabel]
     mterrain = masterhex.terrain
-    pickmovetype, def1 = new(username, legion, hexlabel, None)
+    pickmovetype, def1 = new(playername, legion, hexlabel, None)
     pickmovetype.connect("destroy", guiutils.exit)
     def1.addCallback(mycallback)
 

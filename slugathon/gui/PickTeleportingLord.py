@@ -12,17 +12,18 @@ from twisted.internet import defer
 from slugathon.gui import Chit, Marker, icon
 
 
-def new(username, legion, parent):
+def new(playername, legion, parent):
     """Create a PickTeleportingLord dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pick_teleporting_lord = PickTeleportingLord(username, legion, def1, parent)
+    pick_teleporting_lord = PickTeleportingLord(playername, legion, def1,
+      parent)
     return pick_teleporting_lord, def1
 
 
 class PickTeleportingLord(gtk.Dialog):
     """Dialog to pick a lord to reveal for tower teleport."""
-    def __init__(self, username, legion, def1, parent):
-        gtk.Dialog.__init__(self, "PickTeleportingLord - %s" % username,
+    def __init__(self, playername, legion, def1, parent):
+        gtk.Dialog.__init__(self, "PickTeleportingLord - %s" % playername,
           parent)
         self.legion = legion
         self.deferred = def1
@@ -72,9 +73,9 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     now = time.time()
-    username = "test"
-    game = Game.Game("g1", username, now, now, 2, 6)
-    player = Player.Player(username, game, 0)
+    playername = "test"
+    game = Game.Game("g1", playername, now, now, 2, 6)
+    player = Player.Player(playername, game, 0)
     player.color = "Red"
     creatures1 = [Creature.Creature(name) for name in
       ["Titan", "Archangel", "Angel", "Ogre", "Troll", "Ranger"]]
@@ -85,7 +86,7 @@ if __name__ == "__main__":
         logging.info("Picked %s", creature_name)
         guiutils.exit()
 
-    pick_teleporting_lord, def1 = new(username, legion, None)
+    pick_teleporting_lord, def1 = new(playername, legion, None)
     pick_teleporting_lord.connect("destroy", guiutils.exit)
     def1.addCallback(my_callback)
 

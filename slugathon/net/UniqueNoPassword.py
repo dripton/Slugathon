@@ -13,8 +13,8 @@ class UniqueNoPassword(UniqueFilePasswordDB):
     user who is already logged in."""
 
     def requestAvatarId(self, credentials):
-        if credentials.username in self.server.usernames:
+        if credentials.playername in self.server.playernames:
             # already logged in
             return defer.fail(LoginDenied())
         else:
-            return defer.succeed(credentials.username)
+            return defer.succeed(credentials.playername)

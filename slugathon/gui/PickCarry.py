@@ -17,21 +17,21 @@ import gtk
 from slugathon.gui import icon
 
 
-def new(username, game_name, striker, target, num_dice, strike_number,
+def new(playername, game_name, striker, target, num_dice, strike_number,
   carries, parent):
     """Create a PickCarry dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pickcarry = PickCarry(username, game_name, striker, target, num_dice,
+    pickcarry = PickCarry(playername, game_name, striker, target, num_dice,
       strike_number, carries, def1, parent)
     return pickcarry, def1
 
 
 class PickCarry(gtk.Dialog):
     """Dialog to pick whether and where to carry excess hits."""
-    def __init__(self, username, game_name, striker, target, num_dice,
+    def __init__(self, playername, game_name, striker, target, num_dice,
       strike_number, carries, def1, parent):
-        gtk.Dialog.__init__(self, "PickCarry - %s" % username, parent)
-        self.username = username
+        gtk.Dialog.__init__(self, "PickCarry - %s" % playername, parent)
+        self.playername = playername
         self.game_name = game_name
         self.carries = carries
         self.deferred = def1
@@ -70,9 +70,9 @@ if __name__ == "__main__":
     from slugathon.game import Game, Phase
 
     now = time.time()
-    username = "p0"
+    playername = "p0"
     game_name = "g1"
-    game = Game.Game(game_name, username, now, now, 2, 6)
+    game = Game.Game(game_name, playername, now, now, 2, 6)
     game.add_player("p1")
     player0 = game.players[0]
     player1 = game.players[1]
@@ -124,6 +124,6 @@ if __name__ == "__main__":
         logging.info("carry %d hits to %s" % (carries, creature))
         reactor.stop()
 
-    _, def1 = new(username, game_name, titan2, centaur1, 6, 4, 1, None)
+    _, def1 = new(playername, game_name, titan2, centaur1, 6, 4, 1, None)
     def1.addCallback(my_callback)
     reactor.run()

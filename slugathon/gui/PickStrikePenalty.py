@@ -18,10 +18,10 @@ from slugathon.gui import icon
 from slugathon.game import Phase
 
 
-def new(username, game_name, striker, target, parent):
+def new(playername, game_name, striker, target, parent):
     """Create a PickStrikePenalty dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pick_strike_penalty = PickStrikePenalty(username, game_name, striker,
+    pick_strike_penalty = PickStrikePenalty(playername, game_name, striker,
       target, def1, parent)
     return pick_strike_penalty, def1
 
@@ -29,10 +29,10 @@ def new(username, game_name, striker, target, parent):
 class PickStrikePenalty(gtk.Dialog):
     """Dialog to pick whether to take a strike penalty to allow carrying
     excess hits."""
-    def __init__(self, username, game_name, striker, target, def1, parent):
-        gtk.Dialog.__init__(self, "PickStrikePenalty - %s" % username,
+    def __init__(self, playername, game_name, striker, target, def1, parent):
+        gtk.Dialog.__init__(self, "PickStrikePenalty - %s" % playername,
           parent)
-        self.username = username
+        self.playername = playername
         self.game_name = game_name
         self.striker = striker
         self.target = target
@@ -95,9 +95,9 @@ if __name__ == "__main__":
     from slugathon.game import Game
 
     now = time.time()
-    username = "p0"
+    playername = "p0"
     game_name = "g1"
-    game = Game.Game(game_name, username, now, now, 2, 6)
+    game = Game.Game(game_name, playername, now, now, 2, 6)
     game.add_player("p1")
     player0 = game.players[0]
     player1 = game.players[1]
@@ -150,7 +150,7 @@ if __name__ == "__main__":
           num_dice, strike_number)
         reactor.stop()
 
-    pick_strike_penalty, def1 = new(username, game_name, titan2, gargoyle1,
+    pick_strike_penalty, def1 = new(playername, game_name, titan2, gargoyle1,
       None)
     def1.addCallback(my_callback)
     reactor.run()

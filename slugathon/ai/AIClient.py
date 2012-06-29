@@ -35,12 +35,11 @@ defer.setDebugging(True)
 
 @implementer(IObserver)
 class AIClient(pb.Referenceable, Observed):
-    def __init__(self, username, password, host, port, delay, aitype,
+    def __init__(self, playername, password, host, port, delay, aitype,
       game_name, log_path, ai_time_limit, player_time_limit, form_game,
       min_players, max_players):
         Observed.__init__(self)
-        self.username = username
-        self.playername = username  # In case the same user logs in twice
+        self.playername = playername
         self.password = password
         self.host = host
         self.port = port
@@ -49,13 +48,13 @@ class AIClient(pb.Referenceable, Observed):
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
         self.user = None
-        self.usernames = set()
+        self.playernames = set()
         self.games = []
         self.log_path = log_path
         self._setup_logging()
 
         logging.info("AIClient %s %s %s %s %s %s %s %s %s %s %s %s %s",
-          username, password, host, port, delay, aitype,
+          playername, password, host, port, delay, aitype,
           game_name, log_path, ai_time_limit, form_game, min_players,
           max_players)
         if aitype == "CleverBot":
@@ -71,7 +70,7 @@ class AIClient(pb.Referenceable, Observed):
         self.paused = False
         self.last_actions = []
         self.aps = predictsplits.AllPredictSplits()
-        logging.info("__init__ done %s %s", game_name, username)
+        logging.info("__init__ done %s %s", game_name, playername)
 
     def _setup_logging(self):
         if self.log_path:
@@ -109,10 +108,11 @@ class AIClient(pb.Referenceable, Observed):
         return True
 
     def __repr__(self):
-        return "AIClient " + str(self.username)
+        return "AIClient " + str(self.playername)
 
     def connect(self):
-        user_pass = credentials.UsernamePassword(self.username, self.password)
+        user_pass = credentials.UsernamePassword(self.playername,
+          self.password)
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
@@ -123,19 +123,19 @@ class AIClient(pb.Referenceable, Observed):
         if user:
             self.user = user
             self.ai.user = user
-            def1 = user.callRemote("get_usernames")
-            def1.addCallback(self.got_usernames)
+            def1 = user.callRemote("get_playernames")
+            def1.addCallback(self.got_playernames)
             def1.addErrback(self.failure)
 
     def connection_failed(self, arg):
         log.err(arg)
 
-    def got_usernames(self, usernames):
+    def got_playernames(self, playernames):
         """Only called when the client first connects to the server."""
-        logging.info("got usernames %s", usernames)
-        self.usernames.clear()
-        for username in usernames:
-            self.usernames.add(username)
+        logging.info("got playernames %s", playernames)
+        self.playernames.clear()
+        for playername in playernames:
+            self.playernames.add(playername)
         def1 = self.user.callRemote("get_games")
         def1.addCallback(self.got_games)
         def1.addErrback(self.failure)
@@ -258,17 +258,17 @@ class AIClient(pb.Referenceable, Observed):
             return
 
         if isinstance(action, Action.AddUsername):
-            self.usernames.add(action.username)
+            self.playernames.add(action.playername)
 
         elif isinstance(action, Action.DelUsername):
-            self.usernames.remove(action.username)
+            self.playernames.remove(action.playername)
 
         elif isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
               action.start_time, action.min_players, action.max_players,
-              [action.username], False)
+              [action.playername], False)
             self.add_game(game_info_tuple)
-            if action.username == self.username:
+            if action.playername == self.playername:
                 def1 = self.user.callRemote("start_game", self.game_name)
                 def1.addErrback(self.failure)
 
@@ -642,7 +642,7 @@ class AIClient(pb.Referenceable, Observed):
 
 
 def add_arguments(parser):
-    # Twisted throws a TypeError if username or password is None.
+    # Twisted throws a TypeError if playername or password is None.
     parser.add_argument("-n", "--playername", action="store", type=str,
       default="")
     parser.add_argument("-a", "--password", action="store", type=str,
