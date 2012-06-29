@@ -625,60 +625,13 @@ class Server(Observed):
 
     def update(self, observed, action, names):
         logging.info("%s %s %s", observed, action, names)
-        if (isinstance(action, Action.AssignTower) or
-          isinstance(action, Action.AssignedAllTowers) or
-          isinstance(action, Action.PickedColor) or
-          isinstance(action, Action.AssignedAllColors) or
-          isinstance(action, Action.CreateStartingLegion) or
-          isinstance(action, Action.SplitLegion) or
-          isinstance(action, Action.UndoSplit) or
-          isinstance(action, Action.MergeLegions) or
-          isinstance(action, Action.RollMovement) or
-          isinstance(action, Action.MoveLegion) or
-          isinstance(action, Action.UndoMoveLegion) or
-          isinstance(action, Action.StartSplitPhase) or
-          isinstance(action, Action.StartFightPhase) or
-          isinstance(action, Action.StartMusterPhase) or
-          isinstance(action, Action.RecruitCreature) or
-          isinstance(action, Action.DoNotReinforce) or
-          isinstance(action, Action.UnReinforce) or
-          isinstance(action, Action.UndoRecruit) or
-          isinstance(action, Action.RevealLegion) or
-          isinstance(action, Action.ResolvingEngagement) or
-          isinstance(action, Action.Flee) or
-          isinstance(action, Action.DoNotFlee) or
-          isinstance(action, Action.Concede) or
-          isinstance(action, Action.Fight) or
-          isinstance(action, Action.MakeProposal) or
-          isinstance(action, Action.AcceptProposal) or
-          isinstance(action, Action.RejectProposal) or
-          isinstance(action, Action.MoveCreature) or
-          isinstance(action, Action.UndoMoveCreature) or
-          isinstance(action, Action.StartReinforceBattlePhase) or
-          isinstance(action, Action.StartManeuverBattlePhase) or
-          isinstance(action, Action.StartStrikeBattlePhase) or
-          isinstance(action, Action.StartCounterstrikeBattlePhase) or
-          isinstance(action, Action.DriftDamage) or
-          isinstance(action, Action.Strike) or
-          isinstance(action, Action.Carry) or
-          isinstance(action, Action.SummonAngel) or
-          isinstance(action, Action.UnsummonAngel) or
-          isinstance(action, Action.DoNotSummonAngel) or
-          isinstance(action, Action.CanAcquireAngels) or
-          isinstance(action, Action.AcquireAngels) or
-          isinstance(action, Action.DoNotAcquireAngels) or
-          isinstance(action, Action.BattleOver) or
-          isinstance(action, Action.EliminatePlayer)):
+        if isinstance(action, Action.GameOver):
             game = self.name_to_game(action.game_name)
-            self.notify(action, names or (game and game.playernames))
-        else:
-            if isinstance(action, Action.GameOver):
-                game = self.name_to_game(action.game_name)
-                if game in self.games:
-                    game.remove_observer(self)
-                    self.games.remove(game)
-                    self.results.save_game(game)
-            self.notify(action, names)
+            if game in self.games:
+                game.remove_observer(self)
+                self.games.remove(game)
+                self.results.save_game(game)
+        self.notify(action, names)
 
 
 class AIProcessProtocol(protocol.ProcessProtocol):
