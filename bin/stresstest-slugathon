@@ -48,7 +48,7 @@ def start_game(playername, password, min_players, ai_time_limit, num_games):
           "--password", password,
           "--min-players", str(min_players),
           "--ai-time-limit", str(ai_time_limit),
-          "--game-name", "stresstest_game_%d" % num_games,
+          "--game-name", "stresstest_game_%d_%d" % (os.getpid(), num_games),
       ],
       env=os.environ)
     def1.addCallback(game_exited, playername, password, min_players,
