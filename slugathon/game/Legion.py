@@ -674,7 +674,7 @@ class Legion(Observed):
             angel.legion = self
         self._angels_pending = 0
         self._archangels_pending = 0
-        logging.info("end of acquire_angels", self)
+        logging.info("end of acquire_angels %s", self)
 
     def do_not_acquire_angels(self):
         """Do not acquire any angels, and notify observers."""
