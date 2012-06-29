@@ -162,7 +162,7 @@ class UndoSplit(UndoAction):
         """Used for voluntarily undoing a split during the split phase.
 
         parent_creature_names and child_creature_names are lists of the
-        actual creature names if known, or lists of height * None if not known
+        actual creature names if known, or lists of height * "Unknown" if not.
         """
         self.game_name = game_name
         self.playername = playername
@@ -180,7 +180,7 @@ class MergeLegions(Action):
         because of a lack of legal non-teleport moves.
 
         parent_creature_names and child_creature_names are lists of the
-        actual creature names if known, or lists of height * None if not known
+        actual creature names if known, or lists of height * "Unknown" if not.
         """
         self.game_name = game_name
         self.playername = playername
