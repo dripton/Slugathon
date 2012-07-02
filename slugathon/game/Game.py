@@ -638,9 +638,11 @@ class Game(Observed):
             assert legion.markerid != markerid
 
     def _concede(self, playername, markerid):
+        logging.info("%s %s", playername, markerid)
         player = self.get_player_by_name(playername)
         legion = player.markerid_to_legion.get(markerid)
         if legion is None:
+            logging.info("")
             return
         hexlabel = legion.hexlabel
         for legion2 in self.all_legions(hexlabel):
@@ -648,6 +650,7 @@ class Game(Observed):
                 break
         if legion2 == legion or legion2.player == player:
             # Can't concede because other legion already did.
+            logging.info("")
             return
         if legion in self.battle_legions:
             # conceding during battle
@@ -655,6 +658,7 @@ class Game(Observed):
                 creature.kill()
             player = legion.player
             if player == self.battle_active_player:
+                logging.info("")
                 player.done_with_battle_phase()
         else:
             # conceding before battle
