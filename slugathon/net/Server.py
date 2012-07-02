@@ -277,7 +277,9 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(playername)
-            legion = player.markerid_to_legion[markerid]
+            legion = player.markerid_to_legion.get(markerid)
+            if legion is None:
+                return
             if not game.can_move_legion(player, legion, hexlabel, entry_side,
               teleport, teleporting_lord):
                 raise AssertionError("illegal move attempt", player, legion,
@@ -348,7 +350,9 @@ class Server(Observed):
             if player == game.active_player:
                 logging.info("attacker tried to not flee")
                 return
-            legion = player.markerid_to_legion[markerid]
+            legion = player.markerid_to_legion.get(markerid)
+            if legion is None:
+                return
             if legion.player != player:
                 logging.info("wrong player tried to not flee")
                 return

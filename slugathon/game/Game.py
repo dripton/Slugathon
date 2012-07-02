@@ -544,7 +544,9 @@ class Game(Observed):
         logging.info("%s %s %s %s %s %s", playername, markerid,
           hexlabel, entry_side, teleport, teleporting_lord)
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         previous_hexlabel = legion.hexlabel
         legion.move(hexlabel, teleport, teleporting_lord, entry_side)
         action = Action.MoveLegion(self.name, playername, markerid,
@@ -554,7 +556,9 @@ class Game(Observed):
     def undo_move_legion(self, playername, markerid):
         """Called from Server and update."""
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         action = Action.UndoMoveLegion(self.name, playername, markerid,
           legion.hexlabel, legion.entry_side, legion.teleported,
           legion.teleporting_lord, legion.previous_hexlabel)
@@ -612,7 +616,9 @@ class Game(Observed):
         if player == self.active_player:
             logging.info("attacker tried to flee")
             return
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         if legion.player != player:
             logging.info("wrong player tried to flee")
             return
@@ -814,7 +820,9 @@ class Game(Observed):
     def acquire_angels(self, playername, markerid, angel_names):
         """Called from Server."""
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         angels = [Creature.Creature(name) for name in angel_names]
         legion.acquire_angels(angels)
         angel_names = [angel.name for angel in angels]
@@ -830,7 +838,9 @@ class Game(Observed):
         """Called from Server."""
         logging.info("do_not_acquire_angels %s %s", playername, markerid)
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         legion.do_not_acquire_angels()
         if (self.is_battle_over and not self.pending_summon and not
           self.pending_reinforcement):
@@ -877,7 +887,9 @@ class Game(Observed):
     def undo_recruit(self, playername, markerid):
         """Called from Server and update."""
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         legion.undo_recruit()
 
     def done_with_recruits(self, playername):
@@ -897,8 +909,10 @@ class Game(Observed):
         logging.info("summon_angel %s %s %s %s", playername, markerid,
           donor_markerid, creature_name)
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
-        donor = player.markerid_to_legion[donor_markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        donor = player.markerid_to_legion.get(donor_markerid)
+        if legion is None or donor is None:
+            return
         logging.info("donor %s legion %s", donor, legion)
         # Avoid double summon
         if not player.summoned:
@@ -918,7 +932,9 @@ class Game(Observed):
         """Called from Server."""
         logging.info("")
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         player.do_not_summon_angel(legion)
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -934,7 +950,9 @@ class Game(Observed):
         """Called from Server."""
         logging.info("")
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         player.do_not_reinforce(legion)
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -950,7 +968,9 @@ class Game(Observed):
     def _unreinforce(self, playername, markerid):
         """Called from update."""
         player = self.get_player_by_name(playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         legion.unreinforce()
 
     def carry(self, playername, carry_target_name, carry_target_hexlabel,
@@ -1334,6 +1354,8 @@ class Game(Observed):
         creatures in the winning legion.
         """
         logging.info("_end_battle")
+        if not self.attacker_legion or not self.defender_legion:
+            return
         # XXX Redundant but fixes timing issues with _cleanup_battle
         self.defender_chose_not_to_flee = False
         if self.battle_turn > 7:
@@ -1599,7 +1621,9 @@ class Game(Observed):
             if action.game_name == self.name:
                 player = self.get_player_by_name(action.playername)
                 markerid = action.markerid
-                legion = player.markerid_to_legion[markerid]
+                legion = player.markerid_to_legion.get(markerid)
+                if legion is None:
+                    return
                 hexlabel = action.hexlabel
                 # Avoid double move
                 if not (legion.moved and legion.hexlabel == hexlabel):
@@ -1611,7 +1635,9 @@ class Game(Observed):
             if action.game_name == self.name:
                 player = self.get_player_by_name(action.playername)
                 markerid = action.markerid
-                legion = player.markerid_to_legion[markerid]
+                legion = player.markerid_to_legion.get(markerid)
+                if legion is None:
+                    return
                 # Avoid double undo
                 if legion.moved:
                     self.undo_move_legion(action.playername, markerid)
@@ -1690,7 +1716,9 @@ class Game(Observed):
 
         elif isinstance(action, Action.UnsummonAngel):
             player = self.get_player_by_name(action.playername)
-            legion = player.markerid_to_legion[action.markerid]
+            legion = player.markerid_to_legion.get(action.markerid)
+            if legion is None:
+                return
             player.unsummon_angel(legion, action.creature_name)
 
         elif isinstance(action, Action.DoNotSummonAngel):
@@ -1700,9 +1728,10 @@ class Game(Observed):
             if action.game_name == self.name:
                 attacker_markerid = action.attacker_markerid
                 attacker = self.find_legion(attacker_markerid)
-                defender_markerid = action.defender_markerid
-                self._fight(attacker.player.name, attacker_markerid,
-                  defender_markerid)
+                if attacker is not None:
+                    defender_markerid = action.defender_markerid
+                    self._fight(attacker.player.name, attacker_markerid,
+                      defender_markerid)
 
         elif isinstance(action, Action.MoveCreature):
             if not self.battle_active_legion:
@@ -1808,14 +1837,18 @@ class Game(Observed):
 
         elif isinstance(action, Action.AcquireAngels):
             player = self.get_player_by_name(action.playername)
-            legion = player.markerid_to_legion[action.markerid]
+            legion = player.markerid_to_legion.get(action.markerid)
+            if legion is None:
+                return
             angels = [Creature.Creature(name) for name in action.angel_names]
             legion.acquire_angels(angels)
             reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.DoNotAcquireAngels):
             player = self.get_player_by_name(action.playername)
-            legion = player.markerid_to_legion[action.markerid]
+            legion = player.markerid_to_legion.get(action.markerid)
+            if legion is None:
+                return
             legion.do_not_acquire_angels()
             reactor.callLater(1, self._end_dead_player_turn)
 

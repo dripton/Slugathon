@@ -331,7 +331,9 @@ class CleverBot(object):
         logging.info("CleverBot.acquire_angels %s %s %s", markerid, num_angels,
           num_archangels)
         player = game.get_player_by_name(self.playername)
-        legion = player.markerid_to_legion[markerid]
+        legion = player.markerid_to_legion.get(markerid)
+        if legion is None:
+            return
         starting_height = len(legion)
         acquires = 0
         angel_names = []

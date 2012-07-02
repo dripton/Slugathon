@@ -143,7 +143,9 @@ class Player(Observed):
       parent_creature_names, child_creature_names):
         logging.info("split_legion %s %s %s %s", parent_markerid,
           child_markerid, parent_creature_names, child_creature_names)
-        parent = self.markerid_to_legion[parent_markerid]
+        parent = self.markerid_to_legion.get(parent_markerid)
+        if parent is None:
+            return
         if child_markerid not in self.markerids_left:
             raise AssertionError("illegal marker")
         if bag(parent.creature_names) != bag(parent_creature_names).union(
@@ -182,8 +184,12 @@ class Player(Observed):
         self.notify(action, names=[self.name])
 
     def undo_split(self, parent_markerid, child_markerid):
-        parent = self.markerid_to_legion[parent_markerid]
-        child = self.markerid_to_legion[child_markerid]
+        parent = self.markerid_to_legion.get(parent_markerid)
+        if parent is None:
+            return
+        child = self.markerid_to_legion.get(child_markerid)
+        if child is None:
+            return
         parent_creature_names = parent.creature_names
         child_creature_names = child.creature_names
         parent.creatures += child.creatures
