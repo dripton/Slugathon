@@ -7,10 +7,9 @@ __license__ = "GNU GPL v2"
 import gtk
 from zope.interface import implementer
 
-from slugathon.gui import icon
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase
-from slugathon.util import prefs, colors
+from slugathon.util import colors
 
 
 def add_label(table, col, row, text=""):
@@ -33,12 +32,15 @@ def set_bg(label, color):
 
 
 @implementer(IObserver)
-class StatusScreen(gtk.Dialog):
+class StatusScreen(gtk.EventBox):
     """Game status window."""
-    def __init__(self, game, playername, parent):
-        gtk.Dialog.__init__(self, "Status - %s" % playername, parent)
+    def __init__(self, game, playername):
+        gtk.EventBox.__init__(self)
         self.game = game
         self.playername = playername
+
+        self.vbox = gtk.VBox()
+        self.add(self.vbox)
 
         turn_table = gtk.Table(rows=4, columns=3)
         self.vbox.pack_start(turn_table)
@@ -74,41 +76,12 @@ class StatusScreen(gtk.Dialog):
                 label = add_label(self.player_table, col + 2, row)
                 setattr(self, name, label)
 
-        self.connect("configure-event", self.cb_configure_event)
-
-        if self.playername:
-            tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
-            if tup:
-                x, y = tup
-                self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
-            if tup:
-                width, height = tup
-                self.resize(width, height)
-
         self.default_bg = None
         self._init_players()
         self._init_turn()
 
-        self.set_icon(icon.pixbuf)
-        self.set_transient_for(parent)
-        self.set_destroy_with_parent(True)
-        self.set_title("Game Status - %s" % self.playername)
         self.show_all()
-        self.default_bg = \
-          self.get_style().copy().bg[gtk.STATE_NORMAL]
-
-    def cb_configure_event(self, event, unused):
-        if self.playername:
-            x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
-            width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
-        return False
+        self.default_bg = self.get_style().copy().bg[gtk.STATE_NORMAL]
 
     def _init_turn(self):
         self.game_turn_label.set_text(str(self.game.turn))
@@ -385,6 +358,6 @@ if __name__ == "__main__":
     player6.create_starting_legion()
     game.players.append(player6)
 
-    status_screen = StatusScreen(game, playername, None)
+    status_screen = StatusScreen(game, playername)
     status_screen.connect("destroy", guiutils.exit)
     gtk.main()

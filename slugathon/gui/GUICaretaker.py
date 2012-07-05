@@ -8,20 +8,23 @@ import gtk
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
-from slugathon.gui import Chit, icon
+from slugathon.gui import Chit
 from slugathon.game import Creature, Action
 from slugathon.data import creaturedata
-from slugathon.util import prefs
 
 
 @implementer(IObserver)
-class GUICaretaker(gtk.Dialog):
+class GUICaretaker(gtk.EventBox):
     """Caretaker status window."""
-    def __init__(self, game, playername, parent):
+    def __init__(self, game, playername):
         self.playername = playername
         self.caretaker = game.caretaker
 
-        gtk.Dialog.__init__(self, "Caretaker - %s" % playername, parent)
+        gtk.EventBox.__init__(self)
+
+        self.vbox = gtk.VBox()
+        self.add(self.vbox)
+
         table = gtk.Table(rows=4, columns=6)
         table.set_row_spacings(9)
         table.set_col_spacings(9)
@@ -44,7 +47,7 @@ class GUICaretaker(gtk.Dialog):
             label = self.max_count_labels[creature_name] = gtk.Label()
             vbox.pack_start(label, expand=False)
             chit = self.chits[creature_name] = Chit.Chit(creature, "Black",
-              scale=20, dead=(not left_count))
+              scale=15, dead=(not left_count))
             vbox.pack_start(chit.event_box, expand=False)
             label = self.counts_labels[creature_name] = gtk.Label()
             vbox.pack_start(label, expand=False)
@@ -52,35 +55,7 @@ class GUICaretaker(gtk.Dialog):
             self.update_counts_label(creature_name, left_count, game_count,
               dead_count)
 
-        if self.playername:
-            tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
-            if tup:
-                x, y = tup
-                self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
-            if tup:
-                width, height = tup
-                self.resize(width, height)
-
-        self.connect("configure-event", self.cb_configure_event)
-
-        self.set_icon(icon.pixbuf)
-        self.set_transient_for(parent)
-        self.set_destroy_with_parent(True)
-        self.set_title("Caretaker - %s" % playername)
         self.show_all()
-
-    def cb_configure_event(self, event, unused):
-        if self.playername:
-            x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
-            width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
-        return False
 
     def update_max_count_label(self, creature_name, max_count):
         label = self.max_count_labels[creature_name]

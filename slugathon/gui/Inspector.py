@@ -6,23 +6,20 @@ __license__ = "GNU GPL v2"
 
 import gtk
 
-from slugathon.gui import Chit, Marker, icon
-from slugathon.util import prefs
+from slugathon.gui import Chit, Marker
 from slugathon.data import recruitdata
 from slugathon.game import Creature
 
 
-class Inspector(gtk.Dialog):
+class Inspector(gtk.EventBox):
     """Window to show a legion's contents."""
-    def __init__(self, playername, parent):
-        gtk.Dialog.__init__(self, "Inspector - %s" % playername, parent)
+    def __init__(self, playername):
+        gtk.EventBox.__init__(self)
 
         self.playername = playername
 
-        self.set_icon(icon.pixbuf)
-        self.set_transient_for(parent)
-        self.set_destroy_with_parent(True)
-        self.set_title("Inspector - %s" % (playername))
+        self.vbox = gtk.VBox()
+        self.add(self.vbox)
 
         self.legion_name = gtk.Label()
         self.vbox.pack_start(self.legion_name)
@@ -38,31 +35,6 @@ class Inspector(gtk.Dialog):
         self.legion = None
         self.marker = None
 
-        if self.playername:
-            tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
-            if tup:
-                x, y = tup
-                self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
-            if tup:
-                width, height = tup
-                self.resize(width, height)
-
-        self.connect("delete-event", self.hide_window)
-        self.connect("configure-event", self.cb_configure_event)
-
-    def cb_configure_event(self, event, unused):
-        if self.playername:
-            x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
-            width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
-        return False
-
     def show_legion(self, legion):
         self.legion_name.set_text("Legion %s (%s) in hex %s (%d%s points)" % (
           legion.markerid, legion.picname, legion.hexlabel, legion.score,
@@ -72,12 +44,12 @@ class Inspector(gtk.Dialog):
             for child in hbox.get_children():
                 hbox.remove(child)
 
-        self.marker = Marker.Marker(legion, True, scale=20)
+        self.marker = Marker.Marker(legion, True, scale=15)
         self.marker_hbox.pack_start(self.marker.event_box, expand=False)
 
         playercolor = legion.player.color
         for creature in legion.sorted_living_creatures:
-            chit = Chit.Chit(creature, playercolor, scale=20)
+            chit = Chit.Chit(creature, playercolor, scale=15)
             self.chits_hbox.pack_start(chit.event_box, expand=False)
 
         self.show_all()
@@ -96,13 +68,9 @@ class Inspector(gtk.Dialog):
                     label = gtk.Label(str(count))
                     self.chits_hbox.pack_start(label, expand=False)
                 creature = Creature.Creature(creature_name)
-                chit = Chit.Chit(creature, playercolor, scale=20)
+                chit = Chit.Chit(creature, playercolor, scale=15)
                 self.chits_hbox.pack_start(chit.event_box, expand=False)
         self.show_all()
-
-    def hide_window(self, event, unused):
-        self.hide()
-        return True
 
 
 if __name__ == "__main__":

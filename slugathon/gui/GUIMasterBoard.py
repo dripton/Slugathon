@@ -20,7 +20,7 @@ import cairo
 from zope.interface import implementer
 
 from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
-  SplitLegion, About, icon, Die, PickRecruit, Flee, Inspector, Chit,
+  SplitLegion, About, Die, PickRecruit, Flee, Inspector, Chit,
   Negotiate, Proposal, AcquireAngels, GUIBattleMap, SummonAngel, PickEntrySide,
   PickMoveType, PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker,
   ConfirmDialog, EventLog)
@@ -77,30 +77,29 @@ ui_string = """<ui>
 
 
 @implementer(IObserver)
-class GUIMasterBoard(gtk.Window):
+class GUIMasterBoard(gtk.EventBox):
     """GUI representation of the masterboard."""
     def __init__(self, board, game=None, user=None, playername=None,
-      scale=None):
-        gtk.Window.__init__(self)
+      scale=None, parent_window=None):
+        gtk.EventBox.__init__(self)
 
         self.board = board
         self.user = user
         self.playername = playername
         self.game = game
+        self.parent_window = parent_window
 
-        self.set_icon(icon.pixbuf)
-        if self.game:
-            game_name = self.game.name
-        else:
-            game_name = "None"
-        self.set_title("Masterboard - Slugathon - %s - %s" % (game_name,
-          self.playername))
         self.connect("delete-event", self.cb_delete_event)
         self.connect("destroy", self.cb_destroy)
-        self.connect("configure-event", self.cb_configure_event)
+
+        self.hbox = gtk.HBox()
+        self.add(self.hbox)
 
         self.vbox = gtk.VBox()
-        self.add(self.vbox)
+        self.hbox.pack_start(self.vbox, expand=False)
+        self.vbox2 = gtk.VBox()
+        self.hbox.pack_start(self.vbox2)
+
         self.create_ui()
         self.enable_pause_ai()
         self.vbox.pack_start(self.ui.get_widget("/Menubar"), False, False, 0)
@@ -112,7 +111,7 @@ class GUIMasterBoard(gtk.Window):
             self.scale = scale
         self.area = gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
-        self.vbox.pack_start(self.area)
+        self.vbox.pack_start(self.area, expand=False)
         self.markers = []
         self.guihexes = {}
         # list of tuples (Chit, hexlabel)
@@ -120,14 +119,14 @@ class GUIMasterBoard(gtk.Window):
         for hex1 in self.board.hexes.itervalues():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
-        self.inspector = Inspector.Inspector(self.playername, self)
         self.negotiate = None
         self.proposals = set()
         self.guimap = None
         self.acquire_angels = None
         self.game_over = None
-        self.status_screen = None
         self.guicaretaker = None
+        self.status_screen = None
+        self.inspector = None
         self.event_log = None
         self.destroyed = False
 
@@ -135,18 +134,6 @@ class GUIMasterBoard(gtk.Window):
         # If set to all hexlabels then we redraw the whole window.
         # Used to combine nearly simultaneous redraws into one.
         self.repaint_hexlabels = set()
-
-        if self.playername:
-            tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
-            if tup:
-                x, y = tup
-                self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
-            if tup:
-                width, height = tup
-                self.resize(width, height)
 
         self.area.connect("expose-event", self.cb_area_expose)
         self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -207,7 +194,8 @@ class GUIMasterBoard(gtk.Window):
         self.ui = gtk.UIManager()
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
-        self.add_accel_group(self.ui.get_accel_group())
+        if self.parent_window:
+            self.parent_window.add_accel_group(self.ui.get_accel_group())
 
         for tup in toggle_actions:
             option = tup[0]
@@ -246,23 +234,32 @@ class GUIMasterBoard(gtk.Window):
         mulligan_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Mulligan")
         mulligan_menuitem.set_sensitive(False)
 
-    def _init_status_screen(self):
-        if not self.status_screen:
-            self.status_screen = StatusScreen.StatusScreen(self.game,
-              self.playername, self)
-            self.game.add_observer(self.status_screen)
-
     def _init_caretaker(self):
         if not self.guicaretaker:
             self.guicaretaker = GUICaretaker.GUICaretaker(self.game,
-              self.playername, self)
+              self.playername)
+            self.vbox2.pack_start(self.guicaretaker)
             self.game.add_observer(self.guicaretaker)
+
+    def _init_status_screen(self):
+        if not self.status_screen:
+            self.status_screen = StatusScreen.StatusScreen(self.game,
+              self.playername)
+            self.vbox2.pack_start(gtk.HSeparator())
+            self.vbox2.pack_start(self.status_screen)
+            self.game.add_observer(self.status_screen)
+
+    def _init_inspector(self):
+        if not self.inspector:
+            self.inspector = Inspector.Inspector(self.playername)
+            self.vbox2.pack_start(gtk.HSeparator())
+            self.vbox2.pack_start(self.inspector)
 
     def _init_event_log(self):
         if not self.event_log:
-            self.event_log = EventLog.EventLog(self.game, self.playername,
-              self)
+            self.event_log = EventLog.EventLog(self.game, self.playername)
             self.game.add_observer(self.event_log)
+            self.vbox.pack_start(self.event_log)
 
     def cb_delete_event(self, widget, event):
         if self.game is None or self.game.over:
@@ -293,16 +290,6 @@ class GUIMasterBoard(gtk.Window):
                 def1 = self.user.callRemote("withdraw", self.game.name)
                 def1.addErrback(self.failure)
 
-    def cb_configure_event(self, event, unused):
-        if self.playername:
-            x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
-            width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
-        return False
-
     def cb_area_expose(self, area, event):
         self.update_gui(event=event)
         return True
@@ -323,7 +310,8 @@ class GUIMasterBoard(gtk.Window):
         """Callback for mouse motion."""
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
-                self.inspector.show_legion(marker.legion)
+                if self.inspector:
+                    self.inspector.show_legion(marker.legion)
                 return True
         for guihex in self.guihexes.itervalues():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
@@ -332,8 +320,9 @@ class GUIMasterBoard(gtk.Window):
                     player_color = player.color
                 else:
                     player_color = "Black"
-                self.inspector.show_recruit_tree(guihex.masterhex.terrain,
-                  player_color)
+                if self.inspector:
+                    self.inspector.show_recruit_tree(guihex.masterhex.terrain,
+                      player_color)
                 return True
         return True
 
@@ -402,7 +391,8 @@ class GUIMasterBoard(gtk.Window):
             self._pick_entry_side(False, legion, moves)
         else:
             hexlabel = moves[0][0]
-            _, def1 = PickMoveType.new(self.playername, legion, hexlabel, self)
+            _, def1 = PickMoveType.new(self.playername, legion, hexlabel,
+              self.parent_window)
             def1.addCallback(self._pick_entry_side, legion, moves)
 
     def _pick_entry_side(self, teleport, legion, moves):
@@ -432,7 +422,7 @@ class GUIMasterBoard(gtk.Window):
             else:
                 entry_sides = set((move[1] for move in moves))
             _, def1 = PickEntrySide.new(self.board, masterhex, entry_sides,
-              self)
+              self.parent_window)
             def1.addCallback(self._pick_teleporting_lord, legion, moves,
               teleport)
 
@@ -452,7 +442,7 @@ class GUIMasterBoard(gtk.Window):
                     lord_name = lord_types.pop()
                 else:
                     _, def1 = PickTeleportingLord.new(self.playername, legion,
-                      self)
+                      self.parent_window)
                     def1.addCallback(self._do_move_legion, legion, moves,
                       teleport, entry_side)
                     return
@@ -470,7 +460,8 @@ class GUIMasterBoard(gtk.Window):
 
     def clicked_on_marker(self, area, event, marker):
         if event.button >= 2:
-            ShowLegion.ShowLegion(self.playername, marker.legion, True, self)
+            ShowLegion.ShowLegion(self.playername, marker.legion, True,
+              self.parent_window)
 
         else:  # left button
             phase = self.game.phase
@@ -489,11 +480,11 @@ class GUIMasterBoard(gtk.Window):
                     self.split_legion(legion)
                 else:
                     if not player.markerids_left:
-                        InfoDialog.InfoDialog(self, "Info",
+                        InfoDialog.InfoDialog(self.parent_window, "Info",
                           "No markers available")
                         return
                     _, def1 = PickMarker.new(self.playername, self.game.name,
-                      player.markerids_left, self)
+                      player.markerids_left, self.parent_window)
                     def1.addCallback(self.picked_marker_presplit, legion)
 
             elif phase == Phase.MOVE:
@@ -547,7 +538,7 @@ class GUIMasterBoard(gtk.Window):
                     if legion.can_recruit:
                         logging.info("PickRecruit.new (muster)")
                         _, def1 = PickRecruit.new(self.playername, legion,
-                          mterrain, caretaker, self)
+                          mterrain, caretaker, self.parent_window)
                         def1.addCallback(self.picked_recruit)
                 self.highlight_recruits()
 
@@ -560,7 +551,8 @@ class GUIMasterBoard(gtk.Window):
 
     def split_legion(self, legion):
         if legion is not None:
-            _, def1 = SplitLegion.new(self.playername, legion, self)
+            _, def1 = SplitLegion.new(self.playername, legion,
+              self.parent_window)
             def1.addCallback(self.try_to_split_legion)
 
     def try_to_split_legion(self, (old_legion, new_legion1, new_legion2)):
@@ -937,7 +929,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog(self.parent_window, "Info",
                       "Must split initial legion 4-4")
             elif self.game.phase == Phase.MOVE:
                 if player.can_exit_move_phase:
@@ -945,10 +937,10 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 elif not player.moved_legions:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog(self.parent_window, "Info",
                       "Must move at least one legion")
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog(self.parent_window, "Info",
                       "Must separate split legions")
             elif self.game.phase == Phase.FIGHT:
                 if player.can_exit_fight_phase:
@@ -956,7 +948,7 @@ class GUIMasterBoard(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog(self.parent_window, "Info",
                       "Must resolve engagements")
             elif self.game.phase == Phase.MUSTER:
                 player.forget_enemy_legions()
@@ -1003,7 +995,7 @@ class GUIMasterBoard(gtk.Window):
         self._cb_checkbox_helper(option)
 
     def cb_about(self, action):
-        About.About(self)
+        About.About(self.parent_window)
 
     def cb_undo(self, action):
         if self.game:
@@ -1131,9 +1123,12 @@ class GUIMasterBoard(gtk.Window):
 
     def update(self, observed, action, names):
         if isinstance(action, Action.PickedColor):
-            self._init_status_screen()
             self._init_caretaker()
+            self._init_status_screen()
+            self._init_inspector()
             self._init_event_log()
+            # Needed to show the HSeparators
+            self.show_all()
 
         elif isinstance(action, Action.CreateStartingLegion):
             legion = self.game.find_legion(action.markerid)
@@ -1213,7 +1208,7 @@ class GUIMasterBoard(gtk.Window):
             if defender.player.name == self.playername:
                 if defender.can_flee:
                     _, def1 = Flee.new(self.playername, attacker, defender,
-                      self)
+                      self.parent_window)
                     def1.addCallback(self.cb_maybe_flee)
                 else:
                     # Can't flee, so we always send the do_not_flee.
@@ -1242,7 +1237,7 @@ class GUIMasterBoard(gtk.Window):
               defender.player.name == self.playername or
               attacker.player.name == self.playername)):
                 self.negotiate, def1 = Negotiate.new(self.playername, attacker,
-                  defender, self)
+                  defender, self.parent_window)
                 def1.addCallback(self.cb_negotiate)
 
         elif isinstance(action, Action.Concede):
@@ -1264,7 +1259,7 @@ class GUIMasterBoard(gtk.Window):
             if attacker is not None and defender is not None:
                 proposal, def1 = Proposal.new(self.playername, attacker,
                   action.attacker_creature_names, defender,
-                  action.defender_creature_names, self)
+                  action.defender_creature_names, self.parent_window)
                 def1.addCallback(self.cb_proposal)
                 self.proposals.add(proposal)
 
@@ -1286,7 +1281,7 @@ class GUIMasterBoard(gtk.Window):
             defender = self.game.find_legion(defender_markerid)
             if (action.other_playername == self.playername):
                 self.negotiate, def1 = Negotiate.new(self.playername, attacker,
-                  defender, self)
+                  defender, self.parent_window)
                 def1.addCallback(self.cb_negotiate)
 
         elif isinstance(action, Action.RecruitCreature):
@@ -1369,7 +1364,7 @@ class GUIMasterBoard(gtk.Window):
                 if angels or archangels:
                     self.acquire_angels, def1 = AcquireAngels.new(
                       self.playername, legion, archangels, angels,
-                      self.game.caretaker, self)
+                      self.game.caretaker, self.parent_window)
                     def1.addCallback(self.picked_angels)
                     def1.addErrback(self.failure)
 
@@ -1403,7 +1398,9 @@ class GUIMasterBoard(gtk.Window):
             self.unselect_all()
             if self.guimap is None and not self.destroyed:
                 self.guimap = GUIBattleMap.GUIBattleMap(self.game.battlemap,
-                  self.game, self.user, self.playername)
+                  self.game, self.user, self.playername,
+                  parent_window=self.parent_window)
+                self.parent_window.add_guimap(self.guimap)
                 self.game.add_observer(self.guimap)
 
         elif isinstance(action, Action.BattleOver):
@@ -1416,7 +1413,7 @@ class GUIMasterBoard(gtk.Window):
                         # attacker can possibly summon
                         if legion.can_summon:
                             _, def1 = SummonAngel.new(self.playername, legion,
-                              self)
+                              self.parent_window)
                             def1.addCallback(self.picked_summon)
                         else:
                             logging.info("calling do_not_summon_angel")
@@ -1431,7 +1428,7 @@ class GUIMasterBoard(gtk.Window):
                         if legion.can_recruit:
                             logging.info("PickRecruit.new (after)")
                             _, def1 = PickRecruit.new(self.playername, legion,
-                              mterrain, caretaker, self)
+                              mterrain, caretaker, self.parent_window)
                             def1.addCallback(self.picked_recruit)
                         else:
                             logging.info("calling do_not_reinforce")
@@ -1469,8 +1466,8 @@ class GUIMasterBoard(gtk.Window):
                     message = "Game over.  %s wins." % action.winner_names[0]
                 else:
                     message = "Game over.  Draw."
-                self.game_over = InfoDialog.InfoDialog(self, "Info",
-                  message)
+                self.game_over = InfoDialog.InfoDialog(self.parent_window,
+                  "Info", message)
 
         elif isinstance(action, Action.PauseAI):
             self.enable_resume_ai()
@@ -1482,9 +1479,13 @@ class GUIMasterBoard(gtk.Window):
 def main():
     from slugathon.game import MasterBoard
 
+    window = gtk.Window()
+    window.set_default_size(1024, 768)
     board = MasterBoard.MasterBoard()
-    guiboard = GUIMasterBoard(board)
-    guiboard.connect("destroy", lambda x: reactor.stop())
+    guiboard = GUIMasterBoard(board, parent_window=window)
+    window.add(guiboard)
+    window.show_all()
+    window.connect("destroy", lambda x: reactor.stop())
     reactor.run()
 
 if __name__ == "__main__":

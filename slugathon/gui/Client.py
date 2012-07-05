@@ -17,6 +17,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game
 from slugathon.gui import Anteroom, PickColor, PickMarker, GUIMasterBoard
+from slugathon.gui import MainWindow
 
 
 @implementer(IObserver)
@@ -32,7 +33,6 @@ class Client(pb.Referenceable, Observed):
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
         self.user = None
-        self.anteroom = None
         self.playernames = set()
         self.games = []
         self.guiboards = {}   # Maps game to guiboard
@@ -75,12 +75,15 @@ class Client(pb.Referenceable, Observed):
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""
+        logging.info(game_info_tuples)
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
-        self.anteroom = Anteroom.Anteroom(self.user, self.playername,
-          self.playernames, self.games)
-        self.add_observer(self.anteroom)
+        self.main_window = MainWindow.MainWindow(self.playername)
+        anteroom = Anteroom.Anteroom(self.user, self.playername,
+          self.playernames, self.games, self.main_window)
+        self.main_window.add_anteroom(anteroom)
+        self.add_observer(anteroom)
 
     def name_to_game(self, game_name):
         for game in self.games:
@@ -121,7 +124,7 @@ class Client(pb.Referenceable, Observed):
         if (game.next_playername_to_pick_color == self.playername and
           self.pickcolor is None):
             self.pickcolor, def1 = PickColor.new(self.playername, game,
-              game.colors_left, self.guiboards[game])
+              game.colors_left, self.main_window)
             def1.addCallback(self._cb_pickcolor)
 
     def _cb_pickcolor(self, (game, color)):
@@ -137,7 +140,7 @@ class Client(pb.Referenceable, Observed):
             player = game.get_player_by_name(playername)
             markerids_left = sorted(player.markerids_left.copy())
             _, def1 = PickMarker.new(self.playername, game.name,
-              markerids_left, self.guiboards[game])
+              markerids_left, self.main_window)
             def1.addCallback(self.pick_marker)
             self.pickcolor = None
 
@@ -156,9 +159,12 @@ class Client(pb.Referenceable, Observed):
                 def1.addErrback(self.failure)
 
     def _init_guiboard(self, game):
-        self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(game.board, game,
-          self.user, self.playername)
-        game.add_observer(self.guiboards[game])
+        logging.info(game)
+        guiboard = self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(
+          game.board, game, self.user, self.playername,
+          parent_window=self.main_window)
+        self.main_window.add_guiboard(guiboard)
+        game.add_observer(guiboard)
 
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with

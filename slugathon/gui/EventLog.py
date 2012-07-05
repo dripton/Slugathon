@@ -8,16 +8,14 @@ import gtk
 from zope.interface import implementer
 
 from slugathon.game import Action, Legion
-from slugathon.gui import icon
-from slugathon.util import prefs
 from slugathon.util.Observer import IObserver
 
 
 @implementer(IObserver)
-class EventLog(gtk.Dialog):
+class EventLog(gtk.EventBox):
     """Graphical log of game events."""
-    def __init__(self, game, playername, parent):
-        gtk.Dialog.__init__(self, "Event Log - %s" % playername, parent)
+    def __init__(self, game, playername):
+        gtk.EventBox.__init__(self)
         self.game = game
         self.playername = playername
         self.last_action = None
@@ -27,40 +25,9 @@ class EventLog(gtk.Dialog):
 
         self.scrolledwindow = gtk.ScrolledWindow()
         self.vadjustment = self.scrolledwindow.get_vadjustment()
-        self.vbox.add(self.scrolledwindow)
+        self.add(self.scrolledwindow)
         self.scrolledwindow.add_with_viewport(self.vbox2)
-
-        self.connect("configure-event", self.cb_configure_event)
-
-        self.set_default_size(400, 200)
-
-        if self.playername:
-            tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
-            if tup:
-                x, y = tup
-                self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
-            if tup:
-                width, height = tup
-                self.resize(width, height)
-
-        self.set_icon(icon.pixbuf)
-        self.set_transient_for(parent)
-        self.set_destroy_with_parent(True)
-        self.set_title("Event Log - %s" % self.playername)
         self.show_all()
-
-    def cb_configure_event(self, event, unused):
-        if self.playername:
-            x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
-            width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
-        return False
 
     def update(self, observed, action, names):
         st = None
@@ -228,6 +195,6 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     parent = gtk.Window()
-    event_log = EventLog(None, None, parent)
+    event_log = EventLog(None, None)
     event_log.connect("destroy", guiutils.exit)
     gtk.main()

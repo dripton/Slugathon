@@ -20,7 +20,7 @@ import cairo
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
-from slugathon.gui import (icon, GUIBattleHex, Chit, PickRecruit, SummonAngel,
+from slugathon.gui import (GUIBattleHex, Chit, PickRecruit, SummonAngel,
   PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog, Marker, TurnTrack,
   BattleDice)
 from slugathon.util import guiutils, prefs
@@ -50,29 +50,20 @@ ui_string = """<ui>
 
 
 @implementer(IObserver)
-class GUIBattleMap(gtk.Window):
+class GUIBattleMap(gtk.EventBox):
     """GUI representation of a battlemap."""
     def __init__(self, battlemap, game=None, user=None, playername=None,
-      scale=None):
-        gtk.Window.__init__(self)
+      scale=None, parent_window=None):
+        gtk.EventBox.__init__(self)
 
         self.battlemap = battlemap
         self.game = game
         self.user = user
         self.playername = playername
+        self.parent_window = parent_window
 
         self.chits = []
         self.selected_chit = None
-
-        self.set_icon(icon.pixbuf)
-        if self.game:
-            game_name = self.game.name
-        else:
-            game_name = "None"
-        self.set_title("BattleMap - Slugathon - %s - %s" % (game_name,
-          self.playername))
-
-        self.connect("configure-event", self.cb_configure_event)
 
         self.vbox = gtk.VBox()
         self.add(self.vbox)
@@ -94,18 +85,6 @@ class GUIBattleMap(gtk.Window):
         else:
             self.turn_track = None
             self.battle_dice = None
-
-        if self.playername:
-            tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
-            if tup:
-                x, y = tup
-                self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
-            if tup:
-                width, height = tup
-                self.resize(width, height)
 
         self.create_ui()
         self.vbox.pack_start(self.ui.get_widget("/Menubar"), expand=False)
@@ -175,7 +154,9 @@ class GUIBattleMap(gtk.Window):
         self.ui = gtk.UIManager()
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
-        self.add_accel_group(self.ui.get_accel_group())
+        # TODO MainWindow should do this on tab switch.
+        if self.parent_window:
+            self.parent_window.add_accel_group(self.ui.get_accel_group())
 
     def compute_scale(self):
         """Return the approximate maximum scale that lets the map fit on the
@@ -316,16 +297,6 @@ class GUIBattleMap(gtk.Window):
                 return True
         return False
 
-    def cb_configure_event(self, event, unused):
-        if self.playername:
-            x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
-            width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
-        return False
-
     def cb_area_expose(self, area, event):
         self.update_gui(event=event)
         return True
@@ -419,7 +390,7 @@ class GUIBattleMap(gtk.Window):
                 striker = self.selected_chit.creature
                 if striker.can_take_strike_penalty(target):
                     _, def1 = PickStrikePenalty.new(self.playername,
-                      self.game.name, striker, target, self)
+                      self.game.name, striker, target, self.parent_window)
                     def1.addCallback(self.picked_strike_penalty)
                 else:
                     num_dice = striker.number_of_dice(target)
@@ -579,7 +550,7 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog(self.parent_window, "Info",
                       "Forced strikes remain")
             elif self.game.battle_phase == Phase.COUNTERSTRIKE:
                 if not self.game.battle_active_legion.forced_strikes:
@@ -587,11 +558,11 @@ class GUIBattleMap(gtk.Window):
                       self.game.name)
                     def1.addErrback(self.failure)
                 else:
-                    InfoDialog.InfoDialog(self, "Info",
+                    InfoDialog.InfoDialog(self.parent_window, "Info",
                       "Forced strikes remain")
 
     def cb_concede(self, event):
-        confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
+        confirm_dialog, def1 = ConfirmDialog.new(self.parent_window, "Confirm",
           "Are you sure you want to concede?")
         def1.addCallback(self.cb_concede2)
         def1.addErrback(self.failure)
@@ -753,7 +724,7 @@ class GUIBattleMap(gtk.Window):
                     return
                 self.pickcarry, def1 = PickCarry.new(self.playername,
                   self.game.name, striker, target, num_dice, strike_number,
-                  carries, self)
+                  carries, self.parent_window)
                 def1.addCallback(self.picked_carry)
                 self.unselect_all()
                 for creature in striker.carry_targets(target, num_dice,
@@ -803,7 +774,7 @@ class GUIBattleMap(gtk.Window):
                     return
                 self.pickcarry, def1 = PickCarry.new(self.playername,
                   self.game.name, striker, target, num_dice, strike_number,
-                  carries_left, self)
+                  carries_left, self.parent_window)
                 def1.addCallback(self.picked_carry)
                 self.unselect_all()
                 for creature in striker.carry_targets(target, num_dice,
@@ -849,7 +820,7 @@ class GUIBattleMap(gtk.Window):
                 if legion.can_recruit:
                     logging.info("PickRecruit.new (battle turn 4)")
                     _, def1 = PickRecruit.new(self.playername, legion,
-                      mterrain, caretaker, self)
+                      mterrain, caretaker, self.parent_window)
                     def1.addCallback(self.picked_reinforcement)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",
@@ -863,7 +834,8 @@ class GUIBattleMap(gtk.Window):
                 if (legion.can_summon and self.game.first_attacker_kill in
                   [self.game.battle_turn - 1, self.game.battle_turn]):
                     self.game.first_attacker_kill = -1
-                    _, def1 = SummonAngel.new(self.playername, legion, self)
+                    _, def1 = SummonAngel.new(self.playername, legion,
+                      self.parent_window)
                     def1.addCallback(self.picked_summon)
                 else:
                     def1 = self.user.callRemote("done_with_reinforcements",

@@ -11,32 +11,28 @@ from twisted.internet import reactor
 from twisted.python import log
 from zope.interface import implementer
 
-from slugathon.gui import NewGame, LoadGame, WaitingForPlayers, icon
+from slugathon.gui import NewGame, LoadGame, WaitingForPlayers
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
-from slugathon.util import guiutils, prefs
-from slugathon.util.NullUser import NullUser
+from slugathon.util import guiutils
 from slugathon.net import Results
 
 
 @implementer(IObserver)
-class Anteroom(gtk.Window):
+class Anteroom(gtk.EventBox):
     """GUI for a multiplayer chat and game finding lobby."""
-    def __init__(self, user, playername, playernames, games):
-        gtk.Window.__init__(self)
+    def __init__(self, user, playername, playernames, games, parent_window):
+        gtk.EventBox.__init__(self)
         self.initialized = False
         self.user = user
         self.playername = playername
         self.playernames = playernames   # set, aliased from Client
         self.games = games           # list, aliased from Client
+        self.parent_window = parent_window
 
         self.wfps = {}               # game name : WaitingForPlayers
         self.selected_names = set()
         self.results = Results.Results()
-
-        self.set_title("Anteroom - %s" % self.playername)
-        self.set_default_size(800, 600)
-        self.set_icon(icon.pixbuf)
 
         vbox1 = gtk.VBox()
         self.add(vbox1)
@@ -135,24 +131,11 @@ class Anteroom(gtk.Window):
         self._init_liststores()
 
         self.connect("destroy", guiutils.exit)
-        self.connect("configure-event", self.cb_configure_event)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
         new_game_button.connect("button-press-event",
           self.cb_new_game_button_click)
         load_game_button.connect("button-press-event",
           self.cb_load_game_button_click)
-
-        if self.playername:
-            tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
-            if tup:
-                x, y = tup
-                self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
-            if tup:
-                width, height = tup
-                self.resize(width, height)
 
         self.show_all()
         self.initialized = True
@@ -301,16 +284,6 @@ class Anteroom(gtk.Window):
         log.err(error)
         reactor.stop()
 
-    def cb_configure_event(self, event, unused):
-        if self.playername:
-            x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
-            width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
-        return False
-
     def cb_keypress(self, entry, event):
         if event.keyval == gtk.keysyms.Return:
             text = self.chat_entry.get_text()
@@ -324,10 +297,10 @@ class Anteroom(gtk.Window):
                 self.chat_entry.set_text("")
 
     def cb_new_game_button_click(self, widget, event):
-        NewGame.NewGame(self.user, self.playername, self)
+        NewGame.NewGame(self.user, self.playername, self.parent_window)
 
     def cb_load_game_button_click(self, widget, event):
-        LoadGame.LoadGame(self.user, self.playername, self)
+        LoadGame.LoadGame(self.user, self.playername, self.parent_window)
 
     def _add_wfp(self, game):
         wfp = self.wfps.get(game.name)
@@ -338,7 +311,7 @@ class Anteroom(gtk.Window):
             else:
                 del wfp
         wfp = WaitingForPlayers.WaitingForPlayers(self.user, self.playername,
-          game, self)
+          game, self.parent_window)
         self.wfps[game.name] = wfp
 
     def _remove_wfp(self, game_name):
@@ -419,6 +392,7 @@ class Anteroom(gtk.Window):
 
 if __name__ == "__main__":
     from slugathon.game import Game
+    from slugathon.util.NullUser import NullUser
 
     now = time.time()
     user = NullUser()
@@ -426,5 +400,9 @@ if __name__ == "__main__":
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
     playernames = [playername]
     games = [game]
-    anteroom = Anteroom(user, playername, playernames, games)
+    window = gtk.Window()
+    window.set_default_size(1024, 768)
+    anteroom = Anteroom(user, playername, playernames, games, window)
+    window.add(anteroom)
+    window.show_all()
     gtk.main()
