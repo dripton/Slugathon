@@ -4,6 +4,8 @@ __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 from twisted.internet import gtk2reactor
 try:
     gtk2reactor.install()
@@ -26,6 +28,7 @@ class MainWindow(gtk.Window):
         self.game = None
         self.anteroom = None
         self.guiboard = None
+        self.accel_group = None
 
         self.set_icon(icon.pixbuf)
         self.set_title("Slugathon - %s" % (self.playername))
@@ -53,9 +56,17 @@ class MainWindow(gtk.Window):
                 self.resize(width, height)
 
         self.notebook = gtk.Notebook()
+        self.notebook.connect("switch-page", self.cb_switch_page)
         self.add(self.notebook)
         self.notebook.set_tab_pos(gtk.POS_BOTTOM)
         self.show_all()
+
+    def replace_accel_group(self, accel_group):
+        if self.accel_group is not None:
+            self.remove_accel_group(self.accel_group)
+        self.accel_group = accel_group
+        if accel_group is not None:
+            self.add_accel_group(accel_group)
 
     def add_anteroom(self, anteroom):
         self.anteroom = anteroom
@@ -124,6 +135,16 @@ class MainWindow(gtk.Window):
             prefs.save_window_size(self.playername, self.__class__.__name__,
               width, height)
         return False
+
+    def cb_switch_page(self, widget, dummy, page_num):
+        logging.info(str(page_num))
+        page_widget = widget.get_nth_page(page_num)
+        logging.info(page_widget)
+        if (hasattr(page_widget, "ui") and hasattr(page_widget.ui,
+          "get_accel_group")):
+            self.replace_accel_group(page_widget.ui.get_accel_group())
+        else:
+            self.replace_accel_group(None)
 
     def compute_scale(self):
         """Return the approximate maximum scale that let the board fit on

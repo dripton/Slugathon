@@ -154,9 +154,6 @@ class GUIBattleMap(gtk.EventBox):
         self.ui = gtk.UIManager()
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
-        # TODO MainWindow should do this on tab switch.
-        if self.parent_window:
-            self.parent_window.add_accel_group(self.ui.get_accel_group())
 
     def compute_scale(self):
         """Return the approximate maximum scale that lets the map fit on the
