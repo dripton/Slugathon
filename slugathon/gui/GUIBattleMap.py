@@ -147,8 +147,8 @@ class GUIBattleMap(gtk.EventBox):
           ("Undo All", gtk.STOCK_DELETE, "Undo _All", "a", "Undo All",
             self.cb_undo_all),
           ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
-          ("Concede Battle", None, "_Concede Battle", "c", "Concede Battle",
-            self.cb_concede),
+          ("Concede Battle", None, "_Concede Battle", "<control>C",
+            "Concede Battle", self.cb_concede),
         ]
         ag.add_actions(actions)
         self.ui = gtk.UIManager()
