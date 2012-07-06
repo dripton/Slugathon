@@ -278,9 +278,8 @@ class GUIMasterBoard(gtk.EventBox):
             if self.game:
                 def1 = self.user.callRemote("withdraw", self.game.name)
                 def1.addErrback(self.failure)
-            for widget in [self.guimap]:
-                if widget is not None:
-                    widget.destroy()
+            if self.guimap is not None:
+                self.guimap.destroy()
             self.destroy()
 
     def cb_withdraw2(self, confirmed):
