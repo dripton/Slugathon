@@ -607,8 +607,8 @@ class GUIMasterBoard(gtk.EventBox):
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
         xscale = width / (self.board.hex_width * 4. + 2)
-        # Fudge factor to leave room for menus and toolbars.
-        yscale = height / (self.board.hex_height * 4 * SQRT3) - 4
+        # Fudge factor to leave room for menus and toolbars and EventLog.
+        yscale = height / (self.board.hex_height * 4 * SQRT3) - 6
         return int(min(xscale, yscale))
 
     def compute_width(self):
