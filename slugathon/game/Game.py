@@ -1204,11 +1204,9 @@ class Game(Observed):
         player = self.get_player_by_name(playername)
         if player != self.battle_active_player:
             raise AssertionError("wrong player tried to move")
-        for creature in self.battle_active_legion.creatures:
-            if (creature.name == creature_name and creature.hexlabel ==
-              old_hexlabel):
-                break
-        else:
+        creature = self.battle_active_legion.find_creature(creature_name,
+          old_hexlabel)
+        if creature is None:
             raise AssertionError("no %s in %s" % (creature_name, old_hexlabel))
         if new_hexlabel not in self.find_battle_moves(creature):
             raise AssertionError("illegal battle move %s %s" % (creature,
@@ -1227,12 +1225,12 @@ class Game(Observed):
                 break
         else:
             legion = None
-        for creature in legion.creatures:
-            if (creature.name == creature_name and creature.hexlabel ==
-              new_hexlabel):
-                break
-        else:
-            creature = None
+        creature = self.battle_active_legion.find_creature(creature_name,
+          new_hexlabel)
+        if creature is None:
+            logging.warning("%s %s %s", playername, creature_name,
+              new_hexlabel)
+            return
         action = Action.UndoMoveCreature(self.name, playername, creature_name,
           creature.previous_hexlabel, new_hexlabel)
         creature.undo_move()
@@ -1740,21 +1738,17 @@ class Game(Observed):
         elif isinstance(action, Action.MoveCreature):
             if not self.battle_active_legion:
                 return
-            for creature in self.battle_active_legion.creatures:
-                if (creature.name == action.creature_name and
-                  creature.hexlabel == action.old_hexlabel):
-                    break
-            else:
+            creature = self.battle_active_legion.find_creature(
+              action.creature_name, action.old_hexlabel)
+            if creature is None:
                 raise AssertionError("no %s in %s" % (action.creature_name,
                   action.old_hexlabel))
             creature.move(action.new_hexlabel)
 
         elif isinstance(action, Action.UndoMoveCreature):
-            for creature in self.battle_active_legion.creatures:
-                if (creature.name == action.creature_name and
-                  creature.hexlabel == action.new_hexlabel):
-                    break
-            else:
+            creature = self.battle_active_legion.find_creature(
+              action.creature_name, action.new_hexlabel)
+            if creature is None:
                 raise AssertionError("no %s in %s" % (action.creature_name,
                   action.old_hexlabel))
             # Avoid double undo
