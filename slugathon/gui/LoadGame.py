@@ -9,6 +9,7 @@ try:
     gtk2reactor.install()
 except AssertionError:
     pass
+from twisted.internet import reactor
 from twisted.python import log
 import gtk
 
@@ -54,8 +55,6 @@ class LoadGame(gtk.FileChooserDialog):
 
 
 if __name__ == "__main__":
-    from twisted.internet import reactor
-
     user = NullUser()
     playername = "test user"
     loadgame = LoadGame(user, playername, None)

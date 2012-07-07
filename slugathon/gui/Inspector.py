@@ -77,6 +77,7 @@ if __name__ == "__main__":
     import random
     from slugathon.data import creaturedata, playercolordata
     from slugathon.game import Legion, Player
+    from slugathon.util import guiutils
 
     def cb_destroy(confirmed):
         print "destroy"
@@ -91,7 +92,8 @@ if __name__ == "__main__":
     player.color = random.choice(playercolordata.colors)
     abbrev = player.color_abbrev
     index = random.randrange(1, 12 + 1)
-    inspector = Inspector(playername, None)
+    inspector = Inspector(playername)
+    inspector.connect("destroy", guiutils.exit)
 
     legion = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures, 1)
     inspector.show_legion(legion)
@@ -101,5 +103,9 @@ if __name__ == "__main__":
     index = random.randrange(1, 12 + 1)
     legion2 = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures2, 2)
     inspector.show_legion(legion2)
+
+    window = gtk.Window()
+    window.add(inspector)
+    window.show_all()
 
     gtk.main()

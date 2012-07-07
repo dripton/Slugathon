@@ -4,6 +4,12 @@ __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from twisted.internet import gtk2reactor
+try:
+    gtk2reactor.install()
+except AssertionError:
+    pass
+from twisted.internet import reactor
 import gtk
 from zope.interface import implementer
 
@@ -197,4 +203,8 @@ if __name__ == "__main__":
     parent = gtk.Window()
     event_log = EventLog(None, None)
     event_log.connect("destroy", guiutils.exit)
-    gtk.main()
+    parent.add(event_log)
+    parent.show_all()
+    action = Action.GameOver("a", ["Bob"])
+    reactor.callWhenRunning(event_log.update, None, action, None)
+    reactor.run()

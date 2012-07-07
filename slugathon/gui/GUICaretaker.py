@@ -141,6 +141,9 @@ if __name__ == "__main__":
     for unused in xrange(10):
         caretaker.take_one("Colossus")
 
-    guicaretaker = GUICaretaker(game, playername, None)
+    window = gtk.Window()
+    guicaretaker = GUICaretaker(game, playername)
     guicaretaker.connect("destroy", guiutils.exit)
+    window.add(guicaretaker)
+    window.show_all()
     gtk.main()

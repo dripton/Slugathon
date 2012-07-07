@@ -360,4 +360,7 @@ if __name__ == "__main__":
 
     status_screen = StatusScreen(game, playername)
     status_screen.connect("destroy", guiutils.exit)
+    window = gtk.Window()
+    window.add(status_screen)
+    window.show_all()
     gtk.main()

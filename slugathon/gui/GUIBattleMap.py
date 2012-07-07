@@ -951,6 +951,9 @@ if __name__ == "__main__":
     from slugathon.game import BattleMap
     from slugathon.data import battlemapdata
 
+    window = gtk.Window()
+    window.set_default_size(1024, 768)
+
     entry_side = None
     if len(argv) > 1:
         terrain = argv[1].title()
@@ -965,5 +968,7 @@ if __name__ == "__main__":
             entry_side = random.choice([1, 3, 5])
     battlemap = BattleMap.BattleMap(terrain, entry_side)
     guimap = GUIBattleMap(battlemap)
+    window.add(guimap)
+    window.show_all()
     guimap.connect("destroy", lambda x: reactor.stop())
     reactor.run()

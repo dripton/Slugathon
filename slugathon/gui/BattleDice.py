@@ -82,5 +82,5 @@ if __name__ == "__main__":
     rolls = Dice.roll(numrolls=12)
     action = Action.Strike(None, None, None, None, None, None, None, None,
       rolls, sum(1 for roll in rolls if roll >= 4), 1)
-    battle_dice.update(None, action)
+    battle_dice.update(None, action, None)
     gtk.main()
