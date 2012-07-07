@@ -19,11 +19,11 @@ import gtk
 import cairo
 from zope.interface import implementer
 
-from slugathon.gui import (GUIMasterHex, Marker, ShowLegion, PickMarker,
-  SplitLegion, About, Die, PickRecruit, Flee, Inspector, Chit,
-  Negotiate, Proposal, AcquireAngels, GUIBattleMap, SummonAngel, PickEntrySide,
-  PickMoveType, PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker,
-  ConfirmDialog, EventLog)
+from slugathon.gui import (GUIMasterHex, Marker, PickMarker, SplitLegion,
+  About, Die, PickRecruit, Flee, Inspector, Chit, Negotiate, Proposal,
+  AcquireAngels, GUIBattleMap, SummonAngel, PickEntrySide, PickMoveType,
+  PickTeleportingLord, InfoDialog, StatusScreen, GUICaretaker, ConfirmDialog,
+  EventLog)
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
@@ -456,88 +456,83 @@ class GUIMasterBoard(gtk.EventBox):
         def1.addErrback(self.failure)
 
     def clicked_on_marker(self, area, event, marker):
-        if event.button >= 2:
-            ShowLegion.ShowLegion(self.playername, marker.legion, True,
-              self.parent_window)
+        phase = self.game.phase
+        if phase == Phase.SPLIT:
+            legion = marker.legion
+            player = legion.player
+            # Make sure it's this player's legion and turn.
+            if player.name != self.playername:
+                return
+            elif player != self.game.active_player:
+                return
+            # Ensure that the legion can legally be split.
+            elif not legion.can_be_split(self.game.turn):
+                return
+            elif player.selected_markerid:
+                self.split_legion(legion)
+            else:
+                if not player.markerids_left:
+                    InfoDialog.InfoDialog(self.parent_window, "Info",
+                      "No markers available")
+                    return
+                _, def1 = PickMarker.new(self.playername, self.game.name,
+                  player.markerids_left, self.parent_window)
+                def1.addCallback(self.picked_marker_presplit, legion)
 
-        else:  # left button
-            phase = self.game.phase
-            if phase == Phase.SPLIT:
-                legion = marker.legion
-                player = legion.player
-                # Make sure it's this player's legion and turn.
-                if player.name != self.playername:
-                    return
-                elif player != self.game.active_player:
-                    return
-                # Ensure that the legion can legally be split.
-                elif not legion.can_be_split(self.game.turn):
-                    return
-                elif player.selected_markerid:
-                    self.split_legion(legion)
-                else:
-                    if not player.markerids_left:
-                        InfoDialog.InfoDialog(self.parent_window, "Info",
-                          "No markers available")
-                        return
-                    _, def1 = PickMarker.new(self.playername, self.game.name,
-                      player.markerids_left, self.parent_window)
-                    def1.addCallback(self.picked_marker_presplit, legion)
-
-            elif phase == Phase.MOVE:
-                legion = marker.legion
-                player = legion.player
-                if player.name != self.playername:
-                    # Not my marker; ignore it and click on the hex
-                    guihex = self.guihexes[legion.hexlabel]
-                    self.clicked_on_hex(area, event, guihex)
-                    return
-                self.unselect_all()
-                self.clear_all_recruitchits()
-                if legion.moved:
-                    moves = []
-                else:
-                    if player.movement_roll is None:
-                        logging.info("movement_roll is None; timing problem?")
-                        moves = []
-                    moves = self.game.find_all_moves(legion, self.board.hexes[
-                      legion.hexlabel], player.movement_roll)
-                if moves:
-                    self.selected_marker = marker
-                    for move in moves:
-                        hexlabel = move[0]
-                        guihex = self.guihexes[hexlabel]
-                        guihex.selected = True
-                        self.repaint_hexlabels.add(hexlabel)
-                        recruit_names = legion.available_recruits(
-                          self.board.hexes[hexlabel].terrain,
-                          self.game.caretaker)
-                        if recruit_names:
-                            self.create_recruitchits(legion, hexlabel,
-                              recruit_names)
-                self.repaint()
-
-            elif phase == Phase.FIGHT:
-                legion = marker.legion
+        elif phase == Phase.MOVE:
+            legion = marker.legion
+            player = legion.player
+            if player.name != self.playername:
+                # Not my marker; ignore it and click on the hex
                 guihex = self.guihexes[legion.hexlabel]
-                if guihex.selected:
-                    def1 = self.user.callRemote("resolve_engagement",
-                      self.game.name, guihex.masterhex.label)
-                    def1.addErrback(self.failure)
+                self.clicked_on_hex(area, event, guihex)
+                return
+            self.unselect_all()
+            self.clear_all_recruitchits()
+            if legion.moved:
+                moves = []
+            else:
+                if player.movement_roll is None:
+                    logging.info("movement_roll is None; timing problem?")
+                    moves = []
+                moves = self.game.find_all_moves(legion, self.board.hexes[
+                  legion.hexlabel], player.movement_roll)
+            if moves:
+                self.selected_marker = marker
+                for move in moves:
+                    hexlabel = move[0]
+                    guihex = self.guihexes[hexlabel]
+                    guihex.selected = True
+                    self.repaint_hexlabels.add(hexlabel)
+                    recruit_names = legion.available_recruits(
+                      self.board.hexes[hexlabel].terrain,
+                      self.game.caretaker)
+                    if recruit_names:
+                        self.create_recruitchits(legion, hexlabel,
+                          recruit_names)
+            self.repaint()
 
-            elif phase == Phase.MUSTER:
-                self.unselect_all()
-                legion = marker.legion
-                if legion.moved:
-                    masterhex = self.board.hexes[legion.hexlabel]
-                    mterrain = masterhex.terrain
-                    caretaker = self.game.caretaker
-                    if legion.can_recruit:
-                        logging.info("PickRecruit.new (muster)")
-                        _, def1 = PickRecruit.new(self.playername, legion,
-                          mterrain, caretaker, self.parent_window)
-                        def1.addCallback(self.picked_recruit)
-                self.highlight_recruits()
+        elif phase == Phase.FIGHT:
+            legion = marker.legion
+            guihex = self.guihexes[legion.hexlabel]
+            if guihex.selected:
+                def1 = self.user.callRemote("resolve_engagement",
+                  self.game.name, guihex.masterhex.label)
+                def1.addErrback(self.failure)
+
+        elif phase == Phase.MUSTER:
+            self.unselect_all()
+            legion = marker.legion
+            if legion.moved:
+                masterhex = self.board.hexes[legion.hexlabel]
+                mterrain = masterhex.terrain
+                caretaker = self.game.caretaker
+                if legion.can_recruit:
+                    logging.info("PickRecruit.new (muster)")
+                    _, def1 = PickRecruit.new(self.playername, legion,
+                      mterrain, caretaker, self.parent_window)
+                    def1.addCallback(self.picked_recruit)
+            self.highlight_recruits()
 
     def picked_marker_presplit(self, (game_name, playername, markerid),
       legion):
