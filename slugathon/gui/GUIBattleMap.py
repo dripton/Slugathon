@@ -562,10 +562,12 @@ class GUIBattleMap(gtk.EventBox):
                       "Forced strikes remain")
 
     def cb_concede(self, event):
-        confirm_dialog, def1 = ConfirmDialog.new(self.parent_window, "Confirm",
-          "Are you sure you want to concede?")
-        def1.addCallback(self.cb_concede2)
-        def1.addErrback(self.failure)
+        for legion in self.game.battle_legions:
+            if legion.player.name == self.playername:
+                confirm_dialog, def1 = ConfirmDialog.new(self.parent_window,
+                  "Confirm", "Are you sure you want to concede?")
+                def1.addCallback(self.cb_concede2)
+                def1.addErrback(self.failure)
 
     def cb_concede2(self, confirmed):
         logging.info("cb_concede2 %s", confirmed)
