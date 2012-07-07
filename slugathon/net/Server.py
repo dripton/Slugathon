@@ -446,8 +446,13 @@ class Server(Observed):
         """Move one creature on the battle map."""
         game = self.name_to_game(game_name)
         if game:
-            game.move_creature(playername, creature_name, old_hexlabel,
-              new_hexlabel)
+            try:
+                player = game.get_player_by_name(playername)
+            except KeyError:
+                return
+            if player == game.battle_active_player:
+                game.move_creature(playername, creature_name, old_hexlabel,
+                  new_hexlabel)
 
     def undo_move_creature(self, playername, game_name, creature_name,
       new_hexlabel):
@@ -466,7 +471,12 @@ class Server(Observed):
         """Finish the maneuver battle phase."""
         game = self.name_to_game(game_name)
         if game:
-            game.done_with_maneuvers(playername)
+            try:
+                player = game.get_player_by_name(playername)
+            except KeyError:
+                return
+            if player is game.battle_active_player:
+                game.done_with_maneuvers(playername)
 
     def strike(self, playername, game_name, striker_name, striker_hexlabel,
       target_name, target_hexlabel, num_dice, strike_number):
