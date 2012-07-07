@@ -236,6 +236,16 @@ class Server(Observed):
         """Pick a player color."""
         game = self.name_to_game(game_name)
         if game:
+            try:
+                player = game.get_player_by_name(playername)
+            except KeyError:
+                return
+            if player.color == color:
+                return
+            if playername != game.next_playername_to_pick_color:
+                return
+            if color not in game.colors_left:
+                return
             game.assign_color(playername, color)
 
     def pick_first_marker(self, playername, game_name, markerid):
