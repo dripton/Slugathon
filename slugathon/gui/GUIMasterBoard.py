@@ -1460,6 +1460,7 @@ class GUIMasterBoard(gtk.EventBox):
                     message = "Game over.  Draw."
                 self.game_over = InfoDialog.InfoDialog(self.parent_window,
                   "Info", message)
+            self.destroy()
 
         elif isinstance(action, Action.PauseAI):
             self.enable_resume_ai()
