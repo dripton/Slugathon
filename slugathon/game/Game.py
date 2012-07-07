@@ -244,6 +244,13 @@ class Game(Observed):
             dead = player.dead
         return player, turn
 
+    @property
+    def winner_names(self):
+        if self.over:
+            winner_players = self.finish_order[0]
+            return [player.name for player in winner_players]
+        return []
+
     def assign_towers(self):
         """Randomly assign a tower to each player."""
         towers = self.board.get_tower_labels()
@@ -1052,10 +1059,8 @@ class Game(Observed):
         """Called from update."""
         if self.over:
             self.finish_time = time.time()
-            winner_players = self.finish_order[0]
-            winner_names = [player.name for player in winner_players]
-            logging.info("game over %s", winner_names)
-            action = Action.GameOver(self.name, winner_names)
+            logging.info("game over %s", self.winner_names)
+            action = Action.GameOver(self.name, self.winner_names)
             self.notify(action)
 
     # Battle methods
