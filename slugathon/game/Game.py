@@ -167,8 +167,7 @@ class Game(Observed):
         for player in self.players:
             if player.name == name:
                 return player
-        raise KeyError("No player named %s in players %s" % (
-          name, self.players))
+        return None
 
     @property
     def info_tuple(self):
@@ -197,9 +196,8 @@ class Game(Observed):
         """
         if self.started:
             raise AssertionError("remove_player on started game")
-        try:
-            player = self.get_player_by_name(playername)
-        except KeyError:
+        player = self.get_player_by_name(playername)
+        if player is None:
             # already removed, okay
             pass
         else:
@@ -1522,9 +1520,8 @@ class Game(Observed):
 
         Called from Server.
         """
-        try:
-            player = self.get_player_by_name(playername)
-        except KeyError:
+        player = self.get_player_by_name(playername)
+        if player is None:
             return
         if player.dead:
             return
@@ -1856,11 +1853,7 @@ class Game(Observed):
             reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.EliminatePlayer):
-            try:
-                winner_player = self.get_player_by_name(
-                  action.winner_playername)
-            except KeyError:
-                winner_player = None
+            winner_player = self.get_player_by_name(action.winner_playername)
             loser_player = self.get_player_by_name(action.loser_playername)
             player_to_full_points = defaultdict(int)
             for legion in loser_player.legions:

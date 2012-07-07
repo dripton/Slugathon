@@ -236,9 +236,8 @@ class Server(Observed):
         """Pick a player color."""
         game = self.name_to_game(game_name)
         if game:
-            try:
-                player = game.get_player_by_name(playername)
-            except KeyError:
+            player = game.get_player_by_name(playername)
+            if player is None:
                 return
             if player.color == color:
                 return
@@ -446,9 +445,8 @@ class Server(Observed):
         """Move one creature on the battle map."""
         game = self.name_to_game(game_name)
         if game:
-            try:
-                player = game.get_player_by_name(playername)
-            except KeyError:
+            player = game.get_player_by_name(playername)
+            if player is None:
                 return
             if player == game.battle_active_player:
                 game.move_creature(playername, creature_name, old_hexlabel,
@@ -471,9 +469,8 @@ class Server(Observed):
         """Finish the maneuver battle phase."""
         game = self.name_to_game(game_name)
         if game:
-            try:
-                player = game.get_player_by_name(playername)
-            except KeyError:
+            player = game.get_player_by_name(playername)
+            if player is None:
                 return
             if player is game.battle_active_player:
                 game.done_with_maneuvers(playername)
