@@ -410,3 +410,18 @@ def test_combat_value():
     # Tundra
     legion.hexlabel = 2000
     assert legion.terrain_combat_value == legion.combat_value
+
+
+def test_find_creature():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    creatures = Creature.n2c(creaturedata.starting_creature_names)
+    player = Player.Player("p0", game, 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
+    assert legion.find_creature("Titan", "DEFENDER") is None
+    for creature in legion.creatures:
+        creature.hexlabel = "DEFENDER"
+    assert legion.find_creature("Titan", "DEFENDER") is not None
+    assert legion.find_creature("Ogre", "DEFENDER") is not None
+    assert legion.find_creature("Titan", "ATTACKER") is None
+    assert legion.find_creature("Ogre", "ATTACKER") is None

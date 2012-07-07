@@ -694,3 +694,11 @@ class Legion(Observed):
     def enter_battle(self, hexlabel):
         for creature in self.creatures:
             creature.hexlabel = hexlabel
+
+    def find_creature(self, creature_name, hexlabel):
+        """Return the Creature with creature_name at hexlabel, or None."""
+        for creature in self.creatures:
+            if (creature.name == creature_name and creature.hexlabel ==
+              hexlabel):
+                return creature
+        return None
