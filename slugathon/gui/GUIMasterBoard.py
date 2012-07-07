@@ -1473,7 +1473,7 @@ class GUIMasterBoard(gtk.EventBox):
             self.enable_pause_ai()
 
 
-def main():
+if __name__ == "__main__":
     from slugathon.game import MasterBoard
 
     window = gtk.Window()
@@ -1484,6 +1484,3 @@ def main():
     window.show_all()
     window.connect("destroy", lambda x: reactor.stop())
     reactor.run()
-
-if __name__ == "__main__":
-    main()

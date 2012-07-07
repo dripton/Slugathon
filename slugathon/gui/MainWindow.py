@@ -156,7 +156,7 @@ class MainWindow(gtk.Window):
         log.err(arg)
 
 
-def main():
+if __name__ == "__main__":
     import time
     from slugathon.game import Game
     from slugathon.util.NullUser import NullUser
@@ -174,7 +174,3 @@ def main():
     main_window.add_anteroom(anteroom)
 
     reactor.run()
-
-
-if __name__ == "__main__":
-    main()
