@@ -43,6 +43,7 @@ class StatusScreen(gtk.EventBox):
         self.add(self.vbox)
 
         turn_table = gtk.Table(rows=4, columns=3)
+        turn_table.set_homogeneous(True)
         self.vbox.pack_start(turn_table)
 
         add_label(turn_table, 2, 1, "Game")
