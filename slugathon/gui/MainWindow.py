@@ -111,7 +111,7 @@ class MainWindow(gtk.Window):
         return True
 
     def cb_destroy(self, confirmed):
-        """Withdraw from the game, and destroy the GUIMasterBoard."""
+        """Withdraw from the game, and destroy the window."""
         if confirmed:
             self.destroyed = True
             if self.game:
