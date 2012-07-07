@@ -119,13 +119,6 @@ class MainWindow(gtk.Window):
                 def1.addErrback(self.failure)
             self.destroy()
 
-    def cb_withdraw2(self, confirmed):
-        """Withdraw from the game, but do not destroy the GUIMasterBoard."""
-        if confirmed:
-            if self.game:
-                def1 = self.user.callRemote("withdraw", self.game.name)
-                def1.addErrback(self.failure)
-
     def cb_configure_event(self, event, unused):
         if self.playername:
             x, y = self.get_position()
