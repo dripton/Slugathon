@@ -22,7 +22,7 @@ from zope.interface import implementer
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (GUIBattleHex, Chit, PickRecruit, SummonAngel,
   PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog, Marker, TurnTrack,
-  BattleDice)
+  BattleDice, EventLog)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
 
@@ -82,6 +82,8 @@ class GUIBattleMap(gtk.EventBox):
             game.add_observer(self.turn_track)
             self.battle_dice = BattleDice.BattleDice(self.scale)
             game.add_observer(self.battle_dice)
+            event_log = EventLog.EventLog(game, self.playername)
+            game.add_observer(event_log)
         else:
             self.turn_track = None
             self.battle_dice = None
@@ -120,6 +122,7 @@ class GUIBattleMap(gtk.EventBox):
             self.hbox4.pack_start(self.turn_track, expand=False)
             self.hbox4.pack_start(self.battle_dice, fill=True)
             self.hbox2.pack_start(attacker_marker.event_box)
+            self.vbox.pack_start(event_log)
         self.hbox2.pack_start(self.area)
         if game:
             self.hbox2.pack_start(defender_marker.event_box)
