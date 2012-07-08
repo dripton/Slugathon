@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import time
+import logging
 
 import gtk
 from twisted.internet import reactor
@@ -208,6 +209,7 @@ class Anteroom(gtk.EventBox):
             del self.user_store[leng]
 
     def update_game_stores(self):
+        logging.info("")
         self.update_new_game_store()
         self.update_current_game_store()
         self.update_old_game_store()
