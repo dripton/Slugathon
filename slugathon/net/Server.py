@@ -20,7 +20,7 @@ from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.net import Realm, config, Results
-from slugathon.game import Game, Action
+from slugathon.game import Game, Action, Phase
 from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
@@ -463,16 +463,18 @@ class Server(Observed):
         """Finish the reinforcement battle phase."""
         game = self.name_to_game(game_name)
         if game:
-            game.done_with_reinforcements(playername)
+            player = game.get_player_by_name(playername)
+            if (player is not None and player == game.battle_active_player and
+              game.battle_phase == Phase.REINFORCE):
+                game.done_with_reinforcements(playername)
 
     def done_with_maneuvers(self, playername, game_name):
         """Finish the maneuver battle phase."""
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(playername)
-            if player is None:
-                return
-            if player is game.battle_active_player:
+            if (player is not None and player == game.battle_active_player and
+              game.battle_phase == Phase.MANEUVER):
                 game.done_with_maneuvers(playername)
 
     def strike(self, playername, game_name, striker_name, striker_hexlabel,
@@ -487,13 +489,19 @@ class Server(Observed):
         """Finish the strike battle phase."""
         game = self.name_to_game(game_name)
         if game:
-            game.done_with_strikes(playername)
+            player = game.get_player_by_name(playername)
+            if (player is not None and player == game.battle_active_player and
+              game.battle_phase == Phase.STRIKE):
+                game.done_with_strikes(playername)
 
     def done_with_counterstrikes(self, playername, game_name):
         """Finish the counterstrike battle phase."""
         game = self.name_to_game(game_name)
         if game:
-            game.done_with_counterstrikes(playername)
+            player = game.get_player_by_name(playername)
+            if (player is not None and player == game.battle_active_player and
+              game.battle_phase == Phase.COUNTERSTRIKE):
+                game.done_with_counterstrikes(playername)
 
     def acquire_angels(self, playername, game_name, markerid, angel_names):
         """Acquire angels and/or archangels after an engagement."""
