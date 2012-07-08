@@ -1246,7 +1246,8 @@ class Game(Observed):
         """
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
-            logging.info("%s ending maneuver phase out of turn" % playername)
+            logging.info("%s ending reinforcement phase out of turn" %
+              playername)
             return
         if self.battle_phase == Phase.REINFORCE:
             player.done_with_reinforcements()
