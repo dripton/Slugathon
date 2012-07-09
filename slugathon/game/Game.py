@@ -1514,7 +1514,6 @@ class Game(Observed):
                           self.battle_turn)
                     creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = None
-                    # TODO Move to graveyard instead
 
     def withdraw(self, playername):
         """Withdraw playername from this game.

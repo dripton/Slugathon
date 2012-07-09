@@ -22,7 +22,7 @@ from zope.interface import implementer
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (GUIBattleHex, Chit, PickRecruit, SummonAngel,
   PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog, Marker, TurnTrack,
-  BattleDice, EventLog)
+  BattleDice, EventLog, Graveyard)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
 
@@ -65,7 +65,7 @@ class GUIBattleMap(gtk.EventBox):
         self.chits = []
         self.selected_chit = None
 
-        self.vbox = gtk.VBox()
+        self.vbox = gtk.VBox(spacing=1)
         self.add(self.vbox)
 
         if scale is None:
@@ -74,6 +74,10 @@ class GUIBattleMap(gtk.EventBox):
             self.scale = scale
         self.area = gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
+
+        gtkcolor = gtk.gdk.color_parse("white")
+        self.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+
         if game:
             self.turn_track = TurnTrack.TurnTrack(game.attacker_legion,
                                                  game.defender_legion,
@@ -84,22 +88,29 @@ class GUIBattleMap(gtk.EventBox):
             game.add_observer(self.battle_dice)
             event_log = EventLog.EventLog(game, self.playername)
             game.add_observer(event_log)
+            self.attacker_graveyard = Graveyard.Graveyard(game.attacker_legion)
+            self.defender_graveyard = Graveyard.Graveyard(game.defender_legion)
         else:
             self.turn_track = None
             self.battle_dice = None
+            self.attacker_graveyard = None
+            self.defender_graveyard = None
 
         self.create_ui()
         self.vbox.pack_start(self.ui.get_widget("/Menubar"), expand=False)
         self.vbox.pack_start(self.ui.get_widget("/Toolbar"), expand=False)
-        self.hbox0 = gtk.HBox()
+        self.hbox1 = gtk.HBox()
         self.hbox2 = gtk.HBox()
+        self.hbox3 = gtk.HBox()
         self.hbox4 = gtk.HBox()
-        self.hbox5 = gtk.HBox()
-        self.vbox.pack_start(self.hbox0, expand=False)
+        self.hbox5 = gtk.HBox(homogeneous=True)
+        self.vbox.pack_start(self.hbox1, expand=False)
         self.vbox.pack_start(self.hbox2, fill=True)
+        self.vbox.pack_start(self.hbox3, expand=False)
         self.vbox.pack_start(self.hbox4, expand=False)
         self.vbox.pack_start(self.hbox5, expand=False)
         if game:
+            self.vbox.pack_start(event_log)
             gtkcolor = gtk.gdk.color_parse("white")
             attacker_marker = Marker.Marker(game.attacker_legion, True,
               self.scale / 2)
@@ -111,21 +122,22 @@ class GUIBattleMap(gtk.EventBox):
             hexlabel = game.defender_legion.hexlabel
             masterhex = board.hexes[hexlabel]
             own_hex_label = self.masterhex_label(masterhex, "xx-large")
-            self.hbox0.pack_start(self.spacer())
-            self.hbox0.pack_start(own_hex_label)
-            self.hbox0.pack_start(self.spacer())
-            self.hbox0.pack_start(self.spacer())
-            self.hbox0.pack_start(self.spacer())
-            self.hbox0.pack_start(self.spacer())
-            self.hbox0.pack_start(self.spacer())
-            self.hbox0.pack_start(self.spacer())
-            self.hbox4.pack_start(self.turn_track, expand=False)
-            self.hbox4.pack_start(self.battle_dice, fill=True)
+            self.hbox1.pack_start(self.spacer())
+            self.hbox1.pack_start(own_hex_label)
+            self.hbox1.pack_start(self.spacer())
+            self.hbox1.pack_start(self.spacer())
+            self.hbox1.pack_start(self.spacer())
+            self.hbox1.pack_start(self.spacer())
+            self.hbox1.pack_start(self.spacer())
+            self.hbox1.pack_start(self.spacer())
+            self.hbox3.pack_start(self.turn_track, expand=False)
+            self.hbox3.pack_start(self.battle_dice, fill=True)
             self.hbox2.pack_start(attacker_marker.event_box)
-            self.vbox.pack_start(event_log)
         self.hbox2.pack_start(self.area)
         if game:
             self.hbox2.pack_start(defender_marker.event_box)
+            self.hbox5.pack_start(self.attacker_graveyard)
+            self.hbox5.pack_start(self.defender_graveyard)
 
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.itervalues():
@@ -424,7 +436,6 @@ class GUIBattleMap(gtk.EventBox):
                           self.scale / 2, rotate=rotate)
                         self.chits.append(chit)
 
-    # TODO Move to graveyard area rather than removing.
     def _remove_dead_chits(self):
         for chit in reversed(self.chits):
             if (chit.creature.dead or
@@ -435,6 +446,8 @@ class GUIBattleMap(gtk.EventBox):
                 chit.hexlabel = None
                 if hexlabel is not None:
                     self.repaint([hexlabel])
+        self.attacker_graveyard.update_gui()
+        self.defender_graveyard.update_gui()
 
     def _compute_chit_locations(self, hexlabel):
         chits = self.chits_in_hex(hexlabel)
