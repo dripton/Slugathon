@@ -103,6 +103,8 @@ class CleverBot(object):
         else:
             return random.choice(list(player.markerids_left))
 
+    # TODO Fight with angels first, then with most important legion.
+    # TODO Avoid hitting 100-point multiples with 7-high legions.
     def choose_engagement(self, game):
         """Resolve engagements."""
         logging.info("choose_engagement")
@@ -178,6 +180,10 @@ class CleverBot(object):
         else:
             logging.info("not my engagement")
 
+    # TODO Extract method to decide what to recruit
+    # TODO Pick third cyclops before gorgon.
+    # TODO Look at what we can recruit on each movement roll, to see if we
+    # should take a third creature of a kind.
     def recruit(self, game):
         logging.info("CleverBot.recruit")
         if game.active_player.name != self.playername:
@@ -293,6 +299,7 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
+    # TODO Do not summon if 6 high and we could recruit better.
     def summon_angel_after(self, game):
         """Summon, after the battle is over."""
         logging.info("CleverBot.summon_angel_after")
@@ -325,6 +332,7 @@ class CleverBot(object):
           legion.markerid)
         def1.addErrback(self.failure)
 
+    # TODO Do not take an angel if we are 6 high and can recruit better.
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
         logging.info("CleverBot.acquire_angels %s %s %s", markerid, num_angels,
           num_archangels)
@@ -357,7 +365,7 @@ class CleverBot(object):
             def1.addErrback(self.failure)
 
     def split(self, game):
-        """Split if it's my turn."""
+        """Split a legion, or end split phase."""
         logging.info("split")
         if game.active_player.name != self.playername:
             logging.info("called split out of turn; exiting")
