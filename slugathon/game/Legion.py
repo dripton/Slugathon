@@ -201,6 +201,7 @@ class Legion(Observed):
     def is_legal_split(self, child1, child2):
         """Return whether this legion can be split into legions child1 and
         child2"""
+        logging.info("%s %s", child1, child2)
         if len(self) < 4:
             return False
         if len(self) != len(child1) + len(child2):
