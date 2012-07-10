@@ -655,9 +655,9 @@ class CleverBot(object):
             sort_values[creature_name] = creature.sort_value
             max_score += creature.sort_value
         perms = list(itertools.permutations(creature_moves))
+        logging.info("_find_move_order %d perms" % len(perms))
         # Scramble the list so we don't get a bunch of similar bad
         # orders jumbled together at the beginning.
-        logging.info("_find_move_order %d perms" % len(perms))
         random.shuffle(perms)
         best_score = -maxint
         best_perm = None
