@@ -428,8 +428,7 @@ class CleverBot(object):
                     keep_names = [creature.name for creature in keep]
                     new_markerid = self._choose_marker(player)
                     def1 = self.user.callRemote("split_legion", game.name,
-                      legion.markerid, new_markerid, keep_names,
-                      split_names)
+                      legion.markerid, new_markerid, keep_names, split_names)
                     def1.addErrback(self.failure)
                     return
 
