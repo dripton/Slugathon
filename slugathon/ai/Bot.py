@@ -46,7 +46,7 @@ class Bot(Interface):
     def recruit(game):
         """Recruit during the Muster phase."""
 
-    def reinforce(game):
+    def reinforce_during(game):
         """Muster a reinforcement during battle."""
 
     def reinforce_after(game):

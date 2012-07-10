@@ -206,9 +206,9 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_recruits", game.name)
         def1.addErrback(self.failure)
 
-    def reinforce(self, game):
+    def reinforce_during(self, game):
         """Reinforce, during the REINFORCE battle phase"""
-        logging.info("CleverBot.reinforce")
+        logging.info("")
         assert game.battle_active_player.name == self.playername
         assert game.battle_phase == Phase.REINFORCE
         legion = game.defender_legion
@@ -227,14 +227,13 @@ class CleverBot(object):
                   legion.markerid, recruit, recruiters)
                 def1.addErrback(self.failure)
                 return
-
         logging.info("CleverBot calling done_with_reinforcements")
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
     def reinforce_after(self, game):
         """Reinforce, after the battle"""
-        logging.info("CleverBot.reinforce_after")
+        logging.info("")
         legion = game.defender_legion
         assert legion.player.name == self.playername
         mterrain = game.battlemap.mterrain
@@ -251,7 +250,6 @@ class CleverBot(object):
                   legion.markerid, recruit, recruiters)
                 def1.addErrback(self.failure)
                 return
-
         logging.info("CleverBot calling do_not_reinforce %s", recruit)
         def1 = self.user.callRemote("do_not_reinforce", game.name,
           legion.markerid)
