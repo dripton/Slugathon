@@ -5,7 +5,8 @@ __license__ = "GNU GPL v2"
 import os
 import sqlite3
 import math
-from collections import namedtuple
+from collections import namedtuple, defaultdict
+import logging
 
 import trueskill
 
@@ -23,11 +24,16 @@ CREATE TABLE game (
     finish_time INTEGER
 );
 
+CREATE TABLE type (
+    type_id INTEGER PRIMARY KEY ASC,
+    class TEXT, -- "Human" or "CleverBot"
+    info TEXT   -- name for humans; any info that distinguishes AIs
+);
+
 CREATE TABLE player (
     player_id INTEGER PRIMARY KEY ASC,
-    name TEXT,    -- only used for Human
-    type TEXT,    -- "Human", "CleverBot", etc.
-    info TEXT     -- any info that distinguishes AIs of the same type
+    name TEXT,
+    type_id INTEGER REFERENCES type(type_id)
 );
 
 CREATE TABLE rank (
@@ -37,7 +43,7 @@ CREATE TABLE rank (
 );
 
 CREATE TABLE trueskill (
-    player_id INTEGER PRIMARY KEY REFERENCES player(player_id),
+    type_id INTEGER PRIMARY KEY REFERENCES type(type_id),
     mu REAL,
     sigma REAL
 );
@@ -81,27 +87,47 @@ class Results(object):
     def save_game(self, game):
         """Save a finished Game to the results database.
 
-        TODO This involves a non-trivial amount of computation and I/O, so
-        perhaps it should be run from a thread.
+        XXX This involves a non-trivial amount of computation and I/O, so
+        maybe it should be run from a thread to avoid blocking the reactor.
+        But sqlite is not thread-safe so we can't reuse connections.
         """
+        logging.info("")
         with self.connection:
             cursor = self.connection.cursor()
             for player in game.players:
-                # See if that player is already in the database
-                #name = player.name if player.player_type == "Human" else ""
-                # XXX Temporarily use name for AI, to avoid duplicates.
-                name = player.name
-                query = """SELECT player_id FROM player
-                           WHERE name = ? AND type = ? AND info = ?"""
-                cursor.execute(query, (name, player.player_type,
-                  player.result_info))
+
+                # See if that type is already in the database
+                query = """SELECT type_id FROM type
+                           where class = ? AND info = ?"""
+                cursor.execute(query, (player.player_type, player.result_info))
                 row = cursor.fetchone()
                 # If not, insert it.
                 if row is None:
                     query = \
-                      "INSERT INTO player (name, type, info) VALUES (?, ?, ?)"
-                    cursor.execute(query, (name, player.player_type,
+                      "INSERT INTO type (class, info) VALUES (?, ?)"
+                    cursor.execute(query, (player.player_type,
                       player.result_info))
+                    # And fetch the type_id.
+                    query = """SELECT type_id FROM type
+                               where class = ? AND info = ?"""
+                    cursor.execute(query, (player.player_type,
+                      player.result_info))
+                    row = cursor.fetchone()
+
+                type_id = row["type_id"]
+
+                # See if that player is already in the database
+                name = player.name
+                query = """SELECT player_id FROM player
+                           WHERE name = ? AND type_id = ?"""
+                cursor.execute(query, (name, type_id))
+                row = cursor.fetchone()
+                # If not, insert it.
+                if row is None:
+                    query = \
+                      "INSERT INTO player (name, type_id) VALUES (?, ?)"
+                    cursor.execute(query, (name, type_id))
+
             # Add the game.
             query = """INSERT INTO game (name, start_time, finish_time)
                        VALUES (?, ?, ?)"""
@@ -118,9 +144,9 @@ class Results(object):
             for tup in game.finish_order:
                 for player in tup:
                     # Find the player_id
-                    query = """SELECT player_id FROM player
-                               WHERE name = ? AND type = ? AND info = ?"""
-                    # XXX Temporarily use name for AI, to avoid duplicates.
+                    query = """SELECT player_id FROM player p, type t
+                               WHERE p.type_id = t.type_id
+                               AND p.name = ? AND t.class = ? AND t.info = ?"""
                     name = player.name
                     cursor.execute(query, (name, player.player_type,
                       player.result_info))
@@ -132,24 +158,26 @@ class Results(object):
                          VALUES (?, ?, ?)"""
                     cursor.execute(query, (player_id, game_id, rank))
                 rank += len(tup)
+
             # Update trueskill table
             # There is a slight bias when there are ties, so we process tied
             # players in random order.
-            query = """SELECT p.player_id, r.rank FROM player p, rank r
+            query = """SELECT p.type_id, r.rank
+                       FROM player p, rank r
                        WHERE p.player_id = r.player_id AND r.game_id = ?
                        ORDER BY r.rank, RANDOM()"""
             cursor.execute(query, (game_id, ))
             rows = cursor.fetchall()
             cursor2 = self.connection.cursor()
-            player_ids = []
+            type_ids = []
             rating_tuples = []
             ranks = []
             for row in rows:
-                player_id = row["player_id"]
-                player_ids.append(player_id)
+                type_id = row["type_id"]
+                type_ids.append(type_id)
                 rank = row["rank"]
                 ranks.append(rank)
-                query2 = "SELECT mu, sigma FROM trueskill WHERE player_id = ?"
+                query2 = "SELECT mu, sigma FROM trueskill WHERE type_id = ?"
                 cursor2.execute(query2, (player_id, ))
                 row2 = cursor2.fetchone()
                 if row2 is not None:
@@ -161,20 +189,29 @@ class Results(object):
                 rating = trueskill.Rating(mu=mu, sigma=sigma)
                 rating_tuples.append((rating, ))
             rating_tuples2 = trueskill.transform_ratings(rating_tuples, ranks)
-            while player_ids:
-                player_id = player_ids.pop()
-                rank = ranks.pop()
+            # If we have a duplicate type_id, average the mu and take the
+            # maximum sigma.
+            type_id_to_ratings = defaultdict(list)
+            while type_ids:
+                type_id = type_ids.pop()
                 rating = rating_tuples2.pop()[0]
-                mu = rating.mu
-                sigma = rating.sigma
-                query = """INSERT INTO trueskill (player_id, mu, sigma)
-                           VALUES (?, ?, ?)"""
-                try:
-                    cursor.execute(query, (player_id, mu, sigma))
-                except Exception:
-                    query = """UPDATE trueskill SET mu = ?, sigma = ?
-                               WHERE player_id = ?"""
-                    cursor.execute(query, (mu, sigma, player_id))
+                type_id_to_ratings[type_id].append(rating)
+            # If all players are the same type, then don't update trueskill,
+            # as we have no new information.
+            if len(type_id_to_ratings) > 1:
+                for type_id, ratings in type_id_to_ratings.iteritems():
+                    mu = sum(rating.mu for rating in ratings) / float(len(
+                      ratings))
+                    sigma = max(rating.sigma for rating in ratings)
+                    query = """INSERT INTO trueskill (type_id, mu, sigma)
+                               VALUES (?, ?, ?)"""
+                    try:
+                        cursor.execute(query, (type_id, mu, sigma))
+                    except Exception:
+                        query = """UPDATE trueskill SET mu = ?, sigma = ?
+                                   WHERE type_id = ?"""
+                        cursor.execute(query, (mu, sigma, type_id))
+        logging.info("")
 
     def get_ranking(self, playername):
         """Return a Ranking object for one player name.
@@ -183,8 +220,9 @@ class Results(object):
         """
         with self.connection:
             cursor = self.connection.cursor()
-            query = """SELECT t.mu, t.sigma FROM trueskill t, player p
-                       WHERE p.player_id = t.player_id
+            query = """SELECT tr.mu, tr.sigma
+                       FROM trueskill tr, player p, type ty
+                       WHERE p.type_id = ty.type_id AND ty.type_id = tr.type_id
                        AND p.name = ?"""
             cursor.execute(query, (playername, ))
             rows = cursor.fetchall()

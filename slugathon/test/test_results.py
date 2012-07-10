@@ -47,18 +47,20 @@ def test_save_game_and_get_ranking():
         assert row["start_time"] == int(game.start_time)
         assert row["finish_time"] == int(game.finish_time)
 
-        query = "SELECT * FROM player ORDER BY name"
+        query = """SELECT * FROM player p, type t
+                   WHERE p.type_id = t.type_id
+                   ORDER BY p.name"""
         cursor.execute(query)
         rows = cursor.fetchall()
         assert len(rows) == 2
         row = rows[0]
         assert row["name"] == "p1"
-        assert row["type"] == "Human"
-        assert row["info"] == ""
+        assert row["class"] == "Human"
+        assert row["info"] == "p1"
         row = rows[1]
         assert row["name"] == "p2"
-        assert row["type"] == "Human"
-        assert row["info"] == ""
+        assert row["class"] == "Human"
+        assert row["info"] == "p2"
 
         query = """SELECT g.name as gname, p.name as pname, rank
                    FROM game g, player p, rank r

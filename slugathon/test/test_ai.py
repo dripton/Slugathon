@@ -855,3 +855,10 @@ def test_score_move_scary_pursuer():
     assert hexlabel_to_score[4] > hexlabel_to_score[3]
     assert hexlabel_to_score[5] > hexlabel_to_score[42]
     assert hexlabel_to_score[5] > hexlabel_to_score[4]
+
+
+def test_result_info():
+    cleverbot = CleverBot.CleverBot("ai1", 1)
+    assert cleverbot.result_info.startswith(
+      "version=2 ai_time_limit=1 BotParams(SQUASH=0.6, ")
+    assert cleverbot.result_info.endswith(")")
