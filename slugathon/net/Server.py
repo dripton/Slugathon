@@ -26,6 +26,7 @@ from slugathon.util.Observer import IObserver
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
 from slugathon.net.UniqueNoPassword import UniqueNoPassword
 from slugathon.util import prefs
+from slugathon.util.bag import bag
 
 
 TEMPDIR = tempfile.gettempdir()
@@ -256,10 +257,32 @@ class Server(Observed):
     def split_legion(self, playername, game_name, parent_markerid,
       child_markerid, parent_creature_names, child_creature_names):
         """Split a legion."""
+        logging.info("%s %s %s %s %s %s", playername, game_name,
+          parent_markerid, child_markerid, parent_creature_names,
+          child_creature_names)
         game = self.name_to_game(game_name)
-        if game:
-            game.split_legion(playername, parent_markerid, child_markerid,
-              parent_creature_names, child_creature_names)
+        if not game:
+            logging.info("no game")
+            return
+        player = game.get_player_by_name(playername)
+        if player is not game.active_player:
+            logging.info("wrong player")
+            return
+        if game.phase != Phase.SPLIT:
+            logging.info("wrong phase")
+            return
+        parent = player.markerid_to_legion.get(parent_markerid)
+        if parent is None:
+            logging.info("no parent")
+            return
+        if child_markerid not in player.markerids_left:
+            logging.info("no marker")
+            return
+        if bag(parent.creature_names) != bag(parent_creature_names).union(
+          bag(child_creature_names)):
+            logging.info("wrong creatures")
+        game.split_legion(playername, parent_markerid, child_markerid,
+          parent_creature_names, child_creature_names)
 
     def undo_split(self, playername, game_name, parent_markerid,
       child_markerid):
