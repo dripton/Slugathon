@@ -115,9 +115,9 @@ class CleverBot(object):
               game.pending_summon, game.pending_reinforcement,
               game.pending_acquire)
             return
-        hexlabels = game.engagement_hexlabels
+        hexlabels = list(game.engagement_hexlabels)
         if hexlabels:
-            hexlabel = hexlabels.pop()
+            hexlabel = random.choice(hexlabels)
             logging.info("calling resolve_engagement")
             def1 = self.user.callRemote("resolve_engagement", game.name,
               hexlabel)
