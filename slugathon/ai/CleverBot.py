@@ -7,7 +7,7 @@ __license__ = "GNU GPL v2"
 
 # Manually bump this every time this module changes enough that we want
 # results tracking to treat it as a new AI.
-VERSION = 1
+VERSION = 2
 
 
 import random
@@ -22,11 +22,8 @@ from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.ai.Bot import Bot
+from slugathon.ai import BotParams
 from slugathon.game import Game, Creature, Phase
-
-
-SQUASH = 0.6
-BE_SQUASHED = 1.0
 
 
 def best7(score_moves):
@@ -53,18 +50,22 @@ def best7(score_moves):
 
 @implementer(Bot)
 class CleverBot(object):
-    def __init__(self, playername, ai_time_limit):
+    def __init__(self, playername, ai_time_limit, bot_params=None):
         logging.info("CleverBot %s %s", playername, ai_time_limit)
         self.playername = playername
         self.user = None
         self.ai_time_limit = ai_time_limit
         self.best_creature_moves = None
+        if bot_params is None:
+            self.bp = BotParams.default_bot_params
+        else:
+            self.bp = bot_params
 
     @property
     def result_info(self):
         """Return a string with information for result-tracking purposes."""
-        return str("version=%s ai_time_limit=%s" % (VERSION,
-          self.ai_time_limit))
+        return str("version=%s ai_time_limit=%s %s" % (VERSION,
+          self.ai_time_limit, self.bp))
 
     def maybe_pick_color(self, game):
         logging.info("maybe_pick_color")
@@ -130,7 +131,6 @@ class CleverBot(object):
     def resolve_engagement(self, game, hexlabel):
         """Resolve the engagement in hexlabel."""
         logging.info("resolve_engagement %s %s", game, hexlabel)
-        FLEE_RATIO = 1.5
         attacker = None
         defender = None
         for legion in game.all_legions(hexlabel):
@@ -152,7 +152,7 @@ class CleverBot(object):
                 logging.info("defender hasn't chosen whether to flee yet")
                 if defender.can_flee:
                     logging.info("can flee")
-                    if (defender.terrain_combat_value * FLEE_RATIO <
+                    if (defender.terrain_combat_value * self.bp.FLEE_RATIO <
                       attacker.terrain_combat_value):
                         logging.info("fleeing")
                         def1 = self.user.callRemote("flee", game.name,
@@ -416,7 +416,7 @@ class CleverBot(object):
                         enemies = player.enemy_legions(hexlabel)
                         if enemies:
                             enemy = enemies.pop()
-                            if (enemy.terrain_combat_value < SQUASH *
+                            if (enemy.terrain_combat_value < self.bp.SQUASH *
                               legion.combat_value):
                                 safe_split_rolls.add(roll)
                         else:
@@ -524,9 +524,10 @@ class CleverBot(object):
             logging.info("legion %s hexlabel %s", legion, hexlabel)
             logging.info("legion_combat_value %s", legion_combat_value)
             logging.info("enemy_combat_value %s", enemy_combat_value)
-            if enemy_combat_value < SQUASH * legion_combat_value:
+            if enemy_combat_value < self.bp.SQUASH * legion_combat_value:
                 score += enemy.score
-            elif enemy_combat_value >= BE_SQUASHED * legion_combat_value:
+            elif (enemy_combat_value >= self.bp.BE_SQUASHED *
+              legion_combat_value):
                 score -= legion_sort_value
         if moved and (len(legion) < 7 or enemies):
             masterhex = board.hexes[hexlabel]
@@ -538,7 +539,8 @@ class CleverBot(object):
                 # Only give credit for recruiting if we're likely to live.
                 if not enemies or enemy_combat_value < legion_combat_value:
                     recruit_value = recruit.sort_value
-                elif enemy_combat_value < BE_SQUASHED * legion_combat_value:
+                elif (enemy_combat_value < self.bp.BE_SQUASHED *
+                  legion_combat_value):
                     recruit_value = 0.5 * recruit.sort_value
                 logging.info("recruit value %s %s %s", legion.markerid,
                   hexlabel, recruit_value)
@@ -551,7 +553,7 @@ class CleverBot(object):
                 previous_hexlabel = legion.hexlabel
                 legion.hexlabel = hexlabel
                 for enemy in player.enemy_legions():
-                    if (enemy.terrain_combat_value >= BE_SQUASHED *
+                    if (enemy.terrain_combat_value >= self.bp.BE_SQUASHED *
                       legion_combat_value):
                         for roll in xrange(1, 6 + 1):
                             moves = game.find_normal_moves(enemy,
@@ -819,32 +821,6 @@ class CleverBot(object):
 
     def _score_legion_move(self, game, creatures):
         """Return a score for creatures in their current hexlabels."""
-        ATTACKER_AGGRESSION_BONUS = 1.0
-        ATTACKER_DISTANCE_PENALTY = -1.0
-        HIT_BONUS = 1.0
-        KILL_MULTIPLIER = 1.0
-        DAMAGE_PENALTY = -1.0
-        DEATH_MULTIPLIER = -1.0
-        ELEVATION_BONUS = 0.5
-        NATIVE_BRAMBLE_BONUS = 0.3
-        NON_NATIVE_BRAMBLE_PENALTY = -0.7
-        TOWER_BONUS = 1.0
-        FRONT_OF_TOWER_BONUS = 0.5
-        MIDDLE_OF_TOWER_BONUS = 0.25
-        CENTER_OF_TOWER_BONUS = 1.0
-        TITAN_IN_CENTER_OF_TOWER_BONUS = 2.0
-        NON_NATIVE_DRIFT_PENALTY = -2.0
-        NATIVE_VOLCANO_BONUS = 1.0
-        ADJACENT_ALLY_BONUS = 0.5
-        RANGESTRIKE_BONUS = 2.0
-        TITAN_FORWARD_PENALTY = -1.0
-        DEFENDER_FORWARD_PENALTY = -0.5
-        NATIVE_SLOPE_BONUS = 0.5
-        NATIVE_DUNE_BONUS = 0.5
-        NON_NATIVE_SLOPE_PENALTY = -0.3
-        NON_NATIVE_DUNE_PENALTY = -0.3
-        ENGAGE_RANGESTRIKER_BONUS = 0.5
-
         score = 0
         battlemap = game.battlemap
         legion = creatures[0].legion
@@ -900,9 +876,9 @@ class CleverBot(object):
             probable_death = total_mean_damage_taken >= creature.hits_left
 
             if engaged_with_rangestriker and not creature.rangestrikes:
-                score += ENGAGE_RANGESTRIKER_BONUS
+                score += self.bp.ENGAGE_RANGESTRIKER_BONUS
                 logging.info(creature, "ENGAGE_RANGESTRIKER_BONUS %s",
-                  ENGAGE_RANGESTRIKER_BONUS)
+                  self.bp.ENGAGE_RANGESTRIKER_BONUS)
 
             # rangestriking
             if not engaged:
@@ -915,27 +891,27 @@ class CleverBot(object):
                     max_mean_hits = max(mean_hits, max_mean_hits)
                     can_rangestrike = True
             if can_rangestrike:
-                score += RANGESTRIKE_BONUS
+                score += self.bp.RANGESTRIKE_BONUS
                 logging.info(creature, "RANGESTRIKE_BONUS %s",
-                  RANGESTRIKE_BONUS)
+                  self.bp.RANGESTRIKE_BONUS)
 
             # Don't encourage titans to charge early.
             if (creature.name != "Titan" or game.battle_turn >= 4 or
               len(legion) == 1):
                 if max_mean_hits:
-                    bonus = HIT_BONUS * max_mean_hits
+                    bonus = self.bp.HIT_BONUS * max_mean_hits
                     score += bonus
                     logging.info(creature, "HIT_BONUS %s", bonus)
                 if kill_bonus:
-                    bonus = KILL_MULTIPLIER * kill_bonus
+                    bonus = self.bp.KILL_MULTIPLIER * kill_bonus
                     score += bonus
                     logging.info(creature, "KILL_BONUS %s", bonus)
             if total_mean_damage_taken:
-                penalty = DAMAGE_PENALTY * total_mean_damage_taken
+                penalty = self.bp.DAMAGE_PENALTY * total_mean_damage_taken
                 score += penalty
                 logging.info(creature, "DAMAGE_PENALTY %s", penalty)
             if probable_death:
-                penalty = (DEATH_MULTIPLIER * probable_death *
+                penalty = (self.bp.DEATH_MULTIPLIER * probable_death *
                   creature.sort_value)
                 score += penalty
                 logging.info(creature, "DEATH_PENALTY %s", penalty)
@@ -945,9 +921,9 @@ class CleverBot(object):
             if legion == game.attacker_legion and (creature.name != "Titan"
               or game.battle_turn >= 4 or len(legion) == 1):
                 if engaged or targets:
-                    score += ATTACKER_AGGRESSION_BONUS
+                    score += self.bp.ATTACKER_AGGRESSION_BONUS
                     logging.info(creature, "ATTACKER_AGGRESSION_BONUS %s",
-                        ATTACKER_AGGRESSION_BONUS)
+                        self.bp.ATTACKER_AGGRESSION_BONUS)
                 else:
                     enemy_hexlabels = [enemy.hexlabel for enemy in
                       legion2.living_creatures]
@@ -955,7 +931,7 @@ class CleverBot(object):
                         min_range = min((battlemap.range(creature.hexlabel,
                           enemy_hexlabel) for enemy_hexlabel in
                           enemy_hexlabels))
-                        penalty = min_range * ATTACKER_DISTANCE_PENALTY
+                        penalty = min_range * self.bp.ATTACKER_DISTANCE_PENALTY
                         score += penalty
                         logging.info(creature, "ATTACKER_DISTANCE_PENALTY %s",
                           penalty)
@@ -972,7 +948,7 @@ class CleverBot(object):
                     entrance = "DEFENDER"
                 distance = battlemap.range(creature.hexlabel, entrance,
                   allow_entrance=True) - 2
-                penalty = distance * TITAN_FORWARD_PENALTY
+                penalty = distance * self.bp.TITAN_FORWARD_PENALTY
                 if penalty:
                     score += penalty
                     logging.info(creature, "TITAN_FORWARD_PENALTY %s", penalty)
@@ -983,7 +959,7 @@ class CleverBot(object):
                 entrance = "DEFENDER"
                 distance = battlemap.range(creature.hexlabel, entrance,
                   allow_entrance=True) - 2
-                penalty = distance * DEFENDER_FORWARD_PENALTY
+                penalty = distance * self.bp.DEFENDER_FORWARD_PENALTY
                 if penalty:
                     score += penalty
                     logging.info(creature, "DEFENDER_FORWARD_PENALTY %s",
@@ -991,71 +967,71 @@ class CleverBot(object):
 
             # terrain
             if battlehex.elevation:
-                bonus = battlehex.elevation * ELEVATION_BONUS
+                bonus = battlehex.elevation * self.bp.ELEVATION_BONUS
                 score += bonus
                 logging.info(creature, "ELEVATION_BONUS %s", bonus)
             if terrain == "Bramble":
                 if creature.is_native(terrain):
-                    score += NATIVE_BRAMBLE_BONUS
+                    score += self.bp.NATIVE_BRAMBLE_BONUS
                     logging.info(creature, "NATIVE_BRAMBLE_BONUS %s",
-                      NATIVE_BRAMBLE_BONUS)
+                      self.bp.NATIVE_BRAMBLE_BONUS)
                 else:
-                    score += NON_NATIVE_BRAMBLE_PENALTY
+                    score += self.bp.NON_NATIVE_BRAMBLE_PENALTY
                     logging.info(creature, "NON_NATIVE_BRAMBLE_PENALTY %s",
-                      NON_NATIVE_BRAMBLE_PENALTY)
+                      self.bp.NON_NATIVE_BRAMBLE_PENALTY)
             elif terrain == "Tower":
+                # XXX Hardcoded to default Tower map
                 logging.info("%s TOWER_BONUS", creature)
-                score += TOWER_BONUS
+                score += self.bp.TOWER_BONUS
                 if battlehex.elevation == 2:
                     if creature.is_titan:
-                        score += TITAN_IN_CENTER_OF_TOWER_BONUS
+                        score += self.bp.TITAN_IN_CENTER_OF_TOWER_BONUS
                         logging.info("%s TITAN_IN_CENTER_OF_TOWER_BONUS %s",
-                          creature, TITAN_IN_CENTER_OF_TOWER_BONUS)
+                          creature, self.bp.TITAN_IN_CENTER_OF_TOWER_BONUS)
                     else:
-                        score += CENTER_OF_TOWER_BONUS
+                        score += self.bp.CENTER_OF_TOWER_BONUS
                         logging.info("%s CENTER_OF_TOWER_BONUS %s",
-                          creature, CENTER_OF_TOWER_BONUS)
-                # XXX Hardcoded to default Tower map
+                          creature, self.bp.CENTER_OF_TOWER_BONUS)
                 elif (legion == game.defender_legion and
                   creature.name != "Titan" and battlehex.label in
                   ["C3", "D3"]):
-                    score += FRONT_OF_TOWER_BONUS
+                    score += self.bp.FRONT_OF_TOWER_BONUS
                     logging.info("%s FRONT_OF_TOWER_BONUS %s",
-                      creature, FRONT_OF_TOWER_BONUS)
+                      creature, self.bp.FRONT_OF_TOWER_BONUS)
                 elif (legion == game.defender_legion and
                   creature.name != "Titan" and battlehex.label in
                   ["C4", "E3"]):
-                    score += MIDDLE_OF_TOWER_BONUS
+                    score += self.bp.MIDDLE_OF_TOWER_BONUS
                     logging.info("%s MIDDLE_OF_TOWER_BONUS %s",
-                      creature, MIDDLE_OF_TOWER_BONUS)
+                      creature, self.bp.MIDDLE_OF_TOWER_BONUS)
             elif terrain == "Drift":
                 if not creature.is_native(terrain):
-                    score += NON_NATIVE_DRIFT_PENALTY
+                    score += self.bp.NON_NATIVE_DRIFT_PENALTY
                     logging.info("%s NON_NATIVE_DRIFT_PENALTY %s",
-                      creature, NON_NATIVE_DRIFT_PENALTY)
+                      creature, self.bp.NON_NATIVE_DRIFT_PENALTY)
             elif terrain == "Volcano":
-                score += NATIVE_VOLCANO_BONUS
+                score += self.bp.NATIVE_VOLCANO_BONUS
                 logging.info("%s NATIVE_VOLCANO_BONUS %s",
-                  creature, NATIVE_VOLCANO_BONUS)
+                  creature, self.bp.NATIVE_VOLCANO_BONUS)
 
             if "Slope" in battlehex.borders:
                 if creature.is_native("Slope"):
-                    score += NATIVE_SLOPE_BONUS
+                    score += self.bp.NATIVE_SLOPE_BONUS
                     logging.info("%s NATIVE_SLOPE_BONUS %s",
-                      creature, NATIVE_SLOPE_BONUS)
+                      creature, self.bp.NATIVE_SLOPE_BONUS)
                 else:
-                    score += NON_NATIVE_SLOPE_PENALTY
+                    score += self.bp.NON_NATIVE_SLOPE_PENALTY
                     logging.info("%s NON_NATIVE_SLOPE_PENALTY %s",
-                      creature, NON_NATIVE_SLOPE_PENALTY)
+                      creature, self.bp.NON_NATIVE_SLOPE_PENALTY)
             if "Dune" in battlehex.borders:
                 if creature.is_native("Dune"):
-                    score += NATIVE_DUNE_BONUS
+                    score += self.bp.NATIVE_DUNE_BONUS
                     logging.info("%s NATIVE_DUNE_BONUS %s",
-                      creature, NATIVE_DUNE_BONUS)
+                      creature, self.bp.NATIVE_DUNE_BONUS)
                 else:
-                    score += NON_NATIVE_DUNE_PENALTY
+                    score += self.bp.NON_NATIVE_DUNE_PENALTY
                     logging.info("%s NON_NATIVE_DUNE_PENALTY %s",
-                      creature, NON_NATIVE_DUNE_PENALTY)
+                      creature, self.bp.NON_NATIVE_DUNE_PENALTY)
 
             # allies
             num_adjacent_allies = 0
@@ -1063,7 +1039,8 @@ class CleverBot(object):
                 for ally in legion.living_creatures:
                     if ally.hexlabel == neighbor.label:
                         num_adjacent_allies += 1
-            adjacent_allies_bonus = num_adjacent_allies * ADJACENT_ALLY_BONUS
+            adjacent_allies_bonus = (num_adjacent_allies *
+              self.bp.ADJACENT_ALLY_BONUS)
             if adjacent_allies_bonus:
                 score += adjacent_allies_bonus
                 logging.info("%s ADJACENT_ALLY_BONUS %s",
