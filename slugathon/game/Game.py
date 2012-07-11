@@ -39,8 +39,8 @@ class Game(Observed):
     def __init__(self, name, owner, create_time, start_time, min_players,
       max_players, started=False, master=False,
       ai_time_limit=config.DEFAULT_AI_TIME_LIMIT,
-      player_time_limit=config.DEFAULT_PLAYER_TIME_LIMIT,
-      player_type="Human", result_info=""):
+      player_time_limit=config.DEFAULT_PLAYER_TIME_LIMIT, player_class="Human",
+      player_info=""):
         Observed.__init__(self)
         self.name = name
         self.create_time = create_time
@@ -51,7 +51,7 @@ class Game(Observed):
         self.started = started
         self.players = []
         self.players_left = []  # Used to track co-winners in a draw
-        self.add_player(owner, player_type, result_info)
+        self.add_player(owner, player_class, player_info)
         self.board = MasterBoard.MasterBoard()
         self.turn = 1
         self.phase = Phase.SPLIT
@@ -175,7 +175,7 @@ class Game(Observed):
         return (self.name, self.create_time, self.start_time,
           self.min_players, self.max_players, self.playernames, self.started)
 
-    def add_player(self, playername, player_type="Human", result_info=""):
+    def add_player(self, playername, player_class="Human", player_info=""):
         """Add a player to this game."""
         if playername in self.playernames:
             logging.info("add_player from %s already in game %s" % (
@@ -184,8 +184,10 @@ class Game(Observed):
         if len(self.players) >= self.max_players:
             raise AssertionError("%s tried to join full game %s" % (playername,
               self.name))
-        player = Player.Player(playername, self, self.num_players, player_type,
-          result_info)
+        if player_class == "Human":
+            player_info = playername
+        player = Player.Player(playername, self, self.num_players,
+          player_class, player_info)
         self.players.append(player)
         player.add_observer(self)
 
@@ -1570,7 +1572,8 @@ class Game(Observed):
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
-                self.add_player(action.playername, action.player_type)
+                self.add_player(action.playername, action.player_class,
+                  action.player_info)
 
         elif isinstance(action, Action.AssignTower):
             self.started = True

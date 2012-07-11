@@ -70,7 +70,7 @@ pb.setUnjellyableForClass(DelUsername, DelUsername)
 class FormGame(Action):
     def __init__(self, playername, game_name, create_time, start_time,
       min_players, max_players, ai_time_limit, player_time_limit,
-      player_type, result_info):
+      player_class, player_info):
         self.playername = playername
         self.game_name = game_name
         self.create_time = create_time
@@ -79,8 +79,8 @@ class FormGame(Action):
         self.max_players = max_players
         self.ai_time_limit = ai_time_limit
         self.player_time_limit = player_time_limit
-        self.player_type = player_type
-        self.result_info = result_info
+        self.player_class = player_class
+        self.player_info = player_info
 pb.setUnjellyableForClass(FormGame, FormGame)
 
 
@@ -91,11 +91,11 @@ pb.setUnjellyableForClass(RemoveGame, RemoveGame)
 
 
 class JoinGame(Action):
-    def __init__(self, playername, game_name, player_type, result_info):
+    def __init__(self, playername, game_name, player_class, player_info):
         self.playername = playername
         self.game_name = game_name
-        self.player_type = player_type
-        self.result_info = result_info
+        self.player_class = player_class
+        self.player_info = player_info
 pb.setUnjellyableForClass(JoinGame, JoinGame)
 
 

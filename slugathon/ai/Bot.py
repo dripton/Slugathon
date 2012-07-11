@@ -9,7 +9,7 @@ from zope.interface import Interface
 
 
 class Bot(Interface):
-    def result_info():
+    def player_info():
         """Return a string with information for result-tracking purposes."""
 
     def maybe_pick_color(game):

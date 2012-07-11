@@ -857,8 +857,8 @@ def test_score_move_scary_pursuer():
     assert hexlabel_to_score[5] > hexlabel_to_score[4]
 
 
-def test_result_info():
+def test_player_info():
     cleverbot = CleverBot.CleverBot("ai1", 1)
-    assert cleverbot.result_info.startswith(
+    assert cleverbot.player_info.startswith(
       "version=2 ai_time_limit=1 BotParams(SQUASH=0.6, ")
-    assert cleverbot.result_info.endswith(")")
+    assert cleverbot.player_info.endswith(")")

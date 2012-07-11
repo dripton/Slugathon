@@ -45,6 +45,7 @@ class AIClient(pb.Referenceable, Observed):
         self.port = port
         self.delay = delay
         self.aitype = aitype
+        self.aiclass = "CleverBot"
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
         self.user = None
@@ -153,7 +154,7 @@ class AIClient(pb.Referenceable, Observed):
                 self._setup_logging_form_game()
             def1 = self.user.callRemote("form_game", self.game_name,
               self.min_players, self.max_players, self.ai_time_limit,
-              self.player_time_limit, self.aitype, self.ai.result_info)
+              self.player_time_limit, self.aiclass, self.ai.player_info)
             def1.addErrback(self.failure)
         else:
             # If game_name is set, AI only tries to join game with that name.
@@ -162,7 +163,7 @@ class AIClient(pb.Referenceable, Observed):
                 if not self.game_name or game.name == self.game_name:
                     logging.info("joining game %s", game.name)
                     def1 = self.user.callRemote("join_game", game.name,
-                      self.aitype, self.ai.result_info)
+                      self.aitype, self.ai.player_info)
                     def1.addErrback(self.failure)
 
     def name_to_game(self, game_name):
@@ -183,8 +184,8 @@ class AIClient(pb.Referenceable, Observed):
             game.add_player(playername)
         self.games.append(game)
         if not self.game_name or game.name == self.game_name:
-            def1 = self.user.callRemote("join_game", game.name, self.aitype,
-              self.ai.result_info)
+            def1 = self.user.callRemote("join_game", game.name, self.aiclass,
+              self.ai.player_info)
             def1.addErrback(self.failure)
 
     def remove_game(self, game_name):

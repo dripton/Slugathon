@@ -95,23 +95,25 @@ class Results(object):
         with self.connection:
             cursor = self.connection.cursor()
             for player in game.players:
+                logging.info("%s %s", player.player_class, player.player_info)
 
                 # See if that type is already in the database
                 query = """SELECT type_id FROM type
                            where class = ? AND info = ?"""
-                cursor.execute(query, (player.player_type, player.result_info))
+                cursor.execute(query, (player.player_class,
+                  player.player_info))
                 row = cursor.fetchone()
                 # If not, insert it.
                 if row is None:
                     query = \
                       "INSERT INTO type (class, info) VALUES (?, ?)"
-                    cursor.execute(query, (player.player_type,
-                      player.result_info))
+                    cursor.execute(query, (player.player_class,
+                      player.player_info))
                     # And fetch the type_id.
                     query = """SELECT type_id FROM type
                                where class = ? AND info = ?"""
-                    cursor.execute(query, (player.player_type,
-                      player.result_info))
+                    cursor.execute(query, (player.player_class,
+                      player.player_info))
                     row = cursor.fetchone()
 
                 type_id = row["type_id"]
@@ -148,8 +150,8 @@ class Results(object):
                                WHERE p.type_id = t.type_id
                                AND p.name = ? AND t.class = ? AND t.info = ?"""
                     name = player.name
-                    cursor.execute(query, (name, player.player_type,
-                      player.result_info))
+                    cursor.execute(query, (name, player.player_class,
+                      player.player_info))
                     row = cursor.fetchone()
                     player_id = row["player_id"]
                     # Add to rank.

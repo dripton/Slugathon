@@ -110,7 +110,7 @@ class Server(Observed):
         self.notify(action, names=dest)
 
     def form_game(self, playername, game_name, min_players, max_players,
-      ai_time_limit, player_time_limit, player_type, result_info):
+      ai_time_limit, player_time_limit, player_class, player_info):
         """Form a new game."""
         if not game_name:
             raise ValueError("Games must be named")
@@ -123,28 +123,28 @@ class Server(Observed):
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, playername, now, now + GAME_START_DELAY,
           min_players, max_players, master=True, ai_time_limit=ai_time_limit,
-          player_time_limit=player_time_limit, player_type=player_type,
-          result_info=result_info)
+          player_time_limit=player_time_limit, player_class=player_class,
+          player_info=player_info)
         self.games.append(game)
         game.add_observer(self)
         action = Action.FormGame(playername, game.name, game.create_time,
           game.start_time, game.min_players, game.max_players, ai_time_limit,
-          player_time_limit, player_type, result_info)
+          player_time_limit, player_class, player_info)
         self.notify(action)
 
-    def join_game(self, playername, game_name, player_type, result_info):
+    def join_game(self, playername, game_name, player_class, player_info):
         """Join an existing game that hasn't started yet."""
         logging.info("join_game %s %s %s %s", playername, game_name,
-          player_type, result_info)
+          player_class, player_info)
         game = self.name_to_game(game_name)
         if game:
             try:
-                game.add_player(playername, player_type, result_info)
+                game.add_player(playername, player_class, player_info)
             except AssertionError, ex:
                 logging.exception("join_game caught %s", ex)
             else:
-                action = Action.JoinGame(playername, game.name, player_type,
-                  result_info)
+                action = Action.JoinGame(playername, game.name, player_class,
+                  player_info)
                 self.notify(action)
             set1 = self.game_to_waiting_ais.get(game_name)
             if set1:

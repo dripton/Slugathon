@@ -62,7 +62,7 @@ class CleverBot(object):
             self.bp = bot_params
 
     @property
-    def result_info(self):
+    def player_info(self):
         """Return a string with information for result-tracking purposes."""
         return str("version=%s ai_time_limit=%s %s" % (VERSION,
           self.ai_time_limit, self.bp))
