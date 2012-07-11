@@ -674,9 +674,6 @@ def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     opts, extras = parser.parse_known_args()
-    valid_ai_types = ["CleverBot"]
-    if opts.aitype not in valid_ai_types:
-        parser.error("Invalid AI type.  Valid types are %s" % valid_ai_types)
     aiclient = AIClient(opts.playername, opts.password, opts.server, opts.port,
       opts.delay, opts.aitype, opts.game_name, opts.log_path,
       opts.ai_time_limit, opts.player_time_limit, opts.form_game,
