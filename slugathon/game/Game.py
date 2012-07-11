@@ -177,6 +177,7 @@ class Game(Observed):
 
     def add_player(self, playername, player_class="Human", player_info=""):
         """Add a player to this game."""
+        logging.info("%s %s %s", playername, player_class, player_info)
         if playername in self.playernames:
             logging.info("add_player from %s already in game %s" % (
               playername, self.name))
