@@ -55,3 +55,22 @@ def test_cross():
         val3 = getattr(bp3, field)
         assert val3 >= min(val1, val2)
         assert val3 <= max(val1, val2)
+
+
+def test_fromstring():
+    st = """version=2 ai_time_limit=5 BotParams(SQUASH=0.6, BE_SQUASHED=1.0,
+    FLEE_RATIO=1.5, ATTACKER_AGGRESSION_BONUS=1.0,
+    ATTACKER_DISTANCE_PENALTY=-1.0, HIT_BONUS=1.0, KILL_MULTIPLIER=1.0,
+    DAMAGE_PENALTY=-1.0, DEATH_MULTIPLIER=-1.0, ELEVATION_BONUS=0.5,
+    NATIVE_BRAMBLE_BONUS=0.3, NON_NATIVE_BRAMBLE_PENALTY=-0.7, TOWER_BONUS=1.0,
+    FRONT_OF_TOWER_BONUS=0.5, MIDDLE_OF_TOWER_BONUS=0.25,
+    CENTER_OF_TOWER_BONUS=1.0, TITAN_IN_CENTER_OF_TOWER_BONUS=2.0,
+    NON_NATIVE_DRIFT_PENALTY=-2.0, NATIVE_VOLCANO_BONUS=1.0,
+    ADJACENT_ALLY_BONUS=0.5, RANGESTRIKE_BONUS=2.0, TITAN_FORWARD_PENALTY=-1.0,
+    DEFENDER_FORWARD_PENALTY=-0.5, NATIVE_SLOPE_BONUS=0.5,
+    NATIVE_DUNE_BONUS=0.5, NON_NATIVE_SLOPE_PENALTY=-0.3,
+    NON_NATIVE_DUNE_PENALTY=-0.3, ENGAGE_RANGESTRIKER_BONUS=0.5)"""
+    st = st.replace("\n", "")
+    bp = BotParams.BotParams.fromstring(st)
+    assert bp is not None
+    assert bp.SQUASH == 0.6

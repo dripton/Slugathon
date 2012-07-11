@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 
 from collections import namedtuple
 import random
+import re
 
 
 # TODO Use an OrderedDict to combine these, once we require Python 2.7
@@ -76,6 +77,17 @@ defaults = {
 
 
 class BotParams(namedtuple("BotParams", fields)):
+
+    @classmethod
+    def fromstring(klass, st):
+        """Create a BotParams from a string."""
+        match = re.search(r"BotParams\(.*\)", st)
+        if match:
+            st = match.group(0)
+            return eval(st)
+        else:
+            return None
+
     def mutate_field(self, field, ratio=0.25):
         """Return a new BotParams with field mutated by up to ratio."""
         val = getattr(self, field)
