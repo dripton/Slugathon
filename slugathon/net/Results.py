@@ -237,3 +237,14 @@ class Results(object):
                 sigma = rating.sigma
             ranking = Ranking(mu, sigma)
             return ranking
+
+    def get_player_info(self, type_id):
+        with self.connection:
+            cursor = self.connection.cursor()
+            # See if that type is already in the database
+            query = "SELECT info FROM type where type_id = ?"
+            cursor.execute(query, (type_id,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return row["info"]
