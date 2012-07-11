@@ -19,11 +19,11 @@ from twisted.internet.error import ReactorNotRunning
 from twisted.python import log
 from zope.interface import implementer
 
-from slugathon.net import config
+from slugathon.net import config, Results
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase, Creature
-from slugathon.ai import CleverBot, predictsplits
+from slugathon.ai import CleverBot, predictsplits, BotParams
 from slugathon.data.creaturedata import starting_creature_names
 
 
@@ -58,10 +58,14 @@ class AIClient(pb.Referenceable, Observed):
           playername, password, host, port, delay, aitype,
           game_name, log_path, ai_time_limit, form_game, min_players,
           max_players)
-        if aitype == "CleverBot":
-            self.ai = CleverBot.CleverBot(self.playername, ai_time_limit)
-        else:
-            raise ValueError("invalid aitype %s" % aitype)
+        bp = None
+        if aitype is not None:
+            results = Results.Results()
+            player_info = results.get_player_info(aitype)
+            if player_info:
+                bp = BotParams.BotParams.fromstring(player_info)
+        self.ai = CleverBot.CleverBot(self.playername, ai_time_limit,
+          bot_params=bp)
         self.game_name = game_name
         self.ai_time_limit = ai_time_limit
         self.player_time_limit = player_time_limit
@@ -657,8 +661,8 @@ def add_arguments(parser):
       default=config.DEFAULT_PORT)
     parser.add_argument("-d", "--delay", action="store", type=float,
       default=config.DEFAULT_AI_DELAY)
-    parser.add_argument("-t", "--aitype", action="store", type=str,
-      default="CleverBot")
+    parser.add_argument("-t", "--aitype", action="store", type=int,
+      default=None)
     parser.add_argument("-g", "--game-name", action="store", type=str)
     parser.add_argument("-l", "--log-path", action="store", type=str)
     parser.add_argument("--ai-time-limit", action="store", type=int,
