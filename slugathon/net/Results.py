@@ -126,8 +126,7 @@ class Results(object):
                 row = cursor.fetchone()
                 # If not, insert it.
                 if row is None:
-                    query = \
-                      "INSERT INTO player (name, type_id) VALUES (?, ?)"
+                    query = "INSERT INTO player (name, type_id) VALUES (?, ?)"
                     cursor.execute(query, (name, type_id))
 
             # Add the game.
