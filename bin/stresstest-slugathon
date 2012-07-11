@@ -5,13 +5,14 @@ __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-"""Script to stress-test Slugathon by running many all-AI games."""
+"""Script to stress-test the game and train the AI by running many AI games."""
 
 
 import argparse
 import sys
 import os
 import logging
+import random
 
 from twisted.internet import reactor, utils
 from twisted.python import log
@@ -35,7 +36,7 @@ def server_failed(arg):
     log.err("server failed %s" % arg)
 
 
-def start_game(playername, password, min_players, ai_time_limit, num_games):
+def start_game(playername, password, num_players, ai_time_limit, num_games):
     if num_games <= 0:
         logging.info("finished running games")
         reactor.callWhenRunning(reactor.stop)
@@ -46,20 +47,21 @@ def start_game(playername, password, min_players, ai_time_limit, num_games):
           "--form-game",
           "--playername", playername,
           "--password", password,
-          "--min-players", str(min_players),
+          "--min-players", str(num_players),
+          "--max-players", str(num_players),
           "--ai-time-limit", str(ai_time_limit),
           "--game-name", "stresstest_game_%d_%d" % (os.getpid(), num_games),
       ],
       env=os.environ)
-    def1.addCallback(game_exited, playername, password, min_players,
+    def1.addCallback(game_exited, playername, password, num_players,
       ai_time_limit, num_games - 1)
     def1.addErrback(game_failed)
 
 
-def game_exited(returncode, playername, password, min_players, ai_time_limit,
+def game_exited(returncode, playername, password, num_players, ai_time_limit,
   num_games):
     logging.info("game exited with returncode %d" % returncode)
-    start_game(playername, password, min_players, ai_time_limit, num_games)
+    start_game(playername, password, num_players, ai_time_limit, num_games)
 
 
 def game_failed(arg):
@@ -75,7 +77,6 @@ def main():
     parser.add_argument("-s", "--start-server", action="store_true")
     parser.add_argument("-g", "--num-games", action="store", type=int,
       default=10000000)
-    parser.add_argument("--min-players", type=int, default=6)
     parser.add_argument("--ai-time-limit", type=int,
       default=config.DEFAULT_AI_TIME_LIMIT)
     args = parser.parse_args()
@@ -91,8 +92,9 @@ def main():
 
     if args.start_server:
         start_server()
-    start_game(args.playername, args.password, args.min_players,
-      args.ai_time_limit, args.num_games)
+    num_players = random.randrange(2, 6 + 1)
+    start_game(args.playername, args.password, num_players, args.ai_time_limit,
+      args.num_games)
     reactor.run()
 
 
