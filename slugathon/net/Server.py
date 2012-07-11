@@ -112,6 +112,9 @@ class Server(Observed):
     def form_game(self, playername, game_name, min_players, max_players,
       ai_time_limit, player_time_limit, player_class, player_info):
         """Form a new game."""
+        logging.info("form_game %s %s %s %s %s %s %s %s", playername,
+          game_name, min_players, max_players, ai_time_limit,
+          player_time_limit, player_class, player_info)
         if not game_name:
             raise ValueError("Games must be named")
         if game_name in [game.name for game in self.games]:
