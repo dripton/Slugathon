@@ -54,10 +54,6 @@ class AIClient(pb.Referenceable, Observed):
         self.log_path = log_path
         self._setup_logging()
 
-        logging.info("AIClient %s %s %s %s %s %s %s %s %s %s %s %s %s",
-          playername, password, host, port, delay, aitype,
-          game_name, log_path, ai_time_limit, form_game, min_players,
-          max_players)
         bp = None
         if aitype is not None:
             results = Results.Results()
@@ -75,7 +71,6 @@ class AIClient(pb.Referenceable, Observed):
         self.paused = False
         self.last_actions = []
         self.aps = predictsplits.AllPredictSplits()
-        logging.info("__init__ done %s %s", game_name, playername)
 
     def _setup_logging(self):
         if self.log_path:
