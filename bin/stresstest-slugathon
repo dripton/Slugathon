@@ -20,16 +20,16 @@ from twisted.python import log
 from slugathon.net import config
 
 
-# XXX We never stop the server.
+# We never stop the server, but it seems to go down when this script does.
 def start_server():
-    def1 = utils.getProcessValue(sys.executable,
+    def1 = utils.getProcessOutputAndValue(sys.executable,
       ["-m", "slugathon.net.Server"], env=os.environ)
     def1.addCallback(server_exited)
     def1.addErrback(server_failed)
 
 
 def server_exited(returncode):
-    logging.info("server exited with returncode %d" % returncode)
+    logging.info("server exited with returncode %s" % returncode)
 
 
 def server_failed(arg):
