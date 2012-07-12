@@ -36,11 +36,12 @@ def server_failed(arg):
     log.err("server failed %s" % arg)
 
 
-def start_game(playername, password, num_players, ai_time_limit, num_games):
+def start_game(playername, password, ai_time_limit, num_games):
     if num_games <= 0:
         logging.info("finished running games")
         reactor.callWhenRunning(reactor.stop)
         return
+    num_players = random.randrange(2, 6 + 1)
     def1 = utils.getProcessValue(sys.executable,
       [
           "-m", "slugathon.ai.AIClient",
@@ -53,15 +54,15 @@ def start_game(playername, password, num_players, ai_time_limit, num_games):
           "--game-name", "stresstest_game_%d_%d" % (os.getpid(), num_games),
       ],
       env=os.environ)
-    def1.addCallback(game_exited, playername, password, num_players,
-      ai_time_limit, num_games - 1)
+    def1.addCallback(game_exited, playername, password, ai_time_limit,
+      num_games - 1)
     def1.addErrback(game_failed)
 
 
-def game_exited(returncode, playername, password, num_players, ai_time_limit,
+def game_exited(returncode, playername, password, ai_time_limit,
   num_games):
     logging.info("game exited with returncode %d" % returncode)
-    start_game(playername, password, num_players, ai_time_limit, num_games)
+    start_game(playername, password, ai_time_limit, num_games)
 
 
 def game_failed(arg):
@@ -92,8 +93,7 @@ def main():
 
     if args.start_server:
         start_server()
-    num_players = random.randrange(2, 6 + 1)
-    start_game(args.playername, args.password, num_players, args.ai_time_limit,
+    start_game(args.playername, args.password, args.ai_time_limit,
       args.num_games)
     reactor.run()
 
