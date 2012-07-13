@@ -64,8 +64,7 @@ class CleverBot(object):
     @property
     def player_info(self):
         """Return a string with information for result-tracking purposes."""
-        return str("version=%s ai_time_limit=%s %s" % (VERSION,
-          self.ai_time_limit, self.bp))
+        return str("version=%s %s" % (VERSION, self.bp))
 
     def maybe_pick_color(self, game):
         logging.info("maybe_pick_color")
