@@ -4,6 +4,7 @@ __license__ = "GNU GPL v2"
 
 import math
 import logging
+from collections import defaultdict
 
 from slugathon.util import Dice
 
@@ -225,3 +226,20 @@ class TestDice(object):
         logging.info("chi_square is %s", chi_square)
         # degrees of freedom = 5, 99.5% chance of randomness
         assert chi_square < 0.4117
+
+    def test_weighted_random_choice(self):
+        lst = [
+            (0.4, 1),
+            (0.3, 2),
+            (0.2, 3),
+            (0.1, 4),
+        ]
+        # Can use a Counter when we require Python 2.7
+        counter = defaultdict(int)
+        for trial in xrange(1000):
+            tup = Dice.weighted_random_choice(lst)
+            print tup
+            counter[tup[1]] += 1
+        print counter
+        assert sum(counter.itervalues()) == 1000
+        assert counter[1] > counter[2] > counter[3] > counter[4]

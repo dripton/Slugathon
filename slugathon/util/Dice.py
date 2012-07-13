@@ -23,3 +23,16 @@ def shuffle(lst):
     Here so that we can reuse the same RNG for the whole game.
     """
     _rand.shuffle(lst)
+
+
+def weighted_random_choice(lst):
+    """Return an tuple from a list of tuples, selected randomly but with
+    the odds weighted by the value of the first element of each tuple.
+    """
+    total_score = sum(tup[0] for tup in lst)
+    rand = _rand.uniform(0.0, total_score)
+    for tup in lst:
+        if rand < tup[0]:
+            return tup
+        else:
+            rand -= tup[0]
