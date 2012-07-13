@@ -276,6 +276,8 @@ class AIClient(pb.Referenceable, Observed):
             self.remove_game(action.game_name)
 
         elif isinstance(action, Action.AssignedAllTowers):
+            logging.info("AssignedAllTowers player_info %s",
+              self.ai.player_info)
             game = self.name_to_game(action.game_name)
             reactor.callLater(self.delay, self.ai.maybe_pick_color, game)
 
