@@ -5,11 +5,6 @@ __license__ = "GNU GPL v2"
 """An attempt at a smarter AI."""
 
 
-# Manually bump this every time this module changes enough that we want
-# results tracking to treat it as a new AI.
-VERSION = 2
-
-
 import random
 import copy
 import time
@@ -64,7 +59,7 @@ class CleverBot(object):
     @property
     def player_info(self):
         """Return a string with information for result-tracking purposes."""
-        return str("version=%s %s" % (VERSION, self.bp))
+        return str(self.bp)
 
     def maybe_pick_color(self, game):
         logging.info("maybe_pick_color")
