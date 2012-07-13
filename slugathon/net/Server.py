@@ -211,6 +211,10 @@ class Server(Observed):
         logdir = os.path.join(TEMPDIR, "slugathon")
         if not os.path.exists(logdir):
             os.makedirs(logdir)
+        type_ids = set([None])
+        for player in game.players:
+            type_id = self.results.get_type_id(player.player_info)
+            type_ids.add(type_id)
         for ainame in ainames:
             logging.info("ainame %s", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
@@ -219,6 +223,9 @@ class Server(Observed):
                 args.extend(["ai"])
             else:
                 args.extend(["-m", "slugathon.ai.AIClient"])
+            type_id = None
+            while type_id in type_ids:
+                type_id = self.results.get_weighted_random_type_id()
             args.extend([
                 "--playername", ainame,
                 "--port", str(self.port),
@@ -226,6 +233,7 @@ class Server(Observed):
                 "--log-path", os.path.join(logdir, "slugathon-%s-%s.log" %
                   (game.name, ainame)),
                 "--ai-time-limit", str(game.ai_time_limit),
+                "--type-id", str(type_id),
             ])
             if not self.no_passwd:
                 aipass = self._passwd_for_playername(ainame)
