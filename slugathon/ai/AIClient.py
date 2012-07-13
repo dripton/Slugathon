@@ -677,7 +677,7 @@ def main():
       opts.delay, opts.aitype, opts.game_name, opts.log_path,
       opts.ai_time_limit, opts.player_time_limit, opts.form_game,
       opts.min_players, opts.max_players)
-    aiclient.connect()
+    reactor.callWhenRunning(aiclient.connect)
     reactor.run()
 
 
