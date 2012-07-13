@@ -211,6 +211,8 @@ class Results(object):
                         query = """UPDATE trueskill SET mu = ?, sigma = ?
                                    WHERE type_id = ?"""
                         cursor.execute(query, (mu, sigma, type_id))
+            else:
+                logging.info("all players have same type_id")
         logging.info("")
 
     def get_ranking(self, playername):
