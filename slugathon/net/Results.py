@@ -257,6 +257,19 @@ class Results(object):
                 return None
             return row["info"]
 
+    def get_type_id(self, player_info):
+        """Return the type_id for player_info, from the database."""
+        logging.info(player_info)
+        with self.connection:
+            cursor = self.connection.cursor()
+            # See if that type is already in the database
+            query = "SELECT type_id FROM type where info = ?"
+            cursor.execute(query, (player_info,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return row["type_id"]
+
     def get_weighted_random_type_id(self):
         """Return a random type_id, weighted by mu.
 
