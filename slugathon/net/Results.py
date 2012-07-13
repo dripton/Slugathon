@@ -105,8 +105,7 @@ class Results(object):
                 row = cursor.fetchone()
                 # If not, insert it.
                 if row is None:
-                    query = \
-                      "INSERT INTO type (class, info) VALUES (?, ?)"
+                    query = "INSERT INTO type (class, info) VALUES (?, ?)"
                     cursor.execute(query, (player.player_class,
                       player.player_info))
                     # And fetch the type_id.
