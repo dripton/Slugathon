@@ -7,6 +7,7 @@ import sqlite3
 import math
 from collections import namedtuple, defaultdict
 import logging
+import random
 
 import trueskill
 
@@ -299,12 +300,19 @@ class Results(object):
                            AND ts.sigma > ?"""
                 cursor.execute(query, (BREEDING_SIGMA_THRESHOLD,))
                 young_ai_count = cursor.fetchone()[0]
+                query = """SELECT type_id FROM type
+                           WHERE type_id NOT IN
+                           (SELECT type_id from trueskill)"""
+                cursor.execute(query)
+                young_ai_count += cursor.fetchone()[0]
+
                 query = """SELECT COUNT(*) FROM type ty, trueskill ts
                            WHERE ty.type_id = ts.type_id
                            AND ty.class = 'CleverBot'
                            AND ts.sigma <= ?"""
                 cursor.execute(query, (BREEDING_SIGMA_THRESHOLD,))
                 old_ai_count = cursor.fetchone()[0]
+
                 if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
                     # Breed a new AI, from two weighted-random low-sigma
                     # parents.
@@ -346,9 +354,20 @@ class Results(object):
                     logging.info("mother %s %s", bp2, type_id)
                     logging.info("baby new %s %s", bp3, type_id)
                     return type_id
+
                 else:
-                    # Pick an existing AI randomly, weighted by mu, and return
-                    # its type_id.
+                    # First look for an existing AI that's never played a game.
+                    query = """SELECT type_id FROM type
+                               WHERE type_id NOT IN
+                               (SELECT type_id from trueskill)"""
+                    cursor.execute(query)
+                    rows = cursor.fetchall()
+                    if rows:
+                        type_ids = [row["type_id"] for row in rows]
+                        return random.choice(type_ids)
+
+                    # Then pick an existing AI randomly, weighted by mu, and
+                    # return its type_id.
                     query = """SELECT ts.type_id, ts.mu
                                FROM type ty, trueskill ts
                                WHERE ty.type_id = ts.type_id
