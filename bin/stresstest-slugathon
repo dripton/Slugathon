@@ -61,7 +61,7 @@ def start_game(playername, password, ai_time_limit, num_games):
 
 def game_exited(returncode, playername, password, ai_time_limit,
   num_games):
-    logging.info("game exited with returncode %s" % returncode)
+    logging.info("returncode %s" % returncode)
     start_game(playername, password, ai_time_limit, num_games)
 
 
