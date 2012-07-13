@@ -234,6 +234,7 @@ class Server(Observed):
                       (ainame, self.passwd_path))
                 else:
                     args.extend(["--password", aipass])
+            logging.info("spawning AI process for %s", ainame)
             reactor.spawnProcess(pp, executable, args=args, env=os.environ)
 
     def pick_color(self, playername, game_name, color):
