@@ -317,7 +317,9 @@ class Results(object):
                            WHERE type_id NOT IN
                            (SELECT type_id from trueskill)"""
                 cursor.execute(query)
-                young_ai_count += cursor.fetchone()[0]
+                row = cursor.fetchone()
+                if row:
+                    young_ai_count += row[0]
 
                 query = """SELECT COUNT(*) FROM type ty, trueskill ts
                            WHERE ty.type_id = ts.type_id
