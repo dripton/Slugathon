@@ -55,11 +55,14 @@ class AIClient(pb.Referenceable, Observed):
         self._setup_logging()
 
         bp = None
-        if aitype is not None:
-            results = Results.Results()
+        results = Results.Results()
+        if aitype is None:
+            aitype = results.get_weighted_random_type_id()
+        player_info = results.get_player_info(aitype)
+        if player_info is None:
+            aitype = results.get_weighted_random_type_id()
             player_info = results.get_player_info(aitype)
-            if player_info:
-                bp = BotParams.BotParams.fromstring(player_info)
+        bp = BotParams.BotParams.fromstring(player_info)
         self.ai = CleverBot.CleverBot(self.playername, ai_time_limit,
           bot_params=bp)
         self.game_name = game_name
