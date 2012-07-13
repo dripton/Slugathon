@@ -7,7 +7,6 @@ import sqlite3
 import math
 from collections import namedtuple, defaultdict
 import logging
-import random
 
 import trueskill
 
@@ -20,6 +19,7 @@ DB_PATH = os.path.join(prefs.RESULTS_DIR, "slugathon.db")
 
 GENERATION_SIZE = 10
 BREEDING_SIGMA_THRESHOLD = 1.0
+DEFAULT_MU = 25
 
 
 ddl = """
@@ -356,16 +356,16 @@ class Results(object):
                     return type_id
 
                 else:
+                    candidates = []
                     # First look for an existing AI that's never played a game.
                     query = """SELECT type_id FROM type
                                WHERE type_id NOT IN
                                (SELECT type_id from trueskill)"""
                     cursor.execute(query)
                     rows = cursor.fetchall()
-                    if rows:
-                        type_ids = [row["type_id"] for row in rows]
-                        return random.choice(type_ids)
-
+                    for row in rows:
+                        type_id = row["type_id"]
+                        candidates.append((DEFAULT_MU, type_id))
                     # Then pick an existing AI randomly, weighted by mu, and
                     # return its type_id.
                     query = """SELECT ts.type_id, ts.mu
@@ -374,7 +374,6 @@ class Results(object):
                                AND ty.class = 'CleverBot'"""
                     cursor.execute(query)
                     rows = cursor.fetchall()
-                    candidates = []
                     for row in rows:
                         mu = row["mu"]
                         type_id = row["type_id"]
