@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 import os
 import sqlite3
 import math
-from collections import namedtuple, defaultdict
+from collections import namedtuple
 import logging
 
 import trueskill
@@ -19,7 +19,8 @@ DB_PATH = os.path.join(prefs.RESULTS_DIR, "slugathon.db")
 
 GENERATION_SIZE = 10
 BREEDING_GAMES_THRESHOLD = 20
-DEFAULT_MU = 25
+DEFAULT_MU = 25.0
+DEFAULT_SIGMA = 25.0 / 3.0
 
 
 ddl = """
@@ -30,28 +31,19 @@ CREATE TABLE game (
     finish_time INTEGER
 );
 
-CREATE TABLE type (
-    type_id INTEGER PRIMARY KEY ASC,
-    class TEXT, -- "Human" or "CleverBot"
-    info TEXT   -- name for humans; any info that distinguishes AIs
-);
-
 CREATE TABLE player (
     player_id INTEGER PRIMARY KEY ASC,
-    name TEXT,
-    type_id INTEGER REFERENCES type(type_id)
+    name TEXT,  -- must be unique, but this is not enforced
+    class TEXT, -- "Human" or "CleverBot"
+    info TEXT,  -- name for humans; any info that distinguishes AIs
+    mu REAL,    -- skill level
+    sigma REAL  -- certainty of skill level
 );
 
 CREATE TABLE rank (
     player_id INTEGER REFERENCES player(player_id),
     game_id INTEGER REFERENCES game(game_id),
     rank INTEGER  -- rank in the game from 1 (winner) through 6.  Ties okay.
-);
-
-CREATE TABLE trueskill (
-    type_id INTEGER PRIMARY KEY REFERENCES type(type_id),
-    mu REAL,
-    sigma REAL
 );
 """
 
@@ -103,36 +95,27 @@ class Results(object):
             for player in game.players:
                 logging.info("%s %s", player.player_class, player.player_info)
 
-                # See if that type is already in the database
-                query = """SELECT type_id FROM type
-                           where class = ? AND info = ?"""
-                cursor.execute(query, (player.player_class,
+                # See if that player is already in the database
+                query = """SELECT player_id FROM player
+                           where name = ? AND class = ? AND info = ?"""
+                cursor.execute(query, (player.name, player.player_class,
                   player.player_info))
                 row = cursor.fetchone()
                 # If not, insert it.
                 if row is None:
-                    query = "INSERT INTO type (class, info) VALUES (?, ?)"
-                    cursor.execute(query, (player.player_class,
-                      player.player_info))
-                    # And fetch the type_id.
-                    query = """SELECT type_id FROM type
+                    query = """INSERT INTO player
+                               (name, class, info, mu, sigma)
+                               VALUES (?, ?, ?, ?, ?)"""
+                    cursor.execute(query, (player.name, player.player_class,
+                      player.player_info, DEFAULT_MU, DEFAULT_SIGMA))
+                    # And fetch the player_id.
+                    query = """SELECT player_id FROM player
                                where class = ? AND info = ?"""
                     cursor.execute(query, (player.player_class,
                       player.player_info))
                     row = cursor.fetchone()
 
-                type_id = row["type_id"]
-
-                # See if that player is already in the database
-                name = player.name
-                query = """SELECT player_id FROM player
-                           WHERE name = ? AND type_id = ?"""
-                cursor.execute(query, (name, type_id))
-                row = cursor.fetchone()
-                # If not, insert it.
-                if row is None:
-                    query = "INSERT INTO player (name, type_id) VALUES (?, ?)"
-                    cursor.execute(query, (name, type_id))
+                player_id = row["player_id"]
 
             # Add the game.
             query = """INSERT INTO game (name, start_time, finish_time)
@@ -150,75 +133,48 @@ class Results(object):
             for tup in game.finish_order:
                 for player in tup:
                     # Find the player_id
-                    query = """SELECT player_id FROM player p, type t
-                               WHERE p.type_id = t.type_id
-                               AND p.name = ? AND t.class = ? AND t.info = ?"""
-                    name = player.name
-                    cursor.execute(query, (name, player.player_class,
+                    query = """SELECT player_id FROM player
+                               WHERE name = ? AND class = ? AND info = ?"""
+                    cursor.execute(query, (player.name, player.player_class,
                       player.player_info))
                     row = cursor.fetchone()
                     player_id = row["player_id"]
                     # Add to rank.
-                    query = \
-                      """INSERT INTO rank(player_id, game_id, rank)
-                         VALUES (?, ?, ?)"""
+                    query = """INSERT INTO rank(player_id, game_id, rank)
+                               VALUES (?, ?, ?)"""
                     cursor.execute(query, (player_id, game_id, rank))
                 rank += len(tup)
 
-            # Update trueskill table
+            # Update trueskill values
             # There is a slight bias when there are ties, so we process tied
             # players in random order.
-            query = """SELECT p.type_id, r.rank
+            query = """SELECT p.player_id, p.mu, p.sigma, r.rank
                        FROM player p, rank r
                        WHERE p.player_id = r.player_id AND r.game_id = ?
                        ORDER BY r.rank, RANDOM()"""
             cursor.execute(query, (game_id, ))
             rows = cursor.fetchall()
-            cursor2 = self.connection.cursor()
-            type_ids = []
+            player_ids = []
             rating_tuples = []
             ranks = []
             for row in rows:
-                type_id = row["type_id"]
-                type_ids.append(type_id)
+                player_id = row["player_id"]
+                player_ids.append(player_id)
                 rank = row["rank"]
                 ranks.append(rank)
-                query2 = "SELECT mu, sigma FROM trueskill WHERE type_id = ?"
-                cursor2.execute(query2, (player_id, ))
-                row2 = cursor2.fetchone()
-                if row2 is not None:
-                    mu = row2["mu"]
-                    sigma = row2["sigma"]
-                else:
-                    mu = None
-                    sigma = None
+                mu = row["mu"]
+                sigma = row["sigma"]
                 rating = trueskill.Rating(mu=mu, sigma=sigma)
                 rating_tuples.append((rating, ))
             rating_tuples2 = trueskill.transform_ratings(rating_tuples, ranks)
-            # If we have a duplicate type_id, average the mu and take the
-            # maximum sigma.
-            type_id_to_ratings = defaultdict(list)
-            while type_ids:
-                type_id = type_ids.pop()
+            while player_ids:
+                player_id = player_ids.pop()
                 rating = rating_tuples2.pop()[0]
-                type_id_to_ratings[type_id].append(rating)
-            # If all players are the same type, then don't update trueskill,
-            # as we have no new information.
-            if len(type_id_to_ratings) > 1:
-                for type_id, ratings in type_id_to_ratings.iteritems():
-                    mu = sum(rating.mu for rating in ratings) / float(len(
-                      ratings))
-                    sigma = max(rating.sigma for rating in ratings)
-                    query = """INSERT INTO trueskill (type_id, mu, sigma)
-                               VALUES (?, ?, ?)"""
-                    try:
-                        cursor.execute(query, (type_id, mu, sigma))
-                    except Exception:
-                        query = """UPDATE trueskill SET mu = ?, sigma = ?
-                                   WHERE type_id = ?"""
-                        cursor.execute(query, (mu, sigma, type_id))
-            else:
-                logging.info("all players have same type_id")
+                mu = rating.mu
+                sigma = rating.sigma
+                query = """UPDATE player set mu = ?, sigma = ?
+                           WHERE player_id = ?"""
+                cursor.execute(query, (mu, sigma, player_id))
         logging.info("")
 
     def get_ranking(self, playername):
@@ -228,16 +184,17 @@ class Results(object):
         """
         with self.connection:
             cursor = self.connection.cursor()
-            query = """SELECT tr.mu, tr.sigma
-                       FROM trueskill tr, player p, type ty
-                       WHERE p.type_id = ty.type_id AND ty.type_id = tr.type_id
-                       AND p.name = ?"""
+            query = "SELECT mu, sigma FROM player WHERE name = ?"
             cursor.execute(query, (playername, ))
             rows = cursor.fetchall()
             if rows:
                 row = rows[0]
                 mu = row["mu"]
                 sigma = row["sigma"]
+                if mu is None or sigma is None:
+                    rating = trueskill.Rating()
+                    mu = rating.mu
+                    sigma = rating.sigma
             else:
                 rating = trueskill.Rating()
                 mu = rating.mu
@@ -245,48 +202,48 @@ class Results(object):
             ranking = Ranking(mu, sigma)
             return ranking
 
-    def get_player_info(self, type_id):
-        """Return the player_info string for type_id, from the database."""
+    def get_player_info(self, player_id):
+        """Return the player_info string for player_id, from the database."""
         with self.connection:
             cursor = self.connection.cursor()
-            # See if that type is already in the database
-            query = "SELECT info FROM type where type_id = ?"
-            cursor.execute(query, (type_id,))
+            # See if that player is already in the database
+            query = "SELECT info FROM player where player_id = ?"
+            cursor.execute(query, (player_id,))
             row = cursor.fetchone()
             if row is None:
                 return None
             return row["info"]
 
-    def get_type_id(self, player_info):
-        """Return the type_id for player_info, from the database."""
+    def get_player_id(self, player_info):
+        """Return the player_id for player_info, from the database."""
         logging.info(player_info)
         with self.connection:
             cursor = self.connection.cursor()
-            # See if that type is already in the database
-            query = "SELECT type_id FROM type where info = ?"
+            # See if that player is already in the database
+            query = "SELECT player_id FROM player where info = ?"
             cursor.execute(query, (player_info,))
             row = cursor.fetchone()
             if row is None:
                 return None
-            return row["type_id"]
+            return row["player_id"]
 
-    def get_weighted_random_type_id(self):
-        """Return a random type_id, weighted by mu.
+    def get_weighted_random_player_id(self):
+        """Return a random player_id, weighted by mu.
 
-        If there are fewer than GENERATION_SIZE AI type_ids in the database,
-        add a new AI type (by mutating the default) and return its type_id.
+        If there are fewer than GENERATION_SIZE AI player_id in the database,
+        add a new AI (by mutating the default) and return its player_id.
 
-        If there are fewer than GENERATION_SIZE AI type_ids in the database
-        with at least BREEDING_GAMES_THRESHOLD games, breed a new AI type (by
-        crossing two parent AI types with >= BREEDING_GAMES_THRESHOLD games,
-        chosen randomly weighted by mu), and return its type_id.
+        If there are fewer than GENERATION_SIZE AI player_ids in the database
+        with at least BREEDING_GAMES_THRESHOLD games, breed a new AI (by
+        crossing two parent AIs with >= BREEDING_GAMES_THRESHOLD games,
+        chosen randomly weighted by mu), and return its player_id.
 
-        Otherwise, choose an existing type_id randomly, weighted by mu, and
+        Otherwise, choose an existing player_id randomly, weighted by mu, and
         return it.
         """
         with self.connection:
             cursor = self.connection.cursor()
-            query = "SELECT COUNT(*) FROM type WHERE class='CleverBot'"
+            query = "SELECT COUNT(*) FROM player WHERE class='CleverBot'"
             cursor.execute(query)
             total_ai_count = cursor.fetchone()[0]
             if total_ai_count < GENERATION_SIZE:
@@ -296,39 +253,45 @@ class Results(object):
                   config.DEFAULT_AI_TIME_LIMIT, bp)
                 info = bot.player_info
                 logging.info("player_info %s", info)
-                query = "INSERT INTO type (class, info) VALUES (?, ?)"
-                cursor.execute(query, ("CleverBot", info))
-                # And fetch the type_id.
-                query = """SELECT type_id FROM type
+                query = """INSERT INTO player (class, info, mu, sigma)
+                           VALUES (?, ?, ?, ?)"""
+                cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
+                  DEFAULT_SIGMA))
+                # And fetch the player_id.
+                query = """SELECT player_id FROM player
                            where class = ? AND info = ?"""
                 cursor.execute(query, ("CleverBot", info))
                 row = cursor.fetchone()
-                type_id = row["type_id"]
-                logging.info("spawning new AI %s %s", bp, type_id)
-                return type_id
+                player_id = row["player_id"]
+                # And update the name.
+                name = "ai%d" % player_id
+                query = """UPDATE player SET name = ?
+                           WHERE player_id = ?"""
+                cursor.execute(query, (name, player_id))
+                logging.info("spawning new AI %s %s %s", player_id, name, bp)
+                return player_id
             else:
-                query = """SELECT t.type_id, COUNT(t.type_id)
-                           FROM rank r, player p, type t
+                query = """SELECT p.player_id, COUNT(p.player_id)
+                           FROM rank r, player p
                            WHERE r.player_id = p.player_id
-                           AND p.type_id=t.type_id
-                           AND t.class='CleverBot'
-                           GROUP BY t.type_id
-                           ORDER BY t.type_id"""
+                           AND p.class='CleverBot'
+                           GROUP BY p.player_id
+                           ORDER BY p.player_id"""
                 cursor.execute(query)
                 rows = cursor.fetchall()
-                young_type_ids = set()
-                old_type_ids = set()
+                young_player_ids = set()
+                old_player_ids = set()
                 for row in rows:
-                    type_id, count = row
+                    player_id, count = row
                     if count < BREEDING_GAMES_THRESHOLD:
-                        young_type_ids.add(type_id)
+                        young_player_ids.add(player_id)
                     else:
-                        old_type_ids.add(type_id)
-                young_ai_count = len(young_type_ids)
-                old_ai_count = len(old_type_ids)
-                query = """SELECT COUNT(type_id) FROM type
-                           WHERE type_id NOT IN
-                           (SELECT type_id from trueskill)"""
+                        old_player_ids.add(player_id)
+                young_ai_count = len(young_player_ids)
+                old_ai_count = len(old_player_ids)
+                query = """SELECT COUNT(*) FROM player
+                           WHERE player_id NOT IN
+                           (SELECT player_id from rank)"""
                 cursor.execute(query)
                 row = cursor.fetchone()
                 if row:
@@ -337,71 +300,69 @@ class Results(object):
                 if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
                     # Breed a new AI, from two weighted-random experienced
                     # parents.
-                    query = """SELECT ts.type_id, ts.mu
-                               FROM type ty, trueskill ts
-                               WHERE ty.type_id = ts.type_id
-                               AND ty.class = 'CleverBot'"""
+                    query = """SELECT p.player_id, p.mu FROM player p
+                               WHERE p.class = 'CleverBot'"""
                     cursor.execute(query)
                     rows = cursor.fetchall()
                     possible_parents = []
                     for row in rows:
                         mu = row["mu"]
-                        type_id = row["type_id"]
-                        if type_id in old_type_ids:
-                            possible_parents.append((mu, type_id))
+                        player_id = row["player_id"]
+                        if player_id in old_player_ids:
+                            possible_parents.append((mu, player_id))
                     tup1 = Dice.weighted_random_choice(possible_parents)
                     possible_parents.remove(tup1)
                     tup2 = Dice.weighted_random_choice(possible_parents)
-                    type_id1 = tup1[1]
-                    info1 = self.get_player_info(type_id1)
+                    player_id1 = tup1[1]
+                    info1 = self.get_player_info(player_id1)
                     bp1 = BotParams.BotParams.fromstring(info1)
-                    type_id2 = tup2[1]
-                    info2 = self.get_player_info(type_id2)
+                    player_id2 = tup2[1]
+                    info2 = self.get_player_info(player_id2)
                     bp2 = BotParams.BotParams.fromstring(info2)
                     bp3 = bp1.cross(bp2)
                     bot = CleverBot.CleverBot("child",
                       config.DEFAULT_AI_TIME_LIMIT, bp3)
                     info = bot.player_info
                     logging.info("player_info %s", info)
-                    query = "INSERT INTO type (class, info) VALUES (?, ?)"
-                    cursor.execute(query, ("CleverBot", info))
-                    # And fetch the type_id.
-                    query = """SELECT type_id FROM type
+                    query = """INSERT INTO player (class, info, mu, sigma)
+                               VALUES (?, ?, ?, ?)"""
+                    cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
+                      DEFAULT_SIGMA))
+                    # And fetch the player_id.
+                    query = """SELECT player_id FROM player
                                where class = ? AND info = ?"""
                     cursor.execute(query, ("CleverBot", info))
                     row = cursor.fetchone()
-                    type_id = row["type_id"]
-                    logging.info("father %s %s", bp1, type_id1)
-                    logging.info("mother %s %s", bp2, type_id2)
-                    logging.info("baby %s %s", bp3, type_id)
-                    return type_id
+                    player_id = row["player_id"]
+                    logging.info("father %s %s", player_id1, bp1)
+                    logging.info("mother %s %s", player_id2, bp2)
+                    logging.info("baby %s %s", player_id, bp3)
+                    return player_id
 
                 else:
                     candidates = []
                     # First look for an existing AI that's never played a game.
-                    query = """SELECT type_id FROM type
-                               WHERE type_id NOT IN
-                               (SELECT type_id from trueskill)"""
+                    query = """SELECT player_id FROM player
+                               WHERE player_id NOT IN
+                               (SELECT player_id from rank)"""
                     cursor.execute(query)
                     rows = cursor.fetchall()
                     for row in rows:
-                        type_id = row["type_id"]
-                        young_type_ids.add(type_id)
-                        candidates.append((DEFAULT_MU, type_id))
+                        player_id = row["player_id"]
+                        young_player_ids.add(player_id)
+                        candidates.append((DEFAULT_MU, player_id))
                     # Then pick an existing young AI randomly, weighted by mu,
-                    # and return its type_id.
-                    query = """SELECT ts.type_id, ts.mu
-                               FROM type ty, trueskill ts
-                               WHERE ty.type_id = ts.type_id
-                               AND ty.class = 'CleverBot'"""
+                    # and return its player_id.
+                    query = """SELECT player_id, mu FROM player
+                               WHERE class = 'CleverBot'"""
                     cursor.execute(query)
                     rows = cursor.fetchall()
                     for row in rows:
+                        player_id = row["player_id"]
                         mu = row["mu"]
-                        type_id = row["type_id"]
-                        if type_id in young_type_ids:
-                            candidates.append((mu, type_id))
+                        if player_id in young_player_ids and mu is not None:
+                            candidates.append((mu, player_id))
                     tup = Dice.weighted_random_choice(candidates)
-                    type_id = tup[1]
-                    logging.info("picked random AI %s", type_id)
-                    return type_id
+                    player_id = tup[1]
+                    logging.info("picked random AI %s", player_id)
+                    return player_id

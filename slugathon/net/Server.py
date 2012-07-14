@@ -177,25 +177,24 @@ class Server(Observed):
                     return passwd
         return None
 
-    def _next_unused_ainames(self, num):
-        ainames = []
-        ii = 1
-        while True:
-            ainame = "ai%d" % ii
-            if ainame not in self.playernames:
-                ainames.append(ainame)
-                if len(ainames) == num:
-                    return ainames
-            ii += 1
-
     def _add_playername_with_random_password(self, ainame):
         password = hashlib.md5(str(random.random())).hexdigest()
         with open(self.passwd_path, "a") as fil:
             fil.write("%s:%s\n" % (ainame, password))
 
     def _spawn_ais(self, game):
+        player_ids = set([None])
+        for player in game.players:
+            player_id = self.results.get_player_id(player.player_info)
+            player_ids.add(player_id)
         num_ais = game.min_players - game.num_players
-        ainames = self._next_unused_ainames(num_ais)
+        ainames = []
+        for unused in xrange(num_ais):
+            player_id = None
+            while player_id in player_ids:
+                player_id = self.results.get_weighted_random_player_id()
+            ainame = "ai%d" % player_id
+            ainames.append(ainame)
         for ainame in ainames:
             if self._passwd_for_playername(ainame) is None:
                 self._add_playername_with_random_password(ainame)
@@ -211,10 +210,6 @@ class Server(Observed):
         logdir = os.path.join(TEMPDIR, "slugathon")
         if not os.path.exists(logdir):
             os.makedirs(logdir)
-        type_ids = set([None])
-        for player in game.players:
-            type_id = self.results.get_type_id(player.player_info)
-            type_ids.add(type_id)
         for ainame in ainames:
             logging.info("ainame %s", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
@@ -223,9 +218,6 @@ class Server(Observed):
                 args.extend(["ai"])
             else:
                 args.extend(["-m", "slugathon.ai.AIClient"])
-            type_id = None
-            while type_id in type_ids:
-                type_id = self.results.get_weighted_random_type_id()
             args.extend([
                 "--playername", ainame,
                 "--port", str(self.port),
@@ -233,7 +225,6 @@ class Server(Observed):
                 "--log-path", os.path.join(logdir, "slugathon-%s-%s.log" %
                   (game.name, ainame)),
                 "--ai-time-limit", str(game.ai_time_limit),
-                "--type-id", str(type_id),
             ])
             if not self.no_passwd:
                 aipass = self._passwd_for_playername(ainame)
@@ -242,7 +233,7 @@ class Server(Observed):
                       (ainame, self.passwd_path))
                 else:
                     args.extend(["--password", aipass])
-            logging.info("spawning AI process for %s %s", ainame, type_id)
+            logging.info("spawning AI process for %s", ainame)
             reactor.spawnProcess(pp, executable, args=args, env=os.environ)
 
     def pick_color(self, playername, game_name, color):

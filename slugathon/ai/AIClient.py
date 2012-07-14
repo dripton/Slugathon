@@ -11,6 +11,7 @@ import random
 import tempfile
 import os
 import logging
+import re
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -35,16 +36,15 @@ defer.setDebugging(True)
 
 @implementer(IObserver)
 class AIClient(pb.Referenceable, Observed):
-    def __init__(self, playername, password, host, port, delay, type_id,
-      game_name, log_path, ai_time_limit, player_time_limit, form_game,
-      min_players, max_players):
+    def __init__(self, playername, password, host, port, delay, game_name,
+      log_path, ai_time_limit, player_time_limit, form_game, min_players,
+      max_players):
         Observed.__init__(self)
         self.playername = playername
         self.password = password
         self.host = host
         self.port = port
         self.delay = delay
-        self.type_id = type_id
         self.aiclass = "CleverBot"
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
@@ -56,12 +56,13 @@ class AIClient(pb.Referenceable, Observed):
 
         bp = None
         results = Results.Results()
-        if type_id is None:
-            type_id = results.get_weighted_random_type_id()
-        player_info = results.get_player_info(type_id)
+        if not re.match(r"^ai\d+$", playername):
+            raise AssertionError("invalid playername for AI")
+        player_id = int(playername[2:])
+        player_info = results.get_player_info(player_id)
         if player_info is None:
-            type_id = results.get_weighted_random_type_id()
-            player_info = results.get_player_info(type_id)
+            player_id = results.get_weighted_random_player_id()
+            player_info = results.get_player_info(player_id)
         bp = BotParams.BotParams.fromstring(player_info)
         self.ai = CleverBot.CleverBot(self.playername, ai_time_limit,
           bot_params=bp)
@@ -165,7 +166,7 @@ class AIClient(pb.Referenceable, Observed):
                 if not self.game_name or game.name == self.game_name:
                     logging.info("joining game %s", game.name)
                     def1 = self.user.callRemote("join_game", game.name,
-                      self.type_id, self.ai.player_info)
+                      self.aiclass, self.ai.player_info)
                     def1.addErrback(self.failure)
 
     def name_to_game(self, game_name):
@@ -679,9 +680,9 @@ def main():
     add_arguments(parser)
     opts, extras = parser.parse_known_args()
     aiclient = AIClient(opts.playername, opts.password, opts.server, opts.port,
-      opts.delay, opts.type_id, opts.game_name, opts.log_path,
-      opts.ai_time_limit, opts.player_time_limit, opts.form_game,
-      opts.min_players, opts.max_players)
+      opts.delay, opts.game_name, opts.log_path, opts.ai_time_limit,
+      opts.player_time_limit, opts.form_game, opts.min_players,
+      opts.max_players)
     reactor.callWhenRunning(aiclient.connect)
     reactor.run()
 
