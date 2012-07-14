@@ -18,7 +18,7 @@ from slugathon.net import config
 DB_PATH = os.path.join(prefs.RESULTS_DIR, "slugathon.db")
 
 GENERATION_SIZE = 10
-BREEDING_SIGMA_THRESHOLD = 1.0
+BREEDING_GAMES_THRESHOLD = 20
 DEFAULT_MU = 25
 
 
@@ -277,9 +277,9 @@ class Results(object):
         add a new AI type (by mutating the default) and return its type_id.
 
         If there are fewer than GENERATION_SIZE AI type_ids in the database
-        with sigma > BREEDING_SIGMA_THRESHOLD, breed a new AI type (by crossing
-        two parent AI types with sigma <= BREEDING_SIGMA_THRESHOLD, chosen
-        randomly weighted by mu), and return its type_id.
+        with at least BREEDING_GAMES_THRESHOLD games, breed a new AI type (by
+        crossing two parent AI types with >= BREEDING_GAMES_THRESHOLD games,
+        chosen randomly weighted by mu), and return its type_id.
 
         Otherwise, choose an existing type_id randomly, weighted by mu, and
         return it.
@@ -307,13 +307,26 @@ class Results(object):
                 logging.info("spawning new AI %s %s", bp, type_id)
                 return type_id
             else:
-                query = """SELECT COUNT(*) FROM type ty, trueskill ts
-                           WHERE ty.type_id = ts.type_id
-                           AND ty.class = 'CleverBot'
-                           AND ts.sigma > ?"""
-                cursor.execute(query, (BREEDING_SIGMA_THRESHOLD,))
-                young_ai_count = cursor.fetchone()[0]
-                query = """SELECT type_id FROM type
+                query = """SELECT t.type_id, COUNT(t.type_id)
+                           FROM rank r, player p, type t
+                           WHERE r.player_id = p.player_id
+                           AND p.type_id=t.type_id
+                           AND t.class='CleverBot'
+                           GROUP BY t.type_id
+                           ORDER BY t.type_id"""
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                young_type_ids = set()
+                old_type_ids = set()
+                for row in rows:
+                    type_id, count = row
+                    if count < BREEDING_GAMES_THRESHOLD:
+                        young_type_ids.add(type_id)
+                    else:
+                        old_type_ids.add(type_id)
+                young_ai_count = len(young_type_ids)
+                old_ai_count = len(old_type_ids)
+                query = """SELECT COUNT(type_id) FROM type
                            WHERE type_id NOT IN
                            (SELECT type_id from trueskill)"""
                 cursor.execute(query)
@@ -321,28 +334,21 @@ class Results(object):
                 if row:
                     young_ai_count += row[0]
 
-                query = """SELECT COUNT(*) FROM type ty, trueskill ts
-                           WHERE ty.type_id = ts.type_id
-                           AND ty.class = 'CleverBot'
-                           AND ts.sigma <= ?"""
-                cursor.execute(query, (BREEDING_SIGMA_THRESHOLD,))
-                old_ai_count = cursor.fetchone()[0]
-
                 if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
-                    # Breed a new AI, from two weighted-random low-sigma
+                    # Breed a new AI, from two weighted-random experienced
                     # parents.
                     query = """SELECT ts.type_id, ts.mu
                                FROM type ty, trueskill ts
                                WHERE ty.type_id = ts.type_id
-                               AND ty.class = 'CleverBot'
-                               AND ts.sigma < ?"""
-                    cursor.execute(query, (BREEDING_SIGMA_THRESHOLD,))
+                               AND ty.class = 'CleverBot'"""
+                    cursor.execute(query)
                     rows = cursor.fetchall()
                     possible_parents = []
                     for row in rows:
                         mu = row["mu"]
                         type_id = row["type_id"]
-                        possible_parents.append((mu, type_id))
+                        if type_id in old_type_ids:
+                            possible_parents.append((mu, type_id))
                     tup1 = Dice.weighted_random_choice(possible_parents)
                     possible_parents.remove(tup1)
                     tup2 = Dice.weighted_random_choice(possible_parents)
@@ -365,9 +371,9 @@ class Results(object):
                     cursor.execute(query, ("CleverBot", info))
                     row = cursor.fetchone()
                     type_id = row["type_id"]
-                    logging.info("father %s %s", bp1, type_id)
-                    logging.info("mother %s %s", bp2, type_id)
-                    logging.info("baby new %s %s", bp3, type_id)
+                    logging.info("father %s %s", bp1, type_id1)
+                    logging.info("mother %s %s", bp2, type_id2)
+                    logging.info("baby %s %s", bp3, type_id)
                     return type_id
 
                 else:
@@ -380,9 +386,10 @@ class Results(object):
                     rows = cursor.fetchall()
                     for row in rows:
                         type_id = row["type_id"]
+                        young_type_ids.add(type_id)
                         candidates.append((DEFAULT_MU, type_id))
-                    # Then pick an existing AI randomly, weighted by mu, and
-                    # return its type_id.
+                    # Then pick an existing young AI randomly, weighted by mu,
+                    # and return its type_id.
                     query = """SELECT ts.type_id, ts.mu
                                FROM type ty, trueskill ts
                                WHERE ty.type_id = ts.type_id
@@ -392,7 +399,8 @@ class Results(object):
                     for row in rows:
                         mu = row["mu"]
                         type_id = row["type_id"]
-                        candidates.append((mu, type_id))
+                        if type_id in young_type_ids:
+                            candidates.append((mu, type_id))
                     tup = Dice.weighted_random_choice(candidates)
                     type_id = tup[1]
                     logging.info("picked random AI %s", type_id)
