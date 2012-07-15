@@ -21,6 +21,8 @@ class Graveyard(gtk.EventBox):
 
     def update_gui(self):
         playercolor = self.legion.player.color
+        for child in self.hbox.get_children():
+            self.hbox.remove(child)
         for creature in self.legion.dead_creatures:
             chit = Chit.Chit(creature, playercolor, scale=15)
             self.hbox.pack_start(chit.event_box, expand=False)
