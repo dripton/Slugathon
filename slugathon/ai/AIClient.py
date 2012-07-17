@@ -566,11 +566,13 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
             if action.winner_losses:
-                self.aps.get_leaf(action.winner_markerid).remove_creatures(
-                  list(action.winner_losses))
+                node = self.aps.get_leaf(action.winner_markerid)
+                if node:
+                    node.remove_creatures(list(action.winner_losses))
             if action.loser_losses:
-                self.aps.get_leaf(action.loser_markerid).remove_creatures(
-                  list(action.loser_losses))
+                node = self.aps.get_leaf(action.loser_markerid)
+                if node:
+                    node.remove_creatures(list(action.loser_losses))
             self.update_creatures(game)
             if game.active_player.name == self.playername:
                 if game.attacker_legion:
