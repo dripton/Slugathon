@@ -62,6 +62,7 @@ class AIClient(pb.Referenceable, Observed):
         player_info = results.get_player_info(player_id)
         if player_info is None:
             player_id = results.get_weighted_random_player_id()
+            playername = "ai%d" % player_id
             player_info = results.get_player_info(player_id)
         bp = BotParams.BotParams.fromstring(player_info)
         self.ai = CleverBot.CleverBot(self.playername, ai_time_limit,
