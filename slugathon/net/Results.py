@@ -334,9 +334,14 @@ class Results(object):
                     cursor.execute(query, ("CleverBot", info))
                     row = cursor.fetchone()
                     player_id = row["player_id"]
+                    # And update the name.
+                    name = "ai%d" % player_id
+                    query = """UPDATE player SET name = ?
+                               WHERE player_id = ?"""
+                    cursor.execute(query, (name, player_id))
                     logging.info("father %s %s", player_id1, bp1)
                     logging.info("mother %s %s", player_id2, bp2)
-                    logging.info("baby %s %s", player_id, bp3)
+                    logging.info("baby %s %s %s", player_id, name, bp3)
                     return player_id
 
                 else:
