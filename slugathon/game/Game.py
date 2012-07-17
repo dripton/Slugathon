@@ -215,7 +215,7 @@ class Game(Observed):
     @property
     def living_playernames(self):
         """Return a list of playernames for Players still in the game."""
-        return [player.name for player in self.players if not player.dead]
+        return [player.name for player in self.living_players]
 
     @property
     def dead_playernames(self):
