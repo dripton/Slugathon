@@ -183,7 +183,7 @@ class Server(Observed):
             fil.write("%s:%s\n" % (ainame, password))
 
     def _spawn_ais(self, game):
-        player_ids = set([None])
+        player_ids = set()
         for game in self.games:
             for player in game.players:
                 player_id = self.results.get_player_id(player.player_info)
@@ -191,9 +191,9 @@ class Server(Observed):
         num_ais = game.min_players - game.num_players
         ainames = []
         for unused in xrange(num_ais):
-            player_id = None
-            while player_id in player_ids:
-                player_id = self.results.get_weighted_random_player_id()
+            player_id = self.results.get_weighted_random_player_id(
+              excludes=player_ids)
+            player_ids.add(player_id)
             ainame = "ai%d" % player_id
             ainames.append(ainame)
         for ainame in ainames:

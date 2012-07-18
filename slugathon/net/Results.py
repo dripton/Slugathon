@@ -18,7 +18,7 @@ from slugathon.net import config
 DB_PATH = os.path.join(prefs.RESULTS_DIR, "slugathon.db")
 
 GENERATION_SIZE = 10
-BREEDING_GAMES_THRESHOLD = 20
+BREEDING_SIGMA_THRESHOLD = 1.0
 DEFAULT_MU = 25.0
 DEFAULT_SIGMA = 25.0 / 3.0
 
@@ -227,15 +227,16 @@ class Results(object):
                 return None
             return row["player_id"]
 
-    def get_weighted_random_player_id(self):
-        """Return a random player_id, weighted by mu.
+    def get_weighted_random_player_id(self, excludes=()):
+        """Return a random player_id, weighted by mu.  Exclude any player_ids
+        in excludes.
 
         If there are fewer than GENERATION_SIZE AI player_id in the database,
         add a new AI (by mutating the default) and return its player_id.
 
         If there are fewer than GENERATION_SIZE AI player_ids in the database
-        with at least BREEDING_GAMES_THRESHOLD games, breed a new AI (by
-        crossing two parent AIs with >= BREEDING_GAMES_THRESHOLD games,
+        with sigma <= BREEDING_SIGMA_THRESHOLD, breed a new AI (by
+        crossing two parent AIs with sigma <= BREEDING_SIGMA_THRESHOLD,
         chosen randomly weighted by mu), and return its player_id.
 
         Otherwise, choose an existing player_id randomly, weighted by mu, and
@@ -243,9 +244,14 @@ class Results(object):
         """
         with self.connection:
             cursor = self.connection.cursor()
-            query = "SELECT COUNT(*) FROM player WHERE class='CleverBot'"
+            query = "SELECT player_id FROM player WHERE class='CleverBot'"
             cursor.execute(query)
-            total_ai_count = cursor.fetchone()[0]
+            rows = cursor.fetchall()
+            total_ai_count = 0
+            for row in rows:
+                player_id = row["player_id"]
+                if player_id not in excludes:
+                    total_ai_count += 1
             if total_ai_count < GENERATION_SIZE:
                 # Spawn a new AI, mutated from default_bot_params.
                 bp = BotParams.default_bot_params.mutate_all_fields()
@@ -270,33 +276,24 @@ class Results(object):
                 cursor.execute(query, (name, player_id))
                 logging.info("spawning new AI %s %s %s", player_id, name, bp)
                 return player_id
+
             else:
-                query = """SELECT p.player_id, COUNT(p.player_id)
-                           FROM rank r, player p
-                           WHERE r.player_id = p.player_id
-                           AND p.class='CleverBot'
-                           GROUP BY p.player_id
-                           ORDER BY p.player_id"""
+                query = """SELECT player_id, mu, sigma FROM player p
+                           WHERE p.class='CleverBot'"""
                 cursor.execute(query)
                 rows = cursor.fetchall()
                 young_player_ids = set()
                 old_player_ids = set()
                 for row in rows:
-                    player_id, count = row
-                    if count < BREEDING_GAMES_THRESHOLD:
-                        young_player_ids.add(player_id)
-                    else:
+                    player_id = row["player_id"]
+                    mu = row["mu"]
+                    sigma = row["sigma"]
+                    if sigma <= BREEDING_SIGMA_THRESHOLD:
                         old_player_ids.add(player_id)
+                    else:
+                        young_player_ids.add(player_id)
                 young_ai_count = len(young_player_ids)
                 old_ai_count = len(old_player_ids)
-                query = """SELECT COUNT(*) FROM player
-                           WHERE player_id NOT IN
-                           (SELECT player_id from rank)"""
-                cursor.execute(query)
-                row = cursor.fetchone()
-                if row:
-                    young_ai_count += row[0]
-
                 if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
                     # Breed a new AI, from two weighted-random experienced
                     # parents.
@@ -346,17 +343,7 @@ class Results(object):
 
                 else:
                     candidates = []
-                    # First look for an existing AI that's never played a game.
-                    query = """SELECT player_id FROM player
-                               WHERE player_id NOT IN
-                               (SELECT player_id from rank)"""
-                    cursor.execute(query)
-                    rows = cursor.fetchall()
-                    for row in rows:
-                        player_id = row["player_id"]
-                        young_player_ids.add(player_id)
-                        candidates.append((DEFAULT_MU, player_id))
-                    # Then pick an existing young AI randomly, weighted by mu,
+                    # Pick an existing young AI randomly, weighted by mu,
                     # and return its player_id.
                     query = """SELECT player_id, mu FROM player
                                WHERE class = 'CleverBot'"""
@@ -365,7 +352,8 @@ class Results(object):
                     for row in rows:
                         player_id = row["player_id"]
                         mu = row["mu"]
-                        if player_id in young_player_ids and mu is not None:
+                        if (player_id in young_player_ids and player_id not in
+                          excludes):
                             candidates.append((mu, player_id))
                     tup = Dice.weighted_random_choice(candidates)
                     player_id = tup[1]
