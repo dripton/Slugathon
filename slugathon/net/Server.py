@@ -679,14 +679,18 @@ class Server(Observed):
         if game:
             game.resume_ai(playername)
 
+    def _finish_with_game(self, game):
+        game.remove_observer(self)
+        self.games.remove(game)
+        self.results.save_game(game)
+
     def update(self, observed, action, names):
         logging.info("%s %s %s", observed, action, names)
         if isinstance(action, Action.GameOver):
             game = self.name_to_game(action.game_name)
             if game in self.games:
-                game.remove_observer(self)
-                self.games.remove(game)
-                self.results.save_game(game)
+                # Wait to ensure that EliminatePlayer got through.
+                reactor.callLater(1, self._finish_with_game, game)
         self.notify(action, names)
 
 
