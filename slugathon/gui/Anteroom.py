@@ -219,6 +219,7 @@ class Anteroom(gtk.EventBox):
         ii = -1
         for game in self.games:
             if not game.started:
+                logging.info(game)
                 ii += 1
                 name = game.name
                 owner = game.owner.name
@@ -243,6 +244,7 @@ class Anteroom(gtk.EventBox):
         ii = -1
         for game in self.games:
             if game.started and not game.over:
+                logging.info(game)
                 ii += 1
                 name = game.name
                 start_time = time.ctime(game.start_time)
@@ -264,6 +266,7 @@ class Anteroom(gtk.EventBox):
         ii = -1
         for game in self.games:
             if game.started and game.over:
+                logging.info(game)
                 ii += 1
                 name = game.name
                 start_time = time.ctime(game.start_time)
@@ -361,6 +364,7 @@ class Anteroom(gtk.EventBox):
         return False
 
     def update(self, observed, action, names):
+        logging.info("%s %s %s", observed, action, names)
         if isinstance(action, Action.AddUsername):
             self.update_user_store()
         elif isinstance(action, Action.DelUsername):
@@ -379,11 +383,11 @@ class Anteroom(gtk.EventBox):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
         elif isinstance(action, Action.AssignedAllTowers):
-            self.update_game_stores()
+            reactor.callLater(1, self.update_game_stores)
         elif isinstance(action, Action.GameOver):
-            self.update_game_stores()
+            reactor.callLater(1, self.update_game_stores)
         elif isinstance(action, Action.EliminatePlayer):
-            self.update_game_stores()
+            reactor.callLater(1, self.update_game_stores)
         elif isinstance(action, Action.ChatMessage):
             buf = self.chat_view.get_buffer()
             message = action.message.strip() + "\n"
