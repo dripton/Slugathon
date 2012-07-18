@@ -282,6 +282,18 @@ class Server(Observed):
         if child_markerid not in player.markerids_left:
             logging.info("no marker")
             return
+        if len(parent_creature_names) < 2:
+            logging.info("parent too short")
+            return
+        if len(parent_creature_names) > 5:
+            logging.info("parent too tall")
+            return
+        if len(child_creature_names) < 2:
+            logging.info("child too short")
+            return
+        if len(child_creature_names) > 5:
+            logging.info("child too tall")
+            return
         if bag(parent.creature_names) != bag(parent_creature_names).union(
           bag(child_creature_names)):
             logging.info("wrong creatures")
