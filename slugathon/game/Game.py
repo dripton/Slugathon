@@ -1593,6 +1593,7 @@ class Game(Observed):
 
         elif isinstance(action, Action.CreateStartingLegion):
             player = self.get_player_by_name(action.playername)
+            player.created_starting_legion = True
             # Avoid doing twice
             if not player.markerid_to_legion:
                 player.pick_marker(action.markerid)
@@ -1859,6 +1860,7 @@ class Game(Observed):
         elif isinstance(action, Action.EliminatePlayer):
             winner_player = self.get_player_by_name(action.winner_playername)
             loser_player = self.get_player_by_name(action.loser_playername)
+            logging.info("%s eliminated by %s", loser_player, winner_player)
             player_to_full_points = defaultdict(int)
             for legion in loser_player.legions:
                 if legion.engaged:
@@ -1872,6 +1874,9 @@ class Game(Observed):
                     half_points = full_points // 2
                     player.add_points(half_points)
             loser_player.remove_all_legions()
+            # This will make the player dead even if we missed earlier actions.
+            loser_player.created_starting_legion = True
+            logging.info(loser_player.dead)
             if winner_player:
                 winner_player.eliminated_colors.add(loser_player.color_abbrev)
                 winner_player.markerids_left.update(
