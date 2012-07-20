@@ -487,9 +487,18 @@ class Server(Observed):
             player = game.get_player_by_name(playername)
             if player is None:
                 return
-            if player == game.battle_active_player:
-                game.move_creature(playername, creature_name, old_hexlabel,
-                  new_hexlabel)
+            if player != game.battle_active_player:
+                return
+            legion = game.battle_active_legion
+            if not legion:
+                return
+            creature = legion.find_creature(creature_name, old_hexlabel)
+            if not creature:
+                return
+            if new_hexlabel not in game.find_battle_moves(creature):
+                return
+            game.move_creature(playername, creature_name, old_hexlabel,
+              new_hexlabel)
 
     def undo_move_creature(self, playername, game_name, creature_name,
       new_hexlabel):
