@@ -98,10 +98,13 @@ class CleverBot(object):
         else:
             return random.choice(list(player.markerids_left))
 
-    # TODO Fight with angels first, then with most important legion.
     # TODO Avoid hitting 100-point multiples with 7-high legions.
     def choose_engagement(self, game):
-        """Resolve engagements."""
+        """Resolve engagements.
+
+        Fight with legions that have angels first (so we can summon them),
+        then with the most important legion.
+        """
         logging.info("choose_engagement")
         if (game.pending_summon or game.pending_reinforcement or
           game.pending_acquire):
@@ -111,7 +114,19 @@ class CleverBot(object):
             return
         hexlabels = list(game.engagement_hexlabels)
         if hexlabels:
-            hexlabel = random.choice(hexlabels)
+            if len(hexlabels) >= 2:
+                player = game.get_player_by_name(self.playername)
+                value_to_hexlabel = []
+                for hexlabel in hexlabels:
+                    legion = player.friendly_legions(hexlabel=hexlabel).pop()
+                    value = legion.sort_value
+                    if not player.summoned and legion.any_summonable:
+                        value += 1000
+                    value_to_hexlabel.append((value, hexlabel))
+                value_to_hexlabel.sort()
+                (value, hexlabel) = value_to_hexlabel[-1]
+            else:
+                hexlabel = hexlabels[0]
             logging.info("calling resolve_engagement")
             def1 = self.user.callRemote("resolve_engagement", game.name,
               hexlabel)
