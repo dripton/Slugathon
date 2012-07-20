@@ -606,6 +606,16 @@ class Server(Observed):
         """Finish the engagement phase."""
         game = self.name_to_game(game_name)
         if game:
+            player = game.get_player_by_name(playername)
+            if not player:
+                return
+            if player != game.active_player:
+                return
+            if (game.pending_summon or game.pending_reinforcement or
+              game.pending_acquire):
+                return
+            if game.phase != Phase.FIGHT:
+                return
             game.done_with_engagements(playername)
 
     def recruit_creature(self, playername, game_name, markerid, creature_name,
