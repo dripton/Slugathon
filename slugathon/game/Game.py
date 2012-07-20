@@ -50,7 +50,6 @@ class Game(Observed):
         self.max_players = max_players
         self.started = started
         self.players = []
-        self.players_left = []  # Used to track co-winners in a draw
         self.add_player(owner, player_class, player_info)
         self.board = MasterBoard.MasterBoard()
         self.turn = 1
