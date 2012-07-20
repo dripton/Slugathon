@@ -665,8 +665,6 @@ def add_arguments(parser):
       default=config.DEFAULT_PORT)
     parser.add_argument("-d", "--delay", action="store", type=float,
       default=config.DEFAULT_AI_DELAY)
-    parser.add_argument("-t", "--type-id", action="store", type=int,
-      default=None)
     parser.add_argument("-g", "--game-name", action="store", type=str)
     parser.add_argument("-l", "--log-path", action="store", type=str)
     parser.add_argument("--ai-time-limit", action="store", type=int,
