@@ -712,8 +712,9 @@ class Server(Observed):
 
     def _finish_with_game(self, game):
         game.remove_observer(self)
-        self.games.remove(game)
-        self.results.save_game(game)
+        if game in self.games:
+            self.games.remove(game)
+            self.results.save_game(game)
 
     def update(self, observed, action, names):
         logging.info("%s %s %s", observed, action, names)
