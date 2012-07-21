@@ -398,6 +398,7 @@ class Anteroom(gtk.EventBox):
             reactor.callLater(1, self.update_game_stores)
         elif isinstance(action, Action.GameOver):
             reactor.callLater(1, self.update_game_stores)
+            reactor.callLater(1, self.update_user_store)
         elif isinstance(action, Action.EliminatePlayer):
             reactor.callLater(1, self.update_game_stores)
         elif isinstance(action, Action.ChatMessage):
