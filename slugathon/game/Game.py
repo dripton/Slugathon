@@ -1920,6 +1920,11 @@ class Game(Observed):
                 self.check_for_victory()
             reactor.callLater(1, self._end_dead_player_turn)
 
+        elif isinstance(action, Action.GameOver):
+            self.finish_time = time.time()
+            reactor.callLater(1, self._cleanup_dead_players,
+              action.winner_names)
+
         elif isinstance(action, Action.Withdraw):
             if action.game_name == self.name:
                 if not self.started:
