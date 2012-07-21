@@ -284,12 +284,11 @@ class Anteroom(gtk.EventBox):
                 name = game.name
                 start_time = time.ctime(game.start_time)
                 finish_time = time.ctime(game.finish_time)
-                living_players = ", ".join(playername for playername in
-                  game.living_playernames)
-                dead_players = ", ".join(playername for playername in
-                  game.dead_playernames)
-                tup = (name, start_time, finish_time, living_players,
-                  dead_players)
+                winners = ", ".join(playername for playername in
+                  game.winner_names)
+                losers = ", ".join(playername for playername in
+                  game.loser_names)
+                tup = (name, start_time, finish_time, winners, losers)
                 if ii < length:
                     self.old_game_store[ii, 0] = tup
                 else:
