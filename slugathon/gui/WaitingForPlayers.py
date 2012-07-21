@@ -20,7 +20,6 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.gui import icon
 from slugathon.util.NullUser import NullUser
-from slugathon.net import Results
 
 
 def format_time(secs):
@@ -39,8 +38,6 @@ class WaitingForPlayers(gtk.Dialog):
         self.game = game
         self.game.add_observer(self)
         self.started = False
-
-        self.results = Results.Results()
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -176,10 +173,23 @@ class WaitingForPlayers(gtk.Dialog):
                 self.start_game()
 
     def update_player_store(self):
+        def1 = self.user.callRemote("get_player_data")
+        def1.addCallback(self._got_player_data)
+        def1.addErrback(self.failure)
+
+    def _got_player_data(self, player_data):
+        playername_to_data = {}
+        if player_data:
+            for dct in player_data:
+                playername_to_data[dct["name"]] = dct
         length = len(self.player_store)
         for ii, playername in enumerate(self.game.playernames):
-            ranking = self.results.get_ranking(playername)
-            skill = ranking.skill
+            dct = playername_to_data.get(playername)
+            if dct:
+                skill = dct["skill"]
+            else:
+                # TODO unhardcode
+                skill = 1
             if ii < length:
                 self.player_store[(ii, 0)] = (playername, skill)
             else:

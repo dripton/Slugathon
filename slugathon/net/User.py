@@ -227,6 +227,9 @@ class User(Avatar):
     def perspective_resume_ai(self, game_name):
         self.server.resume_ai(self.name, game_name)
 
+    def perspective_get_player_data(self):
+        return self.server.get_player_data()
+
     def __repr__(self):
         return "User " + self.name
 

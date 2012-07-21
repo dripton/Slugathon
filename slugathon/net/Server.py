@@ -710,6 +710,10 @@ class Server(Observed):
         if game:
             game.resume_ai(playername)
 
+    def get_player_data(self):
+        """Return a list of player dicts for all players in the database."""
+        return self.results.get_player_data()
+
     def _finish_with_game(self, game):
         game.remove_observer(self)
         if game in self.games:

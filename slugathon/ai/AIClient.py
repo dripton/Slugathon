@@ -55,6 +55,7 @@ class AIClient(pb.Referenceable, Observed):
         self._setup_logging()
 
         bp = None
+        # Using Results means we need to be on the server.
         results = Results.Results()
         if not re.match(r"^ai\d+$", playername):
             raise AssertionError("invalid playername for AI")

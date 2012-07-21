@@ -16,7 +16,6 @@ from slugathon.gui import NewGame, LoadGame, WaitingForPlayers
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.util import guiutils
-from slugathon.net import Results
 
 
 @implementer(IObserver)
@@ -33,7 +32,6 @@ class Anteroom(gtk.EventBox):
 
         self.wfps = {}               # game name : WaitingForPlayers
         self.selected_names = set()
-        self.results = Results.Results()
 
         vbox1 = gtk.VBox()
         self.add(vbox1)
@@ -195,11 +193,26 @@ class Anteroom(gtk.EventBox):
             self.add_game(game)
 
     def update_user_store(self):
+        logging.info("")
+        def1 = self.user.callRemote("get_player_data")
+        def1.addCallback(self._got_player_data)
+        def1.addErrback(self.failure)
+
+    def _got_player_data(self, player_data):
+        logging.info(player_data)
+        playername_to_data = {}
+        if player_data:
+            for dct in player_data:
+                playername_to_data[dct["name"]] = dct
         sorted_playernames = sorted(self.playernames)
         leng = len(self.user_store)
         for ii, playername in enumerate(sorted_playernames):
-            ranking = self.results.get_ranking(playername)
-            skill = ranking.skill
+            dct = playername_to_data.get(playername)
+            if dct:
+                skill = dct["skill"]
+            else:
+                # TODO unhardcode
+                skill = 1
             if ii < leng:
                 self.user_store[ii, 0] = (playername, skill)
             else:
