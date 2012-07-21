@@ -227,6 +227,108 @@ class Results(object):
                 return None
             return row["player_id"]
 
+    def get_player_data(self):
+        """Return a list with one dict of data per player in the database."""
+        data = []
+        with self.connection:
+            cursor = self.connection.cursor()
+            query = """SELECT player_id, name, class, info, mu, sigma
+                       FROM player order by player_id"""
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            for row in rows:
+                player_id = row["player_id"]
+                name = row["name"]
+                player_class = row["class"]
+                info = row["info"]
+                mu = row["mu"]
+                sigma = row["sigma"]
+                ranking = Ranking(mu, sigma)
+                skill = ranking.skill
+                # TODO Maybe use a namedtuple instead
+                player_data = {
+                    "player_id": player_id,
+                    "name": name,
+                    "class": player_class,
+                    "info": info,
+                    "mu": mu,
+                    "sigma": sigma,
+                    "skill": skill,
+                }
+                data.append(player_data)
+        return data
+
+    def _spawn_new_ai(self, cursor):
+        """Spawn a new AI, mutated from default_bot_params, and return
+        its player_id."""
+        bp = BotParams.default_bot_params.mutate_all_fields()
+        bot = CleverBot.CleverBot("spawn", config.DEFAULT_AI_TIME_LIMIT, bp)
+        info = bot.player_info
+        logging.info("player_info %s", info)
+        query = """INSERT INTO player (class, info, mu, sigma)
+                   VALUES (?, ?, ?, ?)"""
+        cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
+          DEFAULT_SIGMA))
+        # And fetch the player_id.
+        query = """SELECT player_id FROM player
+                   where class = ? AND info = ?"""
+        cursor.execute(query, ("CleverBot", info))
+        row = cursor.fetchone()
+        player_id = row["player_id"]
+        # And update the name.
+        name = "ai%d" % player_id
+        query = """UPDATE player SET name = ?
+                   WHERE player_id = ?"""
+        cursor.execute(query, (name, player_id))
+        logging.info("spawning new AI %s %s %s", player_id, name, bp)
+        return player_id
+
+    def _breed_new_ai(self, cursor, old_player_ids):
+        """Breed a new AI, from two weighted-random experienced parents."""
+        query = """SELECT p.player_id, p.mu FROM player p
+                   WHERE p.class = 'CleverBot'"""
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        possible_parents = []
+        for row in rows:
+            mu = row["mu"]
+            player_id = row["player_id"]
+            if player_id in old_player_ids:
+                possible_parents.append((mu, player_id))
+        tup1 = Dice.weighted_random_choice(possible_parents)
+        possible_parents.remove(tup1)
+        tup2 = Dice.weighted_random_choice(possible_parents)
+        player_id1 = tup1[1]
+        info1 = self.get_player_info(player_id1)
+        bp1 = BotParams.BotParams.fromstring(info1)
+        player_id2 = tup2[1]
+        info2 = self.get_player_info(player_id2)
+        bp2 = BotParams.BotParams.fromstring(info2)
+        bp3 = bp1.cross(bp2)
+        bot = CleverBot.CleverBot("child",
+          config.DEFAULT_AI_TIME_LIMIT, bp3)
+        info = bot.player_info
+        logging.info("player_info %s", info)
+        query = """INSERT INTO player (class, info, mu, sigma)
+                   VALUES (?, ?, ?, ?)"""
+        cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
+          DEFAULT_SIGMA))
+        # And fetch the player_id.
+        query = """SELECT player_id FROM player
+                   where class = ? AND info = ?"""
+        cursor.execute(query, ("CleverBot", info))
+        row = cursor.fetchone()
+        player_id = row["player_id"]
+        # And update the name.
+        name = "ai%d" % player_id
+        query = """UPDATE player SET name = ?
+                   WHERE player_id = ?"""
+        cursor.execute(query, (name, player_id))
+        logging.info("father %s %s", player_id1, bp1)
+        logging.info("mother %s %s", player_id2, bp2)
+        logging.info("baby %s %s %s", player_id, name, bp3)
+        return player_id
+
     def get_weighted_random_player_id(self, excludes=()):
         """Return a random player_id, weighted by mu.  Exclude any player_ids
         in excludes.
@@ -253,29 +355,7 @@ class Results(object):
                 if player_id not in excludes:
                     total_ai_count += 1
             if total_ai_count < GENERATION_SIZE:
-                # Spawn a new AI, mutated from default_bot_params.
-                bp = BotParams.default_bot_params.mutate_all_fields()
-                bot = CleverBot.CleverBot("spawn",
-                  config.DEFAULT_AI_TIME_LIMIT, bp)
-                info = bot.player_info
-                logging.info("player_info %s", info)
-                query = """INSERT INTO player (class, info, mu, sigma)
-                           VALUES (?, ?, ?, ?)"""
-                cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
-                  DEFAULT_SIGMA))
-                # And fetch the player_id.
-                query = """SELECT player_id FROM player
-                           where class = ? AND info = ?"""
-                cursor.execute(query, ("CleverBot", info))
-                row = cursor.fetchone()
-                player_id = row["player_id"]
-                # And update the name.
-                name = "ai%d" % player_id
-                query = """UPDATE player SET name = ?
-                           WHERE player_id = ?"""
-                cursor.execute(query, (name, player_id))
-                logging.info("spawning new AI %s %s %s", player_id, name, bp)
-                return player_id
+                return self._spawn_new_ai()
 
             else:
                 query = """SELECT player_id, mu, sigma FROM player p
@@ -295,51 +375,7 @@ class Results(object):
                 young_ai_count = len(young_player_ids)
                 old_ai_count = len(old_player_ids)
                 if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
-                    # Breed a new AI, from two weighted-random experienced
-                    # parents.
-                    query = """SELECT p.player_id, p.mu FROM player p
-                               WHERE p.class = 'CleverBot'"""
-                    cursor.execute(query)
-                    rows = cursor.fetchall()
-                    possible_parents = []
-                    for row in rows:
-                        mu = row["mu"]
-                        player_id = row["player_id"]
-                        if player_id in old_player_ids:
-                            possible_parents.append((mu, player_id))
-                    tup1 = Dice.weighted_random_choice(possible_parents)
-                    possible_parents.remove(tup1)
-                    tup2 = Dice.weighted_random_choice(possible_parents)
-                    player_id1 = tup1[1]
-                    info1 = self.get_player_info(player_id1)
-                    bp1 = BotParams.BotParams.fromstring(info1)
-                    player_id2 = tup2[1]
-                    info2 = self.get_player_info(player_id2)
-                    bp2 = BotParams.BotParams.fromstring(info2)
-                    bp3 = bp1.cross(bp2)
-                    bot = CleverBot.CleverBot("child",
-                      config.DEFAULT_AI_TIME_LIMIT, bp3)
-                    info = bot.player_info
-                    logging.info("player_info %s", info)
-                    query = """INSERT INTO player (class, info, mu, sigma)
-                               VALUES (?, ?, ?, ?)"""
-                    cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
-                      DEFAULT_SIGMA))
-                    # And fetch the player_id.
-                    query = """SELECT player_id FROM player
-                               where class = ? AND info = ?"""
-                    cursor.execute(query, ("CleverBot", info))
-                    row = cursor.fetchone()
-                    player_id = row["player_id"]
-                    # And update the name.
-                    name = "ai%d" % player_id
-                    query = """UPDATE player SET name = ?
-                               WHERE player_id = ?"""
-                    cursor.execute(query, (name, player_id))
-                    logging.info("father %s %s", player_id1, bp1)
-                    logging.info("mother %s %s", player_id2, bp2)
-                    logging.info("baby %s %s %s", player_id, name, bp3)
-                    return player_id
+                    return self._breed_new_ai(cursor, old_player_ids)
 
                 else:
                     candidates = []
@@ -355,7 +391,13 @@ class Results(object):
                         if (player_id in young_player_ids and player_id not in
                           excludes):
                             candidates.append((mu, player_id))
-                    tup = Dice.weighted_random_choice(candidates)
-                    player_id = tup[1]
-                    logging.info("picked random AI %s", player_id)
-                    return player_id
+                    if candidates:
+                        tup = Dice.weighted_random_choice(candidates)
+                        player_id = tup[1]
+                        logging.info("picked random AI %s", player_id)
+                        return player_id
+                    else:
+                        if old_ai_count >= 2:
+                            return self._breed_new_ai(cursor, old_player_ids)
+                        else:
+                            return self._spawn_new_ai(cursor)
