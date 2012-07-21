@@ -1633,6 +1633,7 @@ class Game(Observed):
                   player.starting_tower))
 
         elif isinstance(action, Action.AssignedAllTowers):
+            self.start_time = time.time()
             self.sort_players()
 
         elif isinstance(action, Action.PickedColor):
