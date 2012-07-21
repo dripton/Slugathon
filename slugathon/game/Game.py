@@ -1555,25 +1555,38 @@ class Game(Observed):
         self.notify(action)
 
     def _update_finish_order(self, winner_player, loser_player):
+        logging.info("%s %s %s", winner_player, loser_player,
+          self.finish_order)
         # If loser player is already in finish_order, abort.
         if self.finish_order and loser_player in self.finish_order[0]:
+            logging.info("")
+            # Avoid inserting duplicates.
+            pass
+        elif (len(self.finish_order) >= 2 and winner_player in
+          self.finish_order[0] and loser_player in self.finish_order[1]):
+            logging.info("")
             # Avoid inserting duplicates.
             pass
         elif winner_player is None:
             # Just one player died, so no tie.
+            logging.info("")
             self.finish_order.insert(0, (loser_player, ))
         elif self.finish_order and winner_player in self.finish_order[0]:
             # Mutual titan kill, so tie.
+            logging.info("")
             self.finish_order[0] = (loser_player, winner_player)
         elif self.over and winner_player.dead:
             # Mutual titan kill, so tie
+            logging.info("")
             self.finish_order.insert(0, (winner_player, loser_player))
         elif self.over:
             # Game over so insert both the winner and the loser.
+            logging.info("")
             self.finish_order.insert(0, (loser_player, ))
             self.finish_order.insert(0, (winner_player, ))
         else:
             # Just one player died, so no tie.
+            logging.info("")
             self.finish_order.insert(0, (loser_player, ))
 
     def _cleanup_dead_players(self, winner_names):
