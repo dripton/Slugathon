@@ -1576,6 +1576,30 @@ class Game(Observed):
             # Just one player died, so no tie.
             self.finish_order.insert(0, (loser_player, ))
 
+    def _cleanup_dead_players(self, winner_names):
+        """Eliminate all non-winning players.
+
+        This is called when we get the GameOver action, in case we missed
+        any EliminatePlayer actions, so the game shows up as finished
+        in the Anteroom.
+        """
+        for player in self.players:
+            if player.name not in winner_names:
+                if not player.dead:
+                    logging.info(player)
+                    player.die(None, False)
+        # Also eliminate the winning players, if there was a draw.
+        if len(winner_names) == 2:
+            winning_players = [self.get_player_by_name(playername)
+              for playername in winner_names]
+            player0 = winning_players[0]
+            player1 = winning_players[1]
+            if player0 and player1:
+                if not player0.dead:
+                    player0.die(player1, False)
+                if not player1.dead:
+                    player1.die(player0, False)
+
     def update(self, observed, action, names):
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
