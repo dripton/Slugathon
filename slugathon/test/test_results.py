@@ -87,18 +87,18 @@ def test_save_game_and_get_ranking():
         player_data = results.get_player_data()
         assert len(player_data) == 2
         pd1 = player_data[0]
-        assert pd1.player_id == 1
-        assert pd1.name == "p1"
-        assert pd1.player_class == "Human"
-        assert pd1.info == "p1"
-        assert 29 < pd1.mu < 30
-        assert 7 < pd1.sigma < 8
-        assert pd1.skill == 7
+        assert pd1["player_id"] == 1
+        assert pd1["name"] == "p1"
+        assert pd1["class"] == "Human"
+        assert pd1["info"] == "p1"
+        assert 29 < pd1["mu"] < 30
+        assert 7 < pd1["sigma"] < 8
+        assert pd1["skill"] == 7
         pd2 = player_data[1]
-        assert pd2.player_id == 2
-        assert pd2.name == "p2"
-        assert pd2.player_class == "Human"
-        assert pd2.info == "p2"
-        assert 20 < pd2.mu < 21
-        assert 7 < pd2.sigma < 8
-        assert pd2.skill == 1
+        assert pd2["player_id"] == 2
+        assert pd2["name"] == "p2"
+        assert pd2["class"] == "Human"
+        assert pd2["info"] == "p2"
+        assert 20 < pd2["mu"] < 21
+        assert 7 < pd2["sigma"] < 8
+        assert pd2["skill"] == 1
