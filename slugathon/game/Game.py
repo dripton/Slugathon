@@ -251,6 +251,17 @@ class Game(Observed):
             return [player.name for player in winner_players]
         return []
 
+    @property
+    def loser_names(self):
+        losers = []
+        if self.over:
+            start_index = 1
+        else:
+            start_index = 0
+        for players in self.finish_order[start_index:]:
+            losers.extend(players)
+        return [player.name for player in losers]
+
     def assign_towers(self):
         """Randomly assign a tower to each player."""
         towers = self.board.get_tower_labels()
