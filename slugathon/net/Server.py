@@ -190,9 +190,14 @@ class Server(Observed):
                 player_ids.add(player_id)
         num_ais = game.min_players - game.num_players
         ainames = []
+        any_humans = False
+        for player in game.players:
+            if player.player_class == "Human":
+                any_humans = True
+                break
         for unused in xrange(num_ais):
             player_id = self.results.get_weighted_random_player_id(
-              excludes=player_ids)
+              excludes=player_ids, highest_mu=any_humans)
             player_ids.add(player_id)
             ainame = "ai%d" % player_id
             ainames.append(ainame)

@@ -329,75 +329,87 @@ class Results(object):
         logging.info("baby %s %s %s", player_id, name, bp3)
         return player_id
 
-    def get_weighted_random_player_id(self, excludes=()):
-        """Return a random player_id, weighted by mu.  Exclude any player_ids
-        in excludes.
+    def get_weighted_random_player_id(self, excludes=(), highest_mu=False):
+        """Return a player_id.  Exclude any player_ids in excludes.
 
         If there are fewer than GENERATION_SIZE AI player_id in the database,
         add a new AI (by mutating the default) and return its player_id.
+
+        If highest_mu is not None, then return the eligible player_id with
+        the highest mu.
 
         If there are fewer than GENERATION_SIZE AI player_ids in the database
         with sigma <= BREEDING_SIGMA_THRESHOLD, breed a new AI (by
         crossing two parent AIs with sigma <= BREEDING_SIGMA_THRESHOLD,
         chosen randomly weighted by mu), and return its player_id.
 
-        Otherwise, choose an existing player_id randomly, weighted by mu, and
-        return it.
+        Otherwise, choose an existing player_id randomly, weighted by low
+        sigma, and return it.
         """
         with self.connection:
             cursor = self.connection.cursor()
-            query = "SELECT player_id FROM player WHERE class='CleverBot'"
+            total_ai_count = 0
+
+            query = """SELECT player_id, mu, sigma FROM player p
+                       WHERE p.class='CleverBot'"""
             cursor.execute(query)
             rows = cursor.fetchall()
-            total_ai_count = 0
+            young_player_ids = set()
+            old_player_ids = set()
             for row in rows:
                 player_id = row["player_id"]
-                if player_id not in excludes:
-                    total_ai_count += 1
-            if total_ai_count < GENERATION_SIZE:
-                return self._spawn_new_ai()
+                sigma = row["sigma"]
+                if sigma <= BREEDING_SIGMA_THRESHOLD:
+                    old_player_ids.add(player_id)
+                else:
+                    young_player_ids.add(player_id)
+            young_ai_count = len(young_player_ids)
+            old_ai_count = len(old_player_ids)
+            total_ai_count = young_ai_count + old_ai_count
 
-            else:
-                query = """SELECT player_id, mu, sigma FROM player p
-                           WHERE p.class='CleverBot'"""
+            if highest_mu:
+                # Pick the eligible AI with the highest mu and return its
+                # player_id.
+                query = """SELECT player_id, mu FROM player
+                           WHERE class = 'CleverBot'
+                           ORDER BY mu DESC"""
                 cursor.execute(query)
                 rows = cursor.fetchall()
-                young_player_ids = set()
-                old_player_ids = set()
                 for row in rows:
                     player_id = row["player_id"]
-                    mu = row["mu"]
-                    sigma = row["sigma"]
-                    if sigma <= BREEDING_SIGMA_THRESHOLD:
-                        old_player_ids.add(player_id)
-                    else:
-                        young_player_ids.add(player_id)
-                young_ai_count = len(young_player_ids)
-                old_ai_count = len(old_player_ids)
-                if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
-                    return self._breed_new_ai(cursor, old_player_ids)
-
-                else:
-                    candidates = []
-                    # Pick an existing young AI randomly, weighted by mu,
-                    # and return its player_id.
-                    query = """SELECT player_id, mu FROM player
-                               WHERE class = 'CleverBot'"""
-                    cursor.execute(query)
-                    rows = cursor.fetchall()
-                    for row in rows:
-                        player_id = row["player_id"]
-                        mu = row["mu"]
-                        if (player_id in young_player_ids and player_id not in
-                          excludes):
-                            candidates.append((mu, player_id))
-                    if candidates:
-                        tup = Dice.weighted_random_choice(candidates)
-                        player_id = tup[1]
-                        logging.info("picked random AI %s", player_id)
+                    if player_id not in excludes:
+                        logging.info("picked high-mu AI %s", player_id)
                         return player_id
+
+            if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
+                # Not enough young AIs, so breed one.
+                return self._breed_new_ai(cursor, old_player_ids)
+
+            else:
+                candidates = []
+                # Pick an existing young AI randomly, weighted by low sigma,
+                # and return its player_id.
+                query = """SELECT player_id, sigma FROM player
+                           WHERE class = 'CleverBot'"""
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                for row in rows:
+                    player_id = row["player_id"]
+                    sigma = row["sigma"]
+                    if (player_id in young_player_ids and player_id not in
+                      excludes):
+                        candidates.append((1.0 / sigma, player_id))
+                if candidates:
+                    tup = Dice.weighted_random_choice(candidates)
+                    player_id = tup[1]
+                    logging.info("picked random AI %s", player_id)
+                    return player_id
+                else:
+                    # No eligible AIs available, so either breed or spawn
+                    # a new one.
+                    if total_ai_count < GENERATION_SIZE:
+                        return self._spawn_new_ai(cursor)
+                    elif old_ai_count >= 2:
+                        return self._breed_new_ai(cursor, old_player_ids)
                     else:
-                        if old_ai_count >= 2:
-                            return self._breed_new_ai(cursor, old_player_ids)
-                        else:
-                            return self._spawn_new_ai(cursor)
+                        return self._spawn_new_ai(cursor)
