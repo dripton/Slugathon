@@ -630,9 +630,20 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if player:
-                action = Action.RecruitCreature(game.name, player.name,
-                  markerid, creature_name, tuple(recruiter_names))
-                game.update(self, action, None)
+                legion = player.markerid_to_legion.get(markerid)
+                if legion and not legion.recruited:
+                    caretaker = game.caretaker
+                    hexlabel = legion.hexlabel
+                    masterhex = game.board.hexes[hexlabel]
+                    mterrain = masterhex.terrain
+                    lst = list(recruiter_names[:])
+                    lst.insert(0, creature_name)
+                    tup = tuple(lst)
+                    if tup in legion.available_recruits_and_recruiters(
+                      mterrain, caretaker):
+                        action = Action.RecruitCreature(game.name, player.name,
+                          markerid, creature_name, tuple(recruiter_names))
+                        game.update(self, action, None)
 
     def undo_recruit(self, playername, game_name, markerid):
         """Undo one recruit."""

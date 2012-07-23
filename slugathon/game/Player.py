@@ -143,8 +143,8 @@ class Player(Observed):
 
     def split_legion(self, parent_markerid, child_markerid,
       parent_creature_names, child_creature_names):
-        logging.info("split_legion %s %s %s %s", parent_markerid,
-          child_markerid, parent_creature_names, child_creature_names)
+        logging.info("%s %s %s %s", parent_markerid, child_markerid,
+          parent_creature_names, child_creature_names)
         parent = self.markerid_to_legion.get(parent_markerid)
         if parent is None:
             return
@@ -171,19 +171,19 @@ class Player(Observed):
         new_legion2.add_observer(self.game)
         self.markerid_to_legion[child_markerid] = new_legion2
         del parent
+        # One action for our player with creature names
+        action = Action.SplitLegion(self.game.name, self.name,
+         parent_markerid, child_markerid, parent_creature_names,
+         child_creature_names)
+        logging.info(action)
+        self.notify(action, names=[self.name])
+        # Another action for everyone (including our player, who will
+        # ignore it as a duplicate) without creature names.
         action = Action.SplitLegion(self.game.name, self.name,
           parent_markerid, child_markerid, len(parent_creature_names) *
           ["Unknown"], len(child_creature_names) * ["Unknown"])
         logging.info(action)
         self.notify(action)
-        action = Action.RevealLegion(self.game.name, parent_markerid,
-          parent_creature_names)
-        logging.info(action)
-        self.notify(action, names=[self.name])
-        action = Action.RevealLegion(self.game.name, child_markerid,
-          child_creature_names)
-        logging.info(action)
-        self.notify(action, names=[self.name])
 
     def undo_split(self, parent_markerid, child_markerid):
         parent = self.markerid_to_legion.get(parent_markerid)

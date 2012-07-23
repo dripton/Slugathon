@@ -327,7 +327,6 @@ class AIClient(pb.Referenceable, Observed):
             self.aps.get_leaf(action.parent_markerid).split(
               len(action.child_creature_names), action.child_markerid,
               game.turn)
-            # XXX This may be obsolete.
             if action.parent_creature_names[0] != "Unknown":
                 self.aps.get_leaf(action.parent_markerid).reveal_creatures(
                   list(action.parent_creature_names))

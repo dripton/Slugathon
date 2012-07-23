@@ -259,7 +259,14 @@ class User(Avatar):
 
     def update(self, observed, action, names):
         """Defers updates to its client, dropping the observed reference."""
-        if not isinstance(action, Action.DriftDamage):
-            def1 = self.client.callRemote("update", action, names)
-            def1.addErrback(self.trap_connection_lost)
-            def1.addErrback(self.log_failure)
+        # Filter DriftDamage; we redo it on the client.
+        if isinstance(action, Action.DriftDamage):
+            return
+        # Filter SplitLegion to our own player with censored creature names;
+        # it'll get the other one with creature names.
+        if (isinstance(action, Action.SplitLegion) and action.playername ==
+          self.name and "Unknown" in action.parent_creature_names):
+            return
+        def1 = self.client.callRemote("update", action, names)
+        def1.addErrback(self.trap_connection_lost)
+        def1.addErrback(self.log_failure)
