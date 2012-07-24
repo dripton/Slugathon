@@ -189,10 +189,33 @@ class CleverBot(object):
         else:
             logging.info("not my engagement")
 
-    # TODO Extract method to decide what to recruit
-    # TODO Pick third cyclops before gorgon.
     # TODO Look at what we can recruit on each movement roll, to see if we
-    # should take a third creature of a kind.
+    # should take a third creature of a kind.  We also need to be able to
+    # split off better creatures to enable recruiting for this to be
+    # useful for 6-high legions.
+    def _pick_recruit_and_recruiters(self, legion):
+        """Return a tuple of (recruit, recruiters), or (None, None)."""
+        player = legion.player
+        game = player.game
+        caretaker = game.caretaker
+        masterhex = game.board.hexes[legion.hexlabel]
+        mterrain = masterhex.terrain
+        lst = legion.available_recruits_and_recruiters(mterrain,
+          caretaker)
+        if lst:
+            # For now, just take the last recruit.
+            tup = lst[-1]
+            recruit = tup[0]
+            # And pick randomly among its recruiters.
+            possible_recruiters = set()
+            for tup in lst:
+                if tup[0] == recruit:
+                    recruiters = tup[1:]
+                    possible_recruiters.add(recruiters)
+            recruiters = random.choice(list(possible_recruiters))
+            return (recruit, recruiters)
+        return (None, None)
+
     def recruit(self, game):
         logging.info("CleverBot.recruit")
         if game.active_player.name != self.playername:
@@ -201,16 +224,8 @@ class CleverBot(object):
         player = game.active_player
         for legion in player.legions:
             if legion.moved and legion.can_recruit:
-                masterhex = game.board.hexes[legion.hexlabel]
-                caretaker = game.caretaker
-                mterrain = masterhex.terrain
-                lst = legion.available_recruits_and_recruiters(mterrain,
-                  caretaker)
-                if lst:
-                    # For now, just take the last one.
-                    tup = lst[-1]
-                    recruit = tup[0]
-                    recruiters = tup[1:]
+                recruit, recruiters = self._pick_recruit_and_recruiters(legion)
+                if recruit is not None:
                     logging.info("CleverBot calling recruit_creature %s %s %s",
                       legion.markerid, recruit, recruiters)
                     def1 = self.user.callRemote("recruit_creature", game.name,
@@ -228,15 +243,9 @@ class CleverBot(object):
         assert game.battle_phase == Phase.REINFORCE
         legion = game.defender_legion
         assert legion.player.name == self.playername
-        mterrain = game.battlemap.mterrain
-        caretaker = game.caretaker
         if game.battle_turn == 4 and legion.can_recruit:
-            lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
-            if lst:
-                # For now, just take the last one.
-                tup = lst[-1]
-                recruit = tup[0]
-                recruiters = tup[1:]
+            recruit, recruiters = self._pick_recruit_and_recruiters(legion)
+            if recruit is not None:
                 logging.info("CleverBot calling recruit_creature %s", recruit)
                 def1 = self.user.callRemote("recruit_creature", game.name,
                   legion.markerid, recruit, recruiters)
@@ -251,15 +260,9 @@ class CleverBot(object):
         logging.info("")
         legion = game.defender_legion
         assert legion.player.name == self.playername
-        mterrain = game.battlemap.mterrain
-        caretaker = game.caretaker
         if legion.can_recruit:
-            lst = legion.available_recruits_and_recruiters(mterrain, caretaker)
-            if lst:
-                # For now, just take the last one.
-                tup = lst[-1]
-                recruit = tup[0]
-                recruiters = tup[1:]
+            recruit, recruiters = self._pick_recruit_and_recruiters(legion)
+            if recruit is not None:
                 logging.info("CleverBot calling recruit_creature %s", recruit)
                 def1 = self.user.callRemote("recruit_creature", game.name,
                   legion.markerid, recruit, recruiters)
@@ -373,6 +376,7 @@ class CleverBot(object):
               markerid)
             def1.addErrback(self.failure)
 
+    # TODO Sometimes split off a better creature to enable better recruiting.
     def split(self, game):
         """Split a legion, or end split phase."""
         logging.info("split")
