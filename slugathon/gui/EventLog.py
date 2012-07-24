@@ -24,8 +24,7 @@ class EventLog(gtk.EventBox):
         gtk.EventBox.__init__(self)
         self.game = game
         self.playername = playername
-        self.last_action = None
-        self.reveal_actions = set()
+        self.last_st = ""
 
         self.vbox2 = gtk.VBox()
 
@@ -37,16 +36,13 @@ class EventLog(gtk.EventBox):
 
     def update(self, observed, action, names):
         st = None
-        if action == self.last_action or action in self.reveal_actions:
-            pass
-        elif isinstance(action, Action.AssignTower):
+        if isinstance(action, Action.AssignTower):
             st = "%s gets tower %d" % (action.playername,
               action.tower_num)
         elif isinstance(action, Action.PickedColor):
             st = "%s gets color %s" % (action.playername,
               action.color)
         elif isinstance(action, Action.StartSplitPhase):
-            self.reveal_actions.clear()
             playercolor = self.game.get_player_by_name(action.playername).color
             st = "%s (%s) turn %d" % (action.playername,
               playercolor, action.turn)
@@ -86,12 +82,9 @@ class EventLog(gtk.EventBox):
             st = "%s (%s) undoes move" % (action.markerid,
               Legion.find_picname(action.markerid))
         elif isinstance(action, Action.RevealLegion):
-            self.reveal_actions.add(action)
             st = "%s (%s) is revealed as %s" % (action.markerid,
               Legion.find_picname(action.markerid),
               ", ".join(action.creature_names))
-        elif isinstance(action, Action.StartFightPhase):
-            self.reveal_actions.clear()
         elif isinstance(action, Action.Flee):
             st = "%s (%s) in %s hex %s flees" % (action.markerid,
               Legion.find_picname(action.markerid),
@@ -186,8 +179,8 @@ class EventLog(gtk.EventBox):
                 st = "%s wins!" % action.winner_names[0]
             else:
                 st = "%s draw" % " and ".join(action.winner_names)
-        self.last_action = action
-        if st:
+        if st and st != self.last_st:
+            self.last_st = st
             label = gtk.Label(st)
             # left-align the label
             label.set_alignment(0.0, 0.5)
