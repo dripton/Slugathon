@@ -30,6 +30,9 @@ class User(Avatar):
     def detached(self, mind):
         pass
 
+    def perspective_ping(self):
+        return True
+
     def perspective_get_name(self, arg):
         return self.name
 

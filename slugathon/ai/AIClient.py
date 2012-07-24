@@ -17,6 +17,8 @@ from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import reactor, defer
 from twisted.internet.error import ReactorNotRunning
+from twisted.internet.task import LoopingCall
+from twisted.spread.pb import PBConnectionLost, DeadReferenceError
 from twisted.python import log
 from zope.interface import implementer
 
@@ -132,6 +134,12 @@ class AIClient(pb.Referenceable, Observed):
             def1 = user.callRemote("get_playernames")
             def1.addCallback(self.got_playernames)
             def1.addErrback(self.failure)
+            lc = LoopingCall(user.callRemote, "ping")
+            def2 = lc.start(10)
+            def2.addErrback(self.failure)
+        else:
+            logging.info("failed to get user; exiting")
+            self.exit_unconditionally(1)
 
     def connection_failed(self, arg):
         log.err(arg)
@@ -211,6 +219,8 @@ class AIClient(pb.Referenceable, Observed):
 
     def failure(self, error):
         log.err(error)
+        if error.check(PBConnectionLost, DeadReferenceError):
+            self.exit_unconditionally(1)
 
     def remote_update(self, action, names):
         """Near-IObserver on the remote User, except observed is
@@ -221,15 +231,16 @@ class AIClient(pb.Referenceable, Observed):
         observed = None
         self.update(observed, action, names)
 
-    def exit_unconditionally(self):
+    def exit_unconditionally(self, returncode):
         """Just exit the process, with no tracebacks or other drama."""
+        logging.info("")
         if reactor.running:
             try:
                 reactor.stop()
             except ReactorNotRunning:
                 pass
         # sys.exit(0) generates ugly tracebacks on the server side.
-        os._exit(0)
+        os._exit(returncode)
 
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
@@ -305,7 +316,7 @@ class AIClient(pb.Referenceable, Observed):
             else:
                 logging.info("Game %s over, draw" % action.game_name)
             logging.info("AI exiting")
-            self.exit_unconditionally()
+            self.exit_unconditionally(0)
 
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
@@ -625,7 +636,7 @@ class AIClient(pb.Referenceable, Observed):
             if playername == self.playername:
                 if game.owner.name != self.playername:
                     logging.info("Eliminated; AI exiting")
-                    self.exit_unconditionally()
+                    self.exit_unconditionally(0)
             # Remove the dead player's PredictSplits from self.aps
             # to avoid problems later if his markers get reused.
             player = game.get_player_by_name(playername)
