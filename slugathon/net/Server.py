@@ -116,12 +116,14 @@ class Server(Observed):
           game_name, min_players, max_players, ai_time_limit,
           player_time_limit, player_class, player_info)
         if not game_name:
-            raise ValueError("Games must be named")
+            logging.warning("Games must be named")
+            return
         if game_name in [game.name for game in self.games]:
-            raise ValueError('The game name "%s" is already in use'
-              % game_name)
+            logging.warning('The game name "%s" is already in use' % game_name)
+            return
         if min_players > max_players:
-            raise ValueError("min_players must be <= max_players")
+            logging.warning("min_players must be <= max_players")
+            return
         now = time.time()
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, playername, now, now + GAME_START_DELAY,
@@ -161,8 +163,8 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             if playername != game.owner.name:
-                raise AssertionError("Game.start %s called by non-owner %s"
-                  % (self.name, playername))
+                logging.warning("start_game called by non-owner")
+                return
             if game.num_players < game.min_players:
                 self._spawn_ais(game)
             else:
@@ -235,8 +237,9 @@ class Server(Observed):
             if not self.no_passwd:
                 aipass = self._passwd_for_playername(ainame)
                 if aipass is None:
-                    logging.info("user %s is not in %s; ai will fail to join" %
-                      (ainame, self.passwd_path))
+                    logging.warning(
+                      "user %s is not in %s; ai will fail to join" % (ainame,
+                      self.passwd_path))
                 else:
                     args.extend(["--password", aipass])
             logging.info("spawning AI process for %s", ainame)
@@ -248,12 +251,16 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if player is None:
+                logging.warning("no such player")
                 return
             if player.color == color:
+                logging.warning("color already assigned")
                 return
             if playername != game.next_playername_to_pick_color:
+                logging.warning("not this player's turn")
                 return
             if color not in game.colors_left:
+                logging.warning("invalid color")
                 return
             game.assign_color(playername, color)
 
@@ -271,37 +278,37 @@ class Server(Observed):
           child_creature_names)
         game = self.name_to_game(game_name)
         if not game:
-            logging.info("no game")
+            logging.warning("no game")
             return
         player = game.get_player_by_name(playername)
         if player is not game.active_player:
-            logging.info("wrong player")
+            logging.warning("wrong player")
             return
         if game.phase != Phase.SPLIT:
-            logging.info("wrong phase")
+            logging.warning("wrong phase")
             return
         parent = player.markerid_to_legion.get(parent_markerid)
         if parent is None:
-            logging.info("no parent")
+            logging.warning("no parent")
             return
         if child_markerid not in player.markerids_left:
-            logging.info("no marker")
+            logging.warning("no marker")
             return
         if len(parent_creature_names) < 2:
-            logging.info("parent too short")
+            logging.warning("parent too short")
             return
         if len(parent_creature_names) > 5:
-            logging.info("parent too tall")
+            logging.warning("parent too tall")
             return
         if len(child_creature_names) < 2:
-            logging.info("child too short")
+            logging.warning("child too short")
             return
         if len(child_creature_names) > 5:
-            logging.info("child too tall")
+            logging.warning("child too tall")
             return
         if bag(parent.creature_names) != bag(parent_creature_names).union(
           bag(child_creature_names)):
-            logging.info("wrong creatures")
+            logging.warning("wrong creatures")
         game.split_legion(playername, parent_markerid, child_markerid,
           parent_creature_names, child_creature_names)
 
@@ -332,12 +339,12 @@ class Server(Observed):
             player = game.get_player_by_name(playername)
             legion = player.markerid_to_legion.get(markerid)
             if legion is None:
+                logging.warning("no legion")
                 return
             if not game.can_move_legion(player, legion, hexlabel, entry_side,
               teleport, teleporting_lord):
-                raise AssertionError("illegal move attempt", player, legion,
-                  hexlabel, entry_side, teleport, teleporting_lord,
-                  game.all_legions())
+                logging.warning("cannot move")
+                return
             game.move_legion(playername, markerid, hexlabel, entry_side,
               teleport, teleporting_lord)
 
@@ -368,7 +375,7 @@ class Server(Observed):
         if game:
             legion = game.find_legion(markerid)
             if not legion:
-                logging.info("flee with no legion %s", markerid)
+                logging.warning("flee with no legion %s", markerid)
                 return
             hexlabel = legion.hexlabel
             for enemy_legion in game.all_legions(hexlabel):
@@ -376,17 +383,17 @@ class Server(Observed):
                     break
             # Enemy illegally managed to concede before we could flee.
             if enemy_legion == legion:
-                logging.info("illegal concede before flee")
+                logging.warning("illegal concede before flee")
                 return
             player = game.get_player_by_name(playername)
             if player == game.active_player:
-                logging.info("attacker tried to flee")
+                logging.warning("attacker tried to flee")
                 return
             if legion.player != player:
-                logging.info("wrong player tried to flee")
+                logging.warning("wrong player tried to flee")
                 return
             if not legion.can_flee:
-                logging.info("illegal flee attempt")
+                logging.warning("illegal flee attempt")
                 return
             enemy_markerid = enemy_legion.markerid
             action = Action.Flee(game.name, markerid, enemy_markerid,
@@ -401,13 +408,14 @@ class Server(Observed):
             hexlabel = legion.hexlabel
             player = game.get_player_by_name(playername)
             if player == game.active_player:
-                logging.info("attacker tried to not flee")
+                logging.warning("attacker tried to not flee")
                 return
             legion = player.markerid_to_legion.get(markerid)
             if legion is None:
+                logging.warning("no legion")
                 return
             if legion.player != player:
-                logging.info("wrong player tried to not flee")
+                logging.warning("wrong player tried to not flee")
                 return
             for enemy_legion in game.all_legions(hexlabel):
                 if enemy_legion != legion:
@@ -472,11 +480,11 @@ class Server(Observed):
             defender_legion = game.find_legion(defender_markerid)
             if (not attacker_legion or not defender_legion or playername not in
               [attacker_legion.player.name, defender_legion.player.name]):
-                logging.info("illegal fight call from %s", playername)
+                logging.warning("illegal fight call from %s", playername)
                 return
             if (defender_legion.can_flee and not
               game.defender_chose_not_to_flee):
-                logging.info(
+                logging.warning(
                   "Illegal fight call while defender can still flee")
                 return
             action = Action.Fight(game.name, attacker_markerid,
@@ -491,16 +499,21 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if player is None:
+                logging.warning("no player")
                 return
             if player != game.battle_active_player:
+                logging.warning("out of turn")
                 return
             legion = game.battle_active_legion
             if not legion:
+                logging.warning("no battle legion")
                 return
             creature = legion.find_creature(creature_name, old_hexlabel)
             if not creature:
+                logging.warning("no such creature")
                 return
             if new_hexlabel not in game.find_battle_moves(creature):
+                logging.warning("invalid move")
                 return
             game.move_creature(playername, creature_name, old_hexlabel,
               new_hexlabel)
@@ -562,6 +575,7 @@ class Server(Observed):
         if game:
             legion = game.find_legion(markerid)
             if not legion:
+                logging.warning("no such legion")
                 return
             num_archangels = num_angels = 0
             for angel_name in angel_names:
@@ -574,7 +588,7 @@ class Server(Observed):
               num_angels <= legion.angels_pending + legion.archangels_pending -
               num_archangels)
             if not okay:
-                logging.info("not enough angels pending")
+                logging.warning("not enough angels pending")
                 logging.info("angels %s", angel_names)
                 logging.info("angels_pending %s", legion.angels_pending)
                 logging.info("archangels_pending %s",
@@ -582,19 +596,19 @@ class Server(Observed):
                 game.do_not_acquire_angels(playername, markerid)
                 return
             if len(legion) >= 7:
-                logging.info("acquire_angels 7 high")
+                logging.warning("acquire_angels 7 high")
                 game.do_not_acquire_angels(playername, markerid)
                 return
             if len(legion) + num_angels + num_archangels > 7:
-                logging.info("acquire_angels would go over 7 high")
+                logging.warning("acquire_angels would go over 7 high")
                 game.do_not_acquire_angels(playername, markerid)
                 return
             if caretaker.num_left("Archangel") < num_archangels:
-                logging.info("not enough Archangels left")
+                logging.warning("not enough Archangels left")
                 game.do_not_acquire_angels(playername, markerid)
                 return
             if caretaker.num_left("Angel") < num_angels:
-                logging.info("not enough Angels left")
+                logging.warning("not enough Angels left")
                 game.do_not_acquire_angels(playername, markerid)
                 return
             game.acquire_angels(playername, markerid, angel_names)
@@ -613,13 +627,17 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if not player:
+                logging.warning("no such player")
                 return
             if player != game.active_player:
+                logging.warning("out of turn")
                 return
             if (game.pending_summon or game.pending_reinforcement or
               game.pending_acquire):
+                logging.warning("waiting on something")
                 return
             if game.phase != Phase.FIGHT:
+                logging.warning("wrong phase")
                 return
             game.done_with_engagements(playername)
 
