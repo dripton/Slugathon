@@ -22,7 +22,7 @@ from zope.interface import implementer
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (GUIBattleHex, Chit, PickRecruit, SummonAngel,
   PickCarry, PickStrikePenalty, InfoDialog, ConfirmDialog, Marker, TurnTrack,
-  BattleDice, EventLog, Graveyard)
+  BattleDice, EventLog, Graveyard, About)
 from slugathon.util import guiutils, prefs
 from slugathon.game import Phase, Action
 
@@ -38,6 +38,9 @@ ui_string = """<ui>
       <menuitem action="Redo"/>
       <separator/>
       <menuitem action="Concede Battle"/>
+    </menu>
+    <menu action="HelpMenu">
+      <menuitem action="About"/>
     </menu>
   </menubar>
   <toolbar name="Toolbar">
@@ -164,6 +167,9 @@ class GUIBattleMap(gtk.EventBox):
           ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
           ("Concede Battle", None, "_Concede Battle", "<control>C",
             "Concede Battle", self.cb_concede),
+
+          ("HelpMenu", None, "_Help"),
+          ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]
         ag.add_actions(actions)
         self.ui = gtk.UIManager()
@@ -593,6 +599,9 @@ class GUIBattleMap(gtk.EventBox):
             def1 = self.user.callRemote("concede", self.game.name,
               friend.markerid, enemy.markerid, friend.hexlabel)
             def1.addErrback(self.failure)
+
+    def cb_about(self, action):
+        About.About(self.parent_window)
 
     def bounding_rect_for_hexlabels(self, hexlabels):
         """Return the minimum bounding rectangle that encloses all
