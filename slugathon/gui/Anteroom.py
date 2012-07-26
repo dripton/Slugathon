@@ -78,6 +78,8 @@ class Anteroom(gtk.EventBox):
         hbox2.pack_start(label1, expand=False)
 
         load_game_button = gtk.Button()
+        # Disable it until loading games works.
+        load_game_button.set_sensitive(False)
         hbox1.pack_start(load_game_button, expand=False)
         alignment2 = gtk.Alignment()
         load_game_button.add(alignment2)
