@@ -111,7 +111,10 @@ class Server(Observed):
 
     def form_game(self, playername, game_name, min_players, max_players,
       ai_time_limit, player_time_limit, player_class, player_info):
-        """Form a new game."""
+        """Form a new game.
+
+        Return None normally, or an error string if there's a problem.
+        """
         logging.info("form_game %s %s %s %s %s %s %s %s", playername,
           game_name, min_players, max_players, ai_time_limit,
           player_time_limit, player_class, player_info)
@@ -119,8 +122,9 @@ class Server(Observed):
             logging.warning("Games must be named")
             return
         if game_name in [game.name for game in self.games]:
-            logging.warning('The game name "%s" is already in use' % game_name)
-            return
+            st = 'The game name "%s" is already in use' % game_name
+            logging.warning(st)
+            return st
         if min_players > max_players:
             logging.warning("min_players must be <= max_players")
             return

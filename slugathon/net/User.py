@@ -52,8 +52,9 @@ class User(Avatar):
 
     def perspective_form_game(self, game_name, min_players, max_players,
       ai_time_limit, player_time_limit, player_class, player_info):
-        self.server.form_game(self.name, game_name, min_players, max_players,
-          ai_time_limit, player_time_limit, player_class, player_info)
+        return self.server.form_game(self.name, game_name, min_players,
+          max_players, ai_time_limit, player_time_limit, player_class,
+          player_info)
 
     def perspective_join_game(self, game_name, player_class, player_info):
         self.server.join_game(self.name, game_name, player_class, player_info)

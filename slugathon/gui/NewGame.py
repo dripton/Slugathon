@@ -7,23 +7,25 @@ __license__ = "GNU GPL v2"
 import gtk
 from twisted.python import log
 
-from slugathon.gui import icon
+from slugathon.gui import icon, InfoDialog
 from slugathon.util.NullUser import NullUser
 from slugathon.net import config
 
 
 class NewGame(gtk.Dialog):
     """Form new game dialog."""
-    def __init__(self, user, playername, parent):
-        gtk.Dialog.__init__(self, "Form New Game - %s" % playername, parent)
+    def __init__(self, user, playername, parent_window):
+        gtk.Dialog.__init__(self, "Form New Game - %s" % playername,
+          parent_window)
         self.game_name = None
         self.min_players = None
         self.max_players = None
         self.user = user
         self.playername = playername
+        self.parent_window = parent_window
 
         self.set_icon(icon.pixbuf)
-        self.set_transient_for(parent)
+        self.set_transient_for(parent_window)
         self.set_destroy_with_parent(True)
 
         hbox1 = gtk.HBox()
@@ -94,6 +96,7 @@ class NewGame(gtk.Dialog):
             def1 = self.user.callRemote("form_game", self.game_name,
               self.min_players, self.max_players, self.ai_time_limit,
               self.player_time_limit, "Human", "")
+            def1.addCallback(self.got_information)
             def1.addErrback(self.failure)
             self.destroy()
 
@@ -102,6 +105,10 @@ class NewGame(gtk.Dialog):
 
     def failure(self, error):
         log.err(error)
+
+    def got_information(self, information):
+        if information:
+            InfoDialog.InfoDialog(self.parent_window, "Info", str(information))
 
 
 if __name__ == "__main__":
