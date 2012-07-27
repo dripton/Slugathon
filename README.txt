@@ -7,6 +7,9 @@ Installation is currently really easy on Windows (just download and run an
 manager then run a command), and kind of a pain on Mac OS.  I'm working to
 make it easier everywhere.
 
+Note that pip can't install Slugathon because it can't install PyGTK.  But
+once you have PyGTK installed, pip should be able to do the rest.
+
 1. If you're on Windows and in a hurry, download the latest .exe from the
 Downloads page and skip to step 5.
 
