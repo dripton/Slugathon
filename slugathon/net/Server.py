@@ -191,9 +191,10 @@ class Server(Observed):
     def _spawn_ais(self, game):
         player_ids = set()
         for game in self.games:
-            for player in game.players:
-                player_id = self.results.get_player_id(player.player_info)
-                player_ids.add(player_id)
+            if not game.over:
+                for player in game.players:
+                    player_id = self.results.get_player_id(player.player_info)
+                    player_ids.add(player_id)
         num_ais = game.min_players - game.num_players
         ainames = []
         any_humans = False
