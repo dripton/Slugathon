@@ -753,9 +753,10 @@ class Server(Observed):
         return self.results.get_player_data()
 
     def _finish_with_game(self, game):
+        # We don't remove the game, because we want to remember its name
+        # to avoid duplicates.  Does this cause memory problems?
         game.remove_observer(self)
         if game in self.games:
-            self.games.remove(game)
             self.results.save_game(game)
 
     def update(self, observed, action, names):

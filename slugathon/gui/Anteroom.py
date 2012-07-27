@@ -286,8 +286,10 @@ class Anteroom(gtk.EventBox):
                 name = game.name
                 start_time = time.ctime(game.start_time)
                 finish_time = time.ctime(game.finish_time)
+                logging.debug("winners %s", game.winner_names)
                 winners = ", ".join(playername for playername in
                   game.winner_names)
+                logging.debug("losers %s", game.loser_names)
                 losers = ", ".join(playername for playername in
                   game.loser_names)
                 tup = (name, start_time, finish_time, winners, losers)

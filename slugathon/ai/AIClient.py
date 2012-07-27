@@ -188,15 +188,17 @@ class AIClient(pb.Referenceable, Observed):
     def add_game(self, game_info_tuple):
         logging.info("add_game %s", game_info_tuple)
         (name, create_time, start_time, min_players, max_players,
-          playernames, started) = game_info_tuple
+          playernames, started, finish_time, winner_names,
+          loser_names) = game_info_tuple
         owner = playernames[0]
         game = Game.Game(name, owner, create_time, start_time, min_players,
-          max_players, started)
+          max_players, started=started, finish_time=finish_time)
         self.add_observer(game)
         for playername in playernames[1:]:
             game.add_player(playername)
         self.games.append(game)
-        if not self.game_name or game.name == self.game_name:
+        if not game.finish_time and (not self.game_name or
+          game.name == self.game_name):
             def1 = self.user.callRemote("join_game", game.name, self.aiclass,
               self.ai.player_info)
             def1.addErrback(self.failure)
@@ -283,7 +285,7 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
               action.start_time, action.min_players, action.max_players,
-              [action.playername], False)
+              [action.playername], False, None, None, None)
             self.add_game(game_info_tuple)
             if action.playername == self.playername:
                 def1 = self.user.callRemote("start_game", self.game_name)

@@ -93,13 +93,19 @@ class Client(pb.Referenceable, Observed):
 
     def add_game(self, game_info_tuple):
         (name, create_time, start_time, min_players, max_players,
-          playernames, started) = game_info_tuple
+          playernames, started, finish_time, winner_names,
+          loser_names) = game_info_tuple
         owner = playernames[0]
         game = Game.Game(name, owner, create_time, start_time, min_players,
-          max_players, started)
+          max_players, started=started, finish_time=finish_time)
         self.add_observer(game)
         for playername in playernames[1:]:
             game.add_player(playername)
+        if winner_names:
+            logging.debug(winner_names)
+            # XXX Hack
+            game._winner_names = winner_names
+            game._loser_names = loser_names
         self.games.append(game)
 
     def remove_game(self, game_name):
@@ -177,7 +183,7 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
               action.start_time, action.min_players, action.max_players,
-              [action.playername], False)
+              [action.playername], False, None, None, None)
             self.add_game(game_info_tuple)
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)

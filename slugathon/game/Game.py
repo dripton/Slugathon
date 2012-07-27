@@ -40,12 +40,12 @@ class Game(Observed):
       max_players, started=False, master=False,
       ai_time_limit=config.DEFAULT_AI_TIME_LIMIT,
       player_time_limit=config.DEFAULT_PLAYER_TIME_LIMIT, player_class="Human",
-      player_info=""):
+      player_info="", finish_time=None):
         Observed.__init__(self)
         self.name = name
         self.create_time = create_time
         self.start_time = start_time
-        self.finish_time = None
+        self.finish_time = finish_time
         self.min_players = min_players
         self.max_players = max_players
         self.started = started
@@ -172,7 +172,8 @@ class Game(Observed):
     def info_tuple(self):
         """Return state as a tuple of strings for passing to client."""
         return (self.name, self.create_time, self.start_time,
-          self.min_players, self.max_players, self.playernames, self.started)
+          self.min_players, self.max_players, self.playernames, self.started,
+          self.finish_time, self.winner_names, self.loser_names)
 
     def add_player(self, playername, player_class="Human", player_info=""):
         """Add a player to this game."""
@@ -224,7 +225,7 @@ class Game(Observed):
     @property
     def over(self):
         """Return True iff the game is over."""
-        return len(self.living_players) <= 1
+        return self.finish_time or len(self.living_players) <= 1
 
     @property
     def next_player_and_turn(self):
@@ -246,13 +247,19 @@ class Game(Observed):
 
     @property
     def winner_names(self):
-        if self.over:
+        # Hack to easily override the property for old games on the client.
+        if hasattr(self, "_winner_names"):
+            return self._winner_names
+        if self.over and self.finish_order:
             winner_players = self.finish_order[0]
             return [player.name for player in winner_players]
         return []
 
     @property
     def loser_names(self):
+        # Hack to easily override the property for old games on the client.
+        if hasattr(self, "_loser_names"):
+            return self._loser_names
         losers = []
         if self.over:
             start_index = 1
