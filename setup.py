@@ -75,7 +75,7 @@ setup(
     author="David Ripton",
     author_email="d+slugathon@ripton.net",
     url="https://github.com/dripton/Slugathon/",
-    download_url="https://github.com/dripton/Slugathon/downloads",
+    download_url="https://github.com/dripton/Slugathon/zipball/master",
     license="GPLv2",
     packages=["slugathon", "slugathon.ai", "slugathon.data",
       "slugathon.game", "slugathon.gui", "slugathon.net", "slugathon.util"],
