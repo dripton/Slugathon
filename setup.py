@@ -71,7 +71,7 @@ write_version_file()
 setup(
     name="slugathon",
     version="%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7]),
-    description="board game",
+    description="Fantasy battle board game",
     author="David Ripton",
     author_email="d+slugathon@ripton.net",
     url="https://github.com/dripton/Slugathon/",
