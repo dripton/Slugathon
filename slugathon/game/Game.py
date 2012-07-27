@@ -1645,8 +1645,9 @@ class Game(Observed):
             if player.starting_tower is None:
                 player.assign_starting_tower(action.tower_num)
             else:
-                logging.info("player %s already has tower %s" % (player,
-                  player.starting_tower))
+                if player.starting_tower != action.tower_num:
+                    logging.warning("player %s already has tower %s" % (player,
+                      player.starting_tower))
 
         elif isinstance(action, Action.AssignedAllTowers):
             self.start_time = time.time()
