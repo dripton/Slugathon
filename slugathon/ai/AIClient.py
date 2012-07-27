@@ -247,11 +247,11 @@ class AIClient(pb.Referenceable, Observed):
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        logging.info("%s", action)
-
         if (self.game_name is not None and hasattr(action, "game_name")
           and action.game_name != self.game_name):
             return
+
+        logging.info("%s", action)
 
         if isinstance(action, Action.ResumeAI):
             self.paused = False
