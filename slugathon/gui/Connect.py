@@ -195,11 +195,11 @@ class Connect(gtk.Window):
     def cb_start_server_button_clicked(self, *args):
         if hasattr(sys, "frozen"):
             # TODO Find the absolute path.
-            def1 = utils.getProcessValue("slugathon.exe", ["server"],
+            def1 = utils.getProcessValue("slugathon.exe", ["server", "-n"],
               env=os.environ)
         else:
             def1 = utils.getProcessValue(sys.executable,
-              ["-m", "slugathon.net.Server"], env=os.environ)
+              ["-m", "slugathon.net.Server", "-n"], env=os.environ)
         def1.addCallback(self.server_exited)
         def1.addErrback(self.server_failed)
 
