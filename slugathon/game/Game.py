@@ -281,6 +281,7 @@ class Game(Observed):
 
         Called from Server, only by game owner.
         """
+        logging.info("%s %s", self.name, playername)
         if playername != self.owner.name:
             raise AssertionError("Game.start %s called by non-owner %s" % (
               self.name, playername))

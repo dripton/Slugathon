@@ -380,6 +380,8 @@ class CleverBot(object):
     def split(self, game):
         """Split a legion, or end split phase."""
         logging.info("split")
+        logging.info("playername %s active_playername %s", self.playername,
+          game.active_player.name)
         if game.active_player.name != self.playername:
             logging.warning("called split out of turn; exiting")
             return

@@ -164,6 +164,7 @@ class Server(Observed):
 
     def start_game(self, playername, game_name):
         """Start an existing game."""
+        logging.info("%s %s", playername, game_name)
         game = self.name_to_game(game_name)
         if game:
             if playername != game.owner.name:
@@ -247,7 +248,7 @@ class Server(Observed):
                       self.passwd_path))
                 else:
                     args.extend(["--password", aipass])
-            logging.info("spawning AI process for %s", ainame)
+            logging.info("spawning AI process for %s %s", game, ainame)
             reactor.spawnProcess(pp, executable, args=args, env=os.environ)
 
     def pick_color(self, playername, game_name, color):
