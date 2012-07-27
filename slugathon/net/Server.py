@@ -172,6 +172,9 @@ class Server(Observed):
                 return
             if game.num_players < game.min_players:
                 self._spawn_ais(game)
+                # Reschedule this in case spawning AIs fails.
+                reactor.callLater(1, self.start_game, playername, game_name)
+                return
             else:
                 if not game.started:
                     game.start(playername)
