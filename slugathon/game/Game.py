@@ -398,6 +398,9 @@ class Game(Observed):
         Called from Server and update.
         """
         player = self.get_player_by_name(playername)
+        legion = self.find_legion(parent_markerid)
+        if not legion:
+            raise AssertionError("no legion")
         if player is not self.active_player:
             raise AssertionError("splitting out of turn")
         if self.phase != Phase.SPLIT:

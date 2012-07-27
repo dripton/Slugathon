@@ -286,6 +286,10 @@ class Server(Observed):
         if not game:
             logging.warning("no game")
             return
+        parent = game.find_legion(parent_markerid)
+        if parent is None:
+            logging.warning("no legion")
+            return
         player = game.get_player_by_name(playername)
         if player is not game.active_player:
             logging.warning("wrong player")
