@@ -1071,7 +1071,8 @@ class Game(Observed):
         if self.over:
             self.finish_time = time.time()
             logging.info("game over %s", self.winner_names)
-            action = Action.GameOver(self.name, self.winner_names)
+            action = Action.GameOver(self.name, self.winner_names,
+              self.finish_time)
             self.notify(action)
 
     # Battle methods
@@ -1935,7 +1936,7 @@ class Game(Observed):
             reactor.callLater(1, self._end_dead_player_turn)
 
         elif isinstance(action, Action.GameOver):
-            self.finish_time = time.time()
+            self.finish_time = action.finish_time
             reactor.callLater(1, self._cleanup_dead_players,
               action.winner_names)
 

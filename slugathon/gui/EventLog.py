@@ -191,6 +191,7 @@ class EventLog(gtk.EventBox):
 
 
 if __name__ == "__main__":
+    import time
     from slugathon.util import guiutils
 
     parent = gtk.Window()
@@ -198,6 +199,6 @@ if __name__ == "__main__":
     event_log.connect("destroy", guiutils.exit)
     parent.add(event_log)
     parent.show_all()
-    action = Action.GameOver("a", ["Bob"])
+    action = Action.GameOver("a", ["Bob"], time.time())
     reactor.callWhenRunning(event_log.update, None, action, None)
     reactor.run()

@@ -609,9 +609,10 @@ pb.setUnjellyableForClass(EliminatePlayer, EliminatePlayer)
 
 
 class GameOver(Action):
-    def __init__(self, game_name, winner_names):
+    def __init__(self, game_name, winner_names, finish_time):
         self.game_name = game_name
         self.winner_names = tuple(winner_names)
+        self.finish_time = finish_time
 pb.setUnjellyableForClass(GameOver, GameOver)
 
 
