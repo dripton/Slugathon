@@ -19,7 +19,7 @@ from slugathon.util import guiutils
 
 
 @implementer(IObserver)
-class Anteroom(gtk.EventBox):
+class Lobby(gtk.EventBox):
     """GUI for a multiplayer chat and game finding lobby."""
     def __init__(self, user, playername, playernames, games, parent_window):
         gtk.EventBox.__init__(self)
@@ -425,7 +425,7 @@ if __name__ == "__main__":
     games = [game]
     window = gtk.Window()
     window.set_default_size(1024, 768)
-    anteroom = Anteroom(user, playername, playernames, games, window)
-    window.add(anteroom)
+    lobby = Lobby(user, playername, playernames, games, window)
+    window.add(lobby)
     window.show_all()
     gtk.main()

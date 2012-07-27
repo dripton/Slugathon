@@ -26,7 +26,7 @@ class MainWindow(gtk.Window):
 
         self.playername = playername
         self.game = None
-        self.anteroom = None
+        self.lobby = None
         self.guiboard = None
         self.accel_group = None
 
@@ -68,10 +68,10 @@ class MainWindow(gtk.Window):
         if accel_group is not None:
             self.add_accel_group(accel_group)
 
-    def add_anteroom(self, anteroom):
-        self.anteroom = anteroom
-        label = gtk.Label("Anteroom")
-        self.notebook.prepend_page(anteroom, label)
+    def add_lobby(self, lobby):
+        self.lobby = lobby
+        label = gtk.Label("Lobby")
+        self.notebook.prepend_page(lobby, label)
         self.show_all()
 
     def add_guiboard(self, guiboard):
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     import time
     from slugathon.game import Game
     from slugathon.util.NullUser import NullUser
-    from slugathon.gui import Anteroom
+    from slugathon.gui import Lobby
 
     now = time.time()
     user = NullUser()
@@ -162,8 +162,8 @@ if __name__ == "__main__":
     playernames = [playername]
     games = [game]
     main_window = MainWindow()
-    anteroom = Anteroom.Anteroom(user, playername, playernames, games,
+    lobby = Lobby.Lobby(user, playername, playernames, games,
       main_window)
-    main_window.add_anteroom(anteroom)
+    main_window.add_lobby(lobby)
 
     reactor.run()

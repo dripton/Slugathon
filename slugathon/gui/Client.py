@@ -16,7 +16,7 @@ from slugathon.net import config
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game
-from slugathon.gui import Anteroom, PickColor, PickMarker, GUIMasterBoard
+from slugathon.gui import Lobby, PickColor, PickMarker, GUIMasterBoard
 from slugathon.gui import MainWindow
 
 
@@ -80,10 +80,10 @@ class Client(pb.Referenceable, Observed):
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
         self.main_window = MainWindow.MainWindow(self.playername)
-        anteroom = Anteroom.Anteroom(self.user, self.playername,
+        lobby = Lobby.Lobby(self.user, self.playername,
           self.playernames, self.games, self.main_window)
-        self.main_window.add_anteroom(anteroom)
-        self.add_observer(anteroom)
+        self.main_window.add_lobby(lobby)
+        self.add_observer(lobby)
 
     def name_to_game(self, game_name):
         for game in self.games:

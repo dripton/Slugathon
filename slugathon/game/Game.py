@@ -1602,7 +1602,7 @@ class Game(Observed):
 
         This is called when we get the GameOver action, in case we missed
         any EliminatePlayer actions, so the game shows up as finished
-        in the Anteroom.
+        in the Lobby.
         """
         for player in self.players:
             if player.name not in winner_names:
