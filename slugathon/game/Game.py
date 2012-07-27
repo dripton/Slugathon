@@ -285,6 +285,10 @@ class Game(Observed):
         if playername != self.owner.name:
             logging.warning("Game.start %s called by non-owner %s" % (
               self.name, playername))
+            return
+        if self.started:
+            logging.warning("Game.start %s called twice", self.name)
+            return
         self.started = True
         self.start_time = time.time()
         self.assign_towers()
