@@ -142,9 +142,12 @@ class Server(Observed):
         self.notify(action)
 
     def join_game(self, playername, game_name, player_class, player_info):
-        """Join an existing game that hasn't started yet."""
-        logging.info("join_game %s %s %s %s", playername, game_name,
-          player_class, player_info)
+        """Join an existing game that hasn't started yet.
+
+        Return True on success, False on failure.
+        """
+        logging.info("%s %s %s %s", playername, game_name, player_class,
+          player_info)
         game = self.name_to_game(game_name)
         if game:
             try:
@@ -161,6 +164,8 @@ class Server(Observed):
                 if not set1:
                     game = self.name_to_game(game_name)
                     reactor.callLater(1, game.start, game.owner.name)
+            return True
+        return False
 
     def start_game(self, playername, game_name):
         """Start an existing game."""

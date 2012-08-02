@@ -143,6 +143,7 @@ class AIClient(pb.Referenceable, Observed):
 
     def connection_failed(self, arg):
         log.err(arg)
+        self.exit_unconditionally(1)
 
     def got_playernames(self, playernames):
         """Only called when the client first connects to the server."""
@@ -177,7 +178,13 @@ class AIClient(pb.Referenceable, Observed):
                     logging.info("joining game %s", game.name)
                     def1 = self.user.callRemote("join_game", game.name,
                       self.aiclass, self.ai.player_info)
+                    def1.addCallback(self.joined_game)
                     def1.addErrback(self.failure)
+
+    def joined_game(self, success):
+        if not success:
+            logging.info("failed to join game; aborting")
+            self.exit_unconditionally(1)
 
     def name_to_game(self, game_name):
         for game in self.games:

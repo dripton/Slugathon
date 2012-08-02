@@ -57,7 +57,8 @@ class User(Avatar):
           player_info)
 
     def perspective_join_game(self, game_name, player_class, player_info):
-        self.server.join_game(self.name, game_name, player_class, player_info)
+        return self.server.join_game(self.name, game_name, player_class,
+          player_info)
 
     def perspective_start_game(self, game_name):
         self.server.start_game(self.name, game_name)
