@@ -152,8 +152,9 @@ class Server(Observed):
         if game:
             try:
                 game.add_player(playername, player_class, player_info)
-            except AssertionError, ex:
-                logging.exception("join_game caught %s", ex)
+            except AssertionError:
+                logging.exception("join_game caught an exception")
+                return False
             else:
                 action = Action.JoinGame(playername, game.name, player_class,
                   player_info)
