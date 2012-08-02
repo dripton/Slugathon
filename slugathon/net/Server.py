@@ -791,8 +791,15 @@ class AIProcessProtocol(protocol.ProcessProtocol):
         self.ainame = ainame
 
     def connectionMade(self):
-        logging.info("AIProcessProtocol.connectionMade %s %s", self.game_name,
-          self.ainame)
+        logging.info("%s %s", self.game_name, self.ainame)
+        # We don't use stdin, so reduce the number of open files.
+        self.transport.closeStdin()
+
+    def processExited(self, status):
+        logging.debug("%s %s %s", self.game_name, self.ainame, status)
+
+    def processEnded(self, status):
+        logging.debug("%s %s %s", self.game_name, self.ainame, status)
 
 
 def add_arguments(parser):
