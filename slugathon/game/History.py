@@ -2,6 +2,8 @@ __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import logging
+
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
@@ -56,6 +58,7 @@ class History(object):
         if not self.actions:
             return False
         action = self.actions[-1]
+        logging.debug(action)
         return action.undoable() and action.playername == playername
 
     def can_redo(self, playername):
