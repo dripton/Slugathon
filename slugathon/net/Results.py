@@ -304,9 +304,8 @@ class Results(object):
         player_id2 = tup2[1]
         info2 = self.get_player_info(player_id2)
         bp2 = BotParams.BotParams.fromstring(info2)
-        bp3 = bp1.cross(bp2)
-        bot = CleverBot.CleverBot("child",
-          config.DEFAULT_AI_TIME_LIMIT, bp3)
+        bp3 = bp1.cross(bp2).mutate_random_field()
+        bot = CleverBot.CleverBot("child", config.DEFAULT_AI_TIME_LIMIT, bp3)
         info = bot.player_info
         logging.info("player_info %s", info)
         query = """INSERT INTO player (class, info, mu, sigma)
