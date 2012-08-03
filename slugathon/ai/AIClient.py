@@ -246,6 +246,9 @@ class AIClient(pb.Referenceable, Observed):
         if (self.game_name is not None and hasattr(action, "game_name")
           and action.game_name != self.game_name):
             return
+        if (isinstance(action, Action.AddUsername) or
+          isinstance(action, Action.DelUsername)):
+            return
 
         logging.info("%s", action)
 
@@ -272,13 +275,7 @@ class AIClient(pb.Referenceable, Observed):
             self.last_actions.append(action)
             return
 
-        if isinstance(action, Action.AddUsername):
-            self.playernames.add(action.playername)
-
-        elif isinstance(action, Action.DelUsername):
-            self.playernames.remove(action.playername)
-
-        elif isinstance(action, Action.FormGame):
+        if isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
               action.start_time, action.min_players, action.max_players,
               [action.playername], False, None, None, None)
