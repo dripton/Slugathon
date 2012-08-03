@@ -5,7 +5,6 @@ __license__ = "GNU GPL v2"
 
 
 import time
-import logging
 
 import gtk
 from twisted.internet import reactor
@@ -195,13 +194,11 @@ class Lobby(gtk.EventBox):
             self.add_game(game)
 
     def update_user_store(self):
-        logging.info("")
         def1 = self.user.callRemote("get_player_data")
         def1.addCallback(self._got_player_data)
         def1.addErrback(self.failure)
 
     def _got_player_data(self, player_data):
-        logging.info(player_data)
         playername_to_data = {}
         if player_data:
             for dct in player_data:
@@ -224,7 +221,6 @@ class Lobby(gtk.EventBox):
             del self.user_store[leng]
 
     def update_game_stores(self):
-        logging.info("")
         self.update_new_game_store()
         self.update_current_game_store()
         self.update_old_game_store()
@@ -234,7 +230,6 @@ class Lobby(gtk.EventBox):
         ii = -1
         for game in self.games:
             if not game.started:
-                logging.info(game)
                 ii += 1
                 name = game.name
                 owner = game.owner.name
@@ -259,7 +254,6 @@ class Lobby(gtk.EventBox):
         ii = -1
         for game in self.games:
             if game.started and not game.over:
-                logging.info(game)
                 ii += 1
                 name = game.name
                 start_time = time.ctime(game.start_time)
@@ -281,7 +275,6 @@ class Lobby(gtk.EventBox):
         ii = -1
         for game in self.games:
             if game.started and game.over:
-                logging.info(game)
                 ii += 1
                 name = game.name
                 start_time = time.ctime(game.start_time)
@@ -378,7 +371,6 @@ class Lobby(gtk.EventBox):
         return False
 
     def update(self, observed, action, names):
-        logging.info("%s %s %s", observed, action, names)
         if isinstance(action, Action.AddUsername):
             self.update_user_store()
         elif isinstance(action, Action.DelUsername):
