@@ -51,7 +51,6 @@ class AIClient(pb.Referenceable, Observed):
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
         self.user = None
-        self.playernames = set()
         self.games = []
         self.log_path = log_path
         self._setup_logging()
@@ -131,8 +130,8 @@ class AIClient(pb.Referenceable, Observed):
         if user:
             self.user = user
             self.ai.user = user
-            def1 = user.callRemote("get_playernames")
-            def1.addCallback(self.got_playernames)
+            def1 = user.callRemote("get_games")
+            def1.addCallback(self.got_games)
             def1.addErrback(self.failure)
             lc = LoopingCall(user.callRemote, "ping")
             def2 = lc.start(10)
@@ -144,16 +143,6 @@ class AIClient(pb.Referenceable, Observed):
     def connection_failed(self, arg):
         log.err(arg)
         self.exit_unconditionally(1)
-
-    def got_playernames(self, playernames):
-        """Only called when the client first connects to the server."""
-        logging.info("got playernames %s", playernames)
-        self.playernames.clear()
-        for playername in playernames:
-            self.playernames.add(playername)
-        def1 = self.user.callRemote("get_games")
-        def1.addCallback(self.got_games)
-        def1.addErrback(self.failure)
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""
