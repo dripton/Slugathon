@@ -77,12 +77,12 @@ class StatusScreen(gtk.EventBox):
                 label = add_label(self.player_table, col + 2, row)
                 setattr(self, name, label)
 
-        self.default_bg = None
+        self.default_bg = gtk.gdk.color_parse("lightgray")
+        self.modify_bg(gtk.STATE_NORMAL, self.default_bg)
         self._init_players()
         self._init_turn()
 
         self.show_all()
-        self.default_bg = self.get_style().copy().bg[gtk.STATE_NORMAL]
 
     def _init_turn(self):
         self.game_turn_label.set_text(str(self.game.turn))
