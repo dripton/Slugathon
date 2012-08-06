@@ -97,6 +97,17 @@ class Server(Observed):
                 return game
         return None
 
+    def get_game_info_tuples(self):
+        """Return a list of Game.info_tuple for each current or recent game."""
+        results = []
+        num_wanted = 100
+        num_from_db = max(0, num_wanted - len(self.games))
+        if num_from_db:
+            results = self.results.get_game_info_tuples(num_from_db)
+        for game in self.games[-num_wanted:]:
+            results.append(game.info_tuple)
+        return results
+
     def send_chat_message(self, source, dest, text):
         """Send a chat message from user source to users in dest.
 
@@ -121,7 +132,9 @@ class Server(Observed):
         if not game_name:
             logging.warning("Games must be named")
             return
-        if game_name in [game.name for game in self.games]:
+        game_info_tuples = self.get_game_info_tuples()
+        game_names = set((tup[0] for tup in game_info_tuples))
+        if game_name in game_names:
             st = 'The game name "%s" is already in use' % game_name
             logging.warning(st)
             return st
@@ -768,11 +781,10 @@ class Server(Observed):
         return self.results.get_player_data()
 
     def _finish_with_game(self, game):
-        # We don't remove the game, because we want to remember its name
-        # to avoid duplicates.  Does this cause memory problems?
         game.remove_observer(self)
         if game in self.games:
             self.results.save_game(game)
+            self.games.remove(game)
 
     def update(self, observed, action, names):
         logging.info("%s %s %s", observed, action, names)

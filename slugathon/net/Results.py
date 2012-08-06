@@ -258,6 +258,48 @@ class Results(object):
                 data.append(player_data)
         return data
 
+    def get_game_info_tuples(self, num=100):
+        """Return a list of Game.info_tuple for the most recent num games."""
+        results = []
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor2 = self.connection.cursor()
+            query = """SELECT game_id, name, start_time, finish_time
+                       FROM game
+                       ORDER BY game_id DESC
+                       LIMIT ?"""
+            cursor.execute(query, (num, ))
+            rows = cursor.fetchall()
+            for row in rows:
+                game_id = row["game_id"]
+                name = row["name"]
+                start_time = row["start_time"]
+                finish_time = row["finish_time"]
+                query2 = """SELECT p.name, r.rank
+                            FROM rank r, player p
+                            WHERE r.game_id = ? AND r.player_id = p.player_id
+                            ORDER BY r.rank"""
+                cursor2.execute(query2, (game_id, ))
+                rows2 = cursor2.fetchall()
+                num_players = 0
+                winner_names = []
+                loser_names = []
+                for row2 in rows2:
+                    num_players += 1
+                    player_name = row2["name"]
+                    rank = row2["rank"]
+                    if rank == 1:
+                        winner_names.append(player_name)
+                    else:
+                        loser_names.append(player_name)
+                # We don't save create_time so reuse start_time.
+                info_tuple = (name, start_time, start_time, num_players,
+                  num_players, winner_names + loser_names, True, finish_time,
+                  winner_names, loser_names)
+                results.append(info_tuple)
+        results.reverse()
+        return results
+
     def _spawn_new_ai(self, cursor):
         """Spawn a new AI, mutated from default_bot_params, and return
         its player_id."""

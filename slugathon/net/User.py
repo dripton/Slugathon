@@ -40,8 +40,8 @@ class User(Avatar):
         return self.server.playernames
 
     def perspective_get_games(self):
-        games = self.server.games
-        return [game.info_tuple for game in games]
+        """Return a list of Game.info_tuple for each current or recent game."""
+        return self.server.get_game_info_tuples()
 
     def perspective_send_chat_message(self, dest, text):
         """Send chat text to dest, a set of playernames.
