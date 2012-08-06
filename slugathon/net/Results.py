@@ -233,7 +233,7 @@ class Results(object):
         with self.connection:
             cursor = self.connection.cursor()
             query = """SELECT player_id, name, class, info, mu, sigma
-                       FROM player order by player_id"""
+                       FROM player ORDER BY player_id"""
             cursor.execute(query)
             rows = cursor.fetchall()
             for row in rows:
