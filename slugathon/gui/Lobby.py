@@ -237,8 +237,7 @@ class Lobby(gtk.EventBox):
                 start_time = time.ctime(game.start_time)
                 min_players = game.min_players
                 max_players = game.max_players
-                players = ", ".join(playername for playername in
-                  game.playernames)
+                players = ", ".join(game.playernames)
                 tup = (name, owner, create_time, start_time, min_players,
                   max_players, players)
                 if ii < length:
@@ -257,10 +256,8 @@ class Lobby(gtk.EventBox):
                 ii += 1
                 name = game.name
                 start_time = time.ctime(game.start_time)
-                living_players = ", ".join(playername for playername in
-                  game.living_playernames)
-                dead_players = ", ".join(playername for playername in
-                  game.dead_playernames)
+                living_players = ", ".join(game.living_playernames)
+                dead_players = ", ".join(game.dead_playernames)
                 tup = (name, start_time, living_players, dead_players)
                 if ii < length:
                     self.current_game_store[ii, 0] = tup
@@ -279,10 +276,8 @@ class Lobby(gtk.EventBox):
                 name = game.name
                 start_time = time.ctime(game.start_time)
                 finish_time = time.ctime(game.finish_time)
-                winners = ", ".join(playername for playername in
-                  game.winner_names)
-                losers = ", ".join(playername for playername in
-                  game.loser_names)
+                winners = ", ".join(game.winner_names)
+                losers = ", ".join(game.loser_names)
                 tup = (name, start_time, finish_time, winners, losers)
                 if ii < length:
                     self.old_game_store[ii, 0] = tup
