@@ -80,8 +80,8 @@ class Client(pb.Referenceable, Observed):
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
         self.main_window = MainWindow.MainWindow(self.playername)
-        lobby = Lobby.Lobby(self.user, self.playername,
-          self.playernames, self.games, self.main_window)
+        lobby = Lobby.Lobby(self.user, self.playername, self.playernames,
+          self.games, self.main_window)
         self.main_window.add_lobby(lobby)
         self.add_observer(lobby)
 
