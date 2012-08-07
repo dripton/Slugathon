@@ -114,6 +114,17 @@ class Client(pb.Referenceable, Observed):
             self.remove_observer(game)
             self.games.remove(game)
 
+    def _purge_old_games(self):
+        max_games_wanted = 100
+        num_to_purge = len(self.games) - max_games_wanted
+        if num_to_purge >= 1:
+            for game in self.games:
+                if game.started and game.over:
+                    self.games.remove(game)
+                    num_to_purge -= 1
+                    if num_to_purge < 1:
+                        return
+
     def failure(self, error):
         log.err(error)
 
@@ -204,5 +215,6 @@ class Client(pb.Referenceable, Observed):
                   " and ".join(action.winner_names)))
             else:
                 logging.info("Game %s over, draw" % action.game_name)
+            self._purge_old_games()
 
         self.notify(action, names)
