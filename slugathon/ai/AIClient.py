@@ -84,7 +84,8 @@ class AIClient(pb.Referenceable, Observed):
             log_observer = log.PythonLoggingObserver()
             log_observer.start()
             formatter = logging.Formatter(
-              "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+              "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
+              "%(message)s")
             file_handler = logging.FileHandler(filename=self.log_path)
             file_handler.setFormatter(formatter)
             logging.getLogger().addHandler(file_handler)

@@ -49,16 +49,20 @@ class Server(Observed):
         self.results = Results.Results()
         # {game_name: set(ainame) we're waiting for
         self.game_to_waiting_ais = {}
+        self._setup_logging(log_path)
 
+    def _setup_logging(self, log_path):
         log_observer = log.PythonLoggingObserver()
         log_observer.start()
         formatter = logging.Formatter(
-          "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+          "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
+          "%(message)s")
         if not log_path:
             logdir = os.path.join(TEMPDIR, "slugathon")
             if not os.path.exists(logdir):
                 os.makedirs(logdir)
-            log_path = os.path.join(logdir, "slugathon-server-%d.log" % port)
+            log_path = os.path.join(logdir, "slugathon-server-%d.log" %
+              self.port)
         file_handler = RotatingFileHandler(filename=log_path,
           maxBytes=100000000, backupCount=99)
         file_handler.setFormatter(formatter)

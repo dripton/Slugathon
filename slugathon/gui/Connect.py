@@ -111,7 +111,8 @@ class Connect(gtk.Window):
         log_observer = log.PythonLoggingObserver()
         log_observer.start()
         formatter = logging.Formatter(
-          "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+          "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
+          "%(message)s")
         if log_path:
             file_handler = logging.FileHandler(filename=log_path)
             file_handler.setFormatter(formatter)
