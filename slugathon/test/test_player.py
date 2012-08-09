@@ -192,3 +192,22 @@ def test_can_split():
     player.split_legion("Rd02", "Rd04", ["Angel", "Gargoyle"],
       ["Centaur", "Centaur"])
     assert not player.can_split
+
+
+def test_sorted_legions():
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    player.assign_starting_tower(600)
+    player.assign_color("Red")
+    assert len(player.markerids_left) == 12
+    player.pick_marker("Rd01")
+    assert player.selected_markerid == "Rd01"
+    player.create_starting_legion()
+    assert player.can_split
+    player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
+      ["Angel", "Centaur", "Centaur", "Gargoyle"])
+    sorted_legions = player.sorted_legions
+    assert len(sorted_legions) == 2
+    assert sorted_legions[0].has_titan
+    assert not sorted_legions[1].has_titan

@@ -58,6 +58,16 @@ class Player(Observed):
         return self.markerid_to_legion.values()
 
     @property
+    def sorted_legions(self):
+        """Return a list of this player's legions in descending order
+        of importance."""
+        value_legions = [(legion.sort_value, legion) for legion in
+          self.legions]
+        value_legions.sort()
+        value_legions.reverse()
+        return [legion for (value, legion) in value_legions]
+
+    @property
     def dead(self):
         return self.created_starting_legion and not self.markerid_to_legion
 
