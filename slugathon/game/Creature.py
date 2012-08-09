@@ -140,6 +140,50 @@ class Creature(object):
           + 0.18 * (self.skill == 4))
 
     @property
+    def terrain_combat_value(self):
+        """Return a rough indication of creature combat value, considering its
+        legion's current terrain."""
+        TOWER_BONUS = 0.25
+        BRUSH_BONUS = 0.1
+        JUNGLE_BONUS = 0.1
+        HILLS_BONUS = 0.1
+        SWAMP_BONUS = 0.05
+        MARSH_BONUS = 0.05
+        DESERT_BONUS = 0.1
+        MOUNTAINS_BONUS = 0.1
+        TUNDRA_BONUS = 0.1
+        base_value = self.combat_value
+        if (self.legion is None or self.legion.player is None or
+          self.legion.hexlabel is None):
+            return base_value
+        terrain = self.legion.player.game.board.hexes[
+          self.legion.hexlabel].terrain
+        if terrain == "Tower":
+            return (1 + TOWER_BONUS) * base_value
+        elif terrain == "Brush":
+            return ((1 + (self.is_native("Bramble") * BRUSH_BONUS)) *
+              base_value)
+        elif terrain == "Jungle":
+            return ((1 + (self.is_native("Bramble") * JUNGLE_BONUS)) *
+              base_value)
+        elif terrain == "Hills":
+            return ((1 + (self.is_native("Slope") * HILLS_BONUS)) * base_value)
+        elif terrain == "Swamp":
+            return ((1 + (self.is_native("Bog") * SWAMP_BONUS)) * base_value)
+        elif terrain == "Marsh":
+            return ((1 + (self.is_native("Bog") * MARSH_BONUS)) * base_value)
+        elif terrain == "Desert":
+            return ((1 + (self.is_native("Dune") * DESERT_BONUS)) * base_value)
+        elif terrain == "Mountain":
+            return ((1 + (self.is_native("Slope") * MOUNTAINS_BONUS)) *
+              base_value)
+        elif terrain == "Tundra":
+            return ((1 + (self.is_native("Drift") * TUNDRA_BONUS)) *
+              base_value)
+        else:
+            return base_value
+
+    @property
     def is_titan(self):
         return self.name == "Titan"
 

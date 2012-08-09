@@ -374,11 +374,11 @@ def test_combat_value():
     player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
 
-    assert legion.native_fraction("Dune") == 0
-    assert legion.native_fraction("Bramble") == 0.25
-    assert legion.native_fraction("Tundra") == 0
-
+    # No terrain
+    legion.hexlabel = None
+    assert legion.terrain_combat_value == legion.combat_value
     # Plains
+    legion.hexlabel = 1
     assert legion.terrain_combat_value == legion.combat_value
     # Woods
     legion.hexlabel = 2
