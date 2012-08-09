@@ -387,7 +387,8 @@ class CleverBot(object):
             return
         player = game.active_player
         caretaker = game.caretaker
-        for legion in player.legions:
+        # Let more important legions get the first crack at markers.
+        for legion in player.sorted_legions:
             if len(legion) == 8:
                 if game.turn != 1:
                     raise AssertionError("8-high legion", legion)
