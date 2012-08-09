@@ -377,6 +377,7 @@ class CleverBot(object):
             def1.addErrback(self.failure)
 
     # TODO Sometimes split off a better creature to enable better recruiting.
+    # TODO Fear being caught from behind by a bigger legion.
     def split(self, game):
         """Split a legion, or end split phase."""
         logging.info("split")
@@ -393,6 +394,9 @@ class CleverBot(object):
                 if game.turn != 1:
                     raise AssertionError("8-high legion", legion)
                 # initial split 4-4, one lord per legion
+                # TODO Parameterize and train initial split preferences
+                # split_gargs, split_ogres, split_centaurs,
+                # gargs_with_titan, ogres_with_titan, centaurs_with_titan
                 logging.info("initial split")
                 new_markerid = self._choose_marker(player)
                 lord = random.choice(["Titan", "Angel"])
