@@ -199,6 +199,8 @@ class Server(Observed):
             else:
                 if not game.started:
                     game.start(playername)
+        else:
+            logging.warning("game %s does not exist", game_name)
 
     def _passwd_for_playername(self, playername):
         with open(self.passwd_path) as fil:
@@ -214,13 +216,17 @@ class Server(Observed):
             fil.write("%s:%s\n" % (ainame, password))
 
     def _spawn_ais(self, game):
+        logging.debug(game.name)
         player_ids = set()
         for game in self.games:
             if not game.over:
                 for player in game.players:
                     player_id = self.results.get_player_id(player.player_info)
                     player_ids.add(player_id)
+        logging.debug("min_players %d", game.min_players)
+        logging.debug("num_players %d", game.num_players)
         num_ais = game.min_players - game.num_players
+        logging.debug("num_ais needed %d", num_ais)
         ainames = []
         any_humans = False
         for player in game.players:
@@ -236,6 +242,7 @@ class Server(Observed):
         for ainame in ainames:
             if self._passwd_for_playername(ainame) is None:
                 self._add_playername_with_random_password(ainame)
+        logging.debug("ainames %s", ainames)
         self.game_to_waiting_ais[game.name] = set()
         # Add all AIs to the wait list first, to avoid a race.
         for ainame in ainames:
