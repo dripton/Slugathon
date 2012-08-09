@@ -12,6 +12,7 @@ import sys
 import random
 import hashlib
 import logging
+from logging.handlers import RotatingFileHandler
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
@@ -58,7 +59,8 @@ class Server(Observed):
             if not os.path.exists(logdir):
                 os.makedirs(logdir)
             log_path = os.path.join(logdir, "slugathon-server-%d.log" % port)
-        file_handler = logging.FileHandler(filename=log_path)
+        file_handler = RotatingFileHandler(filename=log_path,
+          maxBytes=100000000, backupCount=99)
         file_handler.setFormatter(formatter)
         logging.getLogger().addHandler(file_handler)
         console_handler = logging.StreamHandler()
