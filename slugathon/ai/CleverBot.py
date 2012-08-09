@@ -18,7 +18,7 @@ from zope.interface import implementer
 
 from slugathon.ai.Bot import Bot
 from slugathon.ai import BotParams
-from slugathon.game import Game, Creature, Phase
+from slugathon.game import Game, Creature, Phase, Legion
 
 
 def best7(score_moves):
@@ -416,7 +416,16 @@ class CleverBot(object):
                 logging.info("7-high")
                 good_recruit_rolls = set()
                 safe_split_rolls = set()
+                new_markerid = self._choose_marker(player)
                 lst = legion.sorted_creatures
+                split = lst[-2:]
+                split_names = [creature.name for creature in split]
+                keep = lst[:-2]
+                keep_names = [creature.name for creature in keep]
+                # Pretend to split so that we can compute the bigger
+                # child legion's combat value.
+                new_legion1 = Legion.Legion(legion.player, legion.markerid,
+                  Creature.n2c(keep_names), legion.hexlabel)
                 for roll in xrange(1, 6 + 1):
                     moves = game.find_all_moves(legion,
                       game.board.hexes[legion.hexlabel], roll)
@@ -432,17 +441,13 @@ class CleverBot(object):
                         enemies = player.enemy_legions(hexlabel)
                         if enemies:
                             enemy = enemies.pop()
+                            new_legion1.hexlabel = hexlabel
                             if (enemy.terrain_combat_value < self.bp.SQUASH *
-                              legion.combat_value):
+                              new_legion1.terrain_combat_value):
                                 safe_split_rolls.add(roll)
                         else:
                             safe_split_rolls.add(roll)
                 if good_recruit_rolls and len(safe_split_rolls) == 6:
-                    split = lst[-2:]
-                    split_names = [creature.name for creature in split]
-                    keep = lst[:-2]
-                    keep_names = [creature.name for creature in keep]
-                    new_markerid = self._choose_marker(player)
                     def1 = self.user.callRemote("split_legion", game.name,
                       legion.markerid, new_markerid, keep_names, split_names)
                     def1.addErrback(self.failure)
