@@ -332,13 +332,23 @@ class CleverBot(object):
                 tuples = sorted(((creature.sort_value, creature)
                   for creature in summonables), reverse=True)
                 summonable = tuples[0][1]
-                donor = summonable.legion
-                logging.info("CleverBot calling _summon_angel %s %s %s",
-                  legion.markerid, donor.markerid, summonable.name)
-                def1 = self.user.callRemote("summon_angel", game.name,
-                  legion.markerid, donor.markerid, summonable.name)
-                def1.addErrback(self.failure)
-                return
+
+                # Do not summon if 6 high and we could recruit equal or better.
+                recruit = None
+                if (len(legion) >= 6 and legion.can_recruit and legion.moved):
+                    recruit_name, _ = self._pick_recruit_and_recruiters(legion)
+                    if recruit_name:
+                        recruit = Creature.Creature(recruit_name)
+
+                if not recruit or summonable.sort_value > recruit.sort_value:
+                    donor = summonable.legion
+                    logging.info(
+                      "CleverBot calling _summon_angel %s %s %s",
+                      legion.markerid, donor.markerid, summonable.name)
+                    def1 = self.user.callRemote("summon_angel", game.name,
+                      legion.markerid, donor.markerid, summonable.name)
+                    def1.addErrback(self.failure)
+                    return
 
         logging.info("CleverBot calling do_not_summon_angel %s",
           legion.markerid)
@@ -346,7 +356,6 @@ class CleverBot(object):
           legion.markerid)
         def1.addErrback(self.failure)
 
-    # TODO Do not take an angel if we are 6 high and can recruit better.
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
         logging.info("CleverBot.acquire_angels %s %s %s", markerid, num_angels,
           num_archangels)
@@ -366,17 +375,28 @@ class CleverBot(object):
             num_angels -= 1
             acquires += 1
         if angel_names:
-            logging.info("CleverBot calling acquire_angels %s %s", markerid,
-              angel_names)
-            def1 = self.user.callRemote("acquire_angels", game.name,
-              markerid, angel_names)
-            def1.addErrback(self.failure)
-        else:
-            logging.info("CleverBot calling do_not_acquire_angels %s",
-              markerid)
-            def1 = self.user.callRemote("do_not_acquire_angels", game.name,
-              markerid)
-            def1.addErrback(self.failure)
+            # If we can recruit something better than the worst angel, don't
+            # take it.
+            if (len(legion) + acquires >= 7 and legion.can_recruit and
+              legion.moved):
+                recruit_name, _ = self._pick_recruit_and_recruiters(legion)
+                if recruit_name:
+                    recruit = Creature.Creature(recruit_name)
+                    angel = Creature.Creature(angel_names[-1])
+                    if recruit.sort_value > angel.sort_value:
+                        angel_names = angel_names[:-1]
+                if angel_names:
+                    logging.info("CleverBot calling acquire_angels %s %s",
+                      markerid, angel_names)
+                    def1 = self.user.callRemote("acquire_angels", game.name,
+                      markerid, angel_names)
+                    def1.addErrback(self.failure)
+                    return
+        logging.info("CleverBot calling do_not_acquire_angels %s",
+          markerid)
+        def1 = self.user.callRemote("do_not_acquire_angels", game.name,
+          markerid)
+        def1.addErrback(self.failure)
 
     # TODO Sometimes split off a better creature to enable better recruiting.
     # TODO Fear being caught from behind by a bigger legion.
