@@ -708,7 +708,7 @@ class CleverBot(object):
         random.shuffle(perms)
         best_score = -maxint
         best_perm = None
-        start_time = time.time()
+        finish_time = time.time() + self.ai_time_limit
         for perm in perms:
             score = self._score_perm(game, sort_values, perm)
             if score == max_score:
@@ -718,8 +718,8 @@ class CleverBot(object):
             elif score > best_score:
                 best_perm = perm
                 best_score = score
-            if time.time() - start_time > self.ai_time_limit:
-                logging.info("_find_move_order time limit")
+            if time.time() > finish_time:
+                logging.info("time limit")
                 break
         logging.info("returning %s" % list(best_perm))
         return list(best_perm)
@@ -787,7 +787,8 @@ class CleverBot(object):
             if not legion_moves:
                 return None
         best_score = -maxint
-        start = time.time()
+        start_time = time.time()
+        finish_time = start_time + self.ai_time_limit
         # Scramble the moves, in case we don't have time to look at them all.
         random.shuffle(legion_moves)
         logging.info("len(creatures) %d len(legion_moves[0]) %d" % (
@@ -803,14 +804,14 @@ class CleverBot(object):
                     best_legion_move = legion_move
                     best_score = score
                 now = time.time()
-                if now - start > self.ai_time_limit:
-                    logging.info("_find_best_creature_moves time limit")
+                if now > finish_time:
+                    logging.info("time limit")
                     break
             finally:
                 for creature in creatures:
                     creature.hexlabel = creature.previous_hexlabel
         logging.info("found best_legion_move %s in %fs" % (best_legion_move,
-          now - start))
+          now - start_time))
         start_hexlabels = [creature.hexlabel for creature in creatures]
         creature_names = [creature.name for creature in creatures]
         creature_moves = zip(creature_names, start_hexlabels, best_legion_move)
