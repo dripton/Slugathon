@@ -664,7 +664,7 @@ class CleverBot(object):
         two Creatures have the same hexlabel.  Like:
         ["A1", "B1", "B3"]
         """
-        logging.info("_gen_legion_moves %s", movesets)
+        logging.info(movesets)
         for moves in self._gen_legion_moves_inner(movesets):
             yield list(moves)
 
@@ -702,7 +702,7 @@ class CleverBot(object):
             sort_values[creature_name] = creature.sort_value
             max_score += creature.sort_value
         perms = list(itertools.permutations(creature_moves))
-        logging.info("_find_move_order %d perms" % len(perms))
+        logging.info("%d perms" % len(perms))
         # Scramble the list so we don't get a bunch of similar bad
         # orders jumbled together at the beginning.
         random.shuffle(perms)
@@ -713,7 +713,7 @@ class CleverBot(object):
             score = self._score_perm(game, sort_values, perm)
             if score == max_score:
                 best_perm = perm
-                logging.info("_find_move_order found perfect order")
+                logging.info("found perfect order")
                 break
             elif score > best_score:
                 best_perm = perm
@@ -721,7 +721,7 @@ class CleverBot(object):
             if time.time() - start_time > self.ai_time_limit:
                 logging.info("_find_move_order time limit")
                 break
-        logging.info("_find_move_order returning %s" % list(best_perm))
+        logging.info("returning %s" % list(best_perm))
         return list(best_perm)
 
     def _find_best_creature_moves(self, game):
