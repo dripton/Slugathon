@@ -273,6 +273,7 @@ class CleverBot(object):
           legion.markerid)
         def1.addErrback(self.failure)
 
+    # TODO reduce duplicate code
     def summon_angel_during(self, game):
         """Summon, during the REINFORCE battle phase"""
         logging.info("CleverBot.summon_angel_during")
@@ -311,7 +312,9 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_reinforcements", game.name)
         def1.addErrback(self.failure)
 
-    # TODO Do not summon if 6 high and we could recruit better.
+    # TODO Consider value of this legion and donor legion before deciding
+    # whether to summon.
+    # TODO reduce duplicate code
     def summon_angel_after(self, game):
         """Summon, after the battle is over."""
         logging.info("CleverBot.summon_angel_after")
@@ -806,7 +809,7 @@ class CleverBot(object):
         ignoring mobile allies, and score them in isolation without knowing
         where its allies will end up.  Find the best 7 moves for each creature
         (because with up to 7 creatures in a legion, a creature may have to
-        take its 7th-favorite move, and because 7! = 5040, not too big).
+        take its 7th-favorite move, and because 7 ** 7 = 823543, not too big).
         Combine these into legion moves, and score those again, then take
         the best legion move.  Finally, find the order of creature moves
         that lets all the creatures reach their assigned hexes without
@@ -854,7 +857,7 @@ class CleverBot(object):
         # everyone concentrated on hitting it, and if that's enough to kill it,
         # give every creature a kill bonus.
         # (This is not quite right because each creature can only hit one enemy
-        # (modulo carries), but it's a start.)
+        # (ignoring carries), but it's a start.)
         kill_bonus = 0
         for enemy in legion2.creatures:
             total_mean_hits = 0
@@ -940,7 +943,7 @@ class CleverBot(object):
                 score += penalty
                 logging.info(creature, "DEATH_PENALTY %s", penalty)
 
-            # attacker must attack to avoid time loss
+            # Attacker must attack to avoid time loss
             # Don't encourage titans to charge early.
             if legion == game.attacker_legion and (creature.name != "Titan"
               or game.battle_turn >= 4 or len(legion) == 1):
