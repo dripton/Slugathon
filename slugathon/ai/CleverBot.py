@@ -322,8 +322,7 @@ class CleverBot(object):
         legion = game.attacker_legion
         assert legion.player.name == self.playername
         summonables = []
-        if (legion.can_summon and game.first_attacker_kill in
-          [game.battle_turn - 1, game.battle_turn]):
+        if legion.can_summon:
             for legion2 in legion.player.legions:
                 if not legion2.engaged:
                     for creature in legion2.creatures:
