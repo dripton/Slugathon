@@ -108,6 +108,12 @@ class Connect(gtk.Window):
 
         self.show_all()
 
+        self._setup_logging(log_path)
+
+        if connect_now:
+            reactor.callWhenRunning(self.cb_connect_button_clicked)
+
+    def _setup_logging(self, log_path):
         log_observer = log.PythonLoggingObserver()
         log_observer.start()
         formatter = logging.Formatter(
@@ -121,9 +127,6 @@ class Connect(gtk.Window):
         console_handler.setFormatter(formatter)
         logging.getLogger().addHandler(console_handler)
         logging.getLogger().setLevel(logging.DEBUG)
-
-        if connect_now:
-            reactor.callWhenRunning(self.cb_connect_button_clicked)
 
     def _init_playernames(self, playername):
         self.playernames.update(prefs.load_playernames())
