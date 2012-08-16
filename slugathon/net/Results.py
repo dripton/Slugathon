@@ -216,7 +216,6 @@ class Results(object):
 
     def get_player_id(self, player_info):
         """Return the player_id for player_info, from the database."""
-        logging.info(player_info)
         with self.connection:
             cursor = self.connection.cursor()
             # See if that player is already in the database
@@ -224,6 +223,7 @@ class Results(object):
             cursor.execute(query, (player_info,))
             row = cursor.fetchone()
             if row is None:
+                logging.debug("returning None")
                 return None
             return row["player_id"]
 

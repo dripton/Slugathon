@@ -132,8 +132,8 @@ class Server(Observed):
 
         Return None normally, or an error string if there's a problem.
         """
-        logging.info("form_game %s %s %s %s %s %s %s %s", playername,
-          game_name, min_players, max_players, ai_time_limit,
+        logging.info("%s %s %s %s %s %s %s %s", playername, game_name,
+          min_players, max_players, ai_time_limit,
           player_time_limit, player_class, player_info)
         if not game_name:
             st = "Games must be named"
@@ -249,7 +249,7 @@ class Server(Observed):
         for ainame in ainames:
             if self._passwd_for_playername(ainame) is None:
                 self._add_playername_with_random_password(ainame)
-        logging.debug("ainames %s", ainames)
+        logging.debug("game %s ainames %s", game.name, ainames)
         self.game_to_waiting_ais[game.name] = set()
         # Add all AIs to the wait list first, to avoid a race.
         for ainame in ainames:
