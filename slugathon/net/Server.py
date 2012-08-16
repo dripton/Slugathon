@@ -233,6 +233,7 @@ class Server(Observed):
         logging.debug("num_players %d", game.num_players)
         num_ais = game.min_players - game.num_players
         logging.debug("num_ais needed %d", num_ais)
+        logging.debug("player_ids %s", player_ids)
         ainames = []
         any_humans = False
         for player in game.players:
