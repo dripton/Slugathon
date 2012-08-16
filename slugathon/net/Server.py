@@ -229,6 +229,12 @@ class Server(Observed):
                 for player in game.players:
                     player_id = self.results.get_player_id(player.player_info)
                     player_ids.add(player_id)
+        for game_name, waiting_ais in self.game_to_waiting_ais.iteritems():
+            game2 = self.name_to_game(game_name)
+            if game2 and not game2.over and game2 != game:
+                for ainame in waiting_ais:
+                    player_id = int(ainame[2:])
+                    player_ids.add(player_id)
         logging.debug("min_players %d", game.min_players)
         logging.debug("num_players %d", game.num_players)
         num_ais = game.min_players - game.num_players
