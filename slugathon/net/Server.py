@@ -136,8 +136,9 @@ class Server(Observed):
           game_name, min_players, max_players, ai_time_limit,
           player_time_limit, player_class, player_info)
         if not game_name:
-            logging.warning("Games must be named")
-            return
+            st = "Games must be named"
+            logging.warning(st)
+            return st
         game_info_tuples = self.get_game_info_tuples()
         game_names = set((tup[0] for tup in game_info_tuples))
         if game_name in game_names:
@@ -145,8 +146,9 @@ class Server(Observed):
             logging.warning(st)
             return st
         if min_players > max_players:
-            logging.warning("min_players must be <= max_players")
-            return
+            st = "min_players must be <= max_players"
+            logging.warning(st)
+            return st
         now = time.time()
         GAME_START_DELAY = 5 * 60
         game = Game.Game(game_name, playername, now, now + GAME_START_DELAY,
