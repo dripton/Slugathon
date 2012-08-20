@@ -283,11 +283,11 @@ class Game(Observed):
         """
         logging.info("%s %s", self.name, playername)
         if playername != self.owner.name:
-            logging.warning("Game.start %s called by non-owner %s" % (
-              self.name, playername))
+            logging.warning("%s called by non-owner %s" % (self.name,
+              playername))
             return
         if self.started:
-            logging.warning("Game.start %s called twice", self.name)
+            logging.warning("%s called twice", self.name)
             return
         self.started = True
         self.start_time = time.time()
@@ -608,6 +608,9 @@ class Game(Observed):
             raise AssertionError("ending move phase out of turn")
         if self.phase == Phase.MOVE:
             player.done_with_moves()
+        else:
+            logging.warning("%s done_with_moves in wrong phase %s", playername,
+              self.phase)
 
     def resolve_engagement(self, playername, hexlabel):
         """Called from Server."""

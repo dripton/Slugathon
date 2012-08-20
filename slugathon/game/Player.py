@@ -324,10 +324,13 @@ class Player(Observed):
                 return
 
     def done_with_moves(self):
+        logging.debug("")
         if self.can_exit_move_phase:
             self.recombine()
             action = Action.StartFightPhase(self.game.name, self.name)
             self.notify(action)
+        else:
+            logging.warning("%s cannot exit move phase", self)
 
     @property
     def can_exit_fight_phase(self):

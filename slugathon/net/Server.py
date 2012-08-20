@@ -235,11 +235,10 @@ class Server(Observed):
                 for ainame in waiting_ais:
                     player_id = int(ainame[2:])
                     player_ids.add(player_id)
-        logging.debug("min_players %d", game.min_players)
-        logging.debug("num_players %d", game.num_players)
         num_ais = game.min_players - game.num_players
-        logging.debug("num_ais needed %d", num_ais)
-        logging.debug("player_ids %s", player_ids)
+        logging.debug("%s min_players %d num_players %d num_ais_needed %s",
+          game.name, game.min_players, game.num_players, num_ais)
+        logging.debug("%s player_ids %s", game.name, sorted(player_ids))
         ainames = []
         any_humans = False
         for player in game.players:

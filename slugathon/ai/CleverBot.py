@@ -485,7 +485,7 @@ class CleverBot(object):
 
     def move_legions(self, game):
         """Move one or more legions, and then end the Move phase."""
-        logging.info("move_legions")
+        logging.debug("")
         if game.active_player.name != self.playername:
             logging.info("not active player; aborting")
             return
@@ -498,12 +498,13 @@ class CleverBot(object):
             for legion in player.unmoved_legions:
                 moves = game.find_all_moves(legion, game.board.hexes[
                   legion.hexlabel], player.movement_roll)
+                logging.debug("legion %s moves %s", legion, moves)
                 for hexlabel, entry_side in moves:
                     score = self._score_move(legion, hexlabel, True)
                     best_moves.append(
                       (score, legion, hexlabel, entry_side))
             best_moves.sort()
-            logging.info("best moves %s", best_moves)
+            logging.debug("best moves %s", best_moves)
 
             if player.can_take_mulligan:
                 legions_with_good_moves = set()
@@ -522,7 +523,7 @@ class CleverBot(object):
             for legion in player.unmoved_legions:
                 score = self._score_move(legion, legion.hexlabel, False)
                 non_moves[legion.markerid] = score
-            logging.info("non_moves %s", non_moves)
+            logging.debug("non_moves %s", non_moves)
 
             while best_moves:
                 score, legion, hexlabel, entry_side = best_moves.pop()
@@ -548,6 +549,7 @@ class CleverBot(object):
                     return
 
             # No more legions will move.
+            logging.debug("done_with_moves")
             def1 = self.user.callRemote("done_with_moves", game.name)
             def1.addErrback(self.failure)
             return
@@ -567,9 +569,9 @@ class CleverBot(object):
             assert len(enemies) == 1
             enemy = enemies.pop()
             enemy_combat_value = enemy.terrain_combat_value
-            logging.info("legion %s hexlabel %s", legion, hexlabel)
-            logging.info("legion_combat_value %s", legion_combat_value)
-            logging.info("enemy_combat_value %s", enemy_combat_value)
+            logging.debug("legion %s hexlabel %s", legion, hexlabel)
+            logging.debug("legion_combat_value %s", legion_combat_value)
+            logging.debug("enemy_combat_value %s", enemy_combat_value)
             if enemy_combat_value < self.bp.SQUASH * legion_combat_value:
                 score += enemy.score
             elif (enemy_combat_value >= self.bp.BE_SQUASHED *
@@ -588,7 +590,7 @@ class CleverBot(object):
                 elif (enemy_combat_value < self.bp.BE_SQUASHED *
                   legion_combat_value):
                     recruit_value = 0.5 * recruit.sort_value
-                logging.info("recruit value %s %s %s", legion.markerid,
+                logging.debug("recruit value %s %s %s", legion.markerid,
                   hexlabel, recruit_value)
                 score += recruit_value
         if game.turn > 1:
