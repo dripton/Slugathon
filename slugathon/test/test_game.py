@@ -61,6 +61,44 @@ class TestGame(object):
         moves = self.game.find_normal_moves(legion, masterhex, 6)
         assert moves == set([(15, 1), (11, 5), (103, 5)])
 
+    def test_find_normal_moves2(self):
+        game = self.game
+        player = self.game.players[0]
+        legion1 = player.markerid_to_legion["Rd01"]
+        legion2 = player.markerid_to_legion["Rd02"]
+        player1 = self.game.players[1]
+        player1.pick_marker("Bu02")
+        player1.split_legion("Bu01", "Bu02",
+          ["Titan", "Centaur", "Centaur", "Gargoyle"],
+          ["Angel", "Ogre", "Ogre", "Gargoyle"])
+        player1.done_with_splits()
+        legion3 = player1.markerid_to_legion["Bu01"]
+        try:
+            legion1.hexlabel = 39
+            legion2.hexlabel = 137
+            masterhex1 = game.board.hexes[legion1.hexlabel]
+            masterhex2 = game.board.hexes[legion2.hexlabel]
+            moves = self.game.find_normal_moves(legion1, masterhex1, 2)
+            assert not moves
+            moves = self.game.find_normal_moves(legion2, masterhex2, 2)
+            assert moves == set([(135, 1)])
+
+            legion3.hexlabel = 135
+            moves = self.game.find_normal_moves(legion1, masterhex1, 2)
+            assert not moves
+            moves = self.game.find_normal_moves(legion2, masterhex2, 2)
+            assert moves == set([(135, 1)])
+
+            legion3.hexlabel = 136
+            moves = self.game.find_normal_moves(legion1, masterhex1, 2)
+            assert not moves
+            moves = self.game.find_normal_moves(legion2, masterhex2, 2)
+            assert moves == set([(136, 5)])
+
+        finally:
+            for legion in [legion1, legion2, legion3]:
+                legion.hexlabel = legion.previous_hexlabel
+
     def test_find_all_teleport_moves(self):
         game = self.game
         player = game.players[0]
