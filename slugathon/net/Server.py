@@ -254,11 +254,9 @@ class Server(Observed):
         for ainame in ainames:
             if self._passwd_for_playername(ainame) is None:
                 self._add_playername_with_random_password(ainame)
-        logging.debug("game %s ainames %s", game.name, ainames)
-        self.game_to_waiting_ais[game.name] = set()
+        logging.debug("%s ainames %s", game.name, ainames)
         # Add all AIs to the wait list first, to avoid a race.
-        for ainame in ainames:
-            self.game_to_waiting_ais[game.name].add(ainame)
+        self.game_to_waiting_ais[game.name] = set(ainames)
         if hasattr(sys, "frozen"):
             # TODO Find the absolute path.
             executable = "slugathon.exe"
@@ -268,7 +266,6 @@ class Server(Observed):
         if not os.path.exists(logdir):
             os.makedirs(logdir)
         for ainame in ainames:
-            logging.info("ainame %s", ainame)
             pp = AIProcessProtocol(self, game.name, ainame)
             args = [executable]
             if hasattr(sys, "frozen"):
@@ -413,6 +410,8 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             game.done_with_moves(playername)
+        else:
+            logging.warning("done_with_moves for bad game %s", game_name)
 
     def resolve_engagement(self, playername, game_name, hexlabel):
         """Pick the next engagement to resolve."""
