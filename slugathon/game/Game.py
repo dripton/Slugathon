@@ -162,6 +162,14 @@ class Game(Observed):
     def num_players(self):
         return len(self.players)
 
+    @property
+    def any_humans(self):
+        """Return True if any of this game's players are human."""
+        for player in self.players:
+            if player.player_class == "Human":
+                return True
+        return False
+
     def get_player_by_name(self, name):
         for player in self.players:
             if player.name == name:

@@ -240,14 +240,9 @@ class Server(Observed):
           game.name, game.min_players, game.num_players, num_ais)
         logging.debug("%s player_ids %s", game.name, sorted(player_ids))
         ainames = []
-        any_humans = False
-        for player in game.players:
-            if player.player_class == "Human":
-                any_humans = True
-                break
         for unused in xrange(num_ais):
             player_id = self.results.get_weighted_random_player_id(
-              excludes=player_ids, highest_mu=any_humans)
+              excludes=player_ids, highest_mu=game.any_humans)
             player_ids.add(player_id)
             ainame = "ai%d" % player_id
             ainames.append(ainame)
