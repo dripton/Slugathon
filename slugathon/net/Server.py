@@ -224,9 +224,9 @@ class Server(Observed):
     def _spawn_ais(self, game):
         logging.debug(game.name)
         player_ids = set()
-        for game in self.games:
-            if not game.over:
-                for player in game.players:
+        for game3 in self.games:
+            if not game3.over:
+                for player in game3.players:
                     player_id = self.results.get_player_id(player.player_info)
                     player_ids.add(player_id)
         for game_name, waiting_ais in self.game_to_waiting_ais.iteritems():
