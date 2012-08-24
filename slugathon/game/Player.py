@@ -432,6 +432,17 @@ class Player(Observed):
           self.game.battle_turn)
         self.notify(action)
 
+    @property
+    def all_summonables(self):
+        """Return a list of all this Player's Creatures that are summonable."""
+        summonables = []
+        for legion in self.legions:
+            if not legion.engaged:
+                for creature in legion.creatures:
+                    if creature.summonable:
+                        summonables.append(creature)
+        return summonables
+
     def summon_angel(self, legion, donor, creature_name):
         """Summon an angel from donor to legion."""
         logging.info("Player.summon_angel %s %s %s", legion, donor,

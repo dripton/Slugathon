@@ -273,72 +273,32 @@ class CleverBot(object):
           legion.markerid)
         def1.addErrback(self.failure)
 
-    # TODO reduce duplicate code
-    def summon_angel_during(self, game):
-        """Summon, during the REINFORCE battle phase"""
-        logging.info("CleverBot.summon_angel_during")
+    def _summon_angel(self, game, during_battle):
+        logging.info("")
         assert game.active_player.name == self.playername
-        if game.battle_phase != Phase.REINFORCE:
+        if during_battle and game.battle_phase != Phase.REINFORCE:
             return
         legion = game.attacker_legion
         assert legion.player.name == self.playername
-        summonables = []
-        if (legion.can_summon and game.first_attacker_kill in
-          [game.battle_turn - 1, game.battle_turn]):
-            for legion2 in legion.player.legions:
-                if not legion2.engaged:
-                    for creature in legion2.creatures:
-                        if creature.summonable:
-                            summonables.append(creature)
-            if summonables:
-                tuples = sorted(((creature.sort_value, creature)
-                  for creature in summonables), reverse=True)
-                summonable = tuples[0][1]
-                donor = summonable.legion
-                logging.info("CleverBot calling _summon_angel %s %s %s",
-                  legion.markerid, donor.markerid, summonable.name)
-                def1 = self.user.callRemote("summon_angel", game.name,
-                  legion.markerid, donor.markerid, summonable.name)
-                def1.addErrback(self.failure)
-                return
-
-        logging.info("CleverBot calling do_not_summon_angel %s",
-          legion.markerid)
-        def1 = self.user.callRemote("do_not_summon_angel", game.name,
-          legion.markerid)
-        def1.addErrback(self.failure)
-
-        logging.info("CleverBot calling done_with_reinforcements")
-        def1 = self.user.callRemote("done_with_reinforcements", game.name)
-        def1.addErrback(self.failure)
-
-    # TODO Consider value of this legion and donor legion before deciding
-    # whether to summon.
-    # TODO reduce duplicate code
-    def summon_angel_after(self, game):
-        """Summon, after the battle is over."""
-        logging.info("CleverBot.summon_angel_after")
-        assert game.active_player.name == self.playername
-        legion = game.attacker_legion
-        assert legion.player.name == self.playername
-        summonables = []
-        if legion.can_summon:
-            for legion2 in legion.player.legions:
-                if not legion2.engaged:
-                    for creature in legion2.creatures:
-                        if creature.summonable:
-                            summonables.append(creature)
+        if (legion.can_summon and (not during_battle or
+          game.first_attacker_kill in [game.battle_turn - 1,
+          game.battle_turn])):
+            summonables = legion.player.all_summonables
             if summonables:
                 tuples = sorted(((creature.sort_value, creature)
                   for creature in summonables), reverse=True)
                 summonable = tuples[0][1]
 
-                # Do not summon if 6 high and we could recruit equal or better.
+                # After battle, do not summon if 6 high and we could recruit
+                # something at least as good as the summonable.
                 recruit = None
-                if (len(legion) >= 6 and legion.can_recruit and legion.moved):
-                    recruit_name, _ = self._pick_recruit_and_recruiters(legion)
-                    if recruit_name:
-                        recruit = Creature.Creature(recruit_name)
+                if not during_battle:
+                    if (len(legion) >= 6 and legion.can_recruit and
+                      legion.moved):
+                        recruit_name, _ = self._pick_recruit_and_recruiters(
+                          legion)
+                        if recruit_name:
+                            recruit = Creature.Creature(recruit_name)
 
                 if not recruit or summonable.sort_value > recruit.sort_value:
                     donor = summonable.legion
@@ -355,6 +315,22 @@ class CleverBot(object):
         def1 = self.user.callRemote("do_not_summon_angel", game.name,
           legion.markerid)
         def1.addErrback(self.failure)
+
+        if during_battle:
+            logging.info("CleverBot calling done_with_reinforcements")
+            def1 = self.user.callRemote("done_with_reinforcements", game.name)
+            def1.addErrback(self.failure)
+
+    def summon_angel_during(self, game):
+        """Summon, during the REINFORCE battle phase"""
+        self._summon_angel(game, True)
+
+    # TODO Consider value of this legion and donor legion before deciding
+    # whether to summon.  But we may want to summon from a greater legion
+    # if it's 7 high and doing this lets it recruit.
+    def summon_angel_after(self, game):
+        """Summon, after the battle is over."""
+        self._summon_angel(game, False)
 
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
         logging.info("CleverBot.acquire_angels %s %s %s", markerid, num_angels,
