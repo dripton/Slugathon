@@ -461,6 +461,10 @@ class CleverBot(object):
                       (score, legion, hexlabel, entry_side))
             best_moves.sort()
             logging.debug("best moves %s", best_moves)
+            if not best_moves:
+                logging.debug("dumping all legions")
+                for legion in game.all_legions():
+                    logging.debug(legion)
 
             if player.can_take_mulligan:
                 legions_with_good_moves = set()
