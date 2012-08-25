@@ -91,6 +91,7 @@ setup(
     scripts=[
         "bin/slugathon",
         "bin/stresstest-slugathon",
+        "bin/set-all-slugathon-ai-passwords",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
