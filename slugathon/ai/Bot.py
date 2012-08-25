@@ -46,17 +46,11 @@ class Bot(Interface):
     def recruit(game):
         """Recruit during the Muster phase."""
 
-    def reinforce_during(game):
-        """Muster a reinforcement during battle."""
+    def reinforce(game):
+        """Muster a reinforcement during or after battle."""
 
-    def reinforce_after(game):
-        """Muster a reinforcement after battle."""
-
-    def summon_angel_during(game):
-        """Summon angel, during battle."""
-
-    def summon_angel_after(game):
-        """Summon angel, after battle."""
+    def summon_angel(game):
+        """Summon an angel, during or after battle."""
 
     def acquire_angels(game, markerid, num_angels, num_archangels):
         """Acquire angels."""
