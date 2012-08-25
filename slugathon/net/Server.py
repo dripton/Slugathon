@@ -832,25 +832,25 @@ class AIProcessProtocol(protocol.ProcessProtocol):
 def add_arguments(parser):
     parser.add_argument("-p", "--port", action="store", type=int,
       default=config.DEFAULT_PORT, help="listening TCP port")
-    parser.add_argument("--passwd", "-a", action="store", type=str,
+    parser.add_argument("--passwd-path", action="store", type=str,
       default=prefs.passwd_path(), help="path to passwd file")
-    parser.add_argument("--no-passwd", "-n", action="store_true",
+    parser.add_argument("-n", "--no-passwd", action="store_true",
       help="do not check passwords")
-    parser.add_argument("--log-path", "-l", action="store", type=str,
+    parser.add_argument("-l", "--log-path", action="store", type=str,
       help="path to logfile")
 
 
 def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
-    opts, extras = parser.parse_known_args()
-    port = opts.port
-    server = Server(opts.no_passwd, opts.passwd, opts.port, opts.log_path)
+    args, extras = parser.parse_known_args()
+    port = args.port
+    server = Server(args.no_passwd, args.passwd_path, args.port, args.log_path)
     realm = Realm.Realm(server)
-    if opts.no_passwd:
+    if args.no_passwd:
         checker = UniqueNoPassword(None, server=server)
     else:
-        checker = UniqueFilePasswordDB(opts.passwd, server=server)
+        checker = UniqueFilePasswordDB(args.passwd_path, server=server)
     portal = Portal(realm, [checker])
     pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
     reactor.listenTCP(port, pbfact)

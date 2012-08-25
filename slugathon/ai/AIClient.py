@@ -681,11 +681,11 @@ def add_arguments(parser):
 def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
-    opts, extras = parser.parse_known_args()
-    aiclient = AIClient(opts.playername, opts.password, opts.server, opts.port,
-      opts.delay, opts.game_name, opts.log_path, opts.ai_time_limit,
-      opts.player_time_limit, opts.form_game, opts.min_players,
-      opts.max_players)
+    args, extras = parser.parse_known_args()
+    aiclient = AIClient(args.playername, args.password, args.server, args.port,
+      args.delay, args.game_name, args.log_path, args.ai_time_limit,
+      args.player_time_limit, args.form_game, args.min_players,
+      args.max_players)
     reactor.callWhenRunning(aiclient.connect)
     reactor.run()
 
