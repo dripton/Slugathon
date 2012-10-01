@@ -12,11 +12,12 @@ from slugathon.game import Action, Phase
 from slugathon.util import colors
 
 
-def add_label(table, col, row, text=""):
+def add_label(table, col, row, gtkcolor, text=""):
     """Add a label inside an eventbox to the table."""
     label = gtk.Label(text)
     eventbox = gtk.EventBox()
     eventbox.add(label)
+    eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
     label.eventbox = eventbox
     table.attach(eventbox, col, col + 1, row, row + 1)
     return label
@@ -46,17 +47,19 @@ class StatusScreen(gtk.EventBox):
         turn_table.set_homogeneous(True)
         self.vbox.pack_start(turn_table)
 
-        add_label(turn_table, 2, 1, "Game")
-        add_label(turn_table, 3, 1, "Battle")
-        add_label(turn_table, 1, 2, "Turn")
-        add_label(turn_table, 1, 3, "Player")
-        add_label(turn_table, 1, 4, "Phase")
-        self.game_turn_label = add_label(turn_table, 2, 2)
-        self.battle_turn_label = add_label(turn_table, 3, 2)
-        self.game_player_label = add_label(turn_table, 2, 3)
-        self.battle_player_label = add_label(turn_table, 3, 3)
-        self.game_phase_label = add_label(turn_table, 2, 4)
-        self.battle_phase_label = add_label(turn_table, 3, 4)
+        self.default_bg = gtk.gdk.color_parse("lightgray")
+
+        add_label(turn_table, 2, 1, self.default_bg, "Game")
+        add_label(turn_table, 3, 1, self.default_bg, "Battle")
+        add_label(turn_table, 1, 2, self.default_bg, "Turn")
+        add_label(turn_table, 1, 3, self.default_bg, "Player")
+        add_label(turn_table, 1, 4, self.default_bg, "Phase")
+        self.game_turn_label = add_label(turn_table, 2, 2, self.default_bg)
+        self.battle_turn_label = add_label(turn_table, 3, 2, self.default_bg)
+        self.game_player_label = add_label(turn_table, 2, 3, self.default_bg)
+        self.battle_player_label = add_label(turn_table, 3, 3, self.default_bg)
+        self.game_phase_label = add_label(turn_table, 2, 4, self.default_bg)
+        self.battle_phase_label = add_label(turn_table, 3, 4, self.default_bg)
 
         hseparator1 = gtk.HSeparator()
         self.vbox.pack_start(hseparator1)
@@ -66,7 +69,7 @@ class StatusScreen(gtk.EventBox):
 
         for row, text in enumerate(["Name", "Tower", "Color", "Legions",
           "Markers", "Creatures", "Titan Power", "Eliminated", "Score"]):
-            add_label(self.player_table, 1, row, text)
+            add_label(self.player_table, 1, row, self.default_bg, text)
 
         for col in xrange(len(self.game.players)):
             for row, st in enumerate(["name%d_label", "tower%d_label",
@@ -74,10 +77,10 @@ class StatusScreen(gtk.EventBox):
               "creatures%d_label", "titan_power%d_label", "eliminated%d_label",
               "score%d_label"]):
                 name = st % col
-                label = add_label(self.player_table, col + 2, row)
+                label = add_label(self.player_table, col + 2, row,
+                  self.default_bg)
                 setattr(self, name, label)
 
-        self.default_bg = gtk.gdk.color_parse("lightgray")
         self.modify_bg(gtk.STATE_NORMAL, self.default_bg)
         self._init_players()
         self._init_turn()
