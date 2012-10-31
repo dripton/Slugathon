@@ -8,7 +8,7 @@ __license__ = "GNU GPL v2"
 a new image, leaving the rest transparent."""
 
 
-from optparse import OptionParser
+import argparse
 
 import cairo
 
@@ -52,19 +52,17 @@ def slice_border_image(input_path, output_path, hexsides):
 
 
 def main():
-    usage = "%prog [options] hexsides"
-    op = OptionParser(usage)
-    op.add_option("-i", "--input-path", action="store", type="str")
-    op.add_option("-o", "--output-path", action="store", type="str")
-    opts, args = op.parse_args()
-    if not opts.input_path or not opts.output_path or not args:
-        op.error("Must provide input_path, output_path and hexsides")
-    hexsides = set()
-    for arg in args:
-        hexside = int(arg)
-        assert 0 <= hexside <= 5
-        hexsides.add(hexside)
-    slice_border_image(opts.input_path, opts.output_path, hexsides)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input-path")
+    parser.add_argument("-o", "--output-path")
+    parser.add_argument("hexsides", type=int, nargs="+")
+    args = parser.parse_args()
+    if not args.input_path or not args.output_path or not args.hexsides:
+        parser.error("Must provide input_path, output_path and hexsides")
+    for hexside in args.hexsides:
+        if hexside < 0 or hexside > 5:
+            parser.error("Hexsides must be in range 0-5 inclusive.")
+    slice_border_image(args.input_path, args.output_path, args.hexsides)
 
 if __name__ == "__main__":
     main()
