@@ -223,27 +223,27 @@ class Server(Observed):
 
     def _spawn_ais(self, game):
         logging.debug(game.name)
-        player_ids = set()
+        excludes = set()
         for game3 in self.games:
             if not game3.over:
                 for player in game3.players:
                     player_id = self.results.get_player_id(player.player_info)
-                    player_ids.add(player_id)
+                    excludes.add(player_id)
         for game_name, waiting_ais in self.game_to_waiting_ais.iteritems():
             game2 = self.name_to_game(game_name)
             if game2 and not game2.over and game2 != game:
                 for ainame in waiting_ais:
                     player_id = int(ainame[2:])
-                    player_ids.add(player_id)
+                    excludes.add(player_id)
         num_ais = game.min_players - game.num_players
         logging.debug("%s min_players %d num_players %d num_ais_needed %s",
           game.name, game.min_players, game.num_players, num_ais)
-        logging.debug("%s player_ids %s", game.name, sorted(player_ids))
+        logging.debug("%s excludes %s", game.name, sorted(excludes))
         ainames = []
         for unused in xrange(num_ais):
             player_id = self.results.get_weighted_random_player_id(
-              excludes=player_ids, highest_mu=game.any_humans)
-            player_ids.add(player_id)
+              excludes=excludes, highest_mu=game.any_humans)
+            excludes.add(player_id)
             ainame = "ai%d" % player_id
             ainames.append(ainame)
         for ainame in ainames:
