@@ -162,8 +162,7 @@ if __name__ == "__main__":
     playernames = [playername]
     games = [game]
     main_window = MainWindow()
-    lobby = Lobby.Lobby(user, playername, playernames, games,
-      main_window)
+    lobby = Lobby.Lobby(user, playername, playernames, games, main_window)
     main_window.add_lobby(lobby)
 
     reactor.run()
