@@ -4,8 +4,6 @@ __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import logging
-
 from twisted.internet import gtk2reactor
 try:
     gtk2reactor.install()
@@ -130,9 +128,7 @@ class MainWindow(gtk.Window):
         return False
 
     def cb_switch_page(self, widget, dummy, page_num):
-        logging.info(str(page_num))
         page_widget = widget.get_nth_page(page_num)
-        logging.info(page_widget)
         if (hasattr(page_widget, "ui") and hasattr(page_widget.ui,
           "get_accel_group")):
             self.replace_accel_group(page_widget.ui.get_accel_group())
