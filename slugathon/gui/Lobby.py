@@ -398,6 +398,8 @@ class Lobby(gtk.EventBox):
             it = buf.get_end_iter()
             buf.insert(it, message)
             self.chat_view.scroll_to_mark(buf.get_insert(), 0)
+            if action.playername != self.playername:
+                self.parent_window.highlight_lobby_label()
 
 
 if __name__ == "__main__":

@@ -17,6 +17,13 @@ from slugathon.gui import icon, ConfirmDialog
 from slugathon.util import prefs
 
 
+def modify_fg_all_states(widget, color_name):
+    color = gtk.gdk.color_parse(color_name)
+    for state in [gtk.STATE_NORMAL, gtk.STATE_ACTIVE, gtk.STATE_PRELIGHT,
+      gtk.STATE_SELECTED, gtk.STATE_INSENSITIVE]:
+        widget.modify_fg(state, color)
+
+
 class MainWindow(gtk.Window):
     """Main GUI window."""
     def __init__(self, playername=None, scale=None):
@@ -75,6 +82,7 @@ class MainWindow(gtk.Window):
     def add_guiboard(self, guiboard):
         self.guiboard = guiboard
         label = gtk.Label("MasterBoard")
+        modify_fg_all_states(label, "Red")
         self.notebook.append_page(guiboard, label)
         self.show_all()
 
@@ -87,6 +95,7 @@ class MainWindow(gtk.Window):
     def add_guimap(self, guimap):
         self.guimap = guimap
         label = gtk.Label("BattleMap")
+        modify_fg_all_states(label, "Red")
         self.notebook.append_page(guimap, label)
         self.show_all()
 
@@ -97,6 +106,11 @@ class MainWindow(gtk.Window):
             page_num = self.notebook.page_num(self.guimap)
             self.notebook.remove_page(page_num)
             self.guimap = None
+
+    def highlight_lobby_label(self):
+        if self.lobby:
+            label = self.notebook.get_tab_label(self.lobby)
+            modify_fg_all_states(label, "Red")
 
     def cb_delete_event(self, widget, event):
         if self.game is None or self.game.over:
@@ -134,6 +148,8 @@ class MainWindow(gtk.Window):
             self.replace_accel_group(page_widget.ui.get_accel_group())
         else:
             self.replace_accel_group(None)
+        label = self.notebook.get_tab_label(page_widget)
+        modify_fg_all_states(label, "Black")
 
     def compute_scale(self):
         """Return the approximate maximum scale that let the board fit on
