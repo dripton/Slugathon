@@ -358,7 +358,9 @@ class Lobby(gtk.EventBox):
 
     def cb_game_list_select(self, path, unused):
         index = path[0]
-        game = self.games[index]
+        tup = self.new_game_store[index, 0]
+        name = tup[0]
+        game = self.name_to_game(name)
         if not game.started and self.initialized:
             # We get a spurious call to this method during initialization,
             # so don't add a WaitingForPlayers until fully initialized.
