@@ -189,10 +189,48 @@ class CleverBot(object):
         else:
             logging.info("not my engagement")
 
-    # TODO Look at what we can recruit on each movement roll, to see if we
-    # should take a third creature of a kind.  We also need to be able to
-    # split off better creatures to enable recruiting for this to be
-    # useful for 6-high legions.
+    def _scary_enemy_legions_behind(self, legion):
+        """Return True if there are any scary enemy legions that can
+        catch this legion next turn."""
+        player = legion.player
+        game = player.game
+        legion_combat_value = legion.combat_value
+        hexlabel = legion.hexlabel
+        for enemy in player.enemy_legions():
+            # TODO take terrain into account
+            if (enemy.combat_value >= self.bp.BE_SQUASHED *
+              legion_combat_value):
+                for roll in xrange(1, 6 + 1):
+                    moves = game.find_normal_moves(enemy,
+                      game.board.hexes[enemy.hexlabel], roll).union(
+                      game.find_titan_teleport_moves(enemy))
+                    hexlabels = set((move[0] for move in moves))
+                    if hexlabel in hexlabels:
+                        return True
+        return False
+
+    def _scary_enemy_legions_ahead(self, legion):
+        """Return True if there are any scary enemy legions that this
+        legion can catch next turn."""
+        player = legion.player
+        game = player.game
+        legion_combat_value = legion.combat_value
+        hexlabel = legion.hexlabel
+        all_hexlabels = set()
+        for roll in xrange(1, 6 + 1):
+            moves = game.find_normal_moves(legion,
+              game.board.hexes[hexlabel], roll).union(
+              game.find_titan_teleport_moves(legion))
+            hexlabels = set((move[0] for move in moves))
+            all_hexlabels.update(hexlabels)
+        for enemy in player.enemy_legions():
+            # TODO take terrain into account
+            if (enemy.combat_value >= self.bp.BE_SQUASHED *
+              legion_combat_value):
+                if enemy.hexlabel in all_hexlabels:
+                    return True
+        return False
+
     def _pick_recruit_and_recruiters(self, legion):
         """Return a tuple of (recruit, recruiters), or (None, None)."""
         player = legion.player
@@ -202,19 +240,71 @@ class CleverBot(object):
         mterrain = masterhex.terrain
         lst = legion.available_recruits_and_recruiters(mterrain,
           caretaker)
-        if lst:
-            # For now, just take the last recruit.
-            tup = lst[-1]
-            recruit = tup[0]
-            # And pick randomly among its recruiters.
-            possible_recruiters = set()
-            for tup in lst:
-                if tup[0] == recruit:
-                    recruiters = tup[1:]
-                    possible_recruiters.add(recruiters)
-            recruiters = random.choice(list(possible_recruiters))
-            return (recruit, recruiters)
-        return (None, None)
+        # Put the biggest creature first
+        lst.reverse()
+
+        if not lst:
+            return (None, None)
+
+        # TODO We need to be able to split smarter before recruiting
+        # a third lesser creature is useful for 6-high legions.
+        if (len(lst) == 1 or len(legion) == 6 or
+          self._scary_enemy_legions_behind(legion) or
+          self._scary_enemy_legions_ahead(legion) or
+          random.random() > self.bp.THIRD_CREATURE_RATIO):
+            best_recruit_index = 0
+
+        else:
+            # Look at what we can recruit on each movement roll, to see if we
+            # should take a third creature of a kind.
+            all_hexlabels = set()
+            for roll in xrange(1, 6 + 1):
+                moves = game.find_all_moves(legion,
+                  game.board.hexes[legion.hexlabel], roll)
+                hexlabels = set((move[0] for move in moves))
+                all_hexlabels.update(hexlabels)
+            mterrains = set()
+            for hexlabel in all_hexlabels:
+                mterrains.add(game.board.hexes[hexlabel].terrain)
+
+            all_recruits = set(tup[0] for tup in lst)
+            recruit_to_later_recruits = {}
+            for recruit in all_recruits:
+                # Make a copy of the legion so we can safely modify it.
+                legion2 = Legion.Legion(player, legion.markerid,
+                  legion.creatures[:], legion.hexlabel)
+                legion2.add_creature_by_name(recruit)
+                for mterrain2 in mterrains:
+                    lst2 = legion2.available_recruits_and_recruiters(
+                      mterrain2, caretaker)
+                    later_recruits = set(tup[0] for tup in lst2)
+                    recruit_to_later_recruits[recruit] = later_recruits
+            best_creature = None
+            best_recruit = None
+            for recruit2, recruits in recruit_to_later_recruits.iteritems():
+                for creature_name in [recruit2] + list(recruits):
+                    creature = Creature.Creature(creature_name)
+                    if (best_creature is None or
+                      creature.sort_value > best_creature.sort_value):
+                        best_creature = creature
+                        best_recruit = recruit2
+            best_recruit_index = 0
+            for ii, tup in enumerate(lst):
+                if tup[0] == best_recruit:
+                    best_recruit_index = ii
+                    break
+
+        tup = lst[best_recruit_index]
+        recruit3 = tup[0]
+
+        # And pick randomly among its recruiters.
+        possible_recruiters = set()
+        for tup in lst:
+            if tup[0] == recruit3:
+                recruiters = tup[1:]
+                possible_recruiters.add(recruiters)
+        recruiters = random.choice(list(possible_recruiters))
+        return (recruit3, recruiters)
 
     def recruit(self, game):
         logging.info("CleverBot.recruit")
@@ -432,8 +522,8 @@ class CleverBot(object):
                     moves = game.find_all_moves(legion,
                       game.board.hexes[legion.hexlabel], roll)
                     for hexlabel, entry_side in moves:
-                        masterhex = game.board.hexes[hexlabel]
-                        terrain = masterhex.terrain
+                        masterhex2 = game.board.hexes[hexlabel]
+                        terrain = masterhex2.terrain
                         recruits = legion.available_recruits(terrain,
                           caretaker)
                         if recruits:

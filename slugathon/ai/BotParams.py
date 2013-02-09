@@ -41,6 +41,7 @@ fields = [
     "NON_NATIVE_SLOPE_PENALTY",
     "NON_NATIVE_DUNE_PENALTY",
     "ENGAGE_RANGESTRIKER_BONUS",
+    "THIRD_CREATURE_RATIO",
 ]
 
 
@@ -73,6 +74,7 @@ defaults = {
     "NON_NATIVE_SLOPE_PENALTY": -0.3,
     "NON_NATIVE_DUNE_PENALTY": -0.3,
     "ENGAGE_RANGESTRIKER_BONUS": 0.5,
+    "THIRD_CREATURE_RATIO": 0.5,
 }
 
 
@@ -80,11 +82,24 @@ class BotParams(namedtuple("BotParams", fields)):
 
     @classmethod
     def fromstring(klass, st):
-        """Create a BotParams from a string."""
+        """Create a BotParams from a string.
+
+        If any fields are missing, populate them with the default then
+        mutate them.
+        """
         match = re.search(r"BotParams\(.*\)", st)
         if match:
+            fields_to_mutate = set()
             st = match.group(0)
-            return eval(st)
+            for field, val in defaults.iteritems():
+                if field + "=" not in st:
+                    st = st.replace(")", ", %s=%f)" % (field, val))
+                    fields_to_mutate.add(field)
+            bp = eval(st)
+            while fields_to_mutate:
+                field = fields_to_mutate.pop()
+                bp = bp.mutate_field(field)
+            return bp
         else:
             return None
 
