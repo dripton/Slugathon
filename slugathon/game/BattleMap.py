@@ -192,7 +192,7 @@ class BattleMap(object):
         """
         if hexlabel1 not in self.hexes or hexlabel2 not in self.hexes:
             logging.info("BattleMap.range invalid hexlabel %s %s %s" %
-              hexlabel1, hexlabel2, allow_entrance)
+              (hexlabel1, hexlabel2, allow_entrance))
             return maxint
         if hexlabel1 == hexlabel2:
             return 1
