@@ -97,9 +97,8 @@ class Results(object):
 
                 # See if that player is already in the database
                 query = """SELECT player_id FROM player
-                           where name = ? AND class = ? AND info = ?"""
-                cursor.execute(query, (player.name, player.player_class,
-                  player.player_info))
+                           where name = ? AND class = ?"""
+                cursor.execute(query, (player.name, player.player_class))
                 row = cursor.fetchone()
                 # If not, insert it.
                 if row is None:
@@ -114,6 +113,12 @@ class Results(object):
                     cursor.execute(query, (player.player_class,
                       player.player_info))
                     row = cursor.fetchone()
+                else:
+                    player_id = row["player_id"]
+                    # We may need to update info, if new fields were added.
+                    query = """UPDATE player SET info = ?
+                               where player_id = ?"""
+                    cursor.execute(query, (player.player_info, player_id))
 
                 player_id = row["player_id"]
 
