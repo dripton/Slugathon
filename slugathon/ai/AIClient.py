@@ -461,8 +461,7 @@ class AIClient(pb.Referenceable, Observed):
             if legion:
                 if legion.player.name == self.playername:
                     if legion == game.defender_legion:
-                        reactor.callLater(self.delay, self.ai.reinforce_during,
-                          game)
+                        reactor.callLater(self.delay, self.ai.reinforce, game)
                     else:
                         reactor.callLater(self.delay,
                           self.ai.summon_angel_during, game)
@@ -491,8 +490,7 @@ class AIClient(pb.Referenceable, Observed):
                         reactor.callLater(self.delay, self.ai.recruit, game)
                 elif game.phase == Phase.FIGHT:
                     if game.battle_phase == Phase.REINFORCE:
-                        reactor.callLater(self.delay, self.ai.reinforce_during,
-                          game)
+                        reactor.callLater(self.delay, self.ai.reinforce, game)
                     else:
                         reactor.callLater(self.delay,
                           self.ai.choose_engagement, game)
@@ -596,8 +594,8 @@ class AIClient(pb.Referenceable, Observed):
                     if legion.player.name == self.playername:
                         if (legion.markerid == action.winner_markerid and
                           legion.can_recruit):
-                            reactor.callLater(self.delay,
-                              self.ai.reinforce_after, game)
+                            reactor.callLater(self.delay, self.ai.reinforce,
+                              game)
                             return
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)

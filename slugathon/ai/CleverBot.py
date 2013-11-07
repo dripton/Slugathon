@@ -326,14 +326,15 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_recruits", game.name)
         def1.addErrback(self.failure)
 
-    def reinforce_during(self, game):
-        """Reinforce, during the REINFORCE battle phase"""
+    def reinforce(self, game):
+        """Reinforce, during the REINFORCE battle phase or after the battle"""
         logging.info("")
-        assert game.battle_active_player.name == self.playername
-        assert game.battle_phase == Phase.REINFORCE
+        battle_over = game.is_battle_over
+        if not battle_over:
+            assert game.battle_active_player.name == self.playername
+            assert game.battle_phase == Phase.REINFORCE
         legion = game.defender_legion
-        assert legion.player.name == self.playername
-        if game.battle_turn == 4 and legion.can_recruit:
+        if legion.can_recruit and (battle_over or game.battle_turn == 4):
             recruit, recruiters = self._pick_recruit_and_recruiters(legion)
             if recruit is not None:
                 logging.info("CleverBot calling recruit_creature %s", recruit)
@@ -341,27 +342,15 @@ class CleverBot(object):
                   legion.markerid, recruit, recruiters)
                 def1.addErrback(self.failure)
                 return
-        logging.info("CleverBot calling done_with_reinforcements")
-        def1 = self.user.callRemote("done_with_reinforcements", game.name)
-        def1.addErrback(self.failure)
-
-    def reinforce_after(self, game):
-        """Reinforce, after the battle"""
-        logging.info("")
-        legion = game.defender_legion
-        assert legion.player.name == self.playername
-        if legion.can_recruit:
-            recruit, recruiters = self._pick_recruit_and_recruiters(legion)
-            if recruit is not None:
-                logging.info("CleverBot calling recruit_creature %s", recruit)
-                def1 = self.user.callRemote("recruit_creature", game.name,
-                  legion.markerid, recruit, recruiters)
-                def1.addErrback(self.failure)
-                return
-        logging.info("CleverBot calling do_not_reinforce %s", recruit)
-        def1 = self.user.callRemote("do_not_reinforce", game.name,
-          legion.markerid)
-        def1.addErrback(self.failure)
+        if battle_over:
+            logging.info("CleverBot calling do_not_reinforce %s", recruit)
+            def1 = self.user.callRemote("do_not_reinforce", game.name,
+              legion.markerid)
+            def1.addErrback(self.failure)
+        else:
+            logging.info("CleverBot calling done_with_reinforcements")
+            def1 = self.user.callRemote("done_with_reinforcements", game.name)
+            def1.addErrback(self.failure)
 
     def _summon_angel(self, game, during_battle):
         logging.info("")
