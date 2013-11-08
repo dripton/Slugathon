@@ -352,8 +352,13 @@ class CleverBot(object):
             def1 = self.user.callRemote("done_with_reinforcements", game.name)
             def1.addErrback(self.failure)
 
-    def _summon_angel(self, game, during_battle):
+    # TODO Consider value of this legion and donor legion before deciding
+    # whether to summon.  But we may want to summon from a greater legion
+    # if it's 7 high and doing this lets it recruit.
+    def summon_angel(self, game):
+        """Summon, during the REINFORCE battle phase or after the battle."""
         logging.info("")
+        during_battle = not game.is_battle_over
         assert game.active_player.name == self.playername
         if during_battle and game.battle_phase != Phase.REINFORCE:
             return
@@ -399,17 +404,6 @@ class CleverBot(object):
             logging.info("CleverBot calling done_with_reinforcements")
             def1 = self.user.callRemote("done_with_reinforcements", game.name)
             def1.addErrback(self.failure)
-
-    def summon_angel_during(self, game):
-        """Summon, during the REINFORCE battle phase"""
-        self._summon_angel(game, True)
-
-    # TODO Consider value of this legion and donor legion before deciding
-    # whether to summon.  But we may want to summon from a greater legion
-    # if it's 7 high and doing this lets it recruit.
-    def summon_angel_after(self, game):
-        """Summon, after the battle is over."""
-        self._summon_angel(game, False)
 
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
         logging.info("CleverBot.acquire_angels %s %s %s", markerid, num_angels,

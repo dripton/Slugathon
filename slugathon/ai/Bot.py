@@ -49,11 +49,8 @@ class Bot(Interface):
     def reinforce(game):
         """Muster a reinforcement during or after battle."""
 
-    def summon_angel_during(game):
-        """Summon angel, during battle."""
-
-    def summon_angel_after(game):
-        """Summon angel, after battle."""
+    def summon_angel(game):
+        """Summon angel, during or after battle."""
 
     def acquire_angels(game, markerid, num_angels, num_archangels):
         """Acquire angels."""
