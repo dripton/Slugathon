@@ -11,9 +11,9 @@ SPLIT, MOVE, FIGHT, MUSTER = range(4)
 REINFORCE, MANEUVER, DRIFTDAMAGE, STRIKE, COUNTERSTRIKE, CLEANUP = range(6)
 
 phase_names = {
-    SPLIT:  "Split",
-    MOVE:   "Move",
-    FIGHT:  "Fight",
+    SPLIT: "Split",
+    MOVE: "Move",
+    FIGHT: "Fight",
     MUSTER: "Muster",
 }
 

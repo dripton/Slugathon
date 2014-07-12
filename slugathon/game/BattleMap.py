@@ -366,7 +366,7 @@ class BattleMap(object):
             if mid_obstacle and not striker_atop and not target_atop:
                 return True
             if (total_obstacles >= 3 and (not striker_atop or not target_atop)
-                and (not striker_atop_cliff and not target_atop_cliff)):
+                    and (not striker_atop_cliff and not target_atop_cliff)):
                 return True
             if total_walls >= 2:
                 if not (striker_atop_wall or target_atop_wall):

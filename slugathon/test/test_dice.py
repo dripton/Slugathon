@@ -68,7 +68,7 @@ def count_non_zero_diffs(rolls):
     prev = None
     count = 0
     for roll in rolls:
-        if prev != None and roll != prev:
+        if prev is not None and roll != prev:
             count += 1
         prev = roll
     return count
@@ -119,7 +119,7 @@ class TestDice(object):
             self.bins[num] = self.bins.get(num, 0) + 1
 
     def test_find_median(self):
-        assert find_median([]) == None
+        assert find_median([]) is None
         assert find_median([0]) == 0
         assert find_median([-2, 0, 25]) == 0
         assert find_median([25, -2, 0]) == 0

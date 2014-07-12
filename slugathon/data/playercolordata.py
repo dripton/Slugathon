@@ -7,11 +7,11 @@ __license__ = "GNU GPL v2"
 
 name_to_abbrev = {
     "Black": "Bk",
-    "Blue":  "Bu",
+    "Blue": "Bu",
     "Brown": "Br",
-    "Gold":  "Gd",
+    "Gold": "Gd",
     "Green": "Gr",
-    "Red":   "Rd",
+    "Red": "Rd",
 }
 
 abbrev_to_name = {}

@@ -13,9 +13,9 @@ def test_fromstring():
     assert isinstance(obj, Action.MoveLegion)
     assert obj.markerid == "Rd01"
     assert obj.entry_side == 1
-    assert obj.teleport == False
+    assert obj.teleport is False
     assert obj.playername == "player"
-    assert obj.teleporting_lord == None
+    assert obj.teleporting_lord is None
     assert obj.game_name == "game"
     assert obj.hexlabel == 1
     assert obj.previous_hexlabel == 2

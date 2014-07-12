@@ -30,38 +30,38 @@ def test_hex_inverted():
 
 def test_exits():
     assert hex1.exits[0] == "ARCH"
-    assert hex1.exits[1] == None
+    assert hex1.exits[1] is None
     assert hex1.exits[2] == "ARROWS"
-    assert hex1.exits[3] == None
-    assert hex1.exits[4] == None
-    assert hex1.exits[5] == None
-    assert hex2.exits[0] == None
+    assert hex1.exits[3] is None
+    assert hex1.exits[4] is None
+    assert hex1.exits[5] is None
+    assert hex2.exits[0] is None
     assert hex2.exits[1] == "ARCH"
-    assert hex2.exits[2] == None
+    assert hex2.exits[2] is None
     assert hex2.exits[3] == "ARROWS"
-    assert hex2.exits[4] == None
-    assert hex2.exits[5] == None
+    assert hex2.exits[4] is None
+    assert hex2.exits[5] is None
     assert hex1.entrances[0] == "BLOCK"
-    assert hex1.entrances[1] == None
-    assert hex1.entrances[2] == None
-    assert hex1.entrances[3] == None
+    assert hex1.entrances[1] is None
+    assert hex1.entrances[2] is None
+    assert hex1.entrances[3] is None
     assert hex1.entrances[4] == "ARROWS"
-    assert hex1.entrances[5] == None
-    assert hex2.entrances[0] == None
+    assert hex1.entrances[5] is None
+    assert hex2.entrances[0] is None
     assert hex2.entrances[1] == "ARCH"
-    assert hex2.entrances[2] == None
-    assert hex2.entrances[3] == None
-    assert hex2.entrances[4] == None
+    assert hex2.entrances[2] is None
+    assert hex2.entrances[3] is None
+    assert hex2.entrances[4] is None
     assert hex2.entrances[5] == "ARROWS"
 
 
 def test_neighbors():
     assert hex1.neighbors[0] == board.hexes[1000]
-    assert hex1.neighbors[1] == None
+    assert hex1.neighbors[1] is None
     assert hex1.neighbors[2] == board.hexes[2]
-    assert hex1.neighbors[3] == None
+    assert hex1.neighbors[3] is None
     assert hex1.neighbors[4] == board.hexes[42]
-    assert hex1.neighbors[5] == None
+    assert hex1.neighbors[5] is None
 
 
 def test_flatten_point_list():

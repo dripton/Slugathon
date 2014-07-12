@@ -89,7 +89,7 @@ class Player(Observed):
 
     def assign_starting_tower(self, tower):
         """Set this player's starting tower to the (int) tower"""
-        assert type(tower) == types.IntType
+        assert isinstance(tower, types.IntType)
         self.starting_tower = tower
         action = Action.AssignTower(self.game.name, self.name, tower)
         self.notify(action)

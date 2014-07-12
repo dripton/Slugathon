@@ -139,11 +139,11 @@ class GUIMasterHex(object):
         for i in xrange(6):
             gp = [vertexes[i]]
             n = (i + 1) % 6
-            if hex1.exits[i] != None:
+            if hex1.exits[i] is not None:
                 li = self.init_gate(vertexes[i][0], vertexes[i][1],
                           vertexes[n][0], vertexes[n][1], hex1.exits[i])
                 gp.extend(li)
-            if hex1.entrances[i] != None:
+            if hex1.entrances[i] is not None:
                 li = self.init_gate(vertexes[n][0], vertexes[n][1],
                           vertexes[i][0], vertexes[i][1], hex1.entrances[i])
                 li.reverse()

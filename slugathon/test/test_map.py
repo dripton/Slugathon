@@ -61,9 +61,9 @@ def test_non_default_hex_init():
     assert hex7.terrain == "Tower"
     assert hex7.elevation == 1
     assert hex7.borders[0] == "Wall"
-    assert hex7.borders[1] == None
-    assert hex7.borders[2] == None
-    assert hex7.borders[3] == None
+    assert hex7.borders[1] is None
+    assert hex7.borders[2] is None
+    assert hex7.borders[3] is None
     assert hex7.borders[4] == "Wall"
     assert hex7.borders[5] == "Wall"
 
@@ -272,7 +272,7 @@ def test_battlehex_repr():
 def test_neighbor_to_hexside():
     assert hex1.neighbor_to_hexside(hex2) == 0
     assert hex2.neighbor_to_hexside(hex1) == 3
-    assert hex1.neighbor_to_hexside(hex3) == None
+    assert hex1.neighbor_to_hexside(hex3) is None
 
 
 def test_width_and_height():

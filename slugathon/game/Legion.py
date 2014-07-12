@@ -20,7 +20,7 @@ def find_picname(markerid):
 class Legion(Observed):
     def __init__(self, player, markerid, creatures, hexlabel):
         Observed.__init__(self)
-        assert type(hexlabel) == types.IntType
+        assert isinstance(hexlabel, types.IntType)
         self.markerid = markerid
         self.picname = find_picname(markerid)
         self.creatures = creatures
