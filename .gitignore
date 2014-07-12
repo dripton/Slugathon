@@ -4,4 +4,5 @@ build/
 dist/
 version.txt
 .coverage
+coverage.xml
 MANIFEST
