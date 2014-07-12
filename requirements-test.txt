@@ -1,3 +1,5 @@
 pytest
 pytest-cov
 coveralls
+pyflakes
+pep8
