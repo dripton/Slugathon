@@ -342,7 +342,7 @@ class Node(object):
                 pos_node = Node(self.markerid, -1, cil, self)
                 if pos_node.is_legal_initial_splitoff:
                     possible_splits_set.add(pos)
-        possible_splits = [list(pos) for pos in possible_splits_set]
+        possible_splits = [list(pos2) for pos2 in possible_splits_set]
         return possible_splits
 
     def _choose_creatures_to_split_out(self, possible_splits):

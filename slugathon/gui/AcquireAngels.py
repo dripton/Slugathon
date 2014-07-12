@@ -42,7 +42,7 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
         score = sum((creature.score for creature in combo))
         sorter.append((score, combo))
     sorter.sort(reverse=True)
-    combos = [combo for (score, combo) in sorter]
+    combos = [combo for (unused, combo) in sorter]
     return combos
 
 

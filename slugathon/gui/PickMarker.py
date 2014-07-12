@@ -43,7 +43,7 @@ def sorted_markers(markers):
         count = color_count[color]
         augmented.append((count, marker))
     augmented.sort()
-    return [marker for count, marker in augmented]
+    return [marker for unused, marker in augmented]
 
 
 class PickMarker(gtk.Dialog):
