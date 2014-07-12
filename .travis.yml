@@ -16,7 +16,11 @@ install:
   - pip install .
 
 script:
-  - py.test --cov slugathon --cov-report term-missing
+  - cd slugathon
+  - py.test --cov slugathon --cov-report term-missing test/
 
 after_success:
   coveralls
+
+notifications:
+  email: false
