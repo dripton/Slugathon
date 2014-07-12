@@ -43,15 +43,16 @@ def new(board, masterhex, entry_sides, parent, playername=None, scale=None):
     """Create a PickEntrySide dialog and return it and a Deferred."""
     def1 = defer.Deferred()
     pick_entry_side = PickEntrySide(board, masterhex, entry_sides, def1,
-      parent, playername, scale)
+                                    parent, playername, scale)
     return pick_entry_side, def1
 
 
 class PickEntrySide(gtk.Dialog):
+
     """Dialog to pick a masterhex entry side."""
 
     def __init__(self, board, masterhex, entry_sides, def1, parent,
-      playername=None, scale=None):
+                 playername=None, scale=None):
         gtk.Dialog.__init__(self, "Pick Entry Side - %s" % playername, parent)
 
         terrain = masterhex.terrain
@@ -83,12 +84,12 @@ class PickEntrySide(gtk.Dialog):
 
         if self.playername:
             tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
+                                             self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
             tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
+                                         self.__class__.__name__)
             if tup:
                 width, height = tup
                 self.resize(width, height)
@@ -113,7 +114,7 @@ class PickEntrySide(gtk.Dialog):
             # Don't show entrances.
             if hex1.label not in ["ATTACKER", "DEFENDER"]:
                 self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1,
-                  self)
+                                                                      self)
         self.repaint_hexlabels = set()
         # Hexes that need their bounding rectangles cleared, too.
         # This fixes chits.
@@ -139,7 +140,7 @@ class PickEntrySide(gtk.Dialog):
         xscale = math.floor(width / (2 * self.battlemap.hex_width)) - 5
         # Fudge factor for menus and toolbars.
         yscale = math.floor(height / (2 * SQRT3 *
-          self.battlemap.hex_height)) - 11
+                                      self.battlemap.hex_height)) - 11
         return int(min(xscale, yscale))
 
     def compute_width(self):
@@ -149,7 +150,7 @@ class PickEntrySide(gtk.Dialog):
     def compute_height(self):
         """Return the height of the map in pixels."""
         return int(math.ceil(self.scale * self.battlemap.hex_height * 2 *
-          SQRT3))
+                             SQRT3))
 
     def masterhex_label(self, masterhex):
         """Return a gtk.Label describing masterhex, inside a white
@@ -157,7 +158,7 @@ class PickEntrySide(gtk.Dialog):
         eventbox = gtk.EventBox()
         if masterhex:
             text = '<span size="large" weight="bold">%s hex %d</span>' % (
-              masterhex.terrain, masterhex.label)
+                masterhex.terrain, masterhex.label)
         else:
             text = ""
         label = gtk.Label()
@@ -220,11 +221,13 @@ class PickEntrySide(gtk.Dialog):
                 return
             else:
                 clip_rect = self.bounding_rect_for_hexlabels(
-                  self.repaint_hexlabels)
+                    self.repaint_hexlabels)
         else:
             if self.repaint_hexlabels:
-                clip_rect = guiutils.combine_rectangles(event.area,
-                  self.bounding_rect_for_hexlabels(self.repaint_hexlabels))
+                clip_rect = guiutils.combine_rectangles(
+                    event.area,
+                    self.bounding_rect_for_hexlabels(
+                        self.repaint_hexlabels))
             else:
                 clip_rect = event.area
 

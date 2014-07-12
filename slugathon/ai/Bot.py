@@ -40,7 +40,7 @@ class Bot(Interface):
         """Choose strikes or strikebacks."""
 
     def carry(game, striker_name, striker_hexlabel, target_name,
-      target_hexlabel, num_dice, strike_number, carries):
+              target_hexlabel, num_dice, strike_number, carries):
         """Choose how to apply one carry."""
 
     def recruit(game):

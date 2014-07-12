@@ -21,7 +21,7 @@ def test_can_exit_split_phase():
     assert not player.can_exit_split_phase
 
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Centaur", "Gargoyle"])
+                        ["Angel", "Centaur", "Centaur", "Gargoyle"])
     assert player.can_exit_split_phase
 
 
@@ -35,7 +35,7 @@ def test_friendly_legions():
     player.create_starting_legion()
     legion1 = player.markerid_to_legion["Rd01"]
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
-      ["Angel", "Gargoyle", "Centaur", "Centaur"])
+                        ["Angel", "Gargoyle", "Centaur", "Centaur"])
     legion2 = player.markerid_to_legion["Rd02"]
     assert player.friendly_legions() == set([legion1, legion2])
     assert player.friendly_legions(100) == set([legion1, legion2])
@@ -62,7 +62,7 @@ def test_can_exit_move_phase():
     player.create_starting_legion()
     legion1 = player.markerid_to_legion["Rd01"]
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
-      ["Angel", "Gargoyle", "Centaur", "Centaur"])
+                        ["Angel", "Gargoyle", "Centaur", "Centaur"])
     legion2 = player.markerid_to_legion["Rd02"]
     assert not player.can_exit_move_phase
     legion1.move(8, False, None, 1)
@@ -98,7 +98,7 @@ def test_teleported():
     assert player.num_creatures == 8
     assert not player.teleported
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
-      ["Angel", "Gargoyle", "Centaur", "Centaur"])
+                        ["Angel", "Gargoyle", "Centaur", "Centaur"])
     legion1 = player.markerid_to_legion["Rd01"]
     legion2 = player.markerid_to_legion["Rd02"]
     legion1.move(8, False, None, 1)
@@ -182,15 +182,15 @@ def test_can_split():
     player.create_starting_legion()
     assert player.can_split
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Centaur", "Gargoyle"])
+                        ["Angel", "Centaur", "Centaur", "Gargoyle"])
     assert not player.can_split
     game.turn = 2
     assert player.can_split
     player.split_legion("Rd01", "Rd03", ["Titan", "Gargoyle"],
-      ["Ogre", "Ogre"])
+                        ["Ogre", "Ogre"])
     assert player.can_split
     player.split_legion("Rd02", "Rd04", ["Angel", "Gargoyle"],
-      ["Centaur", "Centaur"])
+                        ["Centaur", "Centaur"])
     assert not player.can_split
 
 
@@ -206,7 +206,7 @@ def test_sorted_legions():
     player.create_starting_legion()
     assert player.can_split
     player.split_legion("Rd01", "Rd02", ["Titan", "Ogre", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Centaur", "Gargoyle"])
+                        ["Angel", "Centaur", "Centaur", "Gargoyle"])
     sorted_legions = player.sorted_legions
     assert len(sorted_legions) == 2
     assert sorted_legions[0].has_titan

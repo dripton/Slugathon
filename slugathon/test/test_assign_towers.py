@@ -7,6 +7,7 @@ from slugathon.game import Game
 
 
 class TestAssignTowers(object):
+
     def setup_method(self, method):
         now = time.time()
         self.game = Game.Game("g1", "p1", now, now, 2, 6)
@@ -35,7 +36,7 @@ class TestAssignTowers(object):
         for unused in xrange(trials):
             self.game.assign_towers()
             towers = set([player.starting_tower for player in
-              self.game.players])
+                          self.game.players])
             assert len(towers) == num_players
             for tower in towers:
                 counts[tower] = counts.get(tower, 0) + 1

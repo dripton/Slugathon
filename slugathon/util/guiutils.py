@@ -74,7 +74,7 @@ def scale_polygon(vertexes, ratio):
 
 def point_in_square(point, topleft, length):
     return (point[0] >= topleft[0] and point[1] >= topleft[1] and
-      point[0] < topleft[0] + length and point[1] < topleft[1] + length)
+            point[0] < topleft[0] + length and point[1] < topleft[1] + length)
 
 
 def point_in_polygon(point, vertexes):
@@ -90,7 +90,7 @@ def point_in_polygon(point, vertexes):
         j = (i + 1) % npol
         xj, yj = vertexes[j]
         if ((yi <= y < yj or yj <= y < yi) and
-          (x < 1.0 * (xj - xi) * (y - yi) / (yj - yi) + xi)):
+           (x < 1.0 * (xj - xi) * (y - yi) / (yj - yi) + xi)):
             c = not c
     return c
 

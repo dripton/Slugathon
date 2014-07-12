@@ -19,12 +19,17 @@ from slugathon.util.NullUser import NullUser
 
 
 class LoadGame(gtk.FileChooserDialog):
+
     """Load saved game dialog."""
+
     def __init__(self, user, playername, parent):
         title = "Load Saved Game - %s" % playername
         gtk.FileChooserDialog.__init__(self, title, parent,
-          gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,
-          gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+                                       gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(
+                                           gtk.STOCK_CANCEL,
+                                           gtk.RESPONSE_CANCEL,
+                                           gtk.STOCK_OPEN,
+                                           gtk.RESPONSE_OK))
         self.user = user
         self.playername = playername
         self.set_icon(icon.pixbuf)

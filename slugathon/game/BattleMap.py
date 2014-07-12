@@ -88,7 +88,7 @@ def label_to_coords(label, entry_side, down=False):
         "B1": (4, 1), "B2": (4, 2), "B3": (4, 3), "B4": (4, 4),
         "C1": (3, 0), "C2": (3, 1), "C3": (3, 2), "C4": (3, 3), "C5": (3, 4),
         "D1": (2, 0), "D2": (2, 1), "D3": (2, 2), "D4": (2, 3), "D5": (2, 4),
-          "D6": (2, 5),
+        "D6": (2, 5),
         "E1": (1, 0), "E2": (1, 1), "E3": (1, 2), "E4": (1, 3), "E5": (1, 4),
         "F1": (0, 1), "F2": (0, 2), "F3": (0, 3), "F4": (0, 4),
         "ATTACKER": (-1, 2), "DEFENDER": (6, 2),
@@ -98,7 +98,7 @@ def label_to_coords(label, entry_side, down=False):
         "B1": (3, 4), "B2": (2, 4), "B3": (1, 3), "B4": (0, 3),
         "C1": (4, 4), "C2": (3, 3), "C3": (2, 3), "C4": (1, 2), "C5": (0, 2),
         "D1": (5, 3), "D2": (4, 3), "D3": (3, 2), "D4": (2, 2), "D5": (1, 1),
-          "D6": (0, 1),
+        "D6": (0, 1),
         "E1": (5, 2), "E2": (4, 2), "E3": (3, 1), "E4": (2, 1), "E5": (1, 0),
         "F1": (5, 1), "F2": (4, 1), "F3": (3, 0), "F4": (2, 0),
         "ATTACKER": (-1, 2), "DEFENDER": (6, 2),
@@ -108,7 +108,7 @@ def label_to_coords(label, entry_side, down=False):
         "B1": (0, 2), "B2": (1, 1), "B3": (2, 1), "B4": (3, 0),
         "C1": (0, 3), "C2": (1, 2), "C3": (2, 2), "C4": (3, 1), "C5": (4, 1),
         "D1": (0, 4), "D2": (1, 3), "D3": (2, 3), "D4": (3, 2), "D5": (4, 2),
-          "D6": (5, 1),
+        "D6": (5, 1),
         "E1": (1, 4), "E2": (2, 4), "E3": (3, 3), "E4": (4, 3), "E5": (5, 2),
         "F1": (2, 5), "F2": (3, 4), "F3": (4, 4), "F4": (5, 3),
         "ATTACKER": (-1, 2), "DEFENDER": (6, 2),
@@ -135,6 +135,7 @@ def is_obstacle(border):
 
 
 class BattleMap(object):
+
     """A logical battle map.  No GUI code.
 
     See label_to_coords for hex labeling docs.
@@ -151,12 +152,13 @@ class BattleMap(object):
             if label in mydata:
                 bterrain, elevation, hexside_dict = mydata[label]
                 spun_hexside_dict = self.spin_border_dict(hexside_dict,
-                  entry_side)
+                                                          entry_side)
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
-                  bterrain, elevation, spun_hexside_dict)
+                                                        bterrain, elevation,
+                                                        spun_hexside_dict)
             else:
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
-                  "Plain", 0, {})
+                                                        "Plain", 0, {})
         for hex1 in self.hexes.itervalues():
             hex1.init_neighbors()
         self.startlist = battlemapdata.startlist.get(mterrain)
@@ -192,7 +194,7 @@ class BattleMap(object):
         """
         if hexlabel1 not in self.hexes or hexlabel2 not in self.hexes:
             logging.info("BattleMap.range invalid hexlabel %s %s %s" %
-              (hexlabel1, hexlabel2, allow_entrance))
+                        (hexlabel1, hexlabel2, allow_entrance))
             return maxint
         if hexlabel1 == hexlabel2:
             return 1
@@ -226,7 +228,7 @@ class BattleMap(object):
         """
         ratio = delta_x / delta_y
         return (ratio >= 1.5 or (ratio >= 0 and ratio <= 0.75)
-            or (ratio >= -1.5 and ratio <= -0.75))
+                or (ratio >= -1.5 and ratio <= -0.75))
 
     def _get_direction(self, hex1, hex2, left):
         """Return the hexside direction of the path from hex1 to hex2.
@@ -302,10 +304,20 @@ class BattleMap(object):
                 else:
                     return 5
 
-    def _is_los_blocked_dir(self, initial_hex, current_hex, final_hex, left,
-      strike_elevation, striker_atop=False, striker_atop_cliff=False,
-      striker_atop_wall=False, mid_obstacle=False, mid_cliff=False,
-      mid_chit=False, total_obstacles=0, total_walls=0, game=None):
+    def _is_los_blocked_dir(self,
+                            initial_hex,
+                            current_hex,
+                            final_hex,
+                            left,
+                            strike_elevation, striker_atop=False,
+                            striker_atop_cliff=False,
+                            striker_atop_wall=False,
+                            mid_obstacle=False,
+                            mid_cliff=False,
+                            mid_chit=False,
+                            total_obstacles=0,
+                            total_walls=0,
+                            game=None):
         """Return True iff the line of sight from hexlabel1 to
         hexlabel2 is blocked by terrain or creatures, going to the left of
         hexspines if left is True.
@@ -372,7 +384,7 @@ class BattleMap(object):
                 if not (striker_atop_wall or target_atop_wall):
                     return True
             elif total_walls == 1 and not (striker_atop_wall or
-              target_atop_wall):
+                                           target_atop_wall):
                 return True
             return False
         else:
@@ -385,7 +397,7 @@ class BattleMap(object):
                 mid_obstacle = True
                 total_obstacles += 1
                 if (border == "Cliff" or border2 == "Cliff" or
-                  border == "Dune" or border2 == "Dune"):
+                   border == "Dune" or border2 == "Dune"):
                     mid_cliff = True
         if next_hex.blocks_line_of_sight:
             return True
@@ -393,13 +405,15 @@ class BattleMap(object):
         # elevation than the creature, or unless the creature is at
         # the base of a cliff and the striker or target is atop it.
         if (game is not None and game.is_battle_hex_occupied(next_hex.label)
-          and next_hex.elevation >= strike_elevation and
-          (not striker_atop_cliff or current_hex != initial_hex)):
+           and next_hex.elevation >= strike_elevation and
+           (not striker_atop_cliff or current_hex != initial_hex)):
             mid_chit = True
         return self._is_los_blocked_dir(initial_hex, next_hex, final_hex,
-          left, strike_elevation, striker_atop, striker_atop_cliff,
-          striker_atop_wall, mid_obstacle, mid_cliff, mid_chit,
-          total_obstacles, total_walls, game)
+                                        left, strike_elevation, striker_atop,
+                                        striker_atop_cliff,
+                                        striker_atop_wall, mid_obstacle,
+                                        mid_cliff, mid_chit,
+                                        total_obstacles, total_walls, game)
 
     def is_los_blocked(self, hexlabel1, hexlabel2, game):
         """Return True iff the line of sight from hexlabel1 to
@@ -418,12 +432,19 @@ class BattleMap(object):
         hex2 = self.hexes[hexlabel2]
         strike_elevation = min(hex1.elevation, hex2.elevation)
         if close(delta_y, 0) or close(abs(delta_y), 1.5 * abs(delta_x)):
-            return (self._is_los_blocked_dir(hex1, hex1, hex2, True,
-              strike_elevation, game=game) and self._is_los_blocked_dir(hex1,
-                hex1, hex2, False, strike_elevation, game=game))
+            return (self._is_los_blocked_dir(
+                hex1, hex1, hex2, True, strike_elevation, game=game)
+                and
+                self._is_los_blocked_dir(hex1, hex1, hex2, False,
+                                         strike_elevation, game=game))
         else:
-            return self._is_los_blocked_dir(hex1, hex1, hex2,
-              self._to_left(delta_x, delta_y), strike_elevation, game=game)
+            return self._is_los_blocked_dir(
+                hex1,
+                hex1,
+                hex2,
+                self._to_left(delta_x, delta_y),
+                strike_elevation,
+                game=game)
 
     def _count_bramble_hexes_dir(self, hex1, hex2, left, count):
         """Return the number of intervening bramble hexes.
@@ -450,11 +471,11 @@ class BattleMap(object):
         """
         if hexlabel1 == hexlabel2:
             logging.info("count_bramble_hexes hexlabel1 == hexlabel2 == %s" %
-              hexlabel1)
+                         hexlabel1)
             return 0
         if self.is_los_blocked(hexlabel1, hexlabel2, game):
             logging.info("count_bramble_hexes %s %s los blocked" % (hexlabel1,
-              hexlabel2))
+                                                                    hexlabel2))
             return 0
         hex1 = self.hexes[hexlabel1]
         hex2 = self.hexes[hexlabel2]
@@ -470,17 +491,21 @@ class BattleMap(object):
             strike_elevation = min(hex1.elevation, hex2.elevation)
             # Hexspine try unblocked side(s).
             if self._is_los_blocked_dir(hex1, hex1, hex2, True,
-              strike_elevation, False, False, False, False, False, 0):
+                                        strike_elevation, False, False,
+                                        False, False, False, 0):
                 return self._count_bramble_hexes_dir(hex1, hex2, False, 0)
             elif self._is_los_blocked_dir(hex1, hex1, hex2, False,
-              strike_elevation, False, False, False, False, False, 0):
+                                          strike_elevation, False, False,
+                                          False, False, False, 0):
                 return self._count_bramble_hexes_dir(hex1, hex2, True, 0)
             else:
                 return min(self._count_bramble_hexes_dir(hex1, hex2, True, 0),
-                  self._count_bramble_hexes_dir(hex1, hex2, False, 0))
+                           self._count_bramble_hexes_dir(hex1, hex2, False, 0))
         else:
-            return self._count_bramble_hexes_dir(hex1, hex2,
-              self._to_left(delta_x, delta_y), 0)
+            return self._count_bramble_hexes_dir(
+                hex1,
+                hex2,
+                self._to_left(delta_x, delta_y), 0)
 
     # XXX Hardcoded to default Tower map
     def count_walls(self, hexlabel1, hexlabel2, game):

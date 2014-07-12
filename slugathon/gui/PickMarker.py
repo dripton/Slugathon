@@ -47,7 +47,9 @@ def sorted_markers(markers):
 
 
 class PickMarker(gtk.Dialog):
+
     """Dialog to pick a legion marker."""
+
     def __init__(self, playername, game_name, markers_left, def1, parent):
         title = "PickMarker - %s" % playername
         gtk.Dialog.__init__(self, title, parent)
@@ -64,7 +66,8 @@ class PickMarker(gtk.Dialog):
             button = gtk.Button()
             button.tag = button_name
             pixbuf = gtk.gdk.pixbuf_new_from_file(fileutils.basedir(
-              "images/legion/%s.png" % button_name))
+                                                  "images/legion/%s.png" %
+                                                  button_name))
             image = gtk.Image()
             image.set_from_pixbuf(pixbuf)
             button.add(image)
@@ -97,7 +100,7 @@ if __name__ == "__main__":
     playername = "test user"
     game_name = "test game"
     markers_left = (["Rd%02d" % ii for ii in xrange(1, 12 + 1)] +
-      ["Bu%02d" % ii for ii in xrange(1, 8 + 1)])
+                    ["Bu%02d" % ii for ii in xrange(1, 8 + 1)])
     pickmarker, def1 = new(playername, game_name, markers_left, None)
     def1.addCallback(my_callback)
     reactor.run()

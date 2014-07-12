@@ -85,7 +85,9 @@ def max_count(lili, name):
 
 
 class CreatureInfo(Creature):
+
     """A Creature with some extra attributes for split prediction."""
+
     def __init__(self, name, certain, at_split):
         Creature.__init__(self, name)
         self.certain = certain
@@ -109,7 +111,9 @@ class CreatureInfo(Creature):
 
 
 class Node(object):
+
     """A view of a Legion at a point in time."""
+
     def __init__(self, markerid, turn_created, creatures, parent):
         self.markerid = markerid     # Not unique!
         self.turn_created = turn_created
@@ -230,8 +234,8 @@ class Node(object):
         Return True iff new information was sent to this legion's parent.
         """
         if ((not cnl) or
-          (superset(get_creature_names(self.certain_creatures), cnl)
-          and (self.all_descendents_certain))):
+           (superset(get_creature_names(self.certain_creatures), cnl)
+                and (self.all_descendents_certain))):
             return False
 
         cil = [CreatureInfo(name, True, True) for name in cnl]
@@ -251,7 +255,7 @@ class Node(object):
 
         assert len(self) >= count, \
             "Certainty error in reveal_creatures count=%d height=%d" \
-              % (count, len(self))
+            % (count, len(self))
 
         # Then mark passed creatures as certain and then
         # communicate this to the parent, to adjust other legions.
@@ -262,7 +266,7 @@ class Node(object):
             ci.certain = True
             ci.at_split = True   # If not at_split, would be certain.
             if num_creature(self.creatures, ci.name) < num_creature(dupe,
-              ci.name):
+                                                                    ci.name):
                 self.creatures.append(ci)
                 count += 1
 
@@ -291,7 +295,7 @@ class Node(object):
         names = []
         for child in self.children:
             names.extend(get_creature_names(
-              child.certain_at_split_or_removed_creatures))
+                         child.certain_at_split_or_removed_creatures))
         told_parent = self.reveal_creatures(names)
         if not told_parent:
             self.split(self.child_size2, self.other_child_markerid)
@@ -312,7 +316,7 @@ class Node(object):
         """
         # Sanity checks
         assert child_size >= len(known_split), \
-          "More known splitoffs than splitoffs"
+            "More known splitoffs than splitoffs"
         assert len(self) <= 8
         if len(self) == 8:
             assert child_size == 4
@@ -322,7 +326,7 @@ class Node(object):
         known_combo = known_split + known_keep
         certain = get_creature_names(self.certain_creatures)
         assert superset(certain, known_combo), \
-          "known_combo contains uncertain creatures"
+            "known_combo contains uncertain creatures"
 
         unknowns = get_creature_names(self.creatures)
         for name in known_combo:
@@ -331,7 +335,7 @@ class Node(object):
         num_unknowns_to_split = child_size - len(known_split)
 
         unknown_combos = itertools.combinations(unknowns,
-          num_unknowns_to_split)
+                                                num_unknowns_to_split)
         possible_splits_set = set()
         for combo in unknown_combos:
             pos = tuple(known_split + list(combo))
@@ -361,8 +365,8 @@ class Node(object):
                 creature = Creature(name)
                 total_sort_value += creature.sort_value
             if ((best_sort_value is None) or
-              (maximize and total_sort_value > best_sort_value) or
-              (not maximize and total_sort_value < best_sort_value)):
+               (maximize and total_sort_value > best_sort_value) or
+               (not maximize and total_sort_value < best_sort_value)):
                 best_sort_value = total_sort_value
                 creatures_to_remove = li
         return creatures_to_remove
@@ -384,9 +388,9 @@ class Node(object):
 
         if self.has_split:
             known_keep1 = get_creature_names(
-              self.child1.certain_at_split_or_removed_creatures)
+                self.child1.certain_at_split_or_removed_creatures)
             known_split1 = get_creature_names(
-              self.child2.certain_at_split_or_removed_creatures)
+                self.child2.certain_at_split_or_removed_creatures)
         else:
             known_keep1 = []
             known_split1 = []
@@ -400,11 +404,12 @@ class Node(object):
         uncertain = subtract_lists(all_names, certain)
 
         possible_splits = self._find_all_possible_splits(child_size,
-          known_keep1, known_split1)
+                                                         known_keep1,
+                                                         known_split1)
         splitoff_names = self._choose_creatures_to_split_out(possible_splits)
 
         possible_keeps = [subtract_lists(all_names, names) for names in
-          possible_splits]
+                          possible_splits]
 
         def find_certain_child(certain, uncertain, possibles):
             """Return a list of names that are certainly in the child node."""
@@ -495,7 +500,7 @@ class Node(object):
         parent = self.parent
         assert parent == other.parent
         if (parent.markerid == self.markerid or
-          parent.markerid == other.markerid):
+           parent.markerid == other.markerid):
             # Remove self and other from parent, as if the split never
             # happened.  The parent will then be a leaf node.
             parent.clear_children()
@@ -537,7 +542,9 @@ class Node(object):
 
 
 class PredictSplits(object):
+
     """Split predictor."""
+
     def __init__(self, playername, root_id, creature_names):
         self.playername = playername
         # All creatures in root legion must be known
@@ -572,7 +579,7 @@ class PredictSplits(object):
                 if leaf1 != leaf2 and leaf1.markerid == leaf2.markerid:
                     if leaf1.turn_created == leaf2.turn_created:
                         raise ValueError(
-                          "Two leaf nodes with same markerid and turn")
+                            "Two leaf nodes with same markerid and turn")
                     elif leaf1.turn_created < leaf2.turn_created:
                         prune_these.add(leaf1)
                     else:
@@ -623,7 +630,9 @@ class PredictSplits(object):
 
 
 class AllPredictSplits(list):
+
     """List of PredictSplits objects, for convenient testing."""
+
     def __init__(self):
         super(AllPredictSplits, self).__init__()
 

@@ -18,18 +18,20 @@ from slugathon.gui import icon
 
 
 def new(playername, game_name, striker, target, num_dice, strike_number,
-  carries, parent):
+        carries, parent):
     """Create a PickCarry dialog and return it and a Deferred."""
     def1 = defer.Deferred()
     pickcarry = PickCarry(playername, game_name, striker, target, num_dice,
-      strike_number, carries, def1, parent)
+                          strike_number, carries, def1, parent)
     return pickcarry, def1
 
 
 class PickCarry(gtk.Dialog):
+
     """Dialog to pick whether and where to carry excess hits."""
+
     def __init__(self, playername, game_name, striker, target, num_dice,
-      strike_number, carries, def1, parent):
+                 strike_number, carries, def1, parent):
         gtk.Dialog.__init__(self, "PickCarry - %s" % playername, parent)
         self.playername = playername
         self.game_name = game_name
@@ -40,8 +42,11 @@ class PickCarry(gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
 
-        label = gtk.Label("%r strikes %r and may carry over %d hit%s." %
-          (striker, target, carries, "" if carries == 1 else "s"))
+        label = gtk.Label("%r strikes %r and may carry over %d hit%s." % (
+                          striker,
+                          target,
+                          carries,
+                          "" if carries == 1 else "s"))
         # We could use get_content_area() instead of vbox, in PyGTK 2.14+
         self.vbox.add(label)
 
@@ -86,13 +91,13 @@ if __name__ == "__main__":
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
     player0.split_legion("Rd01", "Rd02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     bu01 = player1.markerid_to_legion["Bu01"]
 
     rd01.move(6, False, None, 3)

@@ -38,9 +38,10 @@ defer.setDebugging(True)
 
 @implementer(IObserver)
 class AIClient(pb.Referenceable, Observed):
+
     def __init__(self, playername, password, host, port, delay, game_name,
-      log_path, ai_time_limit, player_time_limit, form_game, min_players,
-      max_players):
+                 log_path, ai_time_limit, player_time_limit, form_game,
+                 min_players, max_players):
         Observed.__init__(self)
         self.playername = playername
         self.password = password
@@ -68,7 +69,7 @@ class AIClient(pb.Referenceable, Observed):
             player_info = results.get_player_info(player_id)
         bp = BotParams.BotParams.fromstring(player_info)
         self.ai = CleverBot.CleverBot(self.playername, ai_time_limit,
-          bot_params=bp)
+                                      bot_params=bp)
         self.game_name = game_name
         self.ai_time_limit = ai_time_limit
         self.player_time_limit = player_time_limit
@@ -84,8 +85,8 @@ class AIClient(pb.Referenceable, Observed):
             log_observer = log.PythonLoggingObserver()
             log_observer.start()
             formatter = logging.Formatter(
-              "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
-              "%(message)s")
+                "%(asctime)s %(levelname)s %(filename)s %(funcName)s "
+                "%(lineno)d %(message)s")
             file_handler = logging.FileHandler(filename=self.log_path)
             file_handler.setFormatter(formatter)
             logging.getLogger().addHandler(file_handler)
@@ -95,12 +96,12 @@ class AIClient(pb.Referenceable, Observed):
         log_observer = log.PythonLoggingObserver()
         log_observer.start()
         formatter = logging.Formatter(
-          "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+            "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
         logdir = os.path.join(TEMPDIR, "slugathon")
         if not os.path.exists(logdir):
             os.makedirs(logdir)
         self.log_path = os.path.join(logdir, "slugathon-%s-%s.log" %
-          (self.game_name, self.playername))
+                                    (self.game_name, self.playername))
         file_handler = logging.FileHandler(filename=self.log_path)
         file_handler.setFormatter(formatter)
         logging.getLogger().addHandler(file_handler)
@@ -120,7 +121,7 @@ class AIClient(pb.Referenceable, Observed):
 
     def connect(self):
         user_pass = credentials.UsernamePassword(self.playername,
-          self.password)
+                                                 self.password)
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
@@ -157,8 +158,10 @@ class AIClient(pb.Referenceable, Observed):
             if not self.log_path:
                 self._setup_logging_form_game()
             def1 = self.user.callRemote("form_game", self.game_name,
-              self.min_players, self.max_players, self.ai_time_limit,
-              self.player_time_limit, self.aiclass, self.ai.player_info)
+                                        self.min_players, self.max_players,
+                                        self.ai_time_limit,
+                                        self.player_time_limit, self.aiclass,
+                                        self.ai.player_info)
             def1.addErrback(self.failure)
         else:
             # If game_name is set, AI only tries to join game with that name.
@@ -167,7 +170,8 @@ class AIClient(pb.Referenceable, Observed):
                 if not self.game_name or game.name == self.game_name:
                     logging.info("joining game %s", game.name)
                     def1 = self.user.callRemote("join_game", game.name,
-                      self.aiclass, self.ai.player_info)
+                                                self.aiclass,
+                                                self.ai.player_info)
                     def1.addCallback(self.joined_game)
                     def1.addErrback(self.failure)
 
@@ -185,19 +189,19 @@ class AIClient(pb.Referenceable, Observed):
     def add_game(self, game_info_tuple):
         logging.info("add_game %s", game_info_tuple)
         (name, create_time, start_time, min_players, max_players,
-          playernames, started, finish_time, winner_names,
-          loser_names) = game_info_tuple
+         playernames, started, finish_time, winner_names,
+         loser_names) = game_info_tuple
         owner = playernames[0]
         game = Game.Game(name, owner, create_time, start_time, min_players,
-          max_players, started=started, finish_time=finish_time)
+                         max_players, started=started, finish_time=finish_time)
         self.add_observer(game)
         for playername in playernames[1:]:
             game.add_player(playername)
         self.games.append(game)
         if not game.finish_time and (not self.game_name or
-          game.name == self.game_name):
+                                     game.name == self.game_name):
             def1 = self.user.callRemote("join_game", game.name, self.aiclass,
-              self.ai.player_info)
+                                        self.ai.player_info)
             def1.addErrback(self.failure)
 
     def remove_game(self, game_name):
@@ -245,10 +249,10 @@ class AIClient(pb.Referenceable, Observed):
         """Updates from User will come via remote_update, with
         observed set to None."""
         if (self.game_name is not None and hasattr(action, "game_name")
-          and action.game_name != self.game_name):
+           and action.game_name != self.game_name):
             return
         if (isinstance(action, Action.AddUsername) or
-          isinstance(action, Action.DelUsername)):
+           isinstance(action, Action.DelUsername)):
             return
 
         logging.info("%s", action)
@@ -278,8 +282,9 @@ class AIClient(pb.Referenceable, Observed):
 
         if isinstance(action, Action.FormGame):
             game_info_tuple = (action.game_name, action.create_time,
-              action.start_time, action.min_players, action.max_players,
-              [action.playername], False, None, None, None)
+                               action.start_time, action.min_players,
+                               action.max_players,
+                               [action.playername], False, None, None, None)
             self.add_game(game_info_tuple)
             if action.playername == self.playername:
                 def1 = self.user.callRemote("start_game", self.game_name)
@@ -290,7 +295,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.AssignedAllTowers):
             logging.info("AssignedAllTowers player_info %s",
-              self.ai.player_info)
+                         self.ai.player_info)
             game = self.name_to_game(action.game_name)
             reactor.callLater(self.delay, self.ai.maybe_pick_color, game)
 
@@ -298,7 +303,7 @@ class AIClient(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             self.ai.maybe_pick_color(game)
             reactor.callLater(self.delay, self.ai.maybe_pick_first_marker,
-              game, action.playername)
+                              game, action.playername)
 
         elif isinstance(action, Action.AssignedAllColors):
             game = self.name_to_game(action.game_name)
@@ -307,8 +312,9 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
-                logging.info("Game %s over, won by %s" % (action.game_name,
-                  " and ".join(action.winner_names)))
+                logging.info("Game %s over, won by %s" %
+                            (action.game_name,
+                             " and ".join(action.winner_names)))
             else:
                 logging.info("Game %s over, draw" % action.game_name)
             logging.info("AI exiting")
@@ -322,9 +328,11 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             logging.info("ps = PredictSplits('%s', '%s', %s)" %
-              (action.playername, action.markerid, starting_creature_names))
+                        (action.playername, action.markerid,
+                         starting_creature_names))
             ps = predictsplits.PredictSplits(action.playername,
-              action.markerid, starting_creature_names)
+                                             action.markerid,
+                                             starting_creature_names)
             self.aps.append(ps)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)
@@ -332,13 +340,13 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.parent_markerid).split(
-              len(action.child_creature_names), action.child_markerid,
-              game.turn)
+                len(action.child_creature_names), action.child_markerid,
+                game.turn)
             if action.parent_creature_names[0] != "Unknown":
                 self.aps.get_leaf(action.parent_markerid).reveal_creatures(
-                  list(action.parent_creature_names))
+                    list(action.parent_creature_names))
                 self.aps.get_leaf(action.child_markerid).reveal_creatures(
-                  list(action.child_creature_names))
+                    list(action.child_creature_names))
             self.update_creatures(game)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)
@@ -346,10 +354,10 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.UndoSplit):
             game = self.name_to_game(action.game_name)
             logging.info(
-              "self.aps.get_leaf('%s').merge(self.aps.get_leaf('%s'), %d)" %
-              (action.parent_markerid, action.child_markerid, game.turn))
+                "self.aps.get_leaf('%s').merge(self.aps.get_leaf('%s'), %d)" %
+                (action.parent_markerid, action.child_markerid, game.turn))
             self.aps.get_leaf(action.parent_markerid).merge(
-              self.aps.get_leaf(action.child_markerid), game.turn)
+                self.aps.get_leaf(action.child_markerid), game.turn)
             self.update_creatures(game)
 
         elif isinstance(action, Action.RollMovement):
@@ -375,10 +383,10 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
             reactor.callLater(self.delay, self.ai.resolve_engagement, game,
-              action.hexlabel)
+                              action.hexlabel)
 
         elif (isinstance(action, Action.Flee) or
-          isinstance(action, Action.Concede)):
+              isinstance(action, Action.Concede)):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
@@ -386,14 +394,14 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
             reactor.callLater(self.delay, self.ai.resolve_engagement, game,
-              action.hexlabel)
+                              action.hexlabel)
 
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)
             player = game.get_player_by_name(self.playername)
             if (game.defender_legion and game.defender_legion.player.name ==
-              self.playername and action.defender_markerid in
-              player.markerid_to_legion):
+               self.playername and action.defender_markerid in
+               player.markerid_to_legion):
                 reactor.callLater(self.delay, self.ai.move_creatures, game)
 
         elif isinstance(action, Action.MoveCreature):
@@ -420,11 +428,16 @@ class AIClient(pb.Referenceable, Observed):
             if legion:
                 if legion.player.name == self.playername:
                     if action.carries:
-                        reactor.callLater(self.delay, self.ai.carry, game,
-                          action.striker_name, action.striker_hexlabel,
-                          action.target_name, action.target_hexlabel,
-                          action.num_dice, action.strike_number,
-                          action.carries)
+                        reactor.callLater(self.delay,
+                                          self.ai.carry,
+                                          game,
+                                          action.striker_name,
+                                          action.striker_hexlabel,
+                                          action.target_name,
+                                          action.target_hexlabel,
+                                          action.num_dice,
+                                          action.strike_number,
+                                          action.carries)
                     else:
                         reactor.callLater(self.delay, self.ai.strike, game)
             else:
@@ -436,11 +449,16 @@ class AIClient(pb.Referenceable, Observed):
             if legion:
                 if legion.player.name == self.playername:
                     if action.carries_left:
-                        reactor.callLater(self.delay, self.ai.carry, game,
-                          action.striker_name, action.striker_hexlabel,
-                          action.target_name, action.target_hexlabel,
-                          action.num_dice, action.strike_number,
-                          action.carries_left)
+                        reactor.callLater(self.delay,
+                                          self.ai.carry,
+                                          game,
+                                          action.striker_name,
+                                          action.striker_hexlabel,
+                                          action.target_name,
+                                          action.target_hexlabel,
+                                          action.num_dice,
+                                          action.strike_number,
+                                          action.carries_left)
                     else:
                         reactor.callLater(self.delay, self.ai.strike, game)
             else:
@@ -464,7 +482,7 @@ class AIClient(pb.Referenceable, Observed):
                         reactor.callLater(self.delay, self.ai.reinforce, game)
                     else:
                         reactor.callLater(self.delay, self.ai.summon_angel,
-                          game)
+                                          game)
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -480,9 +498,9 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.markerid).reveal_creatures(
-              list(action.recruiter_names))
+                list(action.recruiter_names))
             self.aps.get_leaf(action.markerid).add_creature(
-              action.creature_name)
+                action.creature_name)
             self.update_creatures(game)
             if action.playername == self.playername:
                 if game.phase == Phase.MUSTER:
@@ -493,24 +511,24 @@ class AIClient(pb.Referenceable, Observed):
                         reactor.callLater(self.delay, self.ai.reinforce, game)
                     else:
                         reactor.callLater(self.delay,
-                          self.ai.choose_engagement, game)
+                                          self.ai.choose_engagement, game)
             else:
                 if (game.phase == Phase.FIGHT and
-                  game.battle_phase != Phase.REINFORCE and
-                  game.active_player.name == self.playername):
+                   game.battle_phase != Phase.REINFORCE and
+                   game.active_player.name == self.playername):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
-                      game)
+                                      game)
 
         elif isinstance(action, Action.UndoRecruit):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.markerid).remove_creature(
-              action.creature_name)
+                action.creature_name)
             self.update_creatures(game)
 
         elif isinstance(action, Action.UnReinforce):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.markerid).remove_creature(
-              action.creature_name)
+                action.creature_name)
             self.update_creatures(game)
 
         elif isinstance(action, Action.DoNotReinforce):
@@ -520,9 +538,9 @@ class AIClient(pb.Referenceable, Observed):
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
             else:
                 if (game.phase == Phase.FIGHT and
-                  game.active_player.name == self.playername):
+                   game.active_player.name == self.playername):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
-                      game)
+                                      game)
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
@@ -539,23 +557,23 @@ class AIClient(pb.Referenceable, Observed):
                     reactor.callLater(self.delay, self.ai.summon_angel, game)
                 else:
                     reactor.callLater(self.delay, self.ai.choose_engagement,
-                      game)
+                                      game)
 
         elif isinstance(action, Action.UnsummonAngel):
             game = self.name_to_game(action.game_name)
             self.aps.get_leaf(action.markerid).reveal_creatures(
-              [action.creature_name])
+                [action.creature_name])
             self.aps.get_leaf(action.markerid).remove_creature(
-              action.creature_name)
+                action.creature_name)
             self.aps.get_leaf(action.donor_markerid).add_creature(
-              action.creature_name)
+                action.creature_name)
             self.update_creatures(game)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
                     reactor.callLater(self.delay, self.ai.summon_angel, game)
                 else:
                     reactor.callLater(self.delay, self.ai.choose_engagement,
-                      game)
+                                      game)
 
         elif isinstance(action, Action.DoNotSummonAngel):
             game = self.name_to_game(action.game_name)
@@ -564,7 +582,7 @@ class AIClient(pb.Referenceable, Observed):
                     reactor.callLater(self.delay, self.ai.summon_angel, game)
                 else:
                     reactor.callLater(self.delay, self.ai.choose_engagement,
-                      game)
+                                      game)
 
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
@@ -581,18 +599,18 @@ class AIClient(pb.Referenceable, Observed):
                 if game.attacker_legion:
                     legion = game.attacker_legion
                     if (legion.markerid == action.winner_markerid and
-                      legion.can_summon):
+                       legion.can_summon):
                         reactor.callLater(self.delay, self.ai.summon_angel,
-                          game)
+                                          game)
                         return
             else:
                 if game.defender_legion:
                     legion = game.defender_legion
                     if legion.player.name == self.playername:
                         if (legion.markerid == action.winner_markerid and
-                          legion.can_recruit):
+                           legion.can_recruit):
                             reactor.callLater(self.delay, self.ai.reinforce,
-                              game)
+                                              game)
                             return
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
@@ -601,7 +619,8 @@ class AIClient(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 reactor.callLater(self.delay, self.ai.acquire_angels, game,
-                  action.markerid, action.angels, action.archangels)
+                                  action.markerid, action.angels,
+                                  action.archangels)
 
         elif isinstance(action, Action.AcquireAngels):
             game = self.name_to_game(action.game_name)
@@ -617,8 +636,8 @@ class AIClient(pb.Referenceable, Observed):
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
-        elif isinstance(action, Action.EliminatePlayer) or isinstance(action,
-          Action.Withdraw):
+        elif (isinstance(action, Action.EliminatePlayer) or
+              isinstance(action, Action.Withdraw)):
             game = self.name_to_game(action.game_name)
             if hasattr(action, "loser_playername"):
                 playername = action.loser_playername
@@ -658,21 +677,21 @@ class AIClient(pb.Referenceable, Observed):
 def add_arguments(parser):
     # Twisted throws a TypeError if playername or password is None.
     parser.add_argument("-n", "--playername", action="store", type=str,
-      default="")
+                        default="")
     parser.add_argument("-a", "--password", action="store", type=str,
-      default="")
+                        default="")
     parser.add_argument("-s", "--server", action="store", type=str,
-      default="localhost")
+                        default="localhost")
     parser.add_argument("-p", "--port", action="store", type=int,
-      default=config.DEFAULT_PORT)
+                        default=config.DEFAULT_PORT)
     parser.add_argument("-d", "--delay", action="store", type=float,
-      default=config.DEFAULT_AI_DELAY)
+                        default=config.DEFAULT_AI_DELAY)
     parser.add_argument("-g", "--game-name", action="store", type=str)
     parser.add_argument("-l", "--log-path", action="store", type=str)
     parser.add_argument("--ai-time-limit", action="store", type=int,
-      default=config.DEFAULT_AI_TIME_LIMIT)
+                        default=config.DEFAULT_AI_TIME_LIMIT)
     parser.add_argument("--player-time-limit", action="store", type=int,
-      default=config.DEFAULT_PLAYER_TIME_LIMIT)
+                        default=config.DEFAULT_PLAYER_TIME_LIMIT)
     parser.add_argument("--form-game", action="store_true", default=False)
     parser.add_argument("--min-players", type=int, default=2)
     parser.add_argument("--max-players", type=int, default=6)
@@ -682,10 +701,18 @@ def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     args, extras = parser.parse_known_args()
-    aiclient = AIClient(args.playername, args.password, args.server, args.port,
-      args.delay, args.game_name, args.log_path, args.ai_time_limit,
-      args.player_time_limit, args.form_game, args.min_players,
-      args.max_players)
+    aiclient = AIClient(args.playername,
+                        args.password,
+                        args.server,
+                        args.port,
+                        args.delay,
+                        args.game_name,
+                        args.log_path,
+                        args.ai_time_limit,
+                        args.player_time_limit,
+                        args.form_game,
+                        args.min_players,
+                        args.max_players)
     reactor.callWhenRunning(aiclient.connect)
     reactor.run()
 

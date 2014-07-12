@@ -109,6 +109,7 @@ def fail_if_abnormal(val, mean, var):
 
 
 class TestDice(object):
+
     def setup_method(self, method):
         self.trials = 600
         self.rolls = []
@@ -127,7 +128,7 @@ class TestDice(object):
 
     def test_convert_to_binary(self):
         assert (convert_to_binary([-11111, 0.1, 2, 3, 4, 23947], 2.5) ==
-          [0, 0, 0, 1, 1, 1])
+                [0, 0, 0, 1, 1, 1])
 
     def test_count_runs(self):
         assert count_runs([1, 2, 2, 2, 3, 2, 1, 6, 6, 5, 5, 1]) == 8
@@ -143,7 +144,7 @@ class TestDice(object):
     def test_trim_zero_runs(self):
         assert trim_zero_runs([]) == []
         assert trim_zero_runs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == \
-                              [3, 4, 2, 5, 3, 4, 2, 6, 1]
+            [3, 4, 2, 5, 3, 4, 2, 6, 1]
 
     def test_M(self):
         """Recode each sample as 0 if <= sample median, 1 if > sample median
@@ -163,9 +164,9 @@ class TestDice(object):
         n = self.trials
         mean_M = 2. * r * (n - r) / n + 1.
         var_M = (((2. * r) * (n - r) / n ** 2 * ((2. * r) * (n - r) - n)) /
-          (n - 1.))
+                (n - 1.))
         logging.info("M test: r = %s M = %s mean = %s var = %s", r, M, mean_M,
-          var_M)
+                     var_M)
         fail_if_abnormal(M, mean_M, var_M)
 
     def test_sign(self):
@@ -177,7 +178,7 @@ class TestDice(object):
         mean_P = M / 2.
         var_P = M / 12.
         logging.info("Sign test: P = %s M = %s mean = %s var = %s", P, M,
-          mean_P, var_P)
+                     mean_P, var_P)
         fail_if_abnormal(P, mean_P, var_P)
 
     def test_runs(self):
@@ -190,7 +191,7 @@ class TestDice(object):
         var_R = (((2. * pos * neg) * (2. * pos * neg - pos - neg)) /
                 ((pos + neg) * (pos + neg) * (pos + neg - 1)))
         logging.info("Runs test: R = %s m = %s mean = %s var = %s", R, m,
-          mean_R, var_R)
+                     mean_R, var_R)
         fail_if_abnormal(R, mean_R, var_R)
 
     def test_mann_kendall(self):
@@ -203,7 +204,7 @@ class TestDice(object):
         mean_S = 0.
         var_S = (n / 18.) * (n - 1.) * (2. * n + 5.)
         logging.info("Mann-Kendall test: S = %s mean = %s var = %s", S, mean_S,
-          var_S)
+                     var_S)
         fail_if_abnormal(S, mean_S, var_S)
 
     def test_shuffle(self):

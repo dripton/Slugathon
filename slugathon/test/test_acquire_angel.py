@@ -13,30 +13,30 @@ def test_find_angel_combos():
     assert fac(0, 1, 6, 12) == [(C("Angel"),)]
 
     assert fac(1, 1, 6, 12) == [
-      (C("Archangel"), C("Angel")),
-      (C("Angel"), C("Angel")),
-      (C("Archangel"),),
-      (C("Angel"),),
+        (C("Archangel"), C("Angel")),
+        (C("Angel"), C("Angel")),
+        (C("Archangel"),),
+        (C("Angel"),),
     ]
 
     assert fac(0, 2, 6, 12) == [
-      (C("Angel"), C("Angel")),
-      (C("Angel"),),
+        (C("Angel"), C("Angel")),
+        (C("Angel"),),
     ]
 
     assert fac(1, 2, 6, 12) == [
-      (C("Archangel"), C("Angel"), C("Angel")),
-      (C("Angel"), C("Angel"), C("Angel")),
-      (C("Archangel"), C("Angel")),
-      (C("Angel"), C("Angel")),
-      (C("Archangel"),),
-      (C("Angel"),),
+        (C("Archangel"), C("Angel"), C("Angel")),
+        (C("Angel"), C("Angel"), C("Angel")),
+        (C("Archangel"), C("Angel")),
+        (C("Angel"), C("Angel")),
+        (C("Archangel"),),
+        (C("Angel"),),
     ]
 
     assert fac(0, 1, 6, 0) == []
 
     assert fac(1, 2, 0, 12) == [
-      (C("Angel"), C("Angel"), C("Angel")),
-      (C("Angel"), C("Angel")),
-      (C("Angel"),),
+        (C("Angel"), C("Angel"), C("Angel")),
+        (C("Angel"), C("Angel")),
+        (C("Angel"),),
     ]

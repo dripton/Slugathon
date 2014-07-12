@@ -11,7 +11,9 @@ from slugathon.game import Creature
 
 
 class Graveyard(gtk.EventBox):
+
     """Show a legion's dead creatures."""
+
     def __init__(self, legion):
         gtk.EventBox.__init__(self)
 
@@ -61,7 +63,7 @@ if __name__ == "__main__":
             graveyard.update_gui()
 
     creatures = [Creature.Creature(name) for name in
-      creaturedata.starting_creature_names]
+                 creaturedata.starting_creature_names]
 
     playername = "test"
     player = Player.Player(playername, None, None)

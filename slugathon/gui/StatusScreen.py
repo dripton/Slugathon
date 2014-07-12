@@ -34,7 +34,9 @@ def set_bg(label, color):
 
 @implementer(IObserver)
 class StatusScreen(gtk.EventBox):
+
     """Game status window."""
+
     def __init__(self, game, playername):
         gtk.EventBox.__init__(self)
         self.game = game
@@ -64,21 +66,27 @@ class StatusScreen(gtk.EventBox):
         hseparator1 = gtk.HSeparator()
         self.vbox.pack_start(hseparator1)
         self.player_table = gtk.Table(rows=9, columns=len(self.game.players)
-          + 1)
+                                      + 1)
         self.vbox.pack_start(self.player_table)
 
         for row, text in enumerate(["Name", "Tower", "Color", "Legions",
-          "Markers", "Creatures", "Titan Power", "Eliminated", "Score"]):
+                                    "Markers", "Creatures", "Titan Power",
+                                    "Eliminated", "Score"]):
             add_label(self.player_table, 1, row, self.default_bg, text)
 
         for col in xrange(len(self.game.players)):
-            for row, st in enumerate(["name%d_label", "tower%d_label",
-              "color%d_label", "legions%d_label", "markers%d_label",
-              "creatures%d_label", "titan_power%d_label", "eliminated%d_label",
-              "score%d_label"]):
+            for row, st in enumerate(["name%d_label",
+                                      "tower%d_label",
+                                      "color%d_label",
+                                      "legions%d_label",
+                                      "markers%d_label",
+                                      "creatures%d_label",
+                                      "titan_power%d_label",
+                                      "eliminated%d_label",
+                                      "score%d_label"]):
                 name = st % col
                 label = add_label(self.player_table, col + 2, row,
-                  self.default_bg)
+                                  self.default_bg)
                 setattr(self, name, label)
 
         self.modify_bg(gtk.STATE_NORMAL, self.default_bg)
@@ -153,8 +161,9 @@ class StatusScreen(gtk.EventBox):
             name_label = getattr(self, "name%d_label" % num)
             set_bg(name_label, playercolor)
             name_label.set_markup("<span foreground='%s'>%s</span>" % (
-              colors.contrasting_colors.get(str(playercolor), "Black"),
-              player.name))
+                                  colors.contrasting_colors.get(
+                                      str(playercolor), "Black"),
+                                  player.name))
             tower_label = getattr(self, "tower%d_label" % num)
             tower_label.set_text(str(player.starting_tower))
             set_bg(tower_label, bg)
@@ -175,7 +184,7 @@ class StatusScreen(gtk.EventBox):
             set_bg(titan_power_label, bg)
             eliminated_label = getattr(self, "eliminated%d_label" % num)
             eliminated_label.set_text("".join(sorted(
-              player.eliminated_colors)))
+                                              player.eliminated_colors)))
             set_bg(eliminated_label, bg)
             score_label = getattr(self, "score%d_label" % num)
             score_label.set_text(str(player.score))
@@ -183,16 +192,16 @@ class StatusScreen(gtk.EventBox):
 
     def _init_battle(self):
         if (self.game.battle_turn is not None and
-          self.game.battle_active_player is not None):
+           self.game.battle_active_player is not None):
             self.battle_turn_label.set_text(str(self.game.battle_turn))
             if self.game.battle_active_player.name == self.playername:
                 set_bg(self.battle_player_label, "Yellow")
             else:
                 set_bg(self.battle_player_label, self.default_bg)
             self.battle_player_label.set_text(
-              self.game.battle_active_player.name)
+                self.game.battle_active_player.name)
             self.battle_phase_label.set_text(Phase.battle_phase_names[
-              self.game.battle_phase])
+                                             self.game.battle_phase])
         else:
             self._clear_battle()
 
@@ -218,7 +227,9 @@ class StatusScreen(gtk.EventBox):
             name_label = getattr(self, "name%d_label" % player_num)
             set_bg(name_label, color)
             name_label.set_markup("<span foreground='%s'>%s</span>" % (
-              colors.contrasting_colors.get(str(color), "Black"), player.name))
+                                  colors.contrasting_colors.get(str(color),
+                                                                "Black"),
+                                  player.name))
 
         elif isinstance(action, Action.AssignedAllColors):
             self._init_turn()
@@ -235,8 +246,8 @@ class StatusScreen(gtk.EventBox):
             markers_label.set_text(str(len(player.markerids_left)))
 
         elif (isinstance(action, Action.SplitLegion) or
-          isinstance(action, Action.UndoSplit) or
-          isinstance(action, Action.MergeLegions)):
+              isinstance(action, Action.UndoSplit) or
+              isinstance(action, Action.MergeLegions)):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
             player_num = self.game.players.index(player)
@@ -262,9 +273,9 @@ class StatusScreen(gtk.EventBox):
             markers_label.set_text(str(len(player.markerids_left)))
 
         elif (isinstance(action, Action.RecruitCreature) or
-          isinstance(action, Action.UndoRecruit) or
-          isinstance(action, Action.UnReinforce) or
-          isinstance(action, Action.AcquireAngels)):
+              isinstance(action, Action.UndoRecruit) or
+              isinstance(action, Action.UnReinforce) or
+              isinstance(action, Action.AcquireAngels)):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
             player_num = self.game.players.index(player)
@@ -275,15 +286,15 @@ class StatusScreen(gtk.EventBox):
             self._init_turn()
 
         elif (isinstance(action, Action.Flee) or
-          isinstance(action, Action.Concede) or
-          isinstance(action, Action.AcceptProposal) or
-          isinstance(action, Action.EliminatePlayer) or
-          isinstance(action, Action.BattleOver) or
-          isinstance(action, Action.GameOver) or
-          isinstance(action, Action.StartMusterPhase) or
-          isinstance(action, Action.DoNotReinforce) or
-          isinstance(action, Action.SummonAngel) or
-          isinstance(action, Action.DoNotSummonAngel)):
+              isinstance(action, Action.Concede) or
+              isinstance(action, Action.AcceptProposal) or
+              isinstance(action, Action.EliminatePlayer) or
+              isinstance(action, Action.BattleOver) or
+              isinstance(action, Action.GameOver) or
+              isinstance(action, Action.StartMusterPhase) or
+              isinstance(action, Action.DoNotReinforce) or
+              isinstance(action, Action.SummonAngel) or
+              isinstance(action, Action.DoNotSummonAngel)):
             self._clear_battle()
             self._color_player_columns()
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
@@ -302,10 +313,10 @@ class StatusScreen(gtk.EventBox):
                 eliminated_label.set_text("".join(player.eliminated_colors))
 
         elif (isinstance(action, Action.Fight) or
-          isinstance(action, Action.StartManeuverBattlePhase) or
-          isinstance(action, Action.StartStrikeBattlePhase) or
-          isinstance(action, Action.StartCounterstrikeBattlePhase) or
-          isinstance(action, Action.StartReinforceBattlePhase)):
+              isinstance(action, Action.StartManeuverBattlePhase) or
+              isinstance(action, Action.StartStrikeBattlePhase) or
+              isinstance(action, Action.StartCounterstrikeBattlePhase) or
+              isinstance(action, Action.StartReinforceBattlePhase)):
             self._init_battle()
 
 

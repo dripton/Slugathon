@@ -13,7 +13,9 @@ from slugathon.game import Action
 
 @implementer(IObserver)
 class BattleDice(gtk.EventBox):
+
     """Widget to show die rolls in battle."""
+
     def __init__(self, scale):
         gtk.EventBox.__init__(self)
         self.scale = scale
@@ -21,8 +23,8 @@ class BattleDice(gtk.EventBox):
         self.columns = 9
         self.spacing = int(round(0.1 * self.scale))
         self.set_size_request(
-          self.columns * self.scale + (self.columns - 1) * self.spacing,
-          self.rows * self.scale + (self.rows - 1) * self.spacing)
+            self.columns * self.scale + (self.columns - 1) * self.spacing,
+            self.rows * self.scale + (self.rows - 1) * self.spacing)
 
         self.table = gtk.Table(rows=self.rows, columns=self.columns)
         self.table.set_row_spacings(self.spacing)
@@ -50,9 +52,9 @@ class BattleDice(gtk.EventBox):
             if changed:
                 self.table.resize(self.rows, self.columns)
                 self.set_size_request(
-                  self.columns * self.scale +
+                    self.columns * self.scale +
                     (self.columns - 1) * self.spacing,
-                  self.rows * self.scale + (self.rows - 1) * self.spacing)
+                    self.rows * self.scale + (self.rows - 1) * self.spacing)
             hits = action.hits
             gtkcolor = gtk.gdk.color_parse("white")
             chit_scale = int(round(self.scale / Die.CHIT_SCALE_FACTOR))
@@ -81,6 +83,6 @@ if __name__ == "__main__":
     window.show_all()
     rolls = Dice.roll(numrolls=12)
     action = Action.Strike(None, None, None, None, None, None, None, None,
-      rolls, sum(1 for roll in rolls if roll >= 4), 1)
+                           rolls, sum(1 for roll in rolls if roll >= 4), 1)
     battle_dice.update(None, action, None)
     gtk.main()

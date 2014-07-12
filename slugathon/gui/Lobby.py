@@ -19,7 +19,9 @@ from slugathon.util import guiutils
 
 @implementer(IObserver)
 class Lobby(gtk.EventBox):
+
     """GUI for a multiplayer chat and game finding lobby."""
+
     def __init__(self, user, playername, playernames, games, parent_window):
         gtk.EventBox.__init__(self)
         self.initialized = False
@@ -133,9 +135,9 @@ class Lobby(gtk.EventBox):
         self.connect("destroy", guiutils.exit)
         self.chat_entry.connect("key-press-event", self.cb_keypress)
         new_game_button.connect("button-press-event",
-          self.cb_new_game_button_click)
+                                self.cb_new_game_button_click)
         load_game_button.connect("button-press-event",
-          self.cb_load_game_button_click)
+                                 self.cb_load_game_button_click)
 
         self.show_all()
         self.initialized = True
@@ -154,11 +156,11 @@ class Lobby(gtk.EventBox):
         selection = self.user_list.get_selection()
         selection.set_mode(gtk.SELECTION_MULTIPLE)
         selection.set_select_function(self.cb_user_list_select, data=None,
-          full=True)
+                                      full=True)
         headers = ["User Name", "Skill"]
         for (ii, title) in enumerate(headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
-              text=ii)
+                                        text=ii)
             self.user_list.append_column(column)
 
         self.new_game_store = gtk.ListStore(str, str, str, str, int, int, str)
@@ -172,22 +174,22 @@ class Lobby(gtk.EventBox):
         selection.set_select_function(self.cb_game_list_select, None)
 
         new_headers = ["Game Name", "Owner", "Create Time", "Start Time",
-          "Min Players", "Max Players", "Players"]
+                       "Min Players", "Max Players", "Players"]
         for (ii, title) in enumerate(new_headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
-              text=ii)
+                                        text=ii)
             self.new_game_list.append_column(column)
         current_headers = ["Game Name", "Start Time", "Living Players",
-          "Dead Players"]
+                           "Dead Players"]
         for (ii, title) in enumerate(current_headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
-              text=ii)
+                                        text=ii)
             self.current_game_list.append_column(column)
         old_headers = ["Game Name", "Start Time", "Finish Time", "Winners",
-          "Losers"]
+                       "Losers"]
         for (ii, title) in enumerate(old_headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
-              text=ii)
+                                        text=ii)
             self.old_game_list.append_column(column)
 
         for game in self.games:
@@ -239,7 +241,7 @@ class Lobby(gtk.EventBox):
                 max_players = game.max_players
                 players = ", ".join(game.playernames)
                 tup = (name, owner, create_time, start_time, min_players,
-                  max_players, players)
+                       max_players, players)
                 if ii < length:
                     self.new_game_store[ii, 0] = tup
                 else:
@@ -318,7 +320,7 @@ class Lobby(gtk.EventBox):
             else:
                 del wfp
         wfp = WaitingForPlayers.WaitingForPlayers(self.user, self.playername,
-          game, self.parent_window)
+                                                  game, self.parent_window)
         self.wfps[game.name] = wfp
 
     def _remove_wfp(self, game_name):

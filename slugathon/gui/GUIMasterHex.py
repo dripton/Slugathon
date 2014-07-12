@@ -23,6 +23,7 @@ rp = guiutils.roundpoint
 
 
 class GUIMasterHex(object):
+
     def __init__(self, masterhex, guiboard):
         self.masterhex = masterhex
         self.guiboard = guiboard
@@ -31,8 +32,8 @@ class GUIMasterHex(object):
         self.cy = masterhex.y * 4 * SQRT3 * scale
         if not masterhex.inverted:
             self.cy += SQRT3 * scale
-        self.fillcolor = guiutils.rgb_to_float(colors.rgb_colors[
-          colors.terrain_colors[self.masterhex.terrain]])
+        self.fillcolor = guiutils.rgb_to_float(
+            colors.rgb_colors[colors.terrain_colors[self.masterhex.terrain]])
         self.center = (self.cx + 3 * scale, self.cy + 1.5 * SQRT3 * scale)
         self.selected = False
 
@@ -141,11 +142,13 @@ class GUIMasterHex(object):
             n = (i + 1) % 6
             if hex1.exits[i] is not None:
                 li = self.init_gate(vertexes[i][0], vertexes[i][1],
-                          vertexes[n][0], vertexes[n][1], hex1.exits[i])
+                                    vertexes[n][0], vertexes[n][1],
+                                    hex1.exits[i])
                 gp.extend(li)
             if hex1.entrances[i] is not None:
                 li = self.init_gate(vertexes[n][0], vertexes[n][1],
-                          vertexes[i][0], vertexes[i][1], hex1.entrances[i])
+                                    vertexes[i][0], vertexes[i][1],
+                                    hex1.entrances[i])
                 li.reverse()
                 gp.extend(li)
             ap.extend(gp)
@@ -180,17 +183,17 @@ class GUIMasterHex(object):
         self.dest_y = int(round(self.center[1] - myboxsize[1] / 2.))
 
         image_filename = fileutils.basedir("images/masterhex",
-          self.masterhex.overlay_filename)
+                                           self.masterhex.overlay_filename)
         input_surface = cairo.ImageSurface.create_from_png(image_filename)
         input_width = input_surface.get_width()
         input_height = input_surface.get_height()
         output_width = int(round(myboxsize[0]))
         output_height = int(round(myboxsize[1]))
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-          output_width, output_height)
+                                          output_width, output_height)
         ctx = cairo.Context(self.surface)
         ctx.scale(float(output_width) / input_width,
-          float(output_height) / input_height)
+                  float(output_height) / input_height)
         ctx.move_to(0, 0)
         ctx.set_source_surface(input_surface)
         ctx.paint()
@@ -212,9 +215,9 @@ class GUIMasterHex(object):
         layout.set_text(label)
         width, height = layout.get_pixel_size()
         x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
-          width / 2.0)))
+                       width / 2.0)))
         y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
-          height / 2.0)))
+                       height / 2.0)))
         pctx.set_source_rgb(0, 0, 0)
         pctx.move_to(x, y)
         pctx.show_layout(layout)

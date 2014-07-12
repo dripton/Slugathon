@@ -11,4 +11,4 @@ from slugathon.util import fileutils
 
 
 pixbuf = gtk.gdk.pixbuf_new_from_file(fileutils.basedir(
-  os.path.join("images", "creature", "Serpent.png")))
+    os.path.join("images", "creature", "Serpent.png")))

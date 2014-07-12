@@ -17,18 +17,18 @@ def new(playername, legion, num_archangels, num_angels, caretaker, parent):
     """Create an AcquireAngels dialog and return it and a Deferred."""
     def1 = defer.Deferred()
     acquire_angel = AcquireAngels(playername, legion, num_archangels,
-      num_angels, caretaker, def1, parent)
+                                  num_angels, caretaker, def1, parent)
     return acquire_angel, def1
 
 
 def find_angel_combos(num_archangels, num_angels, archangels_left,
-  angels_left):
+                      angels_left):
     """Return a list of tuples of Creatures, corresponding to each
     possible group of angels and archangels."""
     set1 = set()
     for archangels in xrange(min(num_archangels, archangels_left) + 1):
         for angels in xrange(min((num_angels + num_archangels),
-          angels_left) + 1):
+                                 angels_left) + 1):
             if 0 < archangels + angels <= num_archangels + num_angels:
                 lst = []
                 for unused in xrange(archangels):
@@ -47,9 +47,11 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
 
 
 class AcquireAngels(gtk.Dialog):
+
     """Dialog to acquire an angel."""
+
     def __init__(self, playername, legion, num_archangels, num_angels,
-      caretaker, def1, parent):
+                 caretaker, def1, parent):
         gtk.Dialog.__init__(self, "AcquireAngels - %s" % playername, parent)
         self.deferred = def1
         self.legion = legion
@@ -61,7 +63,8 @@ class AcquireAngels(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Acquire angel for legion %s (%s) in hex %s" %
-          (legion.markerid, legion.picname, legion.hexlabel))
+                               (legion.markerid, legion.picname,
+                                legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
         legion_hbox = gtk.HBox(spacing=3)
@@ -80,8 +83,10 @@ class AcquireAngels(gtk.Dialog):
             chit = Chit.Chit(creature, player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, expand=False)
 
-        angel_combos = find_angel_combos(num_archangels, num_angels,
-          caretaker.num_left("Archangel"), caretaker.num_left("Angel"))
+        angel_combos = find_angel_combos(num_archangels,
+                                         num_angels,
+                                         caretaker.num_left("Archangel"),
+                                         caretaker.num_left("Angel"))
         max_len = max(len(combo) for combo in angel_combos)
         leading_spaces = (len(legion) + 2 - max_len) // 2
         for combo in angel_combos:

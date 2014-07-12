@@ -24,18 +24,20 @@ FIGHT = 2
 
 
 def new(playername, attacker_legion, attacker_creature_names,
-      defender_legion, defender_creature_names, parent):
+        defender_legion, defender_creature_names, parent):
     """Create a Proposal dialog and return it and a Deferred."""
     def1 = defer.Deferred()
     proposal = Proposal(playername, attacker_legion, attacker_creature_names,
-      defender_legion, defender_creature_names, def1, parent)
+                        defender_legion, defender_creature_names, def1, parent)
     return proposal, def1
 
 
 class Proposal(gtk.Dialog):
+
     """Dialog to choose whether to accept an opponent's proposal."""
+
     def __init__(self, playername, attacker_legion, attacker_creature_names,
-      defender_legion, defender_creature_names, def1, parent):
+                 defender_legion, defender_creature_names, def1, parent):
         gtk.Dialog.__init__(self, "Proposal - %s" % playername, parent)
         self.attacker_legion = attacker_legion
         self.attacker_creature_names = attacker_creature_names
@@ -49,10 +51,10 @@ class Proposal(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label(
-          "Legion %s (%s) negotiates with %s (%s) in hex %s" % (
-          attacker_legion.markerid, attacker_legion.picname,
-          defender_legion.markerid, defender_legion.picname,
-          defender_legion.hexlabel))
+            "Legion %s (%s) negotiates with %s (%s) in hex %s" % (
+                attacker_legion.markerid, attacker_legion.picname,
+                defender_legion.markerid, defender_legion.picname,
+                defender_legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
         attacker_hbox = gtk.HBox(spacing=15)
@@ -64,7 +66,7 @@ class Proposal(gtk.Dialog):
 
         attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
         attacker_marker_hbox.pack_start(attacker_marker.event_box,
-          expand=False)
+                                        expand=False)
 
         defender_hbox = gtk.HBox(spacing=15)
         self.vbox.pack_start(defender_hbox)
@@ -75,7 +77,7 @@ class Proposal(gtk.Dialog):
 
         defender_marker = Marker.Marker(defender_legion, True, scale=20)
         defender_marker_hbox.pack_start(defender_marker.event_box,
-          expand=False)
+                                        expand=False)
 
         attacker_chits = []
 
@@ -90,7 +92,7 @@ class Proposal(gtk.Dialog):
             else:
                 dead = True
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20,
-              dead=dead)
+                             dead=dead)
             attacker_chits_hbox.pack_start(chit.event_box, expand=False)
             attacker_chits.append(chit)
 
@@ -104,7 +106,7 @@ class Proposal(gtk.Dialog):
             else:
                 dead = True
             chit = Chit.Chit(creature, defender_legion.player.color, scale=20,
-              dead=dead)
+                             dead=dead)
             defender_chits_hbox.pack_start(chit.event_box, expand=False)
             defender_chits.append(chit)
 
@@ -120,8 +122,10 @@ class Proposal(gtk.Dialog):
         the response_id."""
         self.destroy()
         self.deferred.callback((self.attacker_legion,
-          self.attacker_creature_names, self.defender_legion,
-          self.defender_creature_names, response_id))
+                                self.attacker_creature_names,
+                                self.defender_legion,
+                                self.defender_creature_names,
+                                response_id))
 
 
 if __name__ == "__main__":
@@ -135,12 +139,12 @@ if __name__ == "__main__":
     attacker_player = Player.Player(attacker_playername, game, 0)
     attacker_player.color = "Black"
     attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
-      "Archangel", "Angel", "Unicorn"]
+                               "Archangel", "Angel", "Unicorn"]
     attacker_survivor_names = ["Titan", "Colossus", "Serpent", "Hydra",
-      "Archangel", "Angel"]
+                               "Archangel", "Angel"]
     attacker_creatures = Creature.n2c(attacker_creature_names)
     attacker_legion = Legion.Legion(attacker_player, "Bk01",
-      attacker_creatures, 1)
+                                    attacker_creatures, 1)
 
     defender_playername = "Eek!"
     defender_player = Player.Player(defender_playername, game, 0)
@@ -149,13 +153,14 @@ if __name__ == "__main__":
     defender_survivor_names = []
     defender_creatures = Creature.n2c(defender_creature_names)
     defender_legion = Legion.Legion(defender_player, "Rd01",
-      defender_creatures, 1)
+                                    defender_creatures, 1)
 
     def my_callback(*args):
         logging.info("my_callback %s", args)
         reactor.stop()
 
     _, def1 = new(defender_playername, attacker_legion,
-      attacker_survivor_names, defender_legion, defender_survivor_names, None)
+                  attacker_survivor_names, defender_legion,
+                  defender_survivor_names, None)
     def1.addCallback(my_callback)
     reactor.run()

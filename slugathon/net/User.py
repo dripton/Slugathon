@@ -16,7 +16,9 @@ from slugathon.game import Action
 
 @implementer(IObserver)
 class User(Avatar):
+
     """Perspective for a player or spectator."""
+
     def __init__(self, name, server, client):
         self.name = name
         self.server = server
@@ -51,14 +53,16 @@ class User(Avatar):
         self.server.send_chat_message(self.name, dest, text)
 
     def perspective_form_game(self, game_name, min_players, max_players,
-      ai_time_limit, player_time_limit, player_class, player_info):
+                              ai_time_limit, player_time_limit, player_class,
+                              player_info):
         return self.server.form_game(self.name, game_name, min_players,
-          max_players, ai_time_limit, player_time_limit, player_class,
-          player_info)
+                                     max_players, ai_time_limit,
+                                     player_time_limit, player_class,
+                                     player_info)
 
     def perspective_join_game(self, game_name, player_class, player_info):
         return self.server.join_game(self.name, game_name, player_class,
-          player_info)
+                                     player_info)
 
     def perspective_start_game(self, game_name):
         self.server.start_game(self.name, game_name)
@@ -70,9 +74,11 @@ class User(Avatar):
         self.server.pick_first_marker(self.name, game_name, markerid)
 
     def perspective_split_legion(self, game_name, parent_markerid,
-      child_markerid, parent_creature_names, child_creature_names):
+                                 child_markerid, parent_creature_names,
+                                 child_creature_names):
         self.server.split_legion(self.name, game_name, parent_markerid,
-          child_markerid, parent_creature_names, child_creature_names)
+                                 child_markerid, parent_creature_names,
+                                 child_creature_names)
 
     def perspective_done_with_splits(self, game_name):
         self.server.done_with_splits(self.name, game_name)
@@ -81,9 +87,9 @@ class User(Avatar):
         self.server.take_mulligan(self.name, game_name)
 
     def perspective_move_legion(self, game_name, markerid, hexlabel,
-      entry_side, teleport, teleporting_lord):
+                                entry_side, teleport, teleporting_lord):
         self.server.move_legion(self.name, game_name, markerid, hexlabel,
-          entry_side, teleport, teleporting_lord)
+                                entry_side, teleport, teleporting_lord)
 
     def perspective_done_with_moves(self, game_name):
         self.server.done_with_moves(self.name, game_name)
@@ -98,42 +104,45 @@ class User(Avatar):
         self.server.do_not_flee(self.name, game_name, markerid)
 
     def perspective_concede(self, game_name, markerid, enemy_markerid,
-      hexlabel):
+                            hexlabel):
         self.server.concede(self.name, game_name, markerid,
-          enemy_markerid, hexlabel)
+                            enemy_markerid, hexlabel)
 
     def perspective_make_proposal(self, game_name, attacker_markerid,
-      attacker_creature_names, defender_markerid, defender_creature_names):
+                                  attacker_creature_names, defender_markerid,
+                                  defender_creature_names):
         self.server.make_proposal(self.name, game_name, attacker_markerid,
-          attacker_creature_names, defender_markerid,
-          defender_creature_names)
+                                  attacker_creature_names, defender_markerid,
+                                  defender_creature_names)
 
     def perspective_accept_proposal(self, game_name, attacker_markerid,
-      attacker_creature_names, defender_markerid, defender_creature_names):
+                                    attacker_creature_names, defender_markerid,
+                                    defender_creature_names):
         self.server.accept_proposal(self.name, game_name, attacker_markerid,
-          attacker_creature_names, defender_markerid,
-          defender_creature_names)
+                                    attacker_creature_names, defender_markerid,
+                                    defender_creature_names)
 
     def perspective_reject_proposal(self, game_name, attacker_markerid,
-      attacker_creature_names, defender_markerid, defender_creature_names):
+                                    attacker_creature_names, defender_markerid,
+                                    defender_creature_names):
         self.server.reject_proposal(self.name, game_name, attacker_markerid,
-          attacker_creature_names, defender_markerid,
-          defender_creature_names)
+                                    attacker_creature_names, defender_markerid,
+                                    defender_creature_names)
 
     def perspective_no_more_proposals(self, game_name, attacker_markerid,
-      defender_markerid):
+                                      defender_markerid):
         self.server.no_more_proposals(self.name, game_name, attacker_markerid,
-          defender_markerid)
+                                      defender_markerid)
 
     def perspective_fight(self, game_name, attacker_markerid,
-      defender_markerid):
+                          defender_markerid):
         self.server.fight(self.name, game_name, attacker_markerid,
-          defender_markerid)
+                          defender_markerid)
 
     def perspective_move_creature(self, game_name, creature_name,
-      old_hexlabel, new_hexlabel):
+                                  old_hexlabel, new_hexlabel):
         self.server.move_creature(self.name, game_name, creature_name,
-          old_hexlabel, new_hexlabel)
+                                  old_hexlabel, new_hexlabel)
 
     def perspective_done_with_reinforcements(self, game_name):
         self.server.done_with_reinforcements(self.name, game_name)
@@ -148,35 +157,37 @@ class User(Avatar):
         self.server.done_with_counterstrikes(self.name, game_name)
 
     def perspective_strike(self, game_name, creature_name, hexlabel,
-      target_creature_name, target_hexlabel, num_dice, strike_number):
+                           target_creature_name, target_hexlabel, num_dice,
+                           strike_number):
         self.server.strike(self.name, game_name, creature_name, hexlabel,
-          target_creature_name, target_hexlabel, num_dice, strike_number)
+                           target_creature_name, target_hexlabel, num_dice,
+                           strike_number)
 
     def perspective_acquire_angels(self, game_name, markerid,
-      angel_names):
+                                   angel_names):
         self.server.acquire_angels(self.name, game_name, markerid,
-          angel_names)
+                                   angel_names)
 
     def perspective_do_not_acquire_angels(self, game_name, markerid):
         logging.info("do_not_acquire_angels %s %s %s", self, game_name,
-          markerid)
+                     markerid)
         self.server.do_not_acquire_angels(self.name, game_name, markerid)
 
     def perspective_done_with_engagements(self, game_name):
         self.server.done_with_engagements(self.name, game_name)
 
     def perspective_recruit_creature(self, game_name, markerid,
-      creature_name, recruiter_names):
+                                     creature_name, recruiter_names):
         self.server.recruit_creature(self.name, game_name, markerid,
-          creature_name, recruiter_names)
+                                     creature_name, recruiter_names)
 
     def perspective_done_with_recruits(self, game_name):
         self.server.done_with_recruits(self.name, game_name)
 
     def perspective_summon_angel(self, game_name, markerid,
-      donor_markerid, creature_name):
+                                 donor_markerid, creature_name):
         self.server.summon_angel(self.name, game_name, markerid,
-          donor_markerid, creature_name)
+                                 donor_markerid, creature_name)
 
     def perspective_do_not_summon_angel(self, game_name, markerid):
         self.server.do_not_summon_angel(self.name, game_name, markerid)
@@ -185,40 +196,53 @@ class User(Avatar):
         self.server.do_not_reinforce(self.name, game_name, markerid)
 
     def perspective_carry(self, game_name, carry_target_name,
-      carry_target_hexlabel, carries):
+                          carry_target_hexlabel, carries):
         logging.info("perspective_carry %s %s %s", carry_target_name,
-          carry_target_hexlabel, carries)
+                     carry_target_hexlabel, carries)
         self.server.carry(self.name, game_name, carry_target_name,
-          carry_target_hexlabel, carries)
+                          carry_target_hexlabel, carries)
 
     def perspective_apply_action(self, action):
         """Pull the exact method and args out of the Action."""
         if isinstance(action, Action.UndoSplit):
-            self.server.undo_split(self.name, action.game_name,
-              action.parent_markerid, action.child_markerid)
+            self.server.undo_split(self.name,
+                                   action.game_name,
+                                   action.parent_markerid,
+                                   action.child_markerid)
         elif isinstance(action, Action.UndoMoveLegion):
             self.server.undo_move_legion(self.name, action.game_name,
-              action.markerid)
+                                         action.markerid)
         elif isinstance(action, Action.UndoRecruit):
             self.server.undo_recruit(self.name, action.game_name,
-              action.markerid)
+                                     action.markerid)
         elif isinstance(action, Action.UndoMoveCreature):
-            self.server.undo_move_creature(self.name, action.game_name,
-              action.creature_name, action.new_hexlabel)
+            self.server.undo_move_creature(self.name,
+                                           action.game_name,
+                                           action.creature_name,
+                                           action.new_hexlabel)
         elif isinstance(action, Action.SplitLegion):
-            self.server.split_legion(self.name, action.game_name,
-              action.parent_markerid, action.child_markerid,
-              action.parent_creature_names, action.child_creature_names)
+            self.server.split_legion(self.name,
+                                     action.game_name,
+                                     action.parent_markerid,
+                                     action.child_markerid,
+                                     action.parent_creature_names,
+                                     action.child_creature_names)
         elif isinstance(action, Action.MoveLegion):
             self.server.move_legion(self.name, action.game_name,
-              action.markerid, action.hexlabel, action.entry_side,
-              action.teleport, action.teleporting_lord)
+                                    action.markerid, action.hexlabel,
+                                    action.entry_side,
+                                    action.teleport,
+                                    action.teleporting_lord)
         elif isinstance(action, Action.MoveCreature):
             self.server.move_creature(self.name, action.game_name,
-              action.creature_name, action.old_hexlabel, action.new_hexlabel)
+                                      action.creature_name,
+                                      action.old_hexlabel, action.new_hexlabel)
         elif isinstance(action, Action.RecruitCreature):
-            self.server.recruit_creature(self.name, action.game_name,
-              action.markerid, action.creature_name, action.recruiter_names)
+            self.server.recruit_creature(self.name,
+                                         action.game_name,
+                                         action.markerid,
+                                         action.creature_name,
+                                         action.recruiter_names)
 
     def perspective_save(self, game_name):
         self.server.save(self.name, game_name)
@@ -270,7 +294,7 @@ class User(Avatar):
         # Filter SplitLegion to our own player with censored creature names;
         # it'll get the other one with creature names.
         if (isinstance(action, Action.SplitLegion) and action.playername ==
-          self.name and "Unknown" in action.parent_creature_names):
+           self.name and "Unknown" in action.parent_creature_names):
             return
         def1 = self.client.callRemote("update", action, names)
         def1.addErrback(self.trap_connection_lost)

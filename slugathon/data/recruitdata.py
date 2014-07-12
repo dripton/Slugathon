@@ -29,12 +29,12 @@ data = {
     "Hills": [("Ogre", 1), ("Minotaur", 3), ("Unicorn", 2)],
 
     "Jungle": [("Gargoyle", 1), ("Cyclops", 2), ("Behemoth", 3),
-      ("Serpent", 2)],
+               ("Serpent", 2)],
 
     "Marsh": [("Ogre", 1), ("Troll", 2), ("Ranger", 2)],
 
     "Mountains": [("Lion", 1), ("Minotaur", 2), ("Dragon", 2),
-      ("Colossus", 2)],
+                  ("Colossus", 2)],
 
     "Plains": [("Centaur", 1), ("Lion", 2), ("Ranger", 2)],
 

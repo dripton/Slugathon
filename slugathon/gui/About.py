@@ -16,6 +16,7 @@ from slugathon.util import guiutils, fileutils
 
 
 class About(gtk.AboutDialog):
+
     def __init__(self, parent):
         gtk.AboutDialog.__init__(self)
         self.set_icon(icon.pixbuf)
@@ -40,10 +41,18 @@ class About(gtk.AboutDialog):
         self.set_version(version)
 
         self.set_authors(["David Ripton", ])
-        self.set_artists(["Chris Byler", "Keith Carter", "Chris Howe",
-          "Klint Hull", "David Lum", "John Lum", "Agustin Martin",
-          "Tchula Ripton", "Jerry Reiger", "Josh Smith",
-          "Sakis Spyropoulos", "D. U. Thibault", ])
+        self.set_artists(["Chris Byler",
+                          "Keith Carter",
+                          "Chris Howe",
+                          "Klint Hull",
+                          "David Lum",
+                          "John Lum",
+                          "Agustin Martin",
+                          "Tchula Ripton",
+                          "Jerry Reiger",
+                          "Josh Smith",
+                          "Sakis Spyropoulos",
+                          "D. U. Thibault", ])
 
         self.set_logo(icon.pixbuf)
         self.set_website("http://github.com/dripton/Slugathon")

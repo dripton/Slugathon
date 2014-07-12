@@ -64,12 +64,14 @@ def n2c(names):
 
 
 class Creature(object):
+
     """One instance of one Creature, Lord, or Demi-Lord."""
+
     def __init__(self, name):
         self.name = name
         (self.plural_name, self._power, self.skill, rangestrikes, self.flies,
-          self.character_type, self.summonable, self.acquirable_every,
-          self.max_count, self.color_name) = creaturedata.data[name]
+         self.character_type, self.summonable, self.acquirable_every,
+         self.max_count, self.color_name) = creaturedata.data[name]
         self.rangestrikes = bool(rangestrikes)
         self.magicmissile = (rangestrikes == 2)
         self.acquirable = bool(self.acquirable_every)
@@ -121,23 +123,23 @@ class Creature(object):
     def sort_value(self):
         """Return a rough indication of creature value, for sorting."""
         return (self.score
-          + 0.2 * self.acquirable
-          + 0.3 * self.flies
-          + 0.25 * self.rangestrikes
-          + 0.1 * self.magicmissile
-          + 0.15 * (self.skill == 2)
-          + 0.18 * (self.skill == 4)
-          + 100 * (self.is_titan))
+                + 0.2 * self.acquirable
+                + 0.3 * self.flies
+                + 0.25 * self.rangestrikes
+                + 0.1 * self.magicmissile
+                + 0.15 * (self.skill == 2)
+                + 0.18 * (self.skill == 4)
+                + 100 * (self.is_titan))
 
     @property
     def combat_value(self):
         """Return a rough indication of creature combat ability, for the AI."""
         return (self.score
-          + 0.3 * self.flies
-          + 0.25 * self.rangestrikes
-          + 0.1 * self.magicmissile
-          + 0.15 * (self.skill == 2)
-          + 0.18 * (self.skill == 4))
+                + 0.3 * self.flies
+                + 0.25 * self.rangestrikes
+                + 0.1 * self.magicmissile
+                + 0.15 * (self.skill == 2)
+                + 0.18 * (self.skill == 4))
 
     @property
     def terrain_combat_value(self):
@@ -154,18 +156,18 @@ class Creature(object):
         TUNDRA_BONUS = 0.1
         base_value = self.combat_value
         if (self.legion is None or self.legion.player is None or
-          self.legion.hexlabel is None):
+           self.legion.hexlabel is None):
             return base_value
         terrain = self.legion.player.game.board.hexes[
-          self.legion.hexlabel].terrain
+            self.legion.hexlabel].terrain
         if terrain == "Tower":
             return (1 + TOWER_BONUS) * base_value
         elif terrain == "Brush":
             return ((1 + (self.is_native("Bramble") * BRUSH_BONUS)) *
-              base_value)
+                    base_value)
         elif terrain == "Jungle":
             return ((1 + (self.is_native("Bramble") * JUNGLE_BONUS)) *
-              base_value)
+                    base_value)
         elif terrain == "Hills":
             return ((1 + (self.is_native("Slope") * HILLS_BONUS)) * base_value)
         elif terrain == "Swamp":
@@ -176,10 +178,10 @@ class Creature(object):
             return ((1 + (self.is_native("Dune") * DESERT_BONUS)) * base_value)
         elif terrain == "Mountain":
             return ((1 + (self.is_native("Slope") * MOUNTAINS_BONUS)) *
-              base_value)
+                    base_value)
         elif terrain == "Tundra":
             return ((1 + (self.is_native("Drift") * TUNDRA_BONUS)) *
-              base_value)
+                    base_value)
         else:
             return base_value
 
@@ -236,7 +238,7 @@ class Creature(object):
         for hexside, hex2 in hex1.neighbors.iteritems():
             if hex2.label in hexlabel_to_enemy:
                 if (hex1.borders[hexside] != "Cliff" and
-                  hex2.borders[(hexside + 3) % 6] != "Cliff"):
+                   hex2.borders[(hexside + 3) % 6] != "Cliff"):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
 
@@ -253,7 +255,7 @@ class Creature(object):
         for hexside, hex2 in hex1.neighbors.iteritems():
             if hex2.label in hexlabel_to_enemy:
                 if (hex1.borders[hexside] != "Cliff" and
-                  hex2.borders[(hexside + 3) % 6] != "Cliff"):
+                   hex2.borders[(hexside + 3) % 6] != "Cliff"):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
 
@@ -271,14 +273,14 @@ class Creature(object):
         game = self.legion.player.game
         enemies = set()
         if (self.offboard or self.hexlabel is None or not self.rangestrikes
-          or self.dead_adjacent_enemies):
+           or self.dead_adjacent_enemies):
             return enemies
         hexlabel_to_enemy = self._hexlabel_to_enemy()
         map1 = game.battlemap
         for hexlabel, enemy in hexlabel_to_enemy.iteritems():
             if (map1.range(self.hexlabel, hexlabel) <= self.skill and
-              (self.magicmissile or self.has_los_to(hexlabel)) and
-              (self.magicmissile or not enemy.is_lord)):
+               (self.magicmissile or self.has_los_to(hexlabel)) and
+               (self.magicmissile or not enemy.is_lord)):
                 enemies.add(enemy)
         return enemies
 
@@ -302,8 +304,8 @@ class Creature(object):
             for target in self.engaged_enemies:
                 hexlabels.add(target.hexlabel)
             if (not hexlabels and self.rangestrikes and
-              game.battle_phase == Phase.STRIKE and not
-              self.dead_adjacent_enemies):
+               game.battle_phase == Phase.STRIKE and not
+               self.dead_adjacent_enemies):
                 for target in self.rangestrike_targets:
                     hexlabels.add(target.hexlabel)
         return hexlabels
@@ -325,10 +327,10 @@ class Creature(object):
         player = legion.player
         game = player.game
         if (not self.struck and
-          self.rangestrikes and
-          game.battle_phase == Phase.STRIKE and
-          not self.engaged_enemies and
-          not self.dead_adjacent_enemies):
+           self.rangestrikes and
+           game.battle_phase == Phase.STRIKE and
+           not self.engaged_enemies and
+           not self.dead_adjacent_enemies):
             for target in self.rangestrike_targets:
                 hexlabels.add(target.hexlabel)
         return hexlabels
@@ -423,31 +425,31 @@ class Creature(object):
         else:
             # Long range rangestrike penalty
             if (not self.magicmissile and map1.range(self.hexlabel,
-              target.hexlabel) >= 4):
+               target.hexlabel) >= 4):
                 skill1 -= 1
             if not self.magicmissile and not self.is_native("Bramble"):
                 skill1 -= map1.count_bramble_hexes(self.hexlabel,
-                  target.hexlabel, game)
+                                                   target.hexlabel, game)
             if not self.magicmissile:
                 skill1 -= map1.count_walls(self.hexlabel, target.hexlabel,
-                  game)
+                                           game)
         strike_number = 4 - skill1 + skill2
         if target in self.engaged_enemies:
             if (hex2.terrain == "Bramble" and not self.is_native(hex2.terrain)
-              and target.is_native(hex2.terrain)):
+               and target.is_native(hex2.terrain)):
                 strike_number += 1
         else:
             if (hex2.terrain == "Bramble" and target.is_native(hex2.terrain)
-              and not self.is_native(hex2.terrain)):
+               and not self.is_native(hex2.terrain)):
                 strike_number += 1
             elif (hex2.terrain == "Volcano" and target.is_native(
-              hex2.terrain)):
+                  hex2.terrain)):
                 strike_number += 1
         strike_number = min(strike_number, 6)
         return strike_number
 
     def can_carry_to(self, carry_target, original_target, num_dice,
-      strike_number):
+                     strike_number):
         """Return whether a strike at original_target using num_dice and
         strike number can carry to carry_target"""
         # Natives to dunes may not carry over damage up dune hexsides when
@@ -465,12 +467,12 @@ class Creature(object):
             if border2 == "Dune" and self.is_native(border2):
                 return False
         retval = (carry_target is not original_target and
-          carry_target in self.engaged_enemies and
-          not carry_target.dead and
-          self.number_of_dice(carry_target) >= num_dice and
-          self.strike_number(carry_target) <= strike_number)
+                  carry_target in self.engaged_enemies and
+                  not carry_target.dead and
+                  self.number_of_dice(carry_target) >= num_dice and
+                  self.strike_number(carry_target) <= strike_number)
         logging.info("can_carry_to %s %s %s %s returning %s", carry_target,
-          original_target, num_dice, strike_number, retval)
+                     original_target, num_dice, strike_number, retval)
         return retval
 
     def carry_targets(self, original_target, num_dice, strike_number):
@@ -478,7 +480,7 @@ class Creature(object):
         results = set()
         for target in self.engaged_enemies:
             if self.can_carry_to(target, original_target, num_dice,
-              strike_number):
+                                 strike_number):
                 results.add(target)
         return results
 
@@ -522,8 +524,9 @@ class Creature(object):
                 # strike against the original target, and there needs to be
                 # a chance to carry.
                 elif ((num_dice2 < num_dice or strike_number2 > strike_number)
-                  and num_dice2 <= num_dice and strike_number2 >= strike_number
-                  and num_dice2 > target.power - target.hits):
+                      and num_dice2 <= num_dice
+                      and strike_number2 >= strike_number
+                      and num_dice2 > target.power - target.hits):
                     result.add((num_dice2, strike_number2))
         return result
 

@@ -20,12 +20,14 @@ from slugathon.util import prefs
 def modify_fg_all_states(widget, color_name):
     color = gtk.gdk.color_parse(color_name)
     for state in [gtk.STATE_NORMAL, gtk.STATE_ACTIVE, gtk.STATE_PRELIGHT,
-      gtk.STATE_SELECTED, gtk.STATE_INSENSITIVE]:
+                  gtk.STATE_SELECTED, gtk.STATE_INSENSITIVE]:
         widget.modify_fg(state, color)
 
 
 class MainWindow(gtk.Window):
+
     """Main GUI window."""
+
     def __init__(self, playername=None, scale=None):
         gtk.Window.__init__(self)
 
@@ -50,12 +52,12 @@ class MainWindow(gtk.Window):
 
         if self.playername:
             tup = prefs.load_window_position(self.playername,
-              self.__class__.__name__)
+                                             self.__class__.__name__)
             if tup:
                 x, y = tup
                 self.move(x, y)
             tup = prefs.load_window_size(self.playername,
-              self.__class__.__name__)
+                                         self.__class__.__name__)
             if tup:
                 width, height = tup
                 self.resize(width, height)
@@ -116,8 +118,10 @@ class MainWindow(gtk.Window):
         if self.game is None or self.game.over:
             self.cb_destroy(True)
         else:
-            confirm_dialog, def1 = ConfirmDialog.new(self, "Confirm",
-              "Are you sure you want to quit?")
+            confirm_dialog, def1 = ConfirmDialog.new(
+                self,
+                "Confirm",
+                "Are you sure you want to quit?")
             def1.addCallback(self.cb_destroy)
             def1.addErrback(self.failure)
         return True
@@ -135,16 +139,16 @@ class MainWindow(gtk.Window):
         if self.playername:
             x, y = self.get_position()
             prefs.save_window_position(self.playername,
-              self.__class__.__name__, x, y)
+                                       self.__class__.__name__, x, y)
             width, height = self.get_size()
             prefs.save_window_size(self.playername, self.__class__.__name__,
-              width, height)
+                                   width, height)
         return False
 
     def cb_switch_page(self, widget, dummy, page_num):
         page_widget = widget.get_nth_page(page_num)
         if (hasattr(page_widget, "ui") and hasattr(page_widget.ui,
-          "get_accel_group")):
+           "get_accel_group")):
             self.replace_accel_group(page_widget.ui.get_accel_group())
         else:
             self.replace_accel_group(None)

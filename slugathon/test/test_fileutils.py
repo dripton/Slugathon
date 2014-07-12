@@ -11,9 +11,9 @@ def test_basedir():
     assert fileutils.basedir().endswith("/slugathon")
     assert fileutils.basedir("images").endswith("/slugathon/images")
     assert fileutils.basedir("images/creature/titan").endswith(
-      "/slugathon/images/creature/titan")
+        "/slugathon/images/creature/titan")
     assert fileutils.basedir("images", "creature", "titan").endswith(
-      "/slugathon/images/creature/titan")
+        "/slugathon/images/creature/titan")
 
 
 def test_basedir_MEIPASS2():

@@ -34,7 +34,7 @@ def player_prefs_dir(playername):
 def window_position_path(playername, window_name):
     """Return the path to the window position prefs file."""
     return os.path.join(player_prefs_dir(playername), window_name +
-      "_position")
+                        "_position")
 
 
 def save_window_position(playername, window_name, x, y):

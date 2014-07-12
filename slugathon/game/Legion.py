@@ -18,6 +18,7 @@ def find_picname(markerid):
 
 
 class Legion(Observed):
+
     def __init__(self, player, markerid, creatures, hexlabel):
         Observed.__init__(self)
         assert isinstance(hexlabel, types.IntType)
@@ -116,7 +117,7 @@ class Legion(Observed):
 
     def __repr__(self):
         return "Legion %s (%s) in %s %s" % (self.markerid, self.picname,
-          self.hexlabel, self.creatures)
+                                            self.hexlabel, self.creatures)
 
     def __len__(self):
         """Return the number of living creatures in the legion."""
@@ -208,16 +209,17 @@ class Legion(Observed):
             return False
         if len(child1) < 2 or len(child2) < 2:
             return False
-        if bag(self.creature_names) != bag(child1.creature_names +
-          child2.creature_names) and bag(child1.creature_names).union(bag(
-          child2.creature_names)) != bag({"Unknown": len(self)}):
+        if (bag(self.creature_names) != bag(child1.creature_names +
+                                            child2.creature_names)
+            and bag(child1.creature_names).union(bag(child2.creature_names))
+                != bag({"Unknown": len(self)})):
             return False
         if len(self) == 8:
             if len(child1) != 4 or len(child2) != 4:
                 return False
             if ((child1.num_lords != 1 or child2.num_lords != 1) and
-              ((bag(child1.creature_names) != bag({"Unknown": 4}) or
-              bag(child2.creature_names) != bag({"Unknown": 4})))):
+               ((bag(child1.creature_names) != bag({"Unknown": 4}) or
+                 bag(child2.creature_names) != bag({"Unknown": 4})))):
                 return False
         return True
 
@@ -259,7 +261,7 @@ class Legion(Observed):
             self.moved = False
             # XXX This is bogus, but makes repainting the UI easier.
             (self.hexlabel, self.previous_hexlabel) = (self.previous_hexlabel,
-              self.hexlabel)
+                                                       self.hexlabel)
             if self.teleported:
                 self.teleported = False
                 self.teleporting_lord = None
@@ -297,21 +299,21 @@ class Legion(Observed):
         or defended in a battle.
         """
         logging.info("can_recruit %s len %s recruited %s dead %s",
-          self, len(self), self.recruited, self.dead)
+                     self, len(self), self.recruited, self.dead)
         if len(self) >= 7 or self.recruited or self.dead:
             return False
         game = self.player.game
         mterrain = game.board.hexes[self.hexlabel].terrain
         caretaker = game.caretaker
         return bool(self.available_recruits_and_recruiters(mterrain,
-          caretaker))
+                                                           caretaker))
 
     def could_recruit(self, mterrain, caretaker):
         """Return True iff the legion could recruit in a masterhex with
         terrain type mterrain, if it moved there and was the right height
         and had not already recruited this turn."""
         return bool(self.available_recruits_and_recruiters(mterrain,
-          caretaker))
+                                                           caretaker))
 
     def available_recruits(self, mterrain, caretaker):
         """Return a list of the creature names that this legion could
@@ -321,7 +323,7 @@ class Legion(Observed):
         """
         recruits = []
         for tup in self.available_recruits_and_recruiters(mterrain,
-          caretaker):
+                                                          caretaker):
             recruit = tup[0]
             if recruit not in recruits:
                 recruits.append(recruit)
@@ -357,12 +359,12 @@ class Legion(Observed):
                             result_list.append((names[jj],))
                 else:
                     if (prev == recruitdata.CREATURE and
-                      self._max_creatures_of_one_type() >= num):
+                       self._max_creatures_of_one_type() >= num):
                         # guardian
                         recruiters = []
                         for name2, num2 in counts.iteritems():
                             if (num2 >= num and Creature.Creature(
-                              name2).is_creature):
+                                    name2).is_creature):
                                 recruiters.append(name2)
                         for jj in xrange(ii + 1):
                             if nums[jj] and caretaker.counts.get(names[jj]):
@@ -407,7 +409,7 @@ class Legion(Observed):
     def recruit_creature(self, creature, recruiter_names):
         """Recruit creature."""
         logging.info("Legion.recruit_creature %s %s %s", self, creature,
-          recruiter_names)
+                     recruiter_names)
         if self.recruited:
             logging.info("already recruited")
             if self.creatures[-1].name == creature.name:
@@ -442,7 +444,8 @@ class Legion(Observed):
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
         action = Action.UndoRecruit(player.game.name, player.name,
-          self.markerid, creature.name, recruiter_names)
+                                    self.markerid, creature.name,
+                                    recruiter_names)
         self.notify(action)
 
     def unreinforce(self):
@@ -458,7 +461,8 @@ class Legion(Observed):
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
         action = Action.UnReinforce(player.game.name, player.name,
-          self.markerid, creature.name, recruiter_names)
+                                    self.markerid, creature.name,
+                                    recruiter_names)
         self.notify(action)
 
     @property
@@ -479,14 +483,15 @@ class Legion(Observed):
     def sorted_creatures(self):
         """Return creatures, sorted in descending order of value."""
         li = reversed(sorted((creature.sort_value, creature)
-          for creature in self.creatures))
+                             for creature in self.creatures))
         return [tup[1] for tup in li]
 
     @property
     def sorted_living_creatures(self):
         """Return living creatures, sorted in descending order of value."""
         li = reversed(sorted((creature.sort_value, creature)
-          for creature in self.creatures if not creature.dead))
+                             for creature in self.creatures
+                             if not creature.dead))
         return [tup[1] for tup in li]
 
     @property
@@ -504,12 +509,12 @@ class Legion(Observed):
         """Return a rough indication of legion combat value, considering its
         current terrain."""
         return sum(creature.terrain_combat_value for creature in
-          self.living_creatures)
+                   self.living_creatures)
 
     def die(self, scoring_legion, fled, no_points, check_for_victory=True,
-      kill_all_creatures=False):
+            kill_all_creatures=False):
         logging.info("Legion.die %s %s %s %s %s", self, scoring_legion, fled,
-          no_points, check_for_victory)
+                     no_points, check_for_victory)
         if scoring_legion is not None and not no_points:
             # We only give points for dead creatures, not living creatures,
             # to handle the case where a titan dies but leaves survivors,
@@ -518,7 +523,7 @@ class Legion(Observed):
                 points = self.score
             else:
                 points = sum(creature.score for creature in self.creatures if
-                  creature.dead)
+                             creature.dead)
             if fled:
                 points //= 2
             scoring_legion.add_points(points, True)
@@ -537,7 +542,7 @@ class Legion(Observed):
 
     def add_points(self, points, can_acquire_angels):
         logging.info("Legion.add_points %s %s %s", self, points,
-          can_acquire_angels)
+                     can_acquire_angels)
         ARCHANGEL_POINTS = Creature.Creature("Archangel").acquirable_every
         ANGEL_POINTS = Creature.Creature("Angel").acquirable_every
         player = self.player
@@ -549,13 +554,13 @@ class Legion(Observed):
             height = len(self)
             archangels = 0
             if (height < 7 and
-              score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
+               score1 // ARCHANGEL_POINTS > score0 // ARCHANGEL_POINTS):
                 archangels += 1
                 score1 -= ANGEL_POINTS
             logging.info("archangels %d" % archangels)
             angels = 0
             while (height + archangels + angels < 7 and
-              score1 // ANGEL_POINTS > score0 // ANGEL_POINTS):
+                   score1 // ANGEL_POINTS > score0 // ANGEL_POINTS):
                 angels += 1
                 score1 -= ANGEL_POINTS
             logging.info("angels %d" % angels)
@@ -563,7 +568,10 @@ class Legion(Observed):
             self._archangels_pending = archangels
             if angels + archangels > 0:
                 action = Action.CanAcquireAngels(self.player.game.name,
-                  self.player.name, self.markerid, angels, archangels)
+                                                 self.player.name,
+                                                 self.markerid,
+                                                 angels,
+                                                 archangels)
                 self.notify(action)
 
     @property
@@ -592,8 +600,9 @@ class Legion(Observed):
         caretaker = self.player.game.caretaker
         if self.player.game.master:
             okay = (num_archangels <= self.archangels_pending and
-              num_angels <= self.angels_pending + self.archangels_pending -
-              num_archangels)
+                    num_angels <= self.angels_pending +
+                    self.archangels_pending -
+                    num_archangels)
             if not okay:
                 logging.info("not enough angels pending")
                 logging.info("angels %s", angels)
@@ -633,7 +642,7 @@ class Legion(Observed):
         if self.angels_pending or self.archangels_pending:
             self.reset_angels_pending()
             action = Action.DoNotAcquireAngels(self.player.game.name,
-              self.player.name, self.markerid)
+                                               self.player.name, self.markerid)
             self.notify(action)
 
     def reset_angels_pending(self):
@@ -650,6 +659,6 @@ class Legion(Observed):
         """Return the Creature with creature_name at hexlabel, or None."""
         for creature in self.creatures:
             if (creature.name == creature_name and creature.hexlabel ==
-              hexlabel):
+               hexlabel):
                 return creature
         return None

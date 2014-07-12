@@ -27,9 +27,11 @@ class ConfirmDialog(gtk.MessageDialog):
     The deferred fires True on Yes, False on No.
     """
     def __init__(self, parent, title, message_format, def1):
-        gtk.MessageDialog.__init__(self, parent=parent,
-          flags=gtk.DIALOG_DESTROY_WITH_PARENT,
-          buttons=gtk.BUTTONS_YES_NO, message_format=message_format)
+        gtk.MessageDialog.__init__(self,
+                                   parent=parent,
+                                   flags=gtk.DIALOG_DESTROY_WITH_PARENT,
+                                   buttons=gtk.BUTTONS_YES_NO,
+                                   message_format=message_format)
         self.deferred = def1
         self.set_title(title)
         self.set_icon(icon.pixbuf)
@@ -46,8 +48,9 @@ class ConfirmDialog(gtk.MessageDialog):
 
 
 if __name__ == "__main__":
-    confirm_dialog, def1 = new(parent=None, title="Info",
-      message_format="Are we having fun yet?")
+    confirm_dialog, def1 = new(parent=None,
+                               title="Info",
+                               message_format="Are we having fun yet?")
 
     def print_arg(arg):
         print arg

@@ -14,8 +14,8 @@ def test_6_players_no_draws():
     r6 = trueskill.Rating()
     sigma0 = r1.sigma
     [(r1, ), (r2, ), (r3, ), (r4, ), (r5, ), (r6, )] = \
-      trueskill.transform_ratings([(r1, ), (r2, ), (r3, ), (r4, ), (r5, ),
-      (r6, )])
+        trueskill.transform_ratings([(r1, ), (r2, ), (r3, ), (r4, ), (r5, ),
+                                     (r6, )])
     assert r1.mu > r2.mu > r3.mu > r4.mu > r5.mu > r6.mu
     for rating in [r1, r2, r3, r4, r5, r6]:
         assert rating.sigma < sigma0
@@ -26,8 +26,10 @@ def test_3_player_draw():
     r2 = trueskill.Rating()
     r3 = trueskill.Rating()
     sigma0 = r1.sigma
-    [(r1, ), (r2, ), (r3, )] = trueskill.transform_ratings([(r1, ), (r2, ),
-      (r3, )], ranks=(1, 1, 3))
+    [(r1, ), (r2, ), (r3, )] = trueskill.transform_ratings([(r1, ),
+                                                            (r2, ),
+                                                            (r3, )],
+                                                           ranks=(1, 1, 3))
     # We would hope it would be zero, but trueskill isn't that accurate.
     assert abs(r1.mu - r2.mu) < 0.01
     assert r1.mu > r3.mu

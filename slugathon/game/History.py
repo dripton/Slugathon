@@ -12,11 +12,13 @@ from slugathon.game import Action
 
 @implementer(IObserver)
 class History(object):
+
     """Event history tracker, for one game.
 
     Lacks direct undo or redo methods because we need those operations to
     go through the server.
     """
+
     def __init__(self):
         self.actions = []
         self.undone = []
@@ -73,9 +75,9 @@ class History(object):
         markerid1 or markerid2, or None."""
         for action in reversed(self.actions):
             if (isinstance(action, Action.SplitLegion)
-              and action.playername == playername
-              and (action.parent_markerid in [markerid1, markerid2]
-              or action.child_markerid in [markerid1, markerid2])):
+               and action.playername == playername
+               and (action.parent_markerid in [markerid1, markerid2]
+                    or action.child_markerid in [markerid1, markerid2])):
                 return action
         return None
 

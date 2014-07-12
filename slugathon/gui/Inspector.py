@@ -12,7 +12,9 @@ from slugathon.game import Creature
 
 
 class Inspector(gtk.EventBox):
+
     """Window to show a legion's contents."""
+
     def __init__(self, playername):
         gtk.EventBox.__init__(self)
 
@@ -37,8 +39,11 @@ class Inspector(gtk.EventBox):
 
     def show_legion(self, legion):
         self.legion_name.set_text("Legion %s (%s) in hex %s (%d%s points)" % (
-          legion.markerid, legion.picname, legion.hexlabel, legion.score,
-          "+?" if legion.any_unknown else ""))
+                                  legion.markerid,
+                                  legion.picname,
+                                  legion.hexlabel,
+                                  legion.score,
+                                  "+?" if legion.any_unknown else ""))
 
         for hbox in [self.marker_hbox, self.chits_hbox]:
             for child in hbox.get_children():
@@ -85,7 +90,7 @@ if __name__ == "__main__":
         gtk.main_quit()
 
     creatures = [Creature.Creature(name) for name in
-      creaturedata.starting_creature_names]
+                 creaturedata.starting_creature_names]
 
     playername = "test"
     player = Player.Player(playername, None, None)
@@ -99,7 +104,7 @@ if __name__ == "__main__":
     inspector.show_legion(legion)
 
     creatures2 = [Creature.Creature(name) for name in
-      ["Angel", "Giant", "Warbear", "Unicorn"]]
+                 ["Angel", "Giant", "Warbear", "Unicorn"]]
     index = random.randrange(1, 12 + 1)
     legion2 = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures2, 2)
     inspector.show_legion(legion2)

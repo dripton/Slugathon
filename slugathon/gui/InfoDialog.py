@@ -10,10 +10,12 @@ from slugathon.gui import icon
 
 
 class InfoDialog(gtk.MessageDialog):
+
     def __init__(self, parent, title, message_format):
         gtk.MessageDialog.__init__(self, parent=parent,
-          flags=gtk.DIALOG_DESTROY_WITH_PARENT,
-          buttons=gtk.BUTTONS_OK, message_format=message_format)
+                                   flags=gtk.DIALOG_DESTROY_WITH_PARENT,
+                                   buttons=gtk.BUTTONS_OK,
+                                   message_format=message_format)
         self.set_title(title)
         self.set_icon(icon.pixbuf)
         self.set_position(gtk.WIN_POS_MOUSE)
@@ -30,6 +32,6 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     info_dialog = InfoDialog(parent=None, title="Info",
-      message_format="Look out behind you!")
+                             message_format="Look out behind you!")
     info_dialog.connect("destroy", guiutils.exit)
     gtk.main()

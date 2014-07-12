@@ -13,7 +13,7 @@ from slugathon.game import Game
 
 def test_db_creation():
     with tempfile.NamedTemporaryFile(prefix="slugathon", suffix=".db",
-      delete=True) as tmp_file:
+                                     delete=True) as tmp_file:
         db_path = tmp_file.name
         Results.Results(db_path=db_path)
         assert os.path.getsize(db_path) > 0
@@ -21,7 +21,7 @@ def test_db_creation():
 
 def test_save_game_and_get_ranking():
     with tempfile.NamedTemporaryFile(prefix="slugathon", suffix=".db",
-      delete=True) as tmp_file:
+                                     delete=True) as tmp_file:
         db_path = tmp_file.name
         results = Results.Results(db_path=db_path)
         now = time.time()

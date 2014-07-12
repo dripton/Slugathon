@@ -20,7 +20,9 @@ def new(playername, legion, parent):
 
 
 class SummonAngel(gtk.Dialog):
+
     """Dialog to summon an angel."""
+
     def __init__(self, playername, legion, def1, parent):
         gtk.Dialog.__init__(self, "SummonAngel - %s" % playername, parent)
         self.legion = legion
@@ -34,8 +36,8 @@ class SummonAngel(gtk.Dialog):
         self.set_destroy_with_parent(True)
 
         top_label = gtk.Label(
-          "Summoning an angel into legion %s (%s) in hex %s"
-          % (legion.markerid, legion.picname, legion.hexlabel))
+            "Summoning an angel into legion %s (%s) in hex %s"
+            % (legion.markerid, legion.picname, legion.hexlabel))
         self.vbox.set_spacing(9)
         self.vbox.pack_start(top_label)
         middle_label = gtk.Label("Summonable creatures have a red border")
@@ -45,14 +47,14 @@ class SummonAngel(gtk.Dialog):
 
         for legion2 in player.legions:
             if (legion2.any_summonable and not legion2.engaged and
-              legion2 != legion):
+               legion2 != legion):
                 hbox = gtk.HBox(spacing=3)
                 self.vbox.pack_start(hbox)
                 marker = Marker.Marker(legion2, False, scale=20)
                 hbox.pack_start(marker.event_box, expand=False, fill=False)
                 for creature in legion2.sorted_creatures:
                     chit = Chit.Chit(creature, player.color, scale=20,
-                      outlined=creature.summonable)
+                                     outlined=creature.summonable)
                     hbox.pack_start(chit.event_box, expand=False, fill=False)
                     if creature.summonable:
                         chit.connect("button-press-event", self.cb_click)
@@ -87,15 +89,15 @@ if __name__ == "__main__":
     player = Player.Player(playername, game, 0)
     player.color = "Red"
     creatures1 = [Creature.Creature(name) for name in
-      ["Titan", "Ogre", "Troll", "Ranger"]]
+                 ["Titan", "Ogre", "Troll", "Ranger"]]
     creatures2 = [Creature.Creature(name) for name in
-      ["Angel", "Ogre", "Troll", "Ranger"]]
+                 ["Angel", "Ogre", "Troll", "Ranger"]]
     creatures3 = [Creature.Creature(name) for name in
-      ["Archangel", "Centaur", "Lion", "Ranger"]]
+                 ["Archangel", "Centaur", "Lion", "Ranger"]]
     creatures4 = [Creature.Creature(name) for name in
-      ["Gargoyle", "Cyclops", "Gorgon", "Behemoth"]]
+                 ["Gargoyle", "Cyclops", "Gorgon", "Behemoth"]]
     creatures5 = [Creature.Creature(name) for name in
-      ["Angel", "Angel", "Warlock", "Guardian"]]
+                 ["Angel", "Angel", "Warlock", "Guardian"]]
     legion1 = Legion.Legion(player, "Rd01", creatures1, 1)
     legion2 = Legion.Legion(player, "Rd02", creatures2, 2)
     legion3 = Legion.Legion(player, "Rd03", creatures3, 3)

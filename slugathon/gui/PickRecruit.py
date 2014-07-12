@@ -18,12 +18,14 @@ def new(playername, legion, mterrain, caretaker, parent):
     logging.info("new %s %s %s", playername, legion, mterrain)
     def1 = defer.Deferred()
     pickrecruit = PickRecruit(playername, legion, mterrain, caretaker, def1,
-      parent)
+                              parent)
     return pickrecruit, def1
 
 
 class PickRecruit(gtk.Dialog):
+
     """Dialog to pick a recruit."""
+
     def __init__(self, playername, legion, mterrain, caretaker, def1, parent):
         gtk.Dialog.__init__(self, "PickRecruit - %s" % playername, parent)
         self.legion = legion
@@ -36,7 +38,9 @@ class PickRecruit(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Pick recruit for legion %s (%s) in hex %s" % (
-          legion.markerid, legion.picname, legion.hexlabel))
+                                legion.markerid,
+                                legion.picname,
+                                legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
         legion_hbox = gtk.HBox(spacing=15)
@@ -50,14 +54,14 @@ class PickRecruit(gtk.Dialog):
 
         marker = Marker.Marker(legion, True, scale=20)
         marker_hbox.pack_start(marker.event_box, expand=False,
-          fill=False)
+                               fill=False)
 
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, expand=False)
 
         recruit_tups = legion.available_recruits_and_recruiters(mterrain,
-          caretaker)
+                                                                caretaker)
         max_len = max(len(tup) for tup in recruit_tups)
         for tup in recruit_tups:
             hbox = gtk.HBox()
@@ -97,7 +101,7 @@ class PickRecruit(gtk.Dialog):
         eventbox = widget
         chit = eventbox.chit
         self.deferred.callback((self.legion, chit.recruit,
-          chit.recruiter_names))
+                                chit.recruiter_names))
         self.destroy()
 
     def cb_cancel(self, widget, response_id):

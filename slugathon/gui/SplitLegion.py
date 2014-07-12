@@ -19,7 +19,9 @@ def new(playername, legion, parent):
 
 
 class SplitLegion(gtk.Dialog):
+
     """Dialog to split a legion."""
+
     def __init__(self, playername, legion, def1, parent):
         gtk.Dialog.__init__(self, "SplitLegion - %s" % playername, parent)
         self.old_legion = legion
@@ -32,7 +34,9 @@ class SplitLegion(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = gtk.Label("Splitting legion %s (%s) in hex %s" % (
-          legion.markerid, legion.picname, legion.hexlabel))
+                                legion.markerid,
+                                legion.picname,
+                                legion.hexlabel))
         self.vbox.pack_start(legion_name)
 
         old_hbox = gtk.HBox(spacing=15)
@@ -53,16 +57,17 @@ class SplitLegion(gtk.Dialog):
         old_marker_hbox.pack_start(old_marker.event_box, expand=False)
 
         self.new_legion1 = Legion.Legion(player, legion.markerid,
-          legion.sorted_creatures, legion.hexlabel)
+                                         legion.sorted_creatures,
+                                         legion.hexlabel)
         self.new_legion2 = Legion.Legion(player, player.selected_markerid,
-          [], legion.hexlabel)
+                                         [], legion.hexlabel)
         self.new_marker = Marker.Marker(self.new_legion2, False, scale=20)
         new_marker_hbox.pack_start(self.new_marker.event_box, expand=False)
 
         for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
             self.old_chits_hbox.pack_start(chit.event_box, expand=False,
-              fill=False)
+                                           fill=False)
             chit.connect("button-press-event", self.cb_click)
 
         self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
@@ -91,14 +96,14 @@ class SplitLegion(gtk.Dialog):
         previous_legion.creatures.remove(chit.creature)
         next_legion.creatures.append(chit.creature)
         legal = self.old_legion.is_legal_split(self.new_legion1,
-          self.new_legion2)
+                                               self.new_legion2)
         self.ok_button.set_sensitive(legal)
 
     def cb_response(self, widget, response_id):
         self.destroy()
         if response_id == gtk.RESPONSE_OK:
             self.deferred.callback((self.old_legion, self.new_legion1,
-              self.new_legion2))
+                                    self.new_legion2))
         else:
             self.deferred.callback((None, None, None))
 
@@ -111,7 +116,7 @@ if __name__ == "__main__":
 
     now = time.time()
     creatures = [Creature.Creature(name) for name in
-      creaturedata.starting_creature_names]
+                 creaturedata.starting_creature_names]
     playername = "test"
     game = Game.Game("g1", playername, now, now, 2, 6)
     player = Player.Player(playername, game, 0)

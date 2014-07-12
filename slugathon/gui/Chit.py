@@ -23,12 +23,13 @@ white = colors.rgb_colors["white"]
 
 
 class Chit(object):
+
     """Clickable GUI creature chit"""
 
     IMAGE_DIR = "creature"
 
     def __init__(self, creature, playercolor, scale=15, dead=False,
-      rotate=0, outlined=False, name=None):
+                 rotate=0, outlined=False, name=None):
         self.creature = creature
         if creature is None:
             if name is None:
@@ -64,7 +65,7 @@ class Chit(object):
         self.rgb = guiutils.rgb_to_float(colors.rgb_colors[color_name])
 
         self.paths = [fileutils.basedir("images/%s/%s.png" %
-          (self.IMAGE_DIR, base)) for base in self.bases]
+                      (self.IMAGE_DIR, base)) for base in self.bases]
 
         self.event_box = gtk.EventBox()
         self.event_box.chit = self
@@ -88,18 +89,19 @@ class Chit(object):
         if self.outlined:
             self._render_outline(input_surface)
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
-          self.chit_scale)
+                                          self.chit_scale)
         ctx2 = cairo.Context(self.surface)
         if self.rotate:
             ctx2.translate(self.chit_scale / 2.0, self.chit_scale / 2.0)
             ctx2.rotate(self.rotate)
             ctx2.translate(-self.chit_scale / 2.0, -self.chit_scale / 2.0)
         ctx2.scale(float(self.chit_scale) / input_surface.get_width(),
-          float(self.chit_scale) / input_surface.get_height())
+                   float(self.chit_scale) / input_surface.get_height())
         ctx2.set_source_surface(input_surface)
         ctx2.paint()
         with tempfile.NamedTemporaryFile(prefix="slugathon",
-          suffix=".png", delete=False) as tmp_file:
+                                         suffix=".png",
+                                         delete=False) as tmp_file:
             tmp_path = tmp_file.name
         self.surface.write_to_png(tmp_path)
         self.pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)

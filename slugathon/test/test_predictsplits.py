@@ -4,7 +4,7 @@ __license__ = "GNU GPL v2"
 
 from slugathon.data.creaturedata import starting_creature_names
 from slugathon.ai.predictsplits import (PredictSplits, CreatureInfo, Node,
-  AllPredictSplits)
+                                        AllPredictSplits)
 
 
 def test_predict_splits1():
@@ -78,7 +78,8 @@ def test_predict_splits1():
     print "Turn", turn
     ps.get_leaf("Rd02").split(2, "Rd05", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Titan", "Warlock", "Warlock",
-        "Cyclops", "Troll", "Gargoyle", "Gargoyle"])
+                                          "Cyclops", "Troll", "Gargoyle",
+                                          "Gargoyle"])
     ps.get_leaf("Rd01").remove_creatures(["Gargoyle", "Gargoyle"])
     ps.get_leaf("Rd02").remove_creature("Angel")
     ps.get_leaf("Rd01").add_creature("Angel")
@@ -87,10 +88,10 @@ def test_predict_splits1():
     ps.get_leaf("Rd04").reveal_creatures(["Lion"])
     ps.get_leaf("Rd04").add_creature("Lion")
     ps.get_leaf("Rd02").reveal_creatures(["Cyclops", "Minotaur", "Lion",
-        "Lion", "Ogre"])
+                                          "Lion", "Ogre"])
     ps.get_leaf("Rd02").add_creature("Minotaur")
     ps.get_leaf("Rd02").remove_creatures(["Cyclops", "Minotaur", "Minotaur",
-        "Lion", "Lion", "Ogre"])
+                                          "Lion", "Lion", "Ogre"])
     assert ps.get_leaf("Rd01").all_certain
     assert ps.get_leaf("Rd03").all_certain
     assert ps.get_leaf("Rd04").all_certain
@@ -155,7 +156,7 @@ def test_predict_splits1():
     turn = 11
     print "Turn", turn
     ps.get_leaf("Rd04").reveal_creatures(["Griffon", "Lion", "Lion", "Lion",
-        "Centaur", "Centaur"])
+                                          "Centaur", "Centaur"])
     ps.get_leaf("Rd01").reveal_creatures(["Cyclops"])
     ps.get_leaf("Rd01").add_creature("Cyclops")
     ps.get_leaf("Rd03").reveal_creatures(["Troll", "Troll"])
@@ -186,7 +187,7 @@ def test_predict_splits1():
     turn = 13
     print "Turn", turn
     ps.get_leaf("Rd01").reveal_creatures(["Titan", "Warlock", "Warlock",
-        "Cyclops", "Cyclops", "Cyclops"])
+                                          "Cyclops", "Cyclops", "Cyclops"])
     ps.get_leaf("Rd05").reveal_creatures(["Cyclops", "Cyclops", "Cyclops"])
     ps.get_leaf("Rd05").add_creature("Behemoth")
     assert ps.get_leaf("Rd01").all_certain
@@ -204,7 +205,7 @@ def test_predict_splits1():
     ps.get_leaf("Rd02").remove_creature("Angel")
     ps.get_leaf("Rd04").add_creature("Angel")
     ps.get_leaf("Rd04").remove_creatures(["Angel", "Lion", "Lion", "Lion",
-                                        "Centaur", "Centaur"])
+                                          "Centaur", "Centaur"])
     ps.get_leaf("Rd04").add_creature("Angel")
     assert ps.get_leaf("Rd01").all_certain
     assert ps.get_leaf("Rd02").all_certain
@@ -255,7 +256,7 @@ def test_predict_splits2():
     turn = 4
     print "Turn", turn
     ps.get_leaf("Rd10").reveal_creatures(["Titan", "Ranger", "Troll",
-        "Troll", "Gargoyle", "Ogre", "Ogre"])
+                                          "Troll", "Gargoyle", "Ogre", "Ogre"])
     ps.print_leaves()
     ps.get_leaf("Rd10").remove_creature("Gargoyle")
     ps.get_leaf("Rd11").remove_creature("Angel")
@@ -401,9 +402,9 @@ def test_predict_splits2():
     ps.get_leaf("Rd11").reveal_creatures(["Ranger"])
     ps.get_leaf("Rd11").add_creature("Ranger")
     ps.get_leaf("Rd08").reveal_creatures(["Lion", "Lion", "Centaur",
-            "Centaur"])
+                                          "Centaur"])
     ps.get_leaf("Rd08").remove_creatures(["Lion", "Lion", "Centaur",
-            "Centaur"])
+                                          "Centaur"])
     assert not ps.get_leaf("Rd04").all_certain
     assert not ps.get_leaf("Rd05").all_certain
     assert ps.get_leaf("Rd06").all_certain
@@ -415,7 +416,7 @@ def test_predict_splits2():
     turn = 14
     print "Turn", turn
     ps.get_leaf("Rd06").reveal_creatures(["Warbear", "Warbear", "Ranger",
-            "Troll", "Troll"])
+                                          "Troll", "Troll"])
     ps.get_leaf("Rd04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Rd04").add_creature("Cyclops")
     ps.get_leaf("Rd06").reveal_creatures(["Ranger"])
@@ -455,7 +456,8 @@ def test_predict_splits2():
     turn = 16
     print "Turn", turn
     ps.get_leaf("Rd06").reveal_creatures(["Warbear", "Warbear", "Ranger",
-            "Ranger", "Ranger", "Troll", "Troll"])
+                                          "Ranger", "Ranger", "Troll",
+                                          "Troll"])
     ps.get_leaf("Rd01").reveal_creatures(["Ranger"])
     ps.get_leaf("Rd01").add_creature("Ranger")
     ps.get_leaf("Rd04").reveal_creatures(["Cyclops"])
@@ -523,7 +525,7 @@ def test_predict_splits2():
     print "Turn", turn
     ps.get_leaf("Rd11").split(2, "Rd08", turn)
     ps.get_leaf("Rd07").reveal_creatures(["Cyclops", "Ranger", "Lion",
-            "Lion", "Centaur", "Centaur"])
+                                          "Lion", "Centaur", "Centaur"])
     ps.get_leaf("Rd07").remove_creatures(["Lion", "Centaur", "Centaur"])
     ps.get_leaf("Rd01").reveal_creatures(["Ranger"])
     ps.get_leaf("Rd01").add_creature("Ranger")
@@ -550,17 +552,17 @@ def test_predict_splits2():
     turn = 20
     print "Turn", turn
     ps.get_leaf("Rd04").reveal_creatures(["Gorgon", "Cyclops", "Cyclops",
-            "Cyclops", "Lion"])
+                                          "Cyclops", "Lion"])
     ps.get_leaf("Rd10").reveal_creatures(["Titan", "Hydra", "Wyvern",
-            "Wyvern", "Warlock"])
+                                          "Wyvern", "Warlock"])
     ps.get_leaf("Rd10").add_creature("Angel")
     ps.get_leaf("Rd05").reveal_creatures(["Warbear", "Warbear", "Ranger",
-            "Ranger", "Troll", "Troll", "Troll"])
+                                          "Ranger", "Troll", "Troll", "Troll"])
     ps.get_leaf("Rd10").remove_creature("Angel")
     ps.get_leaf("Rd05").remove_creature("Troll")
     ps.get_leaf("Rd05").add_creature("Angel")
     ps.get_leaf("Rd05").remove_creatures(["Angel", "Warbear", "Warbear",
-            "Ranger", "Ranger", "Troll"])
+                                          "Ranger", "Ranger", "Troll"])
     assert not ps.get_leaf("Rd01").all_certain
     assert ps.get_leaf("Rd02").all_certain
     assert not ps.get_leaf("Rd03").all_certain
@@ -633,7 +635,8 @@ def test_predict_splits5():
     print "\ntest 5 begins"
     ps = PredictSplits("Gd", "Gd04", starting_creature_names)
     ps.get_leaf("Gd04").reveal_creatures(["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                          "Gargoyle", "Centaur", "Centaur",
+                                          "Ogre", "Ogre"])
     ps.print_leaves()
     assert ps.get_leaf("Gd04").all_certain
 
@@ -844,7 +847,7 @@ def test_predict_splits5():
     turn = 16
     print "\nTurn", turn
     ps.get_leaf("Gd07").reveal_creatures(["Ranger", "Ranger", "Ranger",
-      "Minotaur", "Lion", "Lion"])
+                                          "Minotaur", "Lion", "Lion"])
     ps.get_leaf("Gd04").remove_creature("Angel")
     ps.get_leaf("Gd07").add_creature("Angel")
     ps.get_leaf("Gd02").reveal_creatures(["Lion", "Lion"])
@@ -875,14 +878,14 @@ def test_predict_splits5():
     ps.get_leaf("Gd11").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gd11").add_creature("Cyclops")
     ps.get_leaf("Gd07").reveal_creatures(["Angel", "Ranger", "Ranger",
-      "Ranger", "Minotaur"])
+                                          "Ranger", "Minotaur"])
     ps.get_leaf("Gd07").remove_creature("Minotaur")
     ps.get_leaf("Gd07").remove_creature("Angel")
     ps.get_leaf("Gd07").remove_creature("Ranger")
     ps.get_leaf("Gd07").remove_creature("Ranger")
     ps.get_leaf("Gd07").remove_creature("Ranger")
     ps.get_leaf("Gd04").reveal_creatures(["Ranger", "Ranger", "Troll",
-      "Troll", "Troll"])
+                                          "Troll", "Troll"])
     ps.get_leaf("Gd04").remove_creature("Ranger")
     ps.get_leaf("Gd04").remove_creature("Ranger")
     ps.get_leaf("Gd04").remove_creature("Troll")
@@ -1219,7 +1222,7 @@ def test_predict_splits7():
     ps.get_leaf("Gr08").reveal_creatures(["Gargoyle"])
     ps.get_leaf("Gr08").add_creature("Gargoyle")
     ps.get_leaf("Gr06").remove_creatures(["Troll", "Gargoyle", "Gargoyle",
-      "Ogre", "Ogre"])
+                                          "Ogre", "Ogre"])
     ps.get_leaf("Gr12").remove_creatures(["Cyclops", "Ogre"])
     ps.print_leaves()
     assert ps.get_leaf("Gr04").all_certain
@@ -1703,7 +1706,7 @@ def test_predict_splits9():
     aps.get_leaf("Bu05").split(2, "Bu09", turn)
     aps.get_leaf("Bu09").reveal_creatures(["Gargoyle", "Gargoyle"])
     aps.get_leaf("Br12").reveal_creatures(["Warbear", "Centaur", "Centaur",
-      "Centaur"])
+                                           "Centaur"])
     aps.get_leaf("Br12").remove_creature("Centaur")
     aps.get_leaf("Bu09").remove_creature("Gargoyle")
     aps.get_leaf("Bu09").remove_creature("Gargoyle")
@@ -1823,9 +1826,10 @@ def test_predict_splits9():
     aps.get_leaf("Bk06").add_creature("Lion")
     aps.get_leaf("Bk12").add_creature("Centaur")
     aps.get_leaf("Rd06").reveal_creatures(["Titan", "Cyclops", "Cyclops",
-      "Gargoyle", "Gargoyle", "Centaur", "Centaur"])
+                                           "Gargoyle", "Gargoyle",
+                                           "Centaur", "Centaur"])
     aps.get_leaf("Gd08").reveal_creatures(["Angel", "Guardian", "Troll",
-      "Ogre", "Ogre"])
+                                           "Ogre", "Ogre"])
     aps.get_leaf("Gd08").remove_creature("Ogre")
     aps.get_leaf("Rd06").remove_creature("Gargoyle")
     aps.get_leaf("Rd02").remove_creature("Angel")
@@ -1837,7 +1841,7 @@ def test_predict_splits9():
     aps.get_leaf("Gd08").remove_creature("Ogre")
     aps.get_leaf("Gd08").remove_creature("Guardian")
     aps.get_leaf("Rd06").reveal_creatures(["Titan", "Cyclops", "Cyclops",
-      "Gargoyle", "Centaur"])
+                                           "Gargoyle", "Centaur"])
     aps.get_leaf("Rd06").add_creature("Angel")
 
     aps.check()
@@ -1877,9 +1881,9 @@ def test_predict_splits9():
     aps.get_leaf("Br01").add_creature("Cyclops")
     aps.get_leaf("Bk10").split(2, "Bk11", turn)
     aps.get_leaf("Bk06").reveal_creatures(["Angel", "Troll", "Lion", "Lion",
-      "Lion", "Ogre", "Ogre"])
+                                           "Lion", "Ogre", "Ogre"])
     aps.get_leaf("Br06").reveal_creatures(["Angel", "Lion", "Lion", "Lion",
-      "Ogre", "Ogre"])
+                                           "Ogre", "Ogre"])
     aps.get_leaf("Br06").remove_creature("Lion")
     aps.get_leaf("Br06").remove_creature("Lion")
     aps.get_leaf("Bk06").remove_creature("Angel")
@@ -2014,9 +2018,10 @@ def test_predict_splits9():
     aps.get_leaf("Gd12").remove_creature("Gargoyle")
     aps.get_leaf("Gd12").remove_creature("Gargoyle")
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Behemoth", "Warlock",
-      "Gorgon", "Cyclops", "Cyclops", "Cyclops"])
+                                           "Gorgon", "Cyclops",
+                                           "Cyclops", "Cyclops"])
     aps.get_leaf("Bu02").reveal_creatures(["Angel", "Guardian", "Ranger",
-      "Troll", "Troll"])
+                                           "Troll", "Troll"])
     aps.get_leaf("Bk10").remove_creature("Warlock")
     aps.get_leaf("Bu02").remove_creature("Angel")
     aps.get_leaf("Bk10").remove_creature("Behemoth")
@@ -2029,7 +2034,7 @@ def test_predict_splits9():
     aps.get_leaf("Bk10").remove_creature("Angel")
     aps.get_leaf("Bu02").remove_creature("Guardian")
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Gorgon", "Cyclops",
-      "Cyclops"])
+                                           "Cyclops"])
     aps.get_leaf("Bk10").add_creature("Angel")
     aps.get_leaf("Bk06").reveal_creatures(["Troll"])
     aps.get_leaf("Bk06").add_creature("Troll")
@@ -2180,9 +2185,9 @@ def test_predict_splits9():
     aps.get_leaf("Gr08").split(2, "Gr06", turn)
     aps.get_leaf("Gr08").merge(aps.get_leaf("Gr06"), turn)
     aps.get_leaf("Gr09").reveal_creatures(["Gorgon", "Cyclops", "Cyclops",
-      "Cyclops", "Gargoyle", "Gargoyle"])
+                                           "Cyclops", "Gargoyle", "Gargoyle"])
     aps.get_leaf("Bu07").reveal_creatures(["Troll", "Lion", "Lion", "Ogre",
-      "Ogre", "Ogre"])
+                                           "Ogre", "Ogre"])
     aps.get_leaf("Bu07").remove_creature("Troll")
     aps.get_leaf("Gr09").remove_creature("Gorgon")
     aps.get_leaf("Gr09").remove_creature("Gargoyle")
@@ -2206,9 +2211,9 @@ def test_predict_splits9():
     aps.get_leaf("Br04").reveal_creatures(["Centaur", "Centaur"])
     aps.get_leaf("Br04").add_creature("Lion")
     aps.get_leaf("Rd06").reveal_creatures(["Titan", "Angel", "Behemoth",
-      "Cyclops", "Cyclops"])
+                                           "Cyclops", "Cyclops"])
     aps.get_leaf("Gr03").reveal_creatures(["Lion", "Lion", "Lion",
-      "Centaur", "Centaur", "Centaur"])
+                                           "Centaur", "Centaur", "Centaur"])
     aps.get_leaf("Gr03").remove_creature("Centaur")
     aps.get_leaf("Gr03").remove_creature("Centaur")
     aps.get_leaf("Gr03").remove_creature("Lion")
@@ -2216,11 +2221,11 @@ def test_predict_splits9():
     aps.get_leaf("Gr03").remove_creature("Lion")
     aps.get_leaf("Gr03").remove_creature("Centaur")
     aps.get_leaf("Rd06").reveal_creatures(["Titan", "Angel", "Behemoth",
-      "Cyclops", "Cyclops"])
+                                           "Cyclops", "Cyclops"])
     aps.get_leaf("Rd06").add_creature("Angel")
     aps.get_leaf("Rd11").reveal_creatures(["Warlock", "Cyclops"])
     aps.get_leaf("Bu09").reveal_creatures(["Lion", "Lion", "Centaur",
-      "Centaur"])
+                                           "Centaur"])
     aps.get_leaf("Bu09").remove_creature("Lion")
     aps.get_leaf("Bu09").remove_creature("Centaur")
     aps.get_leaf("Rd11").remove_creature("Cyclops")
@@ -2256,9 +2261,9 @@ def test_predict_splits9():
     aps.get_leaf("Br01").reveal_creatures(["Cyclops", "Cyclops"])
     aps.get_leaf("Br01").add_creature("Gorgon")
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Angel", "Gorgon",
-      "Gorgon", "Cyclops", "Cyclops"])
+                                           "Gorgon", "Cyclops", "Cyclops"])
     aps.get_leaf("Gr05").reveal_creatures(["Troll", "Gargoyle", "Ogre",
-      "Ogre"])
+                                           "Ogre"])
     aps.get_leaf("Gr05").remove_creature("Gargoyle")
     aps.get_leaf("Gr05").remove_creature("Ogre")
     aps.get_leaf("Bk10").remove_creature("Angel")
@@ -2266,10 +2271,10 @@ def test_predict_splits9():
     aps.get_leaf("Bk10").remove_creature("Gorgon")
     aps.get_leaf("Gr05").remove_creature("Ogre")
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Gorgon", "Cyclops",
-      "Cyclops"])
+                                           "Cyclops"])
     aps.get_leaf("Bk10").add_creature("Angel")
     aps.get_leaf("Bk06").reveal_creatures(["Ranger", "Ranger", "Troll",
-      "Troll", "Troll"])
+                                           "Troll", "Troll"])
     aps.get_leaf("Gr12").reveal_creatures(["Cyclops", "Lion", "Lion"])
     aps.get_leaf("Gr12").remove_creature("Cyclops")
     aps.get_leaf("Gr12").remove_creature("Lion")
@@ -2279,21 +2284,21 @@ def test_predict_splits9():
     aps.get_leaf("Gr12").remove_creature("Lion")
     aps.get_leaf("Bk06").remove_creature("Ranger")
     aps.get_leaf("Bk06").reveal_creatures(["Angel", "Troll", "Troll",
-      "Troll"])
+                                           "Troll"])
     aps.get_leaf("Bk04").reveal_creatures(["Lion", "Lion"])
     aps.get_leaf("Bk04").add_creature("Ranger")
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
     aps.get_leaf("Bk10").add_creature("Warlock")
     aps.get_leaf("Rd06").reveal_creatures(["Titan", "Angel", "Angel",
-      "Behemoth", "Cyclops", "Cyclops"])
+                                           "Behemoth", "Cyclops", "Cyclops"])
     aps.get_leaf("Gr04").reveal_creatures(["Cyclops", "Gargoyle", "Gargoyle",
-      "Gargoyle"])
+                                           "Gargoyle"])
     aps.get_leaf("Gr04").remove_creature("Gargoyle")
     aps.get_leaf("Gr04").remove_creature("Gargoyle")
     aps.get_leaf("Gr04").remove_creature("Cyclops")
     aps.get_leaf("Gr04").remove_creature("Gargoyle")
     aps.get_leaf("Rd06").reveal_creatures(["Titan", "Angel", "Angel",
-      "Behemoth", "Cyclops", "Cyclops"])
+                                           "Behemoth", "Cyclops", "Cyclops"])
     aps.get_leaf("Rd06").reveal_creatures(["Cyclops", "Cyclops"])
     aps.get_leaf("Rd06").add_creature("Gorgon")
 
@@ -2348,7 +2353,7 @@ def test_predict_splits9():
     aps.get_leaf("Br06").reveal_creatures(["Troll"])
     aps.get_leaf("Br06").add_creature("Troll")
     aps.get_leaf("Bk06").reveal_creatures(["Angel", "Wyvern", "Troll",
-      "Troll", "Troll"])
+                                           "Troll", "Troll"])
     aps.get_leaf("Gd04").reveal_creatures(["Gorgon", "Cyclops", "Cyclops"])
     aps.get_leaf("Gd04").remove_creature("Gorgon")
     aps.get_leaf("Bk06").remove_creature("Angel")
@@ -2377,9 +2382,9 @@ def test_predict_splits9():
     aps.get_leaf("Bu10").add_creature("Gorgon")
     aps.get_leaf("Gr01").split(2, "Gr05", turn)
     aps.get_leaf("Gr01").reveal_creatures(["Gorgon", "Cyclops", "Cyclops",
-      "Cyclops", "Troll"])
+                                           "Cyclops", "Troll"])
     aps.get_leaf("Bu05").reveal_creatures(["Titan", "Warlock", "Warlock",
-      "Warlock", "Warlock"])
+                                           "Warlock", "Warlock"])
     aps.get_leaf("Gr01").remove_creature("Gorgon")
     aps.get_leaf("Bu05").remove_creature("Warlock")
     aps.get_leaf("Gr01").remove_creature("Cyclops")
@@ -2431,14 +2436,15 @@ def test_predict_splits9():
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd05"), turn)
     aps.get_leaf("Gd06").split(2, "Gd04", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Titan", "Serpent", "Behemoth",
-      "Behemoth", "Warlock", "Gorgon", "Gorgon"])
+                                           "Behemoth", "Warlock",
+                                           "Gorgon", "Gorgon"])
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 0
     assert aps.get_leaf("Gd04").num_uncertain_creatures == 2
     assert aps.get_leaf("Gd06").num_uncertain_creatures == 4
     assert aps.get_leaf("Gd08").num_uncertain_creatures == 1
     assert aps.get_leaf("Gd12").num_uncertain_creatures == 0
     aps.get_leaf("Rd06").reveal_creatures(["Titan", "Angel", "Behemoth",
-      "Gorgon", "Gorgon", "Cyclops"])
+                                           "Gorgon", "Gorgon", "Cyclops"])
     aps.get_leaf("Rd06").remove_creature("Angel")
     aps.get_leaf("Rd06").remove_creature("Behemoth")
     aps.get_leaf("Gd03").remove_creature("Gorgon")
@@ -2461,7 +2467,7 @@ def test_predict_splits9():
     aps.get_leaf("Br01").merge(aps.get_leaf("Br09"), turn)
     aps.get_leaf("Bk04").split(2, "Bk01", turn)
     aps.get_leaf("Bk06").reveal_creatures(["Angel", "Warbear", "Troll",
-      "Troll", "Troll"])
+                                           "Troll", "Troll"])
     aps.get_leaf("Gr09").reveal_creatures(["Angel", "Cyclops", "Gargoyle"])
     aps.get_leaf("Gr09").remove_creature("Gargoyle")
     aps.get_leaf("Bk06").remove_creature("Troll")
@@ -2503,7 +2509,7 @@ def test_predict_splits9():
     print "\nTurn", turn
     aps.get_leaf("Bu12").split(2, "Bu07", turn)
     aps.get_leaf("Gr08").reveal_creatures(["Titan", "Troll", "Troll",
-      "Troll", "Ogre"])
+                                           "Troll", "Ogre"])
     aps.get_leaf("Br06").reveal_creatures(["Cyclops", "Troll", "Troll"])
     aps.get_leaf("Gr08").remove_creature("Ogre")
     aps.get_leaf("Br06").remove_creature("Cyclops")
@@ -2519,7 +2525,7 @@ def test_predict_splits9():
     aps.get_leaf("Gr08").reveal_creatures(["Troll"])
     aps.get_leaf("Gr08").add_creature("Troll")
     aps.get_leaf("Bk04").reveal_creatures(["Ranger", "Ranger", "Ranger",
-      "Minotaur", "Lion", "Lion"])
+                                           "Minotaur", "Lion", "Lion"])
     aps.get_leaf("Bu05").reveal_creatures(["Titan", "Angel", "Warlock"])
     aps.get_leaf("Bk04").remove_creature("Ranger")
     aps.get_leaf("Bu05").remove_creature("Angel")
@@ -2567,9 +2573,9 @@ def test_predict_splits9():
     aps.get_leaf("Gd11").add_creature("Ranger")
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Warlock", "Gorgon",
-      "Cyclops", "Cyclops"])
+                                           "Cyclops", "Cyclops"])
     aps.get_leaf("Gr08").reveal_creatures(["Titan", "Angel", "Troll",
-      "Troll"])
+                                           "Troll"])
     aps.get_leaf("Bk10").remove_creature("Gorgon")
     aps.get_leaf("Gr08").remove_creature("Troll")
     aps.get_leaf("Gr08").remove_creature("Troll")
@@ -2702,7 +2708,7 @@ def test_predict_splits9():
     aps.get_leaf("Gd10").remove_creature("Griffon")
     aps.get_leaf("Bk10").add_creature("Angel")
     aps.get_leaf("Bk02").reveal_creatures(["Ranger", "Troll", "Troll",
-      "Troll"])
+                                           "Troll"])
     aps.get_leaf("Gd07").reveal_creatures(["Behemoth", "Behemoth"])
     aps.get_leaf("Bk02").remove_creature("Ranger")
     aps.get_leaf("Gd07").remove_creature("Behemoth")
@@ -2761,7 +2767,7 @@ def test_predict_splits9():
     aps.get_leaf("Br01").reveal_creatures(["Serpent"])
     aps.get_leaf("Br01").add_creature("Serpent")
     aps.get_leaf("Bk02").reveal_creatures(["Angel", "Troll", "Troll",
-      "Troll"])
+                                           "Troll"])
     aps.get_leaf("Br07").reveal_creatures(["Behemoth", "Behemoth"])
     aps.get_leaf("Br07").remove_creature("Behemoth")
     aps.get_leaf("Bk02").remove_creature("Angel")
@@ -2972,7 +2978,7 @@ def test_predict_splits9():
     aps.get_leaf("Gd02").remove_creature("Ranger")
     aps.get_leaf("Gd02").remove_creature("Ranger")
     aps.get_leaf("Bk05").reveal_creatures(["Giant", "Warbear", "Warbear",
-      "Ranger", "Troll"])
+                                           "Ranger", "Troll"])
     aps.get_leaf("Gd09").reveal_creatures(["Serpent", "Angel"])
     aps.get_leaf("Gd09").remove_creature("Serpent")
     aps.get_leaf("Bk05").remove_creature("Giant")
@@ -2981,7 +2987,7 @@ def test_predict_splits9():
     aps.get_leaf("Bk05").add_creature("Archangel")
     aps.get_leaf("Gd09").remove_creature("Angel")
     aps.get_leaf("Bk05").reveal_creatures(["Archangel", "Warbear", "Ranger",
-      "Troll"])
+                                           "Troll"])
     aps.get_leaf("Bk05").add_creature("Angel")
     aps.get_leaf("Bk02").reveal_creatures(["Troll", "Troll", "Troll"])
     aps.get_leaf("Bk02").add_creature("Wyvern")
@@ -3057,9 +3063,9 @@ def test_predict_splits9():
     aps.get_leaf("Br01").split(2, "Br05", turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Angel", "Angel",
-      "Angel", "Warlock"])
+                                           "Angel", "Warlock"])
     aps.get_leaf("Br12").reveal_creatures(["Unicorn", "Unicorn", "Unicorn",
-      "Unicorn", "Unicorn"])
+                                           "Unicorn", "Unicorn"])
     aps.get_leaf("Br12").remove_creature("Unicorn")
     aps.get_leaf("Br12").remove_creature("Unicorn")
     aps.get_leaf("Br12").remove_creature("Unicorn")
@@ -3078,7 +3084,7 @@ def test_predict_splits9():
     aps.get_leaf("Gd08").remove_creature("Ranger")
     aps.get_leaf("Bk02").add_creature("Angel")
     aps.get_leaf("Bk03").reveal_creatures(["Guardian", "Guardian", "Ranger",
-      "Ranger", "Ranger"])
+                                           "Ranger", "Ranger"])
     aps.get_leaf("Br06").reveal_creatures(["Warlock", "Warlock", "Gorgon"])
     aps.get_leaf("Br06").remove_creature("Warlock")
     aps.get_leaf("Bk03").remove_creature("Ranger")
@@ -3087,7 +3093,7 @@ def test_predict_splits9():
     aps.get_leaf("Br06").remove_creature("Gorgon")
     aps.get_leaf("Bk03").reveal_creatures(["Guardian", "Guardian", "Ranger"])
     aps.get_leaf("Bk07").reveal_creatures(["Warbear", "Warbear", "Troll",
-      "Troll"])
+                                           "Troll"])
     aps.get_leaf("Br07").reveal_creatures(["Warbear", "Minotaur"])
     aps.get_leaf("Br07").remove_creature("Warbear")
     aps.get_leaf("Bk07").remove_creature("Warbear")
@@ -3132,9 +3138,9 @@ def test_predict_splits9():
     aps.get_leaf("Gd06").merge(aps.get_leaf("Gd08"), turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Archangel", "Angel",
-      "Warlock", "Warlock"])
+                                           "Warlock", "Warlock"])
     aps.get_leaf("Br03").reveal_creatures(["Angel", "Behemoth", "Behemoth",
-      "Behemoth"])
+                                           "Behemoth"])
     aps.get_leaf("Br03").remove_creature("Angel")
     aps.get_leaf("Br03").remove_creature("Behemoth")
     aps.get_leaf("Bk10").remove_creature("Angel")
@@ -3210,11 +3216,11 @@ def test_predict_splits9():
     aps.get_leaf("Gd03").reveal_creatures(["Titan"])
     aps.get_leaf("Gd01").reveal_creatures(["Wyvern", "Wyvern"])
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Archangel", "Angel",
-      "Angel"])
+                                           "Angel"])
     aps.get_leaf("Gd01").remove_creature("Wyvern")
     aps.get_leaf("Gd01").remove_creature("Wyvern")
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Archangel", "Angel",
-      "Angel"])
+                                           "Angel"])
     aps.get_leaf("Bk10").add_creature("Angel")
     aps.get_leaf("Gd03").reveal_creatures(["Serpent", "Serpent", "Serpent"])
     aps.get_leaf("Gd03").add_creature("Guardian")
@@ -3292,9 +3298,9 @@ def test_predict_splits9():
     print "\nTurn", turn
     aps.get_leaf("Gd03").split(2, "Gd01", turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Archangel", "Angel",
-      "Angel", "Angel", "Warlock"])
+                                           "Angel", "Angel", "Warlock"])
     aps.get_leaf("Br01").reveal_creatures(["Titan", "Serpent", "Serpent",
-      "Serpent", "Serpent"])
+                                           "Serpent", "Serpent"])
     aps.get_leaf("Br01").remove_creature("Serpent")
     aps.get_leaf("Bk07").remove_creature("Angel")
     aps.get_leaf("Bk10").add_creature("Angel")
@@ -3307,7 +3313,7 @@ def test_predict_splits9():
     aps.get_leaf("Br05").remove_creature("Guardian")
     aps.get_leaf("Br05").remove_creature("Guardian")
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Angel", "Angel",
-      "Angel", "Warlock"])
+                                           "Angel", "Warlock"])
     aps.get_leaf("Bk10").add_creature("Archangel")
     aps.get_leaf("Bk10").add_creature("Angel")
     aps.get_leaf("Gd04").remove_creature("Guardian")
@@ -3404,12 +3410,12 @@ def test_predict_splits9():
     aps.get_leaf("Gd10").remove_creature("Behemoth")
     aps.get_leaf("Gd10").remove_creature("Behemoth")
     aps.get_leaf("Gd06").reveal_creatures(["Hydra", "Hydra", "Hydra",
-      "Hydra", "Hydra", "Griffon"])
+                                           "Hydra", "Hydra", "Griffon"])
     aps.get_leaf("Bk03").reveal_creatures(["Angel", "Warlock"])
     aps.get_leaf("Bk03").remove_creature("Angel")
     aps.get_leaf("Bk03").remove_creature("Warlock")
     aps.get_leaf("Gd06").reveal_creatures(["Hydra", "Hydra", "Hydra",
-      "Hydra", "Hydra", "Griffon"])
+                                           "Hydra", "Hydra", "Griffon"])
     aps.get_leaf("Gd06").add_creature("Angel")
     aps.get_leaf("Bk05").reveal_creatures(["Colossus"])
     aps.get_leaf("Bk05").add_creature("Colossus")
@@ -3435,7 +3441,7 @@ def test_predict_splits9():
     print "\nTurn", turn
     aps.get_leaf("Bk06").split(2, "Bk07", turn)
     aps.get_leaf("Bk06").reveal_creatures(["Hydra", "Hydra", "Hydra",
-      "Angel", "Wyvern"])
+                                           "Angel", "Wyvern"])
     aps.get_leaf("Gd02").reveal_creatures(["Angel", "Griffon", "Griffon"])
     aps.get_leaf("Gd02").remove_creature("Griffon")
     aps.get_leaf("Gd02").remove_creature("Griffon")
@@ -3444,7 +3450,7 @@ def test_predict_splits9():
     aps.get_leaf("Bk06").add_creature("Archangel")
     aps.get_leaf("Gd02").remove_creature("Angel")
     aps.get_leaf("Bk06").reveal_creatures(["Archangel", "Hydra", "Hydra",
-      "Hydra", "Wyvern"])
+                                           "Hydra", "Wyvern"])
     aps.get_leaf("Bk06").add_creature("Angel")
     aps.get_leaf("Bk02").reveal_creatures(["Angel"])
     aps.get_leaf("Bk07").remove_creature("Griffon")
@@ -3491,35 +3497,47 @@ def test_predict_splits10():
     turn = 1
     print "\nTurn", turn
     ps = PredictSplits("Gr", "Gr07", ["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                      "Gargoyle", "Centaur", "Centaur",
+                                      "Ogre", "Ogre"])
     aps.append(ps)
     aps.get_leaf("Gr07").reveal_creatures(["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                           "Gargoyle", "Centaur", "Centaur",
+                                           "Ogre", "Ogre"])
     ps = PredictSplits("Bu", "Bu08", ["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                      "Gargoyle", "Centaur", "Centaur",
+                                      "Ogre", "Ogre"])
     aps.append(ps)
     aps.get_leaf("Bu08").reveal_creatures(["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                           "Gargoyle", "Centaur", "Centaur",
+                                           "Ogre", "Ogre"])
     ps = PredictSplits("Gd", "Gd01", ["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                      "Gargoyle", "Centaur", "Centaur",
+                                      "Ogre", "Ogre"])
     aps.append(ps)
     aps.get_leaf("Gd01").reveal_creatures(["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                           "Gargoyle", "Centaur", "Centaur",
+                                           "Ogre", "Ogre"])
     ps = PredictSplits("Bk", "Bk10", ["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                      "Gargoyle", "Centaur", "Centaur",
+                                      "Ogre", "Ogre"])
     aps.append(ps)
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                           "Gargoyle", "Centaur", "Centaur",
+                                           "Ogre", "Ogre"])
     ps = PredictSplits("Br", "Br12", ["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                      "Gargoyle", "Centaur", "Centaur",
+                                      "Ogre", "Ogre"])
     aps.append(ps)
     aps.get_leaf("Br12").reveal_creatures(["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                           "Gargoyle", "Centaur", "Centaur",
+                                           "Ogre", "Ogre"])
     ps = PredictSplits("Rd", "Rd12", ["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                      "Gargoyle", "Centaur", "Centaur",
+                                      "Ogre", "Ogre"])
     aps.append(ps)
     aps.get_leaf("Rd12").reveal_creatures(["Titan", "Angel", "Gargoyle",
-      "Gargoyle", "Centaur", "Centaur", "Ogre", "Ogre"])
+                                           "Gargoyle", "Centaur", "Centaur",
+                                           "Ogre", "Ogre"])
     aps.get_leaf("Gr07").split(4, "Gr12", turn)
     aps.get_leaf("Gr07").reveal_creatures(["Ogre", "Ogre"])
     aps.get_leaf("Gr07").add_creature("Troll")
@@ -3732,7 +3750,7 @@ def test_predict_splits10():
     aps.get_leaf("Gr12").add_creature("Lion")
     aps.get_leaf("Bu12").split(2, "Bu11", turn)
     aps.get_leaf("Bu12").reveal_creatures(["Titan", "Cyclops", "Centaur",
-      "Centaur", "Centaur"])
+                                           "Centaur", "Centaur"])
     aps.get_leaf("Gd07").reveal_creatures(["Lion", "Centaur", "Centaur"])
     aps.get_leaf("Gd07").remove_creature("Centaur")
     aps.get_leaf("Bu12").remove_creature("Centaur")
@@ -3742,15 +3760,15 @@ def test_predict_splits10():
     aps.get_leaf("Gd07").remove_creature("Lion")
     aps.get_leaf("Gd07").remove_creature("Centaur")
     aps.get_leaf("Bu12").reveal_creatures(["Titan", "Angel", "Cyclops",
-      "Centaur"])
+                                           "Centaur"])
     aps.get_leaf("Bu12").reveal_creatures(["Centaur"])
     aps.get_leaf("Bu12").add_creature("Centaur")
     aps.get_leaf("Gd12").split(2, "Gd11", turn)
     aps.get_leaf("Gd12").merge(aps.get_leaf("Gd11"), turn)
     aps.get_leaf("Gd01").reveal_creatures(["Angel", "Troll", "Troll",
-      "Ogre", "Ogre", "Ogre"])
+                                           "Ogre", "Ogre", "Ogre"])
     aps.get_leaf("Rd03").reveal_creatures(["Angel", "Troll", "Troll",
-      "Gargoyle", "Gargoyle"])
+                                           "Gargoyle", "Gargoyle"])
     aps.get_leaf("Rd03").remove_creature("Troll")
     aps.get_leaf("Gd01").remove_creature("Angel")
     aps.get_leaf("Rd03").remove_creature("Gargoyle")
@@ -3792,28 +3810,34 @@ def test_predict_splits10():
 def test_predict_splits11():
     aps = AllPredictSplits()
     ps = PredictSplits('ai1', 'Bu12', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai4', 'Bk03', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai3', 'Rd07', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai2', 'Br11', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai6', 'Gr10', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai5', 'Gd07', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     aps.get_leaf('Bu12').split(4, 'Bu11', 1)
     aps.get_leaf('Bu12').reveal_creatures(['Centaur', 'Centaur', 'Gargoyle',
-        'Titan'])
+                                           'Titan'])
     aps.get_leaf('Bu11').reveal_creatures(['Angel', 'Ogre', 'Ogre',
-        'Gargoyle'])
+                                           'Gargoyle'])
     aps.get_leaf('Bu11').reveal_creatures(['Gargoyle'])
     aps.get_leaf('Bu11').add_creature('Gargoyle')
     aps.get_leaf('Bu12').reveal_creatures(['Centaur', 'Centaur'])
@@ -3842,26 +3866,26 @@ def test_predict_splits11():
     aps.get_leaf('Gd09').reveal_creatures(['Ogre', 'Ogre'])
     aps.get_leaf('Gd09').add_creature('Troll')
     aps.get_leaf('Br11').reveal_creatures(('Centaur', 'Gargoyle', 'Gargoyle',
-        'Titan', 'Warlock'))
+                                           'Titan', 'Warlock'))
     aps.get_leaf('Bu11').reveal_creatures(('Angel', 'Gargoyle', 'Gargoyle',
-        'Ogre', 'Ogre'))
+                                           'Ogre', 'Ogre'))
     aps.get_leaf('Br11').reveal_creatures(('Centaur', 'Gargoyle', 'Gargoyle',
-        'Titan', 'Warlock'))
+                                           'Titan', 'Warlock'))
     aps.get_leaf('Br11').reveal_creatures(['Titan'])
     aps.get_leaf('Br11').add_creature('Warlock')
     aps.get_leaf('Br11').remove_creatures(['Centaur', 'Gargoyle', 'Gargoyle'])
     aps.get_leaf('Bu11').remove_creatures(['Angel', 'Ogre', 'Ogre', 'Gargoyle',
-        'Gargoyle'])
+                                           'Gargoyle'])
     aps.get_leaf('Bu12').reveal_creatures(['Gargoyle'])
     aps.get_leaf('Bu12').add_creature('Gargoyle')
     aps.get_leaf('Rd07').reveal_creatures(('Angel', 'Gargoyle', 'Gargoyle',
-        'Ogre', 'Ogre'))
+                                           'Ogre', 'Ogre'))
     aps.get_leaf('Bk03').reveal_creatures(('Centaur', 'Centaur', 'Centaur',
-        'Gargoyle', 'Titan'))
+                                           'Gargoyle', 'Titan'))
     aps.get_leaf('Bk03').remove_creatures(['Centaur', 'Centaur', 'Gargoyle',
-        'Centaur'])
+                                           'Centaur'])
     aps.get_leaf('Rd07').remove_creatures(['Angel', 'Gargoyle', 'Gargoyle',
-        'Ogre', 'Ogre'])
+                                           'Ogre', 'Ogre'])
     aps.get_leaf('Br04').reveal_creatures(['Ogre', 'Ogre'])
     aps.get_leaf('Br04').add_creature('Troll')
     aps.get_leaf('Gr10').reveal_creatures(['Ogre'])
@@ -3870,24 +3894,24 @@ def test_predict_splits11():
     aps.get_leaf('Gd07').add_creature('Cyclops')
     aps.get_leaf('Br11').reveal_creatures(('Titan', 'Warlock', 'Warlock'))
     aps.get_leaf('Bu12').reveal_creatures(('Centaur', 'Centaur', 'Gargoyle',
-        'Gargoyle', 'Lion', 'Titan'))
+                                           'Gargoyle', 'Lion', 'Titan'))
     aps.get_leaf('Br11').reveal_creatures(('Titan', 'Warlock', 'Warlock'))
     aps.get_leaf('Br11').reveal_creatures(['Titan'])
     aps.get_leaf('Br11').add_creature('Warlock')
     aps.get_leaf('Bu12').remove_creatures(['Centaur', 'Gargoyle', 'Lion',
-        'Gargoyle'])
+                                           'Gargoyle'])
     aps.get_leaf('Br11').remove_creatures(['Titan', 'Warlock'])
     aps.get_leaf('Br04').reveal_creatures(('Angel', 'Centaur', 'Ogre', 'Ogre',
-        'Troll'))
+                                           'Troll'))
     aps.get_leaf('Bu12').reveal_creatures(['Titan'])
     aps.get_leaf('Bu12').add_creature('Warlock')
     aps.get_leaf('Bk02').reveal_creatures(('Angel', 'Gargoyle', 'Gargoyle',
-        'Ogre', 'Ogre'))
+                                           'Ogre', 'Ogre'))
     aps.get_leaf('Rd06').reveal_creatures(('Centaur', 'Centaur', 'Lion',
-        'Ogre', 'Titan'))
+                                           'Ogre', 'Titan'))
     aps.get_leaf('Bk02').remove_creatures(['Angel', 'Ogre', 'Gargoyle'])
     aps.get_leaf('Rd06').remove_creatures(['Titan', 'Centaur', 'Centaur',
-        'Ogre', 'Lion'])
+                                           'Ogre', 'Lion'])
     aps.get_leaf('Bk02').add_creature('Angel')
     aps.get_leaf('Bk02').reveal_creatures(['Gargoyle'])
     aps.get_leaf('Bk02').add_creature('Gargoyle')
@@ -3952,19 +3976,19 @@ def test_predict_splits11():
     aps.get_leaf('Gd09').reveal_creatures(['Ranger'])
     aps.get_leaf('Gd09').add_creature('Ranger')
     aps.get_leaf('Gr10').reveal_creatures(('Cyclops', 'Titan', 'Troll',
-        'Troll', 'Warlock'))
+                                           'Troll', 'Warlock'))
     aps.get_leaf('Bu12').reveal_creatures(('Centaur', 'Centaur', 'Lion',
-        'Lion', 'Titan', 'Warlock'))
+                                           'Lion', 'Titan', 'Warlock'))
     aps.get_leaf('Gr10').reveal_creatures(('Cyclops', 'Titan', 'Troll',
-        'Troll', 'Warlock'))
+                                           'Troll', 'Warlock'))
     aps.get_leaf('Bu12').remove_creatures(['Centaur', 'Warlock', 'Centaur',
-        'Lion', 'Lion'])
+                                           'Lion', 'Lion'])
     aps.get_leaf('Gr10').remove_creatures(['Titan', 'Warlock', 'Cyclops',
-        'Troll', 'Troll'])
+                                           'Troll', 'Troll'])
     aps.get_leaf('Gr11').reveal_creatures(('Ogre', 'Ogre', 'Troll', 'Troll'))
     aps.get_leaf('Gr01').reveal_creatures(('Gargoyle', 'Gargoyle'))
     aps.get_leaf('Gr07').reveal_creatures(('Angel', 'Centaur', 'Centaur',
-        'Lion', 'Lion'))
+                                           'Lion', 'Lion'))
     aps.get_leaf('Gr02').reveal_creatures(('Ogre', 'Ogre'))
     aps.get_leaf('Bu12').add_creature('Angel')
     aps.get_leaf('Bk02').split(2, 'Bk09', 10)
@@ -4016,7 +4040,7 @@ def test_predict_splits11():
     aps.get_leaf('Gd09').split(2, 'Gd03', 15)
     aps.get_leaf('Gd05').reveal_creatures(('Cyclops', 'Cyclops'))
     aps.get_leaf('Bk02').reveal_creatures(('Angel', 'Gorgon', 'Gorgon',
-        'Gorgon', 'Gorgon', 'Gorgon'))
+                                           'Gorgon', 'Gorgon', 'Gorgon'))
     aps.get_leaf('Bk02').remove_creatures(['Gorgon'])
     aps.get_leaf('Gd05').remove_creatures(['Cyclops', 'Cyclops'])
     aps.get_leaf('Bk02').reveal_creatures(['Gorgon'])
@@ -4030,14 +4054,14 @@ def test_predict_splits11():
     aps.get_leaf('Gd03').reveal_creatures(['Ranger'])
     aps.get_leaf('Gd03').add_creature('Ranger')
     aps.get_leaf('Gd09').reveal_creatures(('Angel', 'Ranger', 'Ranger',
-        'Ranger', 'Ranger', 'Ranger'))
+                                           'Ranger', 'Ranger', 'Ranger'))
     aps.get_leaf('Bu12').reveal_creatures(('Angel', 'Titan'))
     aps.get_leaf('Gd09').reveal_creatures(('Angel', 'Ranger', 'Ranger',
-        'Ranger', 'Ranger', 'Ranger'))
+                                           'Ranger', 'Ranger', 'Ranger'))
     aps.get_leaf('Gd09').reveal_creatures(['Ranger'])
     aps.get_leaf('Gd09').add_creature('Ranger')
     aps.get_leaf('Gd09').remove_creatures(['Angel', 'Ranger', 'Ranger',
-        'Ranger', 'Ranger'])
+                                           'Ranger', 'Ranger'])
     aps.get_leaf('Bu12').remove_creatures(['Titan', 'Angel'])
     aps.get_leaf('Bk04').reveal_creatures(['Ogre', 'Ogre', 'Ogre'])
     aps.get_leaf('Bk04').add_creature('Minotaur')
@@ -4286,9 +4310,9 @@ def test_predict_splits11():
     aps.get_leaf('Bk08').reveal_creatures(['Ogre'])
     aps.get_leaf('Bk08').add_creature('Ogre')
     aps.get_leaf('Gd06').reveal_creatures(('Ranger', 'Troll', 'Troll',
-        'Warbear', 'Warbear'))
+                                           'Warbear', 'Warbear'))
     aps.get_leaf('Bk04').reveal_creatures(('Minotaur', 'Minotaur', 'Troll',
-        'Unicorn', 'Unicorn', 'Warbear'))
+                                           'Unicorn', 'Unicorn', 'Warbear'))
     aps.get_leaf('Gd03').reveal_creatures(['Angel'])
     aps.get_leaf('Gd03').reveal_creatures(['Angel'])
     aps.get_leaf('Gd03').remove_creature('Angel')
@@ -4296,9 +4320,9 @@ def test_predict_splits11():
     aps.get_leaf('Bk04').reveal_creatures(['Unicorn'])
     aps.get_leaf('Bk04').add_creature('Unicorn')
     aps.get_leaf('Bk04').remove_creatures(['Warbear', 'Minotaur', 'Minotaur',
-        'Troll'])
+                                           'Troll'])
     aps.get_leaf('Gd06').remove_creatures(['Warbear', 'Warbear', 'Ranger',
-        'Troll', 'Troll', 'Angel'])
+                                           'Troll', 'Troll', 'Angel'])
     aps.get_leaf('Bk04').add_creature('Angel')
     aps.get_leaf('Bk04').add_creature('Angel')
     aps.get_leaf('Gr04').reveal_creatures(['Troll', 'Troll', 'Troll'])
@@ -4338,9 +4362,9 @@ def test_predict_splits11():
     aps.get_leaf('Gr10').reveal_creatures([])
     aps.get_leaf('Gr10').add_creature('Gargoyle')
     aps.get_leaf('Bk04').reveal_creatures(('Angel', 'Angel', 'Unicorn',
-        'Unicorn', 'Unicorn'))
+                                           'Unicorn', 'Unicorn'))
     aps.get_leaf('Gr04').reveal_creatures(('Guardian', 'Ranger', 'Troll',
-        'Troll', 'Wyvern'))
+                                           'Troll', 'Wyvern'))
     aps.get_leaf('Bk02').reveal_creatures(['Angel'])
     aps.get_leaf('Bk02').remove_creature('Angel')
     aps.get_leaf('Bk04').add_creature('Angel')
@@ -4355,26 +4379,32 @@ def test_predict_splits11():
 def test_predict_splits12():
     aps = AllPredictSplits()
     ps = PredictSplits('ai3', 'Gr08', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai2', 'Br03', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai6', 'Gd11', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai5', 'Bu06', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai1', 'Bk03', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     ps = PredictSplits('ai4', 'Rd08', ('Titan', 'Angel', 'Ogre', 'Ogre',
-      'Centaur', 'Centaur', 'Gargoyle', 'Gargoyle'))
+                                       'Centaur', 'Centaur',
+                                       'Gargoyle', 'Gargoyle'))
     aps.append(ps)
     aps.get_leaf('Gr08').split(4, 'Gr02', 1)
     aps.get_leaf('Gr08').reveal_creatures(['Angel', 'Centaur', 'Gargoyle',
-      'Gargoyle'])
+                                           'Gargoyle'])
     aps.get_leaf('Gr02').reveal_creatures(['Titan', 'Ogre', 'Ogre', 'Centaur'])
     aps.get_leaf('Gr02').reveal_creatures(['Ogre', 'Ogre'])
     aps.get_leaf('Gr02').add_creature('Troll')
@@ -4443,7 +4473,7 @@ def test_predict_splits12():
     aps.get_leaf('Rd08').add_creature('Cyclops')
     aps.get_leaf('Gr02').split(2, 'Gr05', 4)
     aps.get_leaf('Gr02').reveal_creatures(['Titan', 'Ranger', 'Troll', 'Troll',
-      'Centaur'])
+                                           'Centaur'])
     aps.get_leaf('Gr05').reveal_creatures(['Ogre', 'Ogre'])
     aps.get_leaf('Gr08').reveal_creatures([])
     aps.get_leaf('Gr08').add_creature('Gargoyle')
@@ -4466,7 +4496,7 @@ def test_predict_splits12():
     aps.get_leaf('Rd08').split(2, 'Rd02', 4)
     aps.get_leaf('Gr08').split(2, 'Gr11', 5)
     aps.get_leaf('Gr08').reveal_creatures(['Angel', 'Cyclops', 'Cyclops',
-      'Gargoyle', 'Gargoyle'])
+                                           'Gargoyle', 'Gargoyle'])
     aps.get_leaf('Gr11').reveal_creatures(['Gargoyle', 'Centaur'])
     aps.get_leaf('Rd03').reveal_creatures(('Centaur', 'Centaur'))
     aps.get_leaf('Gr08').reveal_creatures(['Cyclops', 'Cyclops'])
@@ -4474,7 +4504,7 @@ def test_predict_splits12():
     aps.get_leaf('Gr11').reveal_creatures(['Gargoyle'])
     aps.get_leaf('Gr11').add_creature('Gargoyle')
     aps.get_leaf('Br07').reveal_creatures(('Angel', 'Centaur', 'Centaur',
-      'Gargoyle', 'Lion', 'Lion'))
+                                           'Gargoyle', 'Lion', 'Lion'))
     aps.get_leaf('Br03').reveal_creatures(['Cyclops', 'Cyclops'])
     aps.get_leaf('Br03').add_creature('Gorgon')
     aps.get_leaf('Br07').reveal_creatures(['Gargoyle'])
@@ -4482,20 +4512,20 @@ def test_predict_splits12():
     aps.get_leaf('Gd11').split(2, 'Gd09', 5)
     aps.get_leaf('Gd08').split(2, 'Gd03', 5)
     aps.get_leaf('Gd11').reveal_creatures(('Gargoyle', 'Ranger', 'Titan',
-      'Troll', 'Troll'))
+                                           'Troll', 'Troll'))
     aps.get_leaf('Rd04').reveal_creatures(('Angel', 'Centaur', 'Gargoyle',
-      'Gargoyle', 'Lion'))
+                                           'Gargoyle', 'Lion'))
     aps.get_leaf('Gd11').reveal_creatures(('Gargoyle', 'Ranger', 'Titan',
-      'Troll', 'Troll'))
+                                           'Troll', 'Troll'))
     aps.get_leaf('Rd04').reveal_creatures(('Angel', 'Centaur', 'Gargoyle',
-      'Gargoyle', 'Lion'))
+                                           'Gargoyle', 'Lion'))
     aps.get_leaf('Gd08').reveal_creatures(['Angel'])
     aps.get_leaf('Gd08').reveal_creatures(['Angel'])
     aps.get_leaf('Gd08').remove_creature('Angel')
     aps.get_leaf('Gd11').add_creature('Angel')
     aps.get_leaf('Gd11').remove_creatures(['Ranger', 'Troll', 'Gargoyle'])
     aps.get_leaf('Rd04').remove_creatures(['Angel', 'Lion', 'Gargoyle',
-      'Gargoyle', 'Centaur'])
+                                           'Gargoyle', 'Centaur'])
     aps.get_leaf('Gd08').reveal_creatures(['Cyclops'])
     aps.get_leaf('Gd08').add_creature('Cyclops')
     aps.get_leaf('Bu05').split(2, 'Bu07', 5)
@@ -4512,31 +4542,31 @@ def test_predict_splits12():
     aps.get_leaf('Br07').add_creature('Ranger')
     aps.get_leaf('Gd03').reveal_creatures(('Centaur', 'Centaur'))
     aps.get_leaf('Rd08').reveal_creatures(('Cyclops', 'Gargoyle', 'Gargoyle',
-      'Titan', 'Warlock'))
+                                           'Titan', 'Warlock'))
     aps.get_leaf('Gd03').reveal_creatures(('Centaur', 'Centaur'))
     aps.get_leaf('Rd08').reveal_creatures(('Cyclops', 'Gargoyle', 'Gargoyle',
-      'Titan', 'Warlock'))
+                                           'Titan', 'Warlock'))
     aps.get_leaf('Gd11').reveal_creatures(['Angel'])
     aps.get_leaf('Gd11').reveal_creatures(['Angel'])
     aps.get_leaf('Gd11').remove_creature('Angel')
     aps.get_leaf('Gd03').add_creature('Angel')
     aps.get_leaf('Rd08').remove_creatures(['Warlock', 'Cyclops', 'Gargoyle',
-      'Gargoyle'])
+                                           'Gargoyle'])
     aps.get_leaf('Gd03').remove_creatures(['Centaur', 'Centaur', 'Angel'])
     aps.get_leaf('Bu05').reveal_creatures(['Cyclops', 'Cyclops'])
     aps.get_leaf('Bu05').add_creature('Gorgon')
     aps.get_leaf('Bk07').reveal_creatures(('Angel', 'Cyclops', 'Cyclops',
-      'Gargoyle', 'Gorgon'))
+                                           'Gargoyle', 'Gorgon'))
     aps.get_leaf('Bu06').reveal_creatures(('Angel', 'Centaur', 'Centaur',
-      'Lion', 'Lion'))
+                                           'Lion', 'Lion'))
     aps.get_leaf('Bk07').reveal_creatures(('Angel', 'Cyclops', 'Cyclops',
-      'Gargoyle', 'Gorgon'))
+                                           'Gargoyle', 'Gorgon'))
     aps.get_leaf('Bu06').reveal_creatures(('Angel', 'Centaur', 'Centaur',
-      'Lion', 'Lion'))
+                                           'Lion', 'Lion'))
     aps.get_leaf('Bk07').remove_creatures(['Angel', 'Gorgon', 'Cyclops',
-      'Gargoyle'])
+                                           'Gargoyle'])
     aps.get_leaf('Bu06').remove_creatures(['Angel', 'Lion', 'Lion', 'Centaur',
-      'Centaur'])
+                                           'Centaur'])
     aps.get_leaf('Bk08').reveal_creatures(['Ogre'])
     aps.get_leaf('Bk08').add_creature('Ogre')
     aps.get_leaf('Bk07').reveal_creatures(['Cyclops'])
@@ -4556,10 +4586,10 @@ def test_predict_splits12():
     aps.get_leaf('Gr08').add_creature('Gorgon')
     aps.get_leaf('Br02').reveal_creatures(('Centaur', 'Centaur'))
     aps.get_leaf('Bu05').reveal_creatures(('Cyclops', 'Cyclops', 'Gorgon',
-      'Gorgon', 'Titan', 'Warlock'))
+                                           'Gorgon', 'Titan', 'Warlock'))
     aps.get_leaf('Br02').reveal_creatures(('Centaur', 'Centaur'))
     aps.get_leaf('Bu05').reveal_creatures(('Cyclops', 'Cyclops', 'Gorgon',
-      'Gorgon', 'Titan', 'Warlock'))
+                                           'Gorgon', 'Titan', 'Warlock'))
     aps.get_leaf('Br02').remove_creatures(['Centaur', 'Centaur'])
     aps.get_leaf('Bu05').reveal_creatures(['Gorgon'])
     aps.get_leaf('Bu05').add_creature('Gorgon')
@@ -4576,7 +4606,7 @@ def test_predict_splits12():
     aps.get_leaf('Bk03').add_creature('Ranger')
     aps.get_leaf('Gr08').split(2, 'Gr12', 9)
     aps.get_leaf('Gr08').reveal_creatures(['Angel', 'Gorgon', 'Gorgon',
-      'Cyclops', 'Cyclops'])
+                                           'Cyclops', 'Cyclops'])
     aps.get_leaf('Gr12').reveal_creatures(['Gargoyle', 'Gargoyle'])
     aps.get_leaf('Gr12').reveal_creatures([])
     aps.get_leaf('Gr12').add_creature('Centaur')
@@ -4590,16 +4620,18 @@ def test_predict_splits12():
     aps.get_leaf('Gd08').reveal_creatures(['Cyclops', 'Cyclops'])
     aps.get_leaf('Gd08').add_creature('Gorgon')
     aps.get_leaf('Bu05').reveal_creatures(('Cyclops', 'Cyclops', 'Gorgon',
-      'Gorgon', 'Gorgon', 'Titan', 'Warlock'))
+                                           'Gorgon', 'Gorgon',
+                                           'Titan', 'Warlock'))
     aps.get_leaf('Br07').reveal_creatures(('Angel', 'Cyclops', 'Lion', 'Lion',
-      'Ranger'))
+                                           'Ranger'))
     aps.get_leaf('Bu05').reveal_creatures(('Cyclops', 'Cyclops', 'Gorgon',
-      'Gorgon', 'Gorgon', 'Titan', 'Warlock'))
+                                           'Gorgon', 'Gorgon',
+                                           'Titan', 'Warlock'))
     aps.get_leaf('Br07').reveal_creatures(('Angel', 'Cyclops', 'Lion', 'Lion',
-      'Ranger'))
+                                           'Ranger'))
     aps.get_leaf('Bu05').remove_creatures(['Warlock', 'Gorgon', 'Gorgon'])
     aps.get_leaf('Br07').remove_creatures(['Angel', 'Cyclops', 'Ranger',
-      'Lion', 'Lion'])
+                                           'Lion', 'Lion'])
     aps.get_leaf('Bu05').add_creature('Angel')
     aps.get_leaf('Bu05').reveal_creatures(['Cyclops'])
     aps.get_leaf('Bu05').add_creature('Cyclops')
@@ -4618,10 +4650,10 @@ def test_predict_splits12():
     aps.get_leaf('Bk03').add_creature('Guardian')
     aps.get_leaf('Rd08').reveal_creatures(('Titan', 'Warlock'))
     aps.get_leaf('Gd11').reveal_creatures(('Ranger', 'Titan', 'Troll',
-      'Troll'))
+                                           'Troll'))
     aps.get_leaf('Rd08').reveal_creatures(('Titan', 'Warlock'))
     aps.get_leaf('Gd11').reveal_creatures(('Ranger', 'Titan', 'Troll',
-      'Troll'))
+                                           'Troll'))
     aps.get_leaf('Gd11').reveal_creatures(['Troll'])
     aps.get_leaf('Gd11').add_creature('Troll')
     aps.get_leaf('Gd11').remove_creatures(['Troll', 'Ranger'])
@@ -4629,7 +4661,7 @@ def test_predict_splits12():
     aps.get_leaf('Gd11').add_creature('Angel')
     aps.get_leaf('Gr02').split(2, 'Gr09', 11)
     aps.get_leaf('Gr02').reveal_creatures(['Titan', 'Ranger', 'Ranger',
-      'Ranger', 'Troll'])
+                                           'Ranger', 'Troll'])
     aps.get_leaf('Gr09').reveal_creatures(['Troll', 'Centaur'])
     aps.get_leaf('Gr02').reveal_creatures(['Ranger'])
     aps.get_leaf('Gr02').add_creature('Ranger')
@@ -4655,7 +4687,7 @@ def test_predict_splits12():
     aps.get_leaf('Gr12').reveal_creatures(['Centaur', 'Centaur'])
     aps.get_leaf('Gr12').add_creature('Lion')
     aps.get_leaf('Br09').reveal_creatures(('Cyclops', 'Cyclops', 'Gargoyle',
-      'Gargoyle', 'Gorgon', 'Gorgon'))
+                                           'Gargoyle', 'Gorgon', 'Gorgon'))
     aps.get_leaf('Br03').reveal_creatures(['Troll'])
     aps.get_leaf('Br03').add_creature('Troll')
     aps.get_leaf('Br09').reveal_creatures(['Cyclops'])
@@ -4671,7 +4703,7 @@ def test_predict_splits12():
     aps.get_leaf('Bk10').add_creature('Ranger')
     aps.get_leaf('Gr02').split(2, 'Gr06', 14)
     aps.get_leaf('Gr02').reveal_creatures(['Titan', 'Ranger', 'Ranger',
-      'Ranger', 'Ranger'])
+                                           'Ranger', 'Ranger'])
     aps.get_leaf('Gr06').reveal_creatures(['Ranger', 'Troll'])
     aps.get_leaf('Gr12').reveal_creatures(['Lion'])
     aps.get_leaf('Gr12').add_creature('Lion')
@@ -4679,31 +4711,35 @@ def test_predict_splits12():
     aps.get_leaf('Gr06').add_creature('Ranger')
     aps.get_leaf('Br03').split(2, 'Br06', 14)
     aps.get_leaf('Br09').reveal_creatures(('Cyclops', 'Cyclops', 'Cyclops',
-      'Gargoyle', 'Gargoyle', 'Gorgon', 'Gorgon'))
+                                           'Gargoyle', 'Gargoyle',
+                                           'Gorgon', 'Gorgon'))
     aps.get_leaf('Bu05').reveal_creatures(('Angel', 'Cyclops', 'Cyclops',
-      'Cyclops', 'Gorgon', 'Titan'))
+                                           'Cyclops', 'Gorgon', 'Titan'))
     aps.get_leaf('Br09').reveal_creatures(('Cyclops', 'Cyclops', 'Cyclops',
-      'Gargoyle', 'Gargoyle', 'Gorgon', 'Gorgon'))
+                                           'Gargoyle', 'Gargoyle',
+                                           'Gorgon', 'Gorgon'))
     aps.get_leaf('Bu05').reveal_creatures(('Angel', 'Cyclops', 'Cyclops',
-      'Cyclops', 'Gorgon', 'Titan'))
+                                           'Cyclops', 'Gorgon', 'Titan'))
     aps.get_leaf('Bu05').remove_creatures(['Cyclops', 'Cyclops', 'Gorgon',
-      'Angel'])
+                                           'Angel'])
     aps.get_leaf('Br09').remove_creatures(['Gargoyle', 'Gargoyle', 'Cyclops',
-      'Cyclops', 'Gorgon', 'Gorgon', 'Cyclops'])
+                                           'Cyclops', 'Gorgon',
+                                           'Gorgon', 'Cyclops'])
     aps.get_leaf('Bu05').add_creature('Angel')
     aps.get_leaf('Gd08').split(2, 'Gd10', 14)
     aps.get_leaf('Bu04').reveal_creatures(('Cyclops', 'Cyclops', 'Gargoyle',
-      'Gargoyle'))
+                                           'Gargoyle'))
     aps.get_leaf('Bk05').reveal_creatures(('Centaur', 'Centaur', 'Centaur',
-      'Cyclops', 'Gargoyle', 'Gargoyle', 'Lion'))
+                                           'Cyclops', 'Gargoyle',
+                                           'Gargoyle', 'Lion'))
     aps.get_leaf('Bu05').reveal_creatures(['Angel'])
     aps.get_leaf('Bu05').reveal_creatures(['Angel'])
     aps.get_leaf('Bu05').remove_creature('Angel')
     aps.get_leaf('Bu04').add_creature('Angel')
     aps.get_leaf('Bk05').remove_creatures(['Gargoyle', 'Centaur', 'Centaur',
-      'Gargoyle', 'Lion', 'Cyclops'])
+                                           'Gargoyle', 'Lion', 'Cyclops'])
     aps.get_leaf('Bu04').remove_creatures(['Gargoyle', 'Gargoyle', 'Cyclops',
-      'Cyclops', 'Angel'])
+                                           'Cyclops', 'Angel'])
     aps.get_leaf('Bk05').add_creature('Angel')
     aps.get_leaf('Bk11').reveal_creatures(['Centaur', 'Centaur'])
     aps.get_leaf('Bk11').add_creature('Lion')
@@ -4717,11 +4753,11 @@ def test_predict_splits12():
     aps.get_leaf('Bk03').add_creature('Ranger')
     aps.get_leaf('Gr08').split(2, 'Gr07', 16)
     aps.get_leaf('Gr08').reveal_creatures(['Angel', 'Gorgon', 'Gorgon',
-      'Gorgon', 'Gorgon'])
+                                           'Gorgon', 'Gorgon'])
     aps.get_leaf('Gr07').reveal_creatures(['Cyclops', 'Cyclops'])
     aps.get_leaf('Gr12').split(2, 'Gr10', 16)
     aps.get_leaf('Gr12').reveal_creatures(['Ranger', 'Lion', 'Lion',
-      'Gargoyle', 'Gargoyle'])
+                                           'Gargoyle', 'Gargoyle'])
     aps.get_leaf('Gr10').reveal_creatures(['Centaur', 'Centaur'])
     aps.get_leaf('Gr09').reveal_creatures(['Centaur'])
     aps.get_leaf('Gr09').add_creature('Centaur')
@@ -4752,7 +4788,7 @@ def test_predict_splits12():
     aps.get_leaf('Gd10').add_creature('Cyclops')
     aps.get_leaf('Gr12').split(2, 'Gr04', 18)
     aps.get_leaf('Gr12').reveal_creatures(['Cyclops', 'Cyclops', 'Ranger',
-      'Lion', 'Lion'])
+                                           'Lion', 'Lion'])
     aps.get_leaf('Gr04').reveal_creatures(['Gargoyle', 'Gargoyle'])
     aps.get_leaf('Gr12').reveal_creatures(['Ranger'])
     aps.get_leaf('Gr12').add_creature('Ranger')
@@ -4762,9 +4798,9 @@ def test_predict_splits12():
     aps.get_leaf('Bu05').reveal_creatures(['Cyclops', 'Cyclops'])
     aps.get_leaf('Bu05').add_creature('Gorgon')
     aps.get_leaf('Bk10').reveal_creatures(('Ranger', 'Ranger', 'Ranger',
-      'Ranger'))
+                                           'Ranger'))
     aps.get_leaf('Bk11').reveal_creatures(('Centaur', 'Centaur', 'Lion',
-      'Lion'))
+                                           'Lion'))
     aps.get_leaf('Gr09').reveal_creatures(['Troll'])
     aps.get_leaf('Gr09').add_creature('Troll')
     aps.get_leaf('Gr08').reveal_creatures(['Gorgon'])
@@ -4774,38 +4810,41 @@ def test_predict_splits12():
     aps.get_leaf('Br06').reveal_creatures(['Troll', 'Troll', 'Troll'])
     aps.get_leaf('Br06').add_creature('Wyvern')
     aps.get_leaf('Bu05').reveal_creatures(('Cyclops', 'Cyclops', 'Gorgon',
-      'Titan'))
+                                           'Titan'))
     aps.get_leaf('Bu05').reveal_creatures(('Cyclops', 'Cyclops', 'Gorgon',
-      'Titan'))
+                                           'Titan'))
     aps.get_leaf('Gr02').reveal_creatures(('Ranger', 'Ranger', 'Ranger',
-      'Ranger', 'Titan'))
+                                           'Ranger', 'Titan'))
     aps.get_leaf('Bu05').reveal_creatures(('Cyclops', 'Cyclops', 'Gorgon',
-      'Titan'))
+                                           'Titan'))
     aps.get_leaf('Gr02').reveal_creatures(('Ranger', 'Ranger', 'Ranger',
-      'Ranger', 'Titan'))
+                                           'Ranger', 'Titan'))
     aps.get_leaf('Gr02').reveal_creatures(['Ranger'])
     aps.get_leaf('Gr02').add_creature('Ranger')
     aps.get_leaf('Gr02').remove_creatures(['Ranger', 'Ranger', 'Ranger',
-      'Ranger', 'Ranger'])
+                                           'Ranger', 'Ranger'])
     aps.get_leaf('Bu05').remove_creatures(['Titan', 'Cyclops', 'Cyclops',
-      'Gorgon'])
+                                           'Gorgon'])
     aps.get_leaf('Gr02').add_creature('Angel')
     aps.get_leaf('Br06').reveal_creatures(('Troll', 'Troll', 'Troll',
-      'Wyvern'))
+                                           'Wyvern'))
     aps.get_leaf('Br03').reveal_creatures(('Behemoth', 'Cyclops', 'Cyclops',
-      'Cyclops', 'Gorgon', 'Gorgon', 'Titan'))
+                                           'Cyclops', 'Gorgon',
+                                           'Gorgon', 'Titan'))
     aps.get_leaf('Br03').reveal_creatures(('Behemoth', 'Cyclops', 'Cyclops',
-      'Cyclops', 'Gorgon', 'Gorgon', 'Titan'))
+                                           'Cyclops', 'Gorgon',
+                                           'Gorgon', 'Titan'))
     aps.get_leaf('Gr08').reveal_creatures(('Angel', 'Gorgon', 'Gorgon',
-      'Gorgon', 'Gorgon', 'Gorgon'))
+                                           'Gorgon', 'Gorgon', 'Gorgon'))
     aps.get_leaf('Br03').reveal_creatures(('Behemoth', 'Cyclops', 'Cyclops',
-      'Cyclops', 'Gorgon', 'Gorgon', 'Titan'))
+                                           'Cyclops', 'Gorgon',
+                                           'Gorgon', 'Titan'))
     aps.get_leaf('Gr08').reveal_creatures(('Angel', 'Gorgon', 'Gorgon',
-      'Gorgon', 'Gorgon', 'Gorgon'))
+                                           'Gorgon', 'Gorgon', 'Gorgon'))
     aps.get_leaf('Br03').remove_creatures(['Gorgon', 'Cyclops', 'Cyclops',
-      'Gorgon', 'Behemoth'])
+                                           'Gorgon', 'Behemoth'])
     aps.get_leaf('Gr08').remove_creatures(['Angel', 'Gorgon', 'Gorgon',
-      'Gorgon', 'Gorgon', 'Gorgon'])
+                                           'Gorgon', 'Gorgon', 'Gorgon'])
     aps.get_leaf('Br03').add_creature('Angel')
     aps.get_leaf('Gr07').reveal_creatures(['Cyclops', 'Cyclops', 'Cyclops'])
     aps.get_leaf('Gr07').add_creature('Behemoth')
@@ -4818,7 +4857,7 @@ def test_predict_splits12():
     aps.get_leaf('Gr06').reveal_creatures(['Ranger'])
     aps.get_leaf('Gr06').add_creature('Ranger')
     aps.get_leaf('Gd11').reveal_creatures(('Angel', 'Ranger', 'Titan', 'Troll',
-      'Troll', 'Troll'))
+                                           'Troll', 'Troll'))
     aps.get_leaf('Gd11').reveal_creatures(['Ranger'])
     aps.get_leaf('Gd11').add_creature('Ranger')
     aps.get_leaf('Bk03').split(2, 'Bk09', 22)
@@ -4826,14 +4865,14 @@ def test_predict_splits12():
     aps.get_leaf('Bk09').add_creature('Ranger')
     aps.get_leaf('Gr06').split(2, 'Gr05', 23)
     aps.get_leaf('Gr06').reveal_creatures(['Ranger', 'Ranger', 'Ranger',
-      'Ranger', 'Ranger'])
+                                           'Ranger', 'Ranger'])
     aps.get_leaf('Gr05').reveal_creatures(['Ranger', 'Troll'])
     aps.get_leaf('Bk10').reveal_creatures(('Ranger', 'Ranger', 'Ranger',
-      'Ranger'))
+                                           'Ranger'))
     aps.get_leaf('Gr07').reveal_creatures(('Behemoth', 'Cyclops', 'Cyclops',
-      'Cyclops', 'Gorgon'))
+                                           'Cyclops', 'Gorgon'))
     aps.get_leaf('Bk10').reveal_creatures(('Ranger', 'Ranger', 'Ranger',
-      'Ranger'))
+                                           'Ranger'))
     aps.get_leaf('Gr02').reveal_creatures(['Angel'])
     aps.get_leaf('Gr02').reveal_creatures(['Angel'])
     aps.get_leaf('Gr02').remove_creature('Angel')
@@ -4842,11 +4881,11 @@ def test_predict_splits12():
     aps.get_leaf('Gr07').remove_creature('Angel')
     aps.get_leaf('Gr02').add_creature('Angel')
     aps.get_leaf('Bk10').reveal_creatures(('Ranger', 'Ranger', 'Ranger',
-      'Ranger'))
+                                           'Ranger'))
     aps.get_leaf('Gr07').reveal_creatures(('Behemoth', 'Cyclops', 'Cyclops',
-      'Cyclops', 'Gorgon'))
+                                           'Cyclops', 'Gorgon'))
     aps.get_leaf('Bk10').reveal_creatures(('Ranger', 'Ranger', 'Ranger',
-      'Ranger'))
+                                           'Ranger'))
     aps.get_leaf('Gr07').add_creature('Angel')
     aps.get_leaf('Gr02').reveal_creatures(['Titan'])
     aps.get_leaf('Gr02').add_creature('Warlock')
@@ -4854,12 +4893,12 @@ def test_predict_splits12():
     aps.get_leaf('Gr07').add_creature('Behemoth')
     aps.get_leaf('Gd11').split(2, 'Gd09', 23)
     aps.get_leaf('Gd08').reveal_creatures(('Behemoth', 'Cyclops', 'Cyclops',
-      'Gorgon', 'Gorgon'))
+                                           'Gorgon', 'Gorgon'))
     aps.get_leaf('Gd08').add_creature('Angel')
     aps.get_leaf('Bk03').reveal_creatures(['Ranger'])
     aps.get_leaf('Bk03').add_creature('Ranger')
     aps.get_leaf('Gr12').split(2, 'Gr11', 24)
     aps.get_leaf('Gr12').reveal_creatures(['Gorgon', 'Cyclops', 'Cyclops',
-      'Ranger', 'Ranger'])
+                                           'Ranger', 'Ranger'])
     aps.get_leaf('Gr11').reveal_creatures(['Lion', 'Lion'])
     aps.print_leaves()

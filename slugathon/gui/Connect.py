@@ -26,9 +26,11 @@ defer.setDebugging(True)
 
 
 class Connect(gtk.Window):
+
     """GUI for connecting to a server."""
+
     def __init__(self, playername, password, server_name, server_port,
-      connect_now, log_path):
+                 connect_now, log_path):
         gtk.Window.__init__(self)
 
         self.playernames = set()
@@ -72,7 +74,7 @@ class Connect(gtk.Window):
 
         connect_button = gtk.Button("Connect to server")
         connect_button.connect("button-press-event",
-          self.cb_connect_button_clicked)
+                               self.cb_connect_button_clicked)
         vbox1.pack_start(connect_button, expand=False)
 
         hseparator1 = gtk.HSeparator()
@@ -80,7 +82,7 @@ class Connect(gtk.Window):
 
         start_server_button = gtk.Button("Start local server")
         start_server_button.connect("button-press-event",
-          self.cb_start_server_button_clicked)
+                                    self.cb_start_server_button_clicked)
         vbox1.pack_start(start_server_button, expand=False)
 
         hseparator2 = gtk.HSeparator()
@@ -117,8 +119,8 @@ class Connect(gtk.Window):
         log_observer = log.PythonLoggingObserver()
         log_observer.start()
         formatter = logging.Formatter(
-          "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
-          "%(message)s")
+            "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
+            "%(message)s")
         if log_path:
             file_handler = logging.FileHandler(filename=log_path)
             file_handler.setFormatter(formatter)
@@ -187,7 +189,7 @@ class Connect(gtk.Window):
         password = self.password_entry.get_text()
         server_name = self.server_name_comboboxentry.get_child().get_text()
         server_port = int(self.server_port_comboboxentry.get_child().
-          get_text())
+                          get_text())
         prefs.save_server(server_name, server_port)
         prefs.save_last_playername(playername)
         self.save_window_position()
@@ -200,10 +202,11 @@ class Connect(gtk.Window):
         if hasattr(sys, "frozen"):
             # TODO Find the absolute path.
             def1 = utils.getProcessValue("slugathon.exe", ["server", "-n"],
-              env=os.environ)
+                                         env=os.environ)
         else:
             def1 = utils.getProcessValue(sys.executable,
-              ["-m", "slugathon.net.Server", "-n"], env=os.environ)
+                                         ["-m", "slugathon.net.Server", "-n"],
+                                         env=os.environ)
         def1.addCallback(self.server_exited)
         def1.addErrback(self.server_failed)
 
@@ -225,14 +228,14 @@ class Connect(gtk.Window):
 
     def connection_failed(self, arg):
         self.status_textview.modify_text(gtk.STATE_NORMAL,
-          gtk.gdk.color_parse("red"))
+                                         gtk.gdk.color_parse("red"))
         self.status_textview.get_buffer().set_text("Login failed")
 
     def server_failed(self, arg):
         self.status_textview.modify_text(gtk.STATE_NORMAL,
-          gtk.gdk.color_parse("red"))
+                                         gtk.gdk.color_parse("red"))
         self.status_textview.get_buffer().set_text("Server failed %s" %
-          str(arg))
+                                                   str(arg))
 
 
 def add_arguments(parser):
@@ -245,9 +248,14 @@ def add_arguments(parser):
     parser.add_argument("-s", "--server", action="store", type=str)
     parser.add_argument("-p", "--port", action="store", type=int)
     parser.add_argument("-c", "--connect", action="store_true")
-    parser.add_argument("-l", "--log-path", action="store", type=str,
-      default=os.path.join(logdir, "slugathon-client-%d.log" %
-      int(time.time())), help="path to logfile")
+    parser.add_argument("-l",
+                        "--log-path",
+                        action="store",
+                        type=str,
+                        default=os.path.join(logdir,
+                                             "slugathon-client-%d.log"
+                                             % int(time.time())),
+                        help="path to logfile")
 
 
 def main():
@@ -255,7 +263,7 @@ def main():
     add_arguments(parser)
     args, extras = parser.parse_known_args()
     Connect(args.playername, args.password, args.server, args.port,
-      args.connect, args.log_path)
+            args.connect, args.log_path)
     reactor.run()
 
 if __name__ == "__main__":

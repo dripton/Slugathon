@@ -29,10 +29,12 @@ def format_time(secs):
 
 @implementer(IObserver)
 class WaitingForPlayers(gtk.Dialog):
+
     """Waiting for players to start game dialog."""
+
     def __init__(self, user, playername, game, parent):
         gtk.Dialog.__init__(self, "Waiting for Players - %s" % playername,
-          parent)
+                            parent)
         self.user = user
         self.playername = playername
         self.game = game
@@ -111,7 +113,7 @@ class WaitingForPlayers(gtk.Dialog):
         self.vbox.pack_start(self.start_button, expand=False)
         self.start_button.connect("button-press-event", self.cb_click_start)
         self.start_button.set_sensitive(self.playername ==
-          self.game.owner.name)
+                                        self.game.owner.name)
 
         self.connect("destroy", self.cb_destroy)
 
@@ -125,7 +127,7 @@ class WaitingForPlayers(gtk.Dialog):
         headers = ["Player Name", "Skill"]
         for (ii, title) in enumerate(headers):
             column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
-              text=ii)
+                                        text=ii)
             self.player_list.append_column(column)
 
         self.show_all()
@@ -198,7 +200,7 @@ class WaitingForPlayers(gtk.Dialog):
         while len(self.player_store) > length:
             del self.player_store[length]
         self.start_button.set_sensitive(self.playername ==
-          self.game.owner.name)
+                                        self.game.owner.name)
 
     def failure(self, arg):
         log.err(arg)

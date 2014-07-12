@@ -15,25 +15,25 @@ def test_best7():
     assert CleverBot.best7(score_moves) == set(["A1", "A2", "A3", "B1", "B2"])
 
     score_moves = [(1, "A1"), (2, "A2"), (3, "A3"), (4, "B1"), (5, "B2"),
-      (6, "B3"), (7, "B4"), (8, "C1")]
+                   (6, "B3"), (7, "B4"), (8, "C1")]
     assert CleverBot.best7(score_moves) == set(["A2", "A3", "B1", "B2", "B3",
-      "B4", "C1"])
+                                                "B4", "C1"])
 
     score_moves = [(1, "A1"), (2, "A2"), (2, "C2"), (3, "A3"), (4, "B1"),
-      (5, "B2"), (6, "B3"), (7, "B4"), (8, "C1")]
+                   (5, "B2"), (6, "B3"), (7, "B4"), (8, "C1")]
     best_moves = CleverBot.best7(score_moves)
     assert (best_moves == set(["A2", "A3", "B1", "B2", "B3", "B4", "C1"]) or
-      best_moves == set(["C2", "A3", "B1", "B2", "B3", "B4", "C1"]))
+            best_moves == set(["C2", "A3", "B1", "B2", "B3", "B4", "C1"]))
 
     score_moves = [(1, "A1"), (2, "A2"), (2, "C2"), (2, "A3"), (4, "B1"),
-      (5, "B2"), (6, "B3"), (7, "B4"), (8, "C1")]
+                   (5, "B2"), (6, "B3"), (7, "B4"), (8, "C1")]
     seen = set()
     for trial in xrange(20):
         best_moves = CleverBot.best7(score_moves)
         assert (
-          best_moves == set(["A2", "A3", "B1", "B2", "B3", "B4", "C1"]) or
-          best_moves == set(["C2", "A3", "B1", "B2", "B3", "B4", "C1"]) or
-          best_moves == set(["A2", "C2", "B1", "B2", "B3", "B4", "C1"]))
+            best_moves == set(["A2", "A3", "B1", "B2", "B3", "B4", "C1"]) or
+            best_moves == set(["C2", "A3", "B1", "B2", "B3", "B4", "C1"]) or
+            best_moves == set(["A2", "C2", "B1", "B2", "B3", "B4", "C1"]))
         for move in best_moves:
             seen.add(move)
     # Make sure we see all the tied moves at some point.
@@ -151,13 +151,13 @@ def test_score_legion_move_brush():
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
     player0.split_legion("Rd01", "Rd02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     bu01 = player1.markerid_to_legion["Bu01"]
     rd01.creatures.append(Creature.Creature("Ranger"))
     rd01.creatures.append(Creature.Creature("Gorgon"))
@@ -408,13 +408,13 @@ def test_score_legion_move_plain():
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
     player0.split_legion("Rd01", "Rd02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     bu01 = player1.markerid_to_legion["Bu01"]
     rd01.creatures.append(Creature.Creature("Ranger"))
     rd01.creatures.append(Creature.Creature("Gorgon"))
@@ -611,13 +611,13 @@ def test_score_legion_move_swamp():
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
     player0.split_legion("Rd01", "Rd02",
-      ["Titan", "Ogre", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Centaur", "Gargoyle"])
+                         ["Titan", "Ogre", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Centaur", "Gargoyle"])
     rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
-      ["Titan", "Centaur", "Gargoyle", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Ogre"])
+                         ["Titan", "Centaur", "Gargoyle", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Ogre"])
     bu01 = player1.markerid_to_legion["Bu01"]
     rd01.creatures.append(Creature.Creature("Troll"))
     rd01.creatures.append(Creature.Creature("Troll"))
@@ -684,7 +684,7 @@ def test_score_legion_move_swamp():
         for hexlabel2 in ["B1", "B3", "B4"]:
             for hexlabel3 in ["C1", "C3"]:
                 assert (move_to_score[hexlabel1] > move_to_score[hexlabel2] >
-                  move_to_score[hexlabel3])
+                        move_to_score[hexlabel3])
 
     hexlabel = d_titan.hexlabel
     move_to_score = {}
@@ -699,8 +699,10 @@ def test_score_legion_move_swamp():
         for hexlabel2 in ["B1", "B3", "B4"]:
             for hexlabel3 in ["C1", "C3"]:
                 for hexlabel4 in ["D2", "D4"]:
-                    assert (move_to_score[hexlabel1] > move_to_score[hexlabel2]
-                      > move_to_score[hexlabel3] > move_to_score[hexlabel4])
+                    assert (move_to_score[hexlabel1] >
+                            move_to_score[hexlabel2] >
+                            move_to_score[hexlabel3] >
+                            move_to_score[hexlabel4])
 
     d_troll1.move("B2")
     d_troll2.move("B4")
@@ -734,8 +736,10 @@ def test_score_legion_move_swamp():
         for hexlabel2 in ["E1", "E2", "E3", "E5"]:
             for hexlabel3 in ["D2", "D4", "D5", "D6"]:
                 for hexlabel4 in ["C1", "C3"]:
-                    assert (move_to_score[hexlabel1] > move_to_score[hexlabel2]
-                      > move_to_score[hexlabel3] > move_to_score[hexlabel4])
+                    assert (move_to_score[hexlabel1] >
+                            move_to_score[hexlabel2] >
+                            move_to_score[hexlabel3] >
+                            move_to_score[hexlabel4])
 
     hexlabel = a_gargoyle1.hexlabel
     move_to_score = {}
@@ -750,7 +754,7 @@ def test_score_legion_move_swamp():
         for hexlabel2 in ["E1", "E2", "E3", "E5"]:
             for hexlabel3 in ["D2", "D4", "D5", "D6"]:
                 assert (move_to_score[hexlabel3] > move_to_score[hexlabel2] >
-                  move_to_score[hexlabel1])
+                        move_to_score[hexlabel1])
 
     hexlabel = a_cyclops1.hexlabel
     move_to_score = {}
@@ -808,15 +812,15 @@ def test_score_move_scary_pursuer():
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
     player0.split_legion("Rd01", "Rd02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     player0.done_with_splits()
     rd01 = player0.markerid_to_legion["Rd01"]
 
     player1.pick_marker("Bu02")
     player1.split_legion("Bu01", "Bu02",
-      ["Titan", "Centaur", "Ogre", "Gargoyle"],
-      ["Angel", "Centaur", "Ogre", "Gargoyle"])
+                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
+                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
     bu01 = player1.markerid_to_legion["Bu01"]
     bu02 = player1.markerid_to_legion["Bu02"]
     player0.done_with_splits()
@@ -843,7 +847,7 @@ def test_score_move_scary_pursuer():
     hexlabel_to_score = {}
     for hexlabel in [41, 42, 1, 2, 3, 4, 5]:
         hexlabel_to_score[hexlabel] = cleverbot._score_move(bu01, hexlabel,
-          hexlabel != 41)
+                                                            hexlabel != 41)
     print hexlabel_to_score
     assert hexlabel_to_score[42] > hexlabel_to_score[41]
     assert hexlabel_to_score[42] > hexlabel_to_score[3]

@@ -6,6 +6,7 @@ BIGNUM = 99999999
 
 
 class MasterHex(object):
+
     """A logical MasterBoard hex.  No GUI logic.
 
     Hex vertexes are numbered like this:
@@ -100,7 +101,7 @@ class MasterHex(object):
         """
         delta_x = self.x - self.board.mid_x
         delta_y = (1.0 * (self.y - self.board.mid_y) * self.board.width /
-          self.board.height)
+                   self.board.height)
         try:
             ratio = delta_x / delta_y
         except ZeroDivisionError:

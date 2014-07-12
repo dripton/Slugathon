@@ -16,15 +16,17 @@ def new(playername, legion, parent):
     """Create a PickTeleportingLord dialog and return it and a Deferred."""
     def1 = defer.Deferred()
     pick_teleporting_lord = PickTeleportingLord(playername, legion, def1,
-      parent)
+                                                parent)
     return pick_teleporting_lord, def1
 
 
 class PickTeleportingLord(gtk.Dialog):
+
     """Dialog to pick a lord to reveal for tower teleport."""
+
     def __init__(self, playername, legion, def1, parent):
         gtk.Dialog.__init__(self, "PickTeleportingLord - %s" % playername,
-          parent)
+                            parent)
         self.legion = legion
         self.deferred = def1
 
@@ -46,7 +48,7 @@ class PickTeleportingLord(gtk.Dialog):
         player = self.legion.player
         for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, player.color, scale=20,
-              outlined=creature.is_lord)
+                             outlined=creature.is_lord)
             hbox.pack_start(chit.event_box, expand=False)
             if creature.is_lord:
                 chit.connect("button-press-event", self.cb_click)
@@ -78,7 +80,7 @@ if __name__ == "__main__":
     player = Player.Player(playername, game, 0)
     player.color = "Red"
     creatures1 = [Creature.Creature(name) for name in
-      ["Titan", "Archangel", "Angel", "Ogre", "Troll", "Ranger"]]
+                 ["Titan", "Archangel", "Angel", "Ogre", "Troll", "Ranger"]]
     legion = Legion.Legion(player, "Rd01", creatures1, 1)
     player.markerid_to_legion[legion.markerid] = legion
 

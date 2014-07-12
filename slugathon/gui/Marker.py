@@ -19,7 +19,9 @@ CHIT_SCALE_FACTOR = 3
 
 
 class Marker(object):
+
     """Clickable GUI legion marker"""
+
     def __init__(self, legion, show_height, scale=15):
         self.legion = legion
         self.name = legion.markerid
@@ -34,14 +36,15 @@ class Marker(object):
         input_surface = cairo.ImageSurface.create_from_png(self.image_path)
         self._render_text(input_surface)
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
-          self.chit_scale)
+                                          self.chit_scale)
         ctx = cairo.Context(self.surface)
         ctx.scale(float(self.chit_scale) / input_surface.get_width(),
-          float(self.chit_scale) / input_surface.get_height())
+                  float(self.chit_scale) / input_surface.get_height())
         ctx.set_source_surface(input_surface)
         ctx.paint()
         with tempfile.NamedTemporaryFile(prefix="slugathon",
-          suffix=".png", delete=False) as tmp_file:
+                                         suffix=".png", delete=False) \
+                as tmp_file:
             tmp_path = tmp_file.name
         self.surface.write_to_png(tmp_path)
         pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
@@ -105,7 +108,7 @@ if __name__ == "__main__":
 
     now = time.time()
     creatures = [Creature.Creature(name) for name in
-      creaturedata.starting_creature_names]
+                 creaturedata.starting_creature_names]
     playername = "test"
     game = Game.Game("g1", playername, now, now, 2, 6)
     player = Player.Player(playername, game, 0)
