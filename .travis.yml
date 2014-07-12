@@ -10,5 +10,8 @@ install:
   - pip install -r requirements-test.txt --use-mirrors
   - pip install .
 
+virtualenv:
+  - system_site_packages: true
+
 script:
   - py.test
