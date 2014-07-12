@@ -4,14 +4,16 @@ python:
   - 2.6
   - 2.7
 
-install: 
+virtualenv:
+  system_site_packages: true
+
+before_install: 
   - sudo apt-get install python-gtk2
+
+install: 
   - pip install -r requirements.txt --use-mirrors
   - pip install -r requirements-test.txt --use-mirrors
   - pip install .
-
-virtualenv:
-  - system_site_packages: true
 
 script:
   - py.test
