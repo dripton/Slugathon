@@ -21,7 +21,7 @@ script:
 
 after_success:
   coveralls
-  pyflakes . | awk -F\: '{printf "%s:%s: [E]%s\n", $1, $2, $3}'
+  #pyflakes . | awk -F\: '{printf "%s:%s: [E]%s\n", $1, $2, $3}'
   #pep8 -r .
 
 notifications:
