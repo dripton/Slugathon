@@ -1993,6 +1993,7 @@ class Game(Observed):
             winner_player = self.get_player_by_name(action.winner_playername)
             loser_player = self.get_player_by_name(action.loser_playername)
             logging.info("%s eliminated by %s", loser_player, winner_player)
+            logging.info("%s legions: %s", loser_player, loser_player.legions)
             player_to_full_points = defaultdict(int)
             for legion in loser_player.legions:
                 if legion.engaged:
@@ -2000,6 +2001,8 @@ class Game(Observed):
                         legion.hexlabel).pop().player
                 else:
                     player = winner_player
+                logging.info("%s %s %d", legion, legion.living_creatures,
+                             legion.living_creatures_score)
                 player_to_full_points[player] += legion.living_creatures_score
             for player, full_points in player_to_full_points.iteritems():
                 if player is not None:
