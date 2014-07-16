@@ -20,9 +20,9 @@ script:
   - py.test --cov slugathon --cov-report term-missing test/
 
 after_success:
-  coveralls
-  #pyflakes . | awk -F: '{printf "%s:%s: [E]%s\n", $1, $2, $3}'
-  pep8 -r .
+  - coveralls
+  - pyflakes . | awk -F: '{printf "%s:%s: [E]%s\n", $1, $2, $3}'
+  - pep8 -r .
 
 notifications:
   email: false
