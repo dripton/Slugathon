@@ -104,7 +104,7 @@ if __name__ == "__main__":
     inspector.show_legion(legion)
 
     creatures2 = [Creature.Creature(name) for name in
-                 ["Angel", "Giant", "Warbear", "Unicorn"]]
+                  ["Angel", "Giant", "Warbear", "Unicorn"]]
     index = random.randrange(1, 12 + 1)
     legion2 = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures2, 2)
     inspector.show_legion(legion2)

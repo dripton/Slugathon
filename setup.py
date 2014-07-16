@@ -17,10 +17,12 @@ VERSION = "0.1"
 
 
 class install_data_twisted(install_data):
+
     """Make sure data files are installed in package.
 
     Yuck.  Taken from an old version of Twisted's setup.py.
     """
+
     def finalize_options(self):
         self.set_undefined_options("install", ("install_lib", "install_dir"),)
         install_data.finalize_options(self)
@@ -78,8 +80,7 @@ setup(
     packages=["slugathon", "slugathon.ai", "slugathon.data",
               "slugathon.game", "slugathon.gui", "slugathon.net",
               "slugathon.util"],
-    data_files=
-    [
+    data_files=[
         ("slugathon/images/battlehex", glob("slugathon/images/battlehex/*")),
         ("slugathon/images/creature", glob("slugathon/images/creature/*")),
         ("slugathon/images/dice", glob("slugathon/images/dice/*")),

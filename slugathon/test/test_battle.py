@@ -1569,7 +1569,7 @@ class TestBattle(object):
         assert titan.can_take_strike_penalty(gargoyle2)
 
         assert titan.valid_strike_penalties(ogre) == set([(6, 4), (6, 3),
-                                           (6, 2)])
+                                                          (6, 2)])
         assert titan.valid_strike_penalties(gargoyle1) == set([(6, 4)])
         assert titan.valid_strike_penalties(gargoyle2) == set([(6, 4), (6, 3)])
 

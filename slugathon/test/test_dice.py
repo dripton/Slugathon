@@ -164,7 +164,7 @@ class TestDice(object):
         n = self.trials
         mean_M = 2. * r * (n - r) / n + 1.
         var_M = (((2. * r) * (n - r) / n ** 2 * ((2. * r) * (n - r) - n)) /
-                (n - 1.))
+                 (n - 1.))
         logging.info("M test: r = %s M = %s mean = %s var = %s", r, M, mean_M,
                      var_M)
         fail_if_abnormal(M, mean_M, var_M)
@@ -189,7 +189,7 @@ class TestDice(object):
         R = 0. + pos
         mean_R = 1. + (2 * pos * neg) / (pos + neg)
         var_R = (((2. * pos * neg) * (2. * pos * neg - pos - neg)) /
-                ((pos + neg) * (pos + neg) * (pos + neg - 1)))
+                 ((pos + neg) * (pos + neg) * (pos + neg - 1)))
         logging.info("Runs test: R = %s m = %s mean = %s var = %s", R, m,
                      mean_R, var_R)
         fail_if_abnormal(R, mean_R, var_R)

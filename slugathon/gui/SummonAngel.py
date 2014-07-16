@@ -47,7 +47,7 @@ class SummonAngel(gtk.Dialog):
 
         for legion2 in player.legions:
             if (legion2.any_summonable and not legion2.engaged and
-               legion2 != legion):
+                    legion2 != legion):
                 hbox = gtk.HBox(spacing=3)
                 self.vbox.pack_start(hbox)
                 marker = Marker.Marker(legion2, False, scale=20)
@@ -89,15 +89,15 @@ if __name__ == "__main__":
     player = Player.Player(playername, game, 0)
     player.color = "Red"
     creatures1 = [Creature.Creature(name) for name in
-                 ["Titan", "Ogre", "Troll", "Ranger"]]
+                  ["Titan", "Ogre", "Troll", "Ranger"]]
     creatures2 = [Creature.Creature(name) for name in
-                 ["Angel", "Ogre", "Troll", "Ranger"]]
+                  ["Angel", "Ogre", "Troll", "Ranger"]]
     creatures3 = [Creature.Creature(name) for name in
-                 ["Archangel", "Centaur", "Lion", "Ranger"]]
+                  ["Archangel", "Centaur", "Lion", "Ranger"]]
     creatures4 = [Creature.Creature(name) for name in
-                 ["Gargoyle", "Cyclops", "Gorgon", "Behemoth"]]
+                  ["Gargoyle", "Cyclops", "Gorgon", "Behemoth"]]
     creatures5 = [Creature.Creature(name) for name in
-                 ["Angel", "Angel", "Warlock", "Guardian"]]
+                  ["Angel", "Angel", "Warlock", "Guardian"]]
     legion1 = Legion.Legion(player, "Rd01", creatures1, 1)
     legion2 = Legion.Legion(player, "Rd02", creatures2, 2)
     legion3 = Legion.Legion(player, "Rd03", creatures3, 3)

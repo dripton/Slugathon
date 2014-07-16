@@ -101,7 +101,7 @@ class AIClient(pb.Referenceable, Observed):
         if not os.path.exists(logdir):
             os.makedirs(logdir)
         self.log_path = os.path.join(logdir, "slugathon-%s-%s.log" %
-                                    (self.game_name, self.playername))
+                                     (self.game_name, self.playername))
         file_handler = logging.FileHandler(filename=self.log_path)
         file_handler.setFormatter(formatter)
         logging.getLogger().addHandler(file_handler)
@@ -249,10 +249,10 @@ class AIClient(pb.Referenceable, Observed):
         """Updates from User will come via remote_update, with
         observed set to None."""
         if (self.game_name is not None and hasattr(action, "game_name")
-           and action.game_name != self.game_name):
+                and action.game_name != self.game_name):
             return
         if (isinstance(action, Action.AddUsername) or
-           isinstance(action, Action.DelUsername)):
+                isinstance(action, Action.DelUsername)):
             return
 
         logging.info("%s", action)
@@ -313,8 +313,8 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
                 logging.info("Game %s over, won by %s" %
-                            (action.game_name,
-                             " and ".join(action.winner_names)))
+                             (action.game_name,
+                              " and ".join(action.winner_names)))
             else:
                 logging.info("Game %s over, draw" % action.game_name)
             logging.info("AI exiting")
@@ -328,8 +328,8 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             logging.info("ps = PredictSplits('%s', '%s', %s)" %
-                        (action.playername, action.markerid,
-                         starting_creature_names))
+                         (action.playername, action.markerid,
+                          starting_creature_names))
             ps = predictsplits.PredictSplits(action.playername,
                                              action.markerid,
                                              starting_creature_names)
@@ -400,8 +400,8 @@ class AIClient(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             player = game.get_player_by_name(self.playername)
             if (game.defender_legion and game.defender_legion.player.name ==
-               self.playername and action.defender_markerid in
-               player.markerid_to_legion):
+                    self.playername and action.defender_markerid in
+                    player.markerid_to_legion):
                 reactor.callLater(self.delay, self.ai.move_creatures, game)
 
         elif isinstance(action, Action.MoveCreature):
@@ -514,8 +514,8 @@ class AIClient(pb.Referenceable, Observed):
                                           self.ai.choose_engagement, game)
             else:
                 if (game.phase == Phase.FIGHT and
-                   game.battle_phase != Phase.REINFORCE and
-                   game.active_player.name == self.playername):
+                        game.battle_phase != Phase.REINFORCE and
+                        game.active_player.name == self.playername):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
                                       game)
 
@@ -538,7 +538,7 @@ class AIClient(pb.Referenceable, Observed):
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
             else:
                 if (game.phase == Phase.FIGHT and
-                   game.active_player.name == self.playername):
+                        game.active_player.name == self.playername):
                     reactor.callLater(self.delay, self.ai.choose_engagement,
                                       game)
 
@@ -599,7 +599,7 @@ class AIClient(pb.Referenceable, Observed):
                 if game.attacker_legion:
                     legion = game.attacker_legion
                     if (legion.markerid == action.winner_markerid and
-                       legion.can_summon):
+                            legion.can_summon):
                         reactor.callLater(self.delay, self.ai.summon_angel,
                                           game)
                         return
@@ -608,7 +608,7 @@ class AIClient(pb.Referenceable, Observed):
                     legion = game.defender_legion
                     if legion.player.name == self.playername:
                         if (legion.markerid == action.winner_markerid and
-                           legion.can_recruit):
+                                legion.can_recruit):
                             reactor.callLater(self.delay, self.ai.reinforce,
                                               game)
                             return

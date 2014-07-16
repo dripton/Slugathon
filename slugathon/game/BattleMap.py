@@ -194,7 +194,7 @@ class BattleMap(object):
         """
         if hexlabel1 not in self.hexes or hexlabel2 not in self.hexes:
             logging.info("BattleMap.range invalid hexlabel %s %s %s" %
-                        (hexlabel1, hexlabel2, allow_entrance))
+                         (hexlabel1, hexlabel2, allow_entrance))
             return maxint
         if hexlabel1 == hexlabel2:
             return 1
@@ -397,7 +397,7 @@ class BattleMap(object):
                 mid_obstacle = True
                 total_obstacles += 1
                 if (border == "Cliff" or border2 == "Cliff" or
-                   border == "Dune" or border2 == "Dune"):
+                        border == "Dune" or border2 == "Dune"):
                     mid_cliff = True
         if next_hex.blocks_line_of_sight:
             return True
@@ -405,8 +405,8 @@ class BattleMap(object):
         # elevation than the creature, or unless the creature is at
         # the base of a cliff and the striker or target is atop it.
         if (game is not None and game.is_battle_hex_occupied(next_hex.label)
-           and next_hex.elevation >= strike_elevation and
-           (not striker_atop_cliff or current_hex != initial_hex)):
+                and next_hex.elevation >= strike_elevation and
+                (not striker_atop_cliff or current_hex != initial_hex)):
             mid_chit = True
         return self._is_los_blocked_dir(initial_hex, next_hex, final_hex,
                                         left, strike_elevation, striker_atop,

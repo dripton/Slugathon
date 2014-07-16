@@ -80,7 +80,7 @@ if __name__ == "__main__":
     player = Player.Player(playername, game, 0)
     player.color = "Red"
     creatures1 = [Creature.Creature(name) for name in
-                 ["Titan", "Archangel", "Angel", "Ogre", "Troll", "Ranger"]]
+                  ["Titan", "Archangel", "Angel", "Ogre", "Troll", "Ranger"]]
     legion = Legion.Legion(player, "Rd01", creatures1, 1)
     player.markerid_to_legion[legion.markerid] = legion
 

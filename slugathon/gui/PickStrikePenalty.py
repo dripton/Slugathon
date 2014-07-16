@@ -47,7 +47,7 @@ class PickStrikePenalty(gtk.Dialog):
         self.vbox.set_spacing(9)
 
         label = gtk.Label("Choose strike penalty for %r striking %r?" %
-                         (striker, target))
+                          (striker, target))
         self.vbox.add(label)
 
         # Map tuple of (num_dice, strike_number) to set of creatures it can hit

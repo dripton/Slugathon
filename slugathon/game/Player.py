@@ -292,7 +292,7 @@ class Player(Observed):
     def friendly_legions(self, hexlabel=None):
         """Return a set of this player's legions, in hexlabel if not None."""
         return set([legion for legion in self.legions if hexlabel in
-                  (None, legion.hexlabel)])
+                    (None, legion.hexlabel)])
 
     def enemy_legions(self, hexlabel=None):
         """Return a set of other players' legions, in hexlabel if not None."""

@@ -359,7 +359,7 @@ class Game(Observed):
             return
         if playername != self.next_playername_to_pick_color:
             raise AssertionError("illegal assign_color attempt %s %s" %
-                                (playername, color))
+                                 (playername, color))
         if color not in self.colors_left:
             raise AssertionError("tried to take unavailable color")
         player.assign_color(color)
@@ -579,7 +579,7 @@ class Game(Observed):
         masterhex = self.board.hexes[legion.hexlabel]
         if teleport:
             if (player.teleported or teleporting_lord not in
-               legion.creature_names):
+                    legion.creature_names):
                 return False
             moves = self.find_all_teleport_moves(legion, masterhex,
                                                  player.movement_roll)
@@ -645,7 +645,7 @@ class Game(Observed):
         """Called from Server."""
         logging.info("")
         if (self.pending_summon or self.pending_reinforcement or
-           self.pending_acquire):
+                self.pending_acquire):
             logging.info("cannot move on to next engagement yet")
             return
         player = self.get_player_by_name(playername)
@@ -880,7 +880,7 @@ class Game(Observed):
         logging.info("attacker %s", attacker_legion)
         logging.info("defender %s", defender_legion)
         if (not attacker_legion or not defender_legion or playername not in
-           [attacker_legion.player.name, defender_legion.player.name]):
+                [attacker_legion.player.name, defender_legion.player.name]):
             logging.info("illegal fight call from %s", playername)
             return
         if defender_legion.can_flee and not self.defender_chose_not_to_flee:
@@ -911,7 +911,7 @@ class Game(Observed):
                                       angel_names)
         self.notify(action)
         if (self.is_battle_over and not self.pending_summon and not
-           self.pending_reinforcement):
+                self.pending_reinforcement):
             self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -924,7 +924,7 @@ class Game(Observed):
             return
         legion.do_not_acquire_angels()
         if (self.is_battle_over and not self.pending_summon and not
-           self.pending_reinforcement):
+                self.pending_reinforcement):
             self._cleanup_battle()
 
     def done_with_engagements(self, playername):
@@ -938,7 +938,7 @@ class Game(Observed):
             logging.info("%s ending fight phase out of turn" % playername)
             return
         if (self.pending_summon or self.pending_reinforcement or
-           self.pending_acquire):
+                self.pending_acquire):
             raise AssertionError("cannot end engagements yet",
                                  "summon", self.pending_summon,
                                  "reinforcement",
@@ -1230,8 +1230,10 @@ class Game(Observed):
                 creature2 = self.creatures_in_battle_hex(hex2.label).pop()
             except KeyError:
                 creature2 = None
-            if (creature.flies or not creature2 or (ignore_mobile_allies and
-               creature2.legion == creature.legion and creature2.mobile)):
+            if (creature.flies or not creature2 or (
+                    ignore_mobile_allies and
+                    creature2.legion == creature.legion and
+                    creature2.mobile)):
                 if hex1.entrance:
                     # Ignore hexside penalties from entrances.  There aren't
                     # any on the standard boards, and this avoids having to
@@ -1247,9 +1249,10 @@ class Game(Observed):
                             hex2.label).pop()
                     except KeyError:
                         creature2 = None
-                    if (not creature2 or (ignore_mobile_allies and
-                       creature2.legion == creature.legion and
-                       creature2.mobile)):
+                    if (not creature2 or (
+                            ignore_mobile_allies and
+                            creature2.legion == creature.legion and
+                            creature2.mobile)):
                         result.add(hex2.label)
                 if creature.flies:
                     flyover_cost = self.battle_hex_flyover_cost(creature,
@@ -1276,7 +1279,7 @@ class Game(Observed):
         if creature.moved or creature.engaged:
             return result
         if (self.battle_turn == 1 and creature.legion == self.defender_legion
-           and self.battlemap.startlist):
+                and self.battlemap.startlist):
             for hexlabel2 in self.battlemap.startlist:
                 # There can't be any mobile allies there on turn 1.
                 if not self.is_battle_hex_occupied(hexlabel2):
@@ -1475,7 +1478,7 @@ class Game(Observed):
         elif self.attacker_legion and self.attacker_legion.dead:
             # defender wins, possible reinforcement
             if (self.defender_legion and self.attacker_entered and
-               self.defender_legion.can_recruit):
+                    self.defender_legion.can_recruit):
                 logging.info("setting pending_reinforcement = True")
                 self.pending_reinforcement = True
             self.attacker_legion.die(self.defender_legion, False, False)
@@ -1500,7 +1503,7 @@ class Game(Observed):
                     legion.remove_creature_by_name(creature_name)
                     self.caretaker.kill_one(creature_name)
         if (not self.pending_summon and not self.pending_reinforcement and not
-           self.pending_acquire):
+                self.pending_acquire):
             self._cleanup_battle()
         reactor.callLater(1, self._end_dead_player_turn)
 
@@ -1508,7 +1511,7 @@ class Game(Observed):
         """If the active player is dead then advance phases if possible."""
         if self.master:
             if (self.active_player.dead and not self.pending_acquire and not
-               self.pending_summon and not self.pending_reinforcement):
+                    self.pending_summon and not self.pending_reinforcement):
                 logging.info("_end_dead_player_turn")
                 if self.phase == Phase.SPLIT:
                     self.active_player.done_with_splits()
@@ -1533,7 +1536,7 @@ class Game(Observed):
             logging.info("ending counterstrike phase out of phase")
             return
         if (not self.is_battle_over and
-           self.battle_active_legion == self.defender_legion):
+                self.battle_active_legion == self.defender_legion):
             self.battle_turn += 1
             logging.info("bumped battle turn to %s", self.battle_turn)
         if self.is_battle_over:
@@ -1599,9 +1602,9 @@ class Game(Observed):
             for creature in legion.creatures:
                 if creature.dead:
                     if (self.first_attacker_kill is None
-                       and creature.legion is self.defender_legion
-                       and creature.hexlabel != "DEFENDER"
-                       and creature.hexlabel is not None):
+                            and creature.legion is self.defender_legion
+                            and creature.hexlabel != "DEFENDER"
+                            and creature.hexlabel is not None):
                         self.first_attacker_kill = self.battle_turn
                         logging.info("first_attacker_kill %s",
                                      self.battle_turn)
@@ -1899,7 +1902,7 @@ class Game(Observed):
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             if (not self.attacker_entered and self.attacker_legion and
-               self.battle_active_legion == self.attacker_legion):
+                    self.battle_active_legion == self.attacker_legion):
                 for creature in self.attacker_legion.creatures:
                     if not creature.dead and creature.hexlabel != "ATTACKER":
                         self.attacker_entered = True

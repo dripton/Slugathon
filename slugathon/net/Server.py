@@ -277,7 +277,7 @@ class Server(Observed):
                 "--port", str(self.port),
                 "--game-name", game.name,
                 "--log-path", os.path.join(logdir, "slugathon-%s-%s.log" %
-                       (game.name, ainame)),
+                                           (game.name, ainame)),
                 "--ai-time-limit", str(game.ai_time_limit),
             ])
             if not self.no_passwd:
@@ -535,11 +535,12 @@ class Server(Observed):
             attacker_legion = game.find_legion(attacker_markerid)
             defender_legion = game.find_legion(defender_markerid)
             if (not attacker_legion or not defender_legion or playername not in
-               [attacker_legion.player.name, defender_legion.player.name]):
+                    [attacker_legion.player.name,
+                     defender_legion.player.name]):
                 logging.warning("illegal fight call from %s", playername)
                 return
             if (defender_legion.can_flee and not
-               game.defender_chose_not_to_flee):
+                    game.defender_chose_not_to_flee):
                 logging.warning(
                     "Illegal fight call while defender can still flee")
                 return
@@ -587,7 +588,7 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if (player is not None and player == game.battle_active_player and
-               game.battle_phase == Phase.REINFORCE):
+                    game.battle_phase == Phase.REINFORCE):
                 game.done_with_reinforcements(playername)
 
     def done_with_maneuvers(self, playername, game_name):
@@ -596,7 +597,7 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if (player is not None and player == game.battle_active_player and
-               game.battle_phase == Phase.MANEUVER):
+                    game.battle_phase == Phase.MANEUVER):
                 game.done_with_maneuvers(playername)
 
     def strike(self, playername, game_name, striker_name, striker_hexlabel,
@@ -613,7 +614,7 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if (player is not None and player == game.battle_active_player and
-               game.battle_phase == Phase.STRIKE):
+                    game.battle_phase == Phase.STRIKE):
                 game.done_with_strikes(playername)
 
     def done_with_counterstrikes(self, playername, game_name):
@@ -622,7 +623,7 @@ class Server(Observed):
         if game:
             player = game.get_player_by_name(playername)
             if (player is not None and player == game.battle_active_player and
-               game.battle_phase == Phase.COUNTERSTRIKE):
+                    game.battle_phase == Phase.COUNTERSTRIKE):
                 game.done_with_counterstrikes(playername)
 
     def acquire_angels(self, playername, game_name, markerid, angel_names):
@@ -690,7 +691,7 @@ class Server(Observed):
                 logging.warning("out of turn")
                 return
             if (game.pending_summon or game.pending_reinforcement or
-               game.pending_acquire):
+                    game.pending_acquire):
                 logging.warning("waiting on something")
                 return
             if game.phase != Phase.FIGHT:
