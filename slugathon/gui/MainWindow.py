@@ -4,9 +4,9 @@ __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from twisted.internet import gtk2reactor
+from twisted.internet import gtk3reactor
 try:
-    gtk2reactor.install()
+    gtk3reactor.install()
 except AssertionError:
     pass
 import gtk

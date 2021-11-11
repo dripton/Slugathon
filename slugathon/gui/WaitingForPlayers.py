@@ -6,9 +6,9 @@ __license__ = "GNU GPL v2"
 
 import time
 
-from twisted.internet import gtk2reactor
+from twisted.internet import gtk3reactor
 try:
-    gtk2reactor.install()
+    gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import reactor

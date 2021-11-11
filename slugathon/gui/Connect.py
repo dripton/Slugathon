@@ -11,12 +11,14 @@ import sys
 import time
 import logging
 
-from twisted.internet import gtk2reactor
-gtk2reactor.install()
+from twisted.internet import gtk3reactor
+gtk3reactor.install()
 from twisted.internet import reactor, utils, defer
 from twisted.python import log
+import gi
+from gi.repository import GObject
+gi.require_version('Gtk', '3.0')
 import gtk
-import gobject
 
 from slugathon.gui import Client, icon
 from slugathon.util import guiutils, prefs
@@ -135,7 +137,7 @@ class Connect(gtk.Window):
         if not playername:
             playername = prefs.last_playername()
         self.playernames.add(playername)
-        store = gtk.ListStore(gobject.TYPE_STRING)
+        store = gtk.ListStore(GObject.TYPE_STRING)
         active_index = 0
         for index, name in enumerate(sorted(self.playernames)):
             store.append([name])
@@ -164,7 +166,7 @@ class Connect(gtk.Window):
         else:
             server_port = last_server_port
 
-        namestore = gtk.ListStore(gobject.TYPE_STRING)
+        namestore = gtk.ListStore(GObject.TYPE_STRING)
         active_index = 0
         for index, name in enumerate(sorted(self.server_names)):
             namestore.append([name])
@@ -175,7 +177,7 @@ class Connect(gtk.Window):
         self.server_name_comboboxentry.set_active(active_index)
 
         active_index = 0
-        portstore = gtk.ListStore(gobject.TYPE_STRING)
+        portstore = gtk.ListStore(GObject.TYPE_STRING)
         for index, port in enumerate(sorted(self.server_ports)):
             portstore.append([str(port)])
             if port == server_port:

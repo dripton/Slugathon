@@ -8,9 +8,9 @@ import math
 from sys import maxsize
 import logging
 
-from twisted.internet import gtk2reactor
+from twisted.internet import gtk3reactor
 try:
-    gtk2reactor.install()
+    gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import reactor
