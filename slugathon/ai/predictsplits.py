@@ -282,7 +282,7 @@ class Node(object):
                     break
 
         # Need to remove count uncertain creatures.
-        for unused in xrange(count):
+        for unused in range(count):
             remove_last_uncertain_creature(self.creatures)
         if self.parent is None:
             return False
@@ -594,22 +594,22 @@ class PredictSplits(object):
         leaves = self.get_leaves()
         leaves.sort(key=str)
         if newlines:
-            print
+            print()
         for leaf in leaves:
-            print leaf
+            print(leaf)
         if newlines:
-            print
+            print()
 
     def print_nodes(self, newlines=True):
         """Print all nodes in tree, in string order."""
         nodes = self.get_nodes()
         nodes.sort(key=Node.sort_key)
         if newlines:
-            print
+            print()
         for node in nodes:
-            print node
+            print(node)
         if newlines:
-            print
+            print()
 
     def get_leaf(self, markerid):
         """Return the leaf node with matching markerid"""
@@ -646,17 +646,17 @@ class AllPredictSplits(list):
 
     def print_leaves(self):
         """Print all leaf nodes."""
-        print
+        print()
         for ps in self:
             ps.print_leaves(False)
-        print
+        print()
 
     def print_nodes(self):
         """Print all nodes."""
-        print
+        print()
         for ps in self:
             ps.print_nodes(False)
-        print
+        print()
 
     def check(self):
         """Sanity check"""

@@ -146,7 +146,7 @@ class GUIBattleMap(gtk.EventBox):
             self.hbox5.pack_start(self.defender_graveyard)
 
         self.guihexes = {}
-        for hex1 in self.battlemap.hexes.itervalues():
+        for hex1 in self.battlemap.hexes.values():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
         self.repaint_hexlabels = set()
 
@@ -225,7 +225,7 @@ class GUIBattleMap(gtk.EventBox):
 
     def unselect_all(self):
         """Unselect all guihexes."""
-        for hexlabel, guihex in self.guihexes.iteritems():
+        for hexlabel, guihex in self.guihexes.items():
             if guihex.selected:
                 guihex.selected = False
                 self.repaint_hexlabels.add(hexlabel)
@@ -330,7 +330,7 @@ class GUIBattleMap(gtk.EventBox):
             if chit.point_inside((event.x, event.y)):
                 self.clicked_on_chit(area, event, chit)
                 return True
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 hexlabel = guihex.battlehex.label
                 chits = self.chits_in_hex(hexlabel)
@@ -681,7 +681,7 @@ class GUIBattleMap(gtk.EventBox):
             x, y, width, height = guihex.bounding_rect
             ctx.rectangle(x, y, width, height)
             ctx.fill()
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
         self.draw_chits(ctx)
@@ -952,7 +952,8 @@ class GUIBattleMap(gtk.EventBox):
         elif isinstance(action, Action.UnsummonAngel):
             self.repaint(["ATTACKER"])
 
-    def picked_reinforcement(self, (legion, creature, recruiter_names)):
+    def picked_reinforcement(self, xxx_todo_changeme):
+        (legion, creature, recruiter_names) = xxx_todo_changeme
         if legion and creature:
             def1 = self.user.callRemote("recruit_creature", self.game.name,
                                         legion.markerid, creature.name,
@@ -963,7 +964,8 @@ class GUIBattleMap(gtk.EventBox):
                                         self.game.name)
             def1.addErrback(self.failure)
 
-    def picked_summon(self, (legion, donor, creature)):
+    def picked_summon(self, xxx_todo_changeme1):
+        (legion, donor, creature) = xxx_todo_changeme1
         if legion and donor and creature:
             def1 = self.user.callRemote("summon_angel", self.game.name,
                                         legion.markerid, donor.markerid,
@@ -974,7 +976,8 @@ class GUIBattleMap(gtk.EventBox):
                                         self.game.name)
             def1.addErrback(self.failure)
 
-    def picked_carry(self, (carry_target, carries)):
+    def picked_carry(self, xxx_todo_changeme2):
+        (carry_target, carries) = xxx_todo_changeme2
         logging.info("picked_carry %s %s", carry_target, carries)
         if self.pickcarry is not None:
             self.pickcarry.destroy()
@@ -984,8 +987,9 @@ class GUIBattleMap(gtk.EventBox):
                                     carries)
         def1.addErrback(self.failure)
 
-    def picked_strike_penalty(self, (striker, target, num_dice,
-                                     strike_number)):
+    def picked_strike_penalty(self, xxx_todo_changeme3):
+        (striker, target, num_dice,
+                                     strike_number) = xxx_todo_changeme3
         logging.info("picked_strike_penalty %s %s %s %s", striker, target,
                      num_dice, strike_number)
         if striker is None:
@@ -1018,7 +1022,7 @@ if __name__ == "__main__":
         if len(argv) > 2:
             entry_side = int(argv[2])
     else:
-        terrain = random.choice(battlemapdata.data.keys())
+        terrain = random.choice(list(battlemapdata.data.keys()))
     if entry_side is None:
         if terrain == "Tower":
             entry_side = 5

@@ -96,9 +96,9 @@ class TurnTrack(gtk.DrawingArea):
         ctx.rectangle(0, 0, width, height)
         ctx.fill()
         ctx.set_line_width(round(0.06 * self.scale))
-        for ii in xrange(7):
+        for ii in range(7):
             self.draw_turn_box(ctx, ii)
-        for ii in xrange(7):
+        for ii in range(7):
             self.draw_turn_number(ctx, ii)
         self.draw_marker(ctx)
 

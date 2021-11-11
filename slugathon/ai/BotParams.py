@@ -91,7 +91,7 @@ class BotParams(namedtuple("BotParams", fields)):
         if match:
             fields_to_mutate = set()
             st = match.group(0)
-            for field, val in defaults.iteritems():
+            for field, val in defaults.items():
                 if field + "=" not in st:
                     st = st.replace(")", ", %s=%f)" % (field, val))
                     fields_to_mutate.add(field)
@@ -117,7 +117,7 @@ class BotParams(namedtuple("BotParams", fields)):
     def mutate_all_fields(self, ratio=0.25):
         """Return a new BotParams with all fields mutated."""
         dct = self._asdict()
-        for key, val in dct.iteritems():
+        for key, val in dct.items():
             dct[key] = random.uniform(val * (1.0 - ratio), val * (1.0 + ratio))
         return BotParams(**dct)
 

@@ -68,7 +68,7 @@ def test_number_in_play():
 def test_take_too_many():
     caretaker = Caretaker.Caretaker()
     assert caretaker.num_left("Serpent") == 10
-    for unused in xrange(10):
+    for unused in range(10):
         caretaker.take_one("Serpent")
     assert caretaker.num_left("Serpent") == 0
     try:

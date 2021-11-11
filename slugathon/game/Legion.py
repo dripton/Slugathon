@@ -21,7 +21,7 @@ class Legion(Observed):
 
     def __init__(self, player, markerid, creatures, hexlabel):
         Observed.__init__(self)
-        assert isinstance(hexlabel, types.IntType)
+        assert isinstance(hexlabel, int)
         self.markerid = markerid
         self.picname = find_picname(markerid)
         self.creatures = creatures
@@ -123,7 +123,7 @@ class Legion(Observed):
         """Return the number of living creatures in the legion."""
         return len(self.living_creature_names)
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Zero height legions should not be False."""
         return True
 
@@ -229,7 +229,7 @@ class Legion(Observed):
         if self.any_unknown:
             bag1 = bag(self.creature_names)
             bag2 = bag(creature_names)
-            for creature_name, count2 in bag2.iteritems():
+            for creature_name, count2 in bag2.items():
                 count1 = bag1[creature_name]
                 while count2 > count1 and self.any_unknown:
                     self.creatures.remove(Creature.Creature("Unknown"))
@@ -288,7 +288,7 @@ class Legion(Observed):
         the same type in this legion."""
         counts = bag(self.creature_names)
         maximum = 0
-        for name, num in counts.iteritems():
+        for name, num in counts.items():
             if (num > maximum and Creature.Creature(name).is_creature):
                 maximum = num
         return maximum
@@ -345,7 +345,7 @@ class Legion(Observed):
         for sublist in self._gen_sublists(recruits):
             names = [tup[0] for tup in sublist]
             nums = [tup[1] for tup in sublist]
-            for ii in xrange(len(sublist)):
+            for ii in range(len(sublist)):
                 name = names[ii]
                 num = nums[ii]
                 if ii >= 1:
@@ -354,7 +354,7 @@ class Legion(Observed):
                     prev = None
                 if prev == recruitdata.ANYTHING:
                     # basic tower creature
-                    for jj in xrange(ii + 1):
+                    for jj in range(ii + 1):
                         if nums[jj] and caretaker.counts.get(names[jj]):
                             result_list.append((names[jj],))
                 else:
@@ -362,15 +362,15 @@ class Legion(Observed):
                        self._max_creatures_of_one_type() >= num):
                         # guardian
                         recruiters = []
-                        for name2, num2 in counts.iteritems():
+                        for name2, num2 in counts.items():
                             if (num2 >= num and Creature.Creature(
                                     name2).is_creature):
                                 recruiters.append(name2)
-                        for jj in xrange(ii + 1):
+                        for jj in range(ii + 1):
                             if nums[jj] and caretaker.counts.get(names[jj]):
                                 for recruiter in recruiters:
                                     li = [names[jj]]
-                                    for kk in xrange(num):
+                                    for kk in range(num):
                                         li.append(recruiter)
                                     tup = tuple(li)
                                     result_list.append(tup)
@@ -378,13 +378,13 @@ class Legion(Observed):
                         # recruit up
                         if num and caretaker.counts.get(name):
                             li = [name]
-                            for kk in xrange(num):
+                            for kk in range(num):
                                 li.append(prev)
                             tup = tuple(li)
                             result_list.append(tup)
                     if counts[name] and num:
                         # recruit same or down
-                        for jj in xrange(ii + 1):
+                        for jj in range(ii + 1):
                             if nums[jj] and caretaker.counts.get(names[jj]):
                                 result_list.append((names[jj], name))
 

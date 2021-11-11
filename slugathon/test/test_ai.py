@@ -28,7 +28,7 @@ def test_best7():
     score_moves = [(1, "A1"), (2, "A2"), (2, "C2"), (2, "A3"), (4, "B1"),
                    (5, "B2"), (6, "B3"), (7, "B4"), (8, "C1")]
     seen = set()
-    for trial in xrange(20):
+    for trial in range(20):
         best_moves = CleverBot.best7(score_moves)
         assert (
             best_moves == set(["A2", "A3", "B1", "B2", "B3", "B4", "C1"]) or
@@ -61,7 +61,7 @@ def test_gen_legion_moves():
         set(["A1", "A2", "A3", "B2"]),
     ]
     lm = sorted(cleverbot._gen_legion_moves(movesets))
-    print lm
+    print(lm)
     assert lm == sorted([
         ["A1", "A2"],
         ["A1", "A3"],
@@ -84,7 +84,7 @@ def test_gen_legion_moves():
         set(["A1", "A2", "A3", "B3"]),
     ]
     lm = sorted(cleverbot._gen_legion_moves(movesets))
-    print lm
+    print(lm)
     assert lm == sorted([
         ["A1", "A2", "A3"],
         ["A1", "A2", "B3"],
@@ -200,7 +200,7 @@ def test_score_legion_move_brush():
     hexlabel = gargoyle1.hexlabel
     move_to_score = {}
     moves = game.find_battle_moves(gargoyle1)
-    print "ogre1 moves", moves
+    print("ogre1 moves", moves)
     for move in moves:
         gargoyle1.move(move)
         score = cleverbot_d._score_legion_move(game, [gargoyle1])
@@ -259,7 +259,7 @@ def test_score_legion_move_brush():
         score = cleverbot_a._score_legion_move(game, [ranger2])
         move_to_score[move] = score
     ranger2.move(hexlabel)
-    print move_to_score
+    print(move_to_score)
     # Should prefer second rank to back rank
     assert move_to_score["A2"] > move_to_score["A1"]
     assert move_to_score["A2"] > move_to_score["B1"]
@@ -372,7 +372,7 @@ def test_score_legion_move_brush():
         move_to_score[move] = score
     ogre2.move(hexlabel)
     # Should prefer being up next to allies
-    assert move_to_score["A2"] == max(move_to_score.itervalues())
+    assert move_to_score["A2"] == max(move_to_score.values())
 
     ogre2.move("A2")
 
@@ -386,8 +386,8 @@ def test_score_legion_move_brush():
         move_to_score[move] = score
     titan2.move(hexlabel)
     # Should prefer hiding in back behind the ogre
-    print move_to_score
-    assert move_to_score["A1"] == max(move_to_score.itervalues())
+    print(move_to_score)
+    assert move_to_score["A1"] == max(move_to_score.values())
 
     titan2.move("A1")
 
@@ -452,7 +452,7 @@ def test_score_legion_move_plain():
     hexlabel = gargoyle1.hexlabel
     move_to_score = {}
     moves = game.find_battle_moves(gargoyle1)
-    print "ogre1 moves", moves
+    print("ogre1 moves", moves)
     for move in moves:
         gargoyle1.move(move)
         score = cleverbot_d._score_legion_move(game, [gargoyle1])
@@ -575,7 +575,7 @@ def test_score_legion_move_plain():
         move_to_score[move] = score
     ogre2.move(hexlabel)
     # Should prefer being up next to allies
-    assert move_to_score["A2"] == max(move_to_score.itervalues())
+    assert move_to_score["A2"] == max(move_to_score.values())
 
     ogre2.move("A2")
 
@@ -589,8 +589,8 @@ def test_score_legion_move_plain():
         move_to_score[move] = score
     titan2.move(hexlabel)
     # Should prefer hiding in back behind the ogre
-    print move_to_score
-    assert move_to_score["A1"] == max(move_to_score.itervalues())
+    print(move_to_score)
+    assert move_to_score["A1"] == max(move_to_score.values())
 
     titan2.move("A1")
 
@@ -848,7 +848,7 @@ def test_score_move_scary_pursuer():
     for hexlabel in [41, 42, 1, 2, 3, 4, 5]:
         hexlabel_to_score[hexlabel] = cleverbot._score_move(bu01, hexlabel,
                                                             hexlabel != 41)
-    print hexlabel_to_score
+    print(hexlabel_to_score)
     assert hexlabel_to_score[42] > hexlabel_to_score[41]
     assert hexlabel_to_score[42] > hexlabel_to_score[3]
     assert hexlabel_to_score[1] > hexlabel_to_score[42]

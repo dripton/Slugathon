@@ -14,7 +14,7 @@ class bag(object):
     def update(self, iterable):
         """Update this object with items from iterable."""
         if hasattr(iterable, "items"):
-            for key, val in iterable.iteritems():
+            for key, val in iterable.items():
                 if val != int(val) or val < 0:
                     raise ValueError("illegal bag value")
                 combo = self._dic.get(key, 0) + val
@@ -80,7 +80,7 @@ class bag(object):
         if not isinstance(other, bag):
             raise TypeError("not a bag")
         newbag = bag(self._dic)
-        for key, val in other._dic.iteritems():
+        for key, val in other._dic.items():
             newbag[key] += val
         return newbag
 
@@ -97,7 +97,7 @@ class bag(object):
         if not isinstance(other, bag):
             raise TypeError("not a bag")
         newbag = bag(self._dic)
-        for key, val in self._dic.iteritems():
+        for key, val in self._dic.items():
             val2 = other[key]
             if val2:
                 newbag[key] = max(val - val2, 0)
@@ -108,7 +108,7 @@ class bag(object):
         if not isinstance(other, bag):
             raise TypeError("not a bag")
         newbag = bag(self._dic)
-        for key, val in self._dic.iteritems():
+        for key, val in self._dic.items():
             val2 = other[key]
             newbag[key] = min(val, val2)
         return newbag
@@ -117,7 +117,7 @@ class bag(object):
         """Report whether the other bag contains everything in this one."""
         if not isinstance(other, bag):
             raise TypeError("not a bag")
-        for key, val in self._dic.iteritems():
+        for key, val in self._dic.items():
             val2 = other[key]
             if val2 < val:
                 return False
@@ -127,7 +127,7 @@ class bag(object):
         """Report whether this bag contains everything in the other one."""
         if not isinstance(other, bag):
             raise TypeError("not a bag")
-        for key, val in other._dic.iteritems():
+        for key, val in other._dic.items():
             val2 = self[key]
             if val2 < val:
                 return False
@@ -135,28 +135,28 @@ class bag(object):
 
     def __iter__(self):
         """Return an iterator, which returns one of each item in the set."""
-        return iter(self._dic.iterkeys())
+        return iter(self._dic.keys())
 
     def items(self):
         """Return a list of item, count pairs."""
-        return self._dic.items()
+        return list(self._dic.items())
 
     def iteritems(self):
         """Yield item, count pairs."""
-        return self._dic.iteritems()
+        return iter(self._dic.items())
 
     def keys(self):
         """Return a list of one of each item in the set."""
-        return self._dic.keys()
+        return list(self._dic.keys())
 
     def iterkeys(self):
         """Yield each item in the set."""
-        return self._dic.iterkeys()
+        return iter(self._dic.keys())
 
     def values(self):
         """Return a list of counts for each item in the set."""
-        return self._dic.values()
+        return list(self._dic.values())
 
     def itervalues(self):
         """Yield counts for each item in the set."""
-        return self._dic.itervalues()
+        return iter(self._dic.values())

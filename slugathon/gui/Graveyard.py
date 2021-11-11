@@ -53,7 +53,7 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     def cb_destroy(confirmed):
-        print "destroy"
+        print("destroy")
         graveyard.destroy()
         gtk.main_quit()
 

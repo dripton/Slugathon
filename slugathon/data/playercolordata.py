@@ -15,10 +15,10 @@ name_to_abbrev = {
 }
 
 abbrev_to_name = {}
-for (name, abbrev) in name_to_abbrev.iteritems():
+for (name, abbrev) in name_to_abbrev.items():
     abbrev_to_name[abbrev] = name
 del name, abbrev
 
-colors = sorted(name_to_abbrev.iterkeys())
+colors = sorted(name_to_abbrev.keys())
 
-abbrevs = sorted(abbrev_to_name.iterkeys())
+abbrevs = sorted(abbrev_to_name.keys())

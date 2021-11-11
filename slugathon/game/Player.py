@@ -57,7 +57,7 @@ class Player(Observed):
 
     @property
     def legions(self):
-        return self.markerid_to_legion.values()
+        return list(self.markerid_to_legion.values())
 
     @property
     def sorted_legions(self):
@@ -91,7 +91,7 @@ class Player(Observed):
 
     def assign_starting_tower(self, tower):
         """Set this player's starting tower to the (int) tower"""
-        assert isinstance(tower, types.IntType)
+        assert isinstance(tower, int)
         self.starting_tower = tower
         action = Action.AssignTower(self.game.name, self.name, tower)
         self.notify(action)
@@ -101,7 +101,7 @@ class Player(Observed):
         self.color = color
         abbrev = self.color_abbrev
         num_markers = len(markerdata.data[color])
-        for ii in xrange(num_markers):
+        for ii in range(num_markers):
             self.markerids_left.add("%s%02d" % (abbrev, ii + 1))
         logging.info(self.markerids_left)
         action = Action.PickedColor(self.game.name, self.name, color)

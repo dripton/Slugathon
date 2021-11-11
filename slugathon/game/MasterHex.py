@@ -38,7 +38,7 @@ class MasterHex(object):
         self.exits = []
         self.entrances = []
         self.neighbors = []
-        for unused in xrange(6):
+        for unused in range(6):
             self.exits.append(None)
             self.entrances.append(None)
             self.neighbors.append(None)

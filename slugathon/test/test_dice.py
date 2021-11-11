@@ -114,7 +114,7 @@ class TestDice(object):
         self.trials = 600
         self.rolls = []
         self.bins = {}
-        for unused in xrange(self.trials):
+        for unused in range(self.trials):
             num = Dice.roll()[0]
             self.rolls.append(num)
             self.bins[num] = self.bins.get(num, 0) + 1
@@ -197,8 +197,8 @@ class TestDice(object):
     def test_mann_kendall(self):
         S = 0
         n = len(self.rolls)
-        for i in xrange(1, n):
-            for j in xrange(i):
+        for i in range(1, n):
+            for j in range(i):
                 val = sign(self.rolls[i] - self.rolls[j])
                 S += val
         mean_S = 0.
@@ -209,7 +209,7 @@ class TestDice(object):
 
     def test_shuffle(self):
         s = set()
-        lst = range(10)
+        lst = list(range(10))
         s.add(tuple(lst))
         num_shuffles = 100
         for unused in range(num_shuffles):
@@ -220,7 +220,7 @@ class TestDice(object):
 
     def test_chi_square(self):
         chi_square = 0
-        for roll, num in self.bins.iteritems():
+        for roll, num in self.bins.items():
             expected = self.trials / 6.0
             chi_square += (num - expected) ** 2.0 / expected
         chi_square /= self.trials - 1
@@ -237,10 +237,10 @@ class TestDice(object):
         ]
         # Can use a Counter when we require Python 2.7
         counter = defaultdict(int)
-        for trial in xrange(1000):
+        for trial in range(1000):
             tup = Dice.weighted_random_choice(lst)
-            print tup
+            print(tup)
             counter[tup[1]] += 1
-        print counter
-        assert sum(counter.itervalues()) == 1000
+        print(counter)
+        assert sum(counter.values()) == 1000
         assert counter[1] > counter[2] > counter[3] > counter[4]

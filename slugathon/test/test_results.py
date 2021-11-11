@@ -77,8 +77,8 @@ def test_save_game_and_get_ranking():
 
         ranking1 = results.get_ranking("p1")
         ranking2 = results.get_ranking("p2")
-        print ranking1
-        print ranking2
+        print(ranking1)
+        print(ranking2)
         assert ranking1.mu > 25. > ranking2.mu
         assert ranking1.sigma < 25. / 3
         assert ranking2.sigma < 25. / 3

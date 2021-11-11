@@ -125,7 +125,8 @@ if __name__ == "__main__":
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
-    def my_callback((creature, carries)):
+    def my_callback(xxx_todo_changeme):
+        (creature, carries) = xxx_todo_changeme
         logging.info("carry %d hits to %s" % (carries, creature))
         reactor.stop()
 

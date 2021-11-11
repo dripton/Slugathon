@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from sys import maxint
+from sys import maxsize
 import logging
 
 from slugathon.data import battlemapdata
@@ -159,7 +159,7 @@ class BattleMap(object):
             else:
                 self.hexes[label] = BattleHex.BattleHex(self, label, x, y,
                                                         "Plain", 0, {})
-        for hex1 in self.hexes.itervalues():
+        for hex1 in self.hexes.values():
             hex1.init_neighbors()
         self.startlist = battlemapdata.startlist.get(mterrain)
 
@@ -179,7 +179,7 @@ class BattleMap(object):
         spun = {}
         entry_side_to_delta = {1: 3, 3: 5, 5: 1}
         delta = entry_side_to_delta[entry_side]
-        for key, val in border_dict.iteritems():
+        for key, val in border_dict.items():
             spun[(key + delta) % 6] = val
         return spun
 
@@ -212,7 +212,7 @@ class BattleMap(object):
         while True:
             neighbors = set()
             for hex3 in prev:
-                neighbors.update(hex3.neighbors.itervalues())
+                neighbors.update(iter(hex3.neighbors.values()))
             if hex2 in neighbors:
                 return result
             neighbors -= ignore

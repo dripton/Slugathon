@@ -8,7 +8,7 @@ __license__ = "GNU GPL v2"
 import random
 import copy
 import time
-from sys import maxint
+from sys import maxsize
 import itertools
 import collections
 import logging
@@ -202,7 +202,7 @@ class CleverBot(object):
             # TODO take terrain into account
             if (enemy.combat_value >= self.bp.BE_SQUASHED *
                legion_combat_value):
-                for roll in xrange(1, 6 + 1):
+                for roll in range(1, 6 + 1):
                     hex1 = game.board.hexes[enemy.hexlabel]
                     moves = game.find_normal_moves(enemy,
                                                    hex1,
@@ -221,7 +221,7 @@ class CleverBot(object):
         legion_combat_value = legion.combat_value
         hexlabel = legion.hexlabel
         all_hexlabels = set()
-        for roll in xrange(1, 6 + 1):
+        for roll in range(1, 6 + 1):
             hex1 = game.board.hexes[hexlabel]
             moves = game.find_normal_moves(legion,
                                            hex1,
@@ -264,7 +264,7 @@ class CleverBot(object):
             # Look at what we can recruit on each movement roll, to see if we
             # should take a third creature of a kind.
             all_hexlabels = set()
-            for roll in xrange(1, 6 + 1):
+            for roll in range(1, 6 + 1):
                 moves = game.find_all_moves(legion,
                                             game.board.hexes[legion.hexlabel],
                                             roll)
@@ -288,7 +288,7 @@ class CleverBot(object):
                     recruit_to_later_recruits[recruit] = later_recruits
             best_creature = None
             best_recruit = None
-            for recruit2, recruits in recruit_to_later_recruits.iteritems():
+            for recruit2, recruits in recruit_to_later_recruits.items():
                 for creature_name in [recruit2] + list(recruits):
                     creature = Creature.Creature(creature_name)
                     if (best_creature is None or
@@ -515,7 +515,7 @@ class CleverBot(object):
                 new_legion1 = Legion.Legion(legion.player, legion.markerid,
                                             Creature.n2c(keep_names),
                                             legion.hexlabel)
-                for roll in xrange(1, 6 + 1):
+                for roll in range(1, 6 + 1):
                     moves = game.find_all_moves(legion,
                                                 game.board.hexes[
                                                     legion.hexlabel],
@@ -675,7 +675,7 @@ class CleverBot(object):
                 for enemy in player.enemy_legions():
                     if (enemy.terrain_combat_value >= self.bp.BE_SQUASHED *
                        legion_combat_value):
-                        for roll in xrange(1, 6 + 1):
+                        for roll in range(1, 6 + 1):
                             moves = game.find_normal_moves(enemy,
                                                            game.board.hexes[
                                                                enemy.hexlabel],
@@ -890,7 +890,7 @@ class CleverBot(object):
                                                            now - start_time))
         start_hexlabels = [creature.hexlabel for creature in creatures]
         creature_names = [creature.name for creature in creatures]
-        creature_moves = zip(creature_names, start_hexlabels, best_legion_move)
+        creature_moves = list(zip(creature_names, start_hexlabels, best_legion_move))
         logging.info("creature_moves %s", creature_moves)
         now = time.time()
         ordered_creature_moves = self._find_move_order(game, creature_moves)
@@ -1161,7 +1161,7 @@ class CleverBot(object):
 
             # allies
             num_adjacent_allies = 0
-            for neighbor in battlehex.neighbors.itervalues():
+            for neighbor in battlehex.neighbors.values():
                 for ally in legion.living_creatures:
                     if ally.hexlabel == neighbor.label:
                         num_adjacent_allies += 1
@@ -1213,7 +1213,7 @@ class CleverBot(object):
                     mean_hits = num_dice * (7. - strike_number) / 6
                     target_to_total_mean_hits[target] += mean_hits
         # First find the best target we can kill.
-        for target, total_mean_hits in target_to_total_mean_hits.iteritems():
+        for target, total_mean_hits in target_to_total_mean_hits.items():
             if total_mean_hits >= target.hits_left:
                 if (best_target is None or target.sort_value >
                    best_target.sort_value):
@@ -1222,7 +1222,7 @@ class CleverBot(object):
         if best_target is None:
             max_total_mean_hits = 0
             for target, total_mean_hits in \
-                    target_to_total_mean_hits.iteritems():
+                    target_to_total_mean_hits.items():
                 if total_mean_hits >= max_total_mean_hits:
                     best_target = target
                     max_total_mean_hits = total_mean_hits

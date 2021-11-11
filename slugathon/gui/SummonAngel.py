@@ -106,7 +106,8 @@ if __name__ == "__main__":
     for legion in [legion1, legion2, legion3, legion4, legion5]:
         player.markerid_to_legion[legion.markerid] = legion
 
-    def my_callback((legion, donor, creature)):
+    def my_callback(xxx_todo_changeme):
+        (legion, donor, creature) = xxx_todo_changeme
         logging.info("Will summon %s from %s into %s", creature, donor, legion)
         guiutils.exit()
 

@@ -13,7 +13,7 @@ class TestAssignTowers(object):
         self.game = Game.Game("g1", "p1", now, now, 2, 6)
 
     def _simple_helper(self, num_players):
-        for num in xrange(num_players - 1):
+        for num in range(num_players - 1):
             self.game.add_player("p%d" % (num + 2))
         self.game.assign_towers()
         towers = set([player.starting_tower for player in self.game.players])
@@ -31,9 +31,9 @@ class TestAssignTowers(object):
         trials = 50
         num_towers = 6
         counts = {}
-        for num in xrange(num_players - 1):
+        for num in range(num_players - 1):
             self.game.add_player("p%d" % (num + 2))
-        for unused in xrange(trials):
+        for unused in range(trials):
             self.game.assign_towers()
             towers = set([player.starting_tower for player in
                           self.game.players])
@@ -41,10 +41,10 @@ class TestAssignTowers(object):
             for tower in towers:
                 counts[tower] = counts.get(tower, 0) + 1
         assert len(counts) == num_towers, "len(counts) is wrong: %s" % counts
-        assert sum(counts.itervalues()) == trials * num_players
+        assert sum(counts.values()) == trials * num_players
         chi_square = 0
         mean = 1. * trials * num_players / num_towers
-        for count in counts.itervalues():
+        for count in counts.values():
             chi_square += (count - mean) ** 2.0 / mean
         chi_square /= (trials - 1)
         # degrees of freedome = 5, 99.5% chance of randomness

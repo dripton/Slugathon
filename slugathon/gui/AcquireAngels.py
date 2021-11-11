@@ -26,14 +26,14 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
     """Return a list of tuples of Creatures, corresponding to each
     possible group of angels and archangels."""
     set1 = set()
-    for archangels in xrange(min(num_archangels, archangels_left) + 1):
-        for angels in xrange(min((num_angels + num_archangels),
+    for archangels in range(min(num_archangels, archangels_left) + 1):
+        for angels in range(min((num_angels + num_archangels),
                                  angels_left) + 1):
             if 0 < archangels + angels <= num_archangels + num_angels:
                 lst = []
-                for unused in xrange(archangels):
+                for unused in range(archangels):
                     lst.append(Creature.Creature("Archangel"))
-                for unused in xrange(angels):
+                for unused in range(angels):
                     lst.append(Creature.Creature("Angel"))
                 combo = tuple(lst)
                 set1.add(combo)
@@ -92,7 +92,7 @@ class AcquireAngels(gtk.Dialog):
         for combo in angel_combos:
             hbox = gtk.HBox(spacing=3, homogeneous=False)
             self.vbox.pack_start(hbox)
-            for unused in xrange(leading_spaces):
+            for unused in range(leading_spaces):
                 chit = Chit.Chit(None, player.color, scale=20, name="Nothing")
                 chit.combo = combo
                 hbox.pack_start(chit.event_box, expand=False)
@@ -127,7 +127,8 @@ if __name__ == "__main__":
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 
-    def my_callback((legion, creature)):
+    def my_callback(xxx_todo_changeme):
+        (legion, creature) = xxx_todo_changeme
         logging.info("%s acquired %s", legion, creature)
         guiutils.exit()
 

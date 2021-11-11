@@ -33,6 +33,6 @@ class Observed(object):
 
     def notify(self, action, names=None):
         # Create the list so it can't change size while iterating
-        for observer, name in self.observers.items():
+        for observer, name in list(self.observers.items()):
             if names is None or not name or name in names:
                 observer.update(self, action, names)

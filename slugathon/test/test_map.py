@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2005-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
-from sys import maxint
+from sys import maxsize
 
 from slugathon.game import BattleMap
 from slugathon.util import guiutils
@@ -34,7 +34,7 @@ def test_all_labels():
 def test_default_hex_init():
     assert hex1.terrain == "Plain"
     assert hex1.elevation == 0
-    for ii in xrange(6):
+    for ii in range(6):
         assert hex1.borders[ii] is None
         assert hex6.borders[ii] is None
 

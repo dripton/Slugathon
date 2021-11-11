@@ -26,7 +26,7 @@ class Action(pb.Copyable, pb.RemoteCopy):
         """Based on all the attributes of the Action, but not its class,
         so that an Action and its matching UndoAction have the same hash.
         """
-        return hash(tuple(sorted(list(self.__dict__.iteritems()))))
+        return hash(tuple(sorted(list(self.__dict__.items()))))
 
     def __eq__(self, other):
         """Based on all the attributes of the Action, and its class."""

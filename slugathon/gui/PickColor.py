@@ -70,7 +70,8 @@ if __name__ == "__main__":
     from slugathon.game import Game
     from slugathon.util import guiutils
 
-    def my_callback((game, color)):
+    def my_callback(xxx_todo_changeme):
+        (game, color) = xxx_todo_changeme
         logging.info("picked %s", color)
         guiutils.exit()
 

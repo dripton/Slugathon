@@ -27,7 +27,7 @@ class BattleHex(object):
         self.terrain = terrain
         self.elevation = elevation
         self.borders = []
-        for ii in xrange(6):
+        for ii in range(6):
             self.borders.append(borderdict.get(ii))
         self.down = (self.x & 1 == 1)
         self.label_side = 5
@@ -43,12 +43,12 @@ class BattleHex(object):
         if self.entrance:
             # hexsides don't really matter for entrances
             hexside = 0
-            for hex1 in self.battlemap.hexes.itervalues():
+            for hex1 in self.battlemap.hexes.values():
                 if abs(hex1.x - self.x) == 1:
                     self.neighbors[hexside] = hex1
                     hexside += 1
         else:
-            for hex1 in self.battlemap.hexes.itervalues():
+            for hex1 in self.battlemap.hexes.values():
                 if hex1.entrance:
                     pass
                 elif hex1.x == self.x:
@@ -104,7 +104,7 @@ class BattleHex(object):
 
     def neighbor_to_hexside(self, neighbor):
         """Return the hexside adjacent to neighbor, or None."""
-        for hexside, neighbor2 in self.neighbors.iteritems():
+        for hexside, neighbor2 in self.neighbors.items():
             if neighbor2 == neighbor:
                 return hexside
         return None

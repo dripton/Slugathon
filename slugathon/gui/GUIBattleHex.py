@@ -4,7 +4,7 @@ __license__ = "GNU GPL v2"
 
 import os
 import math
-from sys import maxint
+from sys import maxsize
 
 import cairo
 import pango
@@ -69,7 +69,7 @@ class GUIBattleHex(object):
         bordering hexes.
         """
         self.vertexes = []
-        for unused in xrange(6):
+        for unused in range(6):
             self.vertexes.append(None)
         cx = self.cx
         cy = self.cy

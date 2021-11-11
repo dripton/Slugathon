@@ -12,14 +12,14 @@ def test_default_bot_params():
 
 def test_mutate_field():
     bp = BotParams.default_bot_params
-    for unused in xrange(10):
+    for unused in range(10):
         bp2 = bp.mutate_field("SQUASH", ratio=0.25)
         assert 0.45 <= bp2.SQUASH <= 0.75
 
 
 def test_mutate_random_field():
     bp = BotParams.default_bot_params
-    for unused in xrange(10):
+    for unused in range(10):
         count = 0
         bp2 = bp.mutate_random_field(ratio=0.25)
         for field in bp._fields:
@@ -30,7 +30,7 @@ def test_mutate_random_field():
 
 def test_mutate_all_fields():
     bp = BotParams.default_bot_params
-    for unused in xrange(10):
+    for unused in range(10):
         bp2 = bp.mutate_all_fields(ratio=0.25)
         for field in bp._fields:
             assert getattr(bp, field) != getattr(bp2, field)

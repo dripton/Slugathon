@@ -3,7 +3,7 @@ __license__ = "GNU GPL v2"
 
 
 import time
-from sys import maxint
+from sys import maxsize
 
 from slugathon.game import Game, Phase, Creature, Legion
 
@@ -28,14 +28,14 @@ class TestBattle(object):
         self.player0.split_legion("Rd01", "Rd02",
                                   ["Titan", "Centaur", "Ogre", "Gargoyle"],
                                   ["Angel", "Centaur", "Ogre", "Gargoyle"])
-        for markerid, legion in self.player0.markerid_to_legion.iteritems():
+        for markerid, legion in self.player0.markerid_to_legion.items():
             legion.player = self.player0
         self.rd01 = self.player0.markerid_to_legion["Rd01"]
         self.player1.pick_marker("Bu02")
         self.player1.split_legion("Bu01", "Bu02",
                                   ["Titan", "Centaur", "Ogre", "Gargoyle"],
                                   ["Angel", "Centaur", "Ogre", "Gargoyle"])
-        for markerid, legion in self.player1.markerid_to_legion.iteritems():
+        for markerid, legion in self.player1.markerid_to_legion.items():
             legion.player = self.player1
         self.bu01 = self.player1.markerid_to_legion["Bu01"]
 

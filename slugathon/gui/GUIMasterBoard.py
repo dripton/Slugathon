@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import math
-from sys import maxint
+from sys import maxsize
 import logging
 
 from twisted.internet import gtk2reactor
@@ -136,7 +136,7 @@ class GUIMasterBoard(gtk.EventBox):
         self.guihexes = {}
         # list of tuples (Chit, hexlabel)
         self.recruitchits = []
-        for hex1 in self.board.hexes.itervalues():
+        for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
         self.negotiate = None
@@ -318,7 +318,7 @@ class GUIMasterBoard(gtk.EventBox):
             if marker.point_inside((event.x, event.y)):
                 self.clicked_on_marker(area, event, marker)
                 return True
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
                 return True
@@ -332,7 +332,7 @@ class GUIMasterBoard(gtk.EventBox):
                 if self.inspector:
                     self.inspector.show_legion(marker.legion)
                 return True
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 if self.game:
                     player = self.game.get_player_by_name(self.playername)
@@ -572,8 +572,9 @@ class GUIMasterBoard(gtk.EventBox):
                     def1.addCallback(self.picked_recruit)
             self.highlight_recruits()
 
-    def picked_marker_presplit(self, (game_name, playername, markerid),
+    def picked_marker_presplit(self, xxx_todo_changeme,
                                legion):
+        (game_name, playername, markerid) = xxx_todo_changeme
         player = self.game.get_player_by_name(playername)
         player.pick_marker(markerid)
         if markerid:
@@ -585,7 +586,8 @@ class GUIMasterBoard(gtk.EventBox):
                                       self.parent_window)
             def1.addCallback(self.try_to_split_legion)
 
-    def try_to_split_legion(self, (old_legion, new_legion1, new_legion2)):
+    def try_to_split_legion(self, xxx_todo_changeme1):
+        (old_legion, new_legion1, new_legion2) = xxx_todo_changeme1
         if old_legion is None:
             # canceled
             player = self.game.get_player_by_name(self.playername)
@@ -599,8 +601,9 @@ class GUIMasterBoard(gtk.EventBox):
                                     new_legion2.creature_names)
         def1.addErrback(self.failure)
 
-    def picked_recruit(self, (legion, creature, recruiter_names)):
+    def picked_recruit(self, xxx_todo_changeme2):
         """Callback from PickRecruit"""
+        (legion, creature, recruiter_names) = xxx_todo_changeme2
         if creature is not None:
             def1 = self.user.callRemote("recruit_creature", self.game.name,
                                         legion.markerid, creature.name,
@@ -611,8 +614,9 @@ class GUIMasterBoard(gtk.EventBox):
                                         legion.markerid)
             def1.addErrback(self.failure)
 
-    def picked_summon(self, (legion, donor, creature)):
+    def picked_summon(self, xxx_todo_changeme3):
         """Callback from SummonAngel"""
+        (legion, donor, creature) = xxx_todo_changeme3
         if donor is None or creature is None:
             def1 = self.user.callRemote("do_not_summon_angel", self.game.name,
                                         legion.markerid)
@@ -623,8 +627,9 @@ class GUIMasterBoard(gtk.EventBox):
                                         creature.name)
             def1.addErrback(self.failure)
 
-    def picked_angels(self, (legion, angels)):
+    def picked_angels(self, xxx_todo_changeme4):
         """Callback from AcquireAngels"""
+        (legion, angels) = xxx_todo_changeme4
         logging.info("picked_angels %s %s", legion, angels)
         self.acquire_angels = None
         if not angels:
@@ -740,8 +745,8 @@ class GUIMasterBoard(gtk.EventBox):
         for name in recruit_names:
             new_chits.add(name)
         diff = new_chits.difference(old_chits)
-        for name, number in diff.iteritems():
-            for unused in xrange(number):
+        for name, number in diff.items():
+            for unused in range(number):
                 recruit = Creature.Creature(name)
                 chit = Chit.Chit(recruit, player.color, recruitchit_scale)
                 chits.append(chit)
@@ -837,7 +842,7 @@ class GUIMasterBoard(gtk.EventBox):
                 x, y, width, height = guihex.bounding_rect
                 ctx.rectangle(x, y, width, height)
                 ctx.fill()
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
 
@@ -857,7 +862,7 @@ class GUIMasterBoard(gtk.EventBox):
         reactor.callLater(0, self.update_gui)
 
     def unselect_all(self):
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guihex.selected:
                 guihex.selected = False
                 self.repaint_hexlabels.add(guihex.masterhex.label)
@@ -1088,7 +1093,8 @@ class GUIMasterBoard(gtk.EventBox):
             def1.addCallback(self.cb_withdraw2)
             def1.addErrback(self.failure)
 
-    def cb_maybe_flee(self, (attacker, defender, fled)):
+    def cb_maybe_flee(self, xxx_todo_changeme5):
+        (attacker, defender, fled) = xxx_todo_changeme5
         if fled:
             def1 = self.user.callRemote("flee", self.game.name,
                                         defender.markerid)
@@ -1097,10 +1103,11 @@ class GUIMasterBoard(gtk.EventBox):
                                         defender.markerid)
         def1.addErrback(self.failure)
 
-    def cb_negotiate(self, (attacker_legion, attacker_creature_names,
-                            defender_legion, defender_creature_names,
-                            response_id)):
+    def cb_negotiate(self, xxx_todo_changeme6):
         """Callback from Negotiate dialog."""
+        (attacker_legion, attacker_creature_names,
+                            defender_legion, defender_creature_names,
+                            response_id) = xxx_todo_changeme6
         player = self.game.get_player_by_name(self.playername)
         hexlabel = attacker_legion.hexlabel
         for legion in player.friendly_legions(hexlabel):
@@ -1135,10 +1142,11 @@ class GUIMasterBoard(gtk.EventBox):
                                         defender_legion.markerid)
             def1.addErrback(self.failure)
 
-    def cb_proposal(self, (attacker_legion, attacker_creature_names,
-                           defender_legion, defender_creature_names,
-                           response_id)):
+    def cb_proposal(self, xxx_todo_changeme7):
         """Callback from Proposal dialog."""
+        (attacker_legion, attacker_creature_names,
+                           defender_legion, defender_creature_names,
+                           response_id) = xxx_todo_changeme7
         if response_id == Proposal.ACCEPT:
             def1 = self.user.callRemote("accept_proposal",
                                         self.game.name,
@@ -1210,7 +1218,7 @@ class GUIMasterBoard(gtk.EventBox):
 
         elif isinstance(action, Action.RollMovement):
             # show movement die
-            self.repaint_hexlabels.update(self.board.hexes.keys())
+            self.repaint_hexlabels.update(list(self.board.hexes.keys()))
             if action.playername == self.playername:
                 if action.mulligans_left == 0:
                     self.disable_mulligan()
@@ -1234,7 +1242,7 @@ class GUIMasterBoard(gtk.EventBox):
 
         elif isinstance(action, Action.StartFightPhase):
             # clear movement die
-            self.repaint_hexlabels.update(self.board.hexes.keys())
+            self.repaint_hexlabels.update(list(self.board.hexes.keys()))
             if action.playername == self.playername:
                 self.clear_all_recruitchits()
             self.highlight_engagements()
@@ -1247,7 +1255,7 @@ class GUIMasterBoard(gtk.EventBox):
 
         elif isinstance(action, Action.StartMusterPhase):
             # clear movement die
-            self.repaint_hexlabels.update(self.board.hexes.keys())
+            self.repaint_hexlabels.update(list(self.board.hexes.keys()))
             self.highlight_recruits()
             player = self.game.active_player
             if self.playername == player.name:

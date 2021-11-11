@@ -4,7 +4,7 @@ __license__ = "GNU GPL v2"
 
 import tempfile
 import os
-import cStringIO as StringIO
+import io as StringIO
 
 from slugathon.game import History, Action
 

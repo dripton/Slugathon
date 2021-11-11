@@ -5,7 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import math
-from sys import maxint
+from sys import maxsize
 import logging
 
 from twisted.internet import gtk2reactor
@@ -110,7 +110,7 @@ class PickEntrySide(gtk.Dialog):
         self.hbox3.pack_start(bottom_hex_label)
 
         self.guihexes = {}
-        for hex1 in self.battlemap.hexes.itervalues():
+        for hex1 in self.battlemap.hexes.values():
             # Don't show entrances.
             if hex1.label not in ["ATTACKER", "DEFENDER"]:
                 self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1,
@@ -126,7 +126,7 @@ class PickEntrySide(gtk.Dialog):
 
         self.connect("destroy", self.callback_with_none)
 
-        for hexlabel, entry_side in hexlabel_to_entry_side.iteritems():
+        for hexlabel, entry_side in hexlabel_to_entry_side.items():
             if entry_side in self.entry_sides:
                 self.guihexes[hexlabel].selected = True
         self.show_all()
@@ -173,7 +173,7 @@ class PickEntrySide(gtk.Dialog):
         return True
 
     def cb_click(self, area, event):
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
                 return True
@@ -247,7 +247,7 @@ class PickEntrySide(gtk.Dialog):
             x, y, width, height = guihex.bounding_rect
             ctx.rectangle(x, y, width, height)
             ctx.fill()
-        for guihex in self.guihexes.itervalues():
+        for guihex in self.guihexes.values():
             if guiutils.rectangles_intersect(clip_rect, guihex.bounding_rect):
                 guihex.update_gui(ctx)
         self.repaint_hexlabels.clear()
@@ -273,7 +273,7 @@ if __name__ == "__main__":
         reactor.stop()
 
     board = MasterBoard.MasterBoard()
-    masterhex = random.choice(board.hexes.values())
+    masterhex = random.choice(list(board.hexes.values()))
     logging.info("masterhex %s", masterhex)
     entry_sides = set()
     for side, neighbor in enumerate(masterhex.neighbors):

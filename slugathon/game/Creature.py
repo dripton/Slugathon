@@ -13,11 +13,11 @@ def _terrain_to_hazards():
     """Return a defaultdict(set) of masterboard terrain type to a set of all
     battle hazards (hex and hexside) found there."""
     result = defaultdict(set)
-    for mterrain, dic2 in battlemapdata.data.iteritems():
-        for hexlabel, (bterrain, elevation, dic3) in dic2.iteritems():
+    for mterrain, dic2 in battlemapdata.data.items():
+        for hexlabel, (bterrain, elevation, dic3) in dic2.items():
             set1 = result[mterrain]
             set1.add(bterrain)
-            for hexside, border in dic3.iteritems():
+            for hexside, border in dic3.items():
                 if border:
                     set1.add(border)
     return result
@@ -27,7 +27,7 @@ def _terrain_to_creature_names():
     """Return a dict of masterboard terrain type to a set of all
     Creature names that can be recruited there."""
     result = {}
-    for terrain, tuples in recruitdata.data.iteritems():
+    for terrain, tuples in recruitdata.data.items():
         set1 = set()
         result[terrain] = set1
         for tup in tuples:
@@ -45,7 +45,7 @@ def _compute_nativity():
     result = defaultdict(set)
     terrain_to_creature_names = _terrain_to_creature_names()
     terrain_to_hazards = _terrain_to_hazards()
-    for terrain, creature_names in terrain_to_creature_names.iteritems():
+    for terrain, creature_names in terrain_to_creature_names.items():
         hazards = terrain_to_hazards[terrain]
         for creature_name in creature_names:
             set1 = result[creature_name]
@@ -235,7 +235,7 @@ class Creature(object):
         game = self.legion.player.game
         hex1 = game.battlemap.hexes[self.hexlabel]
         hexlabel_to_enemy = self._hexlabel_to_enemy()
-        for hexside, hex2 in hex1.neighbors.iteritems():
+        for hexside, hex2 in hex1.neighbors.items():
             if hex2.label in hexlabel_to_enemy:
                 if (hex1.borders[hexside] != "Cliff" and
                    hex2.borders[(hexside + 3) % 6] != "Cliff"):
@@ -252,7 +252,7 @@ class Creature(object):
         game = self.legion.player.game
         hex1 = game.battlemap.hexes[self.hexlabel]
         hexlabel_to_enemy = self._hexlabel_to_dead_enemy()
-        for hexside, hex2 in hex1.neighbors.iteritems():
+        for hexside, hex2 in hex1.neighbors.items():
             if hex2.label in hexlabel_to_enemy:
                 if (hex1.borders[hexside] != "Cliff" and
                    hex2.borders[(hexside + 3) % 6] != "Cliff"):
@@ -277,7 +277,7 @@ class Creature(object):
             return enemies
         hexlabel_to_enemy = self._hexlabel_to_enemy()
         map1 = game.battlemap
-        for hexlabel, enemy in hexlabel_to_enemy.iteritems():
+        for hexlabel, enemy in hexlabel_to_enemy.items():
             if (map1.range(self.hexlabel, hexlabel) <= self.skill and
                (self.magicmissile or self.has_los_to(hexlabel)) and
                (self.magicmissile or not enemy.is_lord)):

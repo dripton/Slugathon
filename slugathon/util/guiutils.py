@@ -49,11 +49,11 @@ def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     xlist = []
     ylist = []
     theta = theta0
-    for unused in xrange(numpoints):
+    for unused in range(numpoints):
         xlist.append(int(round(xcenter + math.cos(theta) * radius)))
         ylist.append(int(round(ycenter - math.sin(theta) * radius)))
         theta += del_theta
-    return zip(xlist, ylist)
+    return list(zip(xlist, ylist))
 
 
 def scale_polygon(vertexes, ratio):

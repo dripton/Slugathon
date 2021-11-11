@@ -74,7 +74,7 @@ class StatusScreen(gtk.EventBox):
                                     "Eliminated", "Score"]):
             add_label(self.player_table, 1, row, self.default_bg, text)
 
-        for col in xrange(len(self.game.players)):
+        for col in range(len(self.game.players)):
             for row, st in enumerate(["name%d_label",
                                       "tower%d_label",
                                       "color%d_label",

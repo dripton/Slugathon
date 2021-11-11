@@ -53,7 +53,7 @@ if __name__ == "__main__":
                                message_format="Are we having fun yet?")
 
     def print_arg(arg):
-        print arg
+        print(arg)
         reactor.stop()
 
     def1.addCallback(print_arg)

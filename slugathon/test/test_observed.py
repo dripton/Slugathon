@@ -49,17 +49,17 @@ def test_observed():
     assert observed.observers[observer2] == "Bob"
 
     observed.notify(None)
-    print update_counter
+    print(update_counter)
     assert update_counter == 3
 
     observed.notify(None, ["Alice", "Bob"])
-    print update_counter
+    print(update_counter)
     assert update_counter == 5
 
     observed.notify(None, ["Alice"])
-    print update_counter
+    print(update_counter)
     assert update_counter == 6
 
     observed.notify(None, ["Sam"])
-    print update_counter
+    print(update_counter)
     assert update_counter == 6

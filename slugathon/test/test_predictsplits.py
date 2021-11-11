@@ -8,13 +8,13 @@ from slugathon.ai.predictsplits import (PredictSplits, CreatureInfo, Node,
 
 
 def test_predict_splits1():
-    print "\ntest 1 begins"
+    print("\ntest 1 begins")
 
     ps = PredictSplits("Rd", "Rd01", starting_creature_names)
     ps.print_leaves()
 
     turn = 1
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").split(4, "Rd02", turn)
     ps.get_leaf("Rd01").merge(ps.get_leaf("Rd02"), turn)
     ps.get_leaf("Rd01").split(4, "Rd02", turn)
@@ -27,7 +27,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 2
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Gargoyle"])
     ps.get_leaf("Rd01").add_creature("Gargoyle")
     ps.get_leaf("Rd02").reveal_creatures(["Lion"])
@@ -37,7 +37,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 3
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Titan"])
     ps.get_leaf("Rd01").add_creature("Warlock")
     ps.get_leaf("Rd02").add_creature("Gargoyle")
@@ -46,7 +46,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 4
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").split(2, "Rd03", turn)
     ps.get_leaf("Rd02").split(2, "Rd04", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Gargoyle", "Gargoyle"])
@@ -60,7 +60,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 5
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Warlock"])
     ps.get_leaf("Rd01").add_creature("Warlock")
     ps.get_leaf("Rd02").add_creature("Ogre")
@@ -75,7 +75,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 6
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd02").split(2, "Rd05", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Titan", "Warlock", "Warlock",
                                           "Cyclops", "Troll", "Gargoyle",
@@ -99,7 +99,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 7
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").add_creature("Angel")
     ps.get_leaf("Rd03").reveal_creatures(["Troll"])
     ps.get_leaf("Rd03").add_creature("Troll")
@@ -112,7 +112,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 8
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").split(2, "Rd02", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Cyclops"])
     ps.get_leaf("Rd01").add_creature("Cyclops")
@@ -126,7 +126,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 9
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Troll"])
     ps.get_leaf("Rd01").add_creature("Troll")
     ps.get_leaf("Rd03").reveal_creatures(["Troll"])
@@ -143,7 +143,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 10
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").split(2, "Rd06", turn)
     assert not ps.get_leaf("Rd01").all_certain
     assert not ps.get_leaf("Rd02").all_certain
@@ -154,7 +154,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 11
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd04").reveal_creatures(["Griffon", "Lion", "Lion", "Lion",
                                           "Centaur", "Centaur"])
     ps.get_leaf("Rd01").reveal_creatures(["Cyclops"])
@@ -170,7 +170,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 12
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd02").add_creature("Centaur")
     ps.get_leaf("Rd03").reveal_creatures(["Troll", "Troll"])
     ps.get_leaf("Rd03").add_creature("Warbear")
@@ -185,7 +185,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 13
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Titan", "Warlock", "Warlock",
                                           "Cyclops", "Cyclops", "Cyclops"])
     ps.get_leaf("Rd05").reveal_creatures(["Cyclops", "Cyclops", "Cyclops"])
@@ -199,7 +199,7 @@ def test_predict_splits1():
     ps.print_leaves()
 
     turn = 14
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd04").reveal_creatures(["Griffon", "Lion", "Lion", "Lion",
                                           "Centaur", "Centaur"])
     ps.get_leaf("Rd02").remove_creature("Angel")
@@ -215,17 +215,17 @@ def test_predict_splits1():
     assert ps.get_leaf("Rd06").all_certain
     ps.print_leaves()
 
-    print "test 1 ends"
+    print("test 1 ends")
 
 
 def test_predict_splits2():
-    print "\ntest 2 begins"
+    print("\ntest 2 begins")
 
     ps = PredictSplits("Rd", "Rd11", starting_creature_names)
     ps.print_leaves()
 
     turn = 1
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd11").split(4, "Rd10", turn)
     ps.get_leaf("Rd10").reveal_creatures(["Ogre", "Ogre"])
     ps.get_leaf("Rd10").add_creature("Troll")
@@ -236,7 +236,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 2
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd10").reveal_creatures(["Troll"])
     ps.get_leaf("Rd10").add_creature("Troll")
     assert not ps.get_leaf("Rd10").all_certain
@@ -244,7 +244,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 3
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd10").reveal_creatures(["Troll", "Troll"])
     ps.get_leaf("Rd10").add_creature("Ranger")
     ps.get_leaf("Rd11").reveal_creatures(["Gargoyle", "Gargoyle"])
@@ -254,7 +254,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 4
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd10").reveal_creatures(["Titan", "Ranger", "Troll",
                                           "Troll", "Gargoyle", "Ogre", "Ogre"])
     ps.print_leaves()
@@ -266,7 +266,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 5
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd10").split(2, "Rd01", turn)
     ps.get_leaf("Rd10").reveal_creatures(["Troll"])
     ps.get_leaf("Rd10").add_creature("Troll")
@@ -278,7 +278,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 6
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Troll", "Ogre", "Ogre"])
     ps.get_leaf("Rd01").reveal_creatures(["Troll"])
     ps.get_leaf("Rd01").add_creature("Troll")
@@ -292,7 +292,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 7
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd10").split(2, "Rd06", turn)
     ps.get_leaf("Rd11").reveal_creatures(["Centaur", "Centaur"])
     ps.get_leaf("Rd11").add_creature("Lion")
@@ -303,7 +303,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 8
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd11").split(2, "Rd07", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Troll", "Troll", "Ogre", "Ogre"])
     ps.get_leaf("Rd10").remove_creature("Angel")
@@ -322,7 +322,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 9
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd07").add_creature("Centaur")
     ps.get_leaf("Rd11").reveal_creatures(["Cyclops"])
     ps.get_leaf("Rd11").add_creature("Cyclops")
@@ -334,7 +334,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 10
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd11").split(2, "Rd08", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Angel", "Angel"])
     ps.get_leaf("Rd06").reveal_creatures(["Troll", "Troll"])
@@ -357,7 +357,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 11
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd06").reveal_creatures(["Troll", "Troll"])
     ps.get_leaf("Rd06").add_creature("Ranger")
     ps.get_leaf("Rd07").reveal_creatures(["Centaur", "Centaur"])
@@ -374,7 +374,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 12
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd10").split(2, "Rd05", turn)
     ps.get_leaf("Rd05").reveal_creatures(["Troll"])
     ps.get_leaf("Rd05").add_creature("Troll")
@@ -393,7 +393,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 13
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd11").split(2, "Rd04", turn)
     ps.get_leaf("Rd05").reveal_creatures(["Troll", "Troll"])
     ps.get_leaf("Rd05").add_creature("Warbear")
@@ -414,7 +414,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 14
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd06").reveal_creatures(["Warbear", "Warbear", "Ranger",
                                           "Troll", "Troll"])
     ps.get_leaf("Rd04").reveal_creatures(["Cyclops"])
@@ -434,7 +434,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 15
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd07").split(2, "Rd02", turn)
     ps.get_leaf("Rd11").split(2, "Rd01", turn)
     ps.get_leaf("Rd05").reveal_creatures(["Troll"])
@@ -454,7 +454,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 16
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd06").reveal_creatures(["Warbear", "Warbear", "Ranger",
                                           "Ranger", "Ranger", "Troll",
                                           "Troll"])
@@ -481,7 +481,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 17
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd06").split(2, "Rd08", turn)
     ps.get_leaf("Rd11").split(2, "Rd03", turn)
     ps.get_leaf("Rd08").reveal_creatures(["Troll", "Troll"])
@@ -502,7 +502,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 18
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd10").split(2, "Rd12", turn)
     ps.get_leaf("Rd01").reveal_creatures(["Ranger"])
     ps.get_leaf("Rd01").add_creature("Ranger")
@@ -522,7 +522,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 19
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd11").split(2, "Rd08", turn)
     ps.get_leaf("Rd07").reveal_creatures(["Cyclops", "Ranger", "Lion",
                                           "Lion", "Centaur", "Centaur"])
@@ -550,7 +550,7 @@ def test_predict_splits2():
     ps.print_leaves()
 
     turn = 20
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Rd04").reveal_creatures(["Gorgon", "Cyclops", "Cyclops",
                                           "Cyclops", "Lion"])
     ps.get_leaf("Rd10").reveal_creatures(["Titan", "Hydra", "Wyvern",
@@ -575,17 +575,17 @@ def test_predict_splits2():
     assert not ps.get_leaf("Rd11").all_certain
     ps.print_leaves()
 
-    print "test 2 ends"
+    print("test 2 ends")
 
 
 def test_predict_splits3():
-    print "\ntest 3 begins"
+    print("\ntest 3 begins")
 
     ps = PredictSplits("Gr", "Gr07", starting_creature_names)
     ps.print_leaves()
 
     turn = 1
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr07").split(4, "Gr11", turn)
     ps.get_leaf("Gr07").reveal_creatures(["Gargoyle", "Gargoyle"])
     ps.get_leaf("Gr07").add_creature("Cyclops")
@@ -596,7 +596,7 @@ def test_predict_splits3():
     ps.print_leaves()
 
     turn = 2
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr07").reveal_creatures(["Gargoyle", "Gargoyle"])
     ps.get_leaf("Gr07").add_creature("Cyclops")
     ps.get_leaf("Gr11").reveal_creatures(["Ogre"])
@@ -606,18 +606,18 @@ def test_predict_splits3():
     ps.print_leaves()
 
     turn = 3
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr11").reveal_creatures(["Centaur", "Centaur", "Centaur"])
     ps.get_leaf("Gr11").add_creature("Warbear")
     assert not ps.get_leaf("Gr07").all_certain
     assert not ps.get_leaf("Gr11").all_certain
     ps.print_leaves()
 
-    print "test 3 ends"
+    print("test 3 ends")
 
 
 def test_predict_splits4():
-    print "\ntest 4 begins"
+    print("\ntest 4 begins")
     creatures = []
     creatures.append(CreatureInfo("Angel", True, True))
     creatures.append(CreatureInfo("Gargoyle", True, True))
@@ -626,13 +626,13 @@ def test_predict_splits4():
     creatures.append(CreatureInfo("Centaur", True, False))
     node = Node("Gd10", 1, creatures, None)
     node.reveal_creatures(["Gargoyle", "Gargoyle"])
-    print node
+    print(node)
     assert node.all_certain
-    print "test 4 ends"
+    print("test 4 ends")
 
 
 def test_predict_splits5():
-    print "\ntest 5 begins"
+    print("\ntest 5 begins")
     ps = PredictSplits("Gd", "Gd04", starting_creature_names)
     ps.get_leaf("Gd04").reveal_creatures(["Titan", "Angel", "Gargoyle",
                                           "Gargoyle", "Centaur", "Centaur",
@@ -641,7 +641,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd04").all_certain
 
     turn = 1
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").split(4, "Gd12", turn)
     ps.get_leaf("Gd12").reveal_creatures(["Titan"])
     ps.get_leaf("Gd04").reveal_creatures(["Centaur"])
@@ -669,7 +669,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").all_certain
 
     turn = 4
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").split(2, "Gd07", turn)
     ps.get_leaf("Gd04").reveal_creatures(["Troll"])
     ps.get_leaf("Gd04").add_creature("Troll")
@@ -679,7 +679,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").all_certain
 
     turn = 5
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").reveal_creatures(["Lion"])
     ps.get_leaf("Gd04").add_creature("Lion")
     ps.get_leaf("Gd12").reveal_creatures(["Centaur"])
@@ -690,7 +690,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").all_certain
 
     turn = 6
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").split(2, "Gd08", turn)
     ps.get_leaf("Gd12").split(2, "Gd03", turn)
     ps.get_leaf("Gd08").reveal_creatures(["Ogre"])
@@ -709,7 +709,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 3
 
     turn = 7
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd12").split(2, "Gd09", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Gargoyle", "Gargoyle"])
     ps.get_leaf("Gd03").add_creature("Cyclops")
@@ -726,7 +726,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 5
 
     turn = 8
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").reveal_creatures(["Lion", "Lion"])
     ps.get_leaf("Gd04").add_creature("Ranger")
     ps.get_leaf("Gd07").reveal_creatures(["Lion", "Lion"])
@@ -744,7 +744,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 4
 
     turn = 10
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd07").reveal_creatures(["Ranger"])
     ps.get_leaf("Gd07").add_creature("Ranger")
     ps.get_leaf("Gd12").reveal_creatures(["Lion", "Lion"])
@@ -758,7 +758,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 2
 
     turn = 11
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gd03").add_creature("Cyclops")
     ps.get_leaf("Gd07").reveal_creatures(["Lion", "Lion"])
@@ -779,7 +779,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 2
 
     turn = 12
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd07").split(2, "Gd06", turn)
     ps.get_leaf("Gd09").reveal_creatures(["Centaur", "Centaur"])
     ps.get_leaf("Gd09").add_creature("Lion")
@@ -792,7 +792,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 2
 
     turn = 13
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd12").split(2, "Gd10", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gd03").add_creature("Cyclops")
@@ -810,7 +810,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 3
 
     turn = 14
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").split(2, "Gd02", turn)
     ps.get_leaf("Gd07").reveal_creatures(["Lion", "Lion"])
     ps.get_leaf("Gd07").add_creature("Minotaur")
@@ -831,7 +831,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 3
 
     turn = 15
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd12").split(2, "Gd11", turn)
     ps.print_leaves()
     assert ps.get_leaf("Gd02").num_uncertain_creatures == 2
@@ -845,7 +845,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 4
 
     turn = 16
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd07").reveal_creatures(["Ranger", "Ranger", "Ranger",
                                           "Minotaur", "Lion", "Lion"])
     ps.get_leaf("Gd04").remove_creature("Angel")
@@ -866,7 +866,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 3
 
     turn = 17
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd07").split(2, "Gd08", turn)
     ps.get_leaf("Gd02").reveal_creatures(["Ranger"])
     ps.get_leaf("Gd02").add_creature("Ranger")
@@ -905,7 +905,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 0
 
     turn = 18
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd02").add_creature("Lion")
     ps.get_leaf("Gd08").reveal_creatures(["Lion", "Lion"])
     ps.get_leaf("Gd08").add_creature("Ranger")
@@ -924,7 +924,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 0
 
     turn = 19
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Cyclops", "Cyclops"])
     ps.get_leaf("Gd03").add_creature("Gorgon")
     ps.get_leaf("Gd10").reveal_creatures(["Lion"])
@@ -939,7 +939,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 0
 
     turn = 20
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd02").reveal_creatures(["Lion", "Lion", "Lion"])
     ps.get_leaf("Gd08").reveal_creatures(["Lion"])
     ps.get_leaf("Gd08").add_creature("Lion")
@@ -957,7 +957,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 0
 
     turn = 22
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd09").split(2, "Gd07", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Cyclops", "Cyclops", "Cyclops"])
     ps.get_leaf("Gd03").add_creature("Behemoth")
@@ -982,7 +982,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 0
 
     turn = 23
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").split(2, "Gd05", turn)
     ps.get_leaf("Gd02").reveal_creatures(["Ranger"])
     ps.get_leaf("Gd02").add_creature("Troll")
@@ -1008,7 +1008,7 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 0
 
     turn = 24
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd02").split(2, "Gd04", turn)
     ps.get_leaf("Gd10").split(2, "Gd06", turn)
     ps.get_leaf("Gd02").reveal_creatures(["Ranger"])
@@ -1031,16 +1031,16 @@ def test_predict_splits5():
     assert ps.get_leaf("Gd10").num_uncertain_creatures == 2
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 0
     assert ps.get_leaf("Gd12").num_uncertain_creatures == 0
-    print "\ntest 5 ends"
+    print("\ntest 5 ends")
 
 
 def test_predict_splits6():
-    print "\ntest 6 begins"
+    print("\ntest 6 begins")
     ps = PredictSplits("Gr", "Gr11", starting_creature_names)
     ps.print_leaves()
 
     turn = 1
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gr11").split(4, "Gr02", turn)
     ps.get_leaf("Gr02").reveal_creatures(["Titan"])
     ps.get_leaf("Gr02").reveal_creatures(["Gargoyle", "Gargoyle"])
@@ -1052,7 +1052,7 @@ def test_predict_splits6():
     assert ps.get_leaf("Gr11").num_uncertain_creatures == 1
 
     turn = 2
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gr02").reveal_creatures(["Titan"])
     ps.get_leaf("Gr02").add_creature("Warlock")
     ps.get_leaf("Gr11").reveal_creatures(["Centaur"])
@@ -1062,7 +1062,7 @@ def test_predict_splits6():
     assert ps.get_leaf("Gr11").num_uncertain_creatures == 1
 
     turn = 3
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gr02").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gr02").add_creature("Cyclops")
     ps.get_leaf("Gr11").reveal_creatures(["Centaur", "Centaur"])
@@ -1072,7 +1072,7 @@ def test_predict_splits6():
     assert ps.get_leaf("Gr11").num_uncertain_creatures == 1
 
     turn = 4
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gr02").split(2, "Gr10", turn)
     ps.get_leaf("Gr11").split(3, "Gr03", turn)
     ps.get_leaf("Gr11").merge(ps.get_leaf("Gr03"), turn)
@@ -1082,7 +1082,7 @@ def test_predict_splits6():
     assert ps.get_leaf("Gr11").num_uncertain_creatures == 1
 
     turn = 5
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gr11").split(3, "Gr12", turn)
     ps.get_leaf("Gr02").reveal_creatures(["Warlock"])
     ps.get_leaf("Gr02").add_creature("Warlock")
@@ -1115,23 +1115,23 @@ def test_predict_splits6():
     assert ps.get_leaf("Gr12").all_certain
 
     turn = 6
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gr02").reveal_creatures(["Centaur"])
     ps.get_leaf("Gr02").add_creature("Centaur")
     ps.print_leaves()
     assert ps.get_leaf("Gr02").all_certain
     assert ps.get_leaf("Gr11").all_certain
     assert ps.get_leaf("Gr12").all_certain
-    print "\ntest 6 ends"
+    print("\ntest 6 ends")
 
 
 def test_predict_splits7():
-    print "\ntest 7 begins"
+    print("\ntest 7 begins")
     ps = PredictSplits("Gr", "Gr08", starting_creature_names)
     ps.print_leaves()
 
     turn = 1
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr08").split(4, "Gr04", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Titan"])
     ps.get_leaf("Gr04").reveal_creatures(["Titan"])
@@ -1143,7 +1143,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 2
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Gargoyle"])
     ps.get_leaf("Gr04").add_creature("Gargoyle")
     ps.print_leaves()
@@ -1151,7 +1151,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 3
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Gargoyle", "Gargoyle"])
     ps.get_leaf("Gr04").add_creature("Cyclops")
     ps.print_leaves()
@@ -1159,7 +1159,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 4
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").split(2, "Gr06", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Ogre"])
     ps.get_leaf("Gr04").add_creature("Ogre")
@@ -1171,7 +1171,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 5
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gr04").add_creature("Cyclops")
     ps.get_leaf("Gr06").add_creature("Ogre")
@@ -1184,7 +1184,7 @@ def test_predict_splits7():
     assert ps.get_leaf("Gr06").num_certain_creatures == 1
 
     turn = 6
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").split(2, "Gr07", turn)
     ps.get_leaf("Gr08").split(2, "Gr11", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Titan"])
@@ -1199,7 +1199,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 7
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gr04").add_creature("Cyclops")
     ps.get_leaf("Gr06").reveal_creatures(["Ogre", "Ogre"])
@@ -1213,7 +1213,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 8
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").split(2, "Gr12", turn)
     ps.print_leaves()
 
@@ -1230,7 +1230,7 @@ def test_predict_splits7():
     assert ps.get_leaf("Gr08").all_certain
 
     turn = 9
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr08").reveal_creatures(["Gargoyle", "Gargoyle"])
     ps.get_leaf("Gr08").add_creature("Cyclops")
     ps.print_leaves()
@@ -1239,7 +1239,7 @@ def test_predict_splits7():
     assert ps.get_leaf("Gr08").all_certain
 
     turn = 11
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr08").split(2, "Gr01", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Titan"])
     ps.get_leaf("Gr04").add_creature("Warlock")
@@ -1252,7 +1252,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 12
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gr04").add_creature("Cyclops")
     ps.get_leaf("Gr08").reveal_creatures(["Lion"])
@@ -1265,7 +1265,7 @@ def test_predict_splits7():
     assert ps.get_leaf("Gr08").all_certain
 
     turn = 13
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr08").split(2, "Gr02", turn)
     ps.get_leaf("Gr07").reveal_creatures(["Ogre", "Ogre"])
     ps.get_leaf("Gr07").add_creature("Troll")
@@ -1276,7 +1276,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 14
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").split(2, "Gr06", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gr04").add_creature("Cyclops")
@@ -1292,7 +1292,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 15
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr06").remove_creatures(["Cyclops", "Cyclops", "Cyclops"])
     ps.get_leaf("Gr02").reveal_creatures(["Centaur"])
     ps.get_leaf("Gr02").add_creature("Centaur")
@@ -1303,7 +1303,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 16
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gr04").add_creature("Cyclops")
     ps.get_leaf("Gr07").reveal_creatures(["Ogre", "Ogre", "Ogre"])
@@ -1317,7 +1317,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr08").all_certain
 
     turn = 17
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr02").remove_creatures(["Lion", "Centaur", "Centaur"])
     ps.print_leaves()
     assert ps.get_leaf("Gr04").all_certain
@@ -1333,7 +1333,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr12").all_certain
 
     turn = 18
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr12").remove_creatures(["Lion", "Lion"])
     assert ps.get_leaf("Gr04").all_certain
     assert ps.get_leaf("Gr07").all_certain
@@ -1350,7 +1350,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr12").all_certain
 
     turn = 19
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr09").remove_creatures(["Ogre", "Ogre"])
     ps.get_leaf("Gr08").split(2, "Gr06", turn)
     ps.get_leaf("Gr07").reveal_creatures(["Minotaur", "Minotaur"])
@@ -1365,7 +1365,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr12").all_certain
 
     turn = 20
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr06").remove_creatures(["Gorgon", "Lion"])
     ps.get_leaf("Gr08").reveal_creatures(["Cyclops", "Cyclops", "Cyclops"])
     ps.get_leaf("Gr08").add_creature("Behemoth")
@@ -1378,7 +1378,7 @@ def test_predict_splits7():
     assert not ps.get_leaf("Gr12").all_certain
 
     turn = 21
-    print "Turn", turn
+    print("Turn", turn)
     ps.get_leaf("Gr04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gr04").add_creature("Gargoyle")
     ps.get_leaf("Gr12").reveal_creatures(["Cyclops", "Cyclops", "Cyclops"])
@@ -1388,15 +1388,15 @@ def test_predict_splits7():
     assert ps.get_leaf("Gr07").all_certain
     assert ps.get_leaf("Gr08").all_certain
     assert ps.get_leaf("Gr12").all_certain
-    print "\ntest 7 ends"
+    print("\ntest 7 ends")
 
 
 def test_predict_splits8():
-    print "\ntest 8 begins"
+    print("\ntest 8 begins")
     ps = PredictSplits("Gd", "Gd03", starting_creature_names)
 
     turn = 1
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").split(4, "Gd04", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Ogre"])
     ps.get_leaf("Gd03").add_creature("Ogre")
@@ -1407,7 +1407,7 @@ def test_predict_splits8():
     ps.print_leaves()
 
     turn = 2
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Centaur"])
     ps.get_leaf("Gd03").add_creature("Centaur")
     ps.get_leaf("Gd04").reveal_creatures(["Ogre"])
@@ -1418,7 +1418,7 @@ def test_predict_splits8():
     ps.print_leaves()
 
     turn = 3
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gd04").add_creature("Cyclops")
     ps.print_leaves()
@@ -1426,7 +1426,7 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd04").num_uncertain_creatures == 1
 
     turn = 4
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").split(2, "Gd11", turn)
     ps.get_leaf("Gd04").reveal_creatures(["Ogre", "Ogre"])
     ps.get_leaf("Gd04").add_creature("Troll")
@@ -1436,7 +1436,7 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 2
 
     turn = 5
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gd04").add_creature("Cyclops")
     ps.get_leaf("Gd11").reveal_creatures(["Gargoyle", "Gargoyle"])
@@ -1447,7 +1447,7 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 0
 
     turn = 6
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").split(2, "Gd10", turn)
     ps.print_leaves()
     assert ps.get_leaf("Gd03").num_uncertain_creatures == 1
@@ -1456,7 +1456,7 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 0
 
     turn = 7
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").reveal_creatures(["Cyclops", "Cyclops", "Cyclops"])
     ps.get_leaf("Gd04").add_creature("Behemoth")
     ps.print_leaves()
@@ -1466,7 +1466,7 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 0
 
     turn = 8
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Ogre", "Ogre"])
     ps.get_leaf("Gd03").add_creature("Troll")
     ps.print_leaves()
@@ -1476,7 +1476,7 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 0
 
     turn = 9
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").split(2, "Gd01", turn)
     ps.print_leaves()
     ps.get_leaf("Gd04").reveal_creatures(["Troll"])
@@ -1501,7 +1501,7 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 0
 
     turn = 10
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd04").split(2, "Gd08", turn)
     ps.get_leaf("Gd11").reveal_creatures(["Cyclops"])
     ps.get_leaf("Gd11").add_creature("Cyclops")
@@ -1521,11 +1521,11 @@ def test_predict_splits8():
     assert ps.get_leaf("Gd11").num_uncertain_creatures == 0
 
     turn = 11
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps.get_leaf("Gd03").reveal_creatures(["Troll"])
     ps.get_leaf("Gd03").add_creature("Troll")
     ps.print_leaves()
-    print "\ntest 8 ends"
+    print("\ntest 8 ends")
     assert ps.get_leaf("Gd03").num_uncertain_creatures == 1
     assert ps.get_leaf("Gd04").num_uncertain_creatures == 4
     assert ps.get_leaf("Gd08").num_uncertain_creatures == 2
@@ -1533,7 +1533,7 @@ def test_predict_splits8():
 
 
 def test_predict_splits9():
-    print "\ntest 9 begins"
+    print("\ntest 9 begins")
     aps = AllPredictSplits()
     aps.append(PredictSplits("Gd", "Gd08", starting_creature_names))
     aps.append(PredictSplits("Bu", "Bu02", starting_creature_names))
@@ -1545,7 +1545,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 1
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd08").split(4, "Gd03", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Gargoyle", "Gargoyle"])
     aps.get_leaf("Gd03").add_creature("Cyclops")
@@ -1592,7 +1592,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 2
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Cyclops"])
     aps.get_leaf("Gd03").add_creature("Cyclops")
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 2
@@ -1623,7 +1623,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 3
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Cyclops"])
     aps.get_leaf("Gd03").add_creature("Cyclops")
     aps.get_leaf("Gd08").reveal_creatures(["Ogre", "Ogre", "Ogre"])
@@ -1662,7 +1662,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 4
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd12", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Centaur"])
     aps.get_leaf("Gd03").add_creature("Centaur")
@@ -1696,7 +1696,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 5
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Centaur", "Centaur"])
     aps.get_leaf("Gd03").add_creature("Lion")
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 1
@@ -1728,7 +1728,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 6
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd06", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Cyclops", "Cyclops", "Cyclops"])
     aps.get_leaf("Gd03").add_creature("Behemoth")
@@ -1766,7 +1766,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 7
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Lion"])
     aps.get_leaf("Gd03").add_creature("Lion")
     aps.get_leaf("Gd08").reveal_creatures(["Ogre", "Ogre"])
@@ -1802,7 +1802,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 8
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd04", turn)
     aps.get_leaf("Gd08").split(2, "Gd05", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Cyclops", "Cyclops"])
@@ -1847,7 +1847,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 9
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd05").reveal_creatures(["Centaur", "Centaur"])
     aps.get_leaf("Gd05").add_creature("Lion")
     aps.get_leaf("Gd06").reveal_creatures(["Centaur"])
@@ -1915,7 +1915,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 10
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Cyclops", "Cyclops"])
     aps.get_leaf("Gd03").add_creature("Gorgon")
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 3
@@ -1953,7 +1953,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 11
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd07", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd07"), turn)
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 3
@@ -1992,7 +1992,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 12
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd08", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd08"), turn)
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 0
@@ -2044,7 +2044,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 13
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd09", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd09"), turn)
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 0
@@ -2071,7 +2071,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 14
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd04", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Titan"])
     aps.get_leaf("Gd03").add_creature("Warlock")
@@ -2098,7 +2098,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 15
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Gorgon"])
     aps.get_leaf("Gd03").add_creature("Gorgon")
     aps.get_leaf("Gd06").reveal_creatures(["Lion"])
@@ -2137,7 +2137,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 16
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd12", turn)
     aps.get_leaf("Gd06").reveal_creatures(["Lion", "Lion"])
     aps.get_leaf("Gd06").add_creature("Minotaur")
@@ -2168,7 +2168,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 17
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Behemoth"])
     aps.get_leaf("Gd03").add_creature("Behemoth")
     aps.get_leaf("Gd12").reveal_creatures(["Gorgon"])
@@ -2237,7 +2237,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 18
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd10", turn)
     aps.get_leaf("Gd06").merge(aps.get_leaf("Gd10"), turn)
     aps.get_leaf("Gd04").reveal_creatures(["Cyclops", "Cyclops"])
@@ -2305,7 +2305,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 19
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd10", turn)
     aps.get_leaf("Gd06").merge(aps.get_leaf("Gd10"), turn)
     aps.get_leaf("Gd06").reveal_creatures(["Lion"])
@@ -2328,7 +2328,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 20
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd08", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Behemoth", "Behemoth"])
     aps.get_leaf("Gd03").add_creature("Serpent")
@@ -2369,7 +2369,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 21
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd07", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd07"), turn)
     assert aps.get_leaf("Gd03").num_uncertain_creatures == 3
@@ -2404,7 +2404,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 22
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd09", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd09"), turn)
     aps.get_leaf("Gd06").reveal_creatures(["Lion", "Lion", "Lion"])
@@ -2431,7 +2431,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 23
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd05", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd05"), turn)
     aps.get_leaf("Gd06").split(2, "Gd04", turn)
@@ -2488,7 +2488,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 24
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Behemoth", "Behemoth"])
     aps.get_leaf("Gd03").add_creature("Serpent")
     aps.get_leaf("Gd06").reveal_creatures(["Guardian"])
@@ -2506,7 +2506,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 25
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bu12").split(2, "Bu07", turn)
     aps.get_leaf("Gr08").reveal_creatures(["Titan", "Troll", "Troll",
                                            "Troll", "Ogre"])
@@ -2565,7 +2565,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 26
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd11", turn)
     aps.get_leaf("Gd06").reveal_creatures(["Minotaur"])
     aps.get_leaf("Gd06").add_creature("Minotaur")
@@ -2601,7 +2601,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 28
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Serpent"])
     aps.get_leaf("Gd03").add_creature("Serpent")
     aps.get_leaf("Gd11").reveal_creatures(["Lion", "Lion"])
@@ -2615,7 +2615,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 30
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd10", turn)
     aps.get_leaf("Gd11").reveal_creatures(["Ranger", "Ranger", "Ranger"])
     aps.get_leaf("Gd11").add_creature("Guardian")
@@ -2632,7 +2632,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 31
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").reveal_creatures(["Minotaur", "Minotaur"])
     aps.get_leaf("Gd06").add_creature("Unicorn")
     aps.get_leaf("Gd11").reveal_creatures(["Ranger"])
@@ -2646,7 +2646,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 32
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd01", turn)
     aps.get_leaf("Gd11").split(2, "Gd05", turn)
     aps.get_leaf("Gd11").reveal_creatures(["Ranger"])
@@ -2674,7 +2674,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 34
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd07", turn)
     aps.get_leaf("Gd11").split(2, "Gd02", turn)
     aps.get_leaf("Gd02").reveal_creatures(["Ranger"])
@@ -2701,7 +2701,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 35
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br01").split(2, "Br07", turn)
     aps.get_leaf("Gd10").remove_creature("Hydra")
     aps.get_leaf("Gd10").remove_creature("Griffon")
@@ -2722,7 +2722,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 36
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd11").split(2, "Gd08", turn)
     aps.get_leaf("Gd11").merge(aps.get_leaf("Gd08"), turn)
     aps.get_leaf("Gd05").reveal_creatures(["Lion", "Lion"])
@@ -2734,7 +2734,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 37
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd11").split(2, "Gd08", turn)
     aps.get_leaf("Gd05").reveal_creatures(["Ranger"])
     aps.get_leaf("Gd05").add_creature("Ranger")
@@ -2753,7 +2753,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 38
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br12").split(2, "Br09", turn)
     aps.get_leaf("Br12").merge(aps.get_leaf("Br09"), turn)
     aps.get_leaf("Bk05").reveal_creatures(["Ranger"])
@@ -2761,7 +2761,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 39
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br12").split(2, "Br06", turn)
     aps.get_leaf("Br12").merge(aps.get_leaf("Br06"), turn)
     aps.get_leaf("Br01").reveal_creatures(["Serpent"])
@@ -2786,7 +2786,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 40
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br12").split(2, "Br05", turn)
     aps.get_leaf("Br12").merge(aps.get_leaf("Br05"), turn)
     aps.get_leaf("Bk05").split(2, "Bk03", turn)
@@ -2800,7 +2800,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 41
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd05").split(2, "Gd09", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Serpent"])
     aps.get_leaf("Gd03").add_creature("Serpent")
@@ -2817,7 +2817,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 42
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd02", turn)
     aps.get_leaf("Gd06").merge(aps.get_leaf("Gd02"), turn)
     aps.get_leaf("Gd11").reveal_creatures(["Troll"])
@@ -2834,7 +2834,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 43
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd07", turn)
     aps.get_leaf("Gd11").split(2, "Gd10", turn)
     aps.get_leaf("Gd11").merge(aps.get_leaf("Gd10"), turn)
@@ -2844,7 +2844,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 44
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd11").split(2, "Gd04", turn)
     aps.get_leaf("Gd11").merge(aps.get_leaf("Gd04"), turn)
     aps.get_leaf("Br12").split(2, "Br11", turn)
@@ -2854,7 +2854,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 45
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd11").split(2, "Gd02", turn)
     aps.get_leaf("Gd11").merge(aps.get_leaf("Gd02"), turn)
     aps.get_leaf("Gd01").reveal_creatures(["Minotaur", "Minotaur"])
@@ -2869,7 +2869,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 46
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd11").split(2, "Gd02", turn)
     aps.get_leaf("Br01").reveal_creatures(["Titan"])
     aps.get_leaf("Br01").add_creature("Warlock")
@@ -2880,7 +2880,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 47
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br01").split(2, "Br06", turn)
     aps.get_leaf("Br01").reveal_creatures(["Serpent"])
     aps.get_leaf("Br01").add_creature("Serpent")
@@ -2901,7 +2901,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 49
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd07", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd07"), turn)
     aps.get_leaf("Gd06").split(2, "Gd07", turn)
@@ -2917,7 +2917,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 50
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd10", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd10"), turn)
     aps.get_leaf("Gd06").split(2, "Gd11", turn)
@@ -2930,7 +2930,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 51
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd07", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd07"), turn)
     aps.get_leaf("Gd06").split(2, "Gd11", turn)
@@ -2945,7 +2945,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 52
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd04", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd04"), turn)
     aps.get_leaf("Gd06").reveal_creatures(["Hydra"])
@@ -2964,7 +2964,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 53
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd09", turn)
     aps.get_leaf("Gd05").reveal_creatures(["Ranger", "Ranger", "Ranger"])
     aps.get_leaf("Gd05").add_creature("Guardian")
@@ -2994,7 +2994,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 54
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd05").split(2, "Gd07", turn)
     aps.get_leaf("Br03").reveal_creatures(["Behemoth"])
     aps.get_leaf("Br03").add_creature("Behemoth")
@@ -3007,7 +3007,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 58
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd11", turn)
     aps.get_leaf("Br06").reveal_creatures(["Warlock"])
     aps.get_leaf("Br06").add_creature("Warlock")
@@ -3022,7 +3022,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 60
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br12").split(2, "Br02", turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
     aps.get_leaf("Gd12").remove_creature("Guardian")
@@ -3050,7 +3050,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 61
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk10").split(2, "Bk09", turn)
     aps.get_leaf("Gd07").remove_creature("Ranger")
     aps.get_leaf("Gd07").remove_creature("Ranger")
@@ -3059,7 +3059,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 62
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br01").split(2, "Br05", turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Angel", "Angel",
@@ -3107,7 +3107,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 63
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk02").split(2, "Bk11", turn)
     aps.get_leaf("Bk06").split(2, "Bk04", turn)
     aps.get_leaf("Bk02").reveal_creatures(["Wyvern"])
@@ -3123,7 +3123,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 64
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd07", turn)
     aps.get_leaf("Gd06").merge(aps.get_leaf("Gd07"), turn)
     aps.get_leaf("Gd03").reveal_creatures(["Titan"])
@@ -3133,7 +3133,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 65
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd08", turn)
     aps.get_leaf("Gd06").merge(aps.get_leaf("Gd08"), turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
@@ -3159,7 +3159,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 66
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd05", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Warlock"])
     aps.get_leaf("Gd03").add_creature("Warlock")
@@ -3172,7 +3172,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 67
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd02", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Titan"])
     aps.get_leaf("Gd03").reveal_creatures(["Titan"])
@@ -3192,13 +3192,13 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 68
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk06").split(2, "Gr01", turn)
     aps.get_leaf("Bk06").merge(aps.get_leaf("Gr01"), turn)
     aps.check()
     aps.print_leaves()
     turn = 69
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd12", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Titan"])
     aps.get_leaf("Gd03").reveal_creatures(["Serpent", "Serpent", "Serpent"])
@@ -3211,7 +3211,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 70
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd01", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Titan"])
     aps.get_leaf("Gd01").reveal_creatures(["Wyvern", "Wyvern"])
@@ -3240,7 +3240,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 71
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd04", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Serpent"])
     aps.get_leaf("Gd03").add_creature("Behemoth")
@@ -3258,7 +3258,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 74
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd11", turn)
     aps.get_leaf("Br01").reveal_creatures(["Titan"])
     aps.get_leaf("Br01").reveal_creatures(["Serpent", "Serpent", "Serpent"])
@@ -3270,7 +3270,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 75
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Br01").split(2, "Br05", turn)
     aps.get_leaf("Bu09").reveal_creatures(["Griffon"])
     aps.get_leaf("Bu09").add_creature("Griffon")
@@ -3288,14 +3288,14 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 77
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd08", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Serpent", "Serpent", "Serpent"])
     aps.get_leaf("Gd03").add_creature("Guardian")
     aps.check()
     aps.print_leaves()
     turn = 78
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd01", turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan", "Archangel", "Angel",
                                            "Angel", "Angel", "Warlock"])
@@ -3321,7 +3321,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 79
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk10").split(2, "Bk03", turn)
     aps.get_leaf("Gd01").remove_creature("Guardian")
     aps.get_leaf("Gd01").remove_creature("Behemoth")
@@ -3332,7 +3332,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 80
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk02").split(2, "Gr11", turn)
     aps.get_leaf("Bk02").reveal_creatures(["Guardian"])
     aps.get_leaf("Bk02").add_creature("Guardian")
@@ -3347,7 +3347,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 84
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk05").split(2, "Gr06", turn)
     aps.get_leaf("Gd08").remove_creature("Griffon")
     aps.get_leaf("Gd08").remove_creature("Griffon")
@@ -3358,7 +3358,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 87
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bu09").split(2, "Br07", turn)
     aps.get_leaf("Bk04").reveal_creatures(["Guardian"])
     aps.get_leaf("Bk04").add_creature("Guardian")
@@ -3371,7 +3371,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 89
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk08").split(2, "Gr09", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Serpent"])
     aps.get_leaf("Gd03").add_creature("Behemoth")
@@ -3380,7 +3380,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 91
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd07", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd07"), turn)
     aps.get_leaf("Bk07").remove_creature("Warbear")
@@ -3393,13 +3393,13 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 92
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd07", turn)
     aps.get_leaf("Gd03").merge(aps.get_leaf("Gd07"), turn)
     aps.check()
     aps.print_leaves()
     turn = 93
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd10", turn)
     aps.get_leaf("Gd03").reveal_creatures(["Serpent"])
     aps.get_leaf("Gd03").add_creature("Behemoth")
@@ -3422,7 +3422,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 97
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd09", turn)
     aps.get_leaf("Gd06").merge(aps.get_leaf("Gd09"), turn)
     aps.get_leaf("Bk01").remove_creature("Wyvern")
@@ -3431,14 +3431,14 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 98
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd06").split(2, "Gd02", turn)
     aps.get_leaf("Gd02").reveal_creatures(["Griffon"])
     aps.get_leaf("Gd02").add_creature("Griffon")
     aps.check()
     aps.print_leaves()
     turn = 99
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk06").split(2, "Bk07", turn)
     aps.get_leaf("Bk06").reveal_creatures(["Hydra", "Hydra", "Hydra",
                                            "Angel", "Wyvern"])
@@ -3463,7 +3463,7 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 105
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk05").split(2, "Bk03", turn)
     aps.get_leaf("Bk05").reveal_creatures(["Colossus"])
     aps.get_leaf("Bk05").add_creature("Colossus")
@@ -3478,24 +3478,24 @@ def test_predict_splits9():
     aps.check()
     aps.print_leaves()
     turn = 107
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gd03").split(2, "Gd12", turn)
     aps.get_leaf("Bk10").reveal_creatures(["Titan"])
     aps.get_leaf("Gd12").remove_creature("Behemoth")
     aps.get_leaf("Gd12").remove_creature("Warlock")
     aps.check()
     aps.print_leaves()
-    print "\ntest 9 ends"
+    print("\ntest 9 ends")
 
 
 def test_predict_splits10():
-    print "\ntest 10 begins"
+    print("\ntest 10 begins")
 
     aps = AllPredictSplits()
     aps.print_leaves()
 
     turn = 1
-    print "\nTurn", turn
+    print("\nTurn", turn)
     ps = PredictSplits("Gr", "Gr07", ["Titan", "Angel", "Gargoyle",
                                       "Gargoyle", "Centaur", "Centaur",
                                       "Ogre", "Ogre"])
@@ -3583,7 +3583,7 @@ def test_predict_splits10():
     assert aps.get_leaf("Rd12").num_uncertain_creatures == 3
 
     turn = 2
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gr07").reveal_creatures(["Troll"])
     aps.get_leaf("Gr07").add_creature("Troll")
     aps.get_leaf("Gr12").reveal_creatures(["Centaur"])
@@ -3613,7 +3613,7 @@ def test_predict_splits10():
     assert aps.get_leaf("Rd12").num_uncertain_creatures == 1
 
     turn = 3
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bu08").reveal_creatures(["Ogre"])
     aps.get_leaf("Bu08").add_creature("Ogre")
     aps.get_leaf("Bu12").reveal_creatures(["Centaur"])
@@ -3643,7 +3643,7 @@ def test_predict_splits10():
     assert aps.get_leaf("Rd12").num_uncertain_creatures == 0
 
     turn = 4
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gr07").reveal_creatures(["Troll"])
     aps.get_leaf("Gr07").add_creature("Troll")
     aps.get_leaf("Gr12").reveal_creatures(["Cyclops"])
@@ -3679,7 +3679,7 @@ def test_predict_splits10():
     assert aps.get_leaf("Rd12").num_uncertain_creatures == 0
 
     turn = 5
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Gr07").split(2, "Gr05", turn)
     aps.get_leaf("Gr12").split(2, "Gr10", turn)
     aps.get_leaf("Gr05").reveal_creatures(["Ogre"])
@@ -3733,7 +3733,7 @@ def test_predict_splits10():
     assert aps.get_leaf("Rd12").num_uncertain_creatures == 3
 
     turn = 6
-    print "\nTurn", turn
+    print("\nTurn", turn)
     aps.get_leaf("Bk04").remove_creature("Gargoyle")
     aps.get_leaf("Bk04").remove_creature("Gargoyle")
     aps.get_leaf("Gr05").reveal_creatures(["Ogre", "Ogre", "Ogre"])
@@ -3804,7 +3804,7 @@ def test_predict_splits10():
     assert aps.get_leaf("Rd04").num_uncertain_creatures == 0
     assert aps.get_leaf("Rd12").num_uncertain_creatures == 0
 
-    print "\ntest 10 ends"
+    print("\ntest 10 ends")
 
 
 def test_predict_splits11():

@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from sys import maxint
+from sys import maxsize
 import os
 import time
 from collections import defaultdict
@@ -1109,7 +1109,7 @@ class Game(Observed):
             color = legion.player.color
             hexlabels_to_legion_colors[hexlabel].add(color)
         results = set()
-        for hexlabel, colorset in hexlabels_to_legion_colors.iteritems():
+        for hexlabel, colorset in hexlabels_to_legion_colors.items():
             if len(colorset) >= 2:
                 results.add(hexlabel)
         return results
@@ -1225,7 +1225,7 @@ class Game(Observed):
         if movement_left <= 0:
             return result
         hex1 = self.battlemap.hexes[hexlabel]
-        for hexside, hex2 in hex1.neighbors.iteritems():
+        for hexside, hex2 in hex1.neighbors.items():
             try:
                 creature2 = self.creatures_in_battle_hex(hex2.label).pop()
             except KeyError:
@@ -2007,7 +2007,7 @@ class Game(Observed):
                 logging.info("%s %s %d", legion, legion.living_creatures,
                              legion.living_creatures_score)
                 player_to_full_points[player] += legion.living_creatures_score
-            for player, full_points in player_to_full_points.iteritems():
+            for player, full_points in player_to_full_points.items():
                 if player is not None:
                     half_points = full_points // 2
                     player.add_points(half_points)

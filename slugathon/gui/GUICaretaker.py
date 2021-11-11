@@ -37,7 +37,7 @@ class GUICaretaker(gtk.EventBox):
         self.chits = {}
 
         for ii, (creature_name, left_count) in enumerate(sorted(
-                self.caretaker.counts.iteritems())):
+                self.caretaker.counts.items())):
             creature = Creature.Creature(creature_name)
             max_count = self.caretaker.max_counts[creature_name]
             dead_count = self.caretaker.graveyard[creature_name]
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     game.players.append(player2)
 
     caretaker = game.caretaker
-    for unused in xrange(10):
+    for unused in range(10):
         caretaker.take_one("Colossus")
 
     window = gtk.Window()

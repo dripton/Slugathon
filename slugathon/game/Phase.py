@@ -5,10 +5,10 @@ __license__ = "GNU GPL v2"
 """Phase constants"""
 
 # Master
-SPLIT, MOVE, FIGHT, MUSTER = range(4)
+SPLIT, MOVE, FIGHT, MUSTER = list(range(4))
 
 # Battle
-REINFORCE, MANEUVER, DRIFTDAMAGE, STRIKE, COUNTERSTRIKE, CLEANUP = range(6)
+REINFORCE, MANEUVER, DRIFTDAMAGE, STRIKE, COUNTERSTRIKE, CLEANUP = list(range(6))
 
 phase_names = {
     SPLIT: "Split",
