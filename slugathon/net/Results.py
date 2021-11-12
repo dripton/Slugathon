@@ -173,7 +173,7 @@ class Results(object):
                 sigma = row["sigma"]
                 rating = trueskill.Rating(mu=mu, sigma=sigma)
                 rating_tuples.append((rating, ))
-            rating_tuples2 = trueskill.transform_ratings(rating_tuples, ranks)
+            rating_tuples2 = trueskill.rate(rating_tuples, ranks)
             while player_ids:
                 player_id = player_ids.pop()
                 rating = rating_tuples2.pop()[0]
