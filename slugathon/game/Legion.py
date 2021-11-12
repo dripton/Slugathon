@@ -133,6 +133,9 @@ class Legion(Observed):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __hash__(self):
+        return hash(self.markerid)
+
     @property
     def num_lords(self):
         return sum(creature.is_lord for creature in self.creatures)

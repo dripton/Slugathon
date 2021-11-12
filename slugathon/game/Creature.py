@@ -114,6 +114,9 @@ class Creature(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __hash__(self):
+        return hash(self.name)
+
     @property
     def score(self):
         """Return the point value of this creature."""
