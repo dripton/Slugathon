@@ -782,7 +782,7 @@ class CleverBot(object):
         # Scramble the list so we don't get a bunch of similar bad
         # orders jumbled together at the beginning.
         random.shuffle(perms)
-        best_score = -maxint
+        best_score = -maxsize
         best_perm = None
         finish_time = time.time() + self.ai_time_limit
         for perm in perms:
@@ -862,7 +862,7 @@ class CleverBot(object):
             legion_moves = list(self._gen_fallback_legion_moves(movesets))
             if not legion_moves:
                 return None
-        best_score = -maxint
+        best_score = -maxsize
         start_time = time.time()
         finish_time = start_time + self.ai_time_limit
         # Scramble the moves, in case we don't have time to look at them all.

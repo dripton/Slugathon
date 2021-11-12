@@ -782,10 +782,10 @@ class GUIMasterBoard(gtk.EventBox):
         GUIMasterHexes whose hexlabels are given, as a tuple
         (x, y, width, height)
         """
-        min_x = maxint
-        max_x = -maxint
-        min_y = maxint
-        max_y = -maxint
+        min_x = maxsize
+        max_x = -maxsize
+        min_y = maxsize
+        max_y = -maxsize
         for hexlabel in hexlabels:
             try:
                 guihex = self.guihexes[hexlabel]

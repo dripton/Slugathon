@@ -98,10 +98,10 @@ class GUIBattleHex(object):
     @property
     def bounding_rect(self):
         """Return the bounding rectangle (x, y, width, height) of this hex."""
-        min_x = maxint
-        max_x = -maxint
-        min_y = maxint
-        max_y = -maxint
+        min_x = maxsize
+        max_x = -maxsize
+        min_y = maxsize
+        max_y = -maxsize
         for x, y in self.vertexes:
             min_x = min(min_x, x)
             min_y = min(min_y, y)

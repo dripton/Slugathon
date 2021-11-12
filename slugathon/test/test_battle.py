@@ -60,7 +60,7 @@ class TestBattle(object):
         assert self.game.battle_hex_entry_cost(titan, "Tower", "Wall") == 2
         assert self.game.battle_hex_entry_cost(titan, "Drift", None) == 2
         assert self.game.battle_hex_entry_cost(titan, "Volcano", None) == \
-            maxint
+            maxsize
         lion = Creature.Creature("Lion")
         assert self.game.battle_hex_entry_cost(lion, "Bramble", None) == 2
         assert self.game.battle_hex_entry_cost(lion, "Plain", None) == 1
@@ -70,7 +70,7 @@ class TestBattle(object):
         assert self.game.battle_hex_entry_cost(lion, "Tower", "Wall") == 2
         assert self.game.battle_hex_entry_cost(lion, "Drift", None) == 2
         assert self.game.battle_hex_entry_cost(lion, "Volcano", None) == \
-            maxint
+            maxsize
         giant = Creature.Creature("Giant")
         assert self.game.battle_hex_entry_cost(giant, "Bramble", None) == 2
         assert self.game.battle_hex_entry_cost(giant, "Plain", None) == 1
@@ -80,7 +80,7 @@ class TestBattle(object):
         assert self.game.battle_hex_entry_cost(giant, "Tower", "Wall") == 2
         assert self.game.battle_hex_entry_cost(giant, "Drift", None) == 1
         assert self.game.battle_hex_entry_cost(giant, "Volcano", None) == \
-            maxint
+            maxsize
         dragon = Creature.Creature("Dragon")
         assert self.game.battle_hex_entry_cost(dragon, "Bramble", None) == 2
         assert self.game.battle_hex_entry_cost(dragon, "Plain", None) == 1

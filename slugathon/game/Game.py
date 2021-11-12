@@ -147,7 +147,7 @@ class Game(Observed):
     @property
     def owner(self):
         """The owner of the game is the remaining player who joined first."""
-        min_join_order = maxint
+        min_join_order = maxsize
         owner = None
         for player in self.players:
             if player.join_order < min_join_order:
@@ -1172,17 +1172,17 @@ class Game(Observed):
         crossing border.  For fliers, this means landing in the hex, not
         just flying over it.
 
-        If the creature cannot enter the hex, return maxint.
+        If the creature cannot enter the hex, return maxsize.
 
         This does not take other creatures in the hex into account.
         """
         cost = 1
         # terrains
         if terrain in ["Tree"]:
-            return maxint
+            return maxsize
         elif terrain in ["Bog", "Volcano"]:
             if not creature.is_native(terrain):
-                return maxint
+                return maxsize
         elif terrain in ["Bramble", "Drift"]:
             if not creature.is_native(terrain):
                 cost += 1
@@ -1198,20 +1198,20 @@ class Game(Observed):
                 cost += 1
         elif border in ["Cliff"]:
             if not creature.flies:
-                return maxint
+                return maxsize
         return cost
 
     def battle_hex_flyover_cost(self, creature, terrain):
         """Return the cost for creature to fly over the hex with terrain.
         This does not include landing in the hex.
 
-        If the creature cannot fly over the hex, return maxint.
+        If the creature cannot fly over the hex, return maxsize.
         """
         if not creature.flies:
-            return maxint
+            return maxsize
         if terrain in ["Volcano"]:
             if not creature.is_native(terrain):
-                return maxint
+                return maxsize
         return 1
 
     def _find_battle_moves_inner(self, creature, hexlabel, movement_left,
@@ -1258,7 +1258,7 @@ class Game(Observed):
                     flyover_cost = self.battle_hex_flyover_cost(creature,
                                                                 hex2.terrain)
                 else:
-                    flyover_cost = maxint
+                    flyover_cost = maxsize
                 min_cost = min(cost, flyover_cost)
                 if min_cost < movement_left:
                     result.update(self._find_battle_moves_inner(
