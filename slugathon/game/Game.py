@@ -316,9 +316,7 @@ class Game(Observed):
 
         Only call this after towers are assigned.
         """
-        def starting_tower_desc(a, b):
-            return b.starting_tower - a.starting_tower
-        self.players.sort(starting_tower_desc)
+        self.players.sort(key=lambda x: -x.starting_tower)
         self.active_player = self.players[0]
 
     @property
