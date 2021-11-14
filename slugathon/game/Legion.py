@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2004-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+from functools import cmp_to_key
 import types
 import logging
 
@@ -406,7 +407,7 @@ class Legion(Observed):
                         return int(diff)
                 ii += 1
 
-        result_list.sort(cmp=cmp_helper)
+        result_list.sort(key=cmp_to_key(cmp_helper))
         return result_list
 
     def recruit_creature(self, creature, recruiter_names):
