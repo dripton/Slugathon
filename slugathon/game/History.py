@@ -84,7 +84,7 @@ class History(object):
     def save(self, fil):
         """Save history to a file, which should already be open for write."""
         for action in self.actions:
-            fil.write(repr(action) + "\n")
+            fil.write(bytes(repr(action) + "\n", "utf-8"))
 
     def load(self, fil):
         """Load history from a file, which should already be open for read."""
