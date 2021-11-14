@@ -143,7 +143,7 @@ class TestGame(object):
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = game.find_all_moves(legion, masterhex, 6)
-        logging.info(sorted(moves))
+        logging.info(sorted(map(str, moves)))
         hexlabels = set([move[0] for move in moves])
         assert hexlabels == set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
                                  15, 16, 17, 21, 37, 41, 42, 101, 102, 103,
