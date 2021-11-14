@@ -3,7 +3,6 @@ __license__ = "GNU GPL v2"
 
 
 from functools import cmp_to_key
-import types
 import logging
 
 from slugathon.util.bag import bag

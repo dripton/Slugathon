@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import types
 import logging
 
 from twisted.internet import reactor
