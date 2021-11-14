@@ -108,14 +108,13 @@ class Creature(object):
             return base
 
     def __eq__(self, other):
-        """All creatures of the same type are equal."""
-        return self.name == other.name
+        return self.name == other.name and self.hexlabel == other.hexlabel
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(self.name)
+        return hash(self.name) + hash(self.hexlabel)
 
     @property
     def score(self):
