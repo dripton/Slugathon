@@ -8,6 +8,8 @@ import math
 from sys import maxsize
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
@@ -15,7 +17,7 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-import gtk
+from gi.repository import Gtk, GObject, Gdk
 import cairo
 from zope.interface import implementer
 
@@ -95,13 +97,13 @@ ui_string = """<ui>
 
 
 @implementer(IObserver)
-class GUIMasterBoard(gtk.EventBox):
+class GUIMasterBoard(Gtk.EventBox):
 
     """GUI representation of the masterboard."""
 
     def __init__(self, board, game=None, user=None, playername=None,
                  scale=None, parent_window=None):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.board = board
         self.user = user
@@ -112,13 +114,13 @@ class GUIMasterBoard(gtk.EventBox):
         self.connect("delete-event", self.cb_delete_event)
         self.connect("destroy", self.cb_destroy)
 
-        self.hbox = gtk.HBox()
+        self.hbox = Gtk.HBox()
         self.add(self.hbox)
 
-        self.vbox = gtk.VBox()
-        self.hbox.pack_start(self.vbox, expand=False)
-        self.vbox2 = gtk.VBox()
-        self.hbox.pack_start(self.vbox2)
+        self.vbox = Gtk.VBox()
+        self.hbox.pack_start(self.vbox, False, True, 0)
+        self.vbox2 = Gtk.VBox()
+        self.hbox.pack_start(self.vbox2, True, True, 0)
 
         self.create_ui()
         self.enable_pause_ai()
@@ -129,9 +131,9 @@ class GUIMasterBoard(gtk.EventBox):
             self.scale = self.compute_scale()
         else:
             self.scale = scale
-        self.area = gtk.DrawingArea()
+        self.area = Gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
-        self.vbox.pack_start(self.area, expand=False)
+        self.vbox.pack_start(self.area, False, True, 0)
         self.markers = []
         self.guihexes = {}
         # list of tuples (Chit, hexlabel)
@@ -155,42 +157,42 @@ class GUIMasterBoard(gtk.EventBox):
         # Used to combine nearly simultaneous redraws into one.
         self.repaint_hexlabels = set()
 
-        self.area.connect("expose-event", self.cb_area_expose)
-        self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.area.connect("draw", self.cb_area_expose)
+        self.area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.area.connect("button-press-event", self.cb_click)
-        self.area.add_events(gtk.gdk.POINTER_MOTION_MASK)
+        self.area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self.area.connect("motion-notify-event", self.cb_motion)
         self.show_all()
 
     def create_ui(self):
-        ag = gtk.ActionGroup("MasterActions")
+        ag = Gtk.ActionGroup(name="MasterActions")
         actions = [
             ("GameMenu", None, "_Game"),
-            ("Save", gtk.STOCK_SAVE, "_Save", "s", "Save", self.cb_save),
-            ("Quit", gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
+            ("Save", Gtk.STOCK_SAVE, "_Save", "s", "Save", self.cb_save),
+            ("Quit", Gtk.STOCK_QUIT, "_Quit", "<control>Q", "Quit program",
              self.cb_quit),
-            ("Withdraw", gtk.STOCK_DISCONNECT, "_Withdraw", "<control>W",
+            ("Withdraw", Gtk.STOCK_DISCONNECT, "_Withdraw", "<control>W",
              "Withdraw from the game", self.cb_withdraw),
 
             ("PhaseMenu", None, "_Phase"),
-            ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
-            ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
-            ("Undo All", gtk.STOCK_DELETE, "Undo _All", "a", "Undo All",
+            ("Done", Gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
+            ("Undo", Gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
+            ("Undo All", Gtk.STOCK_DELETE, "Undo _All", "a", "Undo All",
              self.cb_undo_all),
-            ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
-            ("Mulligan", gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan",
+            ("Redo", Gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
+            ("Mulligan", Gtk.STOCK_MEDIA_REWIND, "_Mulligan", "m", "Mulligan",
              self.cb_mulligan),
-            ("Clear Recruit Chits", gtk.STOCK_CLEAR, "_Clear Recruit Chits",
+            ("Clear Recruit Chits", Gtk.STOCK_CLEAR, "_Clear Recruit Chits",
              "c", "Clear Recruit Chits", self.clear_all_recruitchits),
-            ("Pause AI", gtk.STOCK_MEDIA_PAUSE, "_Pause AI", "p",
+            ("Pause AI", Gtk.STOCK_MEDIA_PAUSE, "_Pause AI", "p",
              "Pause AI", self.pause_ai),
-            ("Resume AI", gtk.STOCK_MEDIA_PLAY, "_Resume AI", "",
+            ("Resume AI", Gtk.STOCK_MEDIA_PLAY, "_Resume AI", "",
              "Resume AI", self.resume_ai),
 
             ("OptionsMenu", None, "_Options"),
 
             ("HelpMenu", None, "_Help"),
-            ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
+            ("About", Gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]
         ag.add_actions(actions)
         toggle_actions = [
@@ -211,7 +213,7 @@ class GUIMasterBoard(gtk.EventBox):
             ),
         ]
         ag.add_toggle_actions(toggle_actions)
-        self.ui = gtk.UIManager()
+        self.ui = Gtk.UIManager()
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
 
@@ -256,28 +258,28 @@ class GUIMasterBoard(gtk.EventBox):
         if not self.guicaretaker:
             self.guicaretaker = GUICaretaker.GUICaretaker(self.game,
                                                           self.playername)
-            self.vbox2.pack_start(self.guicaretaker)
+            self.vbox2.pack_start(self.guicaretaker, True, True, 0)
             self.game.add_observer(self.guicaretaker)
 
     def _init_status_screen(self):
         if not self.status_screen:
             self.status_screen = StatusScreen.StatusScreen(self.game,
                                                            self.playername)
-            self.vbox2.pack_start(gtk.HSeparator())
-            self.vbox2.pack_start(self.status_screen)
+            self.vbox2.pack_start(Gtk.HSeparator(True, True, 0))
+            self.vbox2.pack_start(self.status_screen, True, True, 0)
             self.game.add_observer(self.status_screen)
 
     def _init_inspector(self):
         if not self.inspector:
             self.inspector = Inspector.Inspector(self.playername)
-            self.vbox2.pack_start(gtk.HSeparator())
-            self.vbox2.pack_start(self.inspector)
+            self.vbox2.pack_start(Gtk.HSeparator(True, True, 0))
+            self.vbox2.pack_start(self.inspector, True, True, 0)
 
     def _init_event_log(self):
         if not self.event_log:
             self.event_log = EventLog.EventLog(self.game, self.playername)
             self.game.add_observer(self.event_log)
-            self.vbox.pack_start(self.event_log)
+            self.vbox.pack_start(self.event_log, True, True, 0)
 
     def cb_delete_event(self, widget, event):
         if self.game is None or self.game.over:
@@ -572,9 +574,9 @@ class GUIMasterBoard(gtk.EventBox):
                     def1.addCallback(self.picked_recruit)
             self.highlight_recruits()
 
-    def picked_marker_presplit(self, xxx_todo_changeme,
+    def picked_marker_presplit(self, tup,
                                legion):
-        (game_name, playername, markerid) = xxx_todo_changeme
+        (game_name, playername, markerid) = tup
         player = self.game.get_player_by_name(playername)
         player.pick_marker(markerid)
         if markerid:
@@ -586,8 +588,8 @@ class GUIMasterBoard(gtk.EventBox):
                                       self.parent_window)
             def1.addCallback(self.try_to_split_legion)
 
-    def try_to_split_legion(self, xxx_todo_changeme1):
-        (old_legion, new_legion1, new_legion2) = xxx_todo_changeme1
+    def try_to_split_legion(self, tup1):
+        (old_legion, new_legion1, new_legion2) = tup1
         if old_legion is None:
             # canceled
             player = self.game.get_player_by_name(self.playername)
@@ -601,9 +603,9 @@ class GUIMasterBoard(gtk.EventBox):
                                     new_legion2.creature_names)
         def1.addErrback(self.failure)
 
-    def picked_recruit(self, xxx_todo_changeme2):
+    def picked_recruit(self, tup2):
         """Callback from PickRecruit"""
-        (legion, creature, recruiter_names) = xxx_todo_changeme2
+        (legion, creature, recruiter_names) = tup2
         if creature is not None:
             def1 = self.user.callRemote("recruit_creature", self.game.name,
                                         legion.markerid, creature.name,
@@ -614,9 +616,9 @@ class GUIMasterBoard(gtk.EventBox):
                                         legion.markerid)
             def1.addErrback(self.failure)
 
-    def picked_summon(self, xxx_todo_changeme3):
+    def picked_summon(self, tup3):
         """Callback from SummonAngel"""
-        (legion, donor, creature) = xxx_todo_changeme3
+        (legion, donor, creature) = tup3
         if donor is None or creature is None:
             def1 = self.user.callRemote("do_not_summon_angel", self.game.name,
                                         legion.markerid)
@@ -627,9 +629,9 @@ class GUIMasterBoard(gtk.EventBox):
                                         creature.name)
             def1.addErrback(self.failure)
 
-    def picked_angels(self, xxx_todo_changeme4):
+    def picked_angels(self, tup4):
         """Callback from AcquireAngels"""
-        (legion, angels) = xxx_todo_changeme4
+        (legion, angels) = tup4
         logging.info("picked_angels %s %s", legion, angels)
         self.acquire_angels = None
         if not angels:
@@ -647,8 +649,8 @@ class GUIMasterBoard(gtk.EventBox):
     def compute_scale(self):
         """Return the approximate maximum scale that let the board fit on
         the screen."""
-        width = gtk.gdk.screen_width()
-        height = gtk.gdk.screen_height()
+        width = Gdk.Screen.width()
+        height = Gdk.Screen.height()
         xscale = width / (self.board.hex_width * 4. + 2)
         # Fudge factor to leave room for menus and toolbars and EventLog.
         yscale = height / (self.board.hex_height * 4 * SQRT3) - 5
@@ -817,12 +819,16 @@ class GUIMasterBoard(gtk.EventBox):
         else:
             if self.repaint_hexlabels:
                 clip_rect = guiutils.combine_rectangles(
-                    event.area,
+                    event.clip_extents(),
                     self.bounding_rect_for_hexlabels(self.repaint_hexlabels))
             else:
-                clip_rect = event.area
+                clip_rect = event.clip_extents()
 
-        x, y, width, height = self.allocation
+        allocation = self.get_allocation()
+        x = allocation.x
+        y = allocation.y
+        width = allocation.width
+        height = allocation.height
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         ctx = cairo.Context(surface)
         ctx.rectangle(*clip_rect)
@@ -831,7 +837,9 @@ class GUIMasterBoard(gtk.EventBox):
         # black background
         if event is not None:
             ctx.set_source_rgb(0, 0, 0)
-            width, height = self.area.size_request()
+            requisition = self.area.get_size_request()
+            width = requisition.width
+            height = requisition.height
             # Overdraw in case window is enlarged.
             ctx.rectangle(0, 0, 2 * width, 2 * height)
             ctx.fill()
@@ -1093,8 +1101,8 @@ class GUIMasterBoard(gtk.EventBox):
             def1.addCallback(self.cb_withdraw2)
             def1.addErrback(self.failure)
 
-    def cb_maybe_flee(self, xxx_todo_changeme5):
-        (attacker, defender, fled) = xxx_todo_changeme5
+    def cb_maybe_flee(self, tup5):
+        (attacker, defender, fled) = tup5
         if fled:
             def1 = self.user.callRemote("flee", self.game.name,
                                         defender.markerid)
@@ -1103,11 +1111,11 @@ class GUIMasterBoard(gtk.EventBox):
                                         defender.markerid)
         def1.addErrback(self.failure)
 
-    def cb_negotiate(self, xxx_todo_changeme6):
+    def cb_negotiate(self, tup6):
         """Callback from Negotiate dialog."""
         (attacker_legion, attacker_creature_names,
                             defender_legion, defender_creature_names,
-                            response_id) = xxx_todo_changeme6
+                            response_id) = tup6
         player = self.game.get_player_by_name(self.playername)
         hexlabel = attacker_legion.hexlabel
         for legion in player.friendly_legions(hexlabel):
@@ -1142,11 +1150,11 @@ class GUIMasterBoard(gtk.EventBox):
                                         defender_legion.markerid)
             def1.addErrback(self.failure)
 
-    def cb_proposal(self, xxx_todo_changeme7):
+    def cb_proposal(self, tup7):
         """Callback from Proposal dialog."""
         (attacker_legion, attacker_creature_names,
                            defender_legion, defender_creature_names,
-                           response_id) = xxx_todo_changeme7
+                           response_id) = tup7
         if response_id == Proposal.ACCEPT:
             def1 = self.user.callRemote("accept_proposal",
                                         self.game.name,
@@ -1561,7 +1569,7 @@ class GUIMasterBoard(gtk.EventBox):
 if __name__ == "__main__":
     from slugathon.game import MasterBoard
 
-    window = gtk.Window()
+    window = Gtk.Window()
     window.set_default_size(1024, 768)
     board = MasterBoard.MasterBoard()
     guiboard = GUIMasterBoard(board, parent_window=window)

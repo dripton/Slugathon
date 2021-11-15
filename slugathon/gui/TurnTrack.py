@@ -3,9 +3,10 @@
 __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
-import gtk
-import pango
-import pangocairo
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version("PangoCairo", "1.0")
+from gi.repository import Gtk, Pango, PangoCairo, GObject
 from zope.interface import implementer
 
 from slugathon.gui import Marker
@@ -14,10 +15,10 @@ from slugathon.game import Action
 
 
 @implementer(IObserver)
-class TurnTrack(gtk.DrawingArea):
+class TurnTrack(Gtk.DrawingArea):
     """Widget to show the battle turn."""
     def __init__(self, attacker, defender, game, scale):
-        gtk.DrawingArea.__init__(self)
+        GObject.GObject.__init__(self)
         self.attacker = attacker
         self.defender = defender
         self.game = game
@@ -32,7 +33,7 @@ class TurnTrack(gtk.DrawingArea):
                                              scale=marker_scale)
         self.battle_turn = 1
         self.active_marker = self.defender_marker
-        self.connect("expose-event", self.cb_area_expose)
+        self.connect("draw", self.cb_area_expose)
         self.show_all()
 
     def compute_width(self):
@@ -56,18 +57,17 @@ class TurnTrack(gtk.DrawingArea):
         ctx.stroke()
 
     def draw_turn_number(self, ctx, ii):
-        pctx = pangocairo.CairoContext(ctx)
-        layout = pctx.create_layout()
+        layout = PangoCairo.create_layout(ctx)
         # TODO Vary font size with scale
-        desc = pango.FontDescription("Sans 17")
+        desc = Pango.FontDescription("Sans 17")
         layout.set_font_description(desc)
-        layout.set_alignment(pango.ALIGN_CENTER)
+        layout.set_alignment(Pango.Alignment.CENTER)
         layout.set_text(str(ii + 1))
         cx = int(round((1.23 + ii * 1.8) * self.scale))
         cy = int(round(1.32 * self.scale))
         ctx.set_source_rgb(0, 0, 0)
         ctx.move_to(cx, cy)
-        pctx.show_layout(layout)
+        PangoCairo.show_layout(ctx, layout)
 
     def draw_marker(self, ctx):
         ii = self.battle_turn - 1
@@ -88,11 +88,13 @@ class TurnTrack(gtk.DrawingArea):
             return
         ctx = self.get_window().cairo_create()
         if event:
-            clip_rect = event.area
+            clip_rect = event.clip_extents()
             ctx.rectangle(*clip_rect)
             ctx.clip()
         ctx.set_source_rgb(1, 1, 1)
-        width, height = self.size_request()
+        requisition = self.get_size_request()
+        width = requisition.width
+        height = requisition.height
         ctx.rectangle(0, 0, width, height)
         ctx.fill()
         ctx.set_line_width(round(0.06 * self.scale))
@@ -118,11 +120,11 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
     from slugathon.game import Legion
 
-    window = gtk.Window()
+    window = Gtk.Window()
     attacker = Legion.Legion(None, "Rd01", [], 1)
     defender = Legion.Legion(None, "Bu01", [], 2)
     turntrack = TurnTrack(attacker, defender, None, 50)
     turntrack.connect("destroy", guiutils.exit)
     window.add(turntrack)
     window.show_all()
-    gtk.main()
+    Gtk.main()

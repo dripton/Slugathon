@@ -11,14 +11,13 @@ import sys
 import time
 import logging
 
+import gi
+gi.require_version('Gtk', '3.0')
 from twisted.internet import gtk3reactor
 gtk3reactor.install()
 from twisted.internet import reactor, utils, defer
 from twisted.python import log
-import gi
-from gi.repository import GObject
-gi.require_version('Gtk', '3.0')
-import gtk
+from gi.repository import GObject, Gtk, Gdk
 
 from slugathon.gui import Client, icon
 from slugathon.util import guiutils, prefs
@@ -27,13 +26,13 @@ from slugathon.util import guiutils, prefs
 defer.setDebugging(True)
 
 
-class Connect(gtk.Window):
+class Connect(Gtk.Window):
 
     """GUI for connecting to a server."""
 
     def __init__(self, playername, password, server_name, server_port,
                  connect_now, log_path):
-        gtk.Window.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.playernames = set()
         self.server_names = set()
@@ -42,56 +41,56 @@ class Connect(gtk.Window):
         self.set_title("Slugathon - Connect")
         self.set_default_size(400, -1)
 
-        vbox1 = gtk.VBox()
+        vbox1 = Gtk.VBox()
         self.add(vbox1)
 
-        hbox1 = gtk.HBox(homogeneous=True)
-        vbox1.pack_start(hbox1, expand=False)
-        label1 = gtk.Label("Player name")
-        hbox1.pack_start(label1, expand=False)
-        self.playername_comboboxentry = gtk.ComboBoxEntry()
-        hbox1.pack_start(self.playername_comboboxentry, expand=False)
+        hbox1 = Gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox1, False, True, 0)
+        label1 = Gtk.Label(label="Player name")
+        hbox1.pack_start(label1, False, True, 0)
+        self.playername_comboboxentry = Gtk.ComboBox().new_with_entry()
+        hbox1.pack_start(self.playername_comboboxentry, False, True, 0)
 
-        hbox2 = gtk.HBox(homogeneous=True)
-        vbox1.pack_start(hbox2, expand=False)
-        label2 = gtk.Label("Password")
-        hbox2.pack_start(label2, expand=False)
-        self.password_entry = gtk.Entry()
+        hbox2 = Gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox2, False, True, 0)
+        label2 = Gtk.Label(label="Password")
+        hbox2.pack_start(label2, False, True, 0)
+        self.password_entry = Gtk.Entry()
         self.password_entry.set_visibility(False)
-        hbox2.pack_start(self.password_entry, expand=False)
+        hbox2.pack_start(self.password_entry, False, True, 0)
 
-        hbox3 = gtk.HBox(homogeneous=True)
-        vbox1.pack_start(hbox3, expand=False)
-        label3 = gtk.Label("Server name")
-        hbox3.pack_start(label3, expand=False)
-        self.server_name_comboboxentry = gtk.ComboBoxEntry()
-        hbox3.pack_start(self.server_name_comboboxentry, expand=False)
+        hbox3 = Gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox3, False, True, 0)
+        label3 = Gtk.Label(label="Server name")
+        hbox3.pack_start(label3, False, True, 0)
+        self.server_name_comboboxentry = Gtk.ComboBox().new_with_entry()
+        hbox3.pack_start(self.server_name_comboboxentry, False, True, 0)
 
-        hbox4 = gtk.HBox(homogeneous=True)
-        vbox1.pack_start(hbox4, expand=False)
-        label4 = gtk.Label("Server port")
-        hbox4.pack_start(label4, expand=False)
-        self.server_port_comboboxentry = gtk.ComboBoxEntry()
-        hbox4.pack_start(self.server_port_comboboxentry, expand=False)
+        hbox4 = Gtk.HBox(homogeneous=True)
+        vbox1.pack_start(hbox4, False, True, 0)
+        label4 = Gtk.Label(label="Server port")
+        hbox4.pack_start(label4, False, True, 0)
+        self.server_port_comboboxentry = Gtk.ComboBox().new_with_entry()
+        hbox4.pack_start(self.server_port_comboboxentry, False, True, 0)
 
-        connect_button = gtk.Button("Connect to server")
+        connect_button = Gtk.Button(label="Connect to server")
         connect_button.connect("button-press-event",
                                self.cb_connect_button_clicked)
-        vbox1.pack_start(connect_button, expand=False)
+        vbox1.pack_start(connect_button, False, True, 0)
 
-        hseparator1 = gtk.HSeparator()
-        vbox1.pack_start(hseparator1, expand=False)
+        hseparator1 = Gtk.HSeparator()
+        vbox1.pack_start(hseparator1, False, True, 0)
 
-        start_server_button = gtk.Button("Start local server")
+        start_server_button = Gtk.Button(label="Start local server")
         start_server_button.connect("button-press-event",
                                     self.cb_start_server_button_clicked)
-        vbox1.pack_start(start_server_button, expand=False)
+        vbox1.pack_start(start_server_button, False, True, 0)
 
-        hseparator2 = gtk.HSeparator()
-        vbox1.pack_start(hseparator2, expand=False)
+        hseparator2 = Gtk.HSeparator()
+        vbox1.pack_start(hseparator2, False, True, 0)
 
-        self.status_textview = gtk.TextView()
-        vbox1.pack_start(self.status_textview, expand=False)
+        self.status_textview = Gtk.TextView()
+        vbox1.pack_start(self.status_textview, False, True, 0)
 
         self._init_playernames(playername)
         self._init_password(password)
@@ -137,14 +136,14 @@ class Connect(gtk.Window):
         if not playername:
             playername = prefs.last_playername()
         self.playernames.add(playername)
-        store = gtk.ListStore(GObject.TYPE_STRING)
+        store = Gtk.ListStore(GObject.TYPE_STRING)
         active_index = 0
         for index, name in enumerate(sorted(self.playernames)):
             store.append([name])
             if name == playername:
                 active_index = index
         self.playername_comboboxentry.set_model(store)
-        self.playername_comboboxentry.set_text_column(0)
+        self.playername_comboboxentry.set_entry_text_column(0)
         self.playername_comboboxentry.set_active(active_index)
 
     def _init_password(self, password):
@@ -166,24 +165,24 @@ class Connect(gtk.Window):
         else:
             server_port = last_server_port
 
-        namestore = gtk.ListStore(GObject.TYPE_STRING)
+        namestore = Gtk.ListStore(GObject.TYPE_STRING)
         active_index = 0
         for index, name in enumerate(sorted(self.server_names)):
             namestore.append([name])
             if name == server_name:
                 active_index = index
         self.server_name_comboboxentry.set_model(namestore)
-        self.server_name_comboboxentry.set_text_column(0)
+        self.server_name_comboboxentry.set_entry_text_column(0)
         self.server_name_comboboxentry.set_active(active_index)
 
         active_index = 0
-        portstore = gtk.ListStore(GObject.TYPE_STRING)
+        portstore = Gtk.ListStore(GObject.TYPE_STRING)
         for index, port in enumerate(sorted(self.server_ports)):
             portstore.append([str(port)])
             if port == server_port:
                 active_index = index
         self.server_port_comboboxentry.set_model(portstore)
-        self.server_port_comboboxentry.set_text_column(0)
+        self.server_port_comboboxentry.set_entry_text_column(0)
         self.server_port_comboboxentry.set_active(active_index)
 
     def cb_connect_button_clicked(self, *args):
@@ -229,13 +228,13 @@ class Connect(gtk.Window):
         self.hide()
 
     def connection_failed(self, arg):
-        self.status_textview.modify_text(gtk.STATE_NORMAL,
-                                         gtk.gdk.color_parse("red"))
+        self.status_textview.modify_text(Gtk.StateType.NORMAL,
+                                         Gdk.color_parse("red"))
         self.status_textview.get_buffer().set_text("Login failed")
 
     def server_failed(self, arg):
-        self.status_textview.modify_text(gtk.STATE_NORMAL,
-                                         gtk.gdk.color_parse("red"))
+        self.status_textview.modify_text(Gtk.StateType.NORMAL,
+                                         Gdk.color_parse("red"))
         self.status_textview.get_buffer().set_text("Server failed %s" %
                                                    str(arg))
 

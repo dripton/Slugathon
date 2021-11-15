@@ -6,7 +6,9 @@ __license__ = "GNU GPL v2"
 
 import logging
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject
 from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
@@ -24,12 +26,12 @@ def new(playername, legion, hexlabel, parent):
     return pickmovetype, def1
 
 
-class PickMoveType(gtk.Dialog):
+class PickMoveType(Gtk.Dialog):
 
     """Dialog to choose whether to teleport."""
 
     def __init__(self, playername, legion, hexlabel, def1, parent):
-        gtk.Dialog.__init__(self, "PickMoveType - %s" % playername, parent)
+        GObject.GObject.__init__(self, title="PickMoveType - %s" % playername, parent=parent)
         self.deferred = def1
         self.legion = legion
         player = legion.player
@@ -39,33 +41,33 @@ class PickMoveType(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = gtk.Label(
+        legion_name = Gtk.Label(label=
             "Pick move type for legion %s (%s) in hex %s moving to hex %s" % (
                 legion.markerid, legion.picname, legion.hexlabel, hexlabel))
-        self.vbox.pack_start(legion_name)
+        self.vbox.pack_start(legion_name, True, True, 0)
 
-        legion_hbox = gtk.HBox(spacing=15)
-        self.vbox.pack_start(legion_hbox)
+        legion_hbox = Gtk.HBox(spacing=15)
+        self.vbox.pack_start(legion_hbox, True, True, 0)
 
-        marker_hbox = gtk.HBox()
-        legion_hbox.pack_start(marker_hbox)
+        marker_hbox = Gtk.HBox()
+        legion_hbox.pack_start(marker_hbox, True, True, 0)
 
         marker = Marker.Marker(legion, True, scale=20)
-        marker_hbox.pack_start(marker.event_box, expand=False)
+        marker_hbox.pack_start(marker.event_box, False, True, 0)
 
-        chits_hbox = gtk.HBox(spacing=3)
-        legion_hbox.pack_start(chits_hbox)
+        chits_hbox = Gtk.HBox(spacing=3)
+        legion_hbox.pack_start(chits_hbox, True, True, 0)
 
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
-            chits_hbox.pack_start(chit.event_box, expand=False)
+            chits_hbox.pack_start(chit.event_box, False, True, 0)
 
-        button_hbox = gtk.HBox(homogeneous=True)
-        self.vbox.pack_start(button_hbox)
+        button_hbox = Gtk.HBox(homogeneous=True)
+        self.vbox.pack_start(button_hbox, True, True, 0)
 
         self.add_button("Teleport", TELEPORT)
         self.add_button("Move normally", NORMAL_MOVE)
-        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.add_button("gtk-cancel", Gtk.ResponseType.CANCEL)
 
         self.connect("response", self.cb_response)
 
@@ -111,4 +113,4 @@ if __name__ == "__main__":
     pickmovetype.connect("destroy", guiutils.exit)
     def1.addCallback(mycallback)
 
-    gtk.main()
+    Gtk.main()

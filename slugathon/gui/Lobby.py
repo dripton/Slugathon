@@ -6,7 +6,9 @@ __license__ = "GNU GPL v2"
 
 import time
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 from twisted.internet import reactor
 from twisted.python import log
 from zope.interface import implementer
@@ -18,12 +20,12 @@ from slugathon.util import guiutils
 
 
 @implementer(IObserver)
-class Lobby(gtk.EventBox):
+class Lobby(Gtk.EventBox):
 
     """GUI for a multiplayer chat and game finding lobby."""
 
     def __init__(self, user, playername, playernames, games, parent_window):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
         self.initialized = False
         self.user = user
         self.playername = playername
@@ -34,95 +36,92 @@ class Lobby(gtk.EventBox):
         self.wfps = {}               # game name : WaitingForPlayers
         self.selected_names = set()
 
-        vbox1 = gtk.VBox()
+        vbox1 = Gtk.VBox()
         self.add(vbox1)
 
-        label5 = gtk.Label("New Games")
-        vbox1.pack_start(label5, expand=False)
-        scrolled_window1 = gtk.ScrolledWindow()
-        scrolled_window1.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        vbox1.pack_start(scrolled_window1)
-        label6 = gtk.Label("Current Games")
-        vbox1.pack_start(label6, expand=False)
-        scrolled_window4 = gtk.ScrolledWindow()
-        scrolled_window4.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        vbox1.pack_start(scrolled_window4)
-        label7 = gtk.Label("Old Games")
-        vbox1.pack_start(label7, expand=False)
-        scrolled_window5 = gtk.ScrolledWindow()
-        scrolled_window5.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        vbox1.pack_start(scrolled_window5)
+        label5 = Gtk.Label(label="New Games")
+        vbox1.pack_start(label5, False, True, 0)
+        scrolled_window1 = Gtk.ScrolledWindow()
+        scrolled_window1.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        vbox1.pack_start(scrolled_window1, True, True, 0)
+        label6 = Gtk.Label(label="Current Games")
+        vbox1.pack_start(label6, False, True, 0)
+        scrolled_window4 = Gtk.ScrolledWindow()
+        scrolled_window4.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        vbox1.pack_start(scrolled_window4, True, True, 0)
+        label7 = Gtk.Label(label="Old Games")
+        vbox1.pack_start(label7, False, True, 0)
+        scrolled_window5 = Gtk.ScrolledWindow()
+        scrolled_window5.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        vbox1.pack_start(scrolled_window5, True, True, 0)
 
-        self.new_game_list = gtk.TreeView()
+        self.new_game_list = Gtk.TreeView()
         self.new_game_list.set_enable_search(False)
-        self.current_game_list = gtk.TreeView()
+        self.current_game_list = Gtk.TreeView()
         self.current_game_list.set_enable_search(False)
-        self.old_game_list = gtk.TreeView()
+        self.old_game_list = Gtk.TreeView()
         self.old_game_list.set_enable_search(False)
         scrolled_window1.add(self.new_game_list)
         scrolled_window4.add(self.current_game_list)
         scrolled_window5.add(self.old_game_list)
 
-        hbox1 = gtk.HBox(spacing=10)
-        vbox1.pack_start(hbox1, expand=False)
+        hbox1 = Gtk.HBox(spacing=10)
+        vbox1.pack_start(hbox1, False, True, 0)
 
-        new_game_button = gtk.Button()
-        hbox1.pack_start(new_game_button, expand=False)
-        alignment1 = gtk.Alignment()
-        new_game_button.add(alignment1)
-        hbox2 = gtk.HBox(spacing=2)
-        alignment1.add(hbox2)
-        image1 = gtk.Image()
-        image1.set_from_stock(gtk.STOCK_NEW, gtk.ICON_SIZE_BUTTON)
-        hbox2.pack_start(image1, expand=False)
-        label1 = gtk.Label("Start new game")
-        hbox2.pack_start(label1, expand=False)
+        new_game_button = Gtk.Button()
+        hbox1.pack_start(new_game_button, False, True, 0)
+        hbox2 = Gtk.HBox(spacing=2)
+        new_game_button.add(hbox2)
+        image1 = Gtk.Image()
+        image1.set_from_stock(Gtk.STOCK_NEW, Gtk.IconSize.BUTTON)
+        hbox2.pack_start(image1, False, True, 0)
+        label1 = Gtk.Label(label="Start new game")
+        hbox2.pack_start(label1, False, True, 0)
 
-        load_game_button = gtk.Button()
+        load_game_button = Gtk.Button()
         # Disable it until loading games works.
         load_game_button.set_sensitive(False)
-        hbox1.pack_start(load_game_button, expand=False)
-        alignment2 = gtk.Alignment()
-        load_game_button.add(alignment2)
-        hbox3 = gtk.HBox(spacing=2)
-        alignment2.add(hbox3)
-        image2 = gtk.Image()
-        image2.set_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_BUTTON)
-        hbox3.pack_start(image2, expand=False)
-        label2 = gtk.Label("Load saved game")
-        hbox3.pack_start(label2, expand=False)
+        hbox1.pack_start(load_game_button, False, True, 0)
+        hbox3 = Gtk.HBox(spacing=2)
+        load_game_button.add(hbox3)
+        image2 = Gtk.Image()
+        image2.set_from_stock(Gtk.STOCK_OPEN, Gtk.IconSize.BUTTON)
+        hbox3.pack_start(image2, False, True, 0)
+        label2 = Gtk.Label(label="Load saved game")
+        hbox3.pack_start(label2, False, True, 0)
 
-        hbox4 = gtk.HBox()
-        vbox1.pack_start(hbox4)
+        hbox4 = Gtk.HBox()
+        vbox1.pack_start(hbox4, True, True, 0)
 
-        vbox2 = gtk.VBox()
-        hbox4.pack_start(vbox2)
+        vbox2 = Gtk.VBox()
+        hbox4.pack_start(vbox2, True, True, 0)
 
-        label3 = gtk.Label("Chat messages")
-        vbox2.pack_start(label3, expand=False)
+        label3 = Gtk.Label(label="Chat messages")
+        vbox2.pack_start(label3, False, True, 0)
 
-        scrolled_window2 = gtk.ScrolledWindow()
-        scrolled_window2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        vbox2.pack_start(scrolled_window2)
+        scrolled_window2 = Gtk.ScrolledWindow()
+        scrolled_window2.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        vbox2.pack_start(scrolled_window2, True, True, 0)
 
-        self.chat_view = gtk.TextView()
+        self.chat_view = Gtk.TextView()
         self.chat_view.set_editable(False)
         self.chat_view.set_cursor_visible(False)
-        self.chat_view.set_wrap_mode(gtk.WRAP_WORD)
+        self.chat_view.set_wrap_mode(Gtk.WrapMode.WORD)
         scrolled_window2.add(self.chat_view)
 
-        label4 = gtk.Label("Chat entry")
-        vbox2.pack_start(label4, expand=False)
+        label4 = Gtk.Label(label="Chat entry")
+        vbox2.pack_start(label4, False, True, 0)
 
-        self.chat_entry = gtk.Entry(max=80)
+        self.chat_entry = Gtk.Entry()
+        self.chat_entry.set_max_length(80)
         self.chat_entry.set_width_chars(80)
-        vbox2.pack_start(self.chat_entry, expand=False)
+        vbox2.pack_start(self.chat_entry, False, True, 0)
 
-        scrolled_window3 = gtk.ScrolledWindow()
-        scrolled_window3.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        hbox4.pack_start(scrolled_window3)
+        scrolled_window3 = Gtk.ScrolledWindow()
+        scrolled_window3.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        hbox4.pack_start(scrolled_window3, True, True, 0)
 
-        self.user_list = gtk.TreeView()
+        self.user_list = Gtk.TreeView()
         self.user_list.set_enable_search(False)
         scrolled_window3.add(self.user_list)
 
@@ -150,22 +149,21 @@ class Lobby(gtk.EventBox):
         return None
 
     def _init_liststores(self):
-        self.user_store = gtk.ListStore(str, int)
+        self.user_store = Gtk.ListStore(str, int)
         self.update_user_store()
         self.user_list.set_model(self.user_store)
         selection = self.user_list.get_selection()
-        selection.set_mode(gtk.SELECTION_MULTIPLE)
-        selection.set_select_function(self.cb_user_list_select, data=None,
-                                      full=True)
+        selection.set_mode(Gtk.SelectionMode.MULTIPLE)
+        selection.set_select_function(self.cb_user_list_select, data=None)
         headers = ["User Name", "Skill"]
         for (ii, title) in enumerate(headers):
-            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+            column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(),
                                         text=ii)
             self.user_list.append_column(column)
 
-        self.new_game_store = gtk.ListStore(str, str, str, str, int, int, str)
-        self.current_game_store = gtk.ListStore(str, str, str, str)
-        self.old_game_store = gtk.ListStore(str, str, str, str, str)
+        self.new_game_store = Gtk.ListStore(str, str, str, str, int, int, str)
+        self.current_game_store = Gtk.ListStore(str, str, str, str)
+        self.old_game_store = Gtk.ListStore(str, str, str, str, str)
         self.update_game_stores()
         self.new_game_list.set_model(self.new_game_store)
         self.current_game_list.set_model(self.current_game_store)
@@ -176,19 +174,19 @@ class Lobby(gtk.EventBox):
         new_headers = ["Game Name", "Owner", "Create Time", "Start Time",
                        "Min Players", "Max Players", "Players"]
         for (ii, title) in enumerate(new_headers):
-            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+            column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(),
                                         text=ii)
             self.new_game_list.append_column(column)
         current_headers = ["Game Name", "Start Time", "Living Players",
                            "Dead Players"]
         for (ii, title) in enumerate(current_headers):
-            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+            column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(),
                                         text=ii)
             self.current_game_list.append_column(column)
         old_headers = ["Game Name", "Start Time", "Finish Time", "Winners",
                        "Losers"]
         for (ii, title) in enumerate(old_headers):
-            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+            column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(),
                                         text=ii)
             self.old_game_list.append_column(column)
 
@@ -294,7 +292,7 @@ class Lobby(gtk.EventBox):
         reactor.stop()
 
     def cb_keypress(self, entry, event):
-        if event.keyval == gtk.keysyms.Return:
+        if event.keyval == Gdk.KEY_Return:
             text = self.chat_entry.get_text()
             if text:
                 if not self.selected_names:
@@ -414,9 +412,9 @@ if __name__ == "__main__":
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
     playernames = [playername]
     games = [game]
-    window = gtk.Window()
+    window = Gtk.Window()
     window.set_default_size(1024, 768)
     lobby = Lobby(user, playername, playernames, games, window)
     window.add(lobby)
     window.show_all()
-    gtk.main()
+    Gtk.main()

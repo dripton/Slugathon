@@ -4,7 +4,9 @@ __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject
 from twisted.python import log
 
 from slugathon.gui import icon, InfoDialog
@@ -12,13 +14,13 @@ from slugathon.util.NullUser import NullUser
 from slugathon.net import config
 
 
-class NewGame(gtk.Dialog):
+class NewGame(Gtk.Dialog):
 
     """Form new game dialog."""
 
     def __init__(self, user, playername, parent_window):
-        gtk.Dialog.__init__(self, "Form New Game - %s" % playername,
-                            parent_window)
+        GObject.GObject.__init__(self, title="Form New Game - %s" % playername,
+                            parent=parent_window)
         self.game_name = None
         self.min_players = None
         self.max_players = None
@@ -30,59 +32,64 @@ class NewGame(gtk.Dialog):
         self.set_transient_for(parent_window)
         self.set_destroy_with_parent(True)
 
-        hbox1 = gtk.HBox()
-        self.vbox.pack_start(hbox1)
-        label1 = gtk.Label("Name of game")
-        hbox1.pack_start(label1, expand=False)
-        self.name_entry = gtk.Entry(max=40)
+        hbox1 = Gtk.HBox()
+        self.vbox.pack_start(hbox1, True, True, 0)
+        label1 = Gtk.Label(label="Name of game")
+        hbox1.pack_start(label1, False, True, 0)
+        self.name_entry = Gtk.Entry()
         self.name_entry.set_width_chars(40)
-        hbox1.pack_start(self.name_entry, expand=False)
+        hbox1.pack_start(self.name_entry, False, True, 0)
 
-        min_adjustment = gtk.Adjustment(2, 2, 6, 1, 0, 0)
-        max_adjustment = gtk.Adjustment(6, 2, 6, 1, 0, 0)
-        ai_time_limit_adjustment = gtk.Adjustment(config.DEFAULT_AI_TIME_LIMIT,
-                                                  1, 99, 1, 0, 0)
-        player_time_limit_adjustment = gtk.Adjustment(
-            config.DEFAULT_PLAYER_TIME_LIMIT, 1, 999, 1, 100, 0)
+        min_adjustment = Gtk.Adjustment(value=2, lower=2, upper=6,
+                                        step_increment=1,
+                                        page_increment=0, page_size=0)
+        max_adjustment = Gtk.Adjustment(value=6, lower=2, upper=6,
+                                        step_increment=1, page_increment=0,
+                                        page_size=0)
+        ai_time_limit_adjustment = Gtk.Adjustment(
+            value=config.DEFAULT_AI_TIME_LIMIT,
+            lower=1, upper=99,
+            step_increment=1,
+            page_increment=0,
+            page_size=0)
+        player_time_limit_adjustment = Gtk.Adjustment(
+            value=config.DEFAULT_PLAYER_TIME_LIMIT, lower=1, upper=999,
+            step_increment=1, page_increment=100, page_size=0)
 
-        hbox2 = gtk.HBox()
-        self.vbox.pack_start(hbox2)
-        label2 = gtk.Label("Min players")
-        hbox2.pack_start(label2, expand=False)
-        self.min_players_spin = gtk.SpinButton(adjustment=min_adjustment,
+        hbox2 = Gtk.HBox()
+        self.vbox.pack_start(hbox2, True, True, 0)
+        label2 = Gtk.Label(label="Min players")
+        hbox2.pack_start(label2, False, True, 0)
+        self.min_players_spin = Gtk.SpinButton(adjustment=min_adjustment,
                                                climb_rate=1, digits=0)
         self.min_players_spin.set_numeric(True)
-        self.min_players_spin.set_update_policy(gtk.UPDATE_IF_VALID)
         self.min_players_spin.set_value(2)
-        hbox2.pack_start(self.min_players_spin, expand=False)
-        label3 = gtk.Label("Max players")
-        hbox2.pack_start(label3, expand=False)
-        self.max_players_spin = gtk.SpinButton(adjustment=max_adjustment,
+        hbox2.pack_start(self.min_players_spin, False, True, 0)
+        label3 = Gtk.Label(label="Max players")
+        hbox2.pack_start(label3, False, True, 0)
+        self.max_players_spin = Gtk.SpinButton(adjustment=max_adjustment,
                                                climb_rate=1, digits=0)
         self.max_players_spin.set_numeric(True)
-        self.max_players_spin.set_update_policy(gtk.UPDATE_IF_VALID)
         self.max_players_spin.set_value(6)
-        hbox2.pack_start(self.max_players_spin, expand=False)
-        label4 = gtk.Label("AI time limit")
-        hbox2.pack_start(label4, expand=False)
-        self.ai_time_limit_spin = gtk.SpinButton(
+        hbox2.pack_start(self.max_players_spin, False, True, 0)
+        label4 = Gtk.Label(label="AI time limit")
+        hbox2.pack_start(label4, False, True, 0)
+        self.ai_time_limit_spin = Gtk.SpinButton(
             adjustment=ai_time_limit_adjustment,
             climb_rate=1, digits=0)
         self.ai_time_limit_spin.set_numeric(True)
-        self.ai_time_limit_spin.set_update_policy(gtk.UPDATE_IF_VALID)
-        hbox2.pack_start(self.ai_time_limit_spin, expand=False)
-        label5 = gtk.Label("Player time limit")
-        hbox2.pack_start(label5, expand=False)
-        self.player_time_limit_spin = gtk.SpinButton(
+        hbox2.pack_start(self.ai_time_limit_spin, False, True, 0)
+        label5 = Gtk.Label(label="Player time limit")
+        hbox2.pack_start(label5, False, True, 0)
+        self.player_time_limit_spin = Gtk.SpinButton(
             adjustment=player_time_limit_adjustment,
             climb_rate=1, digits=0)
         self.player_time_limit_spin.set_numeric(True)
-        self.player_time_limit_spin.set_update_policy(gtk.UPDATE_IF_VALID)
-        hbox2.pack_start(self.player_time_limit_spin, expand=False)
+        hbox2.pack_start(self.player_time_limit_spin, False, True, 0)
 
-        self.cancel_button = self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.cancel_button = self.add_button("gtk-cancel", Gtk.ResponseType.CANCEL)
         self.cancel_button.connect("button-press-event", self.cancel)
-        self.ok_button = self.add_button("gtk-ok", gtk.RESPONSE_OK)
+        self.ok_button = self.add_button("gtk-ok", Gtk.ResponseType.OK)
         self.ok_button.connect("button-press-event", self.ok)
 
         self.show_all()
@@ -121,4 +128,4 @@ if __name__ == "__main__":
     playername = "test user"
     newgame = NewGame(user, playername, None)
     newgame.connect("destroy", guiutils.exit)
-    gtk.main()
+    Gtk.main()

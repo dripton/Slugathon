@@ -5,10 +5,10 @@ __license__ = "GNU GPL v2"
 
 import os
 
-import gtk
+from gi.repository import GdkPixbuf
 
 from slugathon.util import fileutils
 
 
-pixbuf = gtk.gdk.pixbuf_new_from_file(fileutils.basedir(
+pixbuf = GdkPixbuf.Pixbuf.new_from_file(fileutils.basedir(
     os.path.join("images", "creature", "Serpent.png")))

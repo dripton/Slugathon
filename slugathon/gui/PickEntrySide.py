@@ -8,13 +8,15 @@ import math
 from sys import maxsize
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-import gtk
+from gi.repository import Gtk, GObject, Gdk
 
 from slugathon.game import BattleMap
 from slugathon.gui import icon, GUIBattleHex
@@ -47,13 +49,13 @@ def new(board, masterhex, entry_sides, parent, playername=None, scale=None):
     return pick_entry_side, def1
 
 
-class PickEntrySide(gtk.Dialog):
+class PickEntrySide(Gtk.Dialog):
 
     """Dialog to pick a masterhex entry side."""
 
     def __init__(self, board, masterhex, entry_sides, def1, parent,
                  playername=None, scale=None):
-        gtk.Dialog.__init__(self, "Pick Entry Side - %s" % playername, parent)
+        GObject.GObject.__init__(self, title="Pick Entry Side - %s" % playername, parent=parent)
 
         terrain = masterhex.terrain
         # We always orient the map as if for entry side 5.
@@ -68,18 +70,18 @@ class PickEntrySide(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.set_title("PickEntrySide - Slugathon - %s" % self.playername)
 
-        self.hbox1 = gtk.HBox(homogeneous=True)
-        self.hbox2 = gtk.HBox()
-        self.hbox3 = gtk.HBox()
-        self.vbox.pack_start(self.hbox1, expand=False)
-        self.vbox.pack_start(self.hbox2, fill=True)
-        self.vbox.pack_start(self.hbox3, expand=False)
+        self.hbox1 = Gtk.HBox(homogeneous=True)
+        self.hbox2 = Gtk.HBox()
+        self.hbox3 = Gtk.HBox()
+        self.vbox.pack_start(self.hbox1, False, True, 0)
+        self.vbox.pack_start(self.hbox2, True, True, 0)
+        self.vbox.pack_start(self.hbox3, False, True, 0)
 
         if scale is None:
             self.scale = self.compute_scale()
         else:
             self.scale = scale
-        self.area = gtk.DrawingArea()
+        self.area = Gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
 
         if self.playername:
@@ -102,12 +104,12 @@ class PickEntrySide(gtk.Dialog):
         bottom_hex = masterhex.neighbors[2] or masterhex.neighbors[3]
         bottom_hex_label = self.masterhex_label(bottom_hex)
         spacer_label = self.masterhex_label(None)
-        self.hbox1.pack_start(own_hex_label)
-        self.hbox1.pack_start(top_hex_label)
-        self.hbox2.pack_start(left_hex_label)
-        self.hbox2.pack_start(self.area)
-        self.hbox3.pack_start(spacer_label)
-        self.hbox3.pack_start(bottom_hex_label)
+        self.hbox1.pack_start(own_hex_label, True, True, 0)
+        self.hbox1.pack_start(top_hex_label, True, True, 0)
+        self.hbox2.pack_start(left_hex_label, True, True, 0)
+        self.hbox2.pack_start(self.area, True, True, 0)
+        self.hbox3.pack_start(spacer_label, True, True, 0)
+        self.hbox3.pack_start(bottom_hex_label, True, True, 0)
 
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.values():
@@ -120,8 +122,8 @@ class PickEntrySide(gtk.Dialog):
         # This fixes chits.
         self.clear_hexlabels = set()
 
-        self.area.connect("expose-event", self.cb_area_expose)
-        self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.area.connect("draw", self.cb_area_expose)
+        self.area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.area.connect("button-press-event", self.cb_click)
 
         self.connect("destroy", self.callback_with_none)
@@ -134,8 +136,8 @@ class PickEntrySide(gtk.Dialog):
     def compute_scale(self):
         """Return the approximate maximum scale that lets the map fit on the
         screen."""
-        width = gtk.gdk.screen_width()
-        height = gtk.gdk.screen_height()
+        width = Gdk.Screen.width()
+        height = Gdk.Screen.height()
         # Fudge factor to leave room on the sides.
         xscale = math.floor(width / (2 * self.battlemap.hex_width)) - 5
         # Fudge factor for menus and toolbars.
@@ -153,19 +155,19 @@ class PickEntrySide(gtk.Dialog):
                              SQRT3))
 
     def masterhex_label(self, masterhex):
-        """Return a gtk.Label describing masterhex, inside a white
-        gtk.EventBox."""
-        eventbox = gtk.EventBox()
+        """Return a Gtk.Label describing masterhex, inside a white
+        Gtk.EventBox."""
+        eventbox = Gtk.EventBox()
         if masterhex:
             text = '<span size="large" weight="bold">%s hex %d</span>' % (
                 masterhex.terrain, masterhex.label)
         else:
             text = ""
-        label = gtk.Label()
+        label = Gtk.Label()
         label.set_markup(text)
         eventbox.add(label)
-        gtkcolor = gtk.gdk.color_parse("white")
-        eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        gtkcolor = Gdk.color_parse("white")
+        eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
     def cb_area_expose(self, area, event):
@@ -225,11 +227,11 @@ class PickEntrySide(gtk.Dialog):
         else:
             if self.repaint_hexlabels:
                 clip_rect = guiutils.combine_rectangles(
-                    event.area,
+                    event.clip_extents(),
                     self.bounding_rect_for_hexlabels(
                         self.repaint_hexlabels))
             else:
-                clip_rect = event.area
+                clip_rect = event.clip_extents()
 
         ctx = self.area.get_window().cairo_create()
         ctx.set_line_width(round(0.2 * self.scale))
@@ -238,7 +240,9 @@ class PickEntrySide(gtk.Dialog):
         # white background, only when we get an event
         if event is not None:
             ctx.set_source_rgb(1, 1, 1)
-            width, height = self.area.size_request()
+            requisition = self.area.get_size_request()
+            width = requisition.width
+            height = requisition.height
             ctx.rectangle(0, 0, width, height)
             ctx.fill()
         for hexlabel in self.clear_hexlabels:

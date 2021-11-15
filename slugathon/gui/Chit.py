@@ -8,10 +8,12 @@ import tempfile
 import os
 import math
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_foreign("cairo")
+gi.require_version("PangoCairo", "1.0")
 import cairo
-import pango
-import pangocairo
+from gi.repository import Gtk, Pango, PangoCairo, GdkPixbuf
 
 from slugathon.util import guiutils, colors, fileutils
 
@@ -67,9 +69,9 @@ class Chit(object):
         self.paths = [fileutils.basedir("images/%s/%s.png" %
                       (self.IMAGE_DIR, base)) for base in self.bases]
 
-        self.event_box = gtk.EventBox()
+        self.event_box = Gtk.EventBox()
         self.event_box.chit = self
-        self.image = gtk.Image()
+        self.image = Gtk.Image()
         self.event_box.add(self.image)
         self.build_image()
 
@@ -104,7 +106,7 @@ class Chit(object):
                                          delete=False) as tmp_file:
             tmp_path = tmp_file.name
         self.surface.write_to_png(tmp_path)
-        self.pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
+        self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(tmp_path)
         os.remove(tmp_path)
         self.image.set_from_pixbuf(self.pixbuf)
 
@@ -125,16 +127,15 @@ class Chit(object):
             return
         ctx = cairo.Context(surface)
         ctx.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
-        pctx = pangocairo.CairoContext(ctx)
-        layout = pctx.create_layout()
+        layout = PangoCairo.create_layout(ctx)
         # TODO Vary font size with scale
-        desc = pango.FontDescription("monospace 9")
+        desc = Pango.FontDescription("monospace 9")
         layout.set_font_description(desc)
-        pctx.set_source_rgb(*self.rgb)
-        pctx.set_line_width(1)
+        ctx.set_source_rgb(*self.rgb)
+        ctx.set_line_width(1)
         size = surface.get_width()
         layout.set_width(size)
-        layout.set_alignment(pango.ALIGN_CENTER)
+        layout.set_alignment(Pango.Alignment.CENTER)
 
         # Name
         if self.name != "Titan":
@@ -142,27 +143,27 @@ class Chit(object):
             # TODO If width is too big, try a smaller font
             x = 0.5 * size
             y = 0
-            pctx.move_to(x, y)
+            ctx.move_to(x, y)
             layout.set_text(label)
-            pctx.show_layout(layout)
+            PangoCairo.show_layout(ctx, layout)
 
         # Power
         if not self.creature.is_unknown:
             label = str(self.creature.power)
             x = 0.14 * size
             y = 0.77 * size
-            pctx.move_to(x, y)
+            ctx.move_to(x, y)
             layout.set_text(label)
-            pctx.show_layout(layout)
+            PangoCairo.show_layout(ctx, layout)
 
         # Skill
         if not self.creature.is_unknown:
             label = str(self.creature.skill)
             x = 0.9 * size
             y = 0.77 * size
-            pctx.move_to(x, y)
+            ctx.move_to(x, y)
             layout.set_text(label)
-            pctx.show_layout(layout)
+            PangoCairo.show_layout(ctx, layout)
 
     def _render_x(self, surface):
         """Add a big red X through a Cairo surface"""
@@ -195,29 +196,28 @@ class Chit(object):
             return
         ctx = cairo.Context(surface)
         ctx.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
-        pctx = pangocairo.CairoContext(ctx)
-        layout = pctx.create_layout()
-        layout.set_alignment(pango.ALIGN_CENTER)
+        layout = PangoCairo.create_layout(ctx)
+        layout.set_alignment(Pango.Alignment.CENTER)
 
         # TODO Vary font size with scale
-        desc = pango.FontDescription("monospace 20")
+        desc = Pango.FontDescription("monospace 20")
         layout.set_font_description(desc)
         layout.set_text(str(self.creature.hits))
         size = surface.get_width()
         layout.set_width(size)
-        pctx.set_source_rgb(1, 0, 0)
+        ctx.set_source_rgb(1, 0, 0)
 
         x = 0.5 * size
         y = 0.2 * size
-        pctx.set_source_rgb(1, 1, 1)
-        pctx.set_line_width(1)
+        ctx.set_source_rgb(1, 1, 1)
+        ctx.set_line_width(1)
         width, height = layout.get_pixel_size()
-        pctx.rectangle(x - 0.5 * width, y, 0.9 * width, 0.8 * height)
-        pctx.fill()
+        ctx.rectangle(x - 0.5 * width, y, 0.9 * width, 0.8 * height)
+        ctx.fill()
 
-        pctx.set_source_rgb(1, 0, 0)
-        pctx.move_to(x, y)
-        pctx.show_layout(layout)
+        ctx.set_source_rgb(1, 0, 0)
+        ctx.move_to(x, y)
+        PangoCairo.show_layout(ctx, layout)
 
 
 if __name__ == "__main__":
@@ -226,9 +226,9 @@ if __name__ == "__main__":
     creature = Creature.Creature("Ogre")
     creature.hits = 3
     chit = Chit(creature, "Red", scale=45, rotate=90)
-    window = gtk.Window()
-    window.connect("destroy", gtk.main_quit)
+    window = Gtk.Window()
+    window.connect("destroy", Gtk.main_quit)
     window.add(chit.event_box)
     window.show()
     chit.show()
-    gtk.main()
+    Gtk.main()

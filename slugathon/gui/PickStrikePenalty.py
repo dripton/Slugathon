@@ -6,13 +6,15 @@ __license__ = "GNU GPL v2"
 
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-import gtk
+from gi.repository import Gtk, GObject
 
 from slugathon.gui import icon
 from slugathon.game import Phase
@@ -26,14 +28,14 @@ def new(playername, game_name, striker, target, parent):
     return pick_strike_penalty, def1
 
 
-class PickStrikePenalty(gtk.Dialog):
+class PickStrikePenalty(Gtk.Dialog):
 
     """Dialog to pick whether to take a strike penalty to allow carrying
     excess hits."""
 
     def __init__(self, playername, game_name, striker, target, def1, parent):
-        gtk.Dialog.__init__(self, "PickStrikePenalty - %s" % playername,
-                            parent)
+        GObject.GObject.__init__(self, title="PickStrikePenalty - %s" % playername,
+                            parent=parent)
         self.playername = playername
         self.game_name = game_name
         self.striker = striker
@@ -46,7 +48,7 @@ class PickStrikePenalty(gtk.Dialog):
 
         self.vbox.set_spacing(9)
 
-        label = gtk.Label("Choose strike penalty for %r striking %r?" %
+        label = Gtk.Label(name="Choose strike penalty for %r striking %r?" %
                           (striker, target))
         self.vbox.add(label)
 
@@ -72,12 +74,12 @@ class PickStrikePenalty(gtk.Dialog):
             else:
                 st = "%d dice at strike number %d, unable to carry" % (
                     num_dice3, strike_number3)
-            button = gtk.Button(st)
-            self.vbox.pack_start(button)
+            button = Gtk.Button(label=st)
+            self.vbox.pack_start(button, True, True, 0)
             button.tup = tup
             button.connect("button-press-event", self.cb_click)
 
-        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.add_button("gtk-cancel", Gtk.ResponseType.CANCEL)
         self.connect("response", self.cb_cancel)
 
         self.show_all()
@@ -148,8 +150,8 @@ if __name__ == "__main__":
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
-    def my_callback(xxx_todo_changeme):
-        (striker, target, num_dice, strike_number) = xxx_todo_changeme
+    def my_callback(tup):
+        (striker, target, num_dice, strike_number) = tup
         logging.info("called my_callback %s %s %s %s", striker, target,
                      num_dice, strike_number)
         reactor.stop()

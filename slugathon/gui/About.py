@@ -4,23 +4,25 @@ __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-"""Help/About dialog, wrapped around gtk.AboutDialog"""
+"""Help/About dialog, wrapped around Gtk.AboutDialog"""
 
 
 import os
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject
 
 from slugathon.gui import icon
 from slugathon.util import guiutils, fileutils
 
 
-class About(gtk.AboutDialog):
+class About(Gtk.AboutDialog):
 
     def __init__(self, parent):
-        gtk.AboutDialog.__init__(self)
+        GObject.GObject.__init__(self)
         self.set_icon(icon.pixbuf)
-        self.set_position(gtk.WIN_POS_MOUSE)
+        self.set_position(Gtk.WindowPosition.MOUSE)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.set_name("Slugathon")
@@ -66,4 +68,4 @@ class About(gtk.AboutDialog):
 if __name__ == "__main__":
     about = About(None)
     about.connect("destroy", guiutils.exit)
-    gtk.main()
+    Gtk.main()

@@ -6,13 +6,15 @@ __license__ = "GNU GPL v2"
 
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
-import gtk
+from gi.repository import Gtk, GObject
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util.bag import bag
@@ -32,13 +34,13 @@ def new(playername, attacker_legion, attacker_creature_names,
     return proposal, def1
 
 
-class Proposal(gtk.Dialog):
+class Proposal(Gtk.Dialog):
 
     """Dialog to choose whether to accept an opponent's proposal."""
 
     def __init__(self, playername, attacker_legion, attacker_creature_names,
                  defender_legion, defender_creature_names, def1, parent):
-        gtk.Dialog.__init__(self, "Proposal - %s" % playername, parent)
+        GObject.GObject.__init__(self, title="Proposal - %s" % playername, parent=parent)
         self.attacker_legion = attacker_legion
         self.attacker_creature_names = attacker_creature_names
         self.defender_legion = defender_legion
@@ -50,34 +52,32 @@ class Proposal(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = gtk.Label(
+        legion_name = Gtk.Label(label=
             "Legion %s (%s) negotiates with %s (%s) in hex %s" % (
                 attacker_legion.markerid, attacker_legion.picname,
                 defender_legion.markerid, defender_legion.picname,
                 defender_legion.hexlabel))
-        self.vbox.pack_start(legion_name)
+        self.vbox.pack_start(legion_name, True, True, 0)
 
-        attacker_hbox = gtk.HBox(spacing=15)
-        self.vbox.pack_start(attacker_hbox)
-        attacker_marker_hbox = gtk.HBox()
-        attacker_hbox.pack_start(attacker_marker_hbox, expand=False)
-        attacker_chits_hbox = gtk.HBox(spacing=3)
-        attacker_hbox.pack_start(attacker_chits_hbox)
+        attacker_hbox = Gtk.HBox(spacing=15)
+        self.vbox.pack_start(attacker_hbox, True, True, 0)
+        attacker_marker_hbox = Gtk.HBox()
+        attacker_hbox.pack_start(attacker_marker_hbox, False, True, 0)
+        attacker_chits_hbox = Gtk.HBox(spacing=3)
+        attacker_hbox.pack_start(attacker_chits_hbox, True, True, 0)
 
         attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
-        attacker_marker_hbox.pack_start(attacker_marker.event_box,
-                                        expand=False)
+        attacker_marker_hbox.pack_start(attacker_marker.event_box, False, False, 0)
 
-        defender_hbox = gtk.HBox(spacing=15)
-        self.vbox.pack_start(defender_hbox)
-        defender_marker_hbox = gtk.HBox()
-        defender_hbox.pack_start(defender_marker_hbox, expand=False)
-        defender_chits_hbox = gtk.HBox(spacing=3)
-        defender_hbox.pack_start(defender_chits_hbox)
+        defender_hbox = Gtk.HBox(spacing=15)
+        self.vbox.pack_start(defender_hbox, True, True, 0)
+        defender_marker_hbox = Gtk.HBox()
+        defender_hbox.pack_start(defender_marker_hbox, False, True, 0)
+        defender_chits_hbox = Gtk.HBox(spacing=3)
+        defender_hbox.pack_start(defender_chits_hbox, True, True, 0)
 
         defender_marker = Marker.Marker(defender_legion, True, scale=20)
-        defender_marker_hbox.pack_start(defender_marker.event_box,
-                                        expand=False)
+        defender_marker_hbox.pack_start(defender_marker.event_box, False, False, 0)
 
         attacker_chits = []
 
@@ -93,7 +93,7 @@ class Proposal(gtk.Dialog):
                 dead = True
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20,
                              dead=dead)
-            attacker_chits_hbox.pack_start(chit.event_box, expand=False)
+            attacker_chits_hbox.pack_start(chit.event_box, False, True, 0)
             attacker_chits.append(chit)
 
         defender_chits = []
@@ -107,7 +107,7 @@ class Proposal(gtk.Dialog):
                 dead = True
             chit = Chit.Chit(creature, defender_legion.player.color, scale=20,
                              dead=dead)
-            defender_chits_hbox.pack_start(chit.event_box, expand=False)
+            defender_chits_hbox.pack_start(chit.event_box, False, True, 0)
             defender_chits.append(chit)
 
         self.add_button("Accept", ACCEPT)

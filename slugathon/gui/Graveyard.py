@@ -4,33 +4,35 @@ __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 
 from slugathon.gui import Chit, Marker
 from slugathon.game import Creature
 
 
-class Graveyard(gtk.EventBox):
+class Graveyard(Gtk.EventBox):
 
     """Show a legion's dead creatures."""
 
     def __init__(self, legion):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.legion = legion
 
-        hbox = gtk.HBox(spacing=3)
+        hbox = Gtk.HBox(spacing=3)
         self.add(hbox)
 
-        self.marker_hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(self.marker_hbox, expand=False)
+        self.marker_hbox = Gtk.HBox(spacing=3)
+        hbox.pack_start(self.marker_hbox, False, True, 0)
         self.marker = Marker.Marker(legion, True, scale=15)
-        self.marker_hbox.pack_start(self.marker.event_box, expand=False)
+        self.marker_hbox.pack_start(self.marker.event_box, False, True, 0)
 
-        self.chits_hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(self.chits_hbox, expand=True)
-        gtkcolor = gtk.gdk.color_parse("white")
-        self.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        self.chits_hbox = Gtk.HBox(spacing=3)
+        hbox.pack_start(self.chits_hbox, True, True, 0)
+        gtkcolor = Gdk.color_parse("white")
+        self.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
 
         self.show_all()
 
@@ -41,7 +43,7 @@ class Graveyard(gtk.EventBox):
         playercolor = self.legion.player.color
         for creature in self.legion.dead_creatures:
             chit = Chit.Chit(creature, playercolor, scale=15)
-            self.chits_hbox.pack_start(chit.event_box, expand=False)
+            self.chits_hbox.pack_start(chit.event_box, False, True, 0)
 
         self.show_all()
 
@@ -55,7 +57,7 @@ if __name__ == "__main__":
     def cb_destroy(confirmed):
         print("destroy")
         graveyard.destroy()
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def cb_click(self, widget, event):
         if self.legion.living_creatures:
@@ -75,8 +77,8 @@ if __name__ == "__main__":
     graveyard.connect("destroy", guiutils.exit)
     graveyard.connect("button-press-event", cb_click, graveyard)
 
-    window = gtk.Window()
+    window = Gtk.Window()
     window.add(graveyard)
     window.show_all()
 
-    gtk.main()
+    Gtk.main()

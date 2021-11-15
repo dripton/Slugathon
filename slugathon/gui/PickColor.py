@@ -6,7 +6,9 @@ __license__ = "GNU GPL v2"
 
 import logging
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 from twisted.internet import defer
 
 from slugathon.data.playercolordata import colors
@@ -21,37 +23,36 @@ def new(playername, game, colors_left, parent):
     return pickcolor, def1
 
 
-class PickColor(gtk.Dialog):
+class PickColor(Gtk.Dialog):
     """Dialog to pick a player color."""
     def __init__(self, playername, game, colors_left, parent, def1):
-        gtk.Dialog.__init__(self, "Pick Color - %s" % playername, parent)
+        GObject.GObject.__init__(self, title="Pick Color - %s" % playername, parent=parent)
         self.playername = playername
         self.game = game
         self.deferred = def1
 
         self.vbox.set_spacing(9)
-        label1 = gtk.Label("Pick a color")
-        self.vbox.pack_start(label1)
+        label1 = Gtk.Label(label="Pick a color")
+        self.vbox.pack_start(label1, True, True, 0)
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_has_separator(False)
         self.set_keep_above(True)
 
-        hbox = gtk.HBox(len(colors), spacing=3)
-        self.vbox.pack_start(hbox)
+        hbox = Gtk.HBox(homogeneous=True, spacing=3)
+        self.vbox.pack_start(hbox, True, True, 0)
         for button_name in colors_left:
-            button = gtk.Button(button_name)
-            hbox.pack_start(button)
+            button = Gtk.Button(label=button_name)
+            hbox.pack_start(button, True, True, 0)
             button.connect("button-press-event", self.cb_click)
             color = button_name
-            gtk_color = button.get_colormap().alloc_color(color)
-            button.modify_bg(gtk.STATE_NORMAL, gtk_color)
+            bg_gtkcolor = Gdk.color_parse(color)
+            button.modify_bg(Gtk.StateType.NORMAL, bg_gtkcolor)
             fg_name = contrasting_colors[color]
-            fg_color = button.get_colormap().alloc_color(fg_name)
+            fg_gtkcolor = Gdk.color_parse(fg_name)
             label = button.get_child()
-            label.modify_fg(gtk.STATE_NORMAL, fg_color)
+            label.modify_fg(Gtk.StateType.NORMAL, fg_gtkcolor)
 
         self.connect("destroy", self.cb_destroy)
         self.show_all()
@@ -70,8 +71,8 @@ if __name__ == "__main__":
     from slugathon.game import Game
     from slugathon.util import guiutils
 
-    def my_callback(xxx_todo_changeme):
-        (game, color) = xxx_todo_changeme
+    def my_callback(tup):
+        (game, color) = tup
         logging.info("picked %s", color)
         guiutils.exit()
 
@@ -83,4 +84,4 @@ if __name__ == "__main__":
     pickcolor, def1 = new(playername, game, colors_left, None)
     def1.addCallback(my_callback)
     pickcolor.connect("destroy", guiutils.exit)
-    gtk.main()
+    Gtk.main()

@@ -6,8 +6,10 @@ __license__ = "GNU GPL v2"
 
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import defer
-import gtk
+from gi.repository import Gtk, GObject
 
 from slugathon.gui import Chit, Marker, icon
 
@@ -19,12 +21,12 @@ def new(playername, legion, parent):
     return summonangel, def1
 
 
-class SummonAngel(gtk.Dialog):
+class SummonAngel(Gtk.Dialog):
 
     """Dialog to summon an angel."""
 
     def __init__(self, playername, legion, def1, parent):
-        gtk.Dialog.__init__(self, "SummonAngel - %s" % playername, parent)
+        GObject.GObject.__init__(self, title="SummonAngel - %s" % playername, parent=parent)
         self.legion = legion
         player = legion.player
         self.deferred = def1
@@ -35,31 +37,31 @@ class SummonAngel(gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
 
-        top_label = gtk.Label(
+        top_label = Gtk.Label(label=
             "Summoning an angel into legion %s (%s) in hex %s"
             % (legion.markerid, legion.picname, legion.hexlabel))
         self.vbox.set_spacing(9)
-        self.vbox.pack_start(top_label)
-        middle_label = gtk.Label("Summonable creatures have a red border")
-        self.vbox.pack_start(middle_label)
-        bottom_label = gtk.Label("Click one to summon it.")
-        self.vbox.pack_start(bottom_label)
+        self.vbox.pack_start(top_label, True, True, 0)
+        middle_label = Gtk.Label(label="Summonable creatures have a red border")
+        self.vbox.pack_start(middle_label, True, True, 0)
+        bottom_label = Gtk.Label(label="Click one to summon it.")
+        self.vbox.pack_start(bottom_label, True, True, 0)
 
         for legion2 in player.legions:
             if (legion2.any_summonable and not legion2.engaged and
                     legion2 != legion):
-                hbox = gtk.HBox(spacing=3)
-                self.vbox.pack_start(hbox)
+                hbox = Gtk.HBox(spacing=3)
+                self.vbox.pack_start(hbox, True, True, 0)
                 marker = Marker.Marker(legion2, False, scale=20)
-                hbox.pack_start(marker.event_box, expand=False, fill=False)
+                hbox.pack_start(marker.event_box, False, False, 0)
                 for creature in legion2.sorted_creatures:
                     chit = Chit.Chit(creature, player.color, scale=20,
                                      outlined=creature.summonable)
-                    hbox.pack_start(chit.event_box, expand=False, fill=False)
+                    hbox.pack_start(chit.event_box, False, False, 0)
                     if creature.summonable:
                         chit.connect("button-press-event", self.cb_click)
 
-        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.add_button("gtk-cancel", Gtk.ResponseType.CANCEL)
         self.connect("response", self.cb_cancel)
 
         self.show_all()
@@ -106,8 +108,8 @@ if __name__ == "__main__":
     for legion in [legion1, legion2, legion3, legion4, legion5]:
         player.markerid_to_legion[legion.markerid] = legion
 
-    def my_callback(xxx_todo_changeme):
-        (legion, donor, creature) = xxx_todo_changeme
+    def my_callback(tup):
+        (legion, donor, creature) = tup
         logging.info("Will summon %s from %s into %s", creature, donor, legion)
         guiutils.exit()
 
@@ -115,4 +117,4 @@ if __name__ == "__main__":
     def1.addCallback(my_callback)
     summonangel.connect("destroy", guiutils.exit)
 
-    gtk.main()
+    Gtk.main()

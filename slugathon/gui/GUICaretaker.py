@@ -4,7 +4,10 @@ __copyright__ = "Copyright (c) 2009-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+from gi.repository import GObject
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
@@ -14,7 +17,7 @@ from slugathon.data import creaturedata
 
 
 @implementer(IObserver)
-class GUICaretaker(gtk.EventBox):
+class GUICaretaker(Gtk.EventBox):
 
     """Caretaker status window."""
 
@@ -22,15 +25,15 @@ class GUICaretaker(gtk.EventBox):
         self.playername = playername
         self.caretaker = game.caretaker
 
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
 
-        self.vbox = gtk.VBox()
+        self.vbox = Gtk.VBox()
         self.add(self.vbox)
 
-        table = gtk.Table(rows=4, columns=6)
+        table = Gtk.Table(rows=4, columns=6)
         table.set_row_spacings(9)
         table.set_col_spacings(9)
-        self.vbox.pack_start(table, expand=False)
+        self.vbox.pack_start(table, False, True, 0)
 
         self.max_count_labels = {}
         self.counts_labels = {}
@@ -42,19 +45,19 @@ class GUICaretaker(gtk.EventBox):
             max_count = self.caretaker.max_counts[creature_name]
             dead_count = self.caretaker.graveyard[creature_name]
             game_count = max_count - left_count - dead_count
-            vbox = gtk.VBox()
+            vbox = Gtk.VBox()
             col = (ii % 6) + 1
             row = (ii // 6) + 1
             table.attach(vbox, col, col + 1, row, row + 1)
-            label = self.max_count_labels[creature_name] = gtk.Label()
-            vbox.pack_start(label, expand=False)
+            label = self.max_count_labels[creature_name] = Gtk.Label()
+            vbox.pack_start(label, False, True, 0)
             chit = self.chits[creature_name] = Chit.Chit(creature,
                                                          "Black",
                                                          scale=15,
                                                          dead=(not left_count))
-            vbox.pack_start(chit.event_box, expand=False)
-            label = self.counts_labels[creature_name] = gtk.Label()
-            vbox.pack_start(label, expand=False)
+            vbox.pack_start(chit.event_box, False, True, 0)
+            label = self.counts_labels[creature_name] = Gtk.Label()
+            vbox.pack_start(label, False, True, 0)
             self.update_max_count_label(creature_name, max_count)
             self.update_counts_label(creature_name, left_count, game_count,
                                      dead_count)
@@ -146,9 +149,9 @@ if __name__ == "__main__":
     for unused in range(10):
         caretaker.take_one("Colossus")
 
-    window = gtk.Window()
+    window = Gtk.Window()
     guicaretaker = GUICaretaker(game, playername)
     guicaretaker.connect("destroy", guiutils.exit)
     window.add(guicaretaker)
     window.show_all()
-    gtk.main()
+    Gtk.main()

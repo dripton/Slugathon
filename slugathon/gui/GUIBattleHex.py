@@ -7,8 +7,9 @@ import math
 from sys import maxsize
 
 import cairo
-import pango
-import pangocairo
+import gi
+gi.require_version("PangoCairo", "1.0")
+from gi.repository import Pango, PangoCairo
 
 from slugathon.util import guiutils, colors, sliceborder, fileutils
 
@@ -198,12 +199,11 @@ class GUIBattleHex(object):
 
     def draw_label(self, ctx, label, side):
         """Display the hex label."""
-        pctx = pangocairo.CairoContext(ctx)
-        layout = pctx.create_layout()
+        layout = PangoCairo.create_layout(ctx)
         # TODO Vary font size with scale
-        desc = pango.FontDescription("Monospace 14")
+        desc = Pango.FontDescription("Monospace 14")
         layout.set_font_description(desc)
-        layout.set_alignment(pango.ALIGN_CENTER)
+        layout.set_alignment(Pango.Alignment.CENTER)
         layout.set_text(label)
         width, height = layout.get_pixel_size()
         x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
@@ -212,7 +212,7 @@ class GUIBattleHex(object):
                        height / 2.0)))
         ctx.set_source_rgb(0, 0, 0)
         ctx.move_to(x, y)
-        pctx.show_layout(layout)
+        PangoCairo.show_layout(ctx, layout)
 
     def update_gui(self, ctx):
         self.draw_hexagon(ctx)

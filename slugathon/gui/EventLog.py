@@ -4,13 +4,15 @@ __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import reactor
-import gtk
+from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
 from slugathon.game import Action, Legion
@@ -18,19 +20,19 @@ from slugathon.util.Observer import IObserver
 
 
 @implementer(IObserver)
-class EventLog(gtk.EventBox):
+class EventLog(Gtk.EventBox):
 
     """Graphical log of game events."""
 
     def __init__(self, game, playername):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
         self.game = game
         self.playername = playername
         self.last_st = ""
 
-        self.vbox2 = gtk.VBox()
+        self.vbox2 = Gtk.VBox()
 
-        self.scrolledwindow = gtk.ScrolledWindow()
+        self.scrolledwindow = Gtk.ScrolledWindow()
         self.vadjustment = self.scrolledwindow.get_vadjustment()
         self.add(self.scrolledwindow)
         self.scrolledwindow.add_with_viewport(self.vbox2)
@@ -200,10 +202,10 @@ class EventLog(gtk.EventBox):
                 st = "%s draw" % " and ".join(action.winner_names)
         if st and st != self.last_st:
             self.last_st = st
-            label = gtk.Label(st)
+            label = Gtk.Label(label=st)
             # left-align the label
             label.set_alignment(0.0, 0.5)
-            self.vbox2.pack_start(label, expand=False, fill=False)
+            self.vbox2.pack_start(label, False, False, 0)
             label.show()
             upper = self.vadjustment.get_upper()
             self.vadjustment.set_value(upper)
@@ -213,7 +215,7 @@ if __name__ == "__main__":
     import time
     from slugathon.util import guiutils
 
-    parent = gtk.Window()
+    parent = Gtk.Window()
     event_log = EventLog(None, None)
     event_log.connect("destroy", guiutils.exit)
     parent.add(event_log)

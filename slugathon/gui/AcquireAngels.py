@@ -6,7 +6,9 @@ __license__ = "GNU GPL v2"
 
 import logging
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject
 from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
@@ -46,13 +48,13 @@ def find_angel_combos(num_archangels, num_angels, archangels_left,
     return combos
 
 
-class AcquireAngels(gtk.Dialog):
+class AcquireAngels(Gtk.Dialog):
 
     """Dialog to acquire an angel."""
 
     def __init__(self, playername, legion, num_archangels, num_angels,
                  caretaker, def1, parent):
-        gtk.Dialog.__init__(self, "AcquireAngels - %s" % playername, parent)
+        GObject.GObject.__init__(self, title="AcquireAngels - %s" % playername, parent=parent)
         self.deferred = def1
         self.legion = legion
         player = legion.player
@@ -62,26 +64,26 @@ class AcquireAngels(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = gtk.Label("Acquire angel for legion %s (%s) in hex %s" %
+        legion_name = Gtk.Label(label="Acquire angel for legion %s (%s) in hex %s" %
                                 (legion.markerid, legion.picname,
                                  legion.hexlabel))
-        self.vbox.pack_start(legion_name)
+        self.vbox.pack_start(legion_name, True, True, 0)
 
-        legion_hbox = gtk.HBox(spacing=3)
-        self.vbox.pack_start(legion_hbox)
+        legion_hbox = Gtk.HBox(spacing=3)
+        self.vbox.pack_start(legion_hbox, True, True, 0)
 
-        marker_hbox = gtk.HBox()
-        legion_hbox.pack_start(marker_hbox, expand=False)
+        marker_hbox = Gtk.HBox()
+        legion_hbox.pack_start(marker_hbox, False, True, 0)
 
         marker = Marker.Marker(legion, True, scale=20)
-        marker_hbox.pack_start(marker.event_box, expand=False)
+        marker_hbox.pack_start(marker.event_box, False, True, 0)
 
-        chits_hbox = gtk.HBox(spacing=3)
-        legion_hbox.pack_start(chits_hbox, expand=True)
+        chits_hbox = Gtk.HBox(spacing=3)
+        legion_hbox.pack_start(chits_hbox, True, True, 0)
 
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
-            chits_hbox.pack_start(chit.event_box, expand=False)
+            chits_hbox.pack_start(chit.event_box, False, True, 0)
 
         angel_combos = find_angel_combos(num_archangels,
                                          num_angels,
@@ -90,20 +92,20 @@ class AcquireAngels(gtk.Dialog):
         max_len = max(len(combo) for combo in angel_combos)
         leading_spaces = (len(legion) + 2 - max_len) // 2
         for combo in angel_combos:
-            hbox = gtk.HBox(spacing=3, homogeneous=False)
-            self.vbox.pack_start(hbox)
+            hbox = Gtk.HBox(spacing=3, homogeneous=False)
+            self.vbox.pack_start(hbox, True, True, 0)
             for unused in range(leading_spaces):
                 chit = Chit.Chit(None, player.color, scale=20, name="Nothing")
                 chit.combo = combo
-                hbox.pack_start(chit.event_box, expand=False)
+                hbox.pack_start(chit.event_box, False, True, 0)
                 chit.connect("button-press-event", self.cb_click)
             for angel in combo:
                 chit = Chit.Chit(angel, player.color, scale=20)
                 chit.combo = combo
-                hbox.pack_start(chit.event_box, expand=False)
+                hbox.pack_start(chit.event_box, False, True, 0)
                 chit.connect("button-press-event", self.cb_click)
 
-        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.add_button("gtk-cancel", Gtk.ResponseType.CANCEL)
         self.connect("response", self.cb_cancel)
 
         self.show_all()
@@ -127,8 +129,8 @@ if __name__ == "__main__":
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 
-    def my_callback(xxx_todo_changeme):
-        (legion, creature) = xxx_todo_changeme
+    def my_callback(tup):
+        (legion, creature) = tup
         logging.info("%s acquired %s", legion, creature)
         guiutils.exit()
 
@@ -139,8 +141,9 @@ if __name__ == "__main__":
     player.color = "Red"
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     legion.hexlabel = 1000
-    acquire_angel, def1 = new(playername, legion, 1, 1, game.caretaker, None)
+    window = Gtk.Window()
+    acquire_angel, def1 = new(playername, legion, 1, 1, game.caretaker, window)
     acquire_angel.connect("destroy", guiutils.exit)
     def1.addCallback(my_callback)
 
-    gtk.main()
+    Gtk.main()

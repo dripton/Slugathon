@@ -4,12 +4,14 @@ __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
 except AssertionError:
     pass
-import gtk
+from gi.repository import Gtk, GObject, Gdk
 from twisted.internet import reactor
 from twisted.python import log
 
@@ -18,18 +20,18 @@ from slugathon.util import prefs
 
 
 def modify_fg_all_states(widget, color_name):
-    color = gtk.gdk.color_parse(color_name)
-    for state in [gtk.STATE_NORMAL, gtk.STATE_ACTIVE, gtk.STATE_PRELIGHT,
-                  gtk.STATE_SELECTED, gtk.STATE_INSENSITIVE]:
+    color = Gdk.color_parse(color_name)
+    for state in [Gtk.StateType.NORMAL, Gtk.StateType.ACTIVE, Gtk.StateType.PRELIGHT,
+                  Gtk.StateType.SELECTED, Gtk.StateType.INSENSITIVE]:
         widget.modify_fg(state, color)
 
 
-class MainWindow(gtk.Window):
+class MainWindow(Gtk.Window):
 
     """Main GUI window."""
 
     def __init__(self, playername=None, scale=None):
-        gtk.Window.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.playername = playername
         self.game = None
@@ -62,10 +64,10 @@ class MainWindow(gtk.Window):
                 width, height = tup
                 self.resize(width, height)
 
-        self.notebook = gtk.Notebook()
+        self.notebook = Gtk.Notebook()
         self.notebook.connect("switch-page", self.cb_switch_page)
         self.add(self.notebook)
-        self.notebook.set_tab_pos(gtk.POS_BOTTOM)
+        self.notebook.set_tab_pos(Gtk.PositionType.BOTTOM)
         self.show_all()
 
     def replace_accel_group(self, accel_group):
@@ -77,13 +79,13 @@ class MainWindow(gtk.Window):
 
     def add_lobby(self, lobby):
         self.lobby = lobby
-        label = gtk.Label("Lobby")
+        label = Gtk.Label(label="Lobby")
         self.notebook.prepend_page(lobby, label)
         self.show_all()
 
     def add_guiboard(self, guiboard):
         self.guiboard = guiboard
-        label = gtk.Label("MasterBoard")
+        label = Gtk.Label(label="MasterBoard")
         modify_fg_all_states(label, "Red")
         self.notebook.append_page(guiboard, label)
         self.show_all()
@@ -96,7 +98,7 @@ class MainWindow(gtk.Window):
 
     def add_guimap(self, guimap):
         self.guimap = guimap
-        label = gtk.Label("BattleMap")
+        label = Gtk.Label(label="BattleMap")
         modify_fg_all_states(label, "Red")
         self.notebook.append_page(guimap, label)
         self.show_all()

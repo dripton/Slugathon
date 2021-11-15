@@ -8,6 +8,8 @@ import math
 from sys import maxsize, argv
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
@@ -15,7 +17,7 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-import gtk
+from gi.repository import Gtk, Gdk, GObject
 import cairo
 from zope.interface import implementer
 
@@ -54,13 +56,13 @@ ui_string = """<ui>
 
 
 @implementer(IObserver)
-class GUIBattleMap(gtk.EventBox):
+class GUIBattleMap(Gtk.EventBox):
 
     """GUI representation of a battlemap."""
 
     def __init__(self, battlemap, game=None, user=None, playername=None,
                  scale=None, parent_window=None):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.battlemap = battlemap
         self.game = game
@@ -71,18 +73,18 @@ class GUIBattleMap(gtk.EventBox):
         self.chits = []
         self.selected_chit = None
 
-        self.vbox = gtk.VBox(spacing=1)
+        self.vbox = Gtk.VBox(spacing=1)
         self.add(self.vbox)
 
         if scale is None:
             self.scale = self.compute_scale()
         else:
             self.scale = scale
-        self.area = gtk.DrawingArea()
+        self.area = Gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
 
-        gtkcolor = gtk.gdk.color_parse("white")
-        self.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        gtkcolor = Gdk.color_parse("white")
+        self.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
 
         if game:
             self.turn_track = TurnTrack.TurnTrack(game.attacker_legion,
@@ -103,55 +105,55 @@ class GUIBattleMap(gtk.EventBox):
             self.defender_graveyard = None
 
         self.create_ui()
-        self.vbox.pack_start(self.ui.get_widget("/Menubar"), expand=False)
-        self.vbox.pack_start(self.ui.get_widget("/Toolbar"), expand=False)
-        self.hbox1 = gtk.HBox()
-        self.hbox2 = gtk.HBox()
-        self.hbox3 = gtk.HBox()
-        self.hbox4 = gtk.HBox()
-        self.hbox5 = gtk.HBox(homogeneous=True)
-        self.vbox.pack_start(self.hbox1, expand=False)
-        self.vbox.pack_start(self.hbox2, fill=True)
-        self.vbox.pack_start(self.hbox3, expand=False)
-        self.vbox.pack_start(self.hbox4, expand=False)
-        self.vbox.pack_start(self.hbox5, expand=False)
+        self.vbox.pack_start(self.ui.get_widget("/Menubar"), True, True, 0)
+        self.vbox.pack_start(self.ui.get_widget("/Toolbar"), True, True, 0)
+        self.hbox1 = Gtk.HBox()
+        self.hbox2 = Gtk.HBox()
+        self.hbox3 = Gtk.HBox()
+        self.hbox4 = Gtk.HBox()
+        self.hbox5 = Gtk.HBox(homogeneous=True)
+        self.vbox.pack_start(self.hbox1, False, True, 0)
+        self.vbox.pack_start(self.hbox2, True, True, 0)
+        self.vbox.pack_start(self.hbox3, False, True, 0)
+        self.vbox.pack_start(self.hbox4, False, True, 0)
+        self.vbox.pack_start(self.hbox5, False, True, 0)
         if game:
-            self.vbox.pack_start(event_log)
-            gtkcolor = gtk.gdk.color_parse("white")
+            self.vbox.pack_start(event_log, True, True, 0)
+            gtkcolor = Gdk.color_parse("white")
             attacker_marker = Marker.Marker(game.attacker_legion, True,
                                             self.scale / 2)
-            attacker_marker.event_box.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+            attacker_marker.event_box.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
             defender_marker = Marker.Marker(game.defender_legion, True,
                                             self.scale / 2)
-            defender_marker.event_box.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+            defender_marker.event_box.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
             board = game.board
             hexlabel = game.defender_legion.hexlabel
             masterhex = board.hexes[hexlabel]
             own_hex_label = self.masterhex_label(masterhex, "xx-large")
-            self.hbox1.pack_start(self.spacer())
-            self.hbox1.pack_start(own_hex_label)
-            self.hbox1.pack_start(self.spacer())
-            self.hbox1.pack_start(self.spacer())
-            self.hbox1.pack_start(self.spacer())
-            self.hbox1.pack_start(self.spacer())
-            self.hbox1.pack_start(self.spacer())
-            self.hbox1.pack_start(self.spacer())
-            self.hbox3.pack_start(self.turn_track, expand=False)
-            self.hbox3.pack_start(self.battle_dice, fill=True)
-            self.hbox2.pack_start(attacker_marker.event_box)
-        self.hbox2.pack_start(self.area)
+            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(own_hex_label, True, True, 0)
+            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox3.pack_start(self.turn_track, False, True, 0)
+            self.hbox3.pack_start(self.battle_dice, True, True, 0)
+            self.hbox2.pack_start(attacker_marker.event_box, True, True, 0)
+        self.hbox2.pack_start(self.area, True, True, 0)
         if game:
-            self.hbox2.pack_start(defender_marker.event_box)
-            self.hbox5.pack_start(self.attacker_graveyard)
-            self.hbox5.pack_start(self.defender_graveyard)
+            self.hbox2.pack_start(defender_marker.event_box, True, True, 0)
+            self.hbox5.pack_start(self.attacker_graveyard, True, True, 0)
+            self.hbox5.pack_start(self.defender_graveyard, True, True, 0)
 
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.values():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
         self.repaint_hexlabels = set()
 
-        self.area.connect("expose-event", self.cb_area_expose)
-        self.area.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.area.connect("draw", self.cb_area_expose)
+        self.area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.area.connect("button-press-event", self.cb_click)
         self.show_all()
         if (self.game and self.game.battle_active_player and
@@ -160,30 +162,30 @@ class GUIBattleMap(gtk.EventBox):
         self.pickcarry = None
 
     def create_ui(self):
-        ag = gtk.ActionGroup("BattleActions")
+        ag = Gtk.ActionGroup(name="BattleActions")
         actions = [
             ("PhaseMenu", None, "_Phase"),
-            ("Done", gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
-            ("Undo", gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
-            ("Undo All", gtk.STOCK_DELETE, "Undo _All", "a", "Undo All",
+            ("Done", Gtk.STOCK_APPLY, "_Done", "d", "Done", self.cb_done),
+            ("Undo", Gtk.STOCK_UNDO, "_Undo", "u", "Undo", self.cb_undo),
+            ("Undo All", Gtk.STOCK_DELETE, "Undo _All", "a", "Undo All",
              self.cb_undo_all),
-            ("Redo", gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
+            ("Redo", Gtk.STOCK_REDO, "_Redo", "r", "Redo", self.cb_redo),
             ("Concede Battle", None, "_Concede Battle", "<control>C",
              "Concede Battle", self.cb_concede),
 
             ("HelpMenu", None, "_Help"),
-            ("About", gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
+            ("About", Gtk.STOCK_ABOUT, "_About", None, "About", self.cb_about),
         ]
         ag.add_actions(actions)
-        self.ui = gtk.UIManager()
+        self.ui = Gtk.UIManager()
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
 
     def compute_scale(self):
         """Return the approximate maximum scale that lets the map fit on the
         screen."""
-        width = gtk.gdk.screen_width()
-        height = gtk.gdk.screen_height()
+        width = Gdk.Screen.width()
+        height = Gdk.Screen.height()
         # Fudge factor to leave room on the sides.
         xscale = width / (2 * self.battlemap.hex_width) - 18
         # Fudge factor for menus and toolbars.
@@ -201,26 +203,26 @@ class GUIBattleMap(gtk.EventBox):
                     2 * SQRT3))
 
     def masterhex_label(self, masterhex, size):
-        """Return a gtk.Label describing masterhex, inside a white
-        gtk.EventBox."""
-        eventbox = gtk.EventBox()
+        """Return a Gtk.Label describing masterhex, inside a white
+        Gtk.EventBox."""
+        eventbox = Gtk.EventBox()
         if masterhex:
             text = '<span size="%s" weight="bold">%s hex %d</span>' % (
                 size, masterhex.terrain, masterhex.label)
         else:
             text = ""
-        label = gtk.Label()
+        label = Gtk.Label()
         label.set_markup(text)
         eventbox.add(label)
-        gtkcolor = gtk.gdk.color_parse("white")
-        eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        gtkcolor = Gdk.color_parse("white")
+        eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
     def spacer(self):
-        """Return a white gtk.EventBox."""
-        eventbox = gtk.EventBox()
-        gtkcolor = gtk.gdk.color_parse("white")
-        eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        """Return a white Gtk.EventBox."""
+        eventbox = Gtk.EventBox()
+        gtkcolor = Gdk.color_parse("white")
+        eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
     def unselect_all(self):
@@ -444,9 +446,9 @@ class GUIBattleMap(gtk.EventBox):
         """Add chits for any creatures that lack them."""
         chit_creatures = set(chit.creature for chit in self.chits)
         for (legion, rotate) in [
-            (self.game.attacker_legion, gtk.gdk.PIXBUF_ROTATE_CLOCKWISE),
+            (self.game.attacker_legion, Gdk.PIXBUF_ROTATE_CLOCKWISE),
                 (self.game.defender_legion,
-                 gtk.gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
+                 Gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)]:
             if legion:
                 for creature in legion.creatures:
                     if creature not in chit_creatures and not creature.dead:
@@ -658,11 +660,15 @@ class GUIBattleMap(gtk.EventBox):
         else:
             if self.repaint_hexlabels:
                 clip_rect = guiutils.combine_rectangles(
-                    event.area,
+                    event.clip_extents(),
                     self.bounding_rect_for_hexlabels(self.repaint_hexlabels))
             else:
-                clip_rect = event.area
-        x, y, width, height = self.allocation
+                clip_rect = event.clip_extents()
+        allocation = self.get_allocation()
+        x = allocation.x
+        y = allocation.y
+        width = allocation.width
+        height = allocation.height
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         ctx = cairo.Context(surface)
         ctx.set_line_width(round(0.2 * self.scale))
@@ -671,7 +677,9 @@ class GUIBattleMap(gtk.EventBox):
         # white background, only when we get an event
         if event is not None:
             ctx.set_source_rgb(1, 1, 1)
-            width, height = self.area.size_request()
+            requisition = self.area.get_size_request()
+            width = requisition.width
+            height = requisition.height
             # Overdraw to avoid gray if window is enlarged.
             ctx.rectangle(0, 0, 2 * width, 2 * height)
             ctx.fill()
@@ -952,8 +960,8 @@ class GUIBattleMap(gtk.EventBox):
         elif isinstance(action, Action.UnsummonAngel):
             self.repaint(["ATTACKER"])
 
-    def picked_reinforcement(self, xxx_todo_changeme):
-        (legion, creature, recruiter_names) = xxx_todo_changeme
+    def picked_reinforcement(self, tup):
+        (legion, creature, recruiter_names) = tup
         if legion and creature:
             def1 = self.user.callRemote("recruit_creature", self.game.name,
                                         legion.markerid, creature.name,
@@ -964,8 +972,8 @@ class GUIBattleMap(gtk.EventBox):
                                         self.game.name)
             def1.addErrback(self.failure)
 
-    def picked_summon(self, xxx_todo_changeme1):
-        (legion, donor, creature) = xxx_todo_changeme1
+    def picked_summon(self, tup1):
+        (legion, donor, creature) = tup1
         if legion and donor and creature:
             def1 = self.user.callRemote("summon_angel", self.game.name,
                                         legion.markerid, donor.markerid,
@@ -976,8 +984,8 @@ class GUIBattleMap(gtk.EventBox):
                                         self.game.name)
             def1.addErrback(self.failure)
 
-    def picked_carry(self, xxx_todo_changeme2):
-        (carry_target, carries) = xxx_todo_changeme2
+    def picked_carry(self, tup2):
+        (carry_target, carries) = tup2
         logging.info("picked_carry %s %s", carry_target, carries)
         if self.pickcarry is not None:
             self.pickcarry.destroy()
@@ -987,9 +995,9 @@ class GUIBattleMap(gtk.EventBox):
                                     carries)
         def1.addErrback(self.failure)
 
-    def picked_strike_penalty(self, xxx_todo_changeme3):
+    def picked_strike_penalty(self, tup3):
         (striker, target, num_dice,
-                                     strike_number) = xxx_todo_changeme3
+                                     strike_number) = tup3
         logging.info("picked_strike_penalty %s %s %s %s", striker, target,
                      num_dice, strike_number)
         if striker is None:
@@ -1013,7 +1021,7 @@ if __name__ == "__main__":
     from slugathon.game import BattleMap
     from slugathon.data import battlemapdata
 
-    window = gtk.Window()
+    window = Gtk.Window()
     window.set_default_size(1024, 768)
 
     entry_side = None

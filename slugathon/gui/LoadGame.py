@@ -4,6 +4,8 @@ __copyright__ = "Copyright (c) 2008-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
@@ -11,37 +13,35 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-import gtk
+from gi.repository import Gtk
 
 from slugathon.gui import icon
 from slugathon.util import prefs
 from slugathon.util.NullUser import NullUser
 
 
-class LoadGame(gtk.FileChooserDialog):
+class LoadGame(Gtk.FileChooserDialog):
 
     """Load saved game dialog."""
 
     def __init__(self, user, playername, parent):
         title = "Load Saved Game - %s" % playername
-        gtk.FileChooserDialog.__init__(self, title, parent,
-                                       gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(
-                                           gtk.STOCK_CANCEL,
-                                           gtk.RESPONSE_CANCEL,
-                                           gtk.STOCK_OPEN,
-                                           gtk.RESPONSE_OK))
+        Gtk.FileChooserDialog.__init__(self, title=title, parent=parent,
+            action=Gtk.FileChooserAction.OPEN)
+        self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.add_button(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         self.user = user
         self.playername = playername
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.set_current_folder(prefs.SAVE_DIR)
-        file_filter = gtk.FileFilter()
+        file_filter = Gtk.FileFilter()
         file_filter.add_pattern(prefs.SAVE_GLOB)
         self.set_filter(file_filter)
 
         response = self.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             self.ok()
         else:
             self.cancel()
@@ -60,8 +60,12 @@ class LoadGame(gtk.FileChooserDialog):
 
 
 if __name__ == "__main__":
+    def my_callback(*args):
+        reactor.stop()
+
     user = NullUser()
     playername = "test user"
-    loadgame = LoadGame(user, playername, None)
-    loadgame.connect("destroy", lambda x: reactor.stop())
+    window = Gtk.Window()
+    window.connect("destroy", my_callback)
+    loadgame = LoadGame(user, playername, window)
     reactor.run()

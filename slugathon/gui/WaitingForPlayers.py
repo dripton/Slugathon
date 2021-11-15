@@ -6,6 +6,8 @@ __license__ = "GNU GPL v2"
 
 import time
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
@@ -13,7 +15,7 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-import gtk
+from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
@@ -28,13 +30,13 @@ def format_time(secs):
 
 
 @implementer(IObserver)
-class WaitingForPlayers(gtk.Dialog):
+class WaitingForPlayers(Gtk.Dialog):
 
     """Waiting for players to start game dialog."""
 
     def __init__(self, user, playername, game, parent):
-        gtk.Dialog.__init__(self, "Waiting for Players - %s" % playername,
-                            parent)
+        GObject.GObject.__init__(self, title="Waiting for Players - %s" % playername,
+                            parent=parent)
         self.user = user
         self.playername = playername
         self.game = game
@@ -44,80 +46,82 @@ class WaitingForPlayers(gtk.Dialog):
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("Waiting for Players - %s" % self.playername)
         self.set_default_size(-1, 300)
 
-        label1 = gtk.Label(game.name)
-        self.vbox.pack_start(label1, expand=False)
+        label1 = Gtk.Label(label=game.name)
+        self.vbox.pack_start(label1, False, True, 0)
 
-        scrolled_window1 = gtk.ScrolledWindow()
-        scrolled_window1.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        self.vbox.pack_start(scrolled_window1)
+        scrolled_window1 = Gtk.ScrolledWindow()
+        scrolled_window1.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        self.vbox.pack_start(scrolled_window1, True, True, 0)
 
-        self.player_list = gtk.TreeView()
+        self.player_list = Gtk.TreeView()
         scrolled_window1.add(self.player_list)
 
-        hbox1 = gtk.HBox()
-        self.vbox.pack_start(hbox1, expand=False)
+        hbox1 = Gtk.HBox()
+        self.vbox.pack_start(hbox1, False, True, 0)
 
-        vbox2 = gtk.VBox()
-        hbox1.pack_start(vbox2)
-        label2 = gtk.Label("Created at")
-        vbox2.pack_start(label2, expand=False)
-        scrolled_window2 = gtk.ScrolledWindow()
-        scrolled_window2.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        vbox2.pack_start(scrolled_window2)
-        viewport1 = gtk.Viewport()
+        vbox2 = Gtk.VBox()
+        hbox1.pack_start(vbox2, True, True, 0)
+        label2 = Gtk.Label(label="Created at")
+        vbox2.pack_start(label2, False, True, 0)
+        scrolled_window2 = Gtk.ScrolledWindow()
+        scrolled_window2.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        vbox2.pack_start(scrolled_window2, True, True, 0)
+        viewport1 = Gtk.Viewport()
         scrolled_window2.add(viewport1)
-        created_entry = gtk.Entry(max=8)
+        created_entry = Gtk.Entry()
+        created_entry.set_max_length(8)
         created_entry.set_editable(False)
         created_entry.set_text(format_time(game.create_time))
         viewport1.add(created_entry)
 
-        vbox3 = gtk.VBox()
-        hbox1.pack_start(vbox3)
-        label3 = gtk.Label("Starts by")
-        vbox3.pack_start(label3, expand=False)
-        scrolled_window3 = gtk.ScrolledWindow()
-        scrolled_window3.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        vbox3.pack_start(scrolled_window3)
-        viewport2 = gtk.Viewport()
+        vbox3 = Gtk.VBox()
+        hbox1.pack_start(vbox3, True, True, 0)
+        label3 = Gtk.Label(label="Starts by")
+        vbox3.pack_start(label3, False, True, 0)
+        scrolled_window3 = Gtk.ScrolledWindow()
+        scrolled_window3.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        vbox3.pack_start(scrolled_window3, True, True, 0)
+        viewport2 = Gtk.Viewport()
         scrolled_window3.add(viewport2)
-        starts_by_entry = gtk.Entry(max=8)
+        starts_by_entry = Gtk.Entry()
+        starts_by_entry.set_max_length(8)
         starts_by_entry.set_editable(False)
         starts_by_entry.set_text(format_time(game.start_time))
         viewport2.add(starts_by_entry)
 
-        vbox4 = gtk.VBox()
-        hbox1.pack_start(vbox4)
-        label4 = gtk.Label("Time Left")
-        vbox4.pack_start(label4, expand=False)
-        scrolled_window4 = gtk.ScrolledWindow()
-        scrolled_window4.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        vbox4.pack_start(scrolled_window4)
-        viewport3 = gtk.Viewport()
+        vbox4 = Gtk.VBox()
+        hbox1.pack_start(vbox4, True, True, 0)
+        label4 = Gtk.Label(label="Time Left")
+        vbox4.pack_start(label4, False, True, 0)
+        scrolled_window4 = Gtk.ScrolledWindow()
+        scrolled_window4.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        vbox4.pack_start(scrolled_window4, True, True, 0)
+        viewport3 = Gtk.Viewport()
         scrolled_window4.add(viewport3)
-        self.countdown_entry = gtk.Entry(max=8)
+        self.countdown_entry = Gtk.Entry()
+        self.countdown_entry.set_max_length(8)
         self.countdown_entry.set_editable(False)
         viewport3.add(self.countdown_entry)
 
-        join_button = gtk.Button("Join Game")
-        self.vbox.pack_start(join_button, expand=False)
+        join_button = Gtk.Button(label="Join Game")
+        self.vbox.pack_start(join_button, False, True, 0)
         join_button.connect("button-press-event", self.cb_click_join)
 
-        drop_button = gtk.Button("Drop out of Game")
-        self.vbox.pack_start(drop_button, expand=False)
+        drop_button = Gtk.Button(label="Drop out of Game")
+        self.vbox.pack_start(drop_button, False, True, 0)
         drop_button.connect("button-press-event", self.cb_click_drop)
 
-        self.start_button = gtk.Button("Start Game Now")
-        self.vbox.pack_start(self.start_button, expand=False)
+        self.start_button = Gtk.Button(label="Start Game Now")
+        self.vbox.pack_start(self.start_button, False, True, 0)
         self.start_button.connect("button-press-event", self.cb_click_start)
         self.start_button.set_sensitive(self.playername ==
                                         self.game.owner.name)
 
         self.connect("destroy", self.cb_destroy)
 
-        self.player_store = gtk.ListStore(str, int)
+        self.player_store = Gtk.ListStore(str, int)
         self.update_player_store()
 
         self.update_countdown()
@@ -126,7 +130,7 @@ class WaitingForPlayers(gtk.Dialog):
         selection.set_select_function(self.cb_player_list_select, None)
         headers = ["Player Name", "Skill"]
         for (ii, title) in enumerate(headers):
-            column = gtk.TreeViewColumn(title, gtk.CellRendererText(),
+            column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(),
                                         text=ii)
             self.player_list.append_column(column)
 

@@ -3,7 +3,9 @@
 __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
 
 from slugathon.gui import Die, Chit
@@ -12,62 +14,60 @@ from slugathon.game import Action
 
 
 @implementer(IObserver)
-class BattleDice(gtk.EventBox):
+class BattleDice(Gtk.EventBox):
 
     """Widget to show die rolls in battle."""
 
     def __init__(self, scale):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
         self.scale = scale
-        self.rows = 2
-        self.columns = 9
+        self.n_rows = 2
+        self.n_columns = 9
         self.spacing = int(round(0.1 * self.scale))
         self.set_size_request(
-            self.columns * self.scale + (self.columns - 1) * self.spacing,
-            self.rows * self.scale + (self.rows - 1) * self.spacing)
+            self.n_columns * self.scale + (self.n_columns - 1) * self.spacing,
+            self.n_rows * self.scale + (self.n_rows - 1) * self.spacing)
 
-        self.table = gtk.Table(rows=self.rows, columns=self.columns)
-        self.table.set_row_spacings(self.spacing)
-        self.table.set_col_spacings(self.spacing)
-        self.table.set_homogeneous(True)
+        self.table = Gtk.Table(n_rows=self.n_rows, n_columns=self.n_columns)
         self.add(self.table)
-        gtkcolor = gtk.gdk.color_parse("white")
-        self.modify_bg(gtk.STATE_NORMAL, gtkcolor)
-        self.table.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        gtkcolor = Gdk.color_parse("white")
+        self.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
+        self.table.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
+
         self.show_all()
 
     def row_and_column(self, ii):
         """Return the row and column for ii."""
-        row = ii // self.columns
-        column = ii % self.columns
+        row = ii // self.n_columns
+        column = ii % self.n_columns
         return (row, column)
 
     def update(self, observed, action, names):
         if isinstance(action, Action.Strike):
             rolls = sorted(action.rolls, reverse=True)
             changed = False
-            while len(rolls) > self.rows * self.columns:
-                self.columns += 1
+            while len(rolls) > self.n_rows * self.n_columns:
+                self.n_columns += 1
                 changed = True
             if changed:
-                self.table.resize(self.rows, self.columns)
+                self.table.resize(self.n_rows, self.n_columns)
                 self.set_size_request(
-                    self.columns * self.scale +
-                    (self.columns - 1) * self.spacing,
-                    self.rows * self.scale + (self.rows - 1) * self.spacing)
+                    self.n_columns * self.scale +
+                    (self.n_columns - 1) * self.spacing,
+                    self.n_rows * self.scale + (self.n_rows - 1) * self.spacing)
             hits = action.hits
-            gtkcolor = gtk.gdk.color_parse("white")
             chit_scale = int(round(self.scale / Die.CHIT_SCALE_FACTOR))
+            gtkcolor = Gdk.color_parse("white")
             for ii, roll in enumerate(rolls):
                 die = Die.Die(roll, ii < hits, scale=chit_scale)
-                die.event_box.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+                die.event_box.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
                 row, col = self.row_and_column(ii)
                 self.table.attach(die.event_box, col, col + 1, row, row + 1)
             ii += 1
-            while ii < self.rows * self.columns:
+            while ii < self.n_rows * self.n_columns:
                 row, col = self.row_and_column(ii)
                 chit = Chit.Chit(None, None, scale=chit_scale, name="Nothing")
-                chit.event_box.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+                die.event_box.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
                 self.table.attach(chit.event_box, col, col + 1, row, row + 1)
                 ii += 1
             self.show_all()
@@ -76,7 +76,7 @@ class BattleDice(gtk.EventBox):
 if __name__ == "__main__":
     from slugathon.util import guiutils, Dice
 
-    window = gtk.Window()
+    window = Gtk.Window()
     battle_dice = BattleDice(80)
     battle_dice.connect("destroy", guiutils.exit)
     window.add(battle_dice)
@@ -85,4 +85,4 @@ if __name__ == "__main__":
     action = Action.Strike(None, None, None, None, None, None, None, None,
                            rolls, sum(1 for roll in rolls if roll >= 4), 1)
     battle_dice.update(None, action, None)
-    gtk.main()
+    Gtk.main()

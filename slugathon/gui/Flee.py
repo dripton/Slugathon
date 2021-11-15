@@ -6,6 +6,8 @@ __license__ = "GNU GPL v2"
 
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
@@ -13,7 +15,7 @@ except AssertionError:
     pass
 from twisted.internet import defer, reactor
 from twisted.python import log
-import gtk
+from gi.repository import Gtk, GObject
 
 from slugathon.gui import Chit, Marker, icon, ConfirmDialog
 
@@ -29,13 +31,13 @@ def new(playername, attacker_legion, defender_legion, parent):
     return flee, def1
 
 
-class Flee(gtk.Dialog):
+class Flee(Gtk.Dialog):
 
     """Dialog to choose whether to flee."""
 
     def __init__(self, playername, attacker_legion, defender_legion, def1,
                  parent):
-        gtk.Dialog.__init__(self, "Flee - %s" % (playername), parent)
+        GObject.GObject.__init__(self, title="Flee - %s" % (playername), parent=parent)
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.deferred = def1
@@ -48,49 +50,47 @@ class Flee(gtk.Dialog):
 
         hexlabel = defender_legion.hexlabel
         masterhex = defender_legion.player.game.board.hexes[hexlabel]
-        self.legion_name = gtk.Label("Flee with legion %s (%s) in %s hex %s?"
+        self.legion_name = Gtk.Label(label="Flee with legion %s (%s) in %s hex %s?"
                                      % (defender_legion.markerid,
                                         defender_legion.picname,
                                         masterhex.terrain, hexlabel))
-        self.vbox.pack_start(self.legion_name)
+        self.vbox.pack_start(self.legion_name, True, True, 0)
 
-        self.attacker_hbox = gtk.HBox(False, 15)
-        self.vbox.pack_start(self.attacker_hbox)
+        self.attacker_hbox = Gtk.HBox(homogeneous=False, spacing=15)
+        self.vbox.pack_start(self.attacker_hbox, True, True, 0)
 
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
         self.attacker_hbox.pack_start(self.attacker_marker.event_box,
-                                      expand=False, fill=False)
+                                      False, False, 0)
 
-        self.attacker_score_label = gtk.Label("%d\npoints" %
+        self.attacker_score_label = Gtk.Label(label="%d\npoints" %
                                               attacker_legion.score)
-        self.attacker_hbox.pack_start(self.attacker_score_label, expand=False)
+        self.attacker_hbox.pack_start(self.attacker_score_label, False, True, 0)
 
-        self.attacker_chits_hbox = gtk.HBox(False, 3)
-        self.attacker_hbox.pack_start(self.attacker_chits_hbox, expand=True,
-                                      fill=True)
+        self.attacker_chits_hbox = Gtk.HBox(homogeneous=False, spacing=3)
+        self.attacker_hbox.pack_start(self.attacker_chits_hbox, True, True, 0)
         for creature in attacker_legion.sorted_creatures:
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20)
             chit.show()
-            self.attacker_chits_hbox.pack_start(chit.event_box, expand=False)
+            self.attacker_chits_hbox.pack_start(chit.event_box, False, True, 0)
 
-        self.defender_hbox = gtk.HBox(False, 15)
-        self.vbox.pack_start(self.defender_hbox)
+        self.defender_hbox = Gtk.HBox(homogeneous=False, spacing=15)
+        self.vbox.pack_start(self.defender_hbox, True, True, 0)
 
         self.defender_marker = Marker.Marker(defender_legion, True, scale=20)
         self.defender_hbox.pack_start(self.defender_marker.event_box,
-                                      expand=False, fill=False)
+                                      False, False, 0)
 
-        self.defender_score_label = gtk.Label("%d\npoints" %
+        self.defender_score_label = Gtk.Label(label="%d\npoints" %
                                               defender_legion.score)
-        self.defender_hbox.pack_start(self.defender_score_label, expand=False)
+        self.defender_hbox.pack_start(self.defender_score_label, False, True, 0)
 
-        self.defender_chits_hbox = gtk.HBox(False, 3)
-        self.defender_hbox.pack_start(self.defender_chits_hbox, expand=True,
-                                      fill=True)
+        self.defender_chits_hbox = Gtk.HBox(homogeneous=False, spacing=3)
+        self.defender_hbox.pack_start(self.defender_chits_hbox, True, True, 0)
         for creature in defender_legion.sorted_creatures:
             chit = Chit.Chit(creature, defender_legion.player.color, scale=20)
             chit.show()
-            self.defender_chits_hbox.pack_start(chit.event_box, expand=False)
+            self.defender_chits_hbox.pack_start(chit.event_box, False, True, 0)
 
         self.add_button("Do Not Flee", DO_NOT_FLEE)
         self.add_button("Flee", FLEE)
@@ -149,8 +149,8 @@ if __name__ == "__main__":
     defender_legion = Legion.Legion(defender_player, "Rd01",
                                     defender_creatures, 1)
 
-    def my_callback(xxx_todo_changeme):
-        (attacker, defender, fled) = xxx_todo_changeme
+    def my_callback(tup):
+        (attacker, defender, fled) = tup
         logging.info("fled is %s", fled)
         reactor.stop()
 

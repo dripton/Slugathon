@@ -4,7 +4,9 @@ __copyright__ = "Copyright (c) 2006-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
@@ -14,10 +16,10 @@ from slugathon.util import colors
 
 def add_label(table, col, row, gtkcolor, text=""):
     """Add a label inside an eventbox to the table."""
-    label = gtk.Label(text)
-    eventbox = gtk.EventBox()
+    label = Gtk.Label(label=text)
+    eventbox = Gtk.EventBox()
     eventbox.add(label)
-    eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+    eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
     label.eventbox = eventbox
     table.attach(eventbox, col, col + 1, row, row + 1)
     return label
@@ -26,30 +28,29 @@ def add_label(table, col, row, gtkcolor, text=""):
 def set_bg(label, color):
     if color:
         if isinstance(color, str):
-            gtkcolor = gtk.gdk.color_parse(color)
+            gtkcolor = Gdk.color_parse(color)
         else:
             gtkcolor = color
-        label.eventbox.modify_bg(gtk.STATE_NORMAL, gtkcolor)
+        label.eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
 
 
 @implementer(IObserver)
-class StatusScreen(gtk.EventBox):
+class StatusScreen(Gtk.EventBox):
 
     """Game status window."""
 
     def __init__(self, game, playername):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
         self.game = game
         self.playername = playername
 
-        self.vbox = gtk.VBox()
+        self.vbox = Gtk.VBox()
         self.add(self.vbox)
 
-        turn_table = gtk.Table(rows=4, columns=3)
-        turn_table.set_homogeneous(True)
-        self.vbox.pack_start(turn_table)
+        turn_table = Gtk.Table(n_rows=4, n_columns=3)
+        self.vbox.pack_start(turn_table, True, True, 0)
 
-        self.default_bg = gtk.gdk.color_parse("lightgray")
+        self.default_bg = Gdk.color_parse("lightgray")
 
         add_label(turn_table, 2, 1, self.default_bg, "Game")
         add_label(turn_table, 3, 1, self.default_bg, "Battle")
@@ -63,11 +64,11 @@ class StatusScreen(gtk.EventBox):
         self.game_phase_label = add_label(turn_table, 2, 4, self.default_bg)
         self.battle_phase_label = add_label(turn_table, 3, 4, self.default_bg)
 
-        hseparator1 = gtk.HSeparator()
-        self.vbox.pack_start(hseparator1)
-        self.player_table = gtk.Table(rows=9, columns=len(self.game.players)
+        hseparator1 = Gtk.HSeparator()
+        self.vbox.pack_start(hseparator1, True, True, 0)
+        self.player_table = Gtk.Table(n_rows=9, n_columns=len(self.game.players)
                                       + 1)
-        self.vbox.pack_start(self.player_table)
+        self.vbox.pack_start(self.player_table, True, True, 0)
 
         for row, text in enumerate(["Name", "Tower", "Color", "Legions",
                                     "Markers", "Creatures", "Titan Power",
@@ -89,7 +90,7 @@ class StatusScreen(gtk.EventBox):
                                   self.default_bg)
                 setattr(self, name, label)
 
-        self.modify_bg(gtk.STATE_NORMAL, self.default_bg)
+        self.modify_bg(Gtk.StateType.NORMAL, self.default_bg)
         self._init_players()
         self._init_turn()
 
@@ -375,7 +376,7 @@ if __name__ == "__main__":
 
     status_screen = StatusScreen(game, playername)
     status_screen.connect("destroy", guiutils.exit)
-    window = gtk.Window()
+    window = Gtk.Window()
     window.add(status_screen)
     window.show_all()
-    gtk.main()
+    Gtk.main()

@@ -7,13 +7,15 @@ __license__ = "GNU GPL v2"
 import collections
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-import gtk
+from gi.repository import Gtk, GObject, GdkPixbuf
 
 from slugathon.gui import icon
 from slugathon.util import fileutils
@@ -46,13 +48,13 @@ def sorted_markers(markers):
     return [marker for unused, marker in augmented]
 
 
-class PickMarker(gtk.Dialog):
+class PickMarker(Gtk.Dialog):
 
     """Dialog to pick a legion marker."""
 
     def __init__(self, playername, game_name, markers_left, def1, parent):
         title = "PickMarker - %s" % playername
-        gtk.Dialog.__init__(self, title, parent)
+        GObject.GObject.__init__(self, title=title, parent=parent)
         self.playername = playername
         self.game_name = game_name
         self.deferred = def1
@@ -63,18 +65,18 @@ class PickMarker(gtk.Dialog):
         previous_color = ""
         hbox = None
         for ii, button_name in enumerate(sorted_markers(markers_left)):
-            button = gtk.Button()
+            button = Gtk.Button()
             button.tag = button_name
-            pixbuf = gtk.gdk.pixbuf_new_from_file(fileutils.basedir(
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file(fileutils.basedir(
                                                   "images/legion/%s.png" %
                                                   button_name))
-            image = gtk.Image()
+            image = Gtk.Image()
             image.set_from_pixbuf(pixbuf)
             button.add(image)
             button.connect("button-press-event", self.cb_click)
             if button_name[:2] != previous_color:
                 previous_color = button_name[:2]
-                hbox = gtk.HBox()
+                hbox = Gtk.HBox()
                 self.vbox.add(hbox)
             hbox.add(button)
 
@@ -93,8 +95,8 @@ class PickMarker(gtk.Dialog):
 
 if __name__ == "__main__":
 
-    def my_callback(xxx_todo_changeme):
-        (game_name, playername, markerid) = xxx_todo_changeme
+    def my_callback(tup):
+        (game_name, playername, markerid) = tup
         logging.info("picked %s", markerid)
         reactor.stop()
 

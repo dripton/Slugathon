@@ -6,13 +6,15 @@ __license__ = "GNU GPL v2"
 
 import logging
 
+import gi
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 try:
     gtk3reactor.install()
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
-import gtk
+from gi.repository import Gtk, GObject
 
 from slugathon.gui import icon
 
@@ -26,13 +28,13 @@ def new(playername, game_name, striker, target, num_dice, strike_number,
     return pickcarry, def1
 
 
-class PickCarry(gtk.Dialog):
+class PickCarry(Gtk.Dialog):
 
     """Dialog to pick whether and where to carry excess hits."""
 
     def __init__(self, playername, game_name, striker, target, num_dice,
                  strike_number, carries, def1, parent):
-        gtk.Dialog.__init__(self, "PickCarry - %s" % playername, parent)
+        GObject.GObject.__init__(self, title="PickCarry - %s" % playername, parent=parent)
         self.playername = playername
         self.game_name = game_name
         self.carries = carries
@@ -42,7 +44,7 @@ class PickCarry(gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
 
-        label = gtk.Label("%r strikes %r and may carry over %d hit%s." % (
+        label = Gtk.Label(label="%r strikes %r and may carry over %d hit%s." % (
                           striker,
                           target,
                           carries,
@@ -125,8 +127,8 @@ if __name__ == "__main__":
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
-    def my_callback(xxx_todo_changeme):
-        (creature, carries) = xxx_todo_changeme
+    def my_callback(tup):
+        (creature, carries) = tup
         logging.info("carry %d hits to %s" % (carries, creature))
         reactor.stop()
 

@@ -7,7 +7,9 @@ __license__ = "GNU GPL v2"
 import os
 import tempfile
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GdkPixbuf
 import cairo
 
 from slugathon.util import fileutils
@@ -41,11 +43,11 @@ class Die(object):
                                          delete=False) as tmp_file:
             tmp_path = tmp_file.name
         self.surface.write_to_png(tmp_path)
-        pixbuf = gtk.gdk.pixbuf_new_from_file(tmp_path)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file(tmp_path)
         os.remove(tmp_path)
-        self.event_box = gtk.EventBox()
+        self.event_box = Gtk.EventBox()
         self.event_box.chit = self
-        self.image = gtk.Image()
+        self.image = Gtk.Image()
         self.image.set_from_pixbuf(pixbuf)
         self.event_box.add(self.image)
         self.location = None    # (x, y) of top left corner
@@ -58,9 +60,9 @@ if __name__ == "__main__":
     from slugathon.util import Dice
 
     die = Die(Dice.roll()[0], scale=45)
-    window = gtk.Window()
-    window.connect("destroy", gtk.main_quit)
+    window = Gtk.Window()
+    window.connect("destroy", Gtk.main_quit)
     window.add(die.event_box)
     window.show()
     die.show()
-    gtk.main()
+    Gtk.main()

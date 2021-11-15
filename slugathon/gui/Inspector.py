@@ -4,35 +4,37 @@ __copyright__ = "Copyright (c) 2006-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject
 
 from slugathon.gui import Chit, Marker
 from slugathon.data import recruitdata
 from slugathon.game import Creature
 
 
-class Inspector(gtk.EventBox):
+class Inspector(Gtk.EventBox):
 
     """Window to show a legion's contents."""
 
     def __init__(self, playername):
-        gtk.EventBox.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.playername = playername
 
-        self.vbox = gtk.VBox()
+        self.vbox = Gtk.VBox()
         self.add(self.vbox)
 
-        self.legion_name = gtk.Label()
-        self.vbox.pack_start(self.legion_name)
+        self.legion_name = Gtk.Label()
+        self.vbox.pack_start(self.legion_name, True, True, 0)
 
-        hbox = gtk.HBox(spacing=3)
-        self.vbox.pack_start(hbox)
+        hbox = Gtk.HBox(spacing=3)
+        self.vbox.pack_start(hbox, True, True, 0)
 
-        self.marker_hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(self.marker_hbox, expand=False)
-        self.chits_hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(self.chits_hbox, expand=True)
+        self.marker_hbox = Gtk.HBox(spacing=3)
+        hbox.pack_start(self.marker_hbox, False, True, 0)
+        self.chits_hbox = Gtk.HBox(spacing=3)
+        hbox.pack_start(self.chits_hbox, True, True, 0)
 
         self.legion = None
         self.marker = None
@@ -50,12 +52,12 @@ class Inspector(gtk.EventBox):
                 hbox.remove(child)
 
         self.marker = Marker.Marker(legion, True, scale=15)
-        self.marker_hbox.pack_start(self.marker.event_box, expand=False)
+        self.marker_hbox.pack_start(self.marker.event_box, False, True, 0)
 
         playercolor = legion.player.color
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, playercolor, scale=15)
-            self.chits_hbox.pack_start(chit.event_box, expand=False)
+            self.chits_hbox.pack_start(chit.event_box, False, True, 0)
 
         self.show_all()
 
@@ -70,11 +72,11 @@ class Inspector(gtk.EventBox):
             if len(tup) == 2 and tup[1] != 0:
                 creature_name, count = tup
                 if count >= 2:
-                    label = gtk.Label(str(count))
-                    self.chits_hbox.pack_start(label, expand=False)
+                    label = Gtk.Label(label=str(count))
+                    self.chits_hbox.pack_start(label, False, True, 0)
                 creature = Creature.Creature(creature_name)
                 chit = Chit.Chit(creature, playercolor, scale=15)
-                self.chits_hbox.pack_start(chit.event_box, expand=False)
+                self.chits_hbox.pack_start(chit.event_box, False, True, 0)
         self.show_all()
 
 
@@ -87,7 +89,7 @@ if __name__ == "__main__":
     def cb_destroy(confirmed):
         print("destroy")
         inspector.destroy()
-        gtk.main_quit()
+        Gtk.main_quit()
 
     creatures = [Creature.Creature(name) for name in
                  creaturedata.starting_creature_names]
@@ -109,8 +111,8 @@ if __name__ == "__main__":
     legion2 = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures2, 2)
     inspector.show_legion(legion2)
 
-    window = gtk.Window()
+    window = Gtk.Window()
     window.add(inspector)
     window.show_all()
 
-    gtk.main()
+    Gtk.main()

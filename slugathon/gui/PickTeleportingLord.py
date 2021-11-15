@@ -6,7 +6,9 @@ __license__ = "GNU GPL v2"
 
 import logging
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject
 from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
@@ -20,13 +22,13 @@ def new(playername, legion, parent):
     return pick_teleporting_lord, def1
 
 
-class PickTeleportingLord(gtk.Dialog):
+class PickTeleportingLord(Gtk.Dialog):
 
     """Dialog to pick a lord to reveal for tower teleport."""
 
     def __init__(self, playername, legion, def1, parent):
-        gtk.Dialog.__init__(self, "PickTeleportingLord - %s" % playername,
-                            parent)
+        GObject.GObject.__init__(self, title="PickTeleportingLord - %s" % playername,
+                            parent=parent)
         self.legion = legion
         self.deferred = def1
 
@@ -35,25 +37,25 @@ class PickTeleportingLord(gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        top_label = gtk.Label("Revealing a lord to tower teleport")
-        self.vbox.pack_start(top_label)
+        top_label = Gtk.Label(label="Revealing a lord to tower teleport")
+        self.vbox.pack_start(top_label, True, True, 0)
 
-        bottom_label = gtk.Label("Click on a lord (red outline) to reveal it.")
-        self.vbox.pack_start(bottom_label)
+        bottom_label = Gtk.Label(label="Click on a lord (red outline) to reveal it.")
+        self.vbox.pack_start(bottom_label, True, True, 0)
 
-        hbox = gtk.HBox(spacing=3)
-        self.vbox.pack_start(hbox)
+        hbox = Gtk.HBox(spacing=3)
+        self.vbox.pack_start(hbox, True, True, 0)
         marker = Marker.Marker(legion, False, scale=20)
-        hbox.pack_start(marker.event_box, expand=False)
+        hbox.pack_start(marker.event_box, False, True, 0)
         player = self.legion.player
         for creature in legion.sorted_creatures:
             chit = Chit.Chit(creature, player.color, scale=20,
                              outlined=creature.is_lord)
-            hbox.pack_start(chit.event_box, expand=False)
+            hbox.pack_start(chit.event_box, False, True, 0)
             if creature.is_lord:
                 chit.connect("button-press-event", self.cb_click)
 
-        self.add_button("gtk-cancel", gtk.RESPONSE_CANCEL)
+        self.add_button("gtk-cancel", Gtk.ResponseType.CANCEL)
         self.connect("response", self.cb_cancel)
 
         self.show_all()
@@ -92,4 +94,4 @@ if __name__ == "__main__":
     pick_teleporting_lord.connect("destroy", guiutils.exit)
     def1.addCallback(my_callback)
 
-    gtk.main()
+    Gtk.main()
