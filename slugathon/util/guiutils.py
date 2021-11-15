@@ -35,9 +35,9 @@ def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     """
     if numpoints <= 0:
         return []
-    xcenter = (x0 + x1) / 2.
-    ycenter = (y0 + y1) / 2.
-    radius = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2) / 2.
+    xcenter = (x0 + x1) / 2.0
+    ycenter = (y0 + y1) / 2.0
+    radius = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2) / 2.0
 
     # Reverse signs of y because vertical screen coords increase down.
     theta0 = math.atan2((ycenter - y0), (x0 - xcenter))
@@ -73,8 +73,12 @@ def scale_polygon(vertexes, ratio):
 
 
 def point_in_square(point, topleft, length):
-    return (point[0] >= topleft[0] and point[1] >= topleft[1] and
-            point[0] < topleft[0] + length and point[1] < topleft[1] + length)
+    return (
+        point[0] >= topleft[0]
+        and point[1] >= topleft[1]
+        and point[0] < topleft[0] + length
+        and point[1] < topleft[1] + length
+    )
 
 
 def point_in_polygon(point, vertexes):
@@ -89,16 +93,17 @@ def point_in_polygon(point, vertexes):
     for i, (xi, yi) in enumerate(vertexes):
         j = (i + 1) % npol
         xj, yj = vertexes[j]
-        if ((yi <= y < yj or yj <= y < yi) and
-           (x < 1.0 * (xj - xi) * (y - yi) / (yj - yi) + xi)):
+        if (yi <= y < yj or yj <= y < yi) and (
+            x < 1.0 * (xj - xi) * (y - yi) / (yj - yi) + xi
+        ):
             c = not c
     return c
 
 
 def midpoint(point1, point2):
     """Return a point midway between two points."""
-    xx = (point1[0] + point2[0]) / 2.
-    yy = (point1[1] + point2[1]) / 2.
+    xx = (point1[0] + point2[0]) / 2.0
+    yy = (point1[1] + point2[1]) / 2.0
     return (xx, yy)
 
 

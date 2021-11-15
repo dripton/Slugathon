@@ -9,6 +9,7 @@ import os
 import math
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 gi.require_foreign("cairo")
 gi.require_version("PangoCairo", "1.0")
@@ -30,8 +31,16 @@ class Chit(object):
 
     IMAGE_DIR = "creature"
 
-    def __init__(self, creature, playercolor, scale=15, dead=False,
-                 rotate=0, outlined=False, name=None):
+    def __init__(
+        self,
+        creature,
+        playercolor,
+        scale=15,
+        dead=False,
+        rotate=0,
+        outlined=False,
+        name=None,
+    ):
         self.creature = creature
         if creature is None:
             if name is None:
@@ -45,7 +54,7 @@ class Chit(object):
         # to Cairo.
         self.rotate = -rotate * math.pi / 180
         self.outlined = outlined
-        self.location = None    # (x, y) of top left corner
+        self.location = None  # (x, y) of top left corner
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
         if creature and creature.name in ["Titan", "Angel"]:
@@ -66,8 +75,10 @@ class Chit(object):
             color_name = "titan_%s" % playercolor.lower()
         self.rgb = guiutils.rgb_to_float(colors.rgb_colors[color_name])
 
-        self.paths = [fileutils.basedir("images/%s/%s.png" %
-                      (self.IMAGE_DIR, base)) for base in self.bases]
+        self.paths = [
+            fileutils.basedir("images/%s/%s.png" % (self.IMAGE_DIR, base))
+            for base in self.bases
+        ]
 
         self.event_box = Gtk.EventBox()
         self.event_box.chit = self
@@ -90,20 +101,23 @@ class Chit(object):
             self._render_hits(input_surface)
         if self.outlined:
             self._render_outline(input_surface)
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
-                                          self.chit_scale)
+        self.surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32, self.chit_scale, self.chit_scale
+        )
         ctx2 = cairo.Context(self.surface)
         if self.rotate:
             ctx2.translate(self.chit_scale / 2.0, self.chit_scale / 2.0)
             ctx2.rotate(self.rotate)
             ctx2.translate(-self.chit_scale / 2.0, -self.chit_scale / 2.0)
-        ctx2.scale(float(self.chit_scale) / input_surface.get_width(),
-                   float(self.chit_scale) / input_surface.get_height())
+        ctx2.scale(
+            float(self.chit_scale) / input_surface.get_width(),
+            float(self.chit_scale) / input_surface.get_height(),
+        )
         ctx2.set_source_surface(input_surface)
         ctx2.paint()
-        with tempfile.NamedTemporaryFile(prefix="slugathon",
-                                         suffix=".png",
-                                         delete=False) as tmp_file:
+        with tempfile.NamedTemporaryFile(
+            prefix="slugathon", suffix=".png", delete=False
+        ) as tmp_file:
             tmp_path = tmp_file.name
         self.surface.write_to_png(tmp_path)
         self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(tmp_path)

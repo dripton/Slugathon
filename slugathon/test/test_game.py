@@ -9,7 +9,6 @@ from slugathon.game import Game
 
 
 class TestGame(object):
-
     def setup_method(self, method):
         now = time.time()
         self.game = game = Game.Game("g1", "p0", now, now, 2, 6)
@@ -25,9 +24,12 @@ class TestGame(object):
         game.assign_first_marker("p1", "Bu01")
         game.assign_first_marker("p0", "Rd01")
         player0.pick_marker("Rd02")
-        player0.split_legion("Rd01", "Rd02",
-                             ["Titan", "Centaur", "Centaur", "Gargoyle"],
-                             ["Angel", "Ogre", "Ogre", "Gargoyle"])
+        player0.split_legion(
+            "Rd01",
+            "Rd02",
+            ["Titan", "Centaur", "Centaur", "Gargoyle"],
+            ["Angel", "Ogre", "Ogre", "Gargoyle"],
+        )
         player0.done_with_splits()
 
     def test_all_legions(self):
@@ -69,9 +71,12 @@ class TestGame(object):
         legion2 = player.markerid_to_legion["Rd02"]
         player1 = self.game.players[1]
         player1.pick_marker("Bu02")
-        player1.split_legion("Bu01", "Bu02",
-                             ["Titan", "Centaur", "Centaur", "Gargoyle"],
-                             ["Angel", "Ogre", "Ogre", "Gargoyle"])
+        player1.split_legion(
+            "Bu01",
+            "Bu02",
+            ["Titan", "Centaur", "Centaur", "Gargoyle"],
+            ["Angel", "Ogre", "Ogre", "Gargoyle"],
+        )
         player1.done_with_splits()
         legion3 = player1.markerid_to_legion["Bu01"]
         try:
@@ -121,11 +126,55 @@ class TestGame(object):
         hexlabels = set([move[0] for move in moves])
         logging.info(sorted(hexlabels))
 
-        assert hexlabels == set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-                                 15, 16, 17, 21, 37, 41, 42, 101, 102, 103,
-                                 104, 105, 106, 107, 108, 109, 110, 111, 112,
-                                 113, 114, 115, 300, 400, 500, 600, 1000, 2000,
-                                 3000, 4000, 6000])
+        assert hexlabels == set(
+            [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                21,
+                37,
+                41,
+                42,
+                101,
+                102,
+                103,
+                104,
+                105,
+                106,
+                107,
+                108,
+                109,
+                110,
+                111,
+                112,
+                113,
+                114,
+                115,
+                300,
+                400,
+                500,
+                600,
+                1000,
+                2000,
+                3000,
+                4000,
+                6000,
+            ]
+        )
 
     def test_find_all_moves(self):
         game = self.game
@@ -145,11 +194,55 @@ class TestGame(object):
         moves = game.find_all_moves(legion, masterhex, 6)
         logging.info(sorted(map(str, moves)))
         hexlabels = set([move[0] for move in moves])
-        assert hexlabels == set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-                                 15, 16, 17, 21, 37, 41, 42, 101, 102, 103,
-                                 104, 105, 106, 107, 108, 109, 110, 111, 112,
-                                 113, 114, 115, 300, 400, 500, 600, 1000, 2000,
-                                 3000, 4000, 6000])
+        assert hexlabels == set(
+            [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                21,
+                37,
+                41,
+                42,
+                101,
+                102,
+                103,
+                104,
+                105,
+                106,
+                107,
+                108,
+                109,
+                110,
+                111,
+                112,
+                113,
+                114,
+                115,
+                300,
+                400,
+                500,
+                600,
+                1000,
+                2000,
+                3000,
+                4000,
+                6000,
+            ]
+        )
         for hexlabel in hexlabels:
             assert (hexlabel, Game.TELEPORT) in moves
         assert (11, 5) in moves
@@ -231,24 +324,30 @@ def test_update_finish_order():
     ai3.markerid_to_legion = {}
     assert ai3.dead
     game._update_finish_order(ai5, ai3)
-    assert game.finish_order == [(ai3, )]
+    assert game.finish_order == [(ai3,)]
     ai6.die(ai2, True)
     ai6.markerid_to_legion = {}
     game._update_finish_order(ai2, ai6)
-    assert game.finish_order == [(ai6, ), (ai3, )]
+    assert game.finish_order == [(ai6,), (ai3,)]
     ai2.die(ai4, True)
     ai2.markerid_to_legion = {}
     game._update_finish_order(ai4, ai2)
-    assert game.finish_order == [(ai2, ), (ai6, ), (ai3, )]
+    assert game.finish_order == [(ai2,), (ai6,), (ai3,)]
     ai1.die(ai4, True)
     ai1.markerid_to_legion = {}
     game._update_finish_order(ai4, ai1)
-    assert game.finish_order == [(ai1, ), (ai2, ), (ai6, ), (ai3, )]
+    assert game.finish_order == [(ai1,), (ai2,), (ai6,), (ai3,)]
     ai5.die(ai4, True)
     ai5.markerid_to_legion = {}
     game._update_finish_order(ai4, ai5)
-    assert game.finish_order == [(ai4, ), (ai5, ), (ai1, ), (ai2, ),
-                                 (ai6, ), (ai3, )]
+    assert game.finish_order == [
+        (ai4,),
+        (ai5,),
+        (ai1,),
+        (ai2,),
+        (ai6,),
+        (ai3,),
+    ]
 
 
 def test_update_finish_order_3_draws():

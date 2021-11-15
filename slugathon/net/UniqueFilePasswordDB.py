@@ -12,10 +12,27 @@ class UniqueFilePasswordDB(FilePasswordDB):
     """A FilePasswordDB that refuses to authenticate a user who is already
     logged in."""
 
-    def __init__(self, filename, delim=':', usernameField=0, passwordField=1,
-                 caseSensitive=True, hash=None, cache=False, server=None):
-        FilePasswordDB.__init__(self, filename, delim, usernameField,
-                                passwordField, caseSensitive, hash, cache)
+    def __init__(
+        self,
+        filename,
+        delim=":",
+        usernameField=0,
+        passwordField=1,
+        caseSensitive=True,
+        hash=None,
+        cache=False,
+        server=None,
+    ):
+        FilePasswordDB.__init__(
+            self,
+            filename,
+            delim,
+            usernameField,
+            passwordField,
+            caseSensitive,
+            hash,
+            cache,
+        )
         self.server = server
 
     def requestAvatarId(self, c):

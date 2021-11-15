@@ -7,7 +7,6 @@ from slugathon.game import Game
 
 
 class TestAssignTowers(object):
-
     def setup_method(self, method):
         now = time.time()
         self.game = Game.Game("g1", "p1", now, now, 2, 6)
@@ -35,18 +34,19 @@ class TestAssignTowers(object):
             self.game.add_player("p%d" % (num + 2))
         for unused in range(trials):
             self.game.assign_towers()
-            towers = set([player.starting_tower for player in
-                          self.game.players])
+            towers = set(
+                [player.starting_tower for player in self.game.players]
+            )
             assert len(towers) == num_players
             for tower in towers:
                 counts[tower] = counts.get(tower, 0) + 1
         assert len(counts) == num_towers, "len(counts) is wrong: %s" % counts
         assert sum(counts.values()) == trials * num_players
         chi_square = 0
-        mean = 1. * trials * num_players / num_towers
+        mean = 1.0 * trials * num_players / num_towers
         for count in counts.values():
             chi_square += (count - mean) ** 2.0 / mean
-        chi_square /= (trials - 1)
+        chi_square /= trials - 1
         # degrees of freedome = 5, 99.5% chance of randomness
         assert chi_square < 0.4117
 

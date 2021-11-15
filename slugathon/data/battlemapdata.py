@@ -24,7 +24,6 @@ data = {
         "E3": ("Bramble", 0, {}),
         "F4": ("Bramble", 0, {}),
     },
-
     "Desert": {
         "A1": ("Sand", 0, {}),
         "A2": ("Sand", 0, {0: "Dune", 1: "Dune"}),
@@ -38,21 +37,49 @@ data = {
         "E5": ("Sand", 0, {}),
         "F4": ("Sand", 0, {}),
     },
-
     "Hills": {
         "B1": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 5: "Slope"}),
-        "B3": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
-                            4: "Slope", 5: "Slope"}),
+        "B3": (
+            "Plain",
+            1,
+            {
+                0: "Slope",
+                1: "Slope",
+                2: "Slope",
+                3: "Slope",
+                4: "Slope",
+                5: "Slope",
+            },
+        ),
         "C2": ("Tree", 1, {}),
         "C4": ("Tree", 1, {}),
-        "D2": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
-                            4: "Slope", 5: "Slope"}),
+        "D2": (
+            "Plain",
+            1,
+            {
+                0: "Slope",
+                1: "Slope",
+                2: "Slope",
+                3: "Slope",
+                4: "Slope",
+                5: "Slope",
+            },
+        ),
         "D6": ("Plain", 1, {2: "Slope", 3: "Slope", 4: "Slope"}),
-        "E3": ("Plain", 1, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
-                            4: "Slope", 5: "Slope"}),
+        "E3": (
+            "Plain",
+            1,
+            {
+                0: "Slope",
+                1: "Slope",
+                2: "Slope",
+                3: "Slope",
+                4: "Slope",
+                5: "Slope",
+            },
+        ),
         "F2": ("Tree", 1, {}),
     },
-
     "Jungle": {
         "A2": ("Bramble", 0, {}),
         "B4": ("Tree", 1, {}),
@@ -65,7 +92,6 @@ data = {
         "F3": ("Tree", 1, {}),
         "F4": ("Bramble", 0, {}),
     },
-
     "Marsh": {
         "A3": ("Bog", 0, {}),
         "C2": ("Bog", 0, {}),
@@ -74,7 +100,6 @@ data = {
         "E1": ("Bog", 0, {}),
         "E3": ("Bog", 0, {}),
     },
-
     "Mountains": {
         "A1": ("Plain", 1, {0: "Slope"}),
         "B1": ("Plain", 2, {0: "Slope", 1: "Cliff", 2: "Slope", 5: "Slope"}),
@@ -84,8 +109,18 @@ data = {
         "C4": ("Plain", 1, {3: "Slope", 4: "Slope"}),
         "C5": ("Plain", 2, {2: "Slope", 3: "Slope", 4: "Slope"}),
         "D3": ("Plain", 1, {2: "Slope", 3: "Slope", 4: "Slope", 5: "Slope"}),
-        "D4": ("Volcano", 2, {0: "Slope", 1: "Slope", 2: "Slope", 3: "Slope",
-                              4: "Cliff", 5: "Slope"}),
+        "D4": (
+            "Volcano",
+            2,
+            {
+                0: "Slope",
+                1: "Slope",
+                2: "Slope",
+                3: "Slope",
+                4: "Cliff",
+                5: "Slope",
+            },
+        ),
         "D5": ("Plain", 1, {}),
         "D6": ("Plain", 2, {2: "Slope", 3: "Slope"}),
         "E3": ("Plain", 1, {3: "Slope"}),
@@ -96,10 +131,7 @@ data = {
         "F3": ("Plain", 1, {}),
         "F4": ("Plain", 2, {3: "Slope", 4: "Slope", 5: "Slope"}),
     },
-
-    "Plains": {
-    },
-
+    "Plains": {},
     "Swamp": {
         "B2": ("Bog", 0, {}),
         "C2": ("Tree", 1, {}),
@@ -110,18 +142,19 @@ data = {
         "E4": ("Tree", 1, {}),
         "F2": ("Bog", 0, {}),
     },
-
     "Tower": {
         "C3": ("Tower", 1, {3: "Wall", 4: "Wall", 5: "Wall"}),
         "C4": ("Tower", 1, {0: "Wall", 4: "Wall", 5: "Wall"}),
         "D3": ("Tower", 1, {2: "Wall", 3: "Wall", 4: "Wall"}),
-        "D4": ("Tower", 2, {0: "Wall", 1: "Wall", 2: "Wall", 3: "Wall",
-                            4: "Wall", 5: "Wall"}),
+        "D4": (
+            "Tower",
+            2,
+            {0: "Wall", 1: "Wall", 2: "Wall", 3: "Wall", 4: "Wall", 5: "Wall"},
+        ),
         "D5": ("Tower", 1, {0: "Wall", 1: "Wall", 5: "Wall"}),
         "E3": ("Tower", 1, {1: "Wall", 2: "Wall", 3: "Wall"}),
         "E4": ("Tower", 1, {0: "Wall", 1: "Wall", 2: "Wall"}),
     },
-
     "Tundra": {
         "A1": ("Drift", 0, {}),
         "B2": ("Drift", 0, {}),
@@ -133,7 +166,6 @@ data = {
         "E4": ("Drift", 0, {}),
         "F2": ("Drift", 0, {}),
     },
-
     "Woods": {
         "A3": ("Tree", 1, {}),
         "C3": ("Tree", 1, {}),

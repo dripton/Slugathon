@@ -18,17 +18,21 @@ def test_num_lords():
     assert legion.num_lords == 2
     assert not legion.can_flee
 
-    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd02",
+        Creature.n2c(["Titan", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     assert legion.num_lords == 1
     assert not legion.can_flee
 
-    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Gargoyle",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd02",
+        Creature.n2c(["Gargoyle", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     assert legion.num_lords == 0
     assert legion.can_flee
 
@@ -39,9 +43,16 @@ def test_creature_names():
     creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
-    assert legion.creature_names == ["Angel", "Centaur", "Centaur",
-                                     "Gargoyle", "Gargoyle", "Ogre",
-                                     "Ogre", "Titan"]
+    assert legion.creature_names == [
+        "Angel",
+        "Centaur",
+        "Centaur",
+        "Gargoyle",
+        "Gargoyle",
+        "Ogre",
+        "Ogre",
+        "Titan",
+    ]
 
 
 def test_remove_creature_by_name():
@@ -112,37 +123,42 @@ def test_is_legal_split():
     player = Player.Player("p0", game, 0)
 
     parent = Legion.Legion(player, "Rd01", creatures, 1)
-    child1 = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
-                                                         "Gargoyle",
-                                                         "Ogre",
-                                                         "Ogre"]), 1)
-    child2 = Legion.Legion(player, "Rd03", Creature.n2c(["Angel",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    child1 = Legion.Legion(
+        player, "Rd01", Creature.n2c(["Titan", "Gargoyle", "Ogre", "Ogre"]), 1
+    )
+    child2 = Legion.Legion(
+        player,
+        "Rd03",
+        Creature.n2c(["Angel", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     assert parent.is_legal_split(child1, child2)
     assert not parent.is_legal_split(child1, child1)
 
-    parent2 = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
-                                                          "Gargoyle",
-                                                          "Ogre",
-                                                          "Troll",
-                                                          "Centaur"]), 1)
-    child3 = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
-                                                         "Gargoyle",
-                                                         "Ogre",
-                                                         "Troll"]), 1)
+    parent2 = Legion.Legion(
+        player,
+        "Rd01",
+        Creature.n2c(["Titan", "Gargoyle", "Ogre", "Troll", "Centaur"]),
+        1,
+    )
+    child3 = Legion.Legion(
+        player, "Rd01", Creature.n2c(["Titan", "Gargoyle", "Ogre", "Troll"]), 1
+    )
     child4 = Legion.Legion(player, "Rd03", Creature.n2c(["Centaur"]), 1)
     assert not parent2.is_legal_split(child3, child4)
 
-    child5 = Legion.Legion(player, "Rd01", Creature.n2c(["Unknown",
-                                                         "Unknown",
-                                                         "Unknown",
-                                                         "Unknown"]), 1)
-    child6 = Legion.Legion(player, "Rd03", Creature.n2c(["Unknown",
-                                                         "Unknown",
-                                                         "Unknown",
-                                                         "Unknown"]), 1)
+    child5 = Legion.Legion(
+        player,
+        "Rd01",
+        Creature.n2c(["Unknown", "Unknown", "Unknown", "Unknown"]),
+        1,
+    )
+    child6 = Legion.Legion(
+        player,
+        "Rd03",
+        Creature.n2c(["Unknown", "Unknown", "Unknown", "Unknown"]),
+        1,
+    )
     assert parent.is_legal_split(child5, child6)
 
 
@@ -151,10 +167,12 @@ def test_could_recruit():
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
 
-    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd02",
+        Creature.n2c(["Titan", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     caretaker = Caretaker.Caretaker()
 
     assert not legion.could_recruit("Marsh", caretaker)
@@ -169,22 +187,27 @@ def test_available_recruits():
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
 
-    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
-                                                         "Lion",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd02",
+        Creature.n2c(["Titan", "Lion", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     caretaker = Caretaker.Caretaker()
 
     assert legion.available_recruits("Marsh", caretaker) == []
     assert legion.available_recruits("Desert", caretaker) == ["Lion"]
-    assert legion.available_recruits("Plains", caretaker) == ["Centaur",
-                                                              "Lion"]
+    assert legion.available_recruits("Plains", caretaker) == [
+        "Centaur",
+        "Lion",
+    ]
     assert legion.available_recruits("Brush", caretaker) == ["Gargoyle"]
-    assert legion.available_recruits("Tower", caretaker) == ["Ogre",
-                                                             "Centaur",
-                                                             "Gargoyle",
-                                                             "Warlock"]
+    assert legion.available_recruits("Tower", caretaker) == [
+        "Ogre",
+        "Centaur",
+        "Gargoyle",
+        "Warlock",
+    ]
 
 
 def test_available_recruits_and_recruiters():
@@ -192,56 +215,88 @@ def test_available_recruits_and_recruiters():
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
 
-    legion = Legion.Legion(player, "Rd01", Creature.n2c(["Titan",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd01",
+        Creature.n2c(["Titan", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     caretaker = Caretaker.Caretaker()
 
     assert legion.available_recruits_and_recruiters("Marsh", caretaker) == []
     assert legion.available_recruits_and_recruiters("Desert", caretaker) == []
     assert legion.available_recruits_and_recruiters("Plains", caretaker) == [
-        ("Centaur", "Centaur"), ("Lion", "Centaur", "Centaur")]
+        ("Centaur", "Centaur"),
+        ("Lion", "Centaur", "Centaur"),
+    ]
     assert legion.available_recruits_and_recruiters("Brush", caretaker) == [
-        ("Gargoyle", "Gargoyle")]
+        ("Gargoyle", "Gargoyle")
+    ]
     assert legion.available_recruits_and_recruiters("Tower", caretaker) == [
-        ("Ogre",), ("Centaur",), ("Gargoyle",), ("Warlock", "Titan")]
+        ("Ogre",),
+        ("Centaur",),
+        ("Gargoyle",),
+        ("Warlock", "Titan"),
+    ]
 
     caretaker.counts["Centaur"] = 0
     assert legion.available_recruits_and_recruiters("Plains", caretaker) == [
-        ("Lion", "Centaur", "Centaur")]
+        ("Lion", "Centaur", "Centaur")
+    ]
 
-    legion2 = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
-                                                          "Gargoyle",
-                                                          "Gargoyle",
-                                                          "Gargoyle"]), 1)
+    legion2 = Legion.Legion(
+        player,
+        "Rd02",
+        Creature.n2c(["Titan", "Gargoyle", "Gargoyle", "Gargoyle"]),
+        1,
+    )
     assert legion2.available_recruits_and_recruiters("Tower", caretaker) == [
-        ("Ogre",), ("Gargoyle",), ("Warlock", "Titan"),
-        ("Guardian", "Gargoyle", "Gargoyle", "Gargoyle")]
+        ("Ogre",),
+        ("Gargoyle",),
+        ("Warlock", "Titan"),
+        ("Guardian", "Gargoyle", "Gargoyle", "Gargoyle"),
+    ]
     assert legion2.available_recruits_and_recruiters("Brush", caretaker) == [
-        ("Gargoyle", "Gargoyle"), ("Cyclops", "Gargoyle", "Gargoyle")]
+        ("Gargoyle", "Gargoyle"),
+        ("Cyclops", "Gargoyle", "Gargoyle"),
+    ]
 
     legion3 = Legion.Legion(player, "Rd03", Creature.n2c(["Colossus"]), 1)
     assert legion3.available_recruits_and_recruiters("Tundra", caretaker) == [
-        ("Troll", "Colossus"), ("Warbear", "Colossus"), ("Giant", "Colossus"),
-        ("Colossus", "Colossus")]
-    assert legion3.available_recruits_and_recruiters("Mountains",
-                                                     caretaker) == [
-        ("Lion", "Colossus"), ("Minotaur", "Colossus"),
-        ("Dragon", "Colossus"), ("Colossus", "Colossus")]
+        ("Troll", "Colossus"),
+        ("Warbear", "Colossus"),
+        ("Giant", "Colossus"),
+        ("Colossus", "Colossus"),
+    ]
+    assert legion3.available_recruits_and_recruiters(
+        "Mountains", caretaker
+    ) == [
+        ("Lion", "Colossus"),
+        ("Minotaur", "Colossus"),
+        ("Dragon", "Colossus"),
+        ("Colossus", "Colossus"),
+    ]
     assert legion3.available_recruits_and_recruiters("Marsh", caretaker) == []
 
-    legion4 = Legion.Legion(player, "Rd04",
-                            Creature.n2c(["Behemoth", "Cyclops",
-                                          "Cyclops", "Cyclops"]), 1)
+    legion4 = Legion.Legion(
+        player,
+        "Rd04",
+        Creature.n2c(["Behemoth", "Cyclops", "Cyclops", "Cyclops"]),
+        1,
+    )
     assert legion4.available_recruits_and_recruiters("Brush", caretaker) == [
-        ("Gargoyle", "Cyclops"), ("Cyclops", "Cyclops"),
-        ("Gorgon", "Cyclops", "Cyclops")]
-    logging.info(legion4.available_recruits_and_recruiters("Jungle",
-                                                           caretaker))
+        ("Gargoyle", "Cyclops"),
+        ("Cyclops", "Cyclops"),
+        ("Gorgon", "Cyclops", "Cyclops"),
+    ]
+    logging.info(
+        legion4.available_recruits_and_recruiters("Jungle", caretaker)
+    )
     assert legion4.available_recruits_and_recruiters("Jungle", caretaker) == [
-        ("Gargoyle", "Cyclops"), ("Gargoyle", "Behemoth"),
-        ("Cyclops", "Cyclops"), ("Cyclops", "Behemoth"),
+        ("Gargoyle", "Cyclops"),
+        ("Gargoyle", "Behemoth"),
+        ("Cyclops", "Cyclops"),
+        ("Cyclops", "Behemoth"),
         ("Behemoth", "Cyclops", "Cyclops", "Cyclops"),
         ("Behemoth", "Behemoth"),
     ]
@@ -257,41 +312,94 @@ def test_score():
 
 
 def test_sorted_creatures():
-    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
-                              "Ogre", "Ranger", "Minotaur"])
+    creatures = Creature.n2c(
+        [
+            "Archangel",
+            "Serpent",
+            "Centaur",
+            "Gargoyle",
+            "Ogre",
+            "Ranger",
+            "Minotaur",
+        ]
+    )
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     li = legion.sorted_creatures
     assert len(li) == len(creatures) == len(legion)
     names = [creature.name for creature in li]
-    assert names == ["Archangel", "Serpent", "Ranger", "Minotaur",
-                     "Gargoyle", "Centaur", "Ogre"]
+    assert names == [
+        "Archangel",
+        "Serpent",
+        "Ranger",
+        "Minotaur",
+        "Gargoyle",
+        "Centaur",
+        "Ogre",
+    ]
 
 
 def test_any_summonable():
-    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
-                              "Ogre", "Ranger", "Minotaur"])
+    creatures = Creature.n2c(
+        [
+            "Archangel",
+            "Serpent",
+            "Centaur",
+            "Gargoyle",
+            "Ogre",
+            "Ranger",
+            "Minotaur",
+        ]
+    )
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert legion.any_summonable
-    creatures = Creature.n2c(["Angel", "Serpent", "Centaur", "Gargoyle",
-                              "Ogre", "Ranger", "Minotaur"])
+    creatures = Creature.n2c(
+        [
+            "Angel",
+            "Serpent",
+            "Centaur",
+            "Gargoyle",
+            "Ogre",
+            "Ranger",
+            "Minotaur",
+        ]
+    )
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert legion.any_summonable
-    creatures = Creature.n2c(["Serpent", "Centaur", "Gargoyle",
-                              "Ogre", "Ranger", "Minotaur"])
+    creatures = Creature.n2c(
+        ["Serpent", "Centaur", "Gargoyle", "Ogre", "Ranger", "Minotaur"]
+    )
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert not legion.any_summonable
 
 
 def test_unknown():
-    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
-                              "Ogre", "Ranger", "Minotaur"])
+    creatures = Creature.n2c(
+        [
+            "Archangel",
+            "Serpent",
+            "Centaur",
+            "Gargoyle",
+            "Ogre",
+            "Ranger",
+            "Minotaur",
+        ]
+    )
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert not legion.any_unknown
     assert legion.all_known
     assert not legion.all_unknown
 
-    creatures = Creature.n2c(["Archangel", "Serpent", "Centaur", "Gargoyle",
-                              "Ogre", "Ranger", "Unknown"])
+    creatures = Creature.n2c(
+        [
+            "Archangel",
+            "Serpent",
+            "Centaur",
+            "Gargoyle",
+            "Ogre",
+            "Ranger",
+            "Unknown",
+        ]
+    )
     legion = Legion.Legion(None, "Rd01", creatures, 1)
     assert legion.any_unknown
     assert not legion.all_known
@@ -338,9 +446,12 @@ def test_can_summon():
     player1.markerid_to_legion[legion1.markerid] = legion1
     assert not legion1.can_summon
 
-    player1.split_legion("Rd01", "Rd02",
-                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
-                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
+    player1.split_legion(
+        "Rd01",
+        "Rd02",
+        ["Titan", "Centaur", "Ogre", "Gargoyle"],
+        ["Angel", "Centaur", "Ogre", "Gargoyle"],
+    )
     assert legion1.can_summon
     legion2 = player1.markerid_to_legion["Rd02"]
     legion2.move(2, False, None, 1)
@@ -362,16 +473,20 @@ def test_picname():
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.picname == "Cross"
 
-    legion = Legion.Legion(player, "Rd02", Creature.n2c(["Titan",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd02",
+        Creature.n2c(["Titan", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     assert legion.picname == "Eagle"
 
-    legion = Legion.Legion(player, "Gr12", Creature.n2c(["Gargoyle",
-                                                         "Gargoyle",
-                                                         "Centaur",
-                                                         "Centaur"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Gr12",
+        Creature.n2c(["Gargoyle", "Gargoyle", "Centaur", "Centaur"]),
+        1,
+    )
     assert legion.picname == "Ourobouros"
 
 
@@ -380,10 +495,12 @@ def test_reveal_creatures():
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
 
-    legion = Legion.Legion(player, "Rd01", Creature.n2c(["Unknown",
-                                                         "Unknown",
-                                                         "Unknown",
-                                                         "Unknown"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd01",
+        Creature.n2c(["Unknown", "Unknown", "Unknown", "Unknown"]),
+        1,
+    )
     legion.reveal_creatures(["Ogre"])
     assert legion.creature_names == ["Ogre", "Unknown", "Unknown", "Unknown"]
     legion.reveal_creatures(["Ogre", "Ogre"])
@@ -396,13 +513,20 @@ def test_reveal_creatures():
     assert legion.creature_names == ["Ogre", "Ogre", "Troll", "Troll"]
     legion.add_creature_by_name("Ranger")
     legion.reveal_creatures(["Troll", "Troll", "Ranger"])
-    assert legion.creature_names == ["Ogre", "Ogre", "Ranger", "Troll",
-                                     "Troll"]
+    assert legion.creature_names == [
+        "Ogre",
+        "Ogre",
+        "Ranger",
+        "Troll",
+        "Troll",
+    ]
 
-    legion = Legion.Legion(player, "Rd01", Creature.n2c(["Unknown",
-                                                         "Unknown",
-                                                         "Unknown",
-                                                         "Unknown"]), 1)
+    legion = Legion.Legion(
+        player,
+        "Rd01",
+        Creature.n2c(["Unknown", "Unknown", "Unknown", "Unknown"]),
+        1,
+    )
     legion.reveal_creatures(["Centaur", "Centaur", "Lion"])
     assert legion.creature_names == ["Centaur", "Centaur", "Lion", "Unknown"]
 

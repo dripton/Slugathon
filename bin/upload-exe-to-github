@@ -36,8 +36,9 @@ def do_list(login, password, user, repo):
     return lst
 
 
-def do_upload(login, password, user, repo, id_, path, description,
-        content_type):
+def do_upload(
+    login, password, user, repo, id_, path, description, content_type
+):
     url = BASE_URL + "/repos/%s/%s/downloads" % (user, repo)
     data = {
         "name": id_,
@@ -46,8 +47,9 @@ def do_upload(login, password, user, repo, id_, path, description,
         "content_type": content_type,
     }
     js_data = json.dumps(data)
-    req = requests.post(url, auth=(login, password), data=js_data,
-                        config=config)
+    req = requests.post(
+        url, auth=(login, password), data=js_data, config=config
+    )
     print "do_upload req.status code", req.status_code
     response = req.content
     print "req.content", req.content
@@ -55,15 +57,24 @@ def do_upload(login, password, user, repo, id_, path, description,
     cmd = [
         r"\curl\curl.exe",
         "-k",
-        "-F", "key=%s" % str(response_dct["path"]),
-        "-F", "acl=%s" % str(response_dct["acl"]),
-        "-F", "success_action_status=201",
-        "-F", "Filename=%s" % str(response_dct["name"]),
-        "-F", "AWSAccessKeyId=%s" % str(response_dct["accesskeyid"]),
-        "-F", "Policy=%s" % str(response_dct["policy"]),
-        "-F", "Signature=%s" % str(response_dct["signature"]),
-        "-F", "Content-Type=%s" % str(response_dct["mime_type"]),
-        "-F", "file=@%s" % path,
+        "-F",
+        "key=%s" % str(response_dct["path"]),
+        "-F",
+        "acl=%s" % str(response_dct["acl"]),
+        "-F",
+        "success_action_status=201",
+        "-F",
+        "Filename=%s" % str(response_dct["name"]),
+        "-F",
+        "AWSAccessKeyId=%s" % str(response_dct["accesskeyid"]),
+        "-F",
+        "Policy=%s" % str(response_dct["policy"]),
+        "-F",
+        "Signature=%s" % str(response_dct["signature"]),
+        "-F",
+        "Content-Type=%s" % str(response_dct["mime_type"]),
+        "-F",
+        "file=@%s" % path,
         str(response_dct["s3_url"]),
     ]
     print "cmd", cmd
@@ -79,8 +90,11 @@ def do_delete(login, password, user, repo, id_):
 
 def delete_excess_uploads(login, password):
     lst = do_list(login, password, USER, REPO)
-    date_name_id = sorted((dct["created_at"], dct["name"], dct["id"])
-      for dct in lst if re.search(r"slugathon-dev-\w+\.exe", dct["name"]))
+    date_name_id = sorted(
+        (dct["created_at"], dct["name"], dct["id"])
+        for dct in lst
+        if re.search(r"slugathon-dev-\w+\.exe", dct["name"])
+    )
     while len(date_name_id) >= MAX_UPLOADS:
         date, name, id_ = date_name_id.pop(0)
         do_delete(login, password, USER, REPO, id_)
@@ -95,12 +109,27 @@ def get_head_commit_from_git():
 
 def main():
     parser = argparse.ArgumentParser(prog="upload-exe-to-github")
-    parser.add_argument("-l", "--login", action="store", type=str,
-      help="login name for authorization")
-    parser.add_argument("-p", "--password", action="store", type=str,
-      help="password for authorization")
-    parser.add_argument("-c", "--commit", action="store", type=str,
-      help="Git commit id of this build")
+    parser.add_argument(
+        "-l",
+        "--login",
+        action="store",
+        type=str,
+        help="login name for authorization",
+    )
+    parser.add_argument(
+        "-p",
+        "--password",
+        action="store",
+        type=str,
+        help="password for authorization",
+    )
+    parser.add_argument(
+        "-c",
+        "--commit",
+        action="store",
+        type=str,
+        help="Git commit id of this build",
+    )
     args = parser.parse_args()
 
     if not args.commit:
@@ -117,8 +146,16 @@ def main():
 
     delete_excess_uploads(args.login, args.password)
 
-    do_upload(args.login, args.password, USER, REPO, id_, new_path,
-      description, "application/exe")
+    do_upload(
+        args.login,
+        args.password,
+        USER,
+        REPO,
+        id_,
+        new_path,
+        description,
+        "application/exe",
+    )
 
 
 if __name__ == "__main__":

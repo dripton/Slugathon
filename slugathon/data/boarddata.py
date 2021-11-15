@@ -7,7 +7,6 @@ __license__ = "GNU GPL v2"
 """
 
 data = [
-
     (1, 7, 5, "Plains", 2, "ARROWS", 1000, "ARCH"),
     (2, 8, 5, "Woods", 3, "ARROWS", 7, "ARCH"),
     (3, 8, 6, "Brush", 4, "ARROWS", 100, "ARCH"),
@@ -50,7 +49,6 @@ data = [
     (40, 5, 6, "Jungle", 41, "ARROWS", 141, "BLOCK"),
     (41, 6, 6, "Marsh", 42, "ARROWS", 100, "ARCH"),
     (42, 6, 5, "Swamp", 1, "ARROWS", 37, "ARCH"),
-
     # Outer rim
     (101, 7, 7, "Plains", 142, "ARROWS", 100, "ARCH"),
     (102, 8, 7, "Brush", 101, "ARROWS"),
@@ -94,7 +92,6 @@ data = [
     (140, 4, 7, "Marsh", 139, "ARROWS"),
     (141, 5, 7, "Brush", 140, "ARROWS", 40, "ARCH"),
     (142, 6, 7, "Swamp", 141, "ARROWS"),
-
     # Towers
     (100, 7, 6, "Tower", 41, "ARROW", 101, "ARROW", 3, "ARROW"),
     (200, 11, 5, "Tower", 6, "ARROW", 108, "ARROW", 10, "ARROW"),
@@ -102,7 +99,6 @@ data = [
     (400, 7, 1, "Tower", 20, "ARROW", 122, "ARROW", 24, "ARROW"),
     (500, 3, 2, "Tower", 27, "ARROW", 129, "ARROW", 31, "ARROW"),
     (600, 3, 5, "Tower", 34, "ARROW", 136, "ARROW", 38, "ARROW"),
-
     # Inner circle
     (1000, 7, 4, "Mountains", 1, "BLOCK", 2000, "ARROW", 6000, "ARROW"),
     (2000, 8, 4, "Tundra", 8, "BLOCK", 3000, "ARROW", 1000, "ARROW"),
@@ -110,5 +106,4 @@ data = [
     (4000, 7, 3, "Tundra", 22, "BLOCK", 5000, "ARROW", 3000, "ARROW"),
     (5000, 6, 3, "Mountains", 29, "BLOCK", 6000, "ARROW", 4000, "ARROW"),
     (6000, 6, 4, "Tundra", 36, "BLOCK", 1000, "ARROW", 5000, "ARROW"),
-
 ]

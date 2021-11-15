@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 
@@ -40,12 +41,16 @@ class Inspector(Gtk.EventBox):
         self.marker = None
 
     def show_legion(self, legion):
-        self.legion_name.set_text("Legion %s (%s) in hex %s (%d%s points)" % (
-                                  legion.markerid,
-                                  legion.picname,
-                                  legion.hexlabel,
-                                  legion.score,
-                                  "+?" if legion.any_unknown else ""))
+        self.legion_name.set_text(
+            "Legion %s (%s) in hex %s (%d%s points)"
+            % (
+                legion.markerid,
+                legion.picname,
+                legion.hexlabel,
+                legion.score,
+                "+?" if legion.any_unknown else "",
+            )
+        )
 
         for hbox in [self.marker_hbox, self.chits_hbox]:
             for child in hbox.get_children():
@@ -91,8 +96,10 @@ if __name__ == "__main__":
         inspector.destroy()
         Gtk.main_quit()
 
-    creatures = [Creature.Creature(name) for name in
-                 creaturedata.starting_creature_names]
+    creatures = [
+        Creature.Creature(name)
+        for name in creaturedata.starting_creature_names
+    ]
 
     playername = "test"
     player = Player.Player(playername, None, None)
@@ -105,8 +112,10 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures, 1)
     inspector.show_legion(legion)
 
-    creatures2 = [Creature.Creature(name) for name in
-                  ["Angel", "Giant", "Warbear", "Unicorn"]]
+    creatures2 = [
+        Creature.Creature(name)
+        for name in ["Angel", "Giant", "Warbear", "Unicorn"]
+    ]
     index = random.randrange(1, 12 + 1)
     legion2 = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures2, 2)
     inspector.show_legion(legion2)

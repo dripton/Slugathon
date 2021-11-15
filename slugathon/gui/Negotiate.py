@@ -7,8 +7,10 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -28,8 +30,9 @@ FIGHT = 3
 def new(playername, attacker_legion, defender_legion, parent):
     """Create a Negotiate dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    negotiate = Negotiate(playername, attacker_legion, defender_legion, def1,
-                          parent)
+    negotiate = Negotiate(
+        playername, attacker_legion, defender_legion, def1, parent
+    )
     return negotiate, def1
 
 
@@ -37,9 +40,12 @@ class Negotiate(Gtk.Dialog):
 
     """Dialog to choose whether to concede, negotiate, or fight."""
 
-    def __init__(self, playername, attacker_legion, defender_legion,
-                 def1, parent):
-        GObject.GObject.__init__(self, title="Negotiate - %s" % playername, parent=parent)
+    def __init__(
+        self, playername, attacker_legion, defender_legion, def1, parent
+    ):
+        GObject.GObject.__init__(
+            self, title="Negotiate - %s" % playername, parent=parent
+        )
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
         self.deferred = def1
@@ -49,19 +55,25 @@ class Negotiate(Gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = Gtk.Label(label=
-            "Legion %s (%s) negotiates with %s (%s) in hex %s?" % (
-                attacker_legion.markerid, attacker_legion.picname,
-                defender_legion.markerid, defender_legion.picname,
-                defender_legion.hexlabel))
+        legion_name = Gtk.Label(
+            label="Legion %s (%s) negotiates with %s (%s) in hex %s?"
+            % (
+                attacker_legion.markerid,
+                attacker_legion.picname,
+                defender_legion.markerid,
+                defender_legion.picname,
+                defender_legion.hexlabel,
+            )
+        )
         self.vbox.pack_start(legion_name, True, True, 0)
 
         attacker_hbox = Gtk.HBox(spacing=15)
         self.vbox.pack_start(attacker_hbox, True, True, 0)
         attacker_marker_hbox = Gtk.HBox()
         attacker_hbox.pack_start(attacker_marker_hbox, False, True, 0)
-        attacker_score_label = Gtk.Label(label="%d\n points" %
-                                         attacker_legion.score)
+        attacker_score_label = Gtk.Label(
+            label="%d\n points" % attacker_legion.score
+        )
         attacker_hbox.pack_start(attacker_score_label, False, True, 0)
         attacker_chits_hbox = Gtk.HBox(spacing=3)
         attacker_hbox.pack_start(attacker_chits_hbox, True, True, 0)
@@ -71,19 +83,22 @@ class Negotiate(Gtk.Dialog):
         defender_marker_hbox = Gtk.HBox()
         defender_hbox.pack_start(defender_marker_hbox, False, True, 0)
         defender_chits_hbox = Gtk.HBox(spacing=3)
-        defender_score_label = Gtk.Label(label="%d\n points" %
-                                         defender_legion.score)
+        defender_score_label = Gtk.Label(
+            label="%d\n points" % defender_legion.score
+        )
         defender_hbox.pack_start(defender_score_label, False, True, 0)
         defender_hbox.pack_start(defender_chits_hbox, True, True, 0)
 
         self.attacker_marker = Marker.Marker(attacker_legion, True, scale=20)
-        attacker_marker_hbox.pack_start(self.attacker_marker.event_box,
-                                        False, False, 0)
+        attacker_marker_hbox.pack_start(
+            self.attacker_marker.event_box, False, False, 0
+        )
         self.attacker_marker.connect("button-press-event", self.cb_click)
 
         self.defender_marker = Marker.Marker(defender_legion, True, scale=20)
-        defender_marker_hbox.pack_start(self.defender_marker.event_box,
-                                        False, False, 0)
+        defender_marker_hbox.pack_start(
+            self.defender_marker.event_box, False, False, 0
+        )
         self.defender_marker.connect("button-press-event", self.cb_click)
 
         self.attacker_chits = []
@@ -151,7 +166,8 @@ class Negotiate(Gtk.Dialog):
         """Return True iff at least one of the two legions is completely
         dead."""
         return self.all_dead(self.attacker_chits) or self.all_dead(
-            self.defender_chits)
+            self.defender_chits
+        )
 
     def surviving_creature_names(self, chits):
         """Return a list of creature names for the survivors."""
@@ -162,12 +178,20 @@ class Negotiate(Gtk.Dialog):
         the response_id."""
         self.destroy()
         attacker_creature_names = self.surviving_creature_names(
-            self.attacker_chits)
+            self.attacker_chits
+        )
         defender_creature_names = self.surviving_creature_names(
-            self.defender_chits)
-        self.deferred.callback((self.attacker_legion, attacker_creature_names,
-                                self.defender_legion, defender_creature_names,
-                                response_id))
+            self.defender_chits
+        )
+        self.deferred.callback(
+            (
+                self.attacker_legion,
+                attacker_creature_names,
+                self.defender_legion,
+                defender_creature_names,
+                response_id,
+            )
+        )
 
 
 if __name__ == "__main__":
@@ -181,19 +205,28 @@ if __name__ == "__main__":
     game = Game.Game("g1", attacker_playername, now, now, 2, 6)
     attacker_player = Player.Player(attacker_playername, game, 0)
     attacker_player.color = "Black"
-    attacker_creature_names = ["Titan", "Colossus", "Serpent", "Hydra",
-                               "Archangel", "Angel", "Unicorn"]
+    attacker_creature_names = [
+        "Titan",
+        "Colossus",
+        "Serpent",
+        "Hydra",
+        "Archangel",
+        "Angel",
+        "Unicorn",
+    ]
     attacker_creatures = Creature.n2c(attacker_creature_names)
-    attacker_legion = Legion.Legion(attacker_player, "Bk01",
-                                    attacker_creatures, 1)
+    attacker_legion = Legion.Legion(
+        attacker_player, "Bk01", attacker_creatures, 1
+    )
 
     defender_playername = "Eek!"
     defender_player = Player.Player(defender_playername, game, 0)
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
     defender_creatures = Creature.n2c(defender_creature_names)
-    defender_legion = Legion.Legion(defender_player, "Rd01",
-                                    defender_creatures, 1)
+    defender_legion = Legion.Legion(
+        defender_player, "Rd01", defender_creatures, 1
+    )
 
     def my_callback(*args):
         logging.info("callback %s", args)

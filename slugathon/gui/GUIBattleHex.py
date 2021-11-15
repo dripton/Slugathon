@@ -8,6 +8,7 @@ from sys import maxsize
 
 import cairo
 import gi
+
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango, PangoCairo
 
@@ -15,7 +16,7 @@ from slugathon.util import guiutils, colors, sliceborder, fileutils
 
 
 SQRT3 = math.sqrt(3.0)
-RAD_TO_DEG = 180. / math.pi
+RAD_TO_DEG = 180.0 / math.pi
 
 # Where to place the label, by hexside.  Derived experimentally.
 x_font_position = [0.5, 0.7, 0.7, 0.5, 0.35, 0.35]
@@ -27,7 +28,6 @@ IMAGE_DIR = fileutils.basedir("images/battlehex")
 
 
 class GUIBattleHex(object):
-
     def __init__(self, battlehex, guimap):
         self.battlehex = battlehex
         self.guimap = guimap
@@ -43,8 +43,12 @@ class GUIBattleHex(object):
 
         self.init_vertexes()
         self.center = rp(guiutils.midpoint(self.vertexes[0], self.vertexes[3]))
-        self.bboxsize = rp((self.vertexes[2][0] - self.vertexes[5][0],
-                            self.vertexes[3][1] - self.vertexes[0][1]))
+        self.bboxsize = rp(
+            (
+                self.vertexes[2][0] - self.vertexes[5][0],
+                self.vertexes[3][1] - self.vertexes[0][1],
+            )
+        )
         self.hex_surface = None
         self.hex_surface_x = None
         self.hex_surface_y = None
@@ -56,9 +60,9 @@ class GUIBattleHex(object):
 
     def find_fillcolor(self):
         terrain = self.battlehex.terrain
-        color = colors.battle_terrain_colors.get((terrain,
-                                                  self.battlehex.elevation),
-                                                 None)
+        color = colors.battle_terrain_colors.get(
+            (terrain, self.battlehex.elevation), None
+        )
         if not color:
             color = colors.battle_terrain_colors.get(terrain)
         return guiutils.rgb_to_float(colors.rgb_colors[color])
@@ -131,18 +135,21 @@ class GUIBattleHex(object):
         if not os.path.exists(image_path):
             return
         myboxsize = [int(round(0.85 * mag)) for mag in self.bboxsize]
-        self.hex_surface_x = int(round(self.center[0] - myboxsize[0] / 2.))
-        self.hex_surface_y = int(round(self.center[1] - myboxsize[1] / 2.))
+        self.hex_surface_x = int(round(self.center[0] - myboxsize[0] / 2.0))
+        self.hex_surface_y = int(round(self.center[1] - myboxsize[1] / 2.0))
         input_surface = cairo.ImageSurface.create_from_png(image_path)
         input_width = input_surface.get_width()
         input_height = input_surface.get_height()
         output_width = myboxsize[0]
         output_height = myboxsize[1]
-        self.hex_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                              output_width, output_height)
+        self.hex_surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32, output_width, output_height
+        )
         ctx = cairo.Context(self.hex_surface)
-        ctx.scale(float(output_width) / input_width,
-                  float(output_height) / input_height)
+        ctx.scale(
+            float(output_width) / input_width,
+            float(output_height) / input_height,
+        )
         ctx.move_to(0, 0)
         ctx.set_source_surface(input_surface)
         ctx.paint()
@@ -150,8 +157,8 @@ class GUIBattleHex(object):
     def init_border_overlays(self):
         """Setup the overlays for each border."""
         myboxsize = [int(round(0.97 * mag)) for mag in self.bboxsize]
-        self.border_surface_x = int(round(self.center[0] - myboxsize[0] / 2.))
-        self.border_surface_y = int(round(self.center[1] - myboxsize[1] / 2.))
+        self.border_surface_x = int(round(self.center[0] - myboxsize[0] / 2.0))
+        self.border_surface_y = int(round(self.center[1] - myboxsize[1] / 2.0))
         for hexside, border in enumerate(self.battlehex.borders):
             border_surface = None
             overlay_filename = "%s.png" % border
@@ -162,19 +169,22 @@ class GUIBattleHex(object):
                 border_filename = "%s-%s.png" % (border, hexsides_str)
                 border_path = os.path.join(IMAGE_DIR, border_filename)
                 if not os.path.exists(border_path):
-                    sliceborder.slice_border_image(image_path, border_path,
-                                                   hexsides)
+                    sliceborder.slice_border_image(
+                        image_path, border_path, hexsides
+                    )
                 input_surface = cairo.ImageSurface.create_from_png(border_path)
                 input_width = input_surface.get_width()
                 input_height = input_surface.get_height()
                 output_width = myboxsize[0]
                 output_height = myboxsize[1]
-                border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                                    output_width,
-                                                    output_height)
+                border_surface = cairo.ImageSurface(
+                    cairo.FORMAT_ARGB32, output_width, output_height
+                )
                 ctx = cairo.Context(border_surface)
-                ctx.scale(float(output_width) / input_width,
-                          float(output_height) / input_height)
+                ctx.scale(
+                    float(output_width) / input_width,
+                    float(output_height) / input_height,
+                )
                 ctx.move_to(0, 0)
                 ctx.set_source_surface(input_surface)
                 ctx.paint()
@@ -184,17 +194,20 @@ class GUIBattleHex(object):
         """Draw the main terrain overlay for the hex."""
         if self.hex_surface is None:
             return
-        ctx.set_source_surface(self.hex_surface, self.hex_surface_x,
-                               self.hex_surface_y)
+        ctx.set_source_surface(
+            self.hex_surface, self.hex_surface_x, self.hex_surface_y
+        )
         ctx.paint()
 
     def draw_border_overlays(self, ctx):
         """Draw the overlays for all borders that have them."""
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
-                ctx.set_source_surface(self.border_surfaces[hexside],
-                                       self.border_surface_x,
-                                       self.border_surface_y)
+                ctx.set_source_surface(
+                    self.border_surfaces[hexside],
+                    self.border_surface_x,
+                    self.border_surface_y,
+                )
                 ctx.paint()
 
     def draw_label(self, ctx, label, side):
@@ -206,10 +219,24 @@ class GUIBattleHex(object):
         layout.set_alignment(Pango.Alignment.CENTER)
         layout.set_text(label)
         width, height = layout.get_pixel_size()
-        x = int(round((self.cx + self.bboxsize[0] * x_font_position[side] -
-                       width / 2.0)))
-        y = int(round((self.cy + self.bboxsize[1] * y_font_position[side] -
-                       height / 2.0)))
+        x = int(
+            round(
+                (
+                    self.cx
+                    + self.bboxsize[0] * x_font_position[side]
+                    - width / 2.0
+                )
+            )
+        )
+        y = int(
+            round(
+                (
+                    self.cy
+                    + self.bboxsize[1] * y_font_position[side]
+                    - height / 2.0
+                )
+            )
+        )
         ctx.set_source_rgb(0, 0, 0)
         ctx.move_to(x, y)
         PangoCairo.show_layout(ctx, layout)
@@ -219,10 +246,12 @@ class GUIBattleHex(object):
         if not self.battlehex.entrance:
             self.draw_hex_overlay(ctx)
             self.draw_border_overlays(ctx)
-            self.draw_label(ctx, self.battlehex.label,
-                            self.battlehex.label_side)
-            self.draw_label(ctx, self.battlehex.terrain,
-                            self.battlehex.terrain_side)
+            self.draw_label(
+                ctx, self.battlehex.label, self.battlehex.label_side
+            )
+            self.draw_label(
+                ctx, self.battlehex.terrain, self.battlehex.terrain_side
+            )
         self.draw_selection(ctx)
 
     def __repr__(self):

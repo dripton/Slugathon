@@ -24,7 +24,10 @@ class install_data_twisted(install_data):
     """
 
     def finalize_options(self):
-        self.set_undefined_options("install", ("install_lib", "install_dir"),)
+        self.set_undefined_options(
+            "install",
+            ("install_lib", "install_dir"),
+        )
         install_data.finalize_options(self)
 
 
@@ -77,9 +80,15 @@ setup(
     url="https://github.com/dripton/Slugathon/",
     download_url="https://github.com/dripton/Slugathon/zipball/master",
     license="GPLv2",
-    packages=["slugathon", "slugathon.ai", "slugathon.data",
-              "slugathon.game", "slugathon.gui", "slugathon.net",
-              "slugathon.util"],
+    packages=[
+        "slugathon",
+        "slugathon.ai",
+        "slugathon.data",
+        "slugathon.game",
+        "slugathon.gui",
+        "slugathon.net",
+        "slugathon.util",
+    ],
     data_files=[
         ("slugathon/images/battlehex", glob("slugathon/images/battlehex/*")),
         ("slugathon/images/creature", glob("slugathon/images/creature/*")),

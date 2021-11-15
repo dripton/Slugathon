@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject, Gdk
 
@@ -64,8 +65,10 @@ if __name__ == "__main__":
             random.choice(self.legion.living_creatures).kill()
             graveyard.update_gui()
 
-    creatures = [Creature.Creature(name) for name in
-                 creaturedata.starting_creature_names]
+    creatures = [
+        Creature.Creature(name)
+        for name in creaturedata.starting_creature_names
+    ]
 
     playername = "test"
     player = Player.Player(playername, None, None)

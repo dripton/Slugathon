@@ -8,7 +8,9 @@ __license__ = "GNU GPL v2"
 SPLIT, MOVE, FIGHT, MUSTER = list(range(4))
 
 # Battle
-REINFORCE, MANEUVER, DRIFTDAMAGE, STRIKE, COUNTERSTRIKE, CLEANUP = list(range(6))
+REINFORCE, MANEUVER, DRIFTDAMAGE, STRIKE, COUNTERSTRIKE, CLEANUP = list(
+    range(6)
+)
 
 phase_names = {
     SPLIT: "Split",

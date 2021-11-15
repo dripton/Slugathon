@@ -64,5 +64,6 @@ def main():
             parser.error("Hexsides must be in range 0-5 inclusive.")
     slice_border_image(args.input_path, args.output_path, args.hexsides)
 
+
 if __name__ == "__main__":
     main()

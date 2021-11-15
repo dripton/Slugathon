@@ -73,7 +73,8 @@ def test_load_playernames():
 
 def test_passwd_path():
     assert prefs.passwd_path() == os.path.expanduser(
-        "~/.slugathon/globalprefs/passwd")
+        "~/.slugathon/globalprefs/passwd"
+    )
 
 
 def teardown_module(module):

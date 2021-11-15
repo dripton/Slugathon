@@ -6,7 +6,6 @@ from zope.interface import Interface
 
 
 class IObserver(Interface):
-
     def update(observed, action, names):
         """Inform this observer that action has happened to observed.
 

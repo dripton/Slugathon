@@ -58,15 +58,18 @@ class Server(Observed):
         log_observer.start()
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
-            "%(message)s")
+            "%(message)s"
+        )
         if not log_path:
             logdir = os.path.join(TEMPDIR, "slugathon")
             if not os.path.exists(logdir):
                 os.makedirs(logdir)
-            log_path = os.path.join(logdir, "slugathon-server-%d.log" %
-                                    self.port)
-        file_handler = RotatingFileHandler(filename=log_path,
-                                           maxBytes=100000000, backupCount=99)
+            log_path = os.path.join(
+                logdir, "slugathon-server-%d.log" % self.port
+            )
+        file_handler = RotatingFileHandler(
+            filename=log_path, maxBytes=100000000, backupCount=99
+        )
         file_handler.setFormatter(formatter)
         logging.getLogger().addHandler(file_handler)
         console_handler = logging.StreamHandler()
@@ -128,15 +131,32 @@ class Server(Observed):
         action = Action.ChatMessage(source, message)
         self.notify(action, names=dest)
 
-    def form_game(self, playername, game_name, min_players, max_players,
-                  ai_time_limit, player_time_limit, player_class, player_info):
+    def form_game(
+        self,
+        playername,
+        game_name,
+        min_players,
+        max_players,
+        ai_time_limit,
+        player_time_limit,
+        player_class,
+        player_info,
+    ):
         """Form a new game.
 
         Return None normally, or an error string if there's a problem.
         """
-        logging.info("%s %s %s %s %s %s %s %s", playername, game_name,
-                     min_players, max_players, ai_time_limit,
-                     player_time_limit, player_class, player_info)
+        logging.info(
+            "%s %s %s %s %s %s %s %s",
+            playername,
+            game_name,
+            min_players,
+            max_players,
+            ai_time_limit,
+            player_time_limit,
+            player_class,
+            player_info,
+        )
         if not game_name:
             st = "Games must be named"
             logging.warning(st)
@@ -153,18 +173,33 @@ class Server(Observed):
             return st
         now = time.time()
         GAME_START_DELAY = 5 * 60
-        game = Game.Game(game_name, playername, now, now + GAME_START_DELAY,
-                         min_players, max_players, master=True,
-                         ai_time_limit=ai_time_limit,
-                         player_time_limit=player_time_limit,
-                         player_class=player_class,
-                         player_info=player_info)
+        game = Game.Game(
+            game_name,
+            playername,
+            now,
+            now + GAME_START_DELAY,
+            min_players,
+            max_players,
+            master=True,
+            ai_time_limit=ai_time_limit,
+            player_time_limit=player_time_limit,
+            player_class=player_class,
+            player_info=player_info,
+        )
         self.games.append(game)
         game.add_observer(self)
-        action = Action.FormGame(playername, game.name, game.create_time,
-                                 game.start_time, game.min_players,
-                                 game.max_players, ai_time_limit,
-                                 player_time_limit, player_class, player_info)
+        action = Action.FormGame(
+            playername,
+            game.name,
+            game.create_time,
+            game.start_time,
+            game.min_players,
+            game.max_players,
+            ai_time_limit,
+            player_time_limit,
+            player_class,
+            player_info,
+        )
         self.notify(action)
 
     def join_game(self, playername, game_name, player_class, player_info):
@@ -172,8 +207,9 @@ class Server(Observed):
 
         Return True on success, False on failure.
         """
-        logging.info("%s %s %s %s", playername, game_name, player_class,
-                     player_info)
+        logging.info(
+            "%s %s %s %s", playername, game_name, player_class, player_info
+        )
         game = self.name_to_game(game_name)
         if game:
             try:
@@ -182,8 +218,9 @@ class Server(Observed):
                 logging.exception("join_game caught an exception")
                 return False
             else:
-                action = Action.JoinGame(playername, game.name, player_class,
-                                         player_info)
+                action = Action.JoinGame(
+                    playername, game.name, player_class, player_info
+                )
                 self.notify(action)
             set1 = self.game_to_waiting_ais.get(game_name)
             if set1:
@@ -241,13 +278,19 @@ class Server(Observed):
                     player_id = int(ainame[2:])
                     excludes.add(player_id)
         num_ais = game.min_players - game.num_players
-        logging.debug("%s min_players %d num_players %d num_ais_needed %s",
-                      game.name, game.min_players, game.num_players, num_ais)
+        logging.debug(
+            "%s min_players %d num_players %d num_ais_needed %s",
+            game.name,
+            game.min_players,
+            game.num_players,
+            num_ais,
+        )
         logging.debug("%s excludes %s", game.name, sorted(excludes))
         ainames = []
         for unused in range(num_ais):
             player_id = self.results.get_weighted_random_player_id(
-                excludes=excludes, highest_mu=game.any_humans)
+                excludes=excludes, highest_mu=game.any_humans
+            )
             excludes.add(player_id)
             ainame = "ai%d" % player_id
             ainames.append(ainame)
@@ -272,20 +315,29 @@ class Server(Observed):
                 args.extend(["ai"])
             else:
                 args.extend(["-m", "slugathon.ai.AIClient"])
-            args.extend([
-                "--playername", ainame,
-                "--port", str(self.port),
-                "--game-name", game.name,
-                "--log-path", os.path.join(logdir, "slugathon-%s-%s.log" %
-                                           (game.name, ainame)),
-                "--ai-time-limit", str(game.ai_time_limit),
-            ])
+            args.extend(
+                [
+                    "--playername",
+                    ainame,
+                    "--port",
+                    str(self.port),
+                    "--game-name",
+                    game.name,
+                    "--log-path",
+                    os.path.join(
+                        logdir, "slugathon-%s-%s.log" % (game.name, ainame)
+                    ),
+                    "--ai-time-limit",
+                    str(game.ai_time_limit),
+                ]
+            )
             if not self.no_passwd:
                 aipass = self._passwd_for_playername(ainame)
                 if aipass is None:
                     logging.warning(
-                        "user %s is not in %s; ai will fail to join" % (
-                            ainame, self.passwd_path))
+                        "user %s is not in %s; ai will fail to join"
+                        % (ainame, self.passwd_path)
+                    )
                 else:
                     args.extend(["--password", aipass])
             logging.info("spawning AI process for %s %s", game, ainame)
@@ -316,13 +368,25 @@ class Server(Observed):
         if game:
             game.assign_first_marker(playername, markerid)
 
-    def split_legion(self, playername, game_name, parent_markerid,
-                     child_markerid, parent_creature_names,
-                     child_creature_names):
+    def split_legion(
+        self,
+        playername,
+        game_name,
+        parent_markerid,
+        child_markerid,
+        parent_creature_names,
+        child_creature_names,
+    ):
         """Split a legion."""
-        logging.info("%s %s %s %s %s %s", playername, game_name,
-                     parent_markerid, child_markerid, parent_creature_names,
-                     child_creature_names)
+        logging.info(
+            "%s %s %s %s %s %s",
+            playername,
+            game_name,
+            parent_markerid,
+            child_markerid,
+            parent_creature_names,
+            child_creature_names,
+        )
         game = self.name_to_game(game_name)
         if not game:
             logging.warning("no game")
@@ -358,13 +422,20 @@ class Server(Observed):
             logging.warning("child too tall")
             return
         if bag(parent.creature_names) != bag(parent_creature_names).union(
-                bag(child_creature_names)):
+            bag(child_creature_names)
+        ):
             logging.warning("wrong creatures")
-        game.split_legion(playername, parent_markerid, child_markerid,
-                          parent_creature_names, child_creature_names)
+        game.split_legion(
+            playername,
+            parent_markerid,
+            child_markerid,
+            parent_creature_names,
+            child_creature_names,
+        )
 
-    def undo_split(self, playername, game_name, parent_markerid,
-                   child_markerid):
+    def undo_split(
+        self, playername, game_name, parent_markerid, child_markerid
+    ):
         """Undo a split."""
         game = self.name_to_game(game_name)
         if game:
@@ -382,8 +453,16 @@ class Server(Observed):
         if game:
             game.take_mulligan(playername)
 
-    def move_legion(self, playername, game_name, markerid, hexlabel,
-                    entry_side, teleport, teleporting_lord):
+    def move_legion(
+        self,
+        playername,
+        game_name,
+        markerid,
+        hexlabel,
+        entry_side,
+        teleport,
+        teleporting_lord,
+    ):
         """Move one legion on the masterboard."""
         game = self.name_to_game(game_name)
         if game:
@@ -392,12 +471,24 @@ class Server(Observed):
             if legion is None:
                 logging.warning("no legion")
                 return
-            if not game.can_move_legion(player, legion, hexlabel, entry_side,
-                                        teleport, teleporting_lord):
+            if not game.can_move_legion(
+                player,
+                legion,
+                hexlabel,
+                entry_side,
+                teleport,
+                teleporting_lord,
+            ):
                 logging.warning("cannot move")
                 return
-            game.move_legion(playername, markerid, hexlabel, entry_side,
-                             teleport, teleporting_lord)
+            game.move_legion(
+                playername,
+                markerid,
+                hexlabel,
+                entry_side,
+                teleport,
+                teleporting_lord,
+            )
 
     def undo_move_legion(self, playername, game_name, markerid):
         """Undo one legion move."""
@@ -416,8 +507,12 @@ class Server(Observed):
 
     def resolve_engagement(self, playername, game_name, hexlabel):
         """Pick the next engagement to resolve."""
-        logging.info("Server.resolve_engagement %s %s %s", playername,
-                     game_name, hexlabel)
+        logging.info(
+            "Server.resolve_engagement %s %s %s",
+            playername,
+            game_name,
+            hexlabel,
+        )
         game = self.name_to_game(game_name)
         if game:
             game.resolve_engagement(playername, hexlabel)
@@ -449,8 +544,9 @@ class Server(Observed):
                 logging.warning("illegal flee attempt")
                 return
             enemy_markerid = enemy_legion.markerid
-            action = Action.Flee(game.name, markerid, enemy_markerid,
-                                 legion.hexlabel)
+            action = Action.Flee(
+                game.name, markerid, enemy_markerid, legion.hexlabel
+            )
             game.update(self, action, None)
 
     def do_not_flee(self, playername, game_name, markerid):
@@ -474,83 +570,137 @@ class Server(Observed):
                 if enemy_legion != legion:
                     break
             enemy_markerid = enemy_legion.markerid
-            action = Action.DoNotFlee(game.name, markerid, enemy_markerid,
-                                      hexlabel)
+            action = Action.DoNotFlee(
+                game.name, markerid, enemy_markerid, hexlabel
+            )
             game.update(self, action, None)
 
-    def concede(self, playername, game_name, markerid, enemy_markerid,
-                hexlabel):
+    def concede(
+        self, playername, game_name, markerid, enemy_markerid, hexlabel
+    ):
         """Concede an engagement."""
         game = self.name_to_game(game_name)
         if game:
             game.concede(playername, markerid)
 
-    def make_proposal(self, playername, game_name, attacker_markerid,
-                      attacker_creature_names, defender_markerid,
-                      defender_creature_names):
+    def make_proposal(
+        self,
+        playername,
+        game_name,
+        attacker_markerid,
+        attacker_creature_names,
+        defender_markerid,
+        defender_creature_names,
+    ):
         """Make a proposal to settle an engagement."""
         game = self.name_to_game(game_name)
         if game:
-            game.make_proposal(playername, attacker_markerid,
-                               attacker_creature_names, defender_markerid,
-                               defender_creature_names)
+            game.make_proposal(
+                playername,
+                attacker_markerid,
+                attacker_creature_names,
+                defender_markerid,
+                defender_creature_names,
+            )
 
-    def accept_proposal(self, playername, game_name, attacker_markerid,
-                        attacker_creature_names, defender_markerid,
-                        defender_creature_names):
+    def accept_proposal(
+        self,
+        playername,
+        game_name,
+        attacker_markerid,
+        attacker_creature_names,
+        defender_markerid,
+        defender_creature_names,
+    ):
         """Accept a previous proposal to settle an engagement."""
         game = self.name_to_game(game_name)
         if game:
-            game.accept_proposal(playername, attacker_markerid,
-                                 attacker_creature_names, defender_markerid,
-                                 defender_creature_names)
+            game.accept_proposal(
+                playername,
+                attacker_markerid,
+                attacker_creature_names,
+                defender_markerid,
+                defender_creature_names,
+            )
 
-    def reject_proposal(self, playername, game_name, attacker_markerid,
-                        attacker_creature_names, defender_markerid,
-                        defender_creature_names):
+    def reject_proposal(
+        self,
+        playername,
+        game_name,
+        attacker_markerid,
+        attacker_creature_names,
+        defender_markerid,
+        defender_creature_names,
+    ):
         """Reject a previous proposal to settle an engagement."""
         game = self.name_to_game(game_name)
         if game:
-            game.reject_proposal(playername, attacker_markerid,
-                                 attacker_creature_names, defender_markerid,
-                                 defender_creature_names)
+            game.reject_proposal(
+                playername,
+                attacker_markerid,
+                attacker_creature_names,
+                defender_markerid,
+                defender_creature_names,
+            )
 
-    def no_more_proposals(self, playername, game_name, attacker_markerid,
-                          defender_markerid):
+    def no_more_proposals(
+        self, playername, game_name, attacker_markerid, defender_markerid
+    ):
         """Indicate that this player will make no more proposals to settle the
         current engagement."""
         game = self.name_to_game(game_name)
         if game:
-            game.no_more_proposals(playername, attacker_markerid,
-                                   defender_markerid)
+            game.no_more_proposals(
+                playername, attacker_markerid, defender_markerid
+            )
 
-    def fight(self, playername, game_name, attacker_markerid,
-              defender_markerid):
+    def fight(
+        self, playername, game_name, attacker_markerid, defender_markerid
+    ):
         """Fight the current current engagement."""
-        logging.info("Server.fight %s %s %s %s", playername, game_name,
-                     attacker_markerid, defender_markerid)
+        logging.info(
+            "Server.fight %s %s %s %s",
+            playername,
+            game_name,
+            attacker_markerid,
+            defender_markerid,
+        )
         game = self.name_to_game(game_name)
         if game:
             attacker_legion = game.find_legion(attacker_markerid)
             attacker_legion = game.find_legion(attacker_markerid)
             defender_legion = game.find_legion(defender_markerid)
-            if (not attacker_legion or not defender_legion or playername not in
-                    [attacker_legion.player.name,
-                     defender_legion.player.name]):
+            if (
+                not attacker_legion
+                or not defender_legion
+                or playername
+                not in [
+                    attacker_legion.player.name,
+                    defender_legion.player.name,
+                ]
+            ):
                 logging.warning("illegal fight call from %s", playername)
                 return
-            if (defender_legion.can_flee and not
-                    game.defender_chose_not_to_flee):
+            if (
+                defender_legion.can_flee
+                and not game.defender_chose_not_to_flee
+            ):
                 logging.warning(
-                    "Illegal fight call while defender can still flee")
+                    "Illegal fight call while defender can still flee"
+                )
                 return
-            action = Action.Fight(game.name, attacker_markerid,
-                                  defender_markerid, attacker_legion.hexlabel)
+            action = Action.Fight(
+                game.name,
+                attacker_markerid,
+                defender_markerid,
+                attacker_legion.hexlabel,
+            )
             logging.info("Server.fight calling game.update")
             game.update(self, action, None)
 
-    def move_creature(self, playername, game_name, creature_name, old_hexlabel,
-                      new_hexlabel):
+    def move_creature(
+        self, playername, game_name, creature_name, old_hexlabel, new_hexlabel
+    ):
         """Move one creature on the battle map."""
         game = self.name_to_game(game_name)
         if game:
@@ -572,11 +722,13 @@ class Server(Observed):
             if new_hexlabel not in game.find_battle_moves(creature):
                 logging.warning("invalid move")
                 return
-            game.move_creature(playername, creature_name, old_hexlabel,
-                               new_hexlabel)
+            game.move_creature(
+                playername, creature_name, old_hexlabel, new_hexlabel
+            )
 
-    def undo_move_creature(self, playername, game_name, creature_name,
-                           new_hexlabel):
+    def undo_move_creature(
+        self, playername, game_name, creature_name, new_hexlabel
+    ):
         """Undo one creature move on the battle map."""
         game = self.name_to_game(game_name)
         if game:
@@ -587,8 +739,11 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(playername)
-            if (player is not None and player == game.battle_active_player and
-                    game.battle_phase == Phase.REINFORCE):
+            if (
+                player is not None
+                and player == game.battle_active_player
+                and game.battle_phase == Phase.REINFORCE
+            ):
                 game.done_with_reinforcements(playername)
 
     def done_with_maneuvers(self, playername, game_name):
@@ -596,25 +751,47 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(playername)
-            if (player is not None and player == game.battle_active_player and
-                    game.battle_phase == Phase.MANEUVER):
+            if (
+                player is not None
+                and player == game.battle_active_player
+                and game.battle_phase == Phase.MANEUVER
+            ):
                 game.done_with_maneuvers(playername)
 
-    def strike(self, playername, game_name, striker_name, striker_hexlabel,
-               target_name, target_hexlabel, num_dice, strike_number):
+    def strike(
+        self,
+        playername,
+        game_name,
+        striker_name,
+        striker_hexlabel,
+        target_name,
+        target_hexlabel,
+        num_dice,
+        strike_number,
+    ):
         """Make one battle strike or strikeback."""
         game = self.name_to_game(game_name)
         if game:
-            game.strike(playername, striker_name, striker_hexlabel,
-                        target_name, target_hexlabel, num_dice, strike_number)
+            game.strike(
+                playername,
+                striker_name,
+                striker_hexlabel,
+                target_name,
+                target_hexlabel,
+                num_dice,
+                strike_number,
+            )
 
     def done_with_strikes(self, playername, game_name):
         """Finish the strike battle phase."""
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(playername)
-            if (player is not None and player == game.battle_active_player and
-                    game.battle_phase == Phase.STRIKE):
+            if (
+                player is not None
+                and player == game.battle_active_player
+                and game.battle_phase == Phase.STRIKE
+            ):
                 game.done_with_strikes(playername)
 
     def done_with_counterstrikes(self, playername, game_name):
@@ -622,8 +799,11 @@ class Server(Observed):
         game = self.name_to_game(game_name)
         if game:
             player = game.get_player_by_name(playername)
-            if (player is not None and player == game.battle_active_player and
-                    game.battle_phase == Phase.COUNTERSTRIKE):
+            if (
+                player is not None
+                and player == game.battle_active_player
+                and game.battle_phase == Phase.COUNTERSTRIKE
+            ):
                 game.done_with_counterstrikes(playername)
 
     def acquire_angels(self, playername, game_name, markerid, angel_names):
@@ -641,16 +821,20 @@ class Server(Observed):
                 elif angel_name == "Angel":
                     num_angels += 1
             caretaker = game.caretaker
-            okay = (num_archangels <= legion.archangels_pending and
-                    num_angels <= legion.angels_pending +
-                    legion.archangels_pending -
-                    num_archangels)
+            okay = (
+                num_archangels <= legion.archangels_pending
+                and num_angels
+                <= legion.angels_pending
+                + legion.archangels_pending
+                - num_archangels
+            )
             if not okay:
                 logging.warning("not enough angels pending")
                 logging.info("angels %s", angel_names)
                 logging.info("angels_pending %s", legion.angels_pending)
-                logging.info("archangels_pending %s",
-                             legion.archangels_pending)
+                logging.info(
+                    "archangels_pending %s", legion.archangels_pending
+                )
                 game.do_not_acquire_angels(playername, markerid)
                 return
             if len(legion) >= 7:
@@ -673,8 +857,13 @@ class Server(Observed):
 
     def do_not_acquire_angels(self, playername, game_name, markerid):
         """Do not acquire angels and/or archangels after an engagement."""
-        logging.info("do_not_acquire_angels %s %s %s %s", self, playername,
-                     game_name, markerid)
+        logging.info(
+            "do_not_acquire_angels %s %s %s %s",
+            self,
+            playername,
+            game_name,
+            markerid,
+        )
         game = self.name_to_game(game_name)
         if game:
             game.do_not_acquire_angels(playername, markerid)
@@ -690,8 +879,11 @@ class Server(Observed):
             if player != game.active_player:
                 logging.warning("out of turn")
                 return
-            if (game.pending_summon or game.pending_reinforcement or
-                    game.pending_acquire):
+            if (
+                game.pending_summon
+                or game.pending_reinforcement
+                or game.pending_acquire
+            ):
                 logging.warning("waiting on something")
                 return
             if game.phase != Phase.FIGHT:
@@ -699,8 +891,9 @@ class Server(Observed):
                 return
             game.done_with_engagements(playername)
 
-    def recruit_creature(self, playername, game_name, markerid, creature_name,
-                         recruiter_names):
+    def recruit_creature(
+        self, playername, game_name, markerid, creature_name, recruiter_names
+    ):
         """Recruit one creature."""
         game = self.name_to_game(game_name)
         if game:
@@ -716,12 +909,15 @@ class Server(Observed):
                     lst.insert(0, creature_name)
                     tup = tuple(lst)
                     if tup in legion.available_recruits_and_recruiters(
-                            mterrain, caretaker):
-                        action = Action.RecruitCreature(game.name,
-                                                        player.name,
-                                                        markerid,
-                                                        creature_name,
-                                                        tuple(recruiter_names))
+                        mterrain, caretaker
+                    ):
+                        action = Action.RecruitCreature(
+                            game.name,
+                            player.name,
+                            markerid,
+                            creature_name,
+                            tuple(recruiter_names),
+                        )
                         game.update(self, action, None)
 
     def undo_recruit(self, playername, game_name, markerid):
@@ -736,13 +932,15 @@ class Server(Observed):
         if game:
             game.done_with_recruits(playername)
 
-    def summon_angel(self, playername, game_name, markerid, donor_markerid,
-                     creature_name):
+    def summon_angel(
+        self, playername, game_name, markerid, donor_markerid, creature_name
+    ):
         """Summon an angel or archangel."""
         game = self.name_to_game(game_name)
         if game:
-            game.summon_angel(playername, markerid, donor_markerid,
-                              creature_name)
+            game.summon_angel(
+                playername, markerid, donor_markerid, creature_name
+            )
 
     def do_not_summon_angel(self, playername, game_name, markerid):
         """Do not summon an angel or archangel."""
@@ -756,15 +954,23 @@ class Server(Observed):
         if game:
             game.do_not_reinforce(playername, markerid)
 
-    def carry(self, playername, game_name, carry_target_name,
-              carry_target_hexlabel, carries):
+    def carry(
+        self,
+        playername,
+        game_name,
+        carry_target_name,
+        carry_target_hexlabel,
+        carries,
+    ):
         """Carry over excess hits to another adjacent enemy."""
-        logging.info("carry %s %s %s", carry_target_name,
-                     carry_target_hexlabel, carries)
+        logging.info(
+            "carry %s %s %s", carry_target_name, carry_target_hexlabel, carries
+        )
         game = self.name_to_game(game_name)
         if game:
-            game.carry(playername, carry_target_name, carry_target_hexlabel,
-                       carries)
+            game.carry(
+                playername, carry_target_name, carry_target_hexlabel, carries
+            )
 
     def save(self, playername, game_name):
         """Save the game to a file."""
@@ -826,7 +1032,6 @@ class Server(Observed):
 
 
 class AIProcessProtocol(protocol.ProcessProtocol):
-
     def __init__(self, server, game_name, ainame):
         self.server = server
         self.game_name = game_name
@@ -845,15 +1050,27 @@ class AIProcessProtocol(protocol.ProcessProtocol):
 
 
 def add_arguments(parser):
-    parser.add_argument("-p", "--port", action="store", type=int,
-                        default=config.DEFAULT_PORT, help="listening TCP port")
-    parser.add_argument("--passwd-path", action="store", type=str,
-                        default=prefs.passwd_path(),
-                        help="path to passwd file")
-    parser.add_argument("-n", "--no-passwd", action="store_true",
-                        help="do not check passwords")
-    parser.add_argument("-l", "--log-path", action="store", type=str,
-                        help="path to logfile")
+    parser.add_argument(
+        "-p",
+        "--port",
+        action="store",
+        type=int,
+        default=config.DEFAULT_PORT,
+        help="listening TCP port",
+    )
+    parser.add_argument(
+        "--passwd-path",
+        action="store",
+        type=str,
+        default=prefs.passwd_path(),
+        help="path to passwd file",
+    )
+    parser.add_argument(
+        "-n", "--no-passwd", action="store_true", help="do not check passwords"
+    )
+    parser.add_argument(
+        "-l", "--log-path", action="store", type=str, help="path to logfile"
+    )
 
 
 def main():

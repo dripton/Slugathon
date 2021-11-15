@@ -66,8 +66,20 @@ def test_neighbors():
 
 def test_flatten_point_list():
     vertexes = [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10, 11)]
-    assert (guiutils.flatten_point_list(vertexes) ==
-            (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
+    assert guiutils.flatten_point_list(vertexes) == (
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+    )
 
 
 def test_rgb_to_gtk():

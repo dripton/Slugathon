@@ -22,8 +22,9 @@ from slugathon.net import config
 
 # We never stop the server, but it seems to go down when this script does.
 def start_server():
-    def1 = utils.getProcessOutputAndValue(sys.executable,
-      ["-m", "slugathon.net.Server"], env=os.environ)
+    def1 = utils.getProcessOutputAndValue(
+        sys.executable, ["-m", "slugathon.net.Server"], env=os.environ
+    )
     def1.addCallback(server_exited)
     def1.addErrback(server_failed)
 
@@ -36,36 +37,66 @@ def server_failed(arg):
     log.err("server failed %s" % arg)
 
 
-def start_game(playername, password, ai_time_limit, min_players, max_players,
-  num_games):
+def start_game(
+    playername, password, ai_time_limit, min_players, max_players, num_games
+):
     if num_games <= 0:
         logging.info("finished running games")
         reactor.callWhenRunning(reactor.stop)
         return
     num_players = random.randrange(min_players, max_players + 1)
-    def1 = utils.getProcessValue(sys.executable,
-      [
-          "-m", "slugathon.ai.AIClient",
-          "--form-game",
-          "--playername", playername,
-          "--password", password,
-          "--min-players", str(num_players),
-          "--max-players", str(num_players),
-          "--ai-time-limit", str(ai_time_limit),
-          "--game-name", "stresstest_game_%d_%d" % (os.getpid(), num_games),
-      ],
-      env=os.environ)
-    def1.addCallback(game_exited, playername, password, ai_time_limit,
-      min_players, max_players, num_games - 1)
+    def1 = utils.getProcessValue(
+        sys.executable,
+        [
+            "-m",
+            "slugathon.ai.AIClient",
+            "--form-game",
+            "--playername",
+            playername,
+            "--password",
+            password,
+            "--min-players",
+            str(num_players),
+            "--max-players",
+            str(num_players),
+            "--ai-time-limit",
+            str(ai_time_limit),
+            "--game-name",
+            "stresstest_game_%d_%d" % (os.getpid(), num_games),
+        ],
+        env=os.environ,
+    )
+    def1.addCallback(
+        game_exited,
+        playername,
+        password,
+        ai_time_limit,
+        min_players,
+        max_players,
+        num_games - 1,
+    )
     def1.addErrback(game_failed)
 
 
-def game_exited(returncode, playername, password, ai_time_limit, min_players,
-  max_players, num_games):
+def game_exited(
+    returncode,
+    playername,
+    password,
+    ai_time_limit,
+    min_players,
+    max_players,
+    num_games,
+):
     logging.info("returncode %s" % returncode)
     if returncode == 0:
-        start_game(playername, password, ai_time_limit, min_players,
-          max_players, num_games)
+        start_game(
+            playername,
+            password,
+            ai_time_limit,
+            min_players,
+            max_players,
+            num_games,
+        )
     else:
         reactor.stop()
 
@@ -76,15 +107,19 @@ def game_failed(arg):
 
 def main():
     parser = argparse.ArgumentParser(prog="stresstest-slugathon")
-    parser.add_argument("-n", "--playername", action="store", type=str,
-      default="")
-    parser.add_argument("-a", "--password", action="store", type=str,
-      default="")
+    parser.add_argument(
+        "-n", "--playername", action="store", type=str, default=""
+    )
+    parser.add_argument(
+        "-a", "--password", action="store", type=str, default=""
+    )
     parser.add_argument("-s", "--start-server", action="store_true")
-    parser.add_argument("-g", "--num-games", action="store", type=int,
-      default=10000000)
-    parser.add_argument("--ai-time-limit", type=int,
-      default=config.DEFAULT_AI_TIME_LIMIT)
+    parser.add_argument(
+        "-g", "--num-games", action="store", type=int, default=10000000
+    )
+    parser.add_argument(
+        "--ai-time-limit", type=int, default=config.DEFAULT_AI_TIME_LIMIT
+    )
     parser.add_argument("--min-players", action="store", type=int, default=2)
     parser.add_argument("--max-players", action="store", type=int, default=6)
     args = parser.parse_args()
@@ -92,7 +127,8 @@ def main():
     log_observer = log.PythonLoggingObserver()
     log_observer.start()
     formatter = logging.Formatter(
-      "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+        "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s"
+    )
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
     logging.getLogger().addHandler(console_handler)
@@ -100,8 +136,14 @@ def main():
 
     if args.start_server:
         start_server()
-    start_game(args.playername, args.password, args.ai_time_limit,
-      args.min_players, args.max_players, args.num_games)
+    start_game(
+        args.playername,
+        args.password,
+        args.ai_time_limit,
+        args.min_players,
+        args.max_players,
+        args.num_games,
+    )
     reactor.run()
 
 

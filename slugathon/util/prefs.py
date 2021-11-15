@@ -33,8 +33,9 @@ def player_prefs_dir(playername):
 
 def window_position_path(playername, window_name):
     """Return the path to the window position prefs file."""
-    return os.path.join(player_prefs_dir(playername), window_name +
-                        "_position")
+    return os.path.join(
+        player_prefs_dir(playername), window_name + "_position"
+    )
 
 
 def save_window_position(playername, window_name, x, y):
@@ -196,7 +197,7 @@ def load_last_server():
                 line = line.strip()
                 if line:
                     host, port = line.split(":")
-                    return ((host, int(port)))
+                    return (host, int(port))
     return ("localhost", "config.DEFAULT_PORT")
 
 

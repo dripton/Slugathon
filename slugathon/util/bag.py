@@ -6,6 +6,7 @@ __license__ = "GNU GPL v2"
 
 class bag(object):
     """A multiset, built on a dictionary."""
+
     def __init__(self, iterable=None):
         self._dic = {}
         if iterable:

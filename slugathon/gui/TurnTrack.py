@@ -4,6 +4,7 @@ __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Gtk, Pango, PangoCairo, GObject
@@ -17,6 +18,7 @@ from slugathon.game import Action
 @implementer(IObserver)
 class TurnTrack(Gtk.DrawingArea):
     """Widget to show the battle turn."""
+
     def __init__(self, attacker, defender, game, scale):
         GObject.GObject.__init__(self)
         self.attacker = attacker
@@ -25,12 +27,12 @@ class TurnTrack(Gtk.DrawingArea):
         self.scale = scale
         self.set_size_request(self.compute_width(), self.compute_height())
         marker_scale = int(round(0.5 * self.scale))
-        self.attacker_marker = Marker.Marker(attacker,
-                                             False,
-                                             scale=marker_scale)
-        self.defender_marker = Marker.Marker(defender,
-                                             False,
-                                             scale=marker_scale)
+        self.attacker_marker = Marker.Marker(
+            attacker, False, scale=marker_scale
+        )
+        self.defender_marker = Marker.Marker(
+            defender, False, scale=marker_scale
+        )
         self.battle_turn = 1
         self.active_marker = self.defender_marker
         self.connect("draw", self.cb_area_expose)
@@ -50,8 +52,10 @@ class TurnTrack(Gtk.DrawingArea):
         ctx.set_source_rgb(0, 0, 0)
         ctx.move_to(cx, cy)
         ctx.line_to(int(round(cx + 1.5 * self.scale)), cy)
-        ctx.line_to(int(round(cx + 1.5 * self.scale)),
-                    int(round(cy + 1.5 * self.scale)))
+        ctx.line_to(
+            int(round(cx + 1.5 * self.scale)),
+            int(round(cy + 1.5 * self.scale)),
+        )
         ctx.line_to(cx, int(round(cy + 1.5 * self.scale)))
         ctx.close_path()
         ctx.stroke()
@@ -115,6 +119,7 @@ class TurnTrack(Gtk.DrawingArea):
             else:
                 self.active_marker = self.attacker_marker
             self.repaint()
+
 
 if __name__ == "__main__":
     from slugathon.util import guiutils

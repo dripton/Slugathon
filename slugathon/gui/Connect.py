@@ -12,8 +12,10 @@ import time
 import logging
 
 import gi
-gi.require_version('Gtk', '3.0')
+
+gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 gtk3reactor.install()
 from twisted.internet import reactor, utils, defer
 from twisted.python import log
@@ -30,8 +32,15 @@ class Connect(Gtk.Window):
 
     """GUI for connecting to a server."""
 
-    def __init__(self, playername, password, server_name, server_port,
-                 connect_now, log_path):
+    def __init__(
+        self,
+        playername,
+        password,
+        server_name,
+        server_port,
+        connect_now,
+        log_path,
+    ):
         GObject.GObject.__init__(self)
 
         self.playernames = set()
@@ -74,16 +83,18 @@ class Connect(Gtk.Window):
         hbox4.pack_start(self.server_port_comboboxentry, False, True, 0)
 
         connect_button = Gtk.Button(label="Connect to server")
-        connect_button.connect("button-press-event",
-                               self.cb_connect_button_clicked)
+        connect_button.connect(
+            "button-press-event", self.cb_connect_button_clicked
+        )
         vbox1.pack_start(connect_button, False, True, 0)
 
         hseparator1 = Gtk.HSeparator()
         vbox1.pack_start(hseparator1, False, True, 0)
 
         start_server_button = Gtk.Button(label="Start local server")
-        start_server_button.connect("button-press-event",
-                                    self.cb_start_server_button_clicked)
+        start_server_button.connect(
+            "button-press-event", self.cb_start_server_button_clicked
+        )
         vbox1.pack_start(start_server_button, False, True, 0)
 
         hseparator2 = Gtk.HSeparator()
@@ -121,7 +132,8 @@ class Connect(Gtk.Window):
         log_observer.start()
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
-            "%(message)s")
+            "%(message)s"
+        )
         if log_path:
             file_handler = logging.FileHandler(filename=log_path)
             file_handler.setFormatter(formatter)
@@ -189,8 +201,9 @@ class Connect(Gtk.Window):
         playername = self.playername_comboboxentry.get_child().get_text()
         password = self.password_entry.get_text()
         server_name = self.server_name_comboboxentry.get_child().get_text()
-        server_port = int(self.server_port_comboboxentry.get_child().
-                          get_text())
+        server_port = int(
+            self.server_port_comboboxentry.get_child().get_text()
+        )
         prefs.save_server(server_name, server_port)
         prefs.save_last_playername(playername)
         self.save_window_position()
@@ -202,12 +215,15 @@ class Connect(Gtk.Window):
     def cb_start_server_button_clicked(self, *args):
         if hasattr(sys, "frozen"):
             # TODO Find the absolute path.
-            def1 = utils.getProcessValue("slugathon.exe", ["server", "-n"],
-                                         env=os.environ)
+            def1 = utils.getProcessValue(
+                "slugathon.exe", ["server", "-n"], env=os.environ
+            )
         else:
-            def1 = utils.getProcessValue(sys.executable,
-                                         ["-m", "slugathon.net.Server", "-n"],
-                                         env=os.environ)
+            def1 = utils.getProcessValue(
+                sys.executable,
+                ["-m", "slugathon.net.Server", "-n"],
+                env=os.environ,
+            )
         def1.addCallback(self.server_exited)
         def1.addErrback(self.server_failed)
 
@@ -228,15 +244,18 @@ class Connect(Gtk.Window):
         self.hide()
 
     def connection_failed(self, arg):
-        self.status_textview.modify_text(Gtk.StateType.NORMAL,
-                                         Gdk.color_parse("red"))
+        self.status_textview.modify_text(
+            Gtk.StateType.NORMAL, Gdk.color_parse("red")
+        )
         self.status_textview.get_buffer().set_text("Login failed")
 
     def server_failed(self, arg):
-        self.status_textview.modify_text(Gtk.StateType.NORMAL,
-                                         Gdk.color_parse("red"))
-        self.status_textview.get_buffer().set_text("Server failed %s" %
-                                                   str(arg))
+        self.status_textview.modify_text(
+            Gtk.StateType.NORMAL, Gdk.color_parse("red")
+        )
+        self.status_textview.get_buffer().set_text(
+            "Server failed %s" % str(arg)
+        )
 
 
 def add_arguments(parser):
@@ -249,23 +268,32 @@ def add_arguments(parser):
     parser.add_argument("-s", "--server", action="store", type=str)
     parser.add_argument("-p", "--port", action="store", type=int)
     parser.add_argument("-c", "--connect", action="store_true")
-    parser.add_argument("-l",
-                        "--log-path",
-                        action="store",
-                        type=str,
-                        default=os.path.join(logdir,
-                                             "slugathon-client-%d.log"
-                                             % int(time.time())),
-                        help="path to logfile")
+    parser.add_argument(
+        "-l",
+        "--log-path",
+        action="store",
+        type=str,
+        default=os.path.join(
+            logdir, "slugathon-client-%d.log" % int(time.time())
+        ),
+        help="path to logfile",
+    )
 
 
 def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     args, extras = parser.parse_known_args()
-    Connect(args.playername, args.password, args.server, args.port,
-            args.connect, args.log_path)
+    Connect(
+        args.playername,
+        args.password,
+        args.server,
+        args.port,
+        args.connect,
+        args.log_path,
+    )
     reactor.run()
+
 
 if __name__ == "__main__":
     main()

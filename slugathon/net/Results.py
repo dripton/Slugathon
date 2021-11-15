@@ -49,15 +49,17 @@ CREATE TABLE rank (
 
 
 class Ranking(namedtuple("Ranking", ["mu", "sigma"])):
-
     @property
     def skill(self):
         """Return an integer rating based on mu - 3 * sigma, at least 1."""
         return max(1, int(math.floor(self.mu - 3 * self.sigma)))
 
     def __repr__(self):
-        return "Ranking: mu=%f sigma=%f skill=%d" % (self.mu, self.sigma,
-                                                     self.skill)
+        return "Ranking: mu=%f sigma=%f skill=%d" % (
+            self.mu,
+            self.sigma,
+            self.skill,
+        )
 
 
 class Results(object):
@@ -106,14 +108,22 @@ class Results(object):
                     query = """INSERT INTO player
                                (name, class, info, mu, sigma)
                                VALUES (?, ?, ?, ?, ?)"""
-                    cursor.execute(query, (player.name, player.player_class,
-                                           player.player_info, DEFAULT_MU,
-                                           DEFAULT_SIGMA))
+                    cursor.execute(
+                        query,
+                        (
+                            player.name,
+                            player.player_class,
+                            player.player_info,
+                            DEFAULT_MU,
+                            DEFAULT_SIGMA,
+                        ),
+                    )
                     # And fetch the player_id.
                     query = """SELECT player_id FROM player
                                where class = ? AND info = ?"""
-                    cursor.execute(query, (player.player_class,
-                                           player.player_info))
+                    cursor.execute(
+                        query, (player.player_class, player.player_info)
+                    )
                     row = cursor.fetchone()
                 else:
                     player_id = row["player_id"]
@@ -127,13 +137,15 @@ class Results(object):
             # Add the game.
             query = """INSERT INTO game (name, start_time, finish_time)
                        VALUES (?, ?, ?)"""
-            cursor.execute(query, (game.name, int(game.start_time),
-                                   int(game.finish_time)))
+            cursor.execute(
+                query, (game.name, int(game.start_time), int(game.finish_time))
+            )
             # Find the game_id for the just-inserted game.
             query = """SELECT game_id FROM game WHERE
                        name = ? AND start_time = ? AND finish_time = ?"""
-            cursor.execute(query, (game.name, int(game.start_time),
-                                   int(game.finish_time)))
+            cursor.execute(
+                query, (game.name, int(game.start_time), int(game.finish_time))
+            )
             row = cursor.fetchone()
             game_id = row["game_id"]
             rank = 1
@@ -142,8 +154,10 @@ class Results(object):
                     # Find the player_id
                     query = """SELECT player_id FROM player
                                WHERE name = ? AND class = ? AND info = ?"""
-                    cursor.execute(query, (player.name, player.player_class,
-                                           player.player_info))
+                    cursor.execute(
+                        query,
+                        (player.name, player.player_class, player.player_info),
+                    )
                     row = cursor.fetchone()
                     player_id = row["player_id"]
                     # Add to rank.
@@ -159,7 +173,7 @@ class Results(object):
                        FROM player p, rank r
                        WHERE p.player_id = r.player_id AND r.game_id = ?
                        ORDER BY r.rank, RANDOM()"""
-            cursor.execute(query, (game_id, ))
+            cursor.execute(query, (game_id,))
             rows = cursor.fetchall()
             player_ids = []
             rating_tuples = []
@@ -172,7 +186,7 @@ class Results(object):
                 mu = row["mu"]
                 sigma = row["sigma"]
                 rating = trueskill.Rating(mu=mu, sigma=sigma)
-                rating_tuples.append((rating, ))
+                rating_tuples.append((rating,))
             rating_tuples2 = trueskill.rate(rating_tuples, ranks)
             while player_ids:
                 player_id = player_ids.pop()
@@ -192,7 +206,7 @@ class Results(object):
         with self.connection:
             cursor = self.connection.cursor()
             query = "SELECT mu, sigma FROM player WHERE name = ?"
-            cursor.execute(query, (playername, ))
+            cursor.execute(query, (playername,))
             rows = cursor.fetchall()
             if rows:
                 row = rows[0]
@@ -275,7 +289,7 @@ class Results(object):
                        FROM game
                        ORDER BY game_id DESC
                        LIMIT ?"""
-            cursor.execute(query, (num, ))
+            cursor.execute(query, (num,))
             rows = cursor.fetchall()
             for row in rows:
                 game_id = row["game_id"]
@@ -286,7 +300,7 @@ class Results(object):
                             FROM rank r, player p
                             WHERE r.game_id = ? AND r.player_id = p.player_id
                             ORDER BY r.rank"""
-                cursor2.execute(query2, (game_id, ))
+                cursor2.execute(query2, (game_id,))
                 rows2 = cursor2.fetchall()
                 num_players = 0
                 winner_names = []
@@ -300,10 +314,18 @@ class Results(object):
                     else:
                         loser_names.append(player_name)
                 # We don't save create_time so reuse start_time.
-                info_tuple = (name, start_time, start_time, num_players,
-                              num_players, winner_names +
-                              loser_names, True, finish_time,
-                              winner_names, loser_names)
+                info_tuple = (
+                    name,
+                    start_time,
+                    start_time,
+                    num_players,
+                    num_players,
+                    winner_names + loser_names,
+                    True,
+                    finish_time,
+                    winner_names,
+                    loser_names,
+                )
                 results.append(info_tuple)
         results.reverse()
         return results
@@ -317,8 +339,7 @@ class Results(object):
         logging.info("player_info %s", info)
         query = """INSERT INTO player (class, info, mu, sigma)
                    VALUES (?, ?, ?, ?)"""
-        cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
-                               DEFAULT_SIGMA))
+        cursor.execute(query, ("CleverBot", info, DEFAULT_MU, DEFAULT_SIGMA))
         # And fetch the player_id.
         query = """SELECT player_id FROM player
                    where class = ? AND info = ?"""
@@ -360,8 +381,7 @@ class Results(object):
         logging.info("player_info %s", info)
         query = """INSERT INTO player (class, info, mu, sigma)
                    VALUES (?, ?, ?, ?)"""
-        cursor.execute(query, ("CleverBot", info, DEFAULT_MU,
-                               DEFAULT_SIGMA))
+        cursor.execute(query, ("CleverBot", info, DEFAULT_MU, DEFAULT_SIGMA))
         # And fetch the player_id.
         query = """SELECT player_id FROM player
                    where class = ? AND info = ?"""
@@ -445,8 +465,10 @@ class Results(object):
                 for row in rows:
                     player_id = row["player_id"]
                     sigma = row["sigma"]
-                    if (player_id in young_player_ids and player_id not in
-                       excludes):
+                    if (
+                        player_id in young_player_ids
+                        and player_id not in excludes
+                    ):
                         candidates.append((1.0 / sigma, player_id))
                 if candidates:
                     tup = Dice.weighted_random_choice(candidates)

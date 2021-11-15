@@ -22,9 +22,9 @@ from slugathon.gui import MainWindow
 
 @implementer(IObserver)
 class Client(pb.Referenceable, Observed):
-
-    def __init__(self, playername, password, host="localhost",
-                 port=config.DEFAULT_PORT):
+    def __init__(
+        self, playername, password, host="localhost", port=config.DEFAULT_PORT
+    ):
         Observed.__init__(self)
         self.playername = playername
         self.playername = playername  # In case the same user logs in twice
@@ -36,7 +36,7 @@ class Client(pb.Referenceable, Observed):
         self.user = None
         self.playernames = set()
         self.games = []
-        self.guiboards = {}   # Maps game to guiboard
+        self.guiboards = {}  # Maps game to guiboard
         self.pickcolor = None
 
     def remote_set_name(self, name):
@@ -50,8 +50,9 @@ class Client(pb.Referenceable, Observed):
         return "Client " + str(self.playername)
 
     def connect(self):
-        user_pass = credentials.UsernamePassword(self.playername,
-                                                 self.password)
+        user_pass = credentials.UsernamePassword(
+            self.playername, self.password
+        )
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
@@ -81,8 +82,13 @@ class Client(pb.Referenceable, Observed):
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
         self.main_window = MainWindow.MainWindow(self.playername)
-        lobby = Lobby.Lobby(self.user, self.playername, self.playernames,
-                            self.games, self.main_window)
+        lobby = Lobby.Lobby(
+            self.user,
+            self.playername,
+            self.playernames,
+            self.games,
+            self.main_window,
+        )
         self.main_window.add_lobby(lobby)
         self.add_observer(lobby)
 
@@ -93,12 +99,29 @@ class Client(pb.Referenceable, Observed):
         return None
 
     def add_game(self, game_info_tuple):
-        (name, create_time, start_time, min_players, max_players,
-         playernames, started, finish_time, winner_names,
-         loser_names) = game_info_tuple
+        (
+            name,
+            create_time,
+            start_time,
+            min_players,
+            max_players,
+            playernames,
+            started,
+            finish_time,
+            winner_names,
+            loser_names,
+        ) = game_info_tuple
         owner = playernames[0]
-        game = Game.Game(name, owner, create_time, start_time, min_players,
-                         max_players, started=started, finish_time=finish_time)
+        game = Game.Game(
+            name,
+            owner,
+            create_time,
+            start_time,
+            min_players,
+            max_players,
+            started=started,
+            finish_time=finish_time,
+        )
         self.add_observer(game)
         for playername in playernames[1:]:
             game.add_player(playername)
@@ -139,12 +162,13 @@ class Client(pb.Referenceable, Observed):
         self.update(observed, action, names)
 
     def _maybe_pick_color(self, game):
-        if (game.next_playername_to_pick_color == self.playername and
-           self.pickcolor is None):
-            self.pickcolor, def1 = PickColor.new(self.playername,
-                                                 game,
-                                                 game.colors_left,
-                                                 self.main_window)
+        if (
+            game.next_playername_to_pick_color == self.playername
+            and self.pickcolor is None
+        ):
+            self.pickcolor, def1 = PickColor.new(
+                self.playername, game, game.colors_left, self.main_window
+            )
             def1.addCallback(self._cb_pickcolor)
 
     def _cb_pickcolor(self, tup):
@@ -160,8 +184,9 @@ class Client(pb.Referenceable, Observed):
         if playername == self.playername:
             player = game.get_player_by_name(playername)
             markerids_left = sorted(player.markerids_left.copy())
-            _, def1 = PickMarker.new(self.playername, game.name,
-                                     markerids_left, self.main_window)
+            _, def1 = PickMarker.new(
+                self.playername, game.name, markerids_left, self.main_window
+            )
             def1.addCallback(self.pick_marker)
             self.pickcolor = None
 
@@ -176,15 +201,20 @@ class Client(pb.Referenceable, Observed):
         else:
             player.pick_marker(markerid)
             if not player.markerid_to_legion:
-                def1 = self.user.callRemote("pick_first_marker", game_name,
-                                            markerid)
+                def1 = self.user.callRemote(
+                    "pick_first_marker", game_name, markerid
+                )
                 def1.addErrback(self.failure)
 
     def _init_guiboard(self, game):
         logging.info(game)
         guiboard = self.guiboards[game] = GUIMasterBoard.GUIMasterBoard(
-            game.board, game, self.user, self.playername,
-            parent_window=self.main_window)
+            game.board,
+            game,
+            self.user,
+            self.playername,
+            parent_window=self.main_window,
+        )
         self.main_window.add_guiboard(guiboard)
         game.add_observer(guiboard)
 
@@ -197,10 +227,18 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.DelUsername):
             self.playernames.remove(action.playername)
         elif isinstance(action, Action.FormGame):
-            game_info_tuple = (action.game_name, action.create_time,
-                               action.start_time, action.min_players,
-                               action.max_players,
-                               [action.playername], False, None, None, None)
+            game_info_tuple = (
+                action.game_name,
+                action.create_time,
+                action.start_time,
+                action.min_players,
+                action.max_players,
+                [action.playername],
+                False,
+                None,
+                None,
+                None,
+            )
             self.add_game(game_info_tuple)
         elif isinstance(action, Action.RemoveGame):
             self.remove_game(action.game_name)
@@ -218,9 +256,9 @@ class Client(pb.Referenceable, Observed):
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
                 logging.info(
-                    "Game %s over, won by %s" % (
-                        action.game_name,
-                        " and ".join(action.winner_names)))
+                    "Game %s over, won by %s"
+                    % (action.game_name, " and ".join(action.winner_names))
+                )
             else:
                 logging.info("Game %s over, draw" % action.game_name)
             self._purge_old_games()

@@ -8,6 +8,7 @@ import os
 import tempfile
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GdkPixbuf
 import cairo
@@ -28,19 +29,23 @@ class Die(object):
         self.name = "%s%d" % (("Miss", "Hit")[hit], number)
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
-        path = fileutils.basedir("images/%s/%s.png" % (self.IMAGE_DIR,
-                                                       self.name))
+        path = fileutils.basedir(
+            "images/%s/%s.png" % (self.IMAGE_DIR, self.name)
+        )
         input_surface = cairo.ImageSurface.create_from_png(path)
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
-                                          self.chit_scale)
+        self.surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32, self.chit_scale, self.chit_scale
+        )
         ctx = cairo.Context(self.surface)
-        ctx.scale(float(self.chit_scale) / input_surface.get_width(),
-                  float(self.chit_scale) / input_surface.get_height())
+        ctx.scale(
+            float(self.chit_scale) / input_surface.get_width(),
+            float(self.chit_scale) / input_surface.get_height(),
+        )
         ctx.set_source_surface(input_surface)
         ctx.paint()
-        with tempfile.NamedTemporaryFile(prefix="slugathon",
-                                         suffix=".png",
-                                         delete=False) as tmp_file:
+        with tempfile.NamedTemporaryFile(
+            prefix="slugathon", suffix=".png", delete=False
+        ) as tmp_file:
             tmp_path = tmp_file.name
         self.surface.write_to_png(tmp_path)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file(tmp_path)
@@ -50,11 +55,12 @@ class Die(object):
         self.image = Gtk.Image()
         self.image.set_from_pixbuf(pixbuf)
         self.event_box.add(self.image)
-        self.location = None    # (x, y) of top left corner
+        self.location = None  # (x, y) of top left corner
 
     def show(self):
         self.event_box.show()
         self.image.show()
+
 
 if __name__ == "__main__":
     from slugathon.util import Dice

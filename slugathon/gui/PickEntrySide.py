@@ -9,8 +9,10 @@ from sys import maxsize
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -44,8 +46,9 @@ hexlabel_to_entry_side = {
 def new(board, masterhex, entry_sides, parent, playername=None, scale=None):
     """Create a PickEntrySide dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pick_entry_side = PickEntrySide(board, masterhex, entry_sides, def1,
-                                    parent, playername, scale)
+    pick_entry_side = PickEntrySide(
+        board, masterhex, entry_sides, def1, parent, playername, scale
+    )
     return pick_entry_side, def1
 
 
@@ -53,9 +56,19 @@ class PickEntrySide(Gtk.Dialog):
 
     """Dialog to pick a masterhex entry side."""
 
-    def __init__(self, board, masterhex, entry_sides, def1, parent,
-                 playername=None, scale=None):
-        GObject.GObject.__init__(self, title="Pick Entry Side - %s" % playername, parent=parent)
+    def __init__(
+        self,
+        board,
+        masterhex,
+        entry_sides,
+        def1,
+        parent,
+        playername=None,
+        scale=None,
+    ):
+        GObject.GObject.__init__(
+            self, title="Pick Entry Side - %s" % playername, parent=parent
+        )
 
         terrain = masterhex.terrain
         # We always orient the map as if for entry side 5.
@@ -85,13 +98,15 @@ class PickEntrySide(Gtk.Dialog):
         self.area.set_size_request(self.compute_width(), self.compute_height())
 
         if self.playername:
-            tup = prefs.load_window_position(self.playername,
-                                             self.__class__.__name__)
+            tup = prefs.load_window_position(
+                self.playername, self.__class__.__name__
+            )
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-                                         self.__class__.__name__)
+            tup = prefs.load_window_size(
+                self.playername, self.__class__.__name__
+            )
             if tup:
                 width, height = tup
                 self.resize(width, height)
@@ -115,8 +130,9 @@ class PickEntrySide(Gtk.Dialog):
         for hex1 in self.battlemap.hexes.values():
             # Don't show entrances.
             if hex1.label not in ["ATTACKER", "DEFENDER"]:
-                self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1,
-                                                                      self)
+                self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(
+                    hex1, self
+                )
         self.repaint_hexlabels = set()
         # Hexes that need their bounding rectangles cleared, too.
         # This fixes chits.
@@ -141,8 +157,9 @@ class PickEntrySide(Gtk.Dialog):
         # Fudge factor to leave room on the sides.
         xscale = math.floor(width / (2 * self.battlemap.hex_width)) - 5
         # Fudge factor for menus and toolbars.
-        yscale = math.floor(height / (2 * SQRT3 *
-                                      self.battlemap.hex_height)) - 11
+        yscale = (
+            math.floor(height / (2 * SQRT3 * self.battlemap.hex_height)) - 11
+        )
         return int(min(xscale, yscale))
 
     def compute_width(self):
@@ -151,8 +168,9 @@ class PickEntrySide(Gtk.Dialog):
 
     def compute_height(self):
         """Return the height of the map in pixels."""
-        return int(math.ceil(self.scale * self.battlemap.hex_height * 2 *
-                             SQRT3))
+        return int(
+            math.ceil(self.scale * self.battlemap.hex_height * 2 * SQRT3)
+        )
 
     def masterhex_label(self, masterhex):
         """Return a Gtk.Label describing masterhex, inside a white
@@ -160,7 +178,9 @@ class PickEntrySide(Gtk.Dialog):
         eventbox = Gtk.EventBox()
         if masterhex:
             text = '<span size="large" weight="bold">%s hex %d</span>' % (
-                masterhex.terrain, masterhex.label)
+                masterhex.terrain,
+                masterhex.label,
+            )
         else:
             text = ""
         label = Gtk.Label()
@@ -204,7 +224,7 @@ class PickEntrySide(Gtk.Dialog):
                 min_y = min(min_y, y)
                 max_x = max(max_x, x + width)
                 max_y = max(max_y, y + height)
-            except KeyError:   # None check
+            except KeyError:  # None check
                 pass
         width = max_x - min_x
         height = max_y - min_y
@@ -223,13 +243,14 @@ class PickEntrySide(Gtk.Dialog):
                 return
             else:
                 clip_rect = self.bounding_rect_for_hexlabels(
-                    self.repaint_hexlabels)
+                    self.repaint_hexlabels
+                )
         else:
             if self.repaint_hexlabels:
                 clip_rect = guiutils.combine_rectangles(
                     event.clip_extents(),
-                    self.bounding_rect_for_hexlabels(
-                        self.repaint_hexlabels))
+                    self.bounding_rect_for_hexlabels(self.repaint_hexlabels),
+                )
             else:
                 clip_rect = event.clip_extents()
 

@@ -10,5 +10,6 @@ from gi.repository import GdkPixbuf
 from slugathon.util import fileutils
 
 
-pixbuf = GdkPixbuf.Pixbuf.new_from_file(fileutils.basedir(
-    os.path.join("images", "creature", "Serpent.png")))
+pixbuf = GdkPixbuf.Pixbuf.new_from_file(
+    fileutils.basedir(os.path.join("images", "creature", "Serpent.png"))
+)

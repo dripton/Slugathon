@@ -19,9 +19,12 @@ from slugathon.net.Server import add_arguments as server_add_arguments
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="slugathon")
-    subparsers = parser.add_subparsers(title="subcommands",
-      description="valid subcommands", dest="subparser_name",
-      help="additional help")
+    subparsers = parser.add_subparsers(
+        title="subcommands",
+        description="valid subcommands",
+        dest="subparser_name",
+        help="additional help",
+    )
 
     client_parser = subparsers.add_parser("client", help="client help")
     if connect_add_arguments is not None:
@@ -40,10 +43,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.subparser_name == "client":
         from slugathon.gui import Connect
+
         Connect.main()
     elif args.subparser_name == "server":
         from slugathon.net import Server
+
         Server.main()
     elif args.subparser_name == "ai":
         from slugathon.ai import AIClient
+
         AIClient.main()

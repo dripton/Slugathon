@@ -7,8 +7,10 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -23,8 +25,9 @@ from slugathon.game import Phase
 def new(playername, game_name, striker, target, parent):
     """Create a PickStrikePenalty dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pick_strike_penalty = PickStrikePenalty(playername, game_name, striker,
-                                            target, def1, parent)
+    pick_strike_penalty = PickStrikePenalty(
+        playername, game_name, striker, target, def1, parent
+    )
     return pick_strike_penalty, def1
 
 
@@ -34,8 +37,9 @@ class PickStrikePenalty(Gtk.Dialog):
     excess hits."""
 
     def __init__(self, playername, game_name, striker, target, def1, parent):
-        GObject.GObject.__init__(self, title="PickStrikePenalty - %s" % playername,
-                            parent=parent)
+        GObject.GObject.__init__(
+            self, title="PickStrikePenalty - %s" % playername, parent=parent
+        )
         self.playername = playername
         self.game_name = game_name
         self.striker = striker
@@ -48,8 +52,10 @@ class PickStrikePenalty(Gtk.Dialog):
 
         self.vbox.set_spacing(9)
 
-        label = Gtk.Label(name="Choose strike penalty for %r striking %r?" %
-                          (striker, target))
+        label = Gtk.Label(
+            name="Choose strike penalty for %r striking %r?"
+            % (striker, target)
+        )
         self.vbox.add(label)
 
         # Map tuple of (num_dice, strike_number) to set of creatures it can hit
@@ -59,21 +65,26 @@ class PickStrikePenalty(Gtk.Dialog):
             dice_strike_to_creatures[tup] = set()
             for creature in striker.engaged_enemies:
                 if creature is not target:
-                    if striker.can_carry_to(creature, target, num_dice,
-                                            strike_number):
+                    if striker.can_carry_to(
+                        creature, target, num_dice, strike_number
+                    ):
                         dice_strike_to_creatures[tup].add(creature)
 
-        for ii, (tup, creatures) in enumerate(sorted(
-                dice_strike_to_creatures.items())):
+        for ii, (tup, creatures) in enumerate(
+            sorted(dice_strike_to_creatures.items())
+        ):
             (num_dice3, strike_number3) = tup
             if creatures:
                 st = "%d dice at strike number %d, able to carry to %s" % (
                     num_dice3,
                     strike_number3,
-                    ", ".join(sorted(repr(cr) for cr in creatures)))
+                    ", ".join(sorted(repr(cr) for cr in creatures)),
+                )
             else:
                 st = "%d dice at strike number %d, unable to carry" % (
-                    num_dice3, strike_number3)
+                    num_dice3,
+                    strike_number3,
+                )
             button = Gtk.Button(label=st)
             self.vbox.pack_start(button, True, True, 0)
             button.tup = tup
@@ -87,8 +98,9 @@ class PickStrikePenalty(Gtk.Dialog):
     def cb_click(self, widget, event):
         self.destroy()
         num_dice, strike_number = widget.tup
-        self.deferred.callback((self.striker, self.target, num_dice,
-                                strike_number))
+        self.deferred.callback(
+            (self.striker, self.target, num_dice, strike_number)
+        )
 
     def cb_cancel(self, widget, response_id):
         self.destroy()
@@ -115,14 +127,20 @@ if __name__ == "__main__":
     game.assign_first_marker("p0", "Rd01")
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
-    player0.split_legion("Rd01", "Rd02",
-                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
-                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
+    player0.split_legion(
+        "Rd01",
+        "Rd02",
+        ["Titan", "Centaur", "Ogre", "Gargoyle"],
+        ["Angel", "Centaur", "Ogre", "Gargoyle"],
+    )
     rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
-    player1.split_legion("Bu01", "Bu02",
-                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
-                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
+    player1.split_legion(
+        "Bu01",
+        "Bu02",
+        ["Titan", "Centaur", "Ogre", "Gargoyle"],
+        ["Angel", "Centaur", "Ogre", "Gargoyle"],
+    )
     bu01 = player1.markerid_to_legion["Bu01"]
 
     rd01.move(6, False, None, 3)
@@ -152,11 +170,17 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (striker, target, num_dice, strike_number) = tup
-        logging.info("called my_callback %s %s %s %s", striker, target,
-                     num_dice, strike_number)
+        logging.info(
+            "called my_callback %s %s %s %s",
+            striker,
+            target,
+            num_dice,
+            strike_number,
+        )
         reactor.stop()
 
-    pick_strike_penalty, def1 = new(playername, game_name, titan2, gargoyle1,
-                                    None)
+    pick_strike_penalty, def1 = new(
+        playername, game_name, titan2, gargoyle1, None
+    )
     def1.addCallback(my_callback)
     reactor.run()

@@ -29,11 +29,11 @@ class BattleHex(object):
         self.borders = []
         for ii in range(6):
             self.borders.append(borderdict.get(ii))
-        self.down = (self.x & 1 == 1)
+        self.down = self.x & 1 == 1
         self.label_side = 5
         self.terrain_side = 3
-        self.entrance = (self.label in ["ATTACKER", "DEFENDER"])
-        self.neighbors = {}   # hexside : BattleHex
+        self.entrance = self.label in ["ATTACKER", "DEFENDER"]
+        self.neighbors = {}  # hexside : BattleHex
 
     def __repr__(self):
         return "BattleHex %s (%d, %d)" % (self.label, self.x, self.y)

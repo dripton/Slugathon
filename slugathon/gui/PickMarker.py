@@ -8,8 +8,10 @@ import collections
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -67,9 +69,9 @@ class PickMarker(Gtk.Dialog):
         for ii, button_name in enumerate(sorted_markers(markers_left)):
             button = Gtk.Button()
             button.tag = button_name
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file(fileutils.basedir(
-                                                  "images/legion/%s.png" %
-                                                  button_name))
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file(
+                fileutils.basedir("images/legion/%s.png" % button_name)
+            )
             image = Gtk.Image()
             image.set_from_pixbuf(pixbuf)
             button.add(image)
@@ -102,8 +104,9 @@ if __name__ == "__main__":
 
     playername = "test user"
     game_name = "test game"
-    markers_left = (["Rd%02d" % ii for ii in range(1, 12 + 1)] +
-                    ["Bu%02d" % ii for ii in range(1, 8 + 1)])
+    markers_left = ["Rd%02d" % ii for ii in range(1, 12 + 1)] + [
+        "Bu%02d" % ii for ii in range(1, 8 + 1)
+    ]
     pickmarker, def1 = new(playername, game_name, markers_left, None)
     def1.addCallback(my_callback)
     reactor.run()

@@ -12,7 +12,7 @@ update_counter = 0
 
 
 @implementer(IObserver)
-class MyObserver():
+class MyObserver:
     def update(self, observed, action, names):
         global update_counter
         update_counter += 1

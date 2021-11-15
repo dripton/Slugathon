@@ -5,8 +5,10 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -21,8 +23,13 @@ from slugathon.util import prefs
 
 def modify_fg_all_states(widget, color_name):
     color = Gdk.color_parse(color_name)
-    for state in [Gtk.StateType.NORMAL, Gtk.StateType.ACTIVE, Gtk.StateType.PRELIGHT,
-                  Gtk.StateType.SELECTED, Gtk.StateType.INSENSITIVE]:
+    for state in [
+        Gtk.StateType.NORMAL,
+        Gtk.StateType.ACTIVE,
+        Gtk.StateType.PRELIGHT,
+        Gtk.StateType.SELECTED,
+        Gtk.StateType.INSENSITIVE,
+    ]:
         widget.modify_fg(state, color)
 
 
@@ -53,13 +60,15 @@ class MainWindow(Gtk.Window):
         self.set_default_size(1024, 768)
 
         if self.playername:
-            tup = prefs.load_window_position(self.playername,
-                                             self.__class__.__name__)
+            tup = prefs.load_window_position(
+                self.playername, self.__class__.__name__
+            )
             if tup:
                 x, y = tup
                 self.move(x, y)
-            tup = prefs.load_window_size(self.playername,
-                                         self.__class__.__name__)
+            tup = prefs.load_window_size(
+                self.playername, self.__class__.__name__
+            )
             if tup:
                 width, height = tup
                 self.resize(width, height)
@@ -121,9 +130,8 @@ class MainWindow(Gtk.Window):
             self.cb_destroy(True)
         else:
             confirm_dialog, def1 = ConfirmDialog.new(
-                self,
-                "Confirm",
-                "Are you sure you want to quit?")
+                self, "Confirm", "Are you sure you want to quit?"
+            )
             def1.addCallback(self.cb_destroy)
             def1.addErrback(self.failure)
         return True
@@ -140,17 +148,20 @@ class MainWindow(Gtk.Window):
     def cb_configure_event(self, event, unused):
         if self.playername:
             x, y = self.get_position()
-            prefs.save_window_position(self.playername,
-                                       self.__class__.__name__, x, y)
+            prefs.save_window_position(
+                self.playername, self.__class__.__name__, x, y
+            )
             width, height = self.get_size()
-            prefs.save_window_size(self.playername, self.__class__.__name__,
-                                   width, height)
+            prefs.save_window_size(
+                self.playername, self.__class__.__name__, width, height
+            )
         return False
 
     def cb_switch_page(self, widget, dummy, page_num):
         page_widget = widget.get_nth_page(page_num)
-        if (hasattr(page_widget, "ui") and hasattr(page_widget.ui,
-           "get_accel_group")):
+        if hasattr(page_widget, "ui") and hasattr(
+            page_widget.ui, "get_accel_group"
+        ):
             self.replace_accel_group(page_widget.ui.get_accel_group())
         else:
             self.replace_accel_group(None)

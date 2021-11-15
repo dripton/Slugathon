@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import defer
 from gi.repository import Gtk, GObject
@@ -26,7 +27,9 @@ class SummonAngel(Gtk.Dialog):
     """Dialog to summon an angel."""
 
     def __init__(self, playername, legion, def1, parent):
-        GObject.GObject.__init__(self, title="SummonAngel - %s" % playername, parent=parent)
+        GObject.GObject.__init__(
+            self, title="SummonAngel - %s" % playername, parent=parent
+        )
         self.legion = legion
         player = legion.player
         self.deferred = def1
@@ -37,26 +40,36 @@ class SummonAngel(Gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
 
-        top_label = Gtk.Label(label=
-            "Summoning an angel into legion %s (%s) in hex %s"
-            % (legion.markerid, legion.picname, legion.hexlabel))
+        top_label = Gtk.Label(
+            label="Summoning an angel into legion %s (%s) in hex %s"
+            % (legion.markerid, legion.picname, legion.hexlabel)
+        )
         self.vbox.set_spacing(9)
         self.vbox.pack_start(top_label, True, True, 0)
-        middle_label = Gtk.Label(label="Summonable creatures have a red border")
+        middle_label = Gtk.Label(
+            label="Summonable creatures have a red border"
+        )
         self.vbox.pack_start(middle_label, True, True, 0)
         bottom_label = Gtk.Label(label="Click one to summon it.")
         self.vbox.pack_start(bottom_label, True, True, 0)
 
         for legion2 in player.legions:
-            if (legion2.any_summonable and not legion2.engaged and
-                    legion2 != legion):
+            if (
+                legion2.any_summonable
+                and not legion2.engaged
+                and legion2 != legion
+            ):
                 hbox = Gtk.HBox(spacing=3)
                 self.vbox.pack_start(hbox, True, True, 0)
                 marker = Marker.Marker(legion2, False, scale=20)
                 hbox.pack_start(marker.event_box, False, False, 0)
                 for creature in legion2.sorted_creatures:
-                    chit = Chit.Chit(creature, player.color, scale=20,
-                                     outlined=creature.summonable)
+                    chit = Chit.Chit(
+                        creature,
+                        player.color,
+                        scale=20,
+                        outlined=creature.summonable,
+                    )
                     hbox.pack_start(chit.event_box, False, False, 0)
                     if creature.summonable:
                         chit.connect("button-press-event", self.cb_click)
@@ -90,16 +103,26 @@ if __name__ == "__main__":
     game = Game.Game("g1", playername, now, now, 2, 6)
     player = Player.Player(playername, game, 0)
     player.color = "Red"
-    creatures1 = [Creature.Creature(name) for name in
-                  ["Titan", "Ogre", "Troll", "Ranger"]]
-    creatures2 = [Creature.Creature(name) for name in
-                  ["Angel", "Ogre", "Troll", "Ranger"]]
-    creatures3 = [Creature.Creature(name) for name in
-                  ["Archangel", "Centaur", "Lion", "Ranger"]]
-    creatures4 = [Creature.Creature(name) for name in
-                  ["Gargoyle", "Cyclops", "Gorgon", "Behemoth"]]
-    creatures5 = [Creature.Creature(name) for name in
-                  ["Angel", "Angel", "Warlock", "Guardian"]]
+    creatures1 = [
+        Creature.Creature(name)
+        for name in ["Titan", "Ogre", "Troll", "Ranger"]
+    ]
+    creatures2 = [
+        Creature.Creature(name)
+        for name in ["Angel", "Ogre", "Troll", "Ranger"]
+    ]
+    creatures3 = [
+        Creature.Creature(name)
+        for name in ["Archangel", "Centaur", "Lion", "Ranger"]
+    ]
+    creatures4 = [
+        Creature.Creature(name)
+        for name in ["Gargoyle", "Cyclops", "Gorgon", "Behemoth"]
+    ]
+    creatures5 = [
+        Creature.Creature(name)
+        for name in ["Angel", "Angel", "Warlock", "Guardian"]
+    ]
     legion1 = Legion.Legion(player, "Rd01", creatures1, 1)
     legion2 = Legion.Legion(player, "Rd02", creatures2, 2)
     legion3 = Legion.Legion(player, "Rd03", creatures3, 3)

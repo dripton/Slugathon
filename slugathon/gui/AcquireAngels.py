@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 from twisted.internet import defer
@@ -18,19 +19,22 @@ from slugathon.game import Creature
 def new(playername, legion, num_archangels, num_angels, caretaker, parent):
     """Create an AcquireAngels dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    acquire_angel = AcquireAngels(playername, legion, num_archangels,
-                                  num_angels, caretaker, def1, parent)
+    acquire_angel = AcquireAngels(
+        playername, legion, num_archangels, num_angels, caretaker, def1, parent
+    )
     return acquire_angel, def1
 
 
-def find_angel_combos(num_archangels, num_angels, archangels_left,
-                      angels_left):
+def find_angel_combos(
+    num_archangels, num_angels, archangels_left, angels_left
+):
     """Return a list of tuples of Creatures, corresponding to each
     possible group of angels and archangels."""
     set1 = set()
     for archangels in range(min(num_archangels, archangels_left) + 1):
-        for angels in range(min((num_angels + num_archangels),
-                                 angels_left) + 1):
+        for angels in range(
+            min((num_angels + num_archangels), angels_left) + 1
+        ):
             if 0 < archangels + angels <= num_archangels + num_angels:
                 lst = []
                 for unused in range(archangels):
@@ -52,9 +56,19 @@ class AcquireAngels(Gtk.Dialog):
 
     """Dialog to acquire an angel."""
 
-    def __init__(self, playername, legion, num_archangels, num_angels,
-                 caretaker, def1, parent):
-        GObject.GObject.__init__(self, title="AcquireAngels - %s" % playername, parent=parent)
+    def __init__(
+        self,
+        playername,
+        legion,
+        num_archangels,
+        num_angels,
+        caretaker,
+        def1,
+        parent,
+    ):
+        GObject.GObject.__init__(
+            self, title="AcquireAngels - %s" % playername, parent=parent
+        )
         self.deferred = def1
         self.legion = legion
         player = legion.player
@@ -64,9 +78,10 @@ class AcquireAngels(Gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = Gtk.Label(label="Acquire angel for legion %s (%s) in hex %s" %
-                                (legion.markerid, legion.picname,
-                                 legion.hexlabel))
+        legion_name = Gtk.Label(
+            label="Acquire angel for legion %s (%s) in hex %s"
+            % (legion.markerid, legion.picname, legion.hexlabel)
+        )
         self.vbox.pack_start(legion_name, True, True, 0)
 
         legion_hbox = Gtk.HBox(spacing=3)
@@ -85,10 +100,12 @@ class AcquireAngels(Gtk.Dialog):
             chit = Chit.Chit(creature, player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, False, True, 0)
 
-        angel_combos = find_angel_combos(num_archangels,
-                                         num_angels,
-                                         caretaker.num_left("Archangel"),
-                                         caretaker.num_left("Angel"))
+        angel_combos = find_angel_combos(
+            num_archangels,
+            num_angels,
+            caretaker.num_left("Archangel"),
+            caretaker.num_left("Angel"),
+        )
         max_len = max(len(combo) for combo in angel_combos)
         leading_spaces = (len(legion) + 2 - max_len) // 2
         for combo in angel_combos:
@@ -120,6 +137,7 @@ class AcquireAngels(Gtk.Dialog):
     def cb_cancel(self, widget, response_id):
         self.deferred.callback((self.legion, None))
         self.destroy()
+
 
 if __name__ == "__main__":
     import time

@@ -5,8 +5,10 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -28,10 +30,11 @@ class ConfirmDialog(Gtk.MessageDialog):
 
     The deferred fires True on Yes, False on No.
     """
+
     def __init__(self, parent, title, message, def1):
-        GObject.GObject.__init__(self,
-                                 parent=parent,
-                                 buttons=Gtk.ButtonsType.YES_NO)
+        GObject.GObject.__init__(
+            self, parent=parent, buttons=Gtk.ButtonsType.YES_NO
+        )
         self.deferred = def1
         self.set_title(title)
         self.set_markup(message)
@@ -43,15 +46,15 @@ class ConfirmDialog(Gtk.MessageDialog):
         self.show_all()
 
     def cb_response(self, widget, response_id):
-        retval = (response_id == Gtk.ResponseType.YES)
+        retval = response_id == Gtk.ResponseType.YES
         self.deferred.callback(retval)
         self.destroy()
 
 
 if __name__ == "__main__":
-    confirm_dialog, def1 = new(parent=None,
-                               title="Info",
-                               message="Are we having fun yet?")
+    confirm_dialog, def1 = new(
+        parent=None, title="Info", message="Are we having fun yet?"
+    )
 
     def print_arg(arg):
         print(arg)

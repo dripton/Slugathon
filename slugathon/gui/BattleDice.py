@@ -4,6 +4,7 @@ __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
@@ -26,7 +27,8 @@ class BattleDice(Gtk.EventBox):
         self.spacing = int(round(0.1 * self.scale))
         self.set_size_request(
             self.n_columns * self.scale + (self.n_columns - 1) * self.spacing,
-            self.n_rows * self.scale + (self.n_rows - 1) * self.spacing)
+            self.n_rows * self.scale + (self.n_rows - 1) * self.spacing,
+        )
 
         self.table = Gtk.Table(n_rows=self.n_rows, n_columns=self.n_columns)
         self.add(self.table)
@@ -52,9 +54,11 @@ class BattleDice(Gtk.EventBox):
             if changed:
                 self.table.resize(self.n_rows, self.n_columns)
                 self.set_size_request(
-                    self.n_columns * self.scale +
-                    (self.n_columns - 1) * self.spacing,
-                    self.n_rows * self.scale + (self.n_rows - 1) * self.spacing)
+                    self.n_columns * self.scale
+                    + (self.n_columns - 1) * self.spacing,
+                    self.n_rows * self.scale
+                    + (self.n_rows - 1) * self.spacing,
+                )
             hits = action.hits
             chit_scale = int(round(self.scale / Die.CHIT_SCALE_FACTOR))
             gtkcolor = Gdk.color_parse("white")
@@ -82,7 +86,18 @@ if __name__ == "__main__":
     window.add(battle_dice)
     window.show_all()
     rolls = Dice.roll(numrolls=12)
-    action = Action.Strike(None, None, None, None, None, None, None, None,
-                           rolls, sum(1 for roll in rolls if roll >= 4), 1)
+    action = Action.Strike(
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        rolls,
+        sum(1 for roll in rolls if roll >= 4),
+        1,
+    )
     battle_dice.update(None, action, None)
     Gtk.main()

@@ -146,13 +146,11 @@ rgb_colors = {
     "white_smoke": (245, 245, 245),
     "yellow": (255, 255, 0),
     "yellow_green": (154, 205, 50),
-
     # Additional terrain colors
     "dark_yellow": (200, 200, 0),
     "light_olive": (150, 150, 0),
     "bramble_green1": (0, 200, 0),
     "bramble_green2": (0, 150, 0),
-
     # Additional creature colors
     "ogre_red": (128, 0, 0),
     "hydra_orange": (255, 132, 21),
@@ -160,7 +158,6 @@ rgb_colors = {
     "centaur_gold": (129, 129, 1),
     "colossus_pink": (207, 6, 207),
     "giant_blue": (3, 3, 213),
-
     # Titan / player colors
     "titan_black": (0, 0, 0),
     "titan_blue": (16, 24, 123),

@@ -5,8 +5,10 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -26,8 +28,9 @@ class LoadGame(Gtk.FileChooserDialog):
 
     def __init__(self, user, playername, parent):
         title = "Load Saved Game - %s" % playername
-        Gtk.FileChooserDialog.__init__(self, title=title, parent=parent,
-            action=Gtk.FileChooserAction.OPEN)
+        Gtk.FileChooserDialog.__init__(
+            self, title=title, parent=parent, action=Gtk.FileChooserAction.OPEN
+        )
         self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         self.add_button(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         self.user = user
@@ -60,6 +63,7 @@ class LoadGame(Gtk.FileChooserDialog):
 
 
 if __name__ == "__main__":
+
     def my_callback(*args):
         reactor.stop()
 

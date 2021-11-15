@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject, Gdk
 from twisted.internet import defer
@@ -25,8 +26,11 @@ def new(playername, game, colors_left, parent):
 
 class PickColor(Gtk.Dialog):
     """Dialog to pick a player color."""
+
     def __init__(self, playername, game, colors_left, parent, def1):
-        GObject.GObject.__init__(self, title="Pick Color - %s" % playername, parent=parent)
+        GObject.GObject.__init__(
+            self, title="Pick Color - %s" % playername, parent=parent
+        )
         self.playername = playername
         self.game = game
         self.deferred = def1
@@ -65,6 +69,7 @@ class PickColor(Gtk.Dialog):
     def cb_destroy(self, widget):
         if not self.deferred.called:
             self.deferred.callback((self.game, None))
+
 
 if __name__ == "__main__":
     import time

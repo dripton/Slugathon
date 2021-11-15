@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import defer
 from gi.repository import Gtk, GObject
@@ -25,7 +26,9 @@ class SplitLegion(Gtk.Dialog):
     """Dialog to split a legion."""
 
     def __init__(self, playername, legion, def1, parent):
-        GObject.GObject.__init__(self, title="SplitLegion - %s" % playername, parent=parent)
+        GObject.GObject.__init__(
+            self, title="SplitLegion - %s" % playername, parent=parent
+        )
         self.old_legion = legion
         player = legion.player
         self.deferred = def1
@@ -35,10 +38,10 @@ class SplitLegion(Gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = Gtk.Label(label="Splitting legion %s (%s) in hex %s" % (
-                                legion.markerid,
-                                legion.picname,
-                                legion.hexlabel))
+        legion_name = Gtk.Label(
+            label="Splitting legion %s (%s) in hex %s"
+            % (legion.markerid, legion.picname, legion.hexlabel)
+        )
         self.vbox.pack_start(legion_name, True, True, 0)
 
         old_hbox = Gtk.HBox(spacing=15)
@@ -58,11 +61,12 @@ class SplitLegion(Gtk.Dialog):
         old_marker = Marker.Marker(legion, False, scale=20)
         old_marker_hbox.pack_start(old_marker.event_box, False, True, 0)
 
-        self.new_legion1 = Legion.Legion(player, legion.markerid,
-                                         legion.sorted_creatures,
-                                         legion.hexlabel)
-        self.new_legion2 = Legion.Legion(player, player.selected_markerid,
-                                         [], legion.hexlabel)
+        self.new_legion1 = Legion.Legion(
+            player, legion.markerid, legion.sorted_creatures, legion.hexlabel
+        )
+        self.new_legion2 = Legion.Legion(
+            player, player.selected_markerid, [], legion.hexlabel
+        )
         self.new_marker = Marker.Marker(self.new_legion2, False, scale=20)
         new_marker_hbox.pack_start(self.new_marker.event_box, False, True, 0)
 
@@ -96,15 +100,17 @@ class SplitLegion(Gtk.Dialog):
         chit = eventbox.chit
         previous_legion.creatures.remove(chit.creature)
         next_legion.creatures.append(chit.creature)
-        legal = self.old_legion.is_legal_split(self.new_legion1,
-                                               self.new_legion2)
+        legal = self.old_legion.is_legal_split(
+            self.new_legion1, self.new_legion2
+        )
         self.ok_button.set_sensitive(legal)
 
     def cb_response(self, widget, response_id):
         self.destroy()
         if response_id == Gtk.ResponseType.OK:
-            self.deferred.callback((self.old_legion, self.new_legion1,
-                                    self.new_legion2))
+            self.deferred.callback(
+                (self.old_legion, self.new_legion1, self.new_legion2)
+            )
         else:
             self.deferred.callback((None, None, None))
 
@@ -116,8 +122,10 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     now = time.time()
-    creatures = [Creature.Creature(name) for name in
-                 creaturedata.starting_creature_names]
+    creatures = [
+        Creature.Creature(name)
+        for name in creaturedata.starting_creature_names
+    ]
     playername = "test"
     game = Game.Game("g1", playername, now, now, 2, 6)
     player = Player.Player(playername, game, 0)

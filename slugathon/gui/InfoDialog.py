@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 
@@ -12,10 +13,10 @@ from slugathon.gui import icon
 
 
 class InfoDialog(Gtk.MessageDialog):
-
     def __init__(self, parent, title, message):
-        GObject.GObject.__init__(self, parent=parent,
-                                 buttons=Gtk.ButtonsType.OK)
+        GObject.GObject.__init__(
+            self, parent=parent, buttons=Gtk.ButtonsType.OK
+        )
         self.set_title(title)
         self.set_markup(message)
         self.set_icon(icon.pixbuf)
@@ -32,7 +33,8 @@ class InfoDialog(Gtk.MessageDialog):
 if __name__ == "__main__":
     from slugathon.util import guiutils
 
-    info_dialog = InfoDialog(parent=None, title="Info",
-                             message="Look out behind you!")
+    info_dialog = InfoDialog(
+        parent=None, title="Info", message="Look out behind you!"
+    )
     info_dialog.connect("destroy", guiutils.exit)
     Gtk.main()

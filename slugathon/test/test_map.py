@@ -88,7 +88,7 @@ def test_midpoint():
 
 def test_roundpoint():
     assert guiutils.roundpoint((1, 2)) == (1, 2)
-    assert guiutils.roundpoint((1., 2.)) == (1, 2)
+    assert guiutils.roundpoint((1.0, 2.0)) == (1, 2)
     assert guiutils.roundpoint((1.5, 2.4999)) == (2, 2)
     assert guiutils.roundpoint((-0.3, 9.5)) == (0, 10)
 

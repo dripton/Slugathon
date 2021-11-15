@@ -12,16 +12,18 @@ from slugathon.game import Game
 
 
 def test_db_creation():
-    with tempfile.NamedTemporaryFile(prefix="slugathon", suffix=".db",
-                                     delete=True) as tmp_file:
+    with tempfile.NamedTemporaryFile(
+        prefix="slugathon", suffix=".db", delete=True
+    ) as tmp_file:
         db_path = tmp_file.name
         Results.Results(db_path=db_path)
         assert os.path.getsize(db_path) > 0
 
 
 def test_save_game_and_get_ranking():
-    with tempfile.NamedTemporaryFile(prefix="slugathon", suffix=".db",
-                                     delete=True) as tmp_file:
+    with tempfile.NamedTemporaryFile(
+        prefix="slugathon", suffix=".db", delete=True
+    ) as tmp_file:
         db_path = tmp_file.name
         results = Results.Results(db_path=db_path)
         now = time.time()
@@ -30,7 +32,7 @@ def test_save_game_and_get_ranking():
         player0 = game.players[0]
         player1 = game.players[1]
         game.finish_time = game.start_time + 5
-        game.finish_order = [(player0, ), (player1, )]
+        game.finish_order = [(player0,), (player1,)]
         results.save_game(game)
         assert os.path.getsize(db_path) > 0
 
@@ -79,9 +81,9 @@ def test_save_game_and_get_ranking():
         ranking2 = results.get_ranking("p2")
         print(ranking1)
         print(ranking2)
-        assert ranking1.mu > 25. > ranking2.mu
-        assert ranking1.sigma < 25. / 3
-        assert ranking2.sigma < 25. / 3
+        assert ranking1.mu > 25.0 > ranking2.mu
+        assert ranking1.sigma < 25.0 / 3
+        assert ranking2.sigma < 25.0 / 3
         assert ranking1.skill > ranking2.skill > 0
 
         player_data = results.get_player_data()

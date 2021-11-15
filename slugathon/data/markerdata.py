@@ -6,7 +6,6 @@ __license__ = "GNU GPL v2"
 
 
 data = {
-
     "Black": [
         "Axes",
         "Eye",
@@ -21,7 +20,6 @@ data = {
         "Arrowhead",
         "Tombstone",
     ],
-
     "Brown": [
         "Antlers",
         "Bell",
@@ -36,7 +34,6 @@ data = {
         "Tankard",
         "Wheel",
     ],
-
     "Blue": [
         "Anchor",
         "Bat",
@@ -51,7 +48,6 @@ data = {
         "Tornado",
         "Trident",
     ],
-
     "Gold": [
         "Caduceus",
         "Claw",
@@ -66,7 +62,6 @@ data = {
         "Sun",
         "Wheat",
     ],
-
     "Green": [
         "Cauldron",
         "Dagger",
@@ -81,7 +76,6 @@ data = {
         "Scales",
         "Ourobouros",
     ],
-
     "Red": [
         "Cross",
         "Eagle",
@@ -96,5 +90,4 @@ data = {
         "Sword",
         "Torch",
     ],
-
 }

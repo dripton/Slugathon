@@ -8,6 +8,7 @@ import tempfile
 import os
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 gi.require_version("PangoCairo", "1.0")
 import cairo
@@ -29,23 +30,26 @@ class Marker(object):
         self.chit_scale = CHIT_SCALE_FACTOR * scale
         self.show_height = show_height
         self.image_path = fileutils.basedir("images/legion/%s.png" % self.name)
-        self.location = None    # (x, y) of top left corner
+        self.location = None  # (x, y) of top left corner
         self.build_image()
 
     def build_image(self):
         self.height = len(self.legion)
         input_surface = cairo.ImageSurface.create_from_png(self.image_path)
         self._render_text(input_surface)
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.chit_scale,
-                                          self.chit_scale)
+        self.surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32, self.chit_scale, self.chit_scale
+        )
         ctx = cairo.Context(self.surface)
-        ctx.scale(float(self.chit_scale) / input_surface.get_width(),
-                  float(self.chit_scale) / input_surface.get_height())
+        ctx.scale(
+            float(self.chit_scale) / input_surface.get_width(),
+            float(self.chit_scale) / input_surface.get_height(),
+        )
         ctx.set_source_surface(input_surface)
         ctx.paint()
-        with tempfile.NamedTemporaryFile(prefix="slugathon",
-                                         suffix=".png", delete=False) \
-                as tmp_file:
+        with tempfile.NamedTemporaryFile(
+            prefix="slugathon", suffix=".png", delete=False
+        ) as tmp_file:
             tmp_path = tmp_file.name
         self.surface.write_to_png(tmp_path)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file(tmp_path)
@@ -107,8 +111,10 @@ if __name__ == "__main__":
     from slugathon.game import Creature, Player, Game, Legion
 
     now = time.time()
-    creatures = [Creature.Creature(name) for name in
-                 creaturedata.starting_creature_names]
+    creatures = [
+        Creature.Creature(name)
+        for name in creaturedata.starting_creature_names
+    ]
     playername = "test"
     game = Game.Game("g1", playername, now, now, 2, 6)
     player = Player.Player(playername, game, 0)

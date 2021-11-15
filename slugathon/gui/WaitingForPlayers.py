@@ -7,8 +7,10 @@ __license__ = "GNU GPL v2"
 import time
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -35,8 +37,9 @@ class WaitingForPlayers(Gtk.Dialog):
     """Waiting for players to start game dialog."""
 
     def __init__(self, user, playername, game, parent):
-        GObject.GObject.__init__(self, title="Waiting for Players - %s" % playername,
-                            parent=parent)
+        GObject.GObject.__init__(
+            self, title="Waiting for Players - %s" % playername, parent=parent
+        )
         self.user = user
         self.playername = playername
         self.game = game
@@ -116,8 +119,9 @@ class WaitingForPlayers(Gtk.Dialog):
         self.start_button = Gtk.Button(label="Start Game Now")
         self.vbox.pack_start(self.start_button, False, True, 0)
         self.start_button.connect("button-press-event", self.cb_click_start)
-        self.start_button.set_sensitive(self.playername ==
-                                        self.game.owner.name)
+        self.start_button.set_sensitive(
+            self.playername == self.game.owner.name
+        )
 
         self.connect("destroy", self.cb_destroy)
 
@@ -130,8 +134,7 @@ class WaitingForPlayers(Gtk.Dialog):
         selection.set_select_function(self.cb_player_list_select, None)
         headers = ["Player Name", "Skill"]
         for (ii, title) in enumerate(headers):
-            column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(),
-                                        text=ii)
+            column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(), text=ii)
             self.player_list.append_column(column)
 
         self.show_all()
@@ -203,8 +206,9 @@ class WaitingForPlayers(Gtk.Dialog):
         length = len(self.game.playernames)
         while len(self.player_store) > length:
             del self.player_store[length]
-        self.start_button.set_sensitive(self.playername ==
-                                        self.game.owner.name)
+        self.start_button.set_sensitive(
+            self.playername == self.game.owner.name
+        )
 
     def failure(self, arg):
         log.err(arg)
@@ -224,6 +228,7 @@ class WaitingForPlayers(Gtk.Dialog):
         elif isinstance(action, Action.AssignTower):
             if action.game_name == self.game.name:
                 self.shutdown()
+
 
 if __name__ == "__main__":
     from slugathon.game import Game

@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 from twisted.python import log
@@ -19,8 +20,9 @@ class NewGame(Gtk.Dialog):
     """Form new game dialog."""
 
     def __init__(self, user, playername, parent_window):
-        GObject.GObject.__init__(self, title="Form New Game - %s" % playername,
-                            parent=parent_window)
+        GObject.GObject.__init__(
+            self, title="Form New Game - %s" % playername, parent=parent_window
+        )
         self.game_name = None
         self.min_players = None
         self.max_players = None
@@ -40,54 +42,75 @@ class NewGame(Gtk.Dialog):
         self.name_entry.set_width_chars(40)
         hbox1.pack_start(self.name_entry, False, True, 0)
 
-        min_adjustment = Gtk.Adjustment(value=2, lower=2, upper=6,
-                                        step_increment=1,
-                                        page_increment=0, page_size=0)
-        max_adjustment = Gtk.Adjustment(value=6, lower=2, upper=6,
-                                        step_increment=1, page_increment=0,
-                                        page_size=0)
-        ai_time_limit_adjustment = Gtk.Adjustment(
-            value=config.DEFAULT_AI_TIME_LIMIT,
-            lower=1, upper=99,
+        min_adjustment = Gtk.Adjustment(
+            value=2,
+            lower=2,
+            upper=6,
             step_increment=1,
             page_increment=0,
-            page_size=0)
+            page_size=0,
+        )
+        max_adjustment = Gtk.Adjustment(
+            value=6,
+            lower=2,
+            upper=6,
+            step_increment=1,
+            page_increment=0,
+            page_size=0,
+        )
+        ai_time_limit_adjustment = Gtk.Adjustment(
+            value=config.DEFAULT_AI_TIME_LIMIT,
+            lower=1,
+            upper=99,
+            step_increment=1,
+            page_increment=0,
+            page_size=0,
+        )
         player_time_limit_adjustment = Gtk.Adjustment(
-            value=config.DEFAULT_PLAYER_TIME_LIMIT, lower=1, upper=999,
-            step_increment=1, page_increment=100, page_size=0)
+            value=config.DEFAULT_PLAYER_TIME_LIMIT,
+            lower=1,
+            upper=999,
+            step_increment=1,
+            page_increment=100,
+            page_size=0,
+        )
 
         hbox2 = Gtk.HBox()
         self.vbox.pack_start(hbox2, True, True, 0)
         label2 = Gtk.Label(label="Min players")
         hbox2.pack_start(label2, False, True, 0)
-        self.min_players_spin = Gtk.SpinButton(adjustment=min_adjustment,
-                                               climb_rate=1, digits=0)
+        self.min_players_spin = Gtk.SpinButton(
+            adjustment=min_adjustment, climb_rate=1, digits=0
+        )
         self.min_players_spin.set_numeric(True)
         self.min_players_spin.set_value(2)
         hbox2.pack_start(self.min_players_spin, False, True, 0)
         label3 = Gtk.Label(label="Max players")
         hbox2.pack_start(label3, False, True, 0)
-        self.max_players_spin = Gtk.SpinButton(adjustment=max_adjustment,
-                                               climb_rate=1, digits=0)
+        self.max_players_spin = Gtk.SpinButton(
+            adjustment=max_adjustment, climb_rate=1, digits=0
+        )
         self.max_players_spin.set_numeric(True)
         self.max_players_spin.set_value(6)
         hbox2.pack_start(self.max_players_spin, False, True, 0)
         label4 = Gtk.Label(label="AI time limit")
         hbox2.pack_start(label4, False, True, 0)
         self.ai_time_limit_spin = Gtk.SpinButton(
-            adjustment=ai_time_limit_adjustment,
-            climb_rate=1, digits=0)
+            adjustment=ai_time_limit_adjustment, climb_rate=1, digits=0
+        )
         self.ai_time_limit_spin.set_numeric(True)
         hbox2.pack_start(self.ai_time_limit_spin, False, True, 0)
         label5 = Gtk.Label(label="Player time limit")
         hbox2.pack_start(label5, False, True, 0)
         self.player_time_limit_spin = Gtk.SpinButton(
-            adjustment=player_time_limit_adjustment,
-            climb_rate=1, digits=0)
+            adjustment=player_time_limit_adjustment, climb_rate=1, digits=0
+        )
         self.player_time_limit_spin.set_numeric(True)
         hbox2.pack_start(self.player_time_limit_spin, False, True, 0)
 
-        self.cancel_button = self.add_button("gtk-cancel", Gtk.ResponseType.CANCEL)
+        self.cancel_button = self.add_button(
+            "gtk-cancel", Gtk.ResponseType.CANCEL
+        )
         self.cancel_button.connect("button-press-event", self.cancel)
         self.ok_button = self.add_button("gtk-ok", Gtk.ResponseType.OK)
         self.ok_button.connect("button-press-event", self.ok)
@@ -100,12 +123,19 @@ class NewGame(Gtk.Dialog):
             self.min_players = self.min_players_spin.get_value_as_int()
             self.max_players = self.max_players_spin.get_value_as_int()
             self.ai_time_limit = self.ai_time_limit_spin.get_value_as_int()
-            self.player_time_limit = \
+            self.player_time_limit = (
                 self.player_time_limit_spin.get_value_as_int()
-            def1 = self.user.callRemote("form_game", self.game_name,
-                                        self.min_players, self.max_players,
-                                        self.ai_time_limit,
-                                        self.player_time_limit, "Human", "")
+            )
+            def1 = self.user.callRemote(
+                "form_game",
+                self.game_name,
+                self.min_players,
+                self.max_players,
+                self.ai_time_limit,
+                self.player_time_limit,
+                "Human",
+                "",
+            )
             def1.addCallback(self.got_information)
             def1.addErrback(self.failure)
             self.destroy()

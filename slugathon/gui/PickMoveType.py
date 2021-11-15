@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 from twisted.internet import defer
@@ -31,7 +32,9 @@ class PickMoveType(Gtk.Dialog):
     """Dialog to choose whether to teleport."""
 
     def __init__(self, playername, legion, hexlabel, def1, parent):
-        GObject.GObject.__init__(self, title="PickMoveType - %s" % playername, parent=parent)
+        GObject.GObject.__init__(
+            self, title="PickMoveType - %s" % playername, parent=parent
+        )
         self.deferred = def1
         self.legion = legion
         player = legion.player
@@ -41,9 +44,10 @@ class PickMoveType(Gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = Gtk.Label(label=
-            "Pick move type for legion %s (%s) in hex %s moving to hex %s" % (
-                legion.markerid, legion.picname, legion.hexlabel, hexlabel))
+        legion_name = Gtk.Label(
+            label="Pick move type for legion %s (%s) in hex %s moving to hex %s"
+            % (legion.markerid, legion.picname, legion.hexlabel, hexlabel)
+        )
         self.vbox.pack_start(legion_name, True, True, 0)
 
         legion_hbox = Gtk.HBox(spacing=15)

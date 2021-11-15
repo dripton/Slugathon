@@ -32,7 +32,7 @@ class MasterHex(object):
         self.label = label
         self.x = x
         self.y = y
-        self.inverted = ((self.x + self.y) & 1 == 0)
+        self.inverted = (self.x + self.y) & 1 == 0
         self.terrain = terrain
         self._exits = exits
         self.exits = []
@@ -46,8 +46,12 @@ class MasterHex(object):
         self.label_side = self.find_label_side()
 
     def __repr__(self):
-        return "%s hex %d at (%d,%d)" % (self.terrain, self.label,
-                                         self.x, self.y)
+        return "%s hex %d at (%d,%d)" % (
+            self.terrain,
+            self.label,
+            self.x,
+            self.y,
+        )
 
     def connect_to_neighbors(self):
         it = iter(self._exits)
@@ -58,7 +62,7 @@ class MasterHex(object):
             self.neighbors[direction] = neighbor
             neighbor.neighbors[(direction + 3) % 6] = self
             neighbor.entrances[(direction + 3) % 6] = gate_type
-        del (self._exits)
+        del self._exits
 
     def find_direction(self, neighbor_label):
         """Return the direction (0 to 5) from this hex to the adjacent hex
@@ -100,8 +104,12 @@ class MasterHex(object):
         the center of the board, or the one farthest away from it.
         """
         delta_x = self.x - self.board.mid_x
-        delta_y = (1.0 * (self.y - self.board.mid_y) * self.board.width /
-                   self.board.height)
+        delta_y = (
+            1.0
+            * (self.y - self.board.mid_y)
+            * self.board.width
+            / self.board.height
+        )
         try:
             ratio = delta_x / delta_y
         except ZeroDivisionError:

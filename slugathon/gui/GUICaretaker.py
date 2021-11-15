@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -39,8 +40,9 @@ class GUICaretaker(Gtk.EventBox):
         self.counts_labels = {}
         self.chits = {}
 
-        for ii, (creature_name, left_count) in enumerate(sorted(
-                self.caretaker.counts.items())):
+        for ii, (creature_name, left_count) in enumerate(
+            sorted(self.caretaker.counts.items())
+        ):
             creature = Creature.Creature(creature_name)
             max_count = self.caretaker.max_counts[creature_name]
             dead_count = self.caretaker.graveyard[creature_name]
@@ -51,16 +53,16 @@ class GUICaretaker(Gtk.EventBox):
             table.attach(vbox, col, col + 1, row, row + 1)
             label = self.max_count_labels[creature_name] = Gtk.Label()
             vbox.pack_start(label, False, True, 0)
-            chit = self.chits[creature_name] = Chit.Chit(creature,
-                                                         "Black",
-                                                         scale=15,
-                                                         dead=(not left_count))
+            chit = self.chits[creature_name] = Chit.Chit(
+                creature, "Black", scale=15, dead=(not left_count)
+            )
             vbox.pack_start(chit.event_box, False, True, 0)
             label = self.counts_labels[creature_name] = Gtk.Label()
             vbox.pack_start(label, False, True, 0)
             self.update_max_count_label(creature_name, max_count)
-            self.update_counts_label(creature_name, left_count, game_count,
-                                     dead_count)
+            self.update_counts_label(
+                creature_name, left_count, game_count, dead_count
+            )
 
         self.show_all()
 
@@ -68,13 +70,15 @@ class GUICaretaker(Gtk.EventBox):
         label = self.max_count_labels[creature_name]
         label.set_markup("<span foreground='blue'>%d</span>" % max_count)
 
-    def update_counts_label(self, creature_name, left_count, game_count,
-                            dead_count):
+    def update_counts_label(
+        self, creature_name, left_count, game_count, dead_count
+    ):
         label = self.counts_labels[creature_name]
-        label.set_markup("<span foreground='black'>%d</span>" % left_count +
-                         "/<span foreground='darkgreen'>%d</span>" %
-                         game_count +
-                         "/<span foreground='red'>%d</span>" % dead_count)
+        label.set_markup(
+            "<span foreground='black'>%d</span>" % left_count
+            + "/<span foreground='darkgreen'>%d</span>" % game_count
+            + "/<span foreground='red'>%d</span>" % dead_count
+        )
         if left_count == 0 and creature_name != "Titan":
             chit = self.chits[creature_name]
             chit.dead = True
@@ -90,30 +94,39 @@ class GUICaretaker(Gtk.EventBox):
         max_count = self.caretaker.max_counts[creature_name]
         dead_count = self.caretaker.graveyard[creature_name]
         game_count = max_count - left_count - dead_count
-        self.update_counts_label(creature_name, left_count, game_count,
-                                 dead_count)
+        self.update_counts_label(
+            creature_name, left_count, game_count, dead_count
+        )
 
     def update(self, observed, action, names):
         if isinstance(action, Action.CreateStartingLegion):
             for creature_name in set(creaturedata.starting_creature_names):
                 self.update_creature(creature_name)
 
-        elif (isinstance(action, Action.RecruitCreature) or
-              isinstance(action, Action.UndoRecruit) or
-              isinstance(action, Action.UnReinforce)):
+        elif (
+            isinstance(action, Action.RecruitCreature)
+            or isinstance(action, Action.UndoRecruit)
+            or isinstance(action, Action.UnReinforce)
+        ):
             creature_name = action.creature_name
             self.update_creature(creature_name)
 
-        elif isinstance(action, Action.Flee or
-                        isinstance(action, Action.Concede) or
-                        isinstance(action, Action.AcceptProposal) or
-                        isinstance(action, Action.BattleOver)):
+        elif isinstance(
+            action,
+            Action.Flee
+            or isinstance(action, Action.Concede)
+            or isinstance(action, Action.AcceptProposal)
+            or isinstance(action, Action.BattleOver),
+        ):
             for creature_name in self.caretaker.counts:
                 self.update_creature(creature_name)
 
-        elif isinstance(action, Action.DriftDamage or
-                        isinstance(action, Action.Strike) or
-                        isinstance(action, Action.Carry)):
+        elif isinstance(
+            action,
+            Action.DriftDamage
+            or isinstance(action, Action.Strike)
+            or isinstance(action, Action.Carry),
+        ):
             creature_name = action.target_name
             self.update_creature(creature_name)
 

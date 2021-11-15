@@ -79,7 +79,6 @@ defaults = {
 
 
 class BotParams(namedtuple("BotParams", fields)):
-
     @classmethod
     def fromstring(klass, st):
         """Create a BotParams from a string.

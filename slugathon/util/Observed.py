@@ -20,6 +20,7 @@ class IObserved(Interface):
 class Observed(object):
     """Inherit from this mixin and call its __init__ to allow the class
     to be observed."""
+
     def __init__(self):
         self.observers = {}
 

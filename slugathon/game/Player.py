@@ -26,17 +26,29 @@ class Player(Observed):
     another user might take over his player can continue the game.
     """
 
-    def __init__(self, playername, game, join_order, player_class="Human",
-                 player_info=""):
-        logging.info("%s %s %s %s %s", playername, game, join_order,
-                     player_class, player_info)
+    def __init__(
+        self,
+        playername,
+        game,
+        join_order,
+        player_class="Human",
+        player_info="",
+    ):
+        logging.info(
+            "%s %s %s %s %s",
+            playername,
+            game,
+            join_order,
+            player_class,
+            player_info,
+        )
         Observed.__init__(self)
         self.name = playername
         self.player_class = player_class
         self.player_info = player_info or playername
         self.game = game
         self.join_order = join_order
-        self.starting_tower = None    # a numeric hex label
+        self.starting_tower = None  # a numeric hex label
         self.created_starting_legion = False
         self.score = 0
         self.color = None
@@ -62,8 +74,9 @@ class Player(Observed):
     def sorted_legions(self):
         """Return a list of this player's legions in descending order
         of importance."""
-        value_legions = [(legion.sort_value, legion) for legion in
-                         self.legions]
+        value_legions = [
+            (legion.sort_value, legion) for legion in self.legions
+        ]
         value_legions.sort()
         value_legions.reverse()
         return [legion for (value, legion) in value_legions]
@@ -127,14 +140,18 @@ class Player(Observed):
             raise AssertionError("create_starting_legion with bad marker")
         if self.markerid_to_legion:
             raise AssertionError("create_starting_legion but have a legion")
-        creatures = [Creature.Creature(name) for name in
-                     creaturedata.starting_creature_names]
-        legion = Legion.Legion(self, self.take_marker(markerid), creatures,
-                               self.starting_tower)
+        creatures = [
+            Creature.Creature(name)
+            for name in creaturedata.starting_creature_names
+        ]
+        legion = Legion.Legion(
+            self, self.take_marker(markerid), creatures, self.starting_tower
+        )
         self.markerid_to_legion[markerid] = legion
         legion.add_observer(self.game)
-        action = Action.CreateStartingLegion(self.game.name, self.name,
-                                             markerid)
+        action = Action.CreateStartingLegion(
+            self.game.name, self.name, markerid
+        )
         caretaker = self.game.caretaker
         for creature in creatures:
             caretaker.take_one(creature.name)
@@ -152,32 +169,53 @@ class Player(Observed):
                     return True
         return False
 
-    def split_legion(self, parent_markerid, child_markerid,
-                     parent_creature_names, child_creature_names):
-        logging.info("%s %s %s %s", parent_markerid, child_markerid,
-                     parent_creature_names, child_creature_names)
+    def split_legion(
+        self,
+        parent_markerid,
+        child_markerid,
+        parent_creature_names,
+        child_creature_names,
+    ):
+        logging.info(
+            "%s %s %s %s",
+            parent_markerid,
+            child_markerid,
+            parent_creature_names,
+            child_creature_names,
+        )
         parent = self.markerid_to_legion.get(parent_markerid)
         if parent is None:
             return
         if child_markerid not in self.markerids_left:
             raise AssertionError("illegal marker")
-        if (bag(parent.creature_names) != bag(parent_creature_names).union(
-                bag(child_creature_names)) and
-            bag(parent_creature_names).union(bag(child_creature_names)) !=
-                bag({"Unknown": len(parent)})):
-            raise AssertionError("wrong creatures",
-                                 "parent.creature_names",
-                                 parent.creature_names,
-                                 "parent_creature_names",
-                                 parent_creature_names,
-                                 "child_creature_names",
-                                 child_creature_names)
-        new_legion1 = Legion.Legion(self, parent_markerid,
-                                    Creature.n2c(parent_creature_names),
-                                    parent.hexlabel)
-        new_legion2 = Legion.Legion(self, child_markerid,
-                                    Creature.n2c(child_creature_names),
-                                    parent.hexlabel)
+        if bag(parent.creature_names) != bag(parent_creature_names).union(
+            bag(child_creature_names)
+        ) and bag(parent_creature_names).union(
+            bag(child_creature_names)
+        ) != bag(
+            {"Unknown": len(parent)}
+        ):
+            raise AssertionError(
+                "wrong creatures",
+                "parent.creature_names",
+                parent.creature_names,
+                "parent_creature_names",
+                parent_creature_names,
+                "child_creature_names",
+                child_creature_names,
+            )
+        new_legion1 = Legion.Legion(
+            self,
+            parent_markerid,
+            Creature.n2c(parent_creature_names),
+            parent.hexlabel,
+        )
+        new_legion2 = Legion.Legion(
+            self,
+            child_markerid,
+            Creature.n2c(child_creature_names),
+            parent.hexlabel,
+        )
         if not parent.is_legal_split(new_legion1, new_legion2):
             raise AssertionError("illegal split")
         del new_legion1
@@ -189,19 +227,26 @@ class Player(Observed):
         self.markerid_to_legion[child_markerid] = new_legion2
         del parent
         # One action for our player with creature names
-        action = Action.SplitLegion(self.game.name, self.name,
-                                    parent_markerid, child_markerid,
-                                    parent_creature_names,
-                                    child_creature_names)
+        action = Action.SplitLegion(
+            self.game.name,
+            self.name,
+            parent_markerid,
+            child_markerid,
+            parent_creature_names,
+            child_creature_names,
+        )
         logging.info(action)
         self.notify(action, names=[self.name])
         # Another action for everyone (including our player, who will
         # ignore it as a duplicate) without creature names.
-        action = Action.SplitLegion(self.game.name, self.name,
-                                    parent_markerid, child_markerid,
-                                    len(parent_creature_names) *
-                                    ["Unknown"],
-                                    len(child_creature_names) * ["Unknown"])
+        action = Action.SplitLegion(
+            self.game.name,
+            self.name,
+            parent_markerid,
+            child_markerid,
+            len(parent_creature_names) * ["Unknown"],
+            len(child_creature_names) * ["Unknown"],
+        )
         logging.info(action)
         self.notify(action)
 
@@ -222,16 +267,23 @@ class Player(Observed):
         del child
         # One action for our player with creature names, and a
         # different action for other players without.
-        action = Action.UndoSplit(self.game.name, self.name,
-                                  parent_markerid, child_markerid,
-                                  parent_creature_names,
-                                  child_creature_names)
+        action = Action.UndoSplit(
+            self.game.name,
+            self.name,
+            parent_markerid,
+            child_markerid,
+            parent_creature_names,
+            child_creature_names,
+        )
         self.notify(action, names=[self.name])
-        action = Action.UndoSplit(self.game.name, self.name,
-                                  parent_markerid, child_markerid,
-                                  len(parent_creature_names) *
-                                  ["Unknown"],
-                                  len(child_creature_names) * ["Unknown"])
+        action = Action.UndoSplit(
+            self.game.name,
+            self.name,
+            parent_markerid,
+            child_markerid,
+            len(parent_creature_names) * ["Unknown"],
+            len(child_creature_names) * ["Unknown"],
+        )
         other_playernames = self.game.playernames
         other_playernames.remove(self.name)
         self.notify(action, names=other_playernames)
@@ -243,13 +295,16 @@ class Player(Observed):
             return False
         if self.dead:
             return True
-        return (self.markerid_to_legion and max((len(legion) for legion in
-                                                 self.legions)) < 8)
+        return (
+            self.markerid_to_legion
+            and max((len(legion) for legion in self.legions)) < 8
+        )
 
     def _roll_movement(self):
         self.movement_roll = Dice.roll()[0]
-        action = Action.RollMovement(self.game.name, self.name,
-                                     self.movement_roll, self.mulligans_left)
+        action = Action.RollMovement(
+            self.game.name, self.name, self.movement_roll, self.mulligans_left
+        )
         self.notify(action)
 
     def done_with_splits(self):
@@ -259,8 +314,12 @@ class Player(Observed):
     @property
     def can_take_mulligan(self):
         """Return True iff this player can take a mulligan"""
-        return bool(self is self.game.active_player and self.game.turn == 1
-                    and self.game.phase == Phase.MOVE and self.mulligans_left)
+        return bool(
+            self is self.game.active_player
+            and self.game.turn == 1
+            and self.game.phase == Phase.MOVE
+            and self.mulligans_left
+        )
 
     def take_mulligan(self):
         self.mulligans_left -= 1
@@ -290,13 +349,23 @@ class Player(Observed):
 
     def friendly_legions(self, hexlabel=None):
         """Return a set of this player's legions, in hexlabel if not None."""
-        return set([legion for legion in self.legions if hexlabel in
-                    (None, legion.hexlabel)])
+        return set(
+            [
+                legion
+                for legion in self.legions
+                if hexlabel in (None, legion.hexlabel)
+            ]
+        )
 
     def enemy_legions(self, hexlabel=None):
         """Return a set of other players' legions, in hexlabel if not None."""
-        return set([legion for legion in self.game.all_legions(hexlabel)
-                    if legion.player is not self])
+        return set(
+            [
+                legion
+                for legion in self.game.all_legions(hexlabel)
+                if legion.player is not self
+            ]
+        )
 
     @property
     def can_exit_move_phase(self):
@@ -309,11 +378,11 @@ class Player(Observed):
             return False
         for legion in self.friendly_legions():
             if len(self.friendly_legions(legion.hexlabel)) >= 2:
-                if (not legion.moved and
-                    self.game.find_all_moves(
-                        legion,
-                        self.game.board.hexes[legion.hexlabel],
-                        self.movement_roll)):
+                if not legion.moved and self.game.find_all_moves(
+                    legion,
+                    self.game.board.hexes[legion.hexlabel],
+                    self.movement_roll,
+                ):
                     return False
                 # else will need to recombine
         return True
@@ -327,7 +396,8 @@ class Player(Observed):
                     split_action = self.game.history.find_last_split(
                         self.name,
                         legions_in_hex[0].markerid,
-                        legions_in_hex[1].markerid)
+                        legions_in_hex[1].markerid,
+                    )
                     if split_action is not None:
                         parent_markerid = split_action.parent_markerid
                         child_markerid = split_action.child_markerid
@@ -354,13 +424,19 @@ class Player(Observed):
         """Return True iff this player can finish the fight phase."""
         if self.game.phase != Phase.FIGHT:
             return False
-        logging.info("can_exit_fight_phase %s %s %s %s",
-                     self.game.engagement_hexlabels, self.game.pending_summon,
-                     self.game.pending_reinforcement, self.pending_acquire)
-        return (not self.game.engagement_hexlabels
-                and not self.game.pending_summon
-                and not self.game.pending_reinforcement
-                and not self.game.pending_acquire)
+        logging.info(
+            "can_exit_fight_phase %s %s %s %s",
+            self.game.engagement_hexlabels,
+            self.game.pending_summon,
+            self.game.pending_reinforcement,
+            self.pending_acquire,
+        )
+        return (
+            not self.game.engagement_hexlabels
+            and not self.game.pending_summon
+            and not self.game.pending_reinforcement
+            and not self.game.pending_acquire
+        )
 
     @property
     def pending_acquire(self):
@@ -438,16 +514,18 @@ class Player(Observed):
         for legion in self.game.battle_legions:
             if legion.player != self:
                 player = legion.player
-        action = Action.StartCounterstrikeBattlePhase(self.game.name,
-                                                      player.name)
+        action = Action.StartCounterstrikeBattlePhase(
+            self.game.name, player.name
+        )
         self.notify(action)
 
     def done_with_counterstrikes(self):
         if self.has_forced_strikes:
             logging.info("Forced strikes remain")
             return
-        action = Action.StartReinforceBattlePhase(self.game.name, self.name,
-                                                  self.game.battle_turn)
+        action = Action.StartReinforceBattlePhase(
+            self.game.name, self.name, self.game.battle_turn
+        )
         self.notify(action)
 
     @property
@@ -463,8 +541,9 @@ class Player(Observed):
 
     def summon_angel(self, legion, donor, creature_name):
         """Summon an angel from donor to legion."""
-        logging.info("Player.summon_angel %s %s %s", legion, donor,
-                     creature_name)
+        logging.info(
+            "Player.summon_angel %s %s %s", legion, donor, creature_name
+        )
         assert not self.summoned, "player tried to summon twice"
         assert len(legion) < 7, "legion too tall to summon"
         donor.reveal_creatures([creature_name])
@@ -489,23 +568,29 @@ class Player(Observed):
         creature.legion = donor
         self.summoned = False
         self.last_donor = None
-        action = Action.UnsummonAngel(self.game.name, self.name,
-                                      legion.markerid, donor.markerid,
-                                      creature.name)
+        action = Action.UnsummonAngel(
+            self.game.name,
+            self.name,
+            legion.markerid,
+            donor.markerid,
+            creature.name,
+        )
         self.notify(action)
 
     def do_not_summon_angel(self, legion):
         """Do not summon an angel into legion."""
         logging.info("Player.do_not_summon_angel %s", legion)
-        action = Action.DoNotSummonAngel(self.game.name, self.name,
-                                         legion.markerid)
+        action = Action.DoNotSummonAngel(
+            self.game.name, self.name, legion.markerid
+        )
         self.notify(action)
 
     def do_not_reinforce(self, legion):
         """Do not recruit a reinforcement into legion."""
         logging.info("Player.do_not_reinforce %s", legion)
-        action = Action.DoNotReinforce(self.game.name, self.name,
-                                       legion.markerid)
+        action = Action.DoNotReinforce(
+            self.game.name, self.name, legion.markerid
+        )
         self.notify(action)
 
     def new_turn(self):
@@ -543,25 +628,28 @@ class Player(Observed):
         """Die and give half points to scoring_player, except for legions
         which are engaged with someone else.
         """
-        logging.info("Player.die %s %s %s", self, scoring_player,
-                     check_for_victory)
+        logging.info(
+            "Player.die %s %s %s", self, scoring_player, check_for_victory
+        )
         # First reveal all this player's legions.
         for legion in self.legions:
-            if (legion.all_known and legion not in self.game.battle_legions):
+            if legion.all_known and legion not in self.game.battle_legions:
                 # Only reveal the legion if we're sure about its contents,
                 # to avoid spreading disinformation.
                 # Do not reveal the legion that's currently in battle, because
                 # its contents are in flux.
-                action = Action.RevealLegion(self.game.name, legion.markerid,
-                                             legion.creature_names)
+                action = Action.RevealLegion(
+                    self.game.name, legion.markerid, legion.creature_names
+                )
                 self.notify(action)
         if scoring_player is None:
             scoring_player_name = ""
         else:
             scoring_player_name = scoring_player.name
         self.has_titan = False
-        action = Action.EliminatePlayer(self.game.name, scoring_player_name,
-                                        self.name, check_for_victory)
+        action = Action.EliminatePlayer(
+            self.game.name, scoring_player_name, self.name, check_for_victory
+        )
         reactor.callLater(0.1, self.notify, action)
 
     def add_points(self, points):

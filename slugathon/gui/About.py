@@ -10,6 +10,7 @@ __license__ = "GNU GPL v2"
 import os
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 
@@ -18,7 +19,6 @@ from slugathon.util import guiutils, fileutils
 
 
 class About(Gtk.AboutDialog):
-
     def __init__(self, parent):
         GObject.GObject.__init__(self)
         self.set_icon(icon.pixbuf)
@@ -42,19 +42,27 @@ class About(Gtk.AboutDialog):
             version = "unknown"
         self.set_version(version)
 
-        self.set_authors(["David Ripton", ])
-        self.set_artists(["Chris Byler",
-                          "Keith Carter",
-                          "Chris Howe",
-                          "Klint Hull",
-                          "David Lum",
-                          "John Lum",
-                          "Agustin Martin",
-                          "Tchula Ripton",
-                          "Jerry Reiger",
-                          "Josh Smith",
-                          "Sakis Spyropoulos",
-                          "D. U. Thibault", ])
+        self.set_authors(
+            [
+                "David Ripton",
+            ]
+        )
+        self.set_artists(
+            [
+                "Chris Byler",
+                "Keith Carter",
+                "Chris Howe",
+                "Klint Hull",
+                "David Lum",
+                "John Lum",
+                "Agustin Martin",
+                "Tchula Ripton",
+                "Jerry Reiger",
+                "Josh Smith",
+                "Sakis Spyropoulos",
+                "D. U. Thibault",
+            ]
+        )
 
         self.set_logo(icon.pixbuf)
         self.set_website("http://github.com/dripton/Slugathon")

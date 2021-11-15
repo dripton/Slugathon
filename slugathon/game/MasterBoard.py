@@ -8,6 +8,7 @@ from slugathon.game import MasterHex
 
 class MasterBoard(object):
     """Model of the Titan MasterBoard.  No GUI logic allowed."""
+
     def __init__(self):
         self.compute_hexes_metadata()
         # str hexlabel to MasterHex
@@ -25,8 +26,8 @@ class MasterBoard(object):
         self.min_y = min(ys)
         self.max_x = max(xs)
         self.max_y = max(ys)
-        self.mid_x = (self.min_x + self.max_x) / 2.
-        self.mid_y = (self.min_y + self.max_y) / 2.
+        self.mid_x = (self.min_x + self.max_x) / 2.0
+        self.mid_y = (self.min_y + self.max_y) / 2.0
         self.width = self.max_x - self.min_x + 1
         self.height = self.max_y - self.min_y + 1
 

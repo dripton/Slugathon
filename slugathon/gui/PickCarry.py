@@ -7,8 +7,10 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
+
 try:
     gtk3reactor.install()
 except AssertionError:
@@ -19,12 +21,29 @@ from gi.repository import Gtk, GObject
 from slugathon.gui import icon
 
 
-def new(playername, game_name, striker, target, num_dice, strike_number,
-        carries, parent):
+def new(
+    playername,
+    game_name,
+    striker,
+    target,
+    num_dice,
+    strike_number,
+    carries,
+    parent,
+):
     """Create a PickCarry dialog and return it and a Deferred."""
     def1 = defer.Deferred()
-    pickcarry = PickCarry(playername, game_name, striker, target, num_dice,
-                          strike_number, carries, def1, parent)
+    pickcarry = PickCarry(
+        playername,
+        game_name,
+        striker,
+        target,
+        num_dice,
+        strike_number,
+        carries,
+        def1,
+        parent,
+    )
     return pickcarry, def1
 
 
@@ -32,9 +51,21 @@ class PickCarry(Gtk.Dialog):
 
     """Dialog to pick whether and where to carry excess hits."""
 
-    def __init__(self, playername, game_name, striker, target, num_dice,
-                 strike_number, carries, def1, parent):
-        GObject.GObject.__init__(self, title="PickCarry - %s" % playername, parent=parent)
+    def __init__(
+        self,
+        playername,
+        game_name,
+        striker,
+        target,
+        num_dice,
+        strike_number,
+        carries,
+        def1,
+        parent,
+    ):
+        GObject.GObject.__init__(
+            self, title="PickCarry - %s" % playername, parent=parent
+        )
         self.playername = playername
         self.game_name = game_name
         self.carries = carries
@@ -44,11 +75,10 @@ class PickCarry(Gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
 
-        label = Gtk.Label(label="%r strikes %r and may carry over %d hit%s." % (
-                          striker,
-                          target,
-                          carries,
-                          "" if carries == 1 else "s"))
+        label = Gtk.Label(
+            label="%r strikes %r and may carry over %d hit%s."
+            % (striker, target, carries, "" if carries == 1 else "s")
+        )
         # We could use get_content_area() instead of vbox, in PyGTK 2.14+
         self.vbox.add(label)
 
@@ -92,14 +122,20 @@ if __name__ == "__main__":
     game.assign_first_marker("p0", "Rd01")
     game.assign_first_marker("p1", "Bu01")
     player0.pick_marker("Rd02")
-    player0.split_legion("Rd01", "Rd02",
-                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
-                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
+    player0.split_legion(
+        "Rd01",
+        "Rd02",
+        ["Titan", "Centaur", "Ogre", "Gargoyle"],
+        ["Angel", "Centaur", "Ogre", "Gargoyle"],
+    )
     rd01 = player0.markerid_to_legion["Rd01"]
     player1.pick_marker("Bu02")
-    player1.split_legion("Bu01", "Bu02",
-                         ["Titan", "Centaur", "Ogre", "Gargoyle"],
-                         ["Angel", "Centaur", "Ogre", "Gargoyle"])
+    player1.split_legion(
+        "Bu01",
+        "Bu02",
+        ["Titan", "Centaur", "Ogre", "Gargoyle"],
+        ["Angel", "Centaur", "Ogre", "Gargoyle"],
+    )
     bu01 = player1.markerid_to_legion["Bu01"]
 
     rd01.move(6, False, None, 3)

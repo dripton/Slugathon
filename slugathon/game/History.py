@@ -74,10 +74,14 @@ class History(object):
         """Return the last SplitLegion action for playername involving
         markerid1 or markerid2, or None."""
         for action in reversed(self.actions):
-            if (isinstance(action, Action.SplitLegion)
-               and action.playername == playername
-               and (action.parent_markerid in [markerid1, markerid2]
-                    or action.child_markerid in [markerid1, markerid2])):
+            if (
+                isinstance(action, Action.SplitLegion)
+                and action.playername == playername
+                and (
+                    action.parent_markerid in [markerid1, markerid2]
+                    or action.child_markerid in [markerid1, markerid2]
+                )
+            ):
                 return action
         return None
 

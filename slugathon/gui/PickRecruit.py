@@ -7,6 +7,7 @@ __license__ = "GNU GPL v2"
 import logging
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 from twisted.internet import defer
@@ -19,8 +20,9 @@ def new(playername, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
     logging.info("new %s %s %s", playername, legion, mterrain)
     def1 = defer.Deferred()
-    pickrecruit = PickRecruit(playername, legion, mterrain, caretaker, def1,
-                              parent)
+    pickrecruit = PickRecruit(
+        playername, legion, mterrain, caretaker, def1, parent
+    )
     return pickrecruit, def1
 
 
@@ -29,7 +31,9 @@ class PickRecruit(Gtk.Dialog):
     """Dialog to pick a recruit."""
 
     def __init__(self, playername, legion, mterrain, caretaker, def1, parent):
-        GObject.GObject.__init__(self, title="PickRecruit - %s" % playername, parent=parent)
+        GObject.GObject.__init__(
+            self, title="PickRecruit - %s" % playername, parent=parent
+        )
         self.legion = legion
         player = legion.player
         self.deferred = def1
@@ -39,10 +43,10 @@ class PickRecruit(Gtk.Dialog):
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
 
-        legion_name = Gtk.Label(label="Pick recruit for legion %s (%s) in hex %s" % (
-                                legion.markerid,
-                                legion.picname,
-                                legion.hexlabel))
+        legion_name = Gtk.Label(
+            label="Pick recruit for legion %s (%s) in hex %s"
+            % (legion.markerid, legion.picname, legion.hexlabel)
+        )
         self.vbox.pack_start(legion_name, True, True, 0)
 
         legion_hbox = Gtk.HBox(spacing=15)
@@ -61,8 +65,9 @@ class PickRecruit(Gtk.Dialog):
             chit = Chit.Chit(creature, player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, False, True, 0)
 
-        recruit_tups = legion.available_recruits_and_recruiters(mterrain,
-                                                                caretaker)
+        recruit_tups = legion.available_recruits_and_recruiters(
+            mterrain, caretaker
+        )
         max_len = max(len(tup) for tup in recruit_tups)
         for tup in recruit_tups:
             hbox = Gtk.HBox()
@@ -101,8 +106,9 @@ class PickRecruit(Gtk.Dialog):
         """Chose a recruit."""
         eventbox = widget
         chit = eventbox.chit
-        self.deferred.callback((self.legion, chit.recruit,
-                                chit.recruiter_names))
+        self.deferred.callback(
+            (self.legion, chit.recruit, chit.recruiter_names)
+        )
         self.destroy()
 
     def cb_cancel(self, widget, response_id):
