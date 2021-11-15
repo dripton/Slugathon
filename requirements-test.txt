@@ -3,3 +3,4 @@ pytest-cov
 coveralls
 pyflakes
 pep8
+black
