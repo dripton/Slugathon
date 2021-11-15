@@ -8,22 +8,25 @@ OS.  (I had .exe files for Windows, but Github removed their downloads feature
 so they're gone for now.  Let me know if you need them.)  I'm working to make
 it easier everywhere.
 
-Note that pip can't install Slugathon because it can't install PyGTK.  But
-once you have PyGTK installed, pip should be able to do the rest.
+Note that pip can't install Slugathon because it can't install PyGI.  But
+once you have PyGI installed, pip should be able to do the rest.
 
 1. Install all the dependencies listed at
-http://wiki.github.com/dripton/Slugathon/dependencies.
+http://github.com/dripton/Slugathon/wiki/Dependencies
+
+(You basically need a recent Python 3, PyGI, PyGI-Cairo, and pip3.  Then
+you can pip install -r requirements.txt to get the rest.)
 
 See
-http://wiki.github.com/dripton/Slugathon/Building-on-Linux
-http://wiki.github.com/dripton/Slugathon/Building-on-Mac-OS
-http://wiki.github.com/dripton/Slugathon/Building-on-Windows
+http://github.com/dripton/Slugathon/wiki/Building-on-Linux
+http://github.com/dripton/Slugathon/wiki/Building-on-Mac-OS
+http://github.com/dripton/Slugathon/wiki/Building-on-Windows
 for details.
 
 2. Clone Slugathon with Git, or download and uncompress a zip or tar
 version.
 
-3. Run "python setup.py install" to install the game.  This will probably
+3. Run "python3 setup.py install" to install the game.  This will probably
 require root permissions, so use su or sudo.
 
 4. In one terminal, run "slugathon server -n"
@@ -44,4 +47,4 @@ If you want AI players, then set "Min players" to more than the number of
 human players, and AIs will join in.  When all humans have joined, have the
 first player click "Start Game Now", and play some Titan.
 
-For documentation, see the Wiki at http://wiki.github.com/dripton/Slugathon
+For documentation, see the Wiki at http://github.com/dripton/Slugathon/wiki
