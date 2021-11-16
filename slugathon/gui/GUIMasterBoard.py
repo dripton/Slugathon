@@ -933,7 +933,7 @@ class GUIMasterBoard(Gtk.EventBox):
         Compute the dirty rectangle from the union of
         self.repaint_hexlabels and the event's area.
         """
-        if self.destroyed:
+        if self.destroyed or not self.area or not self.area.get_window():
             return
         if event is None:
             if not self.repaint_hexlabels:
