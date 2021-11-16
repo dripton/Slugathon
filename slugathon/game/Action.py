@@ -12,8 +12,8 @@ def fromstring(st):
     repr string."""
     classname, dictstr = st.split(" ", 1)
     classobj = globals()[classname]
-    dic = ast.literal_eval(dictstr)
-    obj = classobj(**dic)
+    dct = ast.literal_eval(dictstr)
+    obj = classobj(**dct)
     return obj
 
 
