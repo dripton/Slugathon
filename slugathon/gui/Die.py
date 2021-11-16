@@ -34,7 +34,7 @@ class Die(object):
         )
         input_surface = cairo.ImageSurface.create_from_png(path)
         self.surface = cairo.ImageSurface(
-            cairo.FORMAT_ARGB32, self.chit_scale, self.chit_scale
+            cairo.FORMAT_ARGB32, int(self.chit_scale), (self.chit_scale)
         )
         ctx = cairo.Context(self.surface)
         ctx.scale(

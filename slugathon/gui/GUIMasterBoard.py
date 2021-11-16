@@ -954,8 +954,8 @@ class GUIMasterBoard(Gtk.EventBox):
         allocation = self.get_allocation()
         x = allocation.x
         y = allocation.y
-        width = allocation.width
-        height = allocation.height
+        width = int(allocation.width)
+        height = int(allocation.height)
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         ctx = cairo.Context(surface)
         ctx.rectangle(*clip_rect)

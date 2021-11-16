@@ -102,7 +102,7 @@ class Chit(object):
         if self.outlined:
             self._render_outline(input_surface)
         self.surface = cairo.ImageSurface(
-            cairo.FORMAT_ARGB32, self.chit_scale, self.chit_scale
+            cairo.FORMAT_ARGB32, int(self.chit_scale), int(self.chit_scale)
         )
         ctx2 = cairo.Context(self.surface)
         if self.rotate:

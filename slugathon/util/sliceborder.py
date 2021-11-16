@@ -23,8 +23,8 @@ def slice_border_image(input_path, output_path, hexsides):
     range 0 (north) through 5 (northwest), counting clockwise.
     """
     input_surface = cairo.ImageSurface.create_from_png(input_path)
-    x_size = input_surface.get_width()
-    y_size = input_surface.get_height()
+    x_size = int(input_surface.get_width())
+    y_size = int(input_surface.get_height())
 
     vertexes = []
     vertexes.append((0.25 * x_size, 0))

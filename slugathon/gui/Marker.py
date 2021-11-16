@@ -38,7 +38,7 @@ class Marker(object):
         input_surface = cairo.ImageSurface.create_from_png(self.image_path)
         self._render_text(input_surface)
         self.surface = cairo.ImageSurface(
-            cairo.FORMAT_ARGB32, self.chit_scale, self.chit_scale
+            cairo.FORMAT_ARGB32, int(self.chit_scale), int(self.chit_scale)
         )
         ctx = cairo.Context(self.surface)
         ctx.scale(

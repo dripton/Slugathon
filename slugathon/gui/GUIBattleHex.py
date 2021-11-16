@@ -140,8 +140,8 @@ class GUIBattleHex(object):
         input_surface = cairo.ImageSurface.create_from_png(image_path)
         input_width = input_surface.get_width()
         input_height = input_surface.get_height()
-        output_width = myboxsize[0]
-        output_height = myboxsize[1]
+        output_width = int(myboxsize[0])
+        output_height = int(myboxsize[1])
         self.hex_surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32, output_width, output_height
         )
@@ -175,8 +175,8 @@ class GUIBattleHex(object):
                 input_surface = cairo.ImageSurface.create_from_png(border_path)
                 input_width = input_surface.get_width()
                 input_height = input_surface.get_height()
-                output_width = myboxsize[0]
-                output_height = myboxsize[1]
+                output_width = int(myboxsize[0])
+                output_height = int(myboxsize[1])
                 border_surface = cairo.ImageSurface(
                     cairo.FORMAT_ARGB32, output_width, output_height
                 )
