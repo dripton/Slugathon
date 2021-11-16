@@ -136,6 +136,9 @@ class Legion(Observed):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __lt__(self, other):
+        return self.markerid < other.markerid
+
     def __hash__(self):
         return hash(self.markerid)
 

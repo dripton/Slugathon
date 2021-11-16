@@ -655,7 +655,10 @@ class CleverBot(object):
                 for hexlabel, entry_side in moves:
                     score = self._score_move(legion, hexlabel, True)
                     best_moves.append((score, legion, hexlabel, entry_side))
-            best_moves.sort()
+            # Entry sides are a mix of str and int, so stringify them
+            best_moves.sort(
+                key=lambda move: (move[0], move[1], move[2], str(move[3]))
+            )
             logging.debug("best moves %s", best_moves)
             if not best_moves:
                 logging.debug("dumping all legions")

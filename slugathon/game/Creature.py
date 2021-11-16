@@ -123,6 +123,9 @@ class Creature(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __lt__(self, other):
+        return self.name < other.name
+
     def __hash__(self):
         return hash(self.name) + hash(self.hexlabel)
 
