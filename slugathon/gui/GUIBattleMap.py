@@ -152,14 +152,14 @@ class GUIBattleMap(Gtk.EventBox):
             hexlabel = game.defender_legion.hexlabel
             masterhex = board.hexes[hexlabel]
             own_hex_label = self.masterhex_label(masterhex, "xx-large")
-            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(self.build_spacer(), True, True, 0)
             self.hbox1.pack_start(own_hex_label, True, True, 0)
-            self.hbox1.pack_start(self.spacer(True, True, 0))
-            self.hbox1.pack_start(self.spacer(True, True, 0))
-            self.hbox1.pack_start(self.spacer(True, True, 0))
-            self.hbox1.pack_start(self.spacer(True, True, 0))
-            self.hbox1.pack_start(self.spacer(True, True, 0))
-            self.hbox1.pack_start(self.spacer(True, True, 0))
+            self.hbox1.pack_start(self.build_spacer(), True, True, 0)
+            self.hbox1.pack_start(self.build_spacer(), True, True, 0)
+            self.hbox1.pack_start(self.build_spacer(), True, True, 0)
+            self.hbox1.pack_start(self.build_spacer(), True, True, 0)
+            self.hbox1.pack_start(self.build_spacer(), True, True, 0)
+            self.hbox1.pack_start(self.build_spacer(), True, True, 0)
             self.hbox3.pack_start(self.turn_track, False, True, 0)
             self.hbox3.pack_start(self.battle_dice, True, True, 0)
             self.hbox2.pack_start(attacker_marker.event_box, True, True, 0)
@@ -259,7 +259,7 @@ class GUIBattleMap(Gtk.EventBox):
         eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
-    def spacer(self):
+    def build_spacer(self):
         """Return a white Gtk.EventBox."""
         eventbox = Gtk.EventBox()
         gtkcolor = Gdk.color_parse("white")
