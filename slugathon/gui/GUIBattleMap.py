@@ -19,7 +19,7 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-from gi.repository import Gtk, Gdk, GObject
+from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 import cairo
 from zope.interface import implementer
 
@@ -524,8 +524,11 @@ class GUIBattleMap(Gtk.EventBox):
         """Add chits for any creatures that lack them."""
         chit_creatures = set(chit.creature for chit in self.chits)
         for (legion, rotate) in [
-            (self.game.attacker_legion, Gdk.PIXBUF_ROTATE_CLOCKWISE),
-            (self.game.defender_legion, Gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE),
+            (self.game.attacker_legion, GdkPixbuf.PixbufRotation.CLOCKWISE),
+            (
+                self.game.defender_legion,
+                GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE,
+            ),
         ]:
             if legion:
                 for creature in legion.creatures:
