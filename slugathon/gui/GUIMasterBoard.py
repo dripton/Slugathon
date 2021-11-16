@@ -332,14 +332,14 @@ class GUIMasterBoard(Gtk.EventBox):
             self.status_screen = StatusScreen.StatusScreen(
                 self.game, self.playername
             )
-            self.vbox2.pack_start(Gtk.HSeparator(True, True, 0))
+            self.vbox2.pack_start(Gtk.HSeparator(), True, True, 0)
             self.vbox2.pack_start(self.status_screen, True, True, 0)
             self.game.add_observer(self.status_screen)
 
     def _init_inspector(self):
         if not self.inspector:
             self.inspector = Inspector.Inspector(self.playername)
-            self.vbox2.pack_start(Gtk.HSeparator(True, True, 0))
+            self.vbox2.pack_start(Gtk.HSeparator(), True, True, 0)
             self.vbox2.pack_start(self.inspector, True, True, 0)
 
     def _init_event_log(self):
