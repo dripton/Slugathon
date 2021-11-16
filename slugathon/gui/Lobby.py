@@ -430,7 +430,7 @@ class Lobby(Gtk.EventBox):
             message = action.message.strip() + "\n"
             it = buf.get_end_iter()
             buf.insert(it, message)
-            self.chat_view.scroll_to_mark(buf.get_insert(), 0)
+            self.chat_view.scroll_to_mark(buf.get_insert(), 0, False, 0.5, 0.5)
             if action.source_playername != self.playername:
                 self.parent_window.highlight_lobby_label()
 
