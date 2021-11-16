@@ -251,7 +251,7 @@ class Server(Observed):
             logging.warning("game %s does not exist", game_name)
 
     def _passwd_for_playername(self, playername):
-        with open(self.passwd_path) as fil:
+        with open(self.passwd_path, encoding="utf-8") as fil:
             for line in fil:
                 user, passwd = line.strip().split(":")
                 if user == playername:
@@ -259,9 +259,11 @@ class Server(Observed):
         return None
 
     def _add_playername_with_random_password(self, ainame):
-        password = hashlib.md5(str(random.random())).hexdigest()
-        with open(self.passwd_path, "a") as fil:
-            fil.write("%s:%s\n" % (ainame, password))
+        password = hashlib.sha3_256(
+            bytes(str(random.random()), "utf-8")
+        ).hexdigest()
+        with open(self.passwd_path, "a", encoding="utf-8") as fil:
+            fil.write(bytes("%s:%s\n" % (ainame, password), "utf-8"))
 
     def _spawn_ais(self, game):
         logging.debug(game.name)
