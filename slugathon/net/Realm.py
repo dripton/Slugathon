@@ -16,6 +16,7 @@ class Realm(object):
 
     def requestAvatar(self, avatarId, mind, *interfaces):
         assert pb.IPerspective in interfaces
-        avatar = User.User(avatarId, self.server, mind)
+        str_avatar_id = avatarId.decode()
+        avatar = User.User(str_avatar_id, self.server, mind)
         avatar.attached(mind)
         return pb.IPerspective, avatar, avatar.logout
