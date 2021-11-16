@@ -136,7 +136,7 @@ class AIClient(pb.Referenceable, Observed):
 
     def connect(self):
         user_pass = credentials.UsernamePassword(
-            self.playername, self.password
+            bytes(self.playername, "utf-8"), bytes(self.password, "utf-8")
         )
         reactor.connectTCP(self.host, self.port, self.factory)
         def1 = self.factory.login(user_pass, self)
