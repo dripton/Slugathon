@@ -247,7 +247,7 @@ class Connect(Gtk.Window):
         self.status_textview.modify_text(
             Gtk.StateType.NORMAL, Gdk.color_parse("red")
         )
-        self.status_textview.get_buffer().set_text("Login failed")
+        self.status_textview.get_buffer().set_text(f"Login failed {arg}")
 
     def server_failed(self, arg):
         self.status_textview.modify_text(
