@@ -15,7 +15,7 @@ class UniqueFilePasswordDB(FilePasswordDB):
     def __init__(
         self,
         filename,
-        delim=":",
+        delim=b":",
         usernameField=0,
         passwordField=1,
         caseSensitive=True,
@@ -35,9 +35,9 @@ class UniqueFilePasswordDB(FilePasswordDB):
         )
         self.server = server
 
-    def requestAvatarId(self, c):
-        if c.username in self.server.playernames:
+    def requestAvatarId(self, credentials):
+        if credentials.username in self.server.playernames:
             # already logged in
             return defer.fail(LoginDenied())
         else:
-            return FilePasswordDB.requestAvatarId(self, c)
+            return FilePasswordDB.requestAvatarId(self, credentials)
