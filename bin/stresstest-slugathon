@@ -29,7 +29,8 @@ def start_server():
     def1.addErrback(server_failed)
 
 
-def server_exited((out, err, code)):
+def server_exited(tup):
+    out, err, code = tup
     logging.info("server exited with returncode %s stderr %s" % (code, err))
 
 
