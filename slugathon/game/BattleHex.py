@@ -36,7 +36,7 @@ class BattleHex(object):
         self.neighbors = {}  # hexside : BattleHex
 
     def __repr__(self):
-        return "BattleHex %s (%d, %d)" % (self.label, self.x, self.y)
+        return f"BattleHex {self.label} ({self.x}, {self.y})"
 
     def init_neighbors(self):
         """Called from BattleMap after all hexes are initialized."""

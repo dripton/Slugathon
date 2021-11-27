@@ -33,7 +33,7 @@ class PickMoveType(Gtk.Dialog):
 
     def __init__(self, playername, legion, hexlabel, def1, parent):
         GObject.GObject.__init__(
-            self, title="PickMoveType - %s" % playername, parent=parent
+            self, title=f"PickMoveType - {playername}", parent=parent
         )
         self.deferred = def1
         self.legion = legion
@@ -45,8 +45,10 @@ class PickMoveType(Gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = Gtk.Label(
-            label="Pick move type for legion %s (%s) in hex %s moving to hex %s"
-            % (legion.markerid, legion.picname, legion.hexlabel, hexlabel)
+            label=f"Pick move type for legion {legion.markerid} "
+            f"({legion.picname}) "
+            f"in hex {legion.hexlabel} "
+            f"moving to hex {hexlabel}"
         )
         self.vbox.pack_start(legion_name, True, True, 0)
 

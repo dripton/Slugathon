@@ -67,7 +67,7 @@ class PickEntrySide(Gtk.Dialog):
         scale=None,
     ):
         GObject.GObject.__init__(
-            self, title="Pick Entry Side - %s" % playername, parent=parent
+            self, title=f"Pick Entry Side - {playername}", parent=parent
         )
 
         terrain = masterhex.terrain
@@ -81,7 +81,7 @@ class PickEntrySide(Gtk.Dialog):
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
-        self.set_title("PickEntrySide - Slugathon - %s" % self.playername)
+        self.set_title(f"PickEntrySide - Slugathon - {self.playername}")
 
         self.hbox1 = Gtk.HBox(homogeneous=True)
         self.hbox2 = Gtk.HBox()
@@ -177,9 +177,9 @@ class PickEntrySide(Gtk.Dialog):
         Gtk.EventBox."""
         eventbox = Gtk.EventBox()
         if masterhex:
-            text = '<span size="large" weight="bold">%s hex %d</span>' % (
-                masterhex.terrain,
-                masterhex.label,
+            text = (
+                f"<span size='large' weight='bold'>{masterhex.terrain} "
+                f"hex {masterhex.label}</span>"
             )
         else:
             text = ""
@@ -294,12 +294,12 @@ if __name__ == "__main__":
     from slugathon.game import MasterBoard
 
     def my_callback(choice):
-        logging.info("chose entry side %s", choice)
+        logging.info(f"chose entry side {choice}")
         reactor.stop()
 
     board = MasterBoard.MasterBoard()
     masterhex = random.choice(list(board.hexes.values()))
-    logging.info("masterhex %s", masterhex)
+    logging.info(f"masterhex {masterhex}")
     entry_sides = set()
     for side, neighbor in enumerate(masterhex.neighbors):
         if neighbor is not None:

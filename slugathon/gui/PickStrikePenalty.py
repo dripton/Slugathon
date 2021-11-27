@@ -38,7 +38,7 @@ class PickStrikePenalty(Gtk.Dialog):
 
     def __init__(self, playername, game_name, striker, target, def1, parent):
         GObject.GObject.__init__(
-            self, title="PickStrikePenalty - %s" % playername, parent=parent
+            self, title=f"PickStrikePenalty - {playername}", parent=parent
         )
         self.playername = playername
         self.game_name = game_name
@@ -53,8 +53,8 @@ class PickStrikePenalty(Gtk.Dialog):
         self.vbox.set_spacing(9)
 
         label = Gtk.Label(
-            name="Choose strike penalty for %r striking %r?"
-            % (striker, target)
+            name=f"Choose strike penalty for {repr(striker)} "
+            f"striking {repr(target)}"
         )
         self.vbox.add(label)
 
@@ -75,15 +75,15 @@ class PickStrikePenalty(Gtk.Dialog):
         ):
             (num_dice3, strike_number3) = tup
             if creatures:
-                st = "%d dice at strike number %d, able to carry to %s" % (
-                    num_dice3,
-                    strike_number3,
-                    ", ".join(sorted(repr(cr) for cr in creatures)),
+                st = (
+                    f"{num_dice3} dice at strike number {strike_number3}, "
+                    f"able to carry to "
+                    f"{', '.join(sorted(repr(cr) for cr in creatures))}"
                 )
             else:
-                st = "%d dice at strike number %d, unable to carry" % (
-                    num_dice3,
-                    strike_number3,
+                st = (
+                    f"{num_dice3} dice at strike number {strike_number3}, "
+                    f"unable to carry"
                 )
             button = Gtk.Button(label=st)
             self.vbox.pack_start(button, True, True, 0)
@@ -171,11 +171,8 @@ if __name__ == "__main__":
     def my_callback(tup):
         (striker, target, num_dice, strike_number) = tup
         logging.info(
-            "called my_callback %s %s %s %s",
-            striker,
-            target,
-            num_dice,
-            strike_number,
+            f"called my_callback {striker} {target} {num_dice} "
+            f"{strike_number}"
         )
         reactor.stop()
 

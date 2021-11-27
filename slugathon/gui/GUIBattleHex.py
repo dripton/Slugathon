@@ -130,7 +130,7 @@ class GUIBattleHex(object):
 
     def init_hex_overlay(self):
         """Setup the overlay with terrain name and image."""
-        overlay_filename = "%s.png" % self.battlehex.terrain
+        overlay_filename = f"{self.battlehex.terrain}.png"
         image_path = os.path.join(IMAGE_DIR, overlay_filename)
         if not os.path.exists(image_path):
             return
@@ -161,12 +161,12 @@ class GUIBattleHex(object):
         self.border_surface_y = int(round(self.center[1] - myboxsize[1] / 2.0))
         for hexside, border in enumerate(self.battlehex.borders):
             border_surface = None
-            overlay_filename = "%s.png" % border
+            overlay_filename = f"{border}.png"
             image_path = os.path.join(IMAGE_DIR, overlay_filename)
             if os.path.exists(image_path):
                 hexsides = self.battlehex.hexsides_with_border(border)
                 hexsides_str = "".join(map(str, sorted(hexsides)))
-                border_filename = "%s-%s.png" % (border, hexsides_str)
+                border_filename = f"{border}-{hexsides_str}.png"
                 border_path = os.path.join(IMAGE_DIR, border_filename)
                 if not os.path.exists(border_path):
                     sliceborder.slice_border_image(
@@ -255,4 +255,4 @@ class GUIBattleHex(object):
         self.draw_selection(ctx)
 
     def __repr__(self):
-        return "GUIBattleHex %s" % self.battlehex.label
+        return f"GUIBattleHex {self.battlehex.label}"

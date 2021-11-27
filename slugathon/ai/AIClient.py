@@ -76,7 +76,7 @@ class AIClient(pb.Referenceable, Observed):
         player_info = results.get_player_info(player_id)
         if player_info is None:
             player_id = results.get_weighted_random_player_id()
-            playername = "ai%d" % player_id
+            playername = f"ai{player_id}"
             player_info = results.get_player_info(player_id)
         bp = BotParams.BotParams.fromstring(player_info)
         self.ai = CleverBot.CleverBot(
@@ -115,7 +115,7 @@ class AIClient(pb.Referenceable, Observed):
         if not os.path.exists(logdir):
             os.makedirs(logdir)
         self.log_path = os.path.join(
-            logdir, "slugathon-%s-%s.log" % (self.game_name, self.playername)
+            logdir, f"slugathon-{self.game_name}-{self.playername}.log"
         )
         file_handler = logging.FileHandler(filename=self.log_path)
         file_handler.setFormatter(formatter)
@@ -164,13 +164,13 @@ class AIClient(pb.Referenceable, Observed):
 
     def got_games(self, game_info_tuples):
         """Only called when the client first connects to the server."""
-        logging.info("got games %s", game_info_tuples)
+        logging.info(f"got games {game_info_tuples}")
         del self.games[:]
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
         if self.form_game:
             if not self.game_name:
-                self.game_name = "Game_%d" % random.randrange(1000000)
+                self.game_name = f"Game_{random.randrange(1000000)}"
             if not self.log_path:
                 self._setup_logging_form_game()
             def1 = self.user.callRemote(
@@ -189,7 +189,7 @@ class AIClient(pb.Referenceable, Observed):
             # If game_name is null, AI tries to join all games.
             for game in self.games:
                 if not self.game_name or game.name == self.game_name:
-                    logging.info("joining game %s", game.name)
+                    logging.info(f"joining game {game.name}")
                     def1 = self.user.callRemote(
                         "join_game",
                         game.name,
@@ -211,7 +211,7 @@ class AIClient(pb.Referenceable, Observed):
         return None
 
     def add_game(self, game_info_tuple):
-        logging.info("add_game %s", game_info_tuple)
+        logging.info(f"add_game {game_info_tuple}")
         (
             name,
             create_time,
@@ -302,7 +302,7 @@ class AIClient(pb.Referenceable, Observed):
         ):
             return
 
-        logging.info("%s", action)
+        logging.info(f"{action}")
 
         if isinstance(action, Action.ResumeAI):
             self.paused = False
@@ -350,7 +350,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.AssignedAllTowers):
             logging.info(
-                "AssignedAllTowers player_info %s", self.ai.player_info
+                f"AssignedAllTowers player_info {self.ai.player_info}"
             )
             game = self.name_to_game(action.game_name)
             reactor.callLater(self.delay, self.ai.maybe_pick_color, game)
@@ -372,12 +372,10 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
-                logging.info(
-                    "Game %s over, won by %s"
-                    % (action.game_name, " and ".join(action.winner_names))
-                )
+                names = " and ".join(action.winner_names)
+                logging.info(f"Game {action.game_name} over, won by {names}")
             else:
-                logging.info("Game %s over, draw" % action.game_name)
+                logging.info(f"Game {action.game_name} over, draw")
             logging.info("AI exiting")
             self.exit_unconditionally(0)
 
@@ -389,8 +387,8 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
             logging.info(
-                "ps = PredictSplits('%s', '%s', %s)"
-                % (action.playername, action.markerid, starting_creature_names)
+                f"ps = PredictSplits('{action.playername}', "
+                + f"'{action.markerid}', {starting_creature_names})"
             )
             ps = predictsplits.PredictSplits(
                 action.playername, action.markerid, starting_creature_names
@@ -420,8 +418,9 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.UndoSplit):
             game = self.name_to_game(action.game_name)
             logging.info(
-                "self.aps.get_leaf('%s').merge(self.aps.get_leaf('%s'), %d)"
-                % (action.parent_markerid, action.child_markerid, game.turn)
+                f"self.aps.get_leaf('{action.parent_markerid}')"
+                + f".merge(self.aps.get_leaf('{action.child_markerid}'), "
+                + f"{game.turn})"
             )
             self.aps.get_leaf(action.parent_markerid).merge(
                 self.aps.get_leaf(action.child_markerid), game.turn
@@ -733,7 +732,7 @@ class AIClient(pb.Referenceable, Observed):
             for angel_name in action.angel_names:
                 self.aps.get_leaf(action.markerid).add_creature(angel_name)
             self.update_creatures(game)
-            logging.info("active player %s", game.active_player)
+            logging.info(f"active player {game.active_player}")
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)
 
@@ -778,7 +777,7 @@ class AIClient(pb.Referenceable, Observed):
             self.paused = True
 
         else:
-            logging.info("got unhandled action %s", action)
+            logging.info(f"got unhandled action {action}")
 
 
 def add_arguments(parser):

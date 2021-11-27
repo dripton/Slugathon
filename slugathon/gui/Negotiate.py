@@ -44,7 +44,7 @@ class Negotiate(Gtk.Dialog):
         self, playername, attacker_legion, defender_legion, def1, parent
     ):
         GObject.GObject.__init__(
-            self, title="Negotiate - %s" % playername, parent=parent
+            self, title=f"Negotiate - {playername}", parent=parent
         )
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
@@ -56,14 +56,11 @@ class Negotiate(Gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = Gtk.Label(
-            label="Legion %s (%s) negotiates with %s (%s) in hex %s?"
-            % (
-                attacker_legion.markerid,
-                attacker_legion.picname,
-                defender_legion.markerid,
-                defender_legion.picname,
-                defender_legion.hexlabel,
-            )
+            label=f"Legion {attacker_legion.markerid} "
+            f"({attacker_legion.picname}) negotiates with "
+            f"{defender_legion.markerid} "
+            f"({defender_legion.picname}) "
+            f"in hex {defender_legion.hexlabel}"
         )
         self.vbox.pack_start(legion_name, True, True, 0)
 
@@ -72,7 +69,7 @@ class Negotiate(Gtk.Dialog):
         attacker_marker_hbox = Gtk.HBox()
         attacker_hbox.pack_start(attacker_marker_hbox, False, True, 0)
         attacker_score_label = Gtk.Label(
-            label="%d\n points" % attacker_legion.score
+            label=f"{attacker_legion.score}\n points"
         )
         attacker_hbox.pack_start(attacker_score_label, False, True, 0)
         attacker_chits_hbox = Gtk.HBox(spacing=3)
@@ -84,7 +81,7 @@ class Negotiate(Gtk.Dialog):
         defender_hbox.pack_start(defender_marker_hbox, False, True, 0)
         defender_chits_hbox = Gtk.HBox(spacing=3)
         defender_score_label = Gtk.Label(
-            label="%d\n points" % defender_legion.score
+            label=f"{defender_legion.score}\n points"
         )
         defender_hbox.pack_start(defender_score_label, False, True, 0)
         defender_hbox.pack_start(defender_chits_hbox, True, True, 0)
@@ -229,7 +226,7 @@ if __name__ == "__main__":
     )
 
     def my_callback(*args):
-        logging.info("callback %s", args)
+        logging.info(f"callback {args}")
         reactor.stop()
 
     _, def1 = new(defender_playername, attacker_legion, defender_legion, None)

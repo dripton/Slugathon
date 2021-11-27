@@ -257,9 +257,7 @@ class User(Avatar):
         self.server.acquire_angels(self.name, game_name, markerid, angel_names)
 
     def perspective_do_not_acquire_angels(self, game_name, markerid):
-        logging.info(
-            "do_not_acquire_angels %s %s %s", self, game_name, markerid
-        )
+        logging.info(f"do_not_acquire_angels {self} {game_name} {markerid}")
         self.server.do_not_acquire_angels(self.name, game_name, markerid)
 
     def perspective_done_with_engagements(self, game_name):
@@ -292,10 +290,8 @@ class User(Avatar):
         self, game_name, carry_target_name, carry_target_hexlabel, carries
     ):
         logging.info(
-            "perspective_carry %s %s %s",
-            carry_target_name,
-            carry_target_hexlabel,
-            carries,
+            f"perspective_carry {carry_target_name} {carry_target_hexlabel} "
+            "{carries}"
         )
         self.server.carry(
             self.name,
@@ -384,7 +380,7 @@ class User(Avatar):
         return "User " + self.name
 
     def add_observer(self, mind):
-        logging.info("User.add_observer %s %s", self, mind)
+        logging.info(f"User.add_observer {self} {mind}")
         def1 = self.client.callRemote("set_name", self.name)
         def1.addErrback(self.trap_connection_lost)
         def1.addErrback(self.log_failure)
@@ -397,14 +393,14 @@ class User(Avatar):
         failure.trap(ConnectionLost, PBConnectionLost)
         if not self.logging_out:
             self.logging_out = True
-            logging.info("Connection lost for %s; logging out" % self.name)
+            logging.info(f"Connection lost for {self.name}; logging out")
             self.logout()
 
     def log_failure(self, failure):
         log.err(failure)
 
     def logout(self):
-        logging.info("logout %s", self.name)
+        logging.info(f"logout {self.name}")
         self.server.logout(self)
 
     def update(self, observed, action, names):

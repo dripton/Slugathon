@@ -228,7 +228,7 @@ class Connect(Gtk.Window):
         def1.addErrback(self.server_failed)
 
     def server_exited(self, returncode):
-        logging.info("server exited with returncode %d" % returncode)
+        logging.info(f"server exited with {returncode=}")
 
     def save_window_position(self):
         x, y = self.get_position()
@@ -253,9 +253,7 @@ class Connect(Gtk.Window):
         self.status_textview.modify_text(
             Gtk.StateType.NORMAL, Gdk.color_parse("red")
         )
-        self.status_textview.get_buffer().set_text(
-            "Server failed %s" % str(arg)
-        )
+        self.status_textview.get_buffer().set_text(f"Server failed {str(arg)}")
 
 
 def add_arguments(parser):
@@ -274,7 +272,7 @@ def add_arguments(parser):
         action="store",
         type=str,
         default=os.path.join(
-            logdir, "slugathon-client-%d.log" % int(time.time())
+            logdir, f"slugathon-client-{int(time.time())}.log"
         ),
         help="path to logfile",
     )

@@ -229,7 +229,7 @@ class BattleMap(object):
     """
 
     def __init__(self, mterrain, entry_side):
-        logging.info("mterrain %s entry_side %s", mterrain, entry_side)
+        logging.info(f"{mterrain=} {entry_side=}")
         self.hexes = {}
         self.entry_side = entry_side
         self.mterrain = mterrain
@@ -283,8 +283,8 @@ class BattleMap(object):
         """
         if hexlabel1 not in self.hexes or hexlabel2 not in self.hexes:
             logging.info(
-                "BattleMap.range invalid hexlabel %s %s %s"
-                % (hexlabel1, hexlabel2, allow_entrance)
+                f"BattleMap.range invalid hexlabel {hexlabel1} {hexlabel2} "
+                f"{allow_entrance}"
             )
             return maxsize
         if hexlabel1 == hexlabel2:
@@ -590,13 +590,12 @@ class BattleMap(object):
         """
         if hexlabel1 == hexlabel2:
             logging.info(
-                "count_bramble_hexes hexlabel1 == hexlabel2 == %s" % hexlabel1
+                f"count_bramble_hexes hexlabel1 == hexlabel2 == {hexlabel1}"
             )
             return 0
         if self.is_los_blocked(hexlabel1, hexlabel2, game):
             logging.info(
-                "count_bramble_hexes %s %s los blocked"
-                % (hexlabel1, hexlabel2)
+                f"count_bramble_hexes {hexlabel1} {hexlabel2} los blocked"
             )
             return 0
         hex1 = self.hexes[hexlabel1]

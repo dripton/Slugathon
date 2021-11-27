@@ -256,10 +256,7 @@ class Node(object):
 
         assert (
             len(self) >= count
-        ), "Certainty error in reveal_creatures count=%d height=%d" % (
-            count,
-            len(self),
-        )
+        ), f"Certainty error in reveal_creatures {count=} height={len(self)}"
 
         # Then mark passed creatures as certain and then
         # communicate this to the parent, to adjust other legions.

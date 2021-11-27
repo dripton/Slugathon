@@ -46,12 +46,7 @@ class MasterHex(object):
         self.label_side = self.find_label_side()
 
     def __repr__(self):
-        return "%s hex %d at (%d,%d)" % (
-            self.terrain,
-            self.label,
-            self.x,
-            self.y,
-        )
+        return f"{self.terrain} hex {self.label} at ({self.x},{self.y})"
 
     def connect_to_neighbors(self):
         it = iter(self._exits)
@@ -95,7 +90,7 @@ class MasterHex(object):
             invert_indicator = "i"
         else:
             invert_indicator = "n"
-        self.overlay_filename = "%s_%s.png" % (self.terrain, invert_indicator)
+        self.overlay_filename = f"{self.terrain}_{invert_indicator}.png"
 
     def find_label_side(self):
         """Return the hexside number where the hex label should go.

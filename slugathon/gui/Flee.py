@@ -41,7 +41,7 @@ class Flee(Gtk.Dialog):
         self, playername, attacker_legion, defender_legion, def1, parent
     ):
         GObject.GObject.__init__(
-            self, title="Flee - %s" % (playername), parent=parent
+            self, title=f"Flee - {playername}", parent=parent
         )
         self.attacker_legion = attacker_legion
         self.defender_legion = defender_legion
@@ -56,13 +56,9 @@ class Flee(Gtk.Dialog):
         hexlabel = defender_legion.hexlabel
         masterhex = defender_legion.player.game.board.hexes[hexlabel]
         self.legion_name = Gtk.Label(
-            label="Flee with legion %s (%s) in %s hex %s?"
-            % (
-                defender_legion.markerid,
-                defender_legion.picname,
-                masterhex.terrain,
-                hexlabel,
-            )
+            label=f"Flee with legion {defender_legion.markerid} "
+            f"({defender_legion.picname}) in {masterhex.terrain} hex "
+            f"{hexlabel}?"
         )
         self.vbox.pack_start(self.legion_name, True, True, 0)
 
@@ -75,7 +71,7 @@ class Flee(Gtk.Dialog):
         )
 
         self.attacker_score_label = Gtk.Label(
-            label="%d\npoints" % attacker_legion.score
+            label=f"{attacker_legion.score}\npoints"
         )
         self.attacker_hbox.pack_start(
             self.attacker_score_label, False, True, 0
@@ -97,7 +93,7 @@ class Flee(Gtk.Dialog):
         )
 
         self.defender_score_label = Gtk.Label(
-            label="%d\npoints" % defender_legion.score
+            label=f"{defender_legion.score}\npoints"
         )
         self.defender_hbox.pack_start(
             self.defender_score_label, False, True, 0
@@ -184,7 +180,7 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (attacker, defender, fled) = tup
-        logging.info("fled is %s", fled)
+        logging.info(f"{fled=}")
         reactor.stop()
 
     _, def1 = new(defender_playername, attacker_legion, defender_legion, None)

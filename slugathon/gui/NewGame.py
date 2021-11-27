@@ -21,7 +21,7 @@ class NewGame(Gtk.Dialog):
 
     def __init__(self, user, playername, parent_window):
         GObject.GObject.__init__(
-            self, title="Form New Game - %s" % playername, parent=parent_window
+            self, title=f"Form New Game - {playername}", parent=parent_window
         )
         self.game_name = None
         self.min_players = None

@@ -221,7 +221,7 @@ class Client(pb.Referenceable, Observed):
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
         observed set to None."""
-        logging.info("%s", action)
+        logging.info(f"{action}")
         if isinstance(action, Action.AddUsername):
             self.playernames.add(action.playername)
         elif isinstance(action, Action.DelUsername):
@@ -255,12 +255,10 @@ class Client(pb.Referenceable, Observed):
             self._maybe_pick_first_marker(game, action.playername)
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
-                logging.info(
-                    "Game %s over, won by %s"
-                    % (action.game_name, " and ".join(action.winner_names))
-                )
+                names = " and ".join(action.winner_names)
+                logging.info(f"Game {action.game_name} over, won by {names}")
             else:
-                logging.info("Game %s over, draw" % action.game_name)
+                logging.info(f"Game {action.game_name} over, draw")
             self._purge_old_games()
 
         self.notify(action, names)

@@ -47,7 +47,7 @@ class MainWindow(Gtk.Window):
         self.accel_group = None
 
         self.set_icon(icon.pixbuf)
-        self.set_title("Slugathon - %s" % (self.playername))
+        self.set_title(f"Slugathon - {self.playername}")
         self.connect("delete-event", self.cb_delete_event)
         self.connect("destroy", self.cb_destroy)
         self.connect("configure-event", self.cb_configure_event)

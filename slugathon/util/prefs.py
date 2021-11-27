@@ -43,8 +43,8 @@ def save_window_position(playername, window_name, x, y):
     if not os.path.exists(player_prefs_dir(playername)):
         os.makedirs(player_prefs_dir(playername))
     with open(window_position_path(playername, window_name), "w") as fil:
-        fil.write("%d\n" % x)
-        fil.write("%d\n" % y)
+        fil.write(f"{x}\n")
+        fil.write(f"{y}\n")
 
 
 def load_window_position(playername, window_name):
@@ -69,8 +69,8 @@ def save_window_size(playername, window_name, width, height):
     if not os.path.exists(player_prefs_dir(playername)):
         os.makedirs(player_prefs_dir(playername))
     with open(window_size_path(playername, window_name), "w") as fil:
-        fil.write("%d\n" % width)
-        fil.write("%d\n" % height)
+        fil.write(f"{width}\n")
+        fil.write(f"{height}\n")
 
 
 def load_window_size(playername, window_name):
@@ -95,8 +95,8 @@ def save_global_window_position(window_name, x, y):
     if not os.path.exists(GLOBAL_PREFS_DIR):
         os.makedirs(GLOBAL_PREFS_DIR)
     with open(global_window_position_path(window_name), "w") as fil:
-        fil.write("%d\n" % x)
-        fil.write("%d\n" % y)
+        fil.write(f"{x}\n")
+        fil.write(f"{y}\n")
 
 
 def load_global_window_position(window_name):
@@ -121,8 +121,8 @@ def save_global_window_size(window_name, width, height):
     if not os.path.exists(GLOBAL_PREFS_DIR):
         os.makedirs(GLOBAL_PREFS_DIR)
     with open(global_window_size_path(window_name), "w") as fil:
-        fil.write("%d\n" % width)
-        fil.write("%d\n" % height)
+        fil.write(f"{width}\n")
+        fil.write(f"{height}\n")
 
 
 def load_global_window_size(window_name):
@@ -143,7 +143,7 @@ def option_path(playername, option):
 
 def save_bool_option(playername, option, value):
     with open(option_path(playername, option), "w") as fil:
-        fil.write("%s\n" % value)
+        fil.write(f"{value}\n")
 
 
 def load_bool_option(playername, option):
@@ -210,9 +210,9 @@ def save_server(server_name, server_port):
     server_entries.add((server_name, int(server_port)))
     with open(server_path(), "w") as fil:
         for host, port in sorted(server_entries):
-            fil.write("%s:%d\n" % (host, port))
+            fil.write(f"{host}:{port}\n")
     with open(last_server_path(), "w") as fil:
-        fil.write("%s:%d\n" % (server_name, int(server_port)))
+        fil.write(f"{server_name}:{int(server_port)}\n")
 
 
 def load_playernames():
@@ -245,4 +245,4 @@ def save_last_playername(playername):
     if not os.path.exists(GLOBAL_PREFS_DIR):
         os.makedirs(GLOBAL_PREFS_DIR)
     with open(last_playername_path(), "w") as fil:
-        fil.write("%s\n" % playername)
+        fil.write(f"{playername}\n")

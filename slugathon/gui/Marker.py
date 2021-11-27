@@ -29,7 +29,7 @@ class Marker(object):
         self.name = legion.markerid
         self.chit_scale = CHIT_SCALE_FACTOR * scale
         self.show_height = show_height
-        self.image_path = fileutils.basedir("images/legion/%s.png" % self.name)
+        self.image_path = fileutils.basedir(f"images/legion/{self.name}.png")
         self.location = None  # (x, y) of top left corner
         self.build_image()
 
@@ -61,7 +61,7 @@ class Marker(object):
         self.event_box.add(self.image)
 
     def __repr__(self):
-        return "Marker %s in %s" % (self.name, self.legion.hexlabel)
+        return f"Marker {self.name} in {self.legion.hexlabel}"
 
     def point_inside(self, point):
         if not self.location:

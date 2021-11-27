@@ -67,7 +67,7 @@ class AcquireAngels(Gtk.Dialog):
         parent,
     ):
         GObject.GObject.__init__(
-            self, title="AcquireAngels - %s" % playername, parent=parent
+            self, title=f"AcquireAngels - {playername}", parent=parent
         )
         self.deferred = def1
         self.legion = legion
@@ -79,8 +79,8 @@ class AcquireAngels(Gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = Gtk.Label(
-            label="Acquire angel for legion %s (%s) in hex %s"
-            % (legion.markerid, legion.picname, legion.hexlabel)
+            label=f"Acquire angel for legion {legion.markerid} "
+            f"({legion.picname}) in hex {legion.hexlabel}"
         )
         self.vbox.pack_start(legion_name, True, True, 0)
 
@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (legion, creature) = tup
-        logging.info("%s acquired %s", legion, creature)
+        logging.info(f"{legion} acquired {creature}")
         guiutils.exit()
 
     now = time.time()

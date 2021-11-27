@@ -28,7 +28,7 @@ class SummonAngel(Gtk.Dialog):
 
     def __init__(self, playername, legion, def1, parent):
         GObject.GObject.__init__(
-            self, title="SummonAngel - %s" % playername, parent=parent
+            self, title=f"SummonAngel - {playername}", parent=parent
         )
         self.legion = legion
         player = legion.player
@@ -41,8 +41,8 @@ class SummonAngel(Gtk.Dialog):
         self.set_destroy_with_parent(True)
 
         top_label = Gtk.Label(
-            label="Summoning an angel into legion %s (%s) in hex %s"
-            % (legion.markerid, legion.picname, legion.hexlabel)
+            label=f"Summoning an angel into legion {legion.markerid} "
+            f"({legion.picname}) in hex {legion.hexlabel}"
         )
         self.vbox.set_spacing(9)
         self.vbox.pack_start(top_label, True, True, 0)
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (legion, donor, creature) = tup
-        logging.info("Will summon %s from %s into %s", creature, donor, legion)
+        logging.info(f"Will summon {creature} from {donor} into {legion}")
         guiutils.exit()
 
     summonangel, def1 = new(playername, legion1, None)

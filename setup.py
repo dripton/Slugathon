@@ -60,10 +60,10 @@ def timestamp():
 def write_version_file():
     """Dump a file containing the version, timestamp, and commit to
     docs/version.txt"""
-    version = "%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7])
+    version = f"{VERSION}-{timestamp()}-{head_commit()[:7]}"
     # Need to use a relative path here because we may not have installed yet.
     with open("slugathon/docs/version.txt", "w") as fil:
-        fil.write("%s\n" % version)
+        fil.write(f"{version}\n")
 
 
 # cd to the location of the setup.py file so relative paths work.
@@ -73,7 +73,7 @@ write_version_file()
 
 setup(
     name="slugathon",
-    version="%s-%s-%s" % (VERSION, timestamp(), head_commit()[:7]),
+    version=f"{VERSION}-{timestamp()}-{head_commit()[:7]}",
     description="Fantasy battle board game",
     author="David Ripton",
     author_email="d+slugathon@ripton.net",

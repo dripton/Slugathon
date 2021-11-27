@@ -64,7 +64,7 @@ class PickCarry(Gtk.Dialog):
         parent,
     ):
         GObject.GObject.__init__(
-            self, title="PickCarry - %s" % playername, parent=parent
+            self, title=f"PickCarry - {playername}", parent=parent
         )
         self.playername = playername
         self.game_name = game_name
@@ -76,8 +76,11 @@ class PickCarry(Gtk.Dialog):
         self.set_destroy_with_parent(True)
 
         label = Gtk.Label(
-            label="%r strikes %r and may carry over %d hit%s."
-            % (striker, target, carries, "" if carries == 1 else "s")
+            label=f"{repr(striker)} strikes "
+            f"{repr(target)} "
+            f"and may carry over {carries} "
+            f"hit{'' if carries == 1 else 's'}"
+            f"."
         )
         # We could use get_content_area() instead of vbox, in PyGTK 2.14+
         self.vbox.add(label)
@@ -165,7 +168,7 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (creature, carries) = tup
-        logging.info("carry %d hits to %s" % (carries, creature))
+        logging.info(f"carry {carries} hits to {creature}")
         reactor.stop()
 
     _, def1 = new(playername, game_name, titan2, centaur1, 6, 4, 1, None)

@@ -245,10 +245,9 @@ class GUIBattleMap(Gtk.EventBox):
         Gtk.EventBox."""
         eventbox = Gtk.EventBox()
         if masterhex:
-            text = '<span size="%s" weight="bold">%s hex %d</span>' % (
-                size,
-                masterhex.terrain,
-                masterhex.label,
+            text = (
+                f"<span size='{size}' weight='bold'>{masterhex.terrain} "
+                f"hex {masterhex.label}</span>"
             )
         else:
             text = ""
@@ -708,7 +707,7 @@ class GUIBattleMap(Gtk.EventBox):
                 def1.addErrback(self.failure)
 
     def cb_concede2(self, confirmed):
-        logging.info("cb_concede2 %s", confirmed)
+        logging.info(f"cb_concede2 {confirmed}")
         if confirmed:
             for legion in self.game.battle_legions:
                 if legion.player.name == self.playername:
@@ -826,7 +825,7 @@ class GUIBattleMap(Gtk.EventBox):
         self.repaint([hexlabel])
 
     def update(self, observed, action, names):
-        logging.info("GUIBattleMap.update %s %s %s", observed, action, names)
+        logging.info(f"GUIBattleMap.update {observed} {action} {names}")
 
         if isinstance(action, Action.MoveCreature) or isinstance(
             action, Action.UndoMoveCreature
@@ -1177,7 +1176,7 @@ class GUIBattleMap(Gtk.EventBox):
 
     def picked_carry(self, tup2):
         (carry_target, carries) = tup2
-        logging.info("picked_carry %s %s", carry_target, carries)
+        logging.info(f"picked_carry {carry_target} {carries}")
         if self.pickcarry is not None:
             self.pickcarry.destroy()
         self.pickcarry = None
@@ -1193,11 +1192,8 @@ class GUIBattleMap(Gtk.EventBox):
     def picked_strike_penalty(self, tup3):
         (striker, target, num_dice, strike_number) = tup3
         logging.info(
-            "picked_strike_penalty %s %s %s %s",
-            striker,
-            target,
-            num_dice,
-            strike_number,
+            f"picked_strike_penalty {striker} {target} {num_dice} "
+            "{strike_number}"
         )
         if striker is None:
             # User cancelled the strike.

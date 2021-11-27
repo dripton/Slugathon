@@ -57,7 +57,7 @@ from slugathon.util.bag import bag
 SQRT3 = math.sqrt(3.0)
 
 
-ui_string = """<ui>
+ui_string = f"""<ui>
   <menubar name="Menubar">
     <menu action="GameMenu">
       <menuitem action="Save"/>
@@ -76,9 +76,9 @@ ui_string = """<ui>
       <menuitem action="Resume AI"/>
     </menu>
     <menu name="OptionsMenu" action="OptionsMenu">
-      <menuitem action="%s"/>
-      <menuitem action="%s"/>
-      <menuitem action="%s"/>
+      <menuitem action="{prefs.AUTO_STRIKE_SINGLE_TARGET}"/>
+      <menuitem action="{prefs.AUTO_RANGESTRIKE_SINGLE_TARGET}"/>
+      <menuitem action="{prefs.AUTO_CARRY_TO_SINGLE_TARGET}"/>
     </menu>
     <menu action="HelpMenu">
       <menuitem action="About"/>
@@ -95,11 +95,7 @@ ui_string = """<ui>
     <toolitem action="Pause AI"/>
     <toolitem action="Resume AI"/>
   </toolbar>
-</ui>""" % (
-    prefs.AUTO_STRIKE_SINGLE_TARGET,
-    prefs.AUTO_RANGESTRIKE_SINGLE_TARGET,
-    prefs.AUTO_CARRY_TO_SINGLE_TARGET,
-)
+</ui>"""
 
 
 @implementer(IObserver)
@@ -286,7 +282,7 @@ class GUIMasterBoard(Gtk.EventBox):
             value = prefs.load_bool_option(self.playername, option)
             if value is True:
                 checkmenuitem = self.ui.get_widget(
-                    "/Menubar/OptionsMenu/%s" % option
+                    f"/Menubar/OptionsMenu/{option}"
                 )
                 checkmenuitem.set_active(True)
 
@@ -734,10 +730,10 @@ class GUIMasterBoard(Gtk.EventBox):
     def picked_angels(self, tup4):
         """Callback from AcquireAngels"""
         (legion, angels) = tup4
-        logging.info("picked_angels %s %s", legion, angels)
+        logging.info(f"picked_angels {legion} {angels}")
         self.acquire_angels = None
         if not angels:
-            logging.info("calling do_not_acquire_angels %s", legion)
+            logging.info(f"calling do_not_acquire_angels {legion}")
             def1 = self.user.callRemote(
                 "do_not_acquire_angels", self.game.name, legion.markerid
             )
@@ -1169,7 +1165,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 def1.addErrback(self.failure)
 
     def _cb_checkbox_helper(self, option):
-        checkmenuitem = self.ui.get_widget("/Menubar/OptionsMenu/%s" % option)
+        checkmenuitem = self.ui.get_widget(f"/Menubar/OptionsMenu/{option}")
         active = checkmenuitem.get_active()
         prev = prefs.load_bool_option(self.playername, option)
         if active != prev:
@@ -1763,7 +1759,7 @@ class GUIMasterBoard(Gtk.EventBox):
         elif isinstance(action, Action.GameOver):
             if self.game_over is None:
                 if action.winner_names:
-                    message = "Game over.  %s wins." % action.winner_names[0]
+                    message = f"Game over.  {action.winner_names[0]} wins."
                 else:
                     message = "Game over.  Draw."
                 self.game_over = InfoDialog.InfoDialog(

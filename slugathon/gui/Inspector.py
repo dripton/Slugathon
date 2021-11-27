@@ -42,13 +42,12 @@ class Inspector(Gtk.EventBox):
 
     def show_legion(self, legion):
         self.legion_name.set_text(
-            "Legion %s (%s) in hex %s (%d%s points)"
-            % (
-                legion.markerid,
-                legion.picname,
-                legion.hexlabel,
-                legion.score,
-                "+?" if legion.any_unknown else "",
+            (
+                f"Legion {legion.markerid} "
+                f"({legion.picname}) "
+                f"in hex {legion.hexlabel} "
+                f"({legion.score}{'+?' if legion.any_unknown else ''} "
+                "points)"
             )
         )
 
@@ -109,7 +108,7 @@ if __name__ == "__main__":
     inspector = Inspector(playername)
     inspector.connect("destroy", guiutils.exit)
 
-    legion = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures, 1)
+    legion = Legion.Legion(player, f"{abbrev}{index:02d}", creatures, 1)
     inspector.show_legion(legion)
 
     creatures2 = [
@@ -117,7 +116,7 @@ if __name__ == "__main__":
         for name in ["Angel", "Giant", "Warbear", "Unicorn"]
     ]
     index = random.randrange(1, 12 + 1)
-    legion2 = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures2, 2)
+    legion2 = Legion.Legion(player, f"{abbrev}{index:02d}", creatures2, 2)
     inspector.show_legion(legion2)
 
     window = Gtk.Window()

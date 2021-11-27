@@ -18,7 +18,7 @@ from slugathon.game import Creature
 
 def new(playername, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
-    logging.info("new %s %s %s", playername, legion, mterrain)
+    logging.info(f"new {playername} {legion} {mterrain}")
     def1 = defer.Deferred()
     pickrecruit = PickRecruit(
         playername, legion, mterrain, caretaker, def1, parent
@@ -32,7 +32,7 @@ class PickRecruit(Gtk.Dialog):
 
     def __init__(self, playername, legion, mterrain, caretaker, def1, parent):
         GObject.GObject.__init__(
-            self, title="PickRecruit - %s" % playername, parent=parent
+            self, title=f"PickRecruit - {playername}", parent=parent
         )
         self.legion = legion
         player = legion.player
@@ -44,8 +44,9 @@ class PickRecruit(Gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = Gtk.Label(
-            label="Pick recruit for legion %s (%s) in hex %s"
-            % (legion.markerid, legion.picname, legion.hexlabel)
+            label=f"Pick recruit for legion {legion.markerid} "
+            f"({legion.picname}) "
+            f"in hex {legion.hexlabel}"
         )
         self.vbox.pack_start(legion_name, True, True, 0)
 
@@ -127,7 +128,7 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (legion, creature, recruiter_names) = tup
-        logging.info("%s recruited %s %s", legion, creature, recruiter_names)
+        logging.info(f"{legion} recruited {creature} {recruiter_names}")
         guiutils.exit()
 
     now = time.time()

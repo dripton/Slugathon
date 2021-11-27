@@ -27,7 +27,7 @@ class LoadGame(Gtk.FileChooserDialog):
     """Load saved game dialog."""
 
     def __init__(self, user, playername, parent):
-        title = "Load Saved Game - %s" % playername
+        title = f"Load Saved Game - {playername}"
         Gtk.FileChooserDialog.__init__(
             self, title=title, parent=parent, action=Gtk.FileChooserAction.OPEN
         )

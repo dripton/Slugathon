@@ -115,12 +115,8 @@ class Legion(Observed):
         return self.hexlabel in self.player.game.engagement_hexlabels
 
     def __repr__(self):
-        return "Legion %s (%s) in %s %s" % (
-            self.markerid,
-            self.picname,
-            self.hexlabel,
-            self.creatures,
-        )
+        return f"Legion {self.markerid} ({self.picname}) in {self.hexlabel} \
+                 {self.creatures}"
 
     def __len__(self):
         """Return the number of living creatures in the legion."""
@@ -211,7 +207,7 @@ class Legion(Observed):
     def is_legal_split(self, child1, child2):
         """Return whether this legion can be split into legions child1 and
         child2"""
-        logging.info("%s %s", child1, child2)
+        logging.info(f"{child1} {child2}")
         if len(self) < 4:
             return False
         if len(self) != len(child1) + len(child2):
@@ -316,11 +312,8 @@ class Legion(Observed):
         or defended in a battle.
         """
         logging.info(
-            "can_recruit %s len %s recruited %s dead %s",
-            self,
-            len(self),
-            self.recruited,
-            self.dead,
+            f"can_recruit {self} len {len(self)} recruited {self.recruited} "
+            f"dead {self.dead}"
         )
         if len(self) >= 7 or self.recruited or self.dead:
             return False
@@ -436,7 +429,7 @@ class Legion(Observed):
     def recruit_creature(self, creature, recruiter_names):
         """Recruit creature."""
         logging.info(
-            "Legion.recruit_creature %s %s %s", self, creature, recruiter_names
+            f"Legion.recruit_creature {self} {creature} {recruiter_names}"
         )
         if self.recruited:
             logging.info("already recruited")
@@ -467,7 +460,7 @@ class Legion(Observed):
         player = self.player
         creature = self.creatures.pop()
         recruiter_names = self.recruiter_names_list.pop()
-        logging.info("%s clearing self.recruited", self)
+        logging.info(f"{self} clearing self.recruited")
         self.recruited = False
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
@@ -488,7 +481,7 @@ class Legion(Observed):
         player = self.player
         creature = self.creatures.pop()
         recruiter_names = self.recruiter_names_list.pop()
-        logging.info("%s clearing self.recruited", self)
+        logging.info(f"{self} clearing self.recruited")
         self.recruited = False
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
@@ -564,12 +557,7 @@ class Legion(Observed):
         kill_all_creatures=False,
     ):
         logging.info(
-            "Legion.die %s %s %s %s %s",
-            self,
-            scoring_legion,
-            fled,
-            no_points,
-            check_for_victory,
+            f"Legion.die {self} {scoring_legion} {fled} {no_points} {check_for_victory}"
         )
         if scoring_legion is not None and not no_points:
             # We only give points for dead creatures, not living creatures,
@@ -600,16 +588,14 @@ class Legion(Observed):
         self.player.remove_legion(self.markerid)
 
     def add_points(self, points, can_acquire_angels):
-        logging.info(
-            "Legion.add_points %s %s %s", self, points, can_acquire_angels
-        )
+        logging.info(f"Legion.add_points {self} {points} {can_acquire_angels}")
         ARCHANGEL_POINTS = Creature.Creature("Archangel").acquirable_every
         ANGEL_POINTS = Creature.Creature("Angel").acquirable_every
         player = self.player
         score0 = player.score
         score1 = score0 + points
         player.score = score1
-        logging.info("%s now has score %s", player, player.score)
+        logging.info(f"{player} now has score {player.score}")
         if can_acquire_angels:
             height = len(self)
             archangels = 0
@@ -619,7 +605,7 @@ class Legion(Observed):
             ):
                 archangels += 1
                 score1 -= ANGEL_POINTS
-            logging.info("archangels %d" % archangels)
+            logging.info(f"{archangels=}")
             angels = 0
             while (
                 height + archangels + angels < 7
@@ -627,7 +613,7 @@ class Legion(Observed):
             ):
                 angels += 1
                 score1 -= ANGEL_POINTS
-            logging.info("angels %d" % angels)
+            logging.info(f"{angels=}")
             self._angels_pending = angels
             self._archangels_pending = archangels
             if angels + archangels > 0:
@@ -656,7 +642,7 @@ class Legion(Observed):
 
     def acquire_angels(self, angels):
         """Acquire angels."""
-        logging.info("acquire_angels %s", angels)
+        logging.info(f"acquire_angels {angels}")
         num_archangels = num_angels = 0
         for angel in angels:
             if angel.name == "Archangel":
@@ -674,9 +660,9 @@ class Legion(Observed):
             )
             if not okay:
                 logging.info("not enough angels pending")
-                logging.info("angels %s", angels)
-                logging.info("angels_pending %s", self.angels_pending)
-                logging.info("archangels_pending %s", self.archangels_pending)
+                logging.info(f"{angels=}")
+                logging.info(f"angels_pending {self.angels_pending}")
+                logging.info(f"archangels_pending {self.archangels_pending}")
                 return
             if len(self) >= 7:
                 logging.info("acquire_angels 7 high")
@@ -703,11 +689,11 @@ class Legion(Observed):
             angel.legion = self
         self._angels_pending = 0
         self._archangels_pending = 0
-        logging.info("end of acquire_angels %s", self)
+        logging.info(f"end of acquire_angels {self}")
 
     def do_not_acquire_angels(self):
         """Do not acquire any angels, and notify observers."""
-        logging.info("do_not_acquire_angels %s", self)
+        logging.info(f"do_not_acquire_angels {self}")
         if self.angels_pending or self.archangels_pending:
             self.reset_angels_pending()
             action = Action.DoNotAcquireAngels(

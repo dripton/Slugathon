@@ -38,7 +38,7 @@ class WaitingForPlayers(Gtk.Dialog):
 
     def __init__(self, user, playername, game, parent):
         GObject.GObject.__init__(
-            self, title="Waiting for Players - %s" % playername, parent=parent
+            self, title=f"Waiting for Players - {playername}", parent=parent
         )
         self.user = user
         self.playername = playername

@@ -75,7 +75,7 @@ if __name__ == "__main__":
     player.color = random.choice(playercolordata.colors)
     abbrev = player.color_abbrev
     index = random.randrange(1, 12 + 1)
-    legion = Legion.Legion(player, "%s%02d" % (abbrev, index), creatures, 1)
+    legion = Legion.Legion(player, f"{abbrev}{index:02d}", creatures, 1)
     graveyard = Graveyard(legion)
     graveyard.connect("destroy", guiutils.exit)
     graveyard.connect("button-press-event", cb_click, graveyard)

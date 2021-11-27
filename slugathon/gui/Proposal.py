@@ -64,7 +64,7 @@ class Proposal(Gtk.Dialog):
         parent,
     ):
         GObject.GObject.__init__(
-            self, title="Proposal - %s" % playername, parent=parent
+            self, title=f"Proposal - {playername}", parent=parent
         )
         self.attacker_legion = attacker_legion
         self.attacker_creature_names = attacker_creature_names
@@ -78,14 +78,10 @@ class Proposal(Gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = Gtk.Label(
-            label="Legion %s (%s) negotiates with %s (%s) in hex %s"
-            % (
-                attacker_legion.markerid,
-                attacker_legion.picname,
-                defender_legion.markerid,
-                defender_legion.picname,
-                defender_legion.hexlabel,
-            )
+            label=f"Legion {attacker_legion.markerid} "
+            f"({attacker_legion.picname}) negotiates with "
+            f"{defender_legion.markerid} ({defender_legion.picname}) "
+            f"in hex {defender_legion.hexlabel}"
         )
         self.vbox.pack_start(legion_name, True, True, 0)
 
@@ -211,7 +207,7 @@ if __name__ == "__main__":
     )
 
     def my_callback(*args):
-        logging.info("my_callback %s", args)
+        logging.info(f"my_callback {args}")
         reactor.stop()
 
     _, def1 = new(

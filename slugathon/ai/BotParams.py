@@ -57,7 +57,7 @@ class BotParams(namedtuple("BotParams", list(defaults.keys()))):
             st = match.group(0)
             for field, val in defaults.items():
                 if field + "=" not in st:
-                    st = st.replace(")", ", %s=%f)" % (field, val))
+                    st = st.replace(")", f", {field}={val})")
                     fields_to_mutate.add(field)
             bp = eval(st)
             while fields_to_mutate:

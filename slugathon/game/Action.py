@@ -19,7 +19,7 @@ def fromstring(st):
 
 class Action(pb.Copyable, pb.RemoteCopy):
     def __repr__(self):
-        return "%s %s" % (self.__class__.__name__, self.__dict__)
+        return f"{self.__class__.__name__} {self.__dict__}"
 
     def __hash__(self):
         """Based on all the attributes of the Action, but not its class,

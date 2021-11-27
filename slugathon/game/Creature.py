@@ -109,11 +109,11 @@ class Creature(object):
 
     def __repr__(self):
         if self.is_titan:
-            base = "%s(%d)" % (self.name, self.power)
+            base = f"{self.name}({self.power})"
         else:
             base = self.name
         if self.hexlabel is not None:
-            return "%s in %s" % (base, self.hexlabel)
+            return f"{base} in {self.hexlabel}"
         else:
             return base
 
@@ -522,12 +522,8 @@ class Creature(object):
             and self.strike_number(carry_target) <= strike_number
         )
         logging.info(
-            "can_carry_to %s %s %s %s returning %s",
-            carry_target,
-            original_target,
-            num_dice,
-            strike_number,
-            retval,
+            f"can_carry_to {carry_target} {original_target} {num_dice} "
+            f"{strike_number} returning {retval}"
         )
         return retval
 

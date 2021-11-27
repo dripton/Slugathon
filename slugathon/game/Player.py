@@ -35,12 +35,7 @@ class Player(Observed):
         player_info="",
     ):
         logging.info(
-            "%s %s %s %s %s",
-            playername,
-            game,
-            join_order,
-            player_class,
-            player_info,
+            f"{playername} {game} {join_order} {player_class} {player_info}"
         )
         Observed.__init__(self)
         self.name = playername
@@ -114,7 +109,7 @@ class Player(Observed):
         abbrev = self.color_abbrev
         num_markers = len(markerdata.data[color])
         for ii in range(num_markers):
-            self.markerids_left.add("%s%02d" % (abbrev, ii + 1))
+            self.markerids_left.add(f"{abbrev}{(ii + 1):02d}")
         logging.info(self.markerids_left)
         action = Action.PickedColor(self.game.name, self.name, color)
         self.notify(action)
@@ -177,11 +172,8 @@ class Player(Observed):
         child_creature_names,
     ):
         logging.info(
-            "%s %s %s %s",
-            parent_markerid,
-            child_markerid,
-            parent_creature_names,
-            child_creature_names,
+            f"{parent_markerid} {child_markerid} {parent_creature_names} "
+            f"{child_creature_names}"
         )
         parent = self.markerid_to_legion.get(parent_markerid)
         if parent is None:
@@ -417,7 +409,7 @@ class Player(Observed):
             action = Action.StartFightPhase(self.game.name, self.name)
             self.notify(action)
         else:
-            logging.warning("%s cannot exit move phase", self)
+            logging.warning(f"{self} cannot exit move phase")
 
     @property
     def can_exit_fight_phase(self):
@@ -425,11 +417,9 @@ class Player(Observed):
         if self.game.phase != Phase.FIGHT:
             return False
         logging.info(
-            "can_exit_fight_phase %s %s %s %s",
-            self.game.engagement_hexlabels,
-            self.game.pending_summon,
-            self.game.pending_reinforcement,
-            self.pending_acquire,
+            f"can_exit_fight_phase {self.game.engagement_hexlabels} "
+            f"{self.game.pending_summon} {self.game.pending_reinforcement} "
+            f"{self.pending_acquire}"
         )
         return (
             not self.game.engagement_hexlabels
@@ -541,9 +531,7 @@ class Player(Observed):
 
     def summon_angel(self, legion, donor, creature_name):
         """Summon an angel from donor to legion."""
-        logging.info(
-            "Player.summon_angel %s %s %s", legion, donor, creature_name
-        )
+        logging.info(f"Player.summon_angel {legion} {donor} {creature_name}")
         assert not self.summoned, "player tried to summon twice"
         assert len(legion) < 7, "legion too tall to summon"
         donor.reveal_creatures([creature_name])
@@ -579,7 +567,7 @@ class Player(Observed):
 
     def do_not_summon_angel(self, legion):
         """Do not summon an angel into legion."""
-        logging.info("Player.do_not_summon_angel %s", legion)
+        logging.info(f"Player.do_not_summon_angel {legion}")
         action = Action.DoNotSummonAngel(
             self.game.name, self.name, legion.markerid
         )
@@ -587,7 +575,7 @@ class Player(Observed):
 
     def do_not_reinforce(self, legion):
         """Do not recruit a reinforcement into legion."""
-        logging.info("Player.do_not_reinforce %s", legion)
+        logging.info(f"Player.do_not_reinforce {legion}")
         action = Action.DoNotReinforce(
             self.game.name, self.name, legion.markerid
         )
@@ -628,9 +616,7 @@ class Player(Observed):
         """Die and give half points to scoring_player, except for legions
         which are engaged with someone else.
         """
-        logging.info(
-            "Player.die %s %s %s", self, scoring_player, check_for_victory
-        )
+        logging.info(f"Player.die {self} {scoring_player} {check_for_victory}")
         # First reveal all this player's legions.
         for legion in self.legions:
             if legion.all_known and legion not in self.game.battle_legions:
@@ -657,7 +643,7 @@ class Player(Observed):
 
         This is only used for half points when eliminating a player.
         """
-        logging.info("Player.add_points %s %s", self, points)
+        logging.info(f"Player.add_points {self} {points}")
         self.score += points
 
     def forget_enemy_legions(self):

@@ -46,7 +46,7 @@ def best7(score_moves):
 @implementer(Bot)
 class CleverBot(object):
     def __init__(self, playername, ai_time_limit, bot_params=None):
-        logging.info("CleverBot %s %s", playername, ai_time_limit)
+        logging.info(f"CleverBot {playername} {ai_time_limit}")
         self.playername = playername
         self.user = None
         self.ai_time_limit = ai_time_limit
@@ -116,10 +116,8 @@ class CleverBot(object):
             or game.pending_acquire
         ):
             logging.info(
-                "choose_engagement bailing early %s %s %s",
-                game.pending_summon,
-                game.pending_reinforcement,
-                game.pending_acquire,
+                f"choose_engagement bailing early {game.pending_summon}"
+                f"{game.pending_reinforcement} {game.pending_acquire}"
             )
             return
         hexlabels = list(game.engagement_hexlabels)
@@ -150,7 +148,7 @@ class CleverBot(object):
     # TODO concede, negotiate
     def resolve_engagement(self, game, hexlabel):
         """Resolve the engagement in hexlabel."""
-        logging.info("resolve_engagement %s %s", game, hexlabel)
+        logging.info(f"resolve_engagement {game} {hexlabel}")
         attacker = None
         defender = None
         for legion in game.all_legions(hexlabel):
@@ -159,9 +157,9 @@ class CleverBot(object):
             else:
                 defender = legion
         if attacker:
-            logging.info("attacker %s %s", attacker, attacker.player.name)
+            logging.info(f"attacker {attacker} {attacker.player.name}")
         if defender:
-            logging.info("defender %s %s", defender, defender.player.name)
+            logging.info(f"defender {defender} {defender.player.name}")
         if not attacker or not defender:
             logging.info("no attacker or defender; bailing")
             return
@@ -344,10 +342,8 @@ class CleverBot(object):
                 recruit, recruiters = self._pick_recruit_and_recruiters(legion)
                 if recruit is not None:
                     logging.info(
-                        "CleverBot calling recruit_creature %s %s %s",
-                        legion.markerid,
-                        recruit,
-                        recruiters,
+                        f"CleverBot calling recruit_creature {legion.markerid}"
+                        f"{recruit} {recruiters}"
                     )
                     def1 = self.user.callRemote(
                         "recruit_creature",
@@ -373,7 +369,7 @@ class CleverBot(object):
         if legion.can_recruit and (battle_over or game.battle_turn == 4):
             recruit, recruiters = self._pick_recruit_and_recruiters(legion)
             if recruit is not None:
-                logging.info("CleverBot calling recruit_creature %s", recruit)
+                logging.info(f"CleverBot calling recruit_creature {recruit}")
                 def1 = self.user.callRemote(
                     "recruit_creature",
                     game.name,
@@ -384,7 +380,7 @@ class CleverBot(object):
                 def1.addErrback(self.failure)
                 return
         if battle_over:
-            logging.info("CleverBot calling do_not_reinforce %s", recruit)
+            logging.info(f"CleverBot calling do_not_reinforce {recruit}")
             def1 = self.user.callRemote(
                 "do_not_reinforce", game.name, legion.markerid
             )
@@ -440,10 +436,8 @@ class CleverBot(object):
                 if not recruit or summonable.sort_value > recruit.sort_value:
                     donor = summonable.legion
                     logging.info(
-                        "CleverBot calling _summon_angel %s %s %s",
-                        legion.markerid,
-                        donor.markerid,
-                        summonable.name,
+                        f"CleverBot calling _summon_angel {legion.markerid} "
+                        f"{donor.markerid} {summonable.name}"
                     )
                     def1 = self.user.callRemote(
                         "summon_angel",
@@ -456,7 +450,7 @@ class CleverBot(object):
                     return
 
         logging.info(
-            "CleverBot calling do_not_summon_angel %s", legion.markerid
+            f"CleverBot calling do_not_summon_angel {legion.markerid}"
         )
         def1 = self.user.callRemote(
             "do_not_summon_angel", game.name, legion.markerid
@@ -470,10 +464,8 @@ class CleverBot(object):
 
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
         logging.info(
-            "CleverBot.acquire_angels %s %s %s",
-            markerid,
-            num_angels,
-            num_archangels,
+            f"CleverBot.acquire_angels {markerid} {num_angels} "
+            f"{num_archangels}"
         )
         player = game.get_player_by_name(self.playername)
         legion = player.markerid_to_legion.get(markerid)
@@ -506,16 +498,15 @@ class CleverBot(object):
                         angel_names = angel_names[:-1]
                 if angel_names:
                     logging.info(
-                        "CleverBot calling acquire_angels %s %s",
-                        markerid,
-                        angel_names,
+                        f"CleverBot calling acquire_angels {markerid} "
+                        f"{angel_names}"
                     )
                     def1 = self.user.callRemote(
                         "acquire_angels", game.name, markerid, angel_names
                     )
                     def1.addErrback(self.failure)
                     return
-        logging.info("CleverBot calling do_not_acquire_angels %s", markerid)
+        logging.info(f"CleverBot calling do_not_acquire_angels {markerid}")
         def1 = self.user.callRemote(
             "do_not_acquire_angels", game.name, markerid
         )
@@ -527,9 +518,8 @@ class CleverBot(object):
         """Split a legion, or end split phase."""
         logging.info("split")
         logging.info(
-            "playername %s active_playername %s",
-            self.playername,
-            game.active_player.name,
+            f"playername {self.playername} active_playername "
+            f"{game.active_player.name}"
         )
         if game.active_player.name != self.playername:
             logging.warning("called split out of turn; exiting")
@@ -558,11 +548,7 @@ class CleverBot(object):
                 old_creatures = legion.creature_names
                 for creature in new_creatures:
                     old_creatures.remove(creature)
-                logging.info(
-                    "new_creatures %s old_creatures %s",
-                    new_creatures,
-                    old_creatures,
-                )
+                logging.info(f"{new_creatures=} {old_creatures=}")
                 def1 = self.user.callRemote(
                     "split_legion",
                     game.name,
@@ -651,7 +637,7 @@ class CleverBot(object):
                     game.board.hexes[legion.hexlabel],
                     player.movement_roll,
                 )
-                logging.debug("legion %s moves %s", legion, moves)
+                logging.debug(f"legion {legion} moves {moves}")
                 for hexlabel, entry_side in moves:
                     score = self._score_move(legion, hexlabel, True)
                     best_moves.append((score, legion, hexlabel, entry_side))
@@ -659,7 +645,7 @@ class CleverBot(object):
             best_moves.sort(
                 key=lambda move: (move[0], move[1], move[2], str(move[3]))
             )
-            logging.debug("best moves %s", best_moves)
+            logging.debug(f"best moves {best_moves}")
             if not best_moves:
                 logging.debug("dumping all legions")
                 for legion in game.all_legions():
@@ -682,7 +668,7 @@ class CleverBot(object):
             for legion in player.unmoved_legions:
                 score = self._score_move(legion, legion.hexlabel, False)
                 non_moves[legion.markerid] = score
-            logging.debug("non_moves %s", non_moves)
+            logging.debug(f"non_moves {non_moves}")
 
             while best_moves:
                 score, legion, hexlabel, entry_side = best_moves.pop()
@@ -737,9 +723,9 @@ class CleverBot(object):
             assert len(enemies) == 1
             enemy = enemies.pop()
             enemy_combat_value = enemy.terrain_combat_value
-            logging.debug("legion %s hexlabel %s", legion, hexlabel)
-            logging.debug("legion_combat_value %s", legion_combat_value)
-            logging.debug("enemy_combat_value %s", enemy_combat_value)
+            logging.debug(f"legion {legion} hexlabel {hexlabel}")
+            logging.debug(f"legion_combat_value {legion_combat_value}")
+            logging.debug(f"enemy_combat_value {enemy_combat_value}")
             if enemy_combat_value < self.bp.SQUASH * legion_combat_value:
                 score += enemy.score
             elif (
@@ -762,10 +748,8 @@ class CleverBot(object):
                 ):
                     recruit_value = 0.5 * recruit.sort_value
                 logging.debug(
-                    "recruit value %s %s %s",
-                    legion.markerid,
-                    hexlabel,
-                    recruit_value,
+                    f"recruit value {legion.markerid} {hexlabel} "
+                    f"{recruit_value}"
                 )
                 score += recruit_value
         if game.turn > 1:
@@ -824,7 +808,7 @@ class CleverBot(object):
         two Creatures have the same hexlabel.  Like:
         ["A1", "B1", "B3"]
         """
-        logging.info("_gen_legion_moves %s", movesets)
+        logging.info(f"_gen_legion_moves {movesets}")
         for moves in self._gen_legion_moves_inner(movesets):
             if len(moves) == len(movesets):
                 yield list(moves)
@@ -881,7 +865,7 @@ class CleverBot(object):
             sort_values[creature_name] = creature.sort_value
             max_score += creature.sort_value
         perms = list(itertools.permutations(creature_moves))
-        logging.info("%d perms" % len(perms))
+        logging.info(f"{len(perms)} perms")
         # Scramble the list so we don't get a bunch of similar bad
         # orders jumbled together at the beginning.
         random.shuffle(perms)
@@ -900,7 +884,7 @@ class CleverBot(object):
             if time.time() > finish_time:
                 logging.info("time limit")
                 break
-        logging.info("returning %s" % list(best_perm))
+        logging.info(f"returning {list(best_perm)}")
         return list(best_perm)
 
     def _find_best_creature_moves(self, game):
@@ -924,7 +908,7 @@ class CleverBot(object):
             return None
         legion = game.battle_active_legion
         creatures = legion.sorted_living_creatures
-        logging.info("_find_best_creature_moves %s %s", legion, creatures)
+        logging.info(f"_find_best_creature_moves {legion} {creatures}")
         if not creatures:
             return None
         movesets = []  # list of a set of hexlabels for each creature
@@ -956,7 +940,7 @@ class CleverBot(object):
                         finally:
                             creature.hexlabel = creature.previous_hexlabel
                     score_moves.sort()
-                    logging.info("score_moves %s %s", creature, score_moves)
+                    logging.info(f"score_moves {creature} {score_moves}")
                     moveset = best7(score_moves)
                 else:
                     moveset = set([creature.hexlabel])
@@ -966,8 +950,7 @@ class CleverBot(object):
         now = time.time()
         legion_moves = list(self._gen_legion_moves(movesets))
         logging.info(
-            "found %d legion_moves in %fs"
-            % (len(legion_moves), time.time() - now)
+            f"found {len(legion_moves)} legion_moves in {time.time() - now}"
         )
         if not legion_moves:
             legion_moves = list(self._gen_fallback_legion_moves(movesets))
@@ -978,10 +961,9 @@ class CleverBot(object):
         finish_time = start_time + self.ai_time_limit
         # Scramble the moves, in case we don't have time to look at them all.
         random.shuffle(legion_moves)
-        logging.info(
-            "len(creatures) %d len(legion_moves[0]) %d"
-            % (len(creatures), len(legion_moves[0]))
-        )
+        lc = len(creatures)
+        llm0 = len(legion_moves[0])
+        logging.info(f"len(creatures) = {lc} len(legion_moves[0]) = {llm0}")
         for legion_move in legion_moves:
             try:
                 for ii, creature in enumerate(creatures):
@@ -1000,20 +982,19 @@ class CleverBot(object):
                 for creature in creatures:
                     creature.hexlabel = creature.previous_hexlabel
         logging.info(
-            "found best_legion_move %s in %fs"
-            % (best_legion_move, now - start_time)
+            f"found best_legion_move {best_legion_move} in {now - start_time}"
         )
         start_hexlabels = [creature.hexlabel for creature in creatures]
         creature_names = [creature.name for creature in creatures]
         creature_moves = list(
             zip(creature_names, start_hexlabels, best_legion_move)
         )
-        logging.info("creature_moves %s", creature_moves)
+        logging.info(f"creature_moves {creature_moves}")
         now = time.time()
         ordered_creature_moves = self._find_move_order(game, creature_moves)
         logging.info(
-            "found ordered_creature_moves %s in %fs"
-            % (ordered_creature_moves, time.time() - now)
+            f"found ordered_creature_moves {ordered_creature_moves} in "
+            f"{time.time() - now}"
         )
         return ordered_creature_moves
 
@@ -1036,9 +1017,7 @@ class CleverBot(object):
         # Loop in case a non-move is best.
         while self.best_creature_moves:
             (creature_name, start, finish) = self.best_creature_moves.pop(0)
-            logging.info(
-                "checking move %s %s %s", creature_name, start, finish
-            )
+            logging.info(f"checking move {creature_name} {start} {finish}")
             creatures = game.creatures_in_battle_hex(start, creature_name)
             if creatures:
                 creature = creatures.pop()
@@ -1048,10 +1027,7 @@ class CleverBot(object):
                 continue
             if finish != start and finish in game.find_battle_moves(creature):
                 logging.info(
-                    "calling move_creature %s %s %s",
-                    creature.name,
-                    start,
-                    finish,
+                    f"calling move_creature {creature.name} {start} {finish}"
                 )
                 def1 = self.user.callRemote(
                     "move_creature", game.name, creature.name, start, finish
@@ -1126,8 +1102,8 @@ class CleverBot(object):
                 score += self.bp.ENGAGE_RANGESTRIKER_BONUS
                 logging.info(
                     creature,
-                    "ENGAGE_RANGESTRIKER_BONUS %s",
-                    self.bp.ENGAGE_RANGESTRIKER_BONUS,
+                    f"ENGAGE_RANGESTRIKER_BONUS "
+                    f"{self.bp.ENGAGE_RANGESTRIKER_BONUS}",
                 )
 
             # rangestriking
@@ -1143,7 +1119,7 @@ class CleverBot(object):
             if can_rangestrike:
                 score += self.bp.RANGESTRIKE_BONUS
                 logging.info(
-                    creature, "RANGESTRIKE_BONUS %s", self.bp.RANGESTRIKE_BONUS
+                    creature, f"RANGESTRIKE_BONUS {self.bp.RANGESTRIKE_BONUS}"
                 )
 
             # Don't encourage titans to charge early.
@@ -1155,15 +1131,15 @@ class CleverBot(object):
                 if max_mean_hits:
                     bonus = self.bp.HIT_BONUS * max_mean_hits
                     score += bonus
-                    logging.info(creature, "HIT_BONUS %s", bonus)
+                    logging.info(creature, f"HIT_BONUS {bonus}")
                 if kill_bonus:
                     bonus = self.bp.KILL_MULTIPLIER * kill_bonus
                     score += bonus
-                    logging.info(creature, "KILL_BONUS %s", bonus)
+                    logging.info(creature, f"KILL_BONUS {bonus}")
             if total_mean_damage_taken:
                 penalty = self.bp.DAMAGE_PENALTY * total_mean_damage_taken
                 score += penalty
-                logging.info(creature, "DAMAGE_PENALTY %s", penalty)
+                logging.info(creature, f"DAMAGE_PENALTY {penalty}")
             if probable_death:
                 penalty = (
                     self.bp.DEATH_MULTIPLIER
@@ -1171,7 +1147,7 @@ class CleverBot(object):
                     * creature.sort_value
                 )
                 score += penalty
-                logging.info(creature, "DEATH_PENALTY %s", penalty)
+                logging.info(creature, f"DEATH_PENALTY {penalty}")
 
             # Attacker must attack to avoid time loss
             # Don't encourage titans to charge early.
@@ -1184,8 +1160,8 @@ class CleverBot(object):
                     score += self.bp.ATTACKER_AGGRESSION_BONUS
                     logging.info(
                         creature,
-                        "ATTACKER_AGGRESSION_BONUS %s",
-                        self.bp.ATTACKER_AGGRESSION_BONUS,
+                        f"ATTACKER_AGGRESSION_BONUS "
+                        f"{self.bp.ATTACKER_AGGRESSION_BONUS}",
                     )
                 else:
                     enemy_hexlabels = [
@@ -1203,7 +1179,7 @@ class CleverBot(object):
                         penalty = min_range * self.bp.ATTACKER_DISTANCE_PENALTY
                         score += penalty
                         logging.info(
-                            creature, "ATTACKER_DISTANCE_PENALTY %s", penalty
+                            creature, f"ATTACKER_DISTANCE_PENALTY {penalty}"
                         )
 
             battlehex = battlemap.hexes[creature.hexlabel]
@@ -1228,7 +1204,7 @@ class CleverBot(object):
                 penalty = distance * self.bp.TITAN_FORWARD_PENALTY
                 if penalty:
                     score += penalty
-                    logging.info(creature, "TITAN_FORWARD_PENALTY %s", penalty)
+                    logging.info(creature, f"TITAN_FORWARD_PENALTY {penalty}")
 
             # Make defenders hang back early.
             if (
@@ -1247,47 +1223,44 @@ class CleverBot(object):
                 if penalty:
                     score += penalty
                     logging.info(
-                        creature, "DEFENDER_FORWARD_PENALTY %s", penalty
+                        creature, f"DEFENDER_FORWARD_PENALTY {penalty}"
                     )
 
             # terrain
             if battlehex.elevation:
                 bonus = battlehex.elevation * self.bp.ELEVATION_BONUS
                 score += bonus
-                logging.info(creature, "ELEVATION_BONUS %s", bonus)
+                logging.info(creature, f"ELEVATION_BONUS {bonus}")
             if terrain == "Bramble":
                 if creature.is_native(terrain):
                     score += self.bp.NATIVE_BRAMBLE_BONUS
                     logging.info(
                         creature,
-                        "NATIVE_BRAMBLE_BONUS %s",
-                        self.bp.NATIVE_BRAMBLE_BONUS,
+                        f"NATIVE_BRAMBLE_BONUS {self.bp.NATIVE_BRAMBLE_BONUS}",
                     )
                 else:
                     score += self.bp.NON_NATIVE_BRAMBLE_PENALTY
                     logging.info(
                         creature,
-                        "NON_NATIVE_BRAMBLE_PENALTY %s",
-                        self.bp.NON_NATIVE_BRAMBLE_PENALTY,
+                        f"NON_NATIVE_BRAMBLE_PENALTY "
+                        f"{self.bp.NON_NATIVE_BRAMBLE_PENALTY}",
                     )
             elif terrain == "Tower":
                 # XXX Hardcoded to default Tower map
-                logging.info("%s TOWER_BONUS", creature)
+                logging.info(f"{creature} TOWER_BONUS")
                 score += self.bp.TOWER_BONUS
                 if battlehex.elevation == 2:
                     if creature.is_titan:
                         score += self.bp.TITAN_IN_CENTER_OF_TOWER_BONUS
                         logging.info(
-                            "%s TITAN_IN_CENTER_OF_TOWER_BONUS %s",
-                            creature,
-                            self.bp.TITAN_IN_CENTER_OF_TOWER_BONUS,
+                            f"creature TITAN_IN_CENTER_OF_TOWER_BONUS "
+                            f"{self.bp.TITAN_IN_CENTER_OF_TOWER_BONUS}"
                         )
                     else:
                         score += self.bp.CENTER_OF_TOWER_BONUS
                         logging.info(
-                            "%s CENTER_OF_TOWER_BONUS %s",
-                            creature,
-                            self.bp.CENTER_OF_TOWER_BONUS,
+                            f"{creature} CENTER_OF_TOWER_BONUS "
+                            f"{self.bp.CENTER_OF_TOWER_BONUS}"
                         )
                 elif (
                     legion == game.defender_legion
@@ -1296,9 +1269,8 @@ class CleverBot(object):
                 ):
                     score += self.bp.FRONT_OF_TOWER_BONUS
                     logging.info(
-                        "%s FRONT_OF_TOWER_BONUS %s",
-                        creature,
-                        self.bp.FRONT_OF_TOWER_BONUS,
+                        f"{creature} FRONT_OF_TOWER_BONUS "
+                        f"{self.bp.FRONT_OF_TOWER_BONUS}"
                     )
                 elif (
                     legion == game.defender_legion
@@ -1307,55 +1279,48 @@ class CleverBot(object):
                 ):
                     score += self.bp.MIDDLE_OF_TOWER_BONUS
                     logging.info(
-                        "%s MIDDLE_OF_TOWER_BONUS %s",
-                        creature,
-                        self.bp.MIDDLE_OF_TOWER_BONUS,
+                        f"{creature} MIDDLE_OF_TOWER_BONUS "
+                        f"{self.bp.MIDDLE_OF_TOWER_BONUS}"
                     )
             elif terrain == "Drift":
                 if not creature.is_native(terrain):
                     score += self.bp.NON_NATIVE_DRIFT_PENALTY
                     logging.info(
-                        "%s NON_NATIVE_DRIFT_PENALTY %s",
-                        creature,
-                        self.bp.NON_NATIVE_DRIFT_PENALTY,
+                        f"{creature} NON_NATIVE_DRIFT_PENALTY "
+                        f"{self.bp.NON_NATIVE_DRIFT_PENALTY}"
                     )
             elif terrain == "Volcano":
                 score += self.bp.NATIVE_VOLCANO_BONUS
                 logging.info(
-                    "%s NATIVE_VOLCANO_BONUS %s",
-                    creature,
-                    self.bp.NATIVE_VOLCANO_BONUS,
+                    f"{creature} NATIVE_VOLCANO_BONUS "
+                    f"{self.bp.NATIVE_VOLCANO_BONUS}"
                 )
 
             if "Slope" in battlehex.borders:
                 if creature.is_native("Slope"):
                     score += self.bp.NATIVE_SLOPE_BONUS
                     logging.info(
-                        "%s NATIVE_SLOPE_BONUS %s",
-                        creature,
-                        self.bp.NATIVE_SLOPE_BONUS,
+                        f"{creature} NATIVE_SLOPE_BONUS "
+                        f"{self.bp.NATIVE_SLOPE_BONUS}"
                     )
                 else:
                     score += self.bp.NON_NATIVE_SLOPE_PENALTY
                     logging.info(
-                        "%s NON_NATIVE_SLOPE_PENALTY %s",
-                        creature,
-                        self.bp.NON_NATIVE_SLOPE_PENALTY,
+                        f"{creature} NON_NATIVE_SLOPE_PENALTY "
+                        f"{self.bp.NON_NATIVE_SLOPE_PENALTY}"
                     )
             if "Dune" in battlehex.borders:
                 if creature.is_native("Dune"):
                     score += self.bp.NATIVE_DUNE_BONUS
                     logging.info(
-                        "%s NATIVE_DUNE_BONUS %s",
-                        creature,
-                        self.bp.NATIVE_DUNE_BONUS,
+                        f"{creature} NATIVE_DUNE_BONUS "
+                        f"{self.bp.NATIVE_DUNE_BONUS}"
                     )
                 else:
                     score += self.bp.NON_NATIVE_DUNE_PENALTY
                     logging.info(
-                        "%s NON_NATIVE_DUNE_PENALTY %s",
-                        creature,
-                        self.bp.NON_NATIVE_DUNE_PENALTY,
+                        f"{creature} NON_NATIVE_DUNE_PENALTY "
+                        f"{self.bp.NON_NATIVE_DUNE_PENALTY}"
                     )
 
             # allies
@@ -1370,9 +1335,7 @@ class CleverBot(object):
             if adjacent_allies_bonus:
                 score += adjacent_allies_bonus
                 logging.info(
-                    "%s ADJACENT_ALLY_BONUS %s",
-                    creature,
-                    adjacent_allies_bonus,
+                    f"{creature} ADJACENT_ALLY_BONUS {adjacent_allies_bonus}"
                 )
 
         return score

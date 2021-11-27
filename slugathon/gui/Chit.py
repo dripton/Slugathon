@@ -72,11 +72,11 @@ class Chit(object):
         else:
             color_name = "black"
         if color_name == "by_player":
-            color_name = "titan_%s" % playercolor.lower()
+            color_name = f"titan_{playercolor.lower()}"
         self.rgb = guiutils.rgb_to_float(colors.rgb_colors[color_name])
 
         self.paths = [
-            fileutils.basedir("images/%s/%s.png" % (self.IMAGE_DIR, base))
+            fileutils.basedir(f"images/{self.IMAGE_DIR}/{base}.png")
             for base in self.bases
         ]
 

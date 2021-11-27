@@ -36,7 +36,7 @@ class Caretaker(object):
         if self.counts[creature_name] >= 1:
             self.counts[creature_name] -= 1
         else:
-            raise AssertionError("No %s left to take" % creature_name)
+            raise AssertionError(f"No {creature_name} left to take")
 
     def put_one_back(self, creature_name):
         """Put one of creature_name back onto the stack."""
@@ -44,7 +44,7 @@ class Caretaker(object):
         if creature.is_unknown:
             return
         if self.counts[creature_name] >= creature.max_count:
-            logging.info("Tried to put too many %s back" % creature_name)
+            logging.info(f"Tried to put too many {creature_name} back")
             self.counts[creature_name] = self.max_counts[creature_name]
         else:
             self.counts[creature_name] += 1

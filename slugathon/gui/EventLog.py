@@ -43,197 +43,203 @@ class EventLog(Gtk.EventBox):
     def update(self, observed, action, names):
         st = None
         if isinstance(action, Action.AssignTower):
-            st = "%s gets tower %d" % (action.playername, action.tower_num)
+            st = f"{action.playername} gets tower {action.tower_num}"
         elif isinstance(action, Action.PickedColor):
-            st = "%s gets color %s" % (action.playername, action.color)
+            st = f"{action.playername} gets color {action.color}"
         elif isinstance(action, Action.StartSplitPhase):
             playercolor = self.game.get_player_by_name(action.playername).color
-            st = "%s (%s) turn %d" % (
-                action.playername,
-                playercolor,
-                action.turn,
-            )
+            st = f"{action.playername} ({playercolor}) turn {action.turn}"
         elif isinstance(action, Action.SplitLegion):
-            st = "%s (%s) (%d) splits off %s (%s) (%d)" % (
-                action.parent_markerid,
-                Legion.find_picname(action.parent_markerid),
-                len(action.parent_creature_names),
-                action.child_markerid,
-                Legion.find_picname(action.child_markerid),
-                len(action.child_creature_names),
+            st = (
+                f"{action.parent_markerid} "
+                f"({Legion.find_picname(action.parent_markerid)}) "
+                f"({len(action.parent_creature_names)}) splits off "
+                f"{action.child_markerid} "
+                f"({Legion.find_picname(action.child_markerid)}) "
+                f"({len(action.child_creature_names)})"
             )
         elif isinstance(action, Action.UndoSplit):
-            st = "%s (%s) (%d) undoes split" % (
-                action.parent_markerid,
-                Legion.find_picname(action.parent_markerid),
-                len(action.parent_creature_names)
-                + len(action.child_creature_names),
+            length = len(action.parent_creature_names) + len(
+                action.child_creature_names
+            )
+            st = (
+                f"{action.parent_markerid} "
+                f"({Legion.find_picname(action.parent_markerid)}) "
+                f"({length}) "
+                f"undoes split"
             )
         elif isinstance(action, Action.MergeLegions):
-            st = "%s (%s) (%d) merges with splitoff" % (
-                action.parent_markerid,
-                Legion.find_picname(action.parent_markerid),
-                len(action.parent_creature_names)
-                + len(action.child_creature_names),
+            length = len(action.parent_creature_names) + len(
+                action.child_creature_names
+            )
+            st = (
+                f"{action.parent_markerid} "
+                f"({Legion.find_picname(action.parent_markerid)}) "
+                f"({length}) "
+                f"merges with splitoff"
             )
         elif isinstance(action, Action.RollMovement):
             playercolor = self.game.get_player_by_name(action.playername).color
-            st = "%s (%s) rolls %d for movement" % (
-                action.playername,
-                playercolor,
-                action.movement_roll,
+            st = (
+                f"{action.playername} ({playercolor}) rolls "
+                f"{action.movement_roll} for movement"
             )
         elif isinstance(action, Action.MoveLegion):
-            st = "%s (%s) %s from %s hex %s to %s hex %s" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
-                "teleports" if action.teleport else "moves",
-                self.game.board.hexes[action.previous_hexlabel].terrain,
-                action.previous_hexlabel,
-                self.game.board.hexes[action.hexlabel].terrain,
-                action.hexlabel,
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"{'teleports' if action.teleport else 'moves'} "
+                f"from "
+                f"{self.game.board.hexes[action.previous_hexlabel].terrain} "
+                f"hex {action.previous_hexlabel} "
+                f"to {self.game.board.hexes[action.hexlabel].terrain} "
+                f"hex {action.hexlabel}"
             )
         elif isinstance(action, Action.UndoMoveLegion):
-            st = "%s (%s) undoes move" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"undoes move"
             )
         elif isinstance(action, Action.RevealLegion):
-            st = "%s (%s) is revealed as %s" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
-                ", ".join(action.creature_names),
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"is revealed as {', '.join(action.creature_names)}"
             )
         elif isinstance(action, Action.Flee):
-            st = "%s (%s) in %s hex %s flees" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
-                self.game.board.hexes[action.hexlabel].terrain,
-                action.hexlabel,
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"in {self.game.board.hexes[action.hexlabel].terrain} "
+                f"hex {action.hexlabel} flees"
             )
         elif isinstance(action, Action.Concede):
-            st = "%s (%s) in %s hex %s concedes" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
-                self.game.board.hexes[action.hexlabel].terrain,
-                action.hexlabel,
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"in {self.game.board.hexes[action.hexlabel].terrain} "
+                f"hex {action.hexlabel} concedes"
             )
         elif isinstance(action, Action.SummonAngel):
-            st = "%s (%s) summons %s from %s (%s)" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
-                action.creature_name,
-                action.donor_markerid,
-                Legion.find_picname(action.donor_markerid),
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"summons "
+                f"{action.creature_name} "
+                f"from {action.donor_markerid} "
+                f"({Legion.find_picname(action.donor_markerid)})"
             )
         elif isinstance(action, Action.RecruitCreature):
-            st = "%s (%s) recruits %s with %s" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
-                action.creature_name,
-                ", ".join(action.recruiter_names),
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"recruits "
+                f"{action.creature_name} "
+                f"with {', '.join(action.recruiter_names)}"
             )
         elif isinstance(action, Action.UndoRecruit):
-            st = "%s (%s) undoes recruit" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"undoes recruit"
             )
         elif isinstance(action, Action.Fight):
-            st = "%s (%s) fights %s (%s) in %s hex %s" % (
-                action.attacker_markerid,
-                Legion.find_picname(action.attacker_markerid),
-                action.defender_markerid,
-                Legion.find_picname(action.defender_markerid),
-                self.game.board.hexes[action.hexlabel].terrain,
-                action.hexlabel,
+            st = (
+                f"{action.attacker_markerid} "
+                f"({Legion.find_picname(action.attacker_markerid)}) "
+                f"fights {action.defender_markerid} "
+                f"({Legion.find_picname(action.defender_markerid)}) "
+                f"in {self.game.board.hexes[action.hexlabel].terrain} "
+                f"hex {action.hexlabel}"
             )
         elif isinstance(action, Action.StartReinforceBattlePhase):
             playercolor = self.game.get_player_by_name(action.playername).color
-            st = "%s (%s) starts battle turn %d" % (
-                action.playername,
-                playercolor,
-                action.battle_turn,
+            st = (
+                f"{action.playername} "
+                f"({playercolor}) "
+                f"starts battle turn {action.battle_turn}"
             )
         elif isinstance(action, Action.MoveCreature):
             playercolor = self.game.get_player_by_name(action.playername).color
-            st = "%s (%s) moves %s in %s hex %s to %s hex %s" % (
-                action.playername,
-                playercolor,
-                action.creature_name,
-                self.game.battlemap.hexes[action.old_hexlabel].terrain,
-                action.old_hexlabel,
-                self.game.battlemap.hexes[action.new_hexlabel].terrain,
-                action.new_hexlabel,
+            st = (
+                f"{action.playername} "
+                f"({playercolor}) "
+                f"moves {action.creature_name} "
+                f"in {self.game.battlemap.hexes[action.old_hexlabel].terrain} "
+                f"hex {action.old_hexlabel} "
+                f"to {self.game.battlemap.hexes[action.new_hexlabel].terrain} "
+                f"hex {action.new_hexlabel}"
             )
         elif isinstance(action, Action.UndoMoveCreature):
-            st = "%s in %s hex %s undoes move" % (
-                action.creature_name,
-                self.game.battlemap.hexes[action.new_hexlabel].terrain,
-                action.new_hexlabel,
+            st = (
+                f"{action.creature_name} "
+                f"in {self.game.battlemap.hexes[action.new_hexlabel].terrain} "
+                f"hex {action.new_hexlabel} undoes move"
             )
         elif isinstance(action, Action.Strike):
             if action.carries:
-                st = "%s in %s strikes %s in %s for %d %s and %s %s" % (
-                    action.striker_name,
-                    action.striker_hexlabel,
-                    action.target_name,
-                    action.target_hexlabel,
-                    action.hits,
-                    "hit" if action.hits == 1 else "hits",
-                    action.carries,
-                    "carry" if action.carries == 1 else "carries",
+                st = (
+                    f"{action.striker_name} "
+                    f"in {action.striker_hexlabel} "
+                    f"strikes {action.target_name} "
+                    f"in {action.target_hexlabel} "
+                    f"for {action.hits} "
+                    f"{'hit' if action.hits == 1 else 'hits'} "
+                    f"and {action.carries} "
+                    f"{'carry' if action.carries == 1 else 'carries'}"
                 )
             else:
-                st = "%s in %s strikes %s in %s for %d %s" % (
-                    action.striker_name,
-                    action.striker_hexlabel,
-                    action.target_name,
-                    action.target_hexlabel,
-                    action.hits,
-                    "hit" if action.hits == 1 else "hits",
+                st = (
+                    f"{action.striker_name} "
+                    f"in {action.striker_hexlabel} "
+                    f"strikes {action.target_name} "
+                    f"in {action.target_hexlabel} "
+                    f"for {action.hits} "
+                    f"{'hit' if action.hits == 1 else 'hits'}"
                 )
         elif isinstance(action, Action.Carry):
-            st = "%d %s to %s in %s, leaving %d %s" % (
-                action.carries,
-                "hit carries" if action.carries == 1 else "hits carry",
-                action.carry_target_name,
-                action.carry_target_hexlabel,
-                action.carries_left,
-                "carry" if action.carries == 1 else "carries",
+            st = (
+                f"{action.carries} "
+                f"{'hit carries' if action.carries == 1 else 'hits carry'} "
+                f"to {action.carry_target_name} "
+                f"in {action.carry_target_hexlabel} , leaving "
+                f"{action.carries_left} "
+                f"{'carry' if action.carries == 1 else 'carries'}"
             )
         elif isinstance(action, Action.DriftDamage):
-            st = "%s in %s suffers drift damage" % (
-                action.target_name,
-                action.target_hexlabel,
+            st = (
+                f"{action.target_name} in {action.target_hexlabel} "
+                f"suffers drift damage"
             )
         elif isinstance(action, Action.BattleOver):
             if action.winner_survivors:
-                st = "%s (%s) defeats %s (%s) in %s" % (
-                    action.winner_markerid,
-                    Legion.find_picname(action.winner_markerid),
-                    action.loser_markerid,
-                    Legion.find_picname(action.loser_markerid),
-                    action.hexlabel,
+                st = (
+                    f"{action.winner_markerid} "
+                    f"({Legion.find_picname(action.winner_markerid)}) "
+                    f"defeats {action.loser_markerid} "
+                    f"({Legion.find_picname(action.loser_markerid)}) "
+                    f"in {action.hexlabel}"
                 )
             else:
-                st = "%s (%s) and %s (%s) mutual in %s" % (
-                    action.winner_markerid,
-                    Legion.find_picname(action.winner_markerid),
-                    action.loser_markerid,
-                    Legion.find_picname(action.loser_markerid),
-                    action.hexlabel,
+                st = (
+                    f"{action.winner_markerid} "
+                    f"({Legion.find_picname(action.winner_markerid)}) "
+                    f"and {action.loser_markerid} "
+                    f"({Legion.find_picname(action.loser_markerid)}) "
+                    f"mutual in {action.hexlabel}"
                 )
         elif isinstance(action, Action.AcquireAngels):
-            st = "%s (%s) acquires %s" % (
-                action.markerid,
-                Legion.find_picname(action.markerid),
-                ", ".join(action.angel_names),
+            st = (
+                f"{action.markerid} "
+                f"({Legion.find_picname(action.markerid)}) "
+                f"acquires {', '.join(action.angel_names)}"
             )
         elif isinstance(action, Action.GameOver):
             if len(action.winner_names) == 1:
-                st = "%s wins!" % action.winner_names[0]
+                st = f"{action.winner_names[0]} wins!"
             else:
-                st = "%s draw" % " and ".join(action.winner_names)
+                st = f"{' and '.join(action.winner_names)} draw"
         if st and st != self.last_st:
             self.last_st = st
             label = Gtk.Label(label=st)

@@ -27,7 +27,7 @@ class SplitLegion(Gtk.Dialog):
 
     def __init__(self, playername, legion, def1, parent):
         GObject.GObject.__init__(
-            self, title="SplitLegion - %s" % playername, parent=parent
+            self, title=f"SplitLegion - {playername}", parent=parent
         )
         self.old_legion = legion
         player = legion.player
@@ -39,8 +39,8 @@ class SplitLegion(Gtk.Dialog):
         self.vbox.set_spacing(9)
 
         legion_name = Gtk.Label(
-            label="Splitting legion %s (%s) in hex %s"
-            % (legion.markerid, legion.picname, legion.hexlabel)
+            label=f"Splitting legion {legion.markerid} ({legion.picname}) "
+            f"in hex {legion.hexlabel}"
         )
         self.vbox.pack_start(legion_name, True, True, 0)
 

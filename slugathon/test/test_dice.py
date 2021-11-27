@@ -182,9 +182,7 @@ class TestDice(object):
         var_M = ((2.0 * r) * (n - r) / n ** 2 * ((2.0 * r) * (n - r) - n)) / (
             n - 1.0
         )
-        logging.info(
-            "M test: r = %s M = %s mean = %s var = %s", r, M, mean_M, var_M
-        )
+        logging.info(f"M test: r = {r} M = {M} mean = {mean_M} var = {var_M}")
         fail_if_abnormal(M, mean_M, var_M)
 
     def test_sign(self):
@@ -196,7 +194,7 @@ class TestDice(object):
         mean_P = M / 2.0
         var_P = M / 12.0
         logging.info(
-            "Sign test: P = %s M = %s mean = %s var = %s", P, M, mean_P, var_P
+            f"Sign test: P = {P} M = {M} mean = {mean_P} var = {var_P}"
         )
         fail_if_abnormal(P, mean_P, var_P)
 
@@ -211,7 +209,7 @@ class TestDice(object):
             (pos + neg) * (pos + neg) * (pos + neg - 1)
         )
         logging.info(
-            "Runs test: R = %s m = %s mean = %s var = %s", R, m, mean_R, var_R
+            f"Runs test: R = {R} m = {m} mean = {mean_R} var = {var_R}"
         )
         fail_if_abnormal(R, mean_R, var_R)
 
@@ -225,7 +223,7 @@ class TestDice(object):
         mean_S = 0.0
         var_S = (n / 18.0) * (n - 1.0) * (2.0 * n + 5.0)
         logging.info(
-            "Mann-Kendall test: S = %s mean = %s var = %s", S, mean_S, var_S
+            f"Mann-Kendall test: S = {S} mean = {mean_S} var = {var_S}"
         )
         fail_if_abnormal(S, mean_S, var_S)
 
@@ -246,7 +244,7 @@ class TestDice(object):
             expected = self.trials / 6.0
             chi_square += (num - expected) ** 2.0 / expected
         chi_square /= self.trials - 1
-        logging.info("chi_square is %s", chi_square)
+        logging.info(f"chi_square is {chi_square}")
         # degrees of freedom = 5, 99.5% chance of randomness
         assert chi_square < 0.4117
 

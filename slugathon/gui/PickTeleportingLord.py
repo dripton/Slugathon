@@ -30,7 +30,7 @@ class PickTeleportingLord(Gtk.Dialog):
 
     def __init__(self, playername, legion, def1, parent):
         GObject.GObject.__init__(
-            self, title="PickTeleportingLord - %s" % playername, parent=parent
+            self, title=f"PickTeleportingLord - {playername}", parent=parent
         )
         self.legion = legion
         self.deferred = def1
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     player.markerid_to_legion[legion.markerid] = legion
 
     def my_callback(creature_name):
-        logging.info("Picked %s", creature_name)
+        logging.info(f"Picked {creature_name}")
         guiutils.exit()
 
     pick_teleporting_lord, def1 = new(playername, legion, None)

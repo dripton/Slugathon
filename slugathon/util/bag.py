@@ -59,7 +59,7 @@ class bag(object):
 
     def __repr__(self):
         """Return a string representation of the bag."""
-        return "bag(%s)" % str(self._dct)
+        return f"bag({str(self._dct)})"
 
     def __len__(self):
         """Return the number of keys."""

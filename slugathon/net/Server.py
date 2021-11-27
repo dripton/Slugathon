@@ -65,7 +65,7 @@ class Server(Observed):
             if not os.path.exists(logdir):
                 os.makedirs(logdir)
             log_path = os.path.join(
-                logdir, "slugathon-server-%d.log" % self.port
+                logdir, f"slugathon-server-{self.port}.log"
             )
         file_handler = RotatingFileHandler(
             filename=log_path, maxBytes=100000000, backupCount=99
@@ -125,7 +125,7 @@ class Server(Observed):
         source is a playername.  dest is a set of playernames.
         If dest is None, send to all users
         """
-        message = "%s: %s" % (source, text)
+        message = f"{source}: {text}"
         if dest is not None:
             dest.add(source)
         action = Action.ChatMessage(source, message)
@@ -147,15 +147,8 @@ class Server(Observed):
         Return None normally, or an error string if there's a problem.
         """
         logging.info(
-            "%s %s %s %s %s %s %s %s",
-            playername,
-            game_name,
-            min_players,
-            max_players,
-            ai_time_limit,
-            player_time_limit,
-            player_class,
-            player_info,
+            f"{playername} {game_name} {min_players} {max_players} "
+            "{ai_time_limit} {player_time_limit} {player_class} {player_info}"
         )
         if not game_name:
             st = "Games must be named"
@@ -164,7 +157,7 @@ class Server(Observed):
         game_info_tuples = self.get_game_info_tuples()
         game_names = set((tup[0] for tup in game_info_tuples))
         if game_name in game_names:
-            st = 'The game name "%s" is already in use' % game_name
+            st = f'The game name "{game_name}" is already in use'
             logging.warning(st)
             return st
         if min_players > max_players:
@@ -207,9 +200,7 @@ class Server(Observed):
 
         Return True on success, False on failure.
         """
-        logging.info(
-            "%s %s %s %s", playername, game_name, player_class, player_info
-        )
+        logging.info(f"{playername} {game_name} {player_class} {player_info}")
         game = self.name_to_game(game_name)
         if game:
             try:
@@ -233,7 +224,7 @@ class Server(Observed):
 
     def start_game(self, playername, game_name):
         """Start an existing game."""
-        logging.info("%s %s", playername, game_name)
+        logging.info(f"{playername} {game_name}")
         game = self.name_to_game(game_name)
         if game:
             if playername != game.owner.name:
@@ -248,7 +239,7 @@ class Server(Observed):
                 if not game.started:
                     game.start(playername)
         else:
-            logging.warning("game %s does not exist", game_name)
+            logging.warning(f"game {game_name} does not exist")
 
     def _passwd_for_playername(self, playername):
         with open(self.passwd_path, encoding="utf-8") as fil:
@@ -263,7 +254,7 @@ class Server(Observed):
             bytes(str(random.random()), "utf-8")
         ).hexdigest()
         with open(self.passwd_path, "a", encoding="utf-8") as fil:
-            fil.write(bytes("%s:%s\n" % (ainame, password), "utf-8"))
+            fil.write(bytes(f"{ainame}:{password}\n", "utf-8"))
 
     def _spawn_ais(self, game):
         logging.debug(game.name)
@@ -281,25 +272,22 @@ class Server(Observed):
                     excludes.add(player_id)
         num_ais = game.min_players - game.num_players
         logging.debug(
-            "%s min_players %d num_players %d num_ais_needed %s",
-            game.name,
-            game.min_players,
-            game.num_players,
-            num_ais,
+            f"{game.name} min_players {game.min_players} num_players "
+            "{game.num_players} num_ais_needed {num_ais}"
         )
-        logging.debug("%s excludes %s", game.name, sorted(excludes))
+        logging.debug(f"{game.name} excludes {sorted(excludes)}")
         ainames = []
         for unused in range(num_ais):
             player_id = self.results.get_weighted_random_player_id(
                 excludes=excludes, highest_mu=game.any_humans
             )
             excludes.add(player_id)
-            ainame = "ai%d" % player_id
+            ainame = f"ai{player_id}"
             ainames.append(ainame)
         for ainame in ainames:
             if self._passwd_for_playername(ainame) is None:
                 self._add_playername_with_random_password(ainame)
-        logging.debug("%s ainames %s", game.name, ainames)
+        logging.debug(f"{game.name} ainames {ainames}")
         # Add all AIs to the wait list first, to avoid a race.
         self.game_to_waiting_ais[game.name] = set(ainames)
         if hasattr(sys, "frozen"):
@@ -327,7 +315,7 @@ class Server(Observed):
                     game.name,
                     "--log-path",
                     os.path.join(
-                        logdir, "slugathon-%s-%s.log" % (game.name, ainame)
+                        logdir, f"slugathon-{game.name}-{ainame}.log"
                     ),
                     "--ai-time-limit",
                     str(game.ai_time_limit),
@@ -337,12 +325,12 @@ class Server(Observed):
                 aipass = self._passwd_for_playername(ainame)
                 if aipass is None:
                     logging.warning(
-                        "user %s is not in %s; ai will fail to join"
-                        % (ainame, self.passwd_path)
+                        f"user {ainame} is not in {self.passwd_path}; "
+                        "ai will fail to join"
                     )
                 else:
                     args.extend(["--password", aipass])
-            logging.info("spawning AI process for %s %s", game, ainame)
+            logging.info(f"spawning AI process for {game} {ainame}")
             reactor.spawnProcess(pp, executable, args=args, env=os.environ)
 
     def pick_color(self, playername, game_name, color):
@@ -381,13 +369,8 @@ class Server(Observed):
     ):
         """Split a legion."""
         logging.info(
-            "%s %s %s %s %s %s",
-            playername,
-            game_name,
-            parent_markerid,
-            child_markerid,
-            parent_creature_names,
-            child_creature_names,
+            f"{playername} {game_name} {parent_markerid} "
+            "{child_markerid} {parent_creature_names} {child_creature_names}"
         )
         game = self.name_to_game(game_name)
         if not game:
@@ -505,15 +488,12 @@ class Server(Observed):
         if game:
             game.done_with_moves(playername)
         else:
-            logging.warning("done_with_moves for bad game %s", game_name)
+            logging.warning(f"done_with_moves for bad game {game_name}")
 
     def resolve_engagement(self, playername, game_name, hexlabel):
         """Pick the next engagement to resolve."""
         logging.info(
-            "Server.resolve_engagement %s %s %s",
-            playername,
-            game_name,
-            hexlabel,
+            f"Server.resolve_engagement {playername} {game_name} {hexlabel}"
         )
         game = self.name_to_game(game_name)
         if game:
@@ -525,7 +505,7 @@ class Server(Observed):
         if game:
             legion = game.find_legion(markerid)
             if not legion:
-                logging.warning("flee with no legion %s", markerid)
+                logging.warning(f"flee with no legion {markerid}")
                 return
             hexlabel = legion.hexlabel
             for enemy_legion in game.all_legions(hexlabel):
@@ -661,11 +641,8 @@ class Server(Observed):
     ):
         """Fight the current current engagement."""
         logging.info(
-            "Server.fight %s %s %s %s",
-            playername,
-            game_name,
-            attacker_markerid,
-            defender_markerid,
+            f"Server.fight {playername} {game_name} {attacker_markerid} "
+            "{defender_markerid}"
         )
         game = self.name_to_game(game_name)
         if game:
@@ -681,7 +658,7 @@ class Server(Observed):
                     defender_legion.player.name,
                 ]
             ):
-                logging.warning("illegal fight call from %s", playername)
+                logging.warning(f"illegal fight call from {playername}")
                 return
             if (
                 defender_legion.can_flee
@@ -832,11 +809,9 @@ class Server(Observed):
             )
             if not okay:
                 logging.warning("not enough angels pending")
-                logging.info("angels %s", angel_names)
-                logging.info("angels_pending %s", legion.angels_pending)
-                logging.info(
-                    "archangels_pending %s", legion.archangels_pending
-                )
+                logging.info(f"angels {angel_names}")
+                logging.info(f"angels_pending {legion.angels_pending}")
+                logging.info(f"archangels_pending {legion.archangels_pending}")
                 game.do_not_acquire_angels(playername, markerid)
                 return
             if len(legion) >= 7:
@@ -860,11 +835,8 @@ class Server(Observed):
     def do_not_acquire_angels(self, playername, game_name, markerid):
         """Do not acquire angels and/or archangels after an engagement."""
         logging.info(
-            "do_not_acquire_angels %s %s %s %s",
-            self,
-            playername,
-            game_name,
-            markerid,
+            f"do_not_acquire_angels {self} {playername} {game_name} "
+            "{markerid}"
         )
         game = self.name_to_game(game_name)
         if game:
@@ -966,7 +938,7 @@ class Server(Observed):
     ):
         """Carry over excess hits to another adjacent enemy."""
         logging.info(
-            "carry %s %s %s", carry_target_name, carry_target_hexlabel, carries
+            f"carry {carry_target_name} {carry_target_hexlabel} {carries}"
         )
         game = self.name_to_game(game_name)
         if game:
@@ -1024,7 +996,7 @@ class Server(Observed):
             self.games.remove(game)
 
     def update(self, observed, action, names):
-        logging.info("%s %s %s", observed, action, names)
+        logging.info(f"{observed} {action} {names}")
         if isinstance(action, Action.GameOver):
             game = self.name_to_game(action.game_name)
             if game in self.games:
@@ -1040,15 +1012,15 @@ class AIProcessProtocol(protocol.ProcessProtocol):
         self.ainame = ainame
 
     def connectionMade(self):
-        logging.info("%s %s", self.game_name, self.ainame)
+        logging.info(f"{self.game_name} {self.ainame}")
         # We don't use stdin, so reduce the number of open files.
         self.transport.closeStdin()
 
     def processExited(self, status):
-        logging.debug("%s %s %s", self.game_name, self.ainame, status)
+        logging.debug(f"{self.game_name} {self.ainame} {status}")
 
     def processEnded(self, status):
-        logging.debug("%s %s %s", self.game_name, self.ainame, status)
+        logging.debug(f"{self.game_name} {self.ainame} {status}")
 
 
 def add_arguments(parser):

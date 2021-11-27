@@ -55,7 +55,7 @@ class PickMarker(Gtk.Dialog):
     """Dialog to pick a legion marker."""
 
     def __init__(self, playername, game_name, markers_left, def1, parent):
-        title = "PickMarker - %s" % playername
+        title = f"PickMarker - {playername}"
         GObject.GObject.__init__(self, title=title, parent=parent)
         self.playername = playername
         self.game_name = game_name
@@ -70,7 +70,7 @@ class PickMarker(Gtk.Dialog):
             button = Gtk.Button()
             button.tag = button_name
             pixbuf = GdkPixbuf.Pixbuf.new_from_file(
-                fileutils.basedir("images/legion/%s.png" % button_name)
+                fileutils.basedir(f"images/legion/{button_name}.png")
             )
             image = Gtk.Image()
             image.set_from_pixbuf(pixbuf)
@@ -99,13 +99,13 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (game_name, playername, markerid) = tup
-        logging.info("picked %s", markerid)
+        logging.info(f"picked {markerid}")
         reactor.stop()
 
     playername = "test user"
     game_name = "test game"
-    markers_left = ["Rd%02d" % ii for ii in range(1, 12 + 1)] + [
-        "Bu%02d" % ii for ii in range(1, 8 + 1)
+    markers_left = [f"Rd{ii:02d}" for ii in range(1, 12 + 1)] + [
+        f"Bu{ii:02d}" for ii in range(1, 8 + 1)
     ]
     pickmarker, def1 = new(playername, game_name, markers_left, None)
     def1.addCallback(my_callback)

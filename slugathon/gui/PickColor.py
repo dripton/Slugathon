@@ -29,7 +29,7 @@ class PickColor(Gtk.Dialog):
 
     def __init__(self, playername, game, colors_left, parent, def1):
         GObject.GObject.__init__(
-            self, title="Pick Color - %s" % playername, parent=parent
+            self, title=f"Pick Color - {playername}", parent=parent
         )
         self.playername = playername
         self.game = game
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     def my_callback(tup):
         (game, color) = tup
-        logging.info("picked %s", color)
+        logging.info(f"picked {color}")
         guiutils.exit()
 
     now = time.time()

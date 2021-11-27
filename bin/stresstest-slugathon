@@ -31,11 +31,11 @@ def start_server():
 
 def server_exited(tup):
     out, err, code = tup
-    logging.info("server exited with returncode %s stderr %s" % (code, err))
+    logging.info(f"server exited with returncode {code} stderr {err}")
 
 
 def server_failed(arg):
-    log.err("server failed %s" % arg)
+    log.err(f"server failed {arg}")
 
 
 def start_game(
@@ -63,7 +63,7 @@ def start_game(
             "--ai-time-limit",
             str(ai_time_limit),
             "--game-name",
-            "stresstest_game_%d_%d" % (os.getpid(), num_games),
+            f"stresstest_game_{os.getpid()}_{num_games}"
         ],
         env=os.environ,
     )
@@ -88,7 +88,7 @@ def game_exited(
     max_players,
     num_games,
 ):
-    logging.info("returncode %s" % returncode)
+    logging.info(f"returncode {returncode}")
     if returncode == 0:
         start_game(
             playername,
@@ -103,7 +103,7 @@ def game_exited(
 
 
 def game_failed(arg):
-    log.err("game failed %s" % arg)
+    log.err(f"game failed {arg}")
 
 
 def main():

@@ -26,12 +26,11 @@ class Die(object):
     IMAGE_DIR = "dice"
 
     def __init__(self, number, hit=True, scale=15):
-        self.name = "%s%d" % (("Miss", "Hit")[hit], number)
+        hit_or_miss = "Hit" if hit else "Miss"
+        self.name = f"{hit_or_miss}{number}"
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
-        path = fileutils.basedir(
-            "images/%s/%s.png" % (self.IMAGE_DIR, self.name)
-        )
+        path = fileutils.basedir(f"images/{self.IMAGE_DIR}/{self.name}.png")
         input_surface = cairo.ImageSurface.create_from_png(path)
         self.surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32, int(self.chit_scale), (self.chit_scale)

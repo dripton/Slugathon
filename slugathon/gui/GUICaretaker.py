@@ -68,16 +68,16 @@ class GUICaretaker(Gtk.EventBox):
 
     def update_max_count_label(self, creature_name, max_count):
         label = self.max_count_labels[creature_name]
-        label.set_markup("<span foreground='blue'>%d</span>" % max_count)
+        label.set_markup(f"<span foreground='blue'>{max_count}</span>")
 
     def update_counts_label(
         self, creature_name, left_count, game_count, dead_count
     ):
         label = self.counts_labels[creature_name]
         label.set_markup(
-            "<span foreground='black'>%d</span>" % left_count
-            + "/<span foreground='darkgreen'>%d</span>" % game_count
-            + "/<span foreground='red'>%d</span>" % dead_count
+            f"<span foreground='black'>{left_count}</span>"
+            f"/<span foreground='darkgreen'>{game_count}</span>"
+            f"/<span foreground='red'>{dead_count}</span>"
         )
         if left_count == 0 and creature_name != "Titan":
             chit = self.chits[creature_name]
