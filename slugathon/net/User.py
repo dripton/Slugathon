@@ -291,7 +291,7 @@ class User(Avatar):
     ):
         logging.info(
             f"perspective_carry {carry_target_name} {carry_target_hexlabel} "
-            "{carries}"
+            f"{carries}"
         )
         self.server.carry(
             self.name,

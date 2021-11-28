@@ -148,7 +148,7 @@ class Server(Observed):
         """
         logging.info(
             f"{playername} {game_name} {min_players} {max_players} "
-            "{ai_time_limit} {player_time_limit} {player_class} {player_info}"
+            f"{ai_time_limit} {player_time_limit} {player_class} {player_info}"
         )
         if not game_name:
             st = "Games must be named"
@@ -273,7 +273,7 @@ class Server(Observed):
         num_ais = game.min_players - game.num_players
         logging.debug(
             f"{game.name} min_players {game.min_players} num_players "
-            "{game.num_players} num_ais_needed {num_ais}"
+            f"{game.num_players} num_ais_needed {num_ais}"
         )
         logging.debug(f"{game.name} excludes {sorted(excludes)}")
         ainames = []
@@ -370,7 +370,7 @@ class Server(Observed):
         """Split a legion."""
         logging.info(
             f"{playername} {game_name} {parent_markerid} "
-            "{child_markerid} {parent_creature_names} {child_creature_names}"
+            f"{child_markerid} {parent_creature_names} {child_creature_names}"
         )
         game = self.name_to_game(game_name)
         if not game:
@@ -642,7 +642,7 @@ class Server(Observed):
         """Fight the current current engagement."""
         logging.info(
             f"Server.fight {playername} {game_name} {attacker_markerid} "
-            "{defender_markerid}"
+            f"{defender_markerid}"
         )
         game = self.name_to_game(game_name)
         if game:
@@ -836,7 +836,7 @@ class Server(Observed):
         """Do not acquire angels and/or archangels after an engagement."""
         logging.info(
             f"do_not_acquire_angels {self} {playername} {game_name} "
-            "{markerid}"
+            f"{markerid}"
         )
         game = self.name_to_game(game_name)
         if game:

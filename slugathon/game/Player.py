@@ -417,9 +417,9 @@ class Player(Observed):
         if self.game.phase != Phase.FIGHT:
             return False
         logging.info(
-            f"can_exit_fight_phase {self.game.engagement_hexlabels} "
-            f"{self.game.pending_summon} {self.game.pending_reinforcement} "
-            f"{self.pending_acquire}"
+            f"can_exit_fight_phase {self.game.engagement_hexlabels=} "
+            f"{self.game.pending_summon=} {self.game.pending_reinforcement=} "
+            f"{self.pending_acquire=}"
         )
         return (
             not self.game.engagement_hexlabels

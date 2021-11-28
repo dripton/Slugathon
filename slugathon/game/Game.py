@@ -409,7 +409,7 @@ class Game(Observed):
         Once all players have done this, create the starting legions.
         """
         player = self.get_player_by_name(playername)
-        logging.info(player.markerids_left)
+        logging.info(f"{player.markerids_left=}")
         if markerid not in player.markerids_left:
             raise AssertionError("marker not available")
         player.pick_marker(markerid)
@@ -1674,7 +1674,7 @@ class Game(Observed):
         possible, remove the dead legion(s), award points, and heal surviving
         creatures in the winning legion.
         """
-        logging.info("_end_battle")
+        logging.info("")
         if not self.attacker_legion or not self.defender_legion:
             return
         # XXX Redundant but fixes timing issues with _cleanup_battle
@@ -1753,7 +1753,7 @@ class Game(Observed):
                 and not self.pending_summon
                 and not self.pending_reinforcement
             ):
-                logging.info("_end_dead_player_turn")
+                logging.info("")
                 if self.phase == Phase.SPLIT:
                     self.active_player.done_with_splits()
                 if self.phase == Phase.MOVE:
@@ -1768,7 +1768,7 @@ class Game(Observed):
 
         Called from Server.
         """
-        logging.info(f"done_with_counterstrikes {playername}")
+        logging.info(f"{playername=}")
         player = self.get_player_by_name(playername)
         if player is not self.battle_active_player:
             logging.info("ending counterstrike phase out of turn")
@@ -1820,7 +1820,7 @@ class Game(Observed):
                 creature.struck = False
 
     def cleanup_offboard_creatures(self):
-        logging.info("cleanup_offboard_creatures")
+        logging.info("")
         for legion in self.battle_legions:
             if legion != self.battle_active_legion:
                 for creature in legion.creatures:
@@ -1843,7 +1843,7 @@ class Game(Observed):
                             logging.info(f"{creature} has hexlabel None")
 
     def cleanup_dead_creatures(self):
-        logging.info("cleanup_dead_creatures")
+        logging.info("")
         for legion in self.battle_legions:
             for creature in legion.creatures:
                 if creature.dead:
@@ -1854,7 +1854,9 @@ class Game(Observed):
                         and creature.hexlabel is not None
                     ):
                         self.first_attacker_kill = self.battle_turn
-                        logging.info(f"first_attacker_kill {self.battle_turn}")
+                        logging.info(
+                            f"first_attacker_kill {self.battle_turn=}"
+                        )
                     creature.previous_hexlabel = creature.hexlabel
                     creature.hexlabel = None
 
@@ -1950,7 +1952,7 @@ class Game(Observed):
     def update(self, observed, action, names):
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
-        logging.info(f"{observed} {action}")
+        logging.info(f"{observed=} {action=}")
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
@@ -2303,7 +2305,7 @@ class Game(Observed):
             loser_player.remove_all_legions()
             # This will make the player dead even if we missed earlier actions.
             loser_player.created_starting_legion = True
-            logging.info(loser_player.dead)
+            logging.info(f"{loser_player.dead=}")
             if winner_player:
                 winner_player.eliminated_colors.add(loser_player.color_abbrev)
                 winner_player.markerids_left.update(

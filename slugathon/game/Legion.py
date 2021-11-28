@@ -115,15 +115,17 @@ class Legion(Observed):
         return self.hexlabel in self.player.game.engagement_hexlabels
 
     def __repr__(self):
-        return f"Legion {self.markerid} ({self.picname}) in {self.hexlabel} \
-                 {self.creatures}"
+        return (
+            f"Legion {self.markerid} ({self.picname}) in {self.hexlabel} "
+            f"{self.creatures}"
+        )
 
     def __len__(self):
         """Return the number of living creatures in the legion."""
         return len(self.living_creature_names)
 
     def __bool__(self):
-        """Zero height legions should not be False."""
+        """Zero-height legions should not be False."""
         return True
 
     def __eq__(self, other):
@@ -207,7 +209,7 @@ class Legion(Observed):
     def is_legal_split(self, child1, child2):
         """Return whether this legion can be split into legions child1 and
         child2"""
-        logging.info(f"{child1} {child2}")
+        logging.info(f"{self=} {child1=} {child2=}")
         if len(self) < 4:
             return False
         if len(self) != len(child1) + len(child2):
@@ -311,10 +313,7 @@ class Legion(Observed):
         """Return True iff the legion can currently recruit, if it moved
         or defended in a battle.
         """
-        logging.info(
-            f"can_recruit {self} len {len(self)} recruited {self.recruited} "
-            f"dead {self.dead}"
-        )
+        logging.info(f"{self=} {len(self)=} {self.recruited=} {self.dead=}")
         if len(self) >= 7 or self.recruited or self.dead:
             return False
         game = self.player.game
@@ -428,9 +427,7 @@ class Legion(Observed):
 
     def recruit_creature(self, creature, recruiter_names):
         """Recruit creature."""
-        logging.info(
-            f"Legion.recruit_creature {self} {creature} {recruiter_names}"
-        )
+        logging.info(f"{self=} {creature=} {recruiter_names=}")
         if self.recruited:
             logging.info("already recruited")
             if self.creatures[-1].name == creature.name:
@@ -440,7 +437,7 @@ class Legion(Observed):
                 raise AssertionError("legion tried to recruit twice")
         else:
             if len(self) >= 7:
-                logging.info(self)
+                logging.info("self=")
                 raise AssertionError("legion too tall to recruit")
             caretaker = self.player.game.caretaker
             if not caretaker.num_left(creature.name):
@@ -460,7 +457,7 @@ class Legion(Observed):
         player = self.player
         creature = self.creatures.pop()
         recruiter_names = self.recruiter_names_list.pop()
-        logging.info(f"{self} clearing self.recruited")
+        logging.info(f"{self=} clearing self.recruited")
         self.recruited = False
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
@@ -481,7 +478,7 @@ class Legion(Observed):
         player = self.player
         creature = self.creatures.pop()
         recruiter_names = self.recruiter_names_list.pop()
-        logging.info(f"{self} clearing self.recruited")
+        logging.info(f"{self=} clearing self.recruited")
         self.recruited = False
         caretaker = self.player.game.caretaker
         caretaker.put_one_back(creature.name)
@@ -557,7 +554,8 @@ class Legion(Observed):
         kill_all_creatures=False,
     ):
         logging.info(
-            f"Legion.die {self} {scoring_legion} {fled} {no_points} {check_for_victory}"
+            f"{self=} {scoring_legion=} {fled=} {no_points=} "
+            f"{check_for_victory=}"
         )
         if scoring_legion is not None and not no_points:
             # We only give points for dead creatures, not living creatures,
@@ -588,7 +586,7 @@ class Legion(Observed):
         self.player.remove_legion(self.markerid)
 
     def add_points(self, points, can_acquire_angels):
-        logging.info(f"Legion.add_points {self} {points} {can_acquire_angels}")
+        logging.info(f"{self=} {points=} {can_acquire_angels=}")
         ARCHANGEL_POINTS = Creature.Creature("Archangel").acquirable_every
         ANGEL_POINTS = Creature.Creature("Angel").acquirable_every
         player = self.player
@@ -642,7 +640,7 @@ class Legion(Observed):
 
     def acquire_angels(self, angels):
         """Acquire angels."""
-        logging.info(f"acquire_angels {angels}")
+        logging.info(f"{angels=}")
         num_archangels = num_angels = 0
         for angel in angels:
             if angel.name == "Archangel":
@@ -661,8 +659,8 @@ class Legion(Observed):
             if not okay:
                 logging.info("not enough angels pending")
                 logging.info(f"{angels=}")
-                logging.info(f"angels_pending {self.angels_pending}")
-                logging.info(f"archangels_pending {self.archangels_pending}")
+                logging.info(f"{self.angels_pending=}")
+                logging.info(f"{self.archangels_pending=}")
                 return
             if len(self) >= 7:
                 logging.info("acquire_angels 7 high")
@@ -689,11 +687,11 @@ class Legion(Observed):
             angel.legion = self
         self._angels_pending = 0
         self._archangels_pending = 0
-        logging.info(f"end of acquire_angels {self}")
+        logging.info(f"end of acquire_angels {self=}")
 
     def do_not_acquire_angels(self):
         """Do not acquire any angels, and notify observers."""
-        logging.info(f"do_not_acquire_angels {self}")
+        logging.info(f"{self=}")
         if self.angels_pending or self.archangels_pending:
             self.reset_angels_pending()
             action = Action.DoNotAcquireAngels(
@@ -703,7 +701,7 @@ class Legion(Observed):
 
     def reset_angels_pending(self):
         if self.angels_pending or self.archangels_pending:
-            logging.info("reset_angels_pending")
+            logging.info(f"{self=}")
             self._angels_pending = 0
             self._archangels_pending = 0
 
