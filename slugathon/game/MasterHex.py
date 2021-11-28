@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2003-2010 David Ripton"
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
