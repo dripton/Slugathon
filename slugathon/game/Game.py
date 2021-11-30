@@ -1660,6 +1660,8 @@ class Game(Observed):
     def is_battle_over(self):
         """Return True iff the battle is over."""
         logging.info(f"battle_legions {self.battle_legions}")
+        if self.battle_turn is None:
+            return True
         for legion in self.battle_legions:
             if legion.dead:
                 logging.info(f"{legion} is dead")
