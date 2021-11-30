@@ -331,7 +331,7 @@ class Game(Observed):
             logging.warning(f"{self.name} called by non-owner {playername}")
             return
         if self.started:
-            logging.warning(f"{self.name} called twice", self.name)
+            logging.warning(f"{self.name} called twice")
             return
         self.started = True
         self.start_time = time.time()
