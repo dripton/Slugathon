@@ -380,7 +380,7 @@ class CleverBot(object):
                 def1.addErrback(self.failure)
                 return
         if battle_over:
-            logging.info(f"calling do_not_reinforce {recruit=}")
+            logging.info(f"calling do_not_reinforce")
             def1 = self.user.callRemote(
                 "do_not_reinforce", game.name, legion.markerid
             )
