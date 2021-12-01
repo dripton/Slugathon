@@ -46,7 +46,7 @@ def best7(score_moves):
 @implementer(Bot)
 class CleverBot(object):
     def __init__(self, playername, ai_time_limit, bot_params=None):
-        logging.info(f"CleverBot {playername} {ai_time_limit}")
+        logging.info(f"CleverBot {playername=} {ai_time_limit=}")
         self.playername = playername
         self.user = None
         self.ai_time_limit = ai_time_limit
@@ -62,21 +62,21 @@ class CleverBot(object):
         return str(self.bp)
 
     def maybe_pick_color(self, game):
-        logging.info("maybe_pick_color")
+        logging.info("")
         if game.next_playername_to_pick_color == self.playername:
             color = random.choice(game.colors_left)
             def1 = self.user.callRemote("pick_color", game.name, color)
             def1.addErrback(self.failure)
 
     def maybe_pick_first_marker(self, game, playername):
-        logging.info("maybe_pick_first_marker")
+        logging.info("")
         if playername == self.playername:
             player = game.get_player_by_name(playername)
             markerid = self._choose_marker(player)
             self._pick_marker(game, self.playername, markerid)
 
     def _pick_marker(self, game, playername, markerid):
-        logging.info("pick_marker")
+        logging.info("")
         player = game.get_player_by_name(playername)
         if markerid is None:
             if not player.markerid_to_legion:
@@ -109,15 +109,15 @@ class CleverBot(object):
         Fight with legions that have angels first (so we can summon them),
         then with the most important legion.
         """
-        logging.info("choose_engagement")
+        logging.info("")
         if (
             game.pending_summon
             or game.pending_reinforcement
             or game.pending_acquire
         ):
             logging.info(
-                f"choose_engagement bailing early {game.pending_summon}"
-                f"{game.pending_reinforcement} {game.pending_acquire}"
+                f"choose_engagement bailing early {game.pending_summon=}"
+                f"{game.pending_reinforcement=} {game.pending_acquire=}"
             )
             return
         hexlabels = list(game.engagement_hexlabels)
@@ -141,14 +141,14 @@ class CleverBot(object):
             )
             def1.addErrback(self.failure)
         else:
-            logging.info("CleverBot calling done_with_engagements")
+            logging.info("calling done_with_engagements")
             def1 = self.user.callRemote("done_with_engagements", game.name)
             def1.addErrback(self.failure)
 
     # TODO concede, negotiate
     def resolve_engagement(self, game, hexlabel):
         """Resolve the engagement in hexlabel."""
-        logging.info(f"resolve_engagement {game} {hexlabel}")
+        logging.info(f"{game=} {hexlabel=}")
         attacker = None
         defender = None
         for legion in game.all_legions(hexlabel):
@@ -157,9 +157,9 @@ class CleverBot(object):
             else:
                 defender = legion
         if attacker:
-            logging.info(f"attacker {attacker} {attacker.player.name}")
+            logging.info(f"{attacker=} {attacker.player.name=}")
         if defender:
-            logging.info(f"defender {defender} {defender.player.name}")
+            logging.info(f"{defender=} {defender.player.name=}")
         if not attacker or not defender:
             logging.info("no attacker or defender; bailing")
             return
@@ -332,7 +332,7 @@ class CleverBot(object):
         return (recruit3, recruiters)
 
     def recruit(self, game):
-        logging.info("CleverBot.recruit")
+        logging.info("")
         if game.active_player.name != self.playername:
             logging.info("not my turn")
             return
@@ -342,8 +342,8 @@ class CleverBot(object):
                 recruit, recruiters = self._pick_recruit_and_recruiters(legion)
                 if recruit is not None:
                     logging.info(
-                        f"CleverBot calling recruit_creature {legion.markerid}"
-                        f"{recruit} {recruiters}"
+                        f"calling recruit_creature {legion.markerid=}"
+                        f"{recruit=} {recruiters=}"
                     )
                     def1 = self.user.callRemote(
                         "recruit_creature",
@@ -354,7 +354,7 @@ class CleverBot(object):
                     )
                     def1.addErrback(self.failure)
                     return
-        logging.info("CleverBot calling done_with_recruits")
+        logging.info("calling done_with_recruits")
         def1 = self.user.callRemote("done_with_recruits", game.name)
         def1.addErrback(self.failure)
 
@@ -369,7 +369,7 @@ class CleverBot(object):
         if legion.can_recruit and (battle_over or game.battle_turn == 4):
             recruit, recruiters = self._pick_recruit_and_recruiters(legion)
             if recruit is not None:
-                logging.info(f"CleverBot calling recruit_creature {recruit}")
+                logging.info(f"calling recruit_creature {recruit=}")
                 def1 = self.user.callRemote(
                     "recruit_creature",
                     game.name,
@@ -380,13 +380,13 @@ class CleverBot(object):
                 def1.addErrback(self.failure)
                 return
         if battle_over:
-            logging.info(f"CleverBot calling do_not_reinforce {recruit}")
+            logging.info(f"calling do_not_reinforce {recruit=}")
             def1 = self.user.callRemote(
                 "do_not_reinforce", game.name, legion.markerid
             )
             def1.addErrback(self.failure)
         else:
-            logging.info("CleverBot calling done_with_reinforcements")
+            logging.info("calling done_with_reinforcements")
             def1 = self.user.callRemote("done_with_reinforcements", game.name)
             def1.addErrback(self.failure)
 
@@ -436,7 +436,7 @@ class CleverBot(object):
                 if not recruit or summonable.sort_value > recruit.sort_value:
                     donor = summonable.legion
                     logging.info(
-                        f"CleverBot calling _summon_angel {legion.markerid} "
+                        f"calling _summon_angel {legion.markerid} "
                         f"{donor.markerid} {summonable.name}"
                     )
                     def1 = self.user.callRemote(
@@ -449,24 +449,19 @@ class CleverBot(object):
                     def1.addErrback(self.failure)
                     return
 
-        logging.info(
-            f"CleverBot calling do_not_summon_angel {legion.markerid}"
-        )
+        logging.info(f"calling do_not_summon_angel {legion.markerid}")
         def1 = self.user.callRemote(
             "do_not_summon_angel", game.name, legion.markerid
         )
         def1.addErrback(self.failure)
 
         if during_battle:
-            logging.info("CleverBot calling done_with_reinforcements")
+            logging.info("calling done_with_reinforcements")
             def1 = self.user.callRemote("done_with_reinforcements", game.name)
             def1.addErrback(self.failure)
 
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
-        logging.info(
-            f"CleverBot.acquire_angels {markerid} {num_angels} "
-            f"{num_archangels}"
-        )
+        logging.info(f"{markerid=} {num_angels=} {num_archangels=}")
         player = game.get_player_by_name(self.playername)
         legion = player.markerid_to_legion.get(markerid)
         if legion is None:
@@ -498,15 +493,14 @@ class CleverBot(object):
                         angel_names = angel_names[:-1]
                 if angel_names:
                     logging.info(
-                        f"CleverBot calling acquire_angels {markerid} "
-                        f"{angel_names}"
+                        f"calling acquire_angels {markerid=} {angel_names=}"
                     )
                     def1 = self.user.callRemote(
                         "acquire_angels", game.name, markerid, angel_names
                     )
                     def1.addErrback(self.failure)
                     return
-        logging.info(f"CleverBot calling do_not_acquire_angels {markerid}")
+        logging.info(f"calling do_not_acquire_angels {markerid=}")
         def1 = self.user.callRemote(
             "do_not_acquire_angels", game.name, markerid
         )
@@ -907,8 +901,8 @@ class CleverBot(object):
         ):
             return None
         legion = game.battle_active_legion
+        logging.info(f"{legion=}")
         creatures = legion.sorted_living_creatures
-        logging.info(f"_find_best_creature_moves {legion} {creatures}")
         if not creatures:
             return None
         movesets = []  # list of a set of hexlabels for each creature
@@ -940,7 +934,7 @@ class CleverBot(object):
                         finally:
                             creature.hexlabel = creature.previous_hexlabel
                     score_moves.sort()
-                    logging.info(f"score_moves {creature} {score_moves}")
+                    logging.info(f"{creature=} {score_moves=}")
                     moveset = best7(score_moves)
                 else:
                     moveset = {creature.hexlabel}
@@ -1011,7 +1005,7 @@ class CleverBot(object):
         that lets all the creatures reach their assigned hexes without
         blocking their allies' moves.
         """
-        logging.info("CleverBot.move_creatures")
+        logging.info("")
         if self.best_creature_moves is None:
             self.best_creature_moves = self._find_best_creature_moves(game)
         # Loop in case a non-move is best.

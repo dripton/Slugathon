@@ -1604,8 +1604,7 @@ class Game(Observed):
         assert len(targets) == 1
         target = targets.pop()
         assert target.name == target_name
-        logging.info(f"{striker=} {target=}")
-        logging.info(f"{num_dice=} {strike_number=}")
+        logging.info(f"{striker=} {target=} {num_dice=} {strike_number=}")
         assert (num_dice, strike_number) in striker.valid_strike_penalties(
             target
         )
@@ -1659,7 +1658,7 @@ class Game(Observed):
     @property
     def is_battle_over(self):
         """Return True iff the battle is over."""
-        logging.info(f"battle_legions {self.battle_legions}")
+        logging.info(f"{self.battle_legions=}")
         if self.battle_turn is None:
             return True
         for legion in self.battle_legions:
@@ -1889,7 +1888,7 @@ class Game(Observed):
         self.notify(action)
 
     def _update_finish_order(self, winner_player, loser_player):
-        logging.info(f"{winner_player} {loser_player} {self.finish_order}")
+        logging.info(f"{winner_player=} {loser_player=} {self.finish_order=}")
         # If loser player is already in finish_order, abort.
         if self.finish_order and loser_player in self.finish_order[0]:
             logging.info("")
@@ -1935,7 +1934,7 @@ class Game(Observed):
         for player in self.players:
             if player.name not in winner_names:
                 if not player.dead:
-                    logging.info(player)
+                    logging.info(f"{player=}")
                     player.die(None, False)
         # Also eliminate the winning players, if there was a draw.
         if len(winner_names) == 2:
@@ -1954,7 +1953,7 @@ class Game(Observed):
     def update(self, observed, action, names):
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
-        logging.info(f"{observed=} {action=}")
+        logging.info(f"{observed=} {action=} {names=}")
 
         if isinstance(action, Action.JoinGame):
             if action.game_name == self.name:
@@ -1970,7 +1969,7 @@ class Game(Observed):
             else:
                 if player.starting_tower != action.tower_num:
                     logging.warning(
-                        f"player {player} already has tower {player.starting_tower}"
+                        f"{player=} already has tower {player.starting_tower}"
                     )
 
         elif isinstance(action, Action.AssignedAllTowers):
@@ -2297,7 +2296,8 @@ class Game(Observed):
                 else:
                     player = winner_player
                 logging.info(
-                    f"{legion} {legion.living_creatures} {legion.living_creatures_score}"
+                    f"{legion=} {legion.living_creatures=} "
+                    f"{legion.living_creatures_score=}"
                 )
                 player_to_full_points[player] += legion.living_creatures_score
             for player, full_points in player_to_full_points.items():
