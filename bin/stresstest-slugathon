@@ -88,7 +88,7 @@ def game_exited(
     max_players,
     num_games,
 ):
-    logging.info(f"returncode {returncode}")
+    logging.info(f"{returncode=}")
     if returncode == 0:
         start_game(
             playername,
