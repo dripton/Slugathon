@@ -12,7 +12,7 @@ def test_best7():
     assert CleverBot.best7([]) == set()
 
     score_moves = [(1, "A1"), (2, "A2"), (3, "A3"), (4, "B1"), (5, "B2")]
-    assert CleverBot.best7(score_moves) == set(["A1", "A2", "A3", "B1", "B2"])
+    assert CleverBot.best7(score_moves) == {"A1", "A2", "A3", "B1", "B2"}
 
     score_moves = [
         (1, "A1"),
@@ -24,9 +24,15 @@ def test_best7():
         (7, "B4"),
         (8, "C1"),
     ]
-    assert CleverBot.best7(score_moves) == set(
-        ["A2", "A3", "B1", "B2", "B3", "B4", "C1"]
-    )
+    assert CleverBot.best7(score_moves) == {
+        "A2",
+        "A3",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "C1",
+    }
 
     score_moves = [
         (1, "A1"),
@@ -40,9 +46,15 @@ def test_best7():
         (8, "C1"),
     ]
     best_moves = CleverBot.best7(score_moves)
-    assert best_moves == set(
-        ["A2", "A3", "B1", "B2", "B3", "B4", "C1"]
-    ) or best_moves == set(["C2", "A3", "B1", "B2", "B3", "B4", "C1"])
+    assert best_moves == {
+        "A2",
+        "A3",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "C1",
+    } or best_moves == {"C2", "A3", "B1", "B2", "B3", "B4", "C1"}
 
     score_moves = [
         (1, "A1"),
@@ -59,14 +71,14 @@ def test_best7():
     for trial in range(20):
         best_moves = CleverBot.best7(score_moves)
         assert (
-            best_moves == set(["A2", "A3", "B1", "B2", "B3", "B4", "C1"])
-            or best_moves == set(["C2", "A3", "B1", "B2", "B3", "B4", "C1"])
-            or best_moves == set(["A2", "C2", "B1", "B2", "B3", "B4", "C1"])
+            best_moves == {"A2", "A3", "B1", "B2", "B3", "B4", "C1"}
+            or best_moves == {"C2", "A3", "B1", "B2", "B3", "B4", "C1"}
+            or best_moves == {"A2", "C2", "B1", "B2", "B3", "B4", "C1"}
         )
         for move in best_moves:
             seen.add(move)
     # Make sure we see all the tied moves at some point.
-    assert seen == set(["A2", "A3", "C2", "B1", "B2", "B3", "B4", "C1"])
+    assert seen == {"A2", "A3", "C2", "B1", "B2", "B3", "B4", "C1"}
 
 
 def test_gen_legion_moves():
@@ -76,7 +88,7 @@ def test_gen_legion_moves():
     lm = sorted(cleverbot._gen_legion_moves(movesets))
     assert lm == [[]]
 
-    movesets = [set(["A1", "A2", "A3", "B1"])]
+    movesets = [{"A1", "A2", "A3", "B1"}]
     lm = sorted(cleverbot._gen_legion_moves(movesets))
     assert lm == sorted(
         [
@@ -88,8 +100,8 @@ def test_gen_legion_moves():
     )
 
     movesets = [
-        set(["A1", "A2", "A3", "B1"]),
-        set(["A1", "A2", "A3", "B2"]),
+        {"A1", "A2", "A3", "B1"},
+        {"A1", "A2", "A3", "B2"},
     ]
     lm = sorted(cleverbot._gen_legion_moves(movesets))
     print(lm)
@@ -112,9 +124,9 @@ def test_gen_legion_moves():
     )
 
     movesets = [
-        set(["A1", "A2", "A3", "B1"]),
-        set(["A1", "A2", "A3", "B2"]),
-        set(["A1", "A2", "A3", "B3"]),
+        {"A1", "A2", "A3", "B1"},
+        {"A1", "A2", "A3", "B2"},
+        {"A1", "A2", "A3", "B3"},
     ]
     lm = sorted(cleverbot._gen_legion_moves(movesets))
     print(lm)
@@ -158,13 +170,13 @@ def test_gen_legion_moves():
     )
 
     movesets = [
-        set(["F1", "F2", "F3", "C1", "E2", "E1", "D1"]),
-        set(["F1", "F2", "D1", "E1", "E2"]),
-        set(["F1", "F2", "E2", "E1", "D1"]),
-        set(["F1", "F2", "D1", "E1", "E2"]),
-        set(["F1", "F2", "D1", "E1", "E2"]),
-        set(["F1", "F2", "E2", "E1", "D1"]),
-        set(["F1", "F2", "D1", "E1", "E2"]),
+        {"F1", "F2", "F3", "C1", "E2", "E1", "D1"},
+        {"F1", "F2", "D1", "E1", "E2"},
+        {"F1", "F2", "E2", "E1", "D1"},
+        {"F1", "F2", "D1", "E1", "E2"},
+        {"F1", "F2", "D1", "E1", "E2"},
+        {"F1", "F2", "E2", "E1", "D1"},
+        {"F1", "F2", "D1", "E1", "E2"},
     ]
     lm = sorted(cleverbot._gen_legion_moves(movesets))
     assert lm == []

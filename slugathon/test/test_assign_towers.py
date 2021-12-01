@@ -15,7 +15,7 @@ class TestAssignTowers(object):
         for num in range(num_players - 1):
             self.game.add_player(f"p{(num + 2)}")
         self.game.assign_towers()
-        towers = set([player.starting_tower for player in self.game.players])
+        towers = {player.starting_tower for player in self.game.players}
         assert len(towers) == num_players
         for tower in towers:
             assert tower in self.game.board.get_tower_labels()
@@ -34,9 +34,7 @@ class TestAssignTowers(object):
             self.game.add_player(f"p{(num + 2)}")
         for unused in range(trials):
             self.game.assign_towers()
-            towers = set(
-                [player.starting_tower for player in self.game.players]
-            )
+            towers = {player.starting_tower for player in self.game.players}
             assert len(towers) == num_players
             for tower in towers:
                 counts[tower] = counts.get(tower, 0) + 1

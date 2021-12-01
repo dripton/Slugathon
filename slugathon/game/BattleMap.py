@@ -298,7 +298,7 @@ class BattleMap(object):
                 # We need to start from the entrance.
                 hex1, hex2 = hex2, hex1
         result = 2
-        prev = set([hex1])
+        prev = {hex1}
         ignore = set()
         while True:
             neighbors = set()

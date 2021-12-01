@@ -45,19 +45,19 @@ def test_friendly_legions():
         ["Angel", "Gargoyle", "Centaur", "Centaur"],
     )
     legion2 = player.markerid_to_legion["Rd02"]
-    assert player.friendly_legions() == set([legion1, legion2])
-    assert player.friendly_legions(100) == set([legion1, legion2])
+    assert player.friendly_legions() == {legion1, legion2}
+    assert player.friendly_legions(100) == {legion1, legion2}
     assert player.friendly_legions(200) == set()
     legion1.move(8, False, None, 1)
-    assert player.friendly_legions() == set([legion1, legion2])
-    assert player.friendly_legions(100) == set([legion2])
-    assert player.friendly_legions(8) == set([legion1])
+    assert player.friendly_legions() == {legion1, legion2}
+    assert player.friendly_legions(100) == {legion2}
+    assert player.friendly_legions(8) == {legion1}
     assert player.friendly_legions(200) == set()
     legion2.move(200, True, "Angel", 3)
-    assert player.friendly_legions() == set([legion1, legion2])
+    assert player.friendly_legions() == {legion1, legion2}
     assert player.friendly_legions(100) == set()
-    assert player.friendly_legions(8) == set([legion1])
-    assert player.friendly_legions(200) == set([legion2])
+    assert player.friendly_legions(8) == {legion1}
+    assert player.friendly_legions(200) == {legion2}
 
 
 def test_can_exit_move_phase():

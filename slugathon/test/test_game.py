@@ -47,22 +47,22 @@ class TestGame(object):
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = self.game.find_normal_moves(legion, masterhex, 1)
-        assert moves == set([(6, 5), (10, 1), (108, 3)])
+        assert moves == {(6, 5), (10, 1), (108, 3)}
 
         moves = self.game.find_normal_moves(legion, masterhex, 2)
-        assert moves == set([(7, 3), (11, 5), (107, 1)])
+        assert moves == {(7, 3), (11, 5), (107, 1)}
 
         moves = self.game.find_normal_moves(legion, masterhex, 3)
-        assert moves == set([(8, 1), (12, 5), (106, 5)])
+        assert moves == {(8, 1), (12, 5), (106, 5)}
 
         moves = self.game.find_normal_moves(legion, masterhex, 4)
-        assert moves == set([(9, 5), (13, 1), (105, 1)])
+        assert moves == {(9, 5), (13, 1), (105, 1)}
 
         moves = self.game.find_normal_moves(legion, masterhex, 5)
-        assert moves == set([(10, 3), (14, 3), (104, 1)])
+        assert moves == {(10, 3), (14, 3), (104, 1)}
 
         moves = self.game.find_normal_moves(legion, masterhex, 6)
-        assert moves == set([(15, 1), (11, 5), (103, 5)])
+        assert moves == {(15, 1), (11, 5), (103, 5)}
 
     def test_find_normal_moves2(self):
         game = self.game
@@ -87,19 +87,19 @@ class TestGame(object):
             moves = self.game.find_normal_moves(legion1, masterhex1, 2)
             assert not moves
             moves = self.game.find_normal_moves(legion2, masterhex2, 2)
-            assert moves == set([(135, 1)])
+            assert moves == {(135, 1)}
 
             legion3.hexlabel = 135
             moves = self.game.find_normal_moves(legion1, masterhex1, 2)
             assert not moves
             moves = self.game.find_normal_moves(legion2, masterhex2, 2)
-            assert moves == set([(135, 1)])
+            assert moves == {(135, 1)}
 
             legion3.hexlabel = 136
             moves = self.game.find_normal_moves(legion1, masterhex1, 2)
             assert not moves
             moves = self.game.find_normal_moves(legion2, masterhex2, 2)
-            assert moves == set([(136, 5)])
+            assert moves == {(136, 5)}
 
         finally:
             for legion in [legion1, legion2, legion3]:
@@ -123,58 +123,56 @@ class TestGame(object):
         moves = game.find_all_teleport_moves(legion, masterhex, 6)
         for move in moves:
             assert move[1] == Game.TELEPORT
-        hexlabels = set([move[0] for move in moves])
+        hexlabels = {move[0] for move in moves}
         logging.info(sorted(hexlabels))
 
-        assert hexlabels == set(
-            [
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                21,
-                37,
-                41,
-                42,
-                101,
-                102,
-                103,
-                104,
-                105,
-                106,
-                107,
-                108,
-                109,
-                110,
-                111,
-                112,
-                113,
-                114,
-                115,
-                300,
-                400,
-                500,
-                600,
-                1000,
-                2000,
-                3000,
-                4000,
-                6000,
-            ]
-        )
+        assert hexlabels == {
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            21,
+            37,
+            41,
+            42,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            300,
+            400,
+            500,
+            600,
+            1000,
+            2000,
+            3000,
+            4000,
+            6000,
+        }
 
     def test_find_all_moves(self):
         game = self.game
@@ -183,7 +181,7 @@ class TestGame(object):
         masterhex = game.board.hexes[legion.hexlabel]
 
         moves = game.find_all_moves(legion, masterhex, 1)
-        assert moves == set([(6, 5), (10, 1), (108, 3)])
+        assert moves == {(6, 5), (10, 1), (108, 3)}
 
     def test_find_all_moves2(self):
         game = self.game
@@ -193,56 +191,54 @@ class TestGame(object):
 
         moves = game.find_all_moves(legion, masterhex, 6)
         logging.info(sorted(map(str, moves)))
-        hexlabels = set([move[0] for move in moves])
-        assert hexlabels == set(
-            [
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                21,
-                37,
-                41,
-                42,
-                101,
-                102,
-                103,
-                104,
-                105,
-                106,
-                107,
-                108,
-                109,
-                110,
-                111,
-                112,
-                113,
-                114,
-                115,
-                300,
-                400,
-                500,
-                600,
-                1000,
-                2000,
-                3000,
-                4000,
-                6000,
-            ]
-        )
+        hexlabels = {move[0] for move in moves}
+        assert hexlabels == {
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            21,
+            37,
+            41,
+            42,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            300,
+            400,
+            500,
+            600,
+            1000,
+            2000,
+            3000,
+            4000,
+            6000,
+        }
         for hexlabel in hexlabels:
             assert (hexlabel, Game.TELEPORT) in moves
         assert (11, 5) in moves

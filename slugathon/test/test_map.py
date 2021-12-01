@@ -97,9 +97,9 @@ def test_hexsides_with_border():
     assert hex1.hexsides_with_border("Slope") == set()
     assert hex1.hexsides_with_border("Cliff") == set()
     assert hex1.hexsides_with_border("Wall") == set()
-    assert hex2.hexsides_with_border("Slope") == set([3])
-    assert hex3.hexsides_with_border("Slope") == set([0, 2, 3, 4, 5])
-    assert hex3.hexsides_with_border("Cliff") == set([1])
+    assert hex2.hexsides_with_border("Slope") == {3}
+    assert hex3.hexsides_with_border("Slope") == {0, 2, 3, 4, 5}
+    assert hex3.hexsides_with_border("Cliff") == {1}
 
 
 def test_spin_border_dict():

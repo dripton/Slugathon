@@ -219,7 +219,7 @@ class CleverBot(object):
                     moves = game.find_normal_moves(enemy, hex1, roll).union(
                         game.find_titan_teleport_moves(enemy)
                     )
-                    hexlabels = set((move[0] for move in moves))
+                    hexlabels = {move[0] for move in moves}
                     if hexlabel in hexlabels:
                         return True
         return False
@@ -237,7 +237,7 @@ class CleverBot(object):
             moves = game.find_normal_moves(legion, hex1, roll).union(
                 game.find_titan_teleport_moves(legion)
             )
-            hexlabels = set((move[0] for move in moves))
+            hexlabels = {move[0] for move in moves}
             all_hexlabels.update(hexlabels)
         for enemy in player.enemy_legions():
             # TODO take terrain into account
@@ -279,13 +279,13 @@ class CleverBot(object):
                 moves = game.find_all_moves(
                     legion, game.board.hexes[legion.hexlabel], roll
                 )
-                hexlabels = set((move[0] for move in moves))
+                hexlabels = {move[0] for move in moves}
                 all_hexlabels.update(hexlabels)
             mterrains = set()
             for hexlabel in all_hexlabels:
                 mterrains.add(game.board.hexes[hexlabel].terrain)
 
-            all_recruits = set(tup[0] for tup in lst)
+            all_recruits = {tup[0] for tup in lst}
             recruit_to_later_recruits = {}
             for recruit in all_recruits:
                 # Make a copy of the legion so we can safely modify it.
@@ -300,7 +300,7 @@ class CleverBot(object):
                     lst2 = legion2.available_recruits_and_recruiters(
                         mterrain2, caretaker
                     )
-                    later_recruits = set(tup[0] for tup in lst2)
+                    later_recruits = {tup[0] for tup in lst2}
                     recruit_to_later_recruits[recruit] = later_recruits
             best_creature = None
             best_recruit = None
@@ -768,7 +768,7 @@ class CleverBot(object):
                             moves = game.find_normal_moves(
                                 enemy, game.board.hexes[enemy.hexlabel], roll
                             ).union(game.find_titan_teleport_moves(enemy))
-                            hexlabels = set((move[0] for move in moves))
+                            hexlabels = {move[0] for move in moves}
                             if hexlabel in hexlabels:
                                 score -= legion_sort_value / 6.0
             finally:
@@ -929,7 +929,7 @@ class CleverBot(object):
                 if moves:
                     score_moves = []
                     # Not moving is also an option, unless offboard.
-                    if creature.hexlabel not in ["ATTACKER", "DEFENDER"]:
+                    if creature.hexlabel not in {"ATTACKER", "DEFENDER"}:
                         moves.add(creature.hexlabel)
                     for move in moves:
                         try:
@@ -943,7 +943,7 @@ class CleverBot(object):
                     logging.info(f"score_moves {creature} {score_moves}")
                     moveset = best7(score_moves)
                 else:
-                    moveset = set([creature.hexlabel])
+                    moveset = {creature.hexlabel}
             movesets.append(moveset)
             previous_creature = creature
         best_legion_move = None

@@ -622,7 +622,7 @@ class GUIBattleMap(Gtk.EventBox):
         if not self.game:
             return
         self._add_missing_chits()
-        hexlabels = set([chit.creature.hexlabel for chit in self.chits])
+        hexlabels = {chit.creature.hexlabel for chit in self.chits}
         for hexlabel in hexlabels:
             if hexlabel is not None:
                 self._compute_chit_locations(hexlabel)

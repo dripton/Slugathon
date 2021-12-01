@@ -498,11 +498,11 @@ class GUIMasterBoard(Gtk.EventBox):
         masterhex = self.game.board.hexes[hexlabel]
         terrain = masterhex.terrain
         if terrain == "Tower":
-            entry_sides = set([5])
+            entry_sides = {5}
         elif teleport:
-            entry_sides = set([1, 3, 5])
+            entry_sides = {1, 3, 5}
         else:
-            entry_sides = set((m[1] for m in moves))
+            entry_sides = {m[1] for m in moves}
             entry_sides.discard("TELEPORT")
         if len(entry_sides) == 1 or not legion.player.enemy_legions(hexlabel):
             self._pick_teleporting_lord(
@@ -510,9 +510,9 @@ class GUIMasterBoard(Gtk.EventBox):
             )
         else:
             if teleport:
-                entry_sides = set([1, 3, 5])
+                entry_sides = {1, 3, 5}
             else:
-                entry_sides = set((move[1] for move in moves))
+                entry_sides = {move[1] for move in moves}
             _, def1 = PickEntrySide.new(
                 self.board, masterhex, entry_sides, self.parent_window
             )
@@ -774,7 +774,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def _add_missing_markers(self):
         """Add markers for any legions that lack them."""
-        markerids = set((marker.name for marker in self.markers))
+        markerids = {marker.name for marker in self.markers}
         for legion in self.game.all_legions():
             if legion.markerid not in markerids:
                 marker = Marker.Marker(legion, True, self.scale)
@@ -782,9 +782,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def _remove_extra_markers(self):
         """Remove markers for any legions that are no longer there."""
-        all_markerids = set(
-            [legion.markerid for legion in self.game.all_legions()]
-        )
+        all_markerids = {legion.markerid for legion in self.game.all_legions()}
         hitlist = [
             marker
             for marker in self.markers
@@ -836,7 +834,7 @@ class GUIMasterBoard(Gtk.EventBox):
             return
         self._add_missing_markers()
         self._remove_extra_markers()
-        hexlabels = set((marker.legion.hexlabel for marker in self.markers))
+        hexlabels = {marker.legion.hexlabel for marker in self.markers}
         for hexlabel in hexlabels:
             guihex = self.guihexes[hexlabel]
             mih = self.markers_in_hex(hexlabel)
@@ -1001,7 +999,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def clear_all_recruitchits(self, *unused):
         if self.recruitchits:
-            hexlabels = set((tup[1] for tup in self.recruitchits))
+            hexlabels = {tup[1] for tup in self.recruitchits}
             self.recruitchits = []
             self.repaint(hexlabels)
 

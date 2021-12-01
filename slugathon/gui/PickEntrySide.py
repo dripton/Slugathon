@@ -307,6 +307,6 @@ if __name__ == "__main__":
                 entry_sides.add(side)
             else:
                 entry_sides.add(side + 1)
-    pick_entry_side, def1 = new(board, masterhex, set([1, 3, 5]), None)
+    pick_entry_side, def1 = new(board, masterhex, {1, 3, 5}, None)
     def1.addCallback(my_callback)
     reactor.run()
