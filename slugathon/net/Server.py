@@ -369,8 +369,8 @@ class Server(Observed):
     ):
         """Split a legion."""
         logging.info(
-            f"{playername} {game_name} {parent_markerid} "
-            f"{child_markerid} {parent_creature_names} {child_creature_names}"
+            f"{playername=} {game_name=} {parent_markerid=} {child_markerid=} "
+            f"{parent_creature_names=} {child_creature_names=}"
         )
         game = self.name_to_game(game_name)
         if not game:

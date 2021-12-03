@@ -563,6 +563,7 @@ class CleverBot(object):
                 split_names = [creature.name for creature in split]
                 keep = lst[:-2]
                 keep_names = [creature.name for creature in keep]
+                logging.info(f"{lst=} {split_names=} {keep_names=}")
                 # Pretend to split so that we can compute the bigger
                 # child legion's combat value.
                 new_legion1 = Legion.Legion(
