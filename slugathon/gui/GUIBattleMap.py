@@ -1241,5 +1241,5 @@ if __name__ == "__main__":
     guimap = GUIBattleMap(battlemap)
     window.add(guimap)
     window.show_all()
-    guimap.connect("destroy", lambda x: reactor.stop())
-    reactor.run()
+    guimap.connect("destroy", lambda x: reactor.stop())  # type: ignore[attr-defined]
+    reactor.run()  # type: ignore[attr-defined]

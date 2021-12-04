@@ -180,4 +180,4 @@ if __name__ == "__main__":
         playername, game_name, titan2, gargoyle1, None
     )
     def1.addCallback(my_callback)
-    reactor.run()
+    reactor.run()  # type: ignore[attr-defined]

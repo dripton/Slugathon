@@ -42,8 +42,10 @@ defaults = {
     "THIRD_CREATURE_RATIO": 0.5,
 }
 
+default_keys = list(defaults.keys())
 
-class BotParams(namedtuple("BotParams", list(defaults.keys()))):
+
+class BotParams(namedtuple("BotParams", default_keys)):  # type: ignore[misc]
     @classmethod
     def fromstring(klass, st):
         """Create a BotParams from a string.
@@ -105,4 +107,4 @@ class BotParams(namedtuple("BotParams", list(defaults.keys()))):
         return BotParams(**dct3)
 
 
-default_bot_params = BotParams(**defaults)
+default_bot_params = BotParams(**defaults)  # type: ignore[call-arg]

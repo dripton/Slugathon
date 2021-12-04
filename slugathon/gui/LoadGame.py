@@ -72,4 +72,4 @@ if __name__ == "__main__":
     window = Gtk.Window()
     window.connect("destroy", my_callback)
     loadgame = LoadGame(user, playername, window)
-    reactor.run()
+    reactor.run()  # type: ignore[attr-defined]

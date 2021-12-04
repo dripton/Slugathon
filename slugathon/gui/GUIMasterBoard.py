@@ -1781,5 +1781,5 @@ if __name__ == "__main__":
     guiboard = GUIMasterBoard(board, parent_window=window)
     window.add(guiboard)
     window.show_all()
-    window.connect("destroy", lambda x: reactor.stop())
-    reactor.run()
+    window.connect("destroy", lambda x: reactor.stop())  # type: ignore[attr-defined]
+    reactor.run()  # type: ignore[attr-defined]

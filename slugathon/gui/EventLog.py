@@ -261,5 +261,5 @@ if __name__ == "__main__":
     parent.add(event_log)
     parent.show_all()
     action = Action.GameOver("a", ["Bob"], time.time())
-    reactor.callWhenRunning(event_log.update, None, action, None)
-    reactor.run()
+    reactor.callWhenRunning(event_log.update, None, action, None)  # type: ignore[attr-defined]
+    reactor.run()  # type: ignore[attr-defined]

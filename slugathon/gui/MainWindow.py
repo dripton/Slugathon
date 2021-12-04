@@ -194,4 +194,4 @@ if __name__ == "__main__":
     lobby = Lobby.Lobby(user, playername, playernames, games, main_window)
     main_window.add_lobby(lobby)
 
-    reactor.run()
+    reactor.run()  # type: ignore[attr-defined]

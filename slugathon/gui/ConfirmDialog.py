@@ -62,4 +62,4 @@ if __name__ == "__main__":
 
     def1.addCallback(print_arg)
     def1.addErrback(print_arg)
-    reactor.run()
+    reactor.run()  # type: ignore[attr-defined]

@@ -109,4 +109,4 @@ if __name__ == "__main__":
     ]
     pickmarker, def1 = new(playername, game_name, markers_left, None)
     def1.addCallback(my_callback)
-    reactor.run()
+    reactor.run()  # type: ignore[attr-defined]

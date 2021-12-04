@@ -5,6 +5,7 @@ __license__ = "GNU GPL v2"
 
 
 import logging
+from typing import List
 
 import gi
 
@@ -200,7 +201,7 @@ if __name__ == "__main__":
     defender_player = Player.Player(defender_playername, game, 0)
     defender_player.color = "Gold"
     defender_creature_names = ["Ogre", "Centaur", "Gargoyle"]
-    defender_survivor_names = []
+    defender_survivor_names: List[str] = []
     defender_creatures = Creature.n2c(defender_creature_names)
     defender_legion = Legion.Legion(
         defender_player, "Rd01", defender_creatures, 1
@@ -219,4 +220,4 @@ if __name__ == "__main__":
         None,
     )
     def1.addCallback(my_callback)
-    reactor.run()
+    reactor.run()  # type: ignore[attr-defined]
