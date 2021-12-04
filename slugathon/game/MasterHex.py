@@ -141,14 +141,6 @@ class MasterHex(object):
         else:
             return (6 + came_from - self.find_label_side()) % 6
 
-    def find_came_from(self, entry_side):
-        """Return which hexside a legion came from, based on entry_side
-
-        Can't really tell for a tower, since the actual entry_side is not
-        used.
-        """
-        return (entry_side + self.find_label_side()) % 6
-
     def find_block(self):
         """Return the direction of a forced starting move from this hex,
         or None if there is not one."""
