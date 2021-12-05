@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2006-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import logging
 
@@ -20,6 +17,10 @@ from twisted.python import log
 from gi.repository import Gtk, GObject
 
 from slugathon.gui import Chit, Marker, icon, ConfirmDialog
+
+
+__copyright__ = "Copyright (c) 2006-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 DO_NOT_FLEE = 0

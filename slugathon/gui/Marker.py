@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import tempfile
 import os
@@ -15,6 +12,10 @@ import cairo
 from gi.repository import Gtk, Pango, PangoCairo, GdkPixbuf
 
 from slugathon.util import guiutils, fileutils
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 CHIT_SCALE_FACTOR = 3

@@ -1,8 +1,8 @@
+from slugathon.game import Action
+
+
 __copyright__ = "Copyright (c) 2008-2012 David Ripton"
 __license__ = "GNU GPL v2"
-
-
-from slugathon.game import Action
 
 
 def test_fromstring():

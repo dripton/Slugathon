@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import math
 from sys import maxsize
 
@@ -12,6 +8,10 @@ gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango, PangoCairo
 
 from slugathon.util import guiutils, colors, fileutils
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 SQRT3 = math.sqrt(3.0)

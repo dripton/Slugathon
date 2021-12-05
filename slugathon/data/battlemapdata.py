@@ -1,7 +1,9 @@
+from typing import Dict, List, Tuple
+
+
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
-from typing import Dict, List, Tuple
 
 """Static battle map data"""
 

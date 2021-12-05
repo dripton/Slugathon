@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import logging
 
 from twisted.spread.pb import Avatar, PBConnectionLost
@@ -12,6 +8,10 @@ from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 @implementer(IObserver)

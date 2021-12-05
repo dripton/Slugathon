@@ -1,10 +1,10 @@
-__copyright__ = "Copyright (c) 2003-2012 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import time
 
 from slugathon.game import Creature, Game, Player
+
+
+__copyright__ = "Copyright (c) 2003-2012 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def test_non_existent_creature():

@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
-"""Help/About dialog, wrapped around Gtk.AboutDialog"""
-
 
 import os
 
@@ -16,6 +10,13 @@ from gi.repository import Gtk, GObject
 
 from slugathon.gui import icon
 from slugathon.util import guiutils, fileutils
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
+
+
+"""Help/About dialog, wrapped around Gtk.AboutDialog"""
 
 
 class About(Gtk.AboutDialog):

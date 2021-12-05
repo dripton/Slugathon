@@ -1,8 +1,8 @@
+import trueskill
+
+
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"
-
-
-import trueskill
 
 
 def test_6_players_no_draws():

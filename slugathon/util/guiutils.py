@@ -1,11 +1,11 @@
-__copyright__ = "Copyright (c) 2003-2012 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import sys
 import math
 
 from twisted.internet import reactor
+
+
+__copyright__ = "Copyright (c) 2003-2012 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def flatten_point_list(points):

@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import logging
 
@@ -14,6 +11,10 @@ from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 TELEPORT = 1

@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2012 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import tempfile
 import os
 import time
@@ -9,6 +5,10 @@ import sqlite3
 
 from slugathon.net import Results
 from slugathon.game import Game
+
+
+__copyright__ = "Copyright (c) 2012 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def test_db_creation():

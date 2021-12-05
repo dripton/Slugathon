@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import math
 from sys import maxsize
@@ -23,6 +20,10 @@ from gi.repository import Gtk, GObject, Gdk
 from slugathon.game import BattleMap
 from slugathon.gui import icon, GUIBattleHex
 from slugathon.util import guiutils, prefs
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 SQRT3 = math.sqrt(3.0)

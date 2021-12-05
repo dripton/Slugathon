@@ -1,11 +1,11 @@
+from zope.interface import Interface
+
+
 __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 """Interface for the AI."""
-
-
-from zope.interface import Interface
 
 
 class Bot(Interface):

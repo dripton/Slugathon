@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
+
+import argparse
+
+import cairo
+
+
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 """Copy only the specified hexsides from a battlehex border image into
 a new image, leaving the rest transparent."""
-
-
-import argparse
-
-import cairo
 
 
 def slice_border_image(input_path, output_path, hexsides):

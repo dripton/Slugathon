@@ -1,12 +1,14 @@
+import random
+
+
 __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
+
 
 """Simulate rolling dice.
 
 Runs only on the server side, for security.
 """
-
-import random
 
 
 _rand = random.Random()

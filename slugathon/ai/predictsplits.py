@@ -1,14 +1,14 @@
+import copy
+import itertools
+
+from slugathon.game.Creature import Creature
+
+
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 """Split prediction for the AI."""
-
-
-import copy
-import itertools
-
-from slugathon.game.Creature import Creature
 
 
 def superset(big, little):

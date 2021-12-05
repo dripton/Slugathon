@@ -1,10 +1,11 @@
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 from sys import maxsize
 
 from slugathon.game import BattleMap
 from slugathon.util import guiutils
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 map1 = BattleMap.BattleMap("Mountains", 1)

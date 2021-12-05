@@ -1,11 +1,11 @@
-__copyright__ = "Copyright (c) 2012 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import time
 
 from slugathon.ai import CleverBot
 from slugathon.game import Creature, Phase, Game
+
+
+__copyright__ = "Copyright (c) 2012 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def test_best7():
@@ -46,15 +46,19 @@ def test_best7():
         (8, "C1"),
     ]
     best_moves = CleverBot.best7(score_moves)
-    assert best_moves == {
-        "A2",
-        "A3",
-        "B1",
-        "B2",
-        "B3",
-        "B4",
-        "C1",
-    } or best_moves == {"C2", "A3", "B1", "B2", "B3", "B4", "C1"}
+    assert (
+        best_moves
+        == {
+            "A2",
+            "A3",
+            "B1",
+            "B2",
+            "B3",
+            "B4",
+            "C1",
+        }
+        or best_moves == {"C2", "A3", "B1", "B2", "B3", "B4", "C1"}
+    )
 
     score_moves = [
         (1, "A1"),

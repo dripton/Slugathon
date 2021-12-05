@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2012-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import os
 import sqlite3
 import math
@@ -13,6 +9,10 @@ import trueskill
 from slugathon.util import prefs, Dice
 from slugathon.ai import BotParams, CleverBot
 from slugathon.net import config
+
+
+__copyright__ = "Copyright (c) 2012-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 DB_PATH = os.path.join(prefs.RESULTS_DIR, "slugathon.db")

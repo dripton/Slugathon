@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import math
 from sys import maxsize
@@ -52,6 +49,10 @@ from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
 from slugathon.util.bag import bag
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 SQRT3 = math.sqrt(3.0)

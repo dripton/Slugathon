@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2006-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import logging
 from typing import List
@@ -21,6 +18,10 @@ from gi.repository import Gtk, GObject
 
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util.bag import bag
+
+
+__copyright__ = "Copyright (c) 2006-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 ACCEPT = 0

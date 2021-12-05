@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2006-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import gi
 
@@ -12,6 +9,10 @@ from gi.repository import Gtk, GObject
 from slugathon.gui import Chit, Marker
 from slugathon.data import recruitdata
 from slugathon.game import Creature
+
+
+__copyright__ = "Copyright (c) 2006-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 class Inspector(Gtk.EventBox):

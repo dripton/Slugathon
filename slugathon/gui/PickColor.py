@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2004-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import logging
 
@@ -15,6 +12,10 @@ from twisted.internet import defer
 from slugathon.data.playercolordata import colors
 from slugathon.gui import icon
 from slugathon.util.colors import contrasting_colors
+
+
+__copyright__ = "Copyright (c) 2004-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def new(playername, game, colors_left, parent):

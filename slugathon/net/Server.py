@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import os
 import time
@@ -28,6 +25,10 @@ from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
 from slugathon.net.UniqueNoPassword import UniqueNoPassword
 from slugathon.util import prefs
 from slugathon.util.bag import bag
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 TEMPDIR = tempfile.gettempdir()

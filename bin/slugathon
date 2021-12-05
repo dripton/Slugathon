@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
 
-__copyright__ = "Copyright (c) 2011-2012 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import argparse
 import sys
 
@@ -15,6 +11,10 @@ except ImportError:
     pass
 from slugathon.ai.AIClient import add_arguments as aiclient_add_arguments
 from slugathon.net.Server import add_arguments as server_add_arguments
+
+
+__copyright__ = "Copyright (c) 2011-2012 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 if __name__ == "__main__":

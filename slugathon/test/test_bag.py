@@ -1,8 +1,8 @@
+from slugathon.util.bag import bag
+
+
 __copyright__ = "Copyright (c) 2005-2009 David Ripton"
 __license__ = "GNU GPL v2"
-
-
-from slugathon.util.bag import bag
 
 
 def test_add():

@@ -1,10 +1,10 @@
-__copyright__ = "Copyright (c) 2008-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 from twisted.cred.error import LoginDenied
 from twisted.cred.checkers import FilePasswordDB
 from twisted.internet import defer
+
+
+__copyright__ = "Copyright (c) 2008-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 class UniqueFilePasswordDB(FilePasswordDB):

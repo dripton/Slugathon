@@ -1,14 +1,14 @@
+import logging
+
+from slugathon.data import creaturedata
+from slugathon.game import Creature
+
+
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 """Tracks creatures remaining, onboard, and dead."""
-
-
-import logging
-
-from slugathon.data import creaturedata
-from slugathon.game import Creature
 
 
 class Caretaker(object):

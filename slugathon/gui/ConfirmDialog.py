@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2010-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import gi
 
@@ -17,6 +14,10 @@ from twisted.internet import defer, reactor
 from gi.repository import Gtk, GObject
 
 from slugathon.gui import icon
+
+
+__copyright__ = "Copyright (c) 2010-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def new(parent, title, message):

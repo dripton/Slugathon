@@ -1,13 +1,13 @@
+from collections import namedtuple
+import random
+import re
+
+
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 """Parameters for CleverBot."""
-
-
-from collections import namedtuple
-import random
-import re
 
 
 defaults = {

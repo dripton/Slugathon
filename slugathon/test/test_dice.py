@@ -1,12 +1,12 @@
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import math
 import logging
 from collections import defaultdict
 
 from slugathon.util import Dice
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 EPSILON = 0.000001

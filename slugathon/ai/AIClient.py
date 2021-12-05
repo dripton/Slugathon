@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-"""Outward-facing facade for AI."""
-
 
 import argparse
 import random
@@ -28,6 +23,13 @@ from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase, Creature
 from slugathon.ai import CleverBot, predictsplits, BotParams
 from slugathon.data.creaturedata import starting_creature_names
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
+
+
+"""Outward-facing facade for AI."""
 
 
 TEMPDIR = tempfile.gettempdir()

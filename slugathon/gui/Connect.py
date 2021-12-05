@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import argparse
 import os
 import tempfile
@@ -23,6 +19,10 @@ from gi.repository import GObject, Gtk, Gdk
 
 from slugathon.gui import Client, icon
 from slugathon.util import guiutils, prefs
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 defer.setDebugging(True)

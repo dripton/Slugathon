@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2004-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import time
 
 import gi
@@ -24,6 +20,10 @@ from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.gui import icon
 from slugathon.util.NullUser import NullUser
+
+
+__copyright__ = "Copyright (c) 2004-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def format_time(secs):

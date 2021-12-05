@@ -1,11 +1,11 @@
-__copyright__ = "Copyright (c) 2011 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
+
+
+__copyright__ = "Copyright (c) 2011 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 update_counter = 0

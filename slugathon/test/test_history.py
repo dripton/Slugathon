@@ -1,12 +1,12 @@
-__copyright__ = "Copyright (c) 2005-2012 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import tempfile
 import os
 import io as StringIO
 
 from slugathon.game import History, Action
+
+
+__copyright__ = "Copyright (c) 2005-2012 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 tmp_path = None

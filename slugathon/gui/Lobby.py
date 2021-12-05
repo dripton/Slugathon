@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import time
 
@@ -18,6 +15,10 @@ from slugathon.gui import NewGame, LoadGame, WaitingForPlayers
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
 from slugathon.util import guiutils
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 @implementer(IObserver)

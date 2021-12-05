@@ -1,8 +1,8 @@
+from slugathon.util import guiutils
+
+
 __copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
-
-
-from slugathon.util import guiutils
 
 
 def test_rectangles_intersect():

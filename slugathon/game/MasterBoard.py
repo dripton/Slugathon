@@ -1,9 +1,9 @@
-__copyright__ = "Copyright (c) 2003-2011 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 from slugathon.data import boarddata
 from slugathon.game import MasterHex
+
+
+__copyright__ = "Copyright (c) 2003-2011 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 class MasterBoard(object):

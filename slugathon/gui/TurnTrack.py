@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2010-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -13,6 +10,10 @@ from zope.interface import implementer
 from slugathon.gui import Marker
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
+
+
+__copyright__ = "Copyright (c) 2010-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 @implementer(IObserver)

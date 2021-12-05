@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2006-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import gi
 
@@ -13,6 +10,10 @@ from zope.interface import implementer
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase
 from slugathon.util import colors
+
+
+__copyright__ = "Copyright (c) 2006-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def add_label(table, col, row, gtkcolor, text=""):

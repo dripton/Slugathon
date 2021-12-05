@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2004-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import collections
 import logging
@@ -21,6 +18,10 @@ from gi.repository import Gtk, GObject, GdkPixbuf
 
 from slugathon.gui import icon
 from slugathon.util import fileutils
+
+
+__copyright__ = "Copyright (c) 2004-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def new(playername, game_name, markers_left, parent):

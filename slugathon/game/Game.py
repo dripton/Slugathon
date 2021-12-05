@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 from sys import maxsize
 import os
 import time
@@ -30,6 +26,10 @@ from slugathon.util.Observer import IObserver
 from slugathon.util import prefs, Dice
 from slugathon.util.bag import bag
 from slugathon.net import config
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 # Movement constants

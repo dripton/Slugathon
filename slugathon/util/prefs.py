@@ -1,14 +1,14 @@
+import os
+import getpass
+
+from slugathon.net import config
+
+
 __copyright__ = "Copyright (c) 2008-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
 """Saving and loading preferences."""
-
-
-import os
-import getpass
-
-from slugathon.net import config
 
 
 SLUGATHON_DIR = os.path.expanduser(os.path.join("~", ".slugathon"))

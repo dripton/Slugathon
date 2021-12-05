@@ -1,9 +1,3 @@
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-"""Outward-facing facade for client side."""
-
-
 import logging
 
 from twisted.spread import pb
@@ -18,6 +12,13 @@ from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game
 from slugathon.gui import Lobby, PickColor, PickMarker, GUIMasterBoard
 from slugathon.gui import MainWindow
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
+
+
+"""Outward-facing facade for client side."""
 
 
 @implementer(IObserver)

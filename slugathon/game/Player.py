@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import logging
 
 from twisted.internet import reactor
@@ -11,6 +7,10 @@ from slugathon.game import Action, Creature, Legion, Phase
 from slugathon.data import playercolordata, creaturedata, markerdata
 from slugathon.util.bag import bag
 from slugathon.util import Dice
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 class Player(Observed):

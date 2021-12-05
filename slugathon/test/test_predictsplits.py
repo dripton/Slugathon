@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2003-2012 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 from slugathon.data.creaturedata import starting_creature_names
 from slugathon.ai.predictsplits import (
     PredictSplits,
@@ -9,6 +5,10 @@ from slugathon.ai.predictsplits import (
     Node,
     AllPredictSplits,
 )
+
+
+__copyright__ = "Copyright (c) 2003-2012 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def test_predict_splits1():

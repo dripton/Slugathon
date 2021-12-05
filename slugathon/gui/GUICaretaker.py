@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2009-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import gi
 
@@ -15,6 +12,10 @@ from slugathon.util.Observer import IObserver
 from slugathon.gui import Chit
 from slugathon.game import Creature, Action
 from slugathon.data import creaturedata
+
+
+__copyright__ = "Copyright (c) 2009-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 @implementer(IObserver)

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 from typing import List, Optional
 
 from slugathon.game import MasterBoard
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 BIGNUM = 99999999

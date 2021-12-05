@@ -1,7 +1,3 @@
-__copyright__ = "Copyright (c) 2004-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 from functools import cmp_to_key
 import logging
 
@@ -9,6 +5,10 @@ from slugathon.util.bag import bag
 from slugathon.data import recruitdata, markerdata, playercolordata
 from slugathon.game import Creature, Action
 from slugathon.util.Observed import Observed
+
+
+__copyright__ = "Copyright (c) 2004-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def find_picname(markerid):

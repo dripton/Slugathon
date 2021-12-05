@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import logging
 from sys import maxsize
 from typing import Dict, Optional, Set, Tuple
 
 from slugathon.data import battlemapdata
 from slugathon.game import BattleHex, Game
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 all_labels = frozenset(

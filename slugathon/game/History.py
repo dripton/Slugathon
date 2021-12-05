@@ -1,13 +1,13 @@
-__copyright__ = "Copyright (c) 2005-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import logging
 
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 @implementer(IObserver)

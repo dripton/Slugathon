@@ -1,10 +1,3 @@
-__copyright__ = "Copyright (c) 2010-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
-"""An attempt at a smarter AI."""
-
-
 import random
 import copy
 import time
@@ -19,6 +12,13 @@ from zope.interface import implementer
 from slugathon.ai.Bot import Bot
 from slugathon.ai import BotParams
 from slugathon.game import Game, Creature, Phase, Legion
+
+
+__copyright__ = "Copyright (c) 2010-2021 David Ripton"
+__license__ = "GNU GPL v2"
+
+
+"""An attempt at a smarter AI."""
 
 
 def best7(score_moves):

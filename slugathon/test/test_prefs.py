@@ -1,13 +1,13 @@
-__copyright__ = "Copyright (c) 2009-2011 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 import shutil
 import getpass
 import os
 
 from slugathon.util import prefs, Dice
 from slugathon.net import config
+
+
+__copyright__ = "Copyright (c) 2009-2011 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 playername = "unittest"

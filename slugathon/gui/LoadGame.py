@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-__copyright__ = "Copyright (c) 2008-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
 
 import gi
 
@@ -20,6 +17,10 @@ from gi.repository import Gtk
 from slugathon.gui import icon
 from slugathon.util import prefs
 from slugathon.util.NullUser import NullUser
+
+
+__copyright__ = "Copyright (c) 2008-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 class LoadGame(Gtk.FileChooserDialog):

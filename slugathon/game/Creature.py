@@ -1,12 +1,12 @@
-__copyright__ = "Copyright (c) 2003-2021 David Ripton"
-__license__ = "GNU GPL v2"
-
-
 from collections import defaultdict
 import logging
 
 from slugathon.data import creaturedata, recruitdata, battlemapdata
 from slugathon.game import Phase
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
+__license__ = "GNU GPL v2"
 
 
 def _terrain_to_hazards():
