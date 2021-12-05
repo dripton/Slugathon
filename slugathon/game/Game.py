@@ -136,6 +136,9 @@ class Game(Observed):
             logging.info("")
             return
         self.battle_entry_side = attacker_legion.entry_side
+        if self.battle_entry_side is None:
+            logging.warning("")
+            return
         self.battlemap = BattleMap.BattleMap(
             self.battle_masterhex.terrain, self.battle_entry_side
         )

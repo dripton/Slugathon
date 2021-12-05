@@ -1,5 +1,7 @@
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
+
+from typing import Dict, List, Tuple
 
 """Static battle map data"""
 
@@ -12,6 +14,7 @@ __license__ = "GNU GPL v2"
 
 Omitted hexes default to Plain, elevation 0, no borders
 """
+
 
 data = {
     "Brush": {
@@ -173,11 +176,11 @@ data = {
         "E3": ("Tree", 1, {}),
         "E5": ("Tree", 1, {}),
     },
-}
+}  # type: Dict[str, Dict[str, Tuple[str, int, Dict[int, str]]]]
 
 
 """{ master terrain type: [start hex labels] }"""
 
 startlist = {
     "Tower": ["C3", "C4", "D3", "D4", "D5", "E3", "E4"],
-}
+}  # type: Dict[str, List[str]]

@@ -266,7 +266,7 @@ def test_is_los_blocked():
 
 
 def test_battlehex_repr():
-    assert repr(hex1) == "BattleHex A2 (5, 2)"
+    assert repr(hex1) == "BattleHex A2 (5, 2.0)"
 
 
 def test_neighbor_to_hexside():

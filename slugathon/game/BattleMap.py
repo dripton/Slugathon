@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-from sys import maxsize
 import logging
+from sys import maxsize
+from typing import Dict, Optional, Set, Tuple
 
 from slugathon.data import battlemapdata
-from slugathon.game import BattleHex
+from slugathon.game import BattleHex, Game
 
 
 all_labels = frozenset(
@@ -44,7 +47,9 @@ all_labels = frozenset(
 )
 
 
-def label_to_coords(label, entry_side, down=False):
+def label_to_coords(
+    label: str, entry_side: int, down: bool = False
+) -> Tuple[int, float]:
     """Convert a hex label to a tuple of X and Y coordinates, starting at the
     top left.
 
@@ -200,23 +205,23 @@ def label_to_coords(label, entry_side, down=False):
         "ATTACKER": (-1, 2),
         "DEFENDER": (6, 2),
     }
-    result = l2c[entry_side][label]
-    if down:
-        x, y = result
-        if x & 1:
-            result = (x, y + 0.5)
+    x, y = l2c[entry_side][label]
+    if down and x & 1:
+        result = (x, y + 0.5)
+    else:
+        result = x, float(y)
     return result
 
 
 EPSILON = 0.000001
 
 
-def close(x, y):
+def close(x: float, y: float) -> bool:
     """Return True iff x and y are within EPSILON."""
     return abs(x - y) <= EPSILON
 
 
-def is_obstacle(border):
+def is_obstacle(border: str) -> bool:
     """Return True iff the border feature is an obstacle."""
     return bool(border)
 
@@ -228,7 +233,7 @@ class BattleMap(object):
     See label_to_coords for hex labeling docs.
     """
 
-    def __init__(self, mterrain, entry_side):
+    def __init__(self, mterrain: str, entry_side: int):
         logging.info(f"{mterrain=} {entry_side=}")
         self.hexes = {}
         self.entry_side = entry_side
@@ -253,16 +258,18 @@ class BattleMap(object):
         self.startlist = battlemapdata.startlist.get(mterrain)
 
     @property
-    def hex_width(self):
+    def hex_width(self) -> int:
         """Width of the map, in hexes, including entrances."""
         return 8
 
     @property
-    def hex_height(self):
+    def hex_height(self) -> int:
         """Height of the map, in hexes."""
         return 6
 
-    def spin_border_dict(self, border_dict, entry_side):
+    def spin_border_dict(
+        self, border_dict: Dict[int, str], entry_side: int
+    ) -> Dict[int, str]:
         """Return a new dict with the keys (hexsides) rotated by the correct
         amount for entry_side"""
         spun = {}
@@ -272,7 +279,9 @@ class BattleMap(object):
             spun[(key + delta) % 6] = val
         return spun
 
-    def range(self, hexlabel1, hexlabel2, allow_entrance=False):
+    def range(
+        self, hexlabel1: str, hexlabel2: str, allow_entrance: bool = False
+    ) -> int:
         """Return the range from hexlabel1 to hexlabel2.
 
         Titan ranges are inclusive on both ends, so one more than
@@ -299,9 +308,9 @@ class BattleMap(object):
                 hex1, hex2 = hex2, hex1
         result = 2
         prev = {hex1}
-        ignore = set()
+        ignore = set()  # type: Set[BattleHex.BattleHex]
         while True:
-            neighbors = set()
+            neighbors = set()  # type: Set[BattleHex.BattleHex]
             for hex3 in prev:
                 neighbors.update(iter(hex3.neighbors.values()))
             if hex2 in neighbors:
@@ -311,7 +320,7 @@ class BattleMap(object):
             ignore = prev
             prev = neighbors
 
-    def _to_left(self, delta_x, delta_y):
+    def _to_left(self, delta_x: float, delta_y: float) -> bool:
         """Return True iff the path of displacement (delta_x, delta_y)
         passes to the left of the hexspine.
 
@@ -324,7 +333,9 @@ class BattleMap(object):
             or (ratio >= -1.5 and ratio <= -0.75)
         )
 
-    def _get_direction(self, hex1, hex2, left):
+    def _get_direction(
+        self, hex1: BattleHex.BattleHex, hex2: BattleHex.BattleHex, left: bool
+    ) -> int:
         """Return the hexside direction of the path from hex1 to hex2.
 
         Sometimes two directions are possible.  If the left parameter
@@ -400,21 +411,21 @@ class BattleMap(object):
 
     def _is_los_blocked_dir(
         self,
-        initial_hex,
-        current_hex,
-        final_hex,
-        left,
-        strike_elevation,
-        striker_atop=False,
-        striker_atop_cliff=False,
-        striker_atop_wall=False,
-        mid_obstacle=False,
-        mid_cliff=False,
-        mid_chit=False,
-        total_obstacles=0,
-        total_walls=0,
-        game=None,
-    ):
+        initial_hex: BattleHex.BattleHex,
+        current_hex: BattleHex.BattleHex,
+        final_hex: BattleHex.BattleHex,
+        left: bool,
+        strike_elevation: int,
+        striker_atop: bool = False,
+        striker_atop_cliff: bool = False,
+        striker_atop_wall: bool = False,
+        mid_obstacle: bool = False,
+        mid_cliff: bool = False,
+        mid_chit: bool = False,
+        total_obstacles: int = 0,
+        total_walls: int = 0,
+        game: Optional[Game.Game] = None,
+    ) -> bool:
         """Return True iff the line of sight from hexlabel1 to
         hexlabel2 is blocked by terrain or creatures, going to the left of
         hexspines if left is True.
@@ -517,23 +528,25 @@ class BattleMap(object):
         ):
             mid_chit = True
         return self._is_los_blocked_dir(
-            initial_hex,
-            next_hex,
-            final_hex,
-            left,
-            strike_elevation,
-            striker_atop,
-            striker_atop_cliff,
-            striker_atop_wall,
-            mid_obstacle,
-            mid_cliff,
-            mid_chit,
-            total_obstacles,
-            total_walls,
-            game,
+            initial_hex=initial_hex,
+            current_hex=next_hex,
+            final_hex=final_hex,
+            left=left,
+            strike_elevation=strike_elevation,
+            striker_atop=striker_atop,
+            striker_atop_cliff=striker_atop_cliff,
+            striker_atop_wall=striker_atop_wall,
+            mid_obstacle=mid_obstacle,
+            mid_cliff=mid_cliff,
+            mid_chit=mid_chit,
+            total_obstacles=total_obstacles,
+            total_walls=total_walls,
+            game=game,
         )
 
-    def is_los_blocked(self, hexlabel1, hexlabel2, game):
+    def is_los_blocked(
+        self, hexlabel1: str, hexlabel2: str, game: Optional[Game.Game]
+    ) -> bool:
         """Return True iff the line of sight from hexlabel1 to
         hexlabel2 is blocked by terrain or creatures.
 
@@ -551,21 +564,37 @@ class BattleMap(object):
         strike_elevation = min(hex1.elevation, hex2.elevation)
         if close(delta_y, 0) or close(abs(delta_y), 1.5 * abs(delta_x)):
             return self._is_los_blocked_dir(
-                hex1, hex1, hex2, True, strike_elevation, game=game
+                initial_hex=hex1,
+                current_hex=hex1,
+                final_hex=hex2,
+                left=True,
+                strike_elevation=strike_elevation,
+                game=game,
             ) and self._is_los_blocked_dir(
-                hex1, hex1, hex2, False, strike_elevation, game=game
+                initial_hex=hex1,
+                current_hex=hex1,
+                final_hex=hex2,
+                left=False,
+                strike_elevation=strike_elevation,
+                game=game,
             )
         else:
             return self._is_los_blocked_dir(
-                hex1,
-                hex1,
-                hex2,
-                self._to_left(delta_x, delta_y),
-                strike_elevation,
+                initial_hex=hex1,
+                current_hex=hex1,
+                final_hex=hex2,
+                left=self._to_left(delta_x, delta_y),
+                strike_elevation=strike_elevation,
                 game=game,
             )
 
-    def _count_bramble_hexes_dir(self, hex1, hex2, left, count):
+    def _count_bramble_hexes_dir(
+        self,
+        hex1: BattleHex.BattleHex,
+        hex2: BattleHex.BattleHex,
+        left: bool,
+        count: int,
+    ) -> int:
         """Return the number of intervening bramble hexes.
 
         If LOS is along a hexspine, go left if argument left is True, right
@@ -582,7 +611,9 @@ class BattleMap(object):
             count += 1
         return self._count_bramble_hexes_dir(next_hex, hex2, left, count)
 
-    def count_bramble_hexes(self, hexlabel1, hexlabel2, game):
+    def count_bramble_hexes(
+        self, hexlabel1: str, hexlabel2: str, game: Optional[Game.Game]
+    ) -> int:
         """Return the minimum number of intervening bramble hexes along a valid
         line of sight between hexlabel1 and hexlabel2.
 
@@ -612,31 +643,37 @@ class BattleMap(object):
             strike_elevation = min(hex1.elevation, hex2.elevation)
             # Hexspine try unblocked side(s).
             if self._is_los_blocked_dir(
-                hex1,
-                hex1,
-                hex2,
-                True,
-                strike_elevation,
-                False,
-                False,
-                False,
-                False,
-                False,
-                0,
+                initial_hex=hex1,
+                current_hex=hex1,
+                final_hex=hex2,
+                left=True,
+                strike_elevation=strike_elevation,
+                striker_atop=False,
+                striker_atop_cliff=False,
+                striker_atop_wall=False,
+                mid_obstacle=False,
+                mid_cliff=False,
+                mid_chit=False,
+                total_obstacles=0,
+                total_walls=0,
+                game=game,
             ):
                 return self._count_bramble_hexes_dir(hex1, hex2, False, 0)
             elif self._is_los_blocked_dir(
-                hex1,
-                hex1,
-                hex2,
-                False,
-                strike_elevation,
-                False,
-                False,
-                False,
-                False,
-                False,
-                0,
+                initial_hex=hex1,
+                current_hex=hex1,
+                final_hex=hex2,
+                left=False,
+                strike_elevation=strike_elevation,
+                striker_atop=False,
+                striker_atop_cliff=False,
+                striker_atop_wall=False,
+                mid_obstacle=False,
+                mid_cliff=False,
+                mid_chit=False,
+                total_obstacles=0,
+                total_walls=0,
+                game=game,
             ):
                 return self._count_bramble_hexes_dir(hex1, hex2, True, 0)
             else:
@@ -650,7 +687,9 @@ class BattleMap(object):
             )
 
     # XXX Hardcoded to default Tower map
-    def count_walls(self, hexlabel1, hexlabel2, game):
+    def count_walls(
+        self, hexlabel1: str, hexlabel2: str, game: Optional[Game.Game]
+    ) -> int:
         """Return the number of uphill wall hazards between hexlabel1 and
         hexlabel2.
 
