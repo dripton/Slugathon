@@ -4,3 +4,4 @@ coveralls
 pyflakes
 pep8
 black
+mypy
