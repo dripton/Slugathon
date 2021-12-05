@@ -105,7 +105,7 @@ class PickCarry(Gtk.Dialog):
             self.deferred.callback((None, 0))
 
 
-if __name__ == "__main__":
+def main():
     import time
     from slugathon.game import Game, Phase
 
@@ -145,6 +145,8 @@ if __name__ == "__main__":
     bu01.move(6, False, None, 3)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
+    if defender is None:
+        return
     titan1 = defender.creatures[0]
     titan1.move("F2")
     ogre1 = defender.creatures[1]
@@ -155,6 +157,8 @@ if __name__ == "__main__":
     gargoyle1.move("C1")
 
     attacker = game.attacker_legion
+    if attacker is None:
+        return
     game.battle_active_legion = attacker
     titan2 = attacker.creatures[0]
     titan2.move("C2")
@@ -174,3 +178,7 @@ if __name__ == "__main__":
     _, def1 = new(playername, game_name, titan2, centaur1, 6, 4, 1, None)
     def1.addCallback(my_callback)
     reactor.run()  # type: ignore[attr-defined]
+
+
+if __name__ == "__main__":
+    main()
