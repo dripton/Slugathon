@@ -238,5 +238,5 @@ if __name__ == "__main__":
     playername = "Player 1"
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
     wfp = WaitingForPlayers(user, playername, game, None)
-    wfp.connect("destroy", lambda x: reactor.stop())  # type: ignore[attr-defined]
+    wfp.connect("destroy", lambda x: reactor.stop())  # type: ignore
     reactor.run()  # type: ignore[attr-defined]
