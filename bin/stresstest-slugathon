@@ -135,6 +135,8 @@ def main():
     logging.getLogger().addHandler(console_handler)
     logging.getLogger().setLevel(logging.DEBUG)
 
+    logging.info(f"starting stresstest")
+
     if args.start_server:
         start_server()
     start_game(
