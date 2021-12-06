@@ -7,6 +7,7 @@ import tempfile
 import os
 import logging
 import re
+import sys
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -287,8 +288,7 @@ class AIClient(pb.Referenceable, Observed):
                 reactor.stop()
             except ReactorNotRunning:
                 pass
-        # sys.exit(0) generates ugly tracebacks on the server side.
-        os._exit(returncode)
+        sys.exit(returncode)
 
     def update(self, observed, action, names):
         """Updates from User will come via remote_update, with
