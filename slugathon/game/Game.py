@@ -2171,7 +2171,10 @@ class Game(Observed):
                     player1.die(player0, False)
 
     def update(
-        self, observed: Observed, action, names: List[str]  # TODO Action
+        self,
+        observed: Observed,
+        action,
+        names: Optional[List[str]],  # TODO Action
     ) -> None:
         if hasattr(action, "game_name") and action.game_name != self.name:
             return

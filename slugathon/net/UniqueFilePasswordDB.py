@@ -1,7 +1,13 @@
+from __future__ import annotations
+
+from typing import Any, Callable, Optional
+
 from twisted.cred.error import LoginDenied
 from twisted.cred.checkers import FilePasswordDB
+from twisted.cred.credentials import ICredentials
 from twisted.internet import defer
 
+from slugathon.net import Server
 
 __copyright__ = "Copyright (c) 2008-2021 David Ripton"
 __license__ = "GNU GPL v2"
@@ -14,14 +20,14 @@ class UniqueFilePasswordDB(FilePasswordDB):
 
     def __init__(
         self,
-        filename,
-        delim=b":",
-        usernameField=0,
-        passwordField=1,
-        caseSensitive=True,
-        hash=None,
-        cache=False,
-        server=None,
+        filename: Optional[str],
+        delim: bytes = b":",
+        usernameField: int = 0,
+        passwordField: int = 1,
+        caseSensitive: bool = True,
+        hash: Optional[Callable] = None,
+        cache: bool = False,
+        server: Optional[Server.Server] = None,
     ):
         FilePasswordDB.__init__(
             self,
@@ -35,8 +41,10 @@ class UniqueFilePasswordDB(FilePasswordDB):
         )
         self.server = server
 
-    def requestAvatarId(self, credentials):
-        if credentials.username in self.server.playernames:
+    def requestAvatarId(self, credentials: ICredentials) -> Any:
+        if self.server is None:
+            return defer.fail(LoginDenied())
+        elif credentials.username in self.server.playernames:
             # already logged in
             return defer.fail(LoginDenied())
         else:

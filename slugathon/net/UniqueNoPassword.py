@@ -1,3 +1,6 @@
+from typing import Any
+
+from twisted.cred.credentials import ICredentials
 from twisted.cred.error import LoginDenied
 from twisted.internet import defer
 
@@ -12,8 +15,10 @@ class UniqueNoPassword(UniqueFilePasswordDB):
     """A checker that does not check passwords but refuses to authenticate a
     user who is already logged in."""
 
-    def requestAvatarId(self, credentials):
-        if credentials.username in self.server.playernames:
+    def requestAvatarId(self, credentials: ICredentials) -> Any:
+        if self.server is None:
+            return defer.fail(LoginDenied())
+        elif credentials.username in self.server.playernames:
             # already logged in
             return defer.fail(LoginDenied())
         else:
