@@ -281,7 +281,7 @@ class AIClient(pb.Referenceable, Observed):
 
     def exit_unconditionally(self, returncode):
         """Just exit the process, with no tracebacks or other drama."""
-        logging.info("")
+        logging.info(f"{returncode}")
         if reactor.running:
             try:
                 reactor.stop()
