@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+from typing import Dict, Optional, Set
+
+from slugathon.game import BattleMap
+
+
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
@@ -19,7 +26,16 @@ class BattleHex(object):
         4        3
     """
 
-    def __init__(self, battlemap, label, x, y, terrain, elevation, borderdict):
+    def __init__(
+        self,
+        battlemap: BattleMap.BattleMap,
+        label: str,
+        x: int,
+        y: float,
+        terrain: str,
+        elevation: int,
+        borderdict: Dict[int, str],
+    ):
         self.battlemap = battlemap
         self.label = label
         self.x = x
@@ -33,12 +49,12 @@ class BattleHex(object):
         self.label_side = 5
         self.terrain_side = 3
         self.entrance = self.label in ["ATTACKER", "DEFENDER"]
-        self.neighbors = {}  # hexside : BattleHex
+        self.neighbors = {}  # type: Dict[int, BattleHex]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"BattleHex {self.label} ({self.x}, {self.y})"
 
-    def init_neighbors(self):
+    def init_neighbors(self) -> None:
         """Called from BattleMap after all hexes are initialized."""
         if self.entrance:
             # hexsides don't really matter for entrances
@@ -81,7 +97,7 @@ class BattleHex(object):
                         if self.x & 1:
                             self.neighbors[4] = hex1
 
-    def hexsides_with_border(self, border):
+    def hexsides_with_border(self, border) -> Set[int]:
         """Return the set of hexsides with this border."""
         result = set()
         for hexside, border2 in enumerate(self.borders):
@@ -89,7 +105,7 @@ class BattleHex(object):
                 result.add(hexside)
         return result
 
-    def opposite_border(self, hexside):
+    def opposite_border(self, hexside) -> str:
         """Return the border type of the adjacent hex in direction hexside.
 
         Raise if there's no hex there.
@@ -98,11 +114,11 @@ class BattleHex(object):
         return neighbor.borders[(hexside + 3) % 6]
 
     @property
-    def blocks_line_of_sight(self):
+    def blocks_line_of_sight(self) -> bool:
         """Return True if this hex's terrain type blocks LOS."""
         return self.terrain == "Tree"
 
-    def neighbor_to_hexside(self, neighbor):
+    def neighbor_to_hexside(self, neighbor: BattleHex) -> Optional[int]:
         """Return the hexside adjacent to neighbor, or None."""
         for hexside, neighbor2 in self.neighbors.items():
             if neighbor2 == neighbor:

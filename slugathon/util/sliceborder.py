@@ -2,6 +2,7 @@
 
 
 import argparse
+from typing import List, Set, Tuple
 
 import cairo
 
@@ -14,7 +15,9 @@ __license__ = "GNU GPL v2"
 a new image, leaving the rest transparent."""
 
 
-def slice_border_image(input_path, output_path, hexsides):
+def slice_border_image(
+    input_path: str, output_path: str, hexsides: Set[int]
+) -> None:
     """Copy only the specified hexsides from a battlehex border image into
     a new image, leaving the rest transparent.
 
@@ -27,7 +30,7 @@ def slice_border_image(input_path, output_path, hexsides):
     x_size = int(input_surface.get_width())
     y_size = int(input_surface.get_height())
 
-    vertexes = []
+    vertexes = []  # type: List[Tuple[float, float]]
     vertexes.append((0.25 * x_size, 0))
     vertexes.append((0.75 * x_size, 0))
     vertexes.append((x_size, 0.5 * y_size))
@@ -52,7 +55,7 @@ def slice_border_image(input_path, output_path, hexsides):
     output_surface.write_to_png(output_path)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input-path")
     parser.add_argument("-o", "--output-path")

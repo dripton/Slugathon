@@ -444,7 +444,7 @@ class BattleMap(object):
         border = current_hex.borders[direction]
         border2 = current_hex.opposite_border(direction)
         if current_hex == initial_hex:
-            if is_obstacle(border):
+            if border is not None and is_obstacle(border):
                 striker_atop = True
                 total_obstacles += 1
                 if border == "Cliff":
@@ -454,7 +454,7 @@ class BattleMap(object):
                 elif border == "Wall":
                     striker_atop_wall = True
                     total_walls += 1
-            if is_obstacle(border2):
+            if border2 is not None and is_obstacle(border2):
                 mid_obstacle = True
                 total_obstacles += 1
                 if border2 == "Cliff" or border2 == "Dune":
@@ -464,14 +464,14 @@ class BattleMap(object):
                 elif border2 == "Wall":
                     return True
         elif next_hex == final_hex:
-            if is_obstacle(border):
+            if border is not None and is_obstacle(border):
                 mid_obstacle = True
                 total_obstacles += 1
                 if border == "Cliff" or border == "Dune":
                     mid_cliff = True
                 elif border == "Wall":
                     return True
-            if is_obstacle(border2):
+            if border2 is not None and is_obstacle(border2):
                 target_atop = True
                 total_obstacles += 1
                 if border2 == "Cliff":
@@ -505,7 +505,12 @@ class BattleMap(object):
                 # marked a mid chit, so it's not adjacent to the base of a
                 # cliff that the target is atop.
                 return True
-            if is_obstacle(border) or is_obstacle(border2):
+            if (
+                border is not None
+                and is_obstacle(border)
+                or border2 is not None
+                and is_obstacle(border2)
+            ):
                 mid_obstacle = True
                 total_obstacles += 1
                 if (

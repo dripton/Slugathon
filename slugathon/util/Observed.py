@@ -1,4 +1,9 @@
+from typing import Any, List, Optional
+
 from zope.interface import Interface, implementer
+
+from slugathon.game import Action
+from slugathon.util import Observer
 
 
 __copyright__ = "Copyright (c) 2004-2011 David Ripton"
@@ -24,15 +29,15 @@ class Observed(object):
     def __init__(self):
         self.observers = {}
 
-    def add_observer(self, observer, name=""):
+    def add_observer(self, observer, name: str = "") -> None:
         if observer not in self.observers:
             self.observers[observer] = name
 
-    def remove_observer(self, observer):
+    def remove_observer(self, observer) -> None:
         if observer in self.observers:
             del self.observers[observer]
 
-    def notify(self, action, names=None):
+    def notify(self, action: Action.Action, names: Optional[List[str]] = None):
         # Create the list so it can't change size while iterating
         for observer, name in list(self.observers.items()):
             if names is None or not name or name in names:

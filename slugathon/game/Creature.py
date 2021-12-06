@@ -1,18 +1,21 @@
+from __future__ import annotations
+
 from collections import defaultdict
 import logging
+from typing import Any, DefaultDict, Dict, List, Optional, Set
 
 from slugathon.data import creaturedata, recruitdata, battlemapdata
-from slugathon.game import Phase
+from slugathon.game import Legion, Phase
 
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def _terrain_to_hazards():
+def _terrain_to_hazards() -> DefaultDict[str, Set[str]]:
     """Return a defaultdict(set) of masterboard terrain type to a set of all
     battle hazards (hex and hexside) found there."""
-    result = defaultdict(set)
+    result = defaultdict(set)  # type: DefaultDict[str, Set[str]]
     for mterrain, dic2 in battlemapdata.data.items():
         for hexlabel, (bterrain, elevation, dic3) in dic2.items():
             set1 = result[mterrain]
@@ -23,12 +26,12 @@ def _terrain_to_hazards():
     return result
 
 
-def _terrain_to_creature_names():
+def _terrain_to_creature_names() -> Dict[str, Set[str]]:
     """Return a dict of masterboard terrain type to a set of all
     Creature names that can be recruited there."""
     result = {}
     for terrain, tuples in recruitdata.data.items():
-        set1 = set()
+        set1 = set()  # type: Set[str]
         result[terrain] = set1
         for tup in tuples:
             if tup:
@@ -38,11 +41,11 @@ def _terrain_to_creature_names():
     return result
 
 
-def _compute_nativity():
+def _compute_nativity() -> DefaultDict[str, Set[str]]:
     """Return a defaultdict(set) of creature name to a set of all hazards
     (battle terrain types and border types) to which it is
     native."""
-    result = defaultdict(set)
+    result = defaultdict(set)  # type: DefaultDict[str, Set[str]]
     terrain_to_creature_names = _terrain_to_creature_names()
     terrain_to_hazards = _terrain_to_hazards()
     for terrain, creature_names in terrain_to_creature_names.items():
@@ -59,7 +62,7 @@ def _compute_nativity():
 creature_name_to_native_hazards = _compute_nativity()
 
 
-def n2c(names):
+def n2c(names: List[str]) -> List[Creature]:
     """Make a list of Creatures from a list of creature names"""
     return [Creature(name) for name in names]
 
@@ -68,7 +71,7 @@ class Creature(object):
 
     """One instance of one Creature, Lord, or Demi-Lord."""
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
         (
             self.plural_name,
@@ -88,26 +91,26 @@ class Creature(object):
         self.hits = 0
         self.moved = False
         self.struck = False
-        self.hexlabel = None
-        self.previous_hexlabel = None
-        self.legion = None
+        self.hexlabel = None  # type: Optional[str]
+        self.previous_hexlabel = None  # type: Optional[str]
+        self.legion = None  # type: Optional[Legion.Legion]
 
     @property
-    def power(self):
+    def power(self) -> int:
         if self.is_titan and self.legion is not None:
             return self.legion.player.titan_power
         else:
             return self._power
 
     @property
-    def dead(self):
+    def dead(self) -> bool:
         return self.hits >= self.power
 
     @property
-    def hits_left(self):
+    def hits_left(self) -> int:
         return max(self.power - self.hits, 0)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.is_titan:
             base = f"{self.name}({self.power})"
         else:
@@ -117,25 +120,25 @@ class Creature(object):
         else:
             return base
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         return self.name == other.name and self.hexlabel == other.hexlabel
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Creature) -> bool:
         return self.name < other.name
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.name) + hash(self.hexlabel)
 
     @property
-    def score(self):
+    def score(self) -> int:
         """Return the point value of this creature."""
         return self.power * self.skill
 
     @property
-    def sort_value(self):
+    def sort_value(self) -> float:
         """Return a rough indication of creature value, for sorting."""
         return (
             self.score
@@ -149,7 +152,7 @@ class Creature(object):
         )
 
     @property
-    def combat_value(self):
+    def combat_value(self) -> float:
         """Return a rough indication of creature combat ability, for the AI."""
         return (
             self.score
@@ -161,7 +164,7 @@ class Creature(object):
         )
 
     @property
-    def terrain_combat_value(self):
+    def terrain_combat_value(self) -> float:
         """Return a rough indication of creature combat value, considering its
         legion's current terrain."""
         TOWER_BONUS = 0.25
@@ -209,39 +212,55 @@ class Creature(object):
             return base_value
 
     @property
-    def is_titan(self):
+    def is_titan(self) -> bool:
         return self.name == "Titan"
 
     @property
-    def is_lord(self):
+    def is_lord(self) -> bool:
         return self.character_type == "lord"
 
     @property
-    def is_demilord(self):
+    def is_demilord(self) -> bool:
         return self.character_type == "demilord"
 
     @property
-    def is_creature(self):
+    def is_creature(self) -> bool:
         return self.character_type == "creature"
 
     @property
-    def is_unknown(self):
+    def is_unknown(self) -> bool:
         return self.character_type == "unknown"
 
-    def _hexlabel_to_enemy(self):
+    def _hexlabel_to_enemy(self) -> Dict[str, Creature]:
         """Return a dict of hexlabel: live enemy Creature"""
-        hexlabel_to_enemy = {}
-        game = self.legion.player.game
+        hexlabel_to_enemy = {}  # type: Dict[str, Creature]
+        legion = self.legion
+        if legion is None:
+            return hexlabel_to_enemy
+        player = legion.player
+        if player is None:
+            return hexlabel_to_enemy
+        game = player.game
+        if game is None:
+            return hexlabel_to_enemy
         legion2 = game.other_battle_legion(self.legion)
         for creature in legion2.creatures:
             if not creature.dead and not creature.offboard:
                 hexlabel_to_enemy[creature.hexlabel] = creature
         return hexlabel_to_enemy
 
-    def _hexlabel_to_dead_enemy(self):
+    def _hexlabel_to_dead_enemy(self) -> Dict[str, Creature]:
         """Return a dict of hexlabel: dead enemy Creature"""
-        hexlabel_to_enemy = {}
-        game = self.legion.player.game
+        hexlabel_to_enemy = {}  # type: Dict[str, Creature]
+        legion = self.legion
+        if legion is None:
+            return hexlabel_to_enemy
+        player = legion.player
+        if player is None:
+            return hexlabel_to_enemy
+        game = player.game
+        if game is None:
+            return hexlabel_to_enemy
         legion2 = game.other_battle_legion(self.legion)
         for creature in legion2.creatures:
             if creature.dead and not creature.offboard:
@@ -249,13 +268,21 @@ class Creature(object):
         return hexlabel_to_enemy
 
     @property
-    def engaged_enemies(self):
+    def engaged_enemies(self) -> Set[Creature]:
         """Return a set of live enemy Creatures this Creature is engaged
         with."""
-        enemies = set()
+        enemies = set()  # type: Set[Creature]
         if self.offboard or self.hexlabel is None:
             return enemies
-        game = self.legion.player.game
+        legion = self.legion
+        if legion is None:
+            return enemies
+        player = legion.player
+        if player is None:
+            return enemies
+        game = player.game
+        if game is None:
+            return enemies
         hex1 = game.battlemap.hexes[self.hexlabel]
         hexlabel_to_enemy = self._hexlabel_to_enemy()
         for hexside, hex2 in hex1.neighbors.items():
@@ -268,13 +295,21 @@ class Creature(object):
         return enemies
 
     @property
-    def dead_adjacent_enemies(self):
+    def dead_adjacent_enemies(self) -> Set[Creature]:
         """Return a set of dead enemy Creatures this Creature is engaged
         with."""
-        enemies = set()
+        enemies = set()  # type: Set[Creature]
         if self.offboard or self.hexlabel is None:
             return enemies
-        game = self.legion.player.game
+        legion = self.legion
+        if legion is None:
+            return enemies
+        player = legion.player
+        if player is None:
+            return enemies
+        game = player.game
+        if game is None:
+            return enemies
         hex1 = game.battlemap.hexes[self.hexlabel]
         hexlabel_to_enemy = self._hexlabel_to_dead_enemy()
         for hexside, hex2 in hex1.neighbors.items():
@@ -286,19 +321,35 @@ class Creature(object):
                     enemies.add(hexlabel_to_enemy[hex2.label])
         return enemies
 
-    def has_los_to(self, hexlabel):
+    def has_los_to(self, hexlabel: str) -> bool:
         """Return True iff this creature has line of sight to the
         hex with hexlabel."""
-        game = self.legion.player.game
+        legion = self.legion
+        if legion is None:
+            return False
+        player = legion.player
+        if player is None:
+            return False
+        game = player.game
+        if game is None:
+            return False
         map1 = game.battlemap
         return not map1.is_los_blocked(self.hexlabel, hexlabel, game)
 
     @property
-    def potential_rangestrike_targets(self):
+    def potential_rangestrike_targets(self) -> Set[Creature]:
         """Return a set of Creatures that this Creature could rangestrike
         if the phase were correct."""
-        game = self.legion.player.game
-        enemies = set()
+        enemies = set()  # type: Set[Creature]
+        legion = self.legion
+        if legion is None:
+            return enemies
+        player = legion.player
+        if player is None:
+            return enemies
+        game = player.game
+        if game is None:
+            return enemies
         if (
             self.offboard
             or self.hexlabel is None
@@ -318,24 +369,39 @@ class Creature(object):
         return enemies
 
     @property
-    def rangestrike_targets(self):
+    def rangestrike_targets(self) -> Set[Creature]:
         """Return a set of Creatures that this Creature can rangestrike."""
-        game = self.legion.player.game
+        legion = self.legion
+        if legion is None:
+            return set()
+        player = legion.player
+        if player is None:
+            return set()
+        game = player.game
+        if game is None:
+            return set()
         if game.battle_phase != Phase.STRIKE:
             return set()
         else:
             return self.potential_rangestrike_targets
 
-    def find_target_hexlabels(self):
+    def find_target_hexlabels(self) -> Set[str]:
         """Return a set of hexlabels containing creatures that this creature
         can strike or rangestrike."""
-        hexlabels = set()
+        hexlabels = set()  # type: Set[str]
         legion = self.legion
+        if legion is None:
+            return set()
         player = legion.player
+        if player is None:
+            return set()
         game = player.game
+        if game is None:
+            return set()
         if not self.struck:
             for target in self.engaged_enemies:
-                hexlabels.add(target.hexlabel)
+                if target is not None and target.hexlabel is not None:
+                    hexlabels.add(target.hexlabel)
             if (
                 not hexlabels
                 and self.rangestrikes
@@ -343,25 +409,33 @@ class Creature(object):
                 and not self.dead_adjacent_enemies
             ):
                 for target in self.rangestrike_targets:
+                    if target is not None and target.hexlabel is not None:
+                        hexlabels.add(target.hexlabel)
+        return hexlabels
+
+    def find_adjacent_target_hexlabels(self) -> Set[str]:
+        """Return a set of hexlabels containing creatures that this creature
+        can strike normally."""
+        hexlabels = set()  # type: Set[str]
+        if not self.struck:
+            for target in self.engaged_enemies:
+                if target.hexlabel is not None:
                     hexlabels.add(target.hexlabel)
         return hexlabels
 
-    def find_adjacent_target_hexlabels(self):
-        """Return a set of hexlabels containing creatures that this creature
-        can strike normally."""
-        hexlabels = set()
-        if not self.struck:
-            for target in self.engaged_enemies:
-                hexlabels.add(target.hexlabel)
-        return hexlabels
-
-    def find_rangestrike_target_hexlabels(self):
+    def find_rangestrike_target_hexlabels(self) -> Set[str]:
         """Return a set of hexlabels containing creatures that this creature
         can rangestrike."""
-        hexlabels = set()
+        hexlabels = set()  # type: Set[str]
         legion = self.legion
+        if legion is None:
+            return hexlabels
         player = legion.player
+        if player is None:
+            return hexlabels
         game = player.game
+        if game is None:
+            return hexlabels
         if (
             not self.struck
             and self.rangestrikes
@@ -370,20 +444,21 @@ class Creature(object):
             and not self.dead_adjacent_enemies
         ):
             for target in self.rangestrike_targets:
-                hexlabels.add(target.hexlabel)
+                if target.hexlabel is not None:
+                    hexlabels.add(target.hexlabel)
         return hexlabels
 
     @property
-    def engaged(self):
+    def engaged(self) -> bool:
         """Return True iff this creature is engaged with an adjacent enemy."""
         return bool(self.engaged_enemies)
 
     @property
-    def mobile(self):
+    def mobile(self) -> bool:
         """Return True iff this creature can move."""
         return not self.moved and not self.dead and not self.engaged
 
-    def is_native(self, hazard):
+    def is_native(self, hazard: str) -> bool:
         """Return True iff this creature is native to the named hazard.
 
         Note that we define nativity even for hazards that don't provide any
@@ -391,13 +466,13 @@ class Creature(object):
         """
         return hazard in creature_name_to_native_hazards[self.name]
 
-    def move(self, hexlabel):
+    def move(self, hexlabel: str) -> None:
         """Move this creature to a new battle hex"""
         self.previous_hexlabel = self.hexlabel
         self.hexlabel = hexlabel
         self.moved = True
 
-    def undo_move(self):
+    def undo_move(self) -> None:
         """Undo this creature's last battle move."""
         assert self.moved and self.previous_hexlabel
         self.hexlabel = self.previous_hexlabel
@@ -405,18 +480,27 @@ class Creature(object):
         self.moved = False
 
     @property
-    def can_strike(self):
+    def can_strike(self) -> bool:
         """Return True iff this creature can strike."""
         return not self.struck and (self.engaged or self.can_rangestrike)
 
     @property
-    def can_rangestrike(self):
+    def can_rangestrike(self) -> bool:
         """Return True iff this creature can rangestrike an enemy."""
         return bool(self.rangestrike_targets)
 
-    def number_of_dice(self, target):
+    def number_of_dice(self, target: Creature) -> int:
         """Return the number of dice to use if striking target."""
-        map1 = self.legion.player.game.battlemap
+        legion = self.legion
+        if legion is None:
+            return 0
+        player = legion.player
+        if player is None:
+            return 0
+        game = player.game
+        if game is None:
+            return 0
+        map1 = game.battlemap
         hex1 = map1.hexes[self.hexlabel]
         hex2 = map1.hexes[target.hexlabel]
         if target in self.engaged_enemies:

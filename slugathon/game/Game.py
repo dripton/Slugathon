@@ -1809,7 +1809,11 @@ class Game(Observed):
         logging.info(f"{rolls=} {hits=}")
         target.hits += hits
         if target.is_titan and target.dead:
-            target.legion.player.has_titan = False
+            legion = target.legion
+            if legion is not None:
+                player = legion.player
+                if player is not None:
+                    player.has_titan = False
         if target.hits > target.power:
             carries = target.hits - target.power
             target.hits -= carries
@@ -2448,7 +2452,11 @@ class Game(Observed):
                 target.hits += action.hits
                 target.hits = min(target.hits, target.power)
                 if target.is_titan and target.dead:
-                    target.legion.player.has_titan = False
+                    legion = target.legion
+                    if legion is not None:
+                        player = legion.player
+                        if player is not None:
+                            player.has_titan = False
                 strikers = self.creatures_in_battle_hex(
                     action.striker_hexlabel
                 )

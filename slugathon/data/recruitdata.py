@@ -1,4 +1,7 @@
-__copyright__ = "Copyright (c) 2005-2011 David Ripton"
+from typing import Dict, List, Tuple, Union
+
+
+__copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -58,4 +61,4 @@ data = {
     ],
     "Tundra": [("Troll", 1), ("Warbear", 2), ("Giant", 2), ("Colossus", 2)],
     "Woods": [("Centaur", 1), ("Warbear", 3), ("Unicorn", 2)],
-}
+}  # type: Dict[str, List[Union[Tuple[str, int],Tuple]]]
