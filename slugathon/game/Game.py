@@ -699,7 +699,9 @@ class Game(Observed):
         """Return set of (hexlabel, entry_side) tuples describing where legion
         can move."""
         moves = self.find_normal_moves(legion, masterhex, roll)
+        logging.info(f"{moves=}")
         moves.update(self.find_all_teleport_moves(legion, masterhex, roll))
+        logging.info(f"{moves=}")
         return moves
 
     def can_move_legion(
