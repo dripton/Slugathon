@@ -557,6 +557,7 @@ class Game(Observed):
         If block == ARROWS_ONLY, use only arrows.
         Return a set of (hexlabel, entry_side) tuples.
         """
+        logging.info(f"{legion=} {masterhex=} {roll=} {block=} {came_from=}")
         if block is None:
             block = masterhex.find_block()
             if block is None:
