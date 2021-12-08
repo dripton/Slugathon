@@ -1934,6 +1934,7 @@ class Game(Observed):
                 for creature in legion.creatures:
                     if creature.dead:
                         creature_names_to_remove.append(creature.name)
+                    logging.info(f"{legion=}, {creature_names_to_remove=}")
                     creature.heal()
                     creature.hexlabel = None
                 for creature_name in creature_names_to_remove:
