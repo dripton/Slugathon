@@ -112,7 +112,8 @@ class AIClient(pb.Referenceable, Observed):
         log_observer = log.PythonLoggingObserver()
         log_observer.start()
         formatter = logging.Formatter(
-            "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s"
+            "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
+            "%(message)s"
         )
         logdir = os.path.join(TEMPDIR, "slugathon")
         if not os.path.exists(logdir):
