@@ -259,6 +259,10 @@ class Legion(Observed):
 
     def move(self, hexlabel, teleport, teleporting_lord, entry_side):
         """Move this legion on the masterboard"""
+        logging.info(
+            f"{self=} {hexlabel=} {teleport=} {teleporting_lord=} "
+            f"{entry_side=}"
+        )
         self.moved = True
         self.previous_hexlabel = self.hexlabel
         self.hexlabel = hexlabel

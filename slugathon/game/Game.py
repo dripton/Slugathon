@@ -133,11 +133,11 @@ class Game(Observed):
         assert defender_legion.hexlabel == attacker_legion.hexlabel
         self.battle_masterhex = self.board.hexes[attacker_legion.hexlabel]
         if self.battle_masterhex is None:
-            logging.info("")
+            logging.warning(f"self.battle_masterhex=")
             return
         self.battle_entry_side = attacker_legion.entry_side
         if self.battle_entry_side is None:
-            logging.warning("")
+            logging.warning(f"{self.battle_entry_side=}")
             return
         self.battlemap = BattleMap.BattleMap(
             self.battle_masterhex.terrain, self.battle_entry_side
@@ -755,8 +755,8 @@ class Game(Observed):
     ) -> None:
         """Called from Server and update."""
         logging.info(
-            f"{playername} {markerid} {hexlabel} {entry_side} {teleport} "
-            f"{teleporting_lord}"
+            f"{playername=} {markerid=} {hexlabel=} {entry_side=} {teleport=} "
+            f"{teleporting_lord=}"
         )
         player = self.get_player_by_name(playername)
         if player is None:
