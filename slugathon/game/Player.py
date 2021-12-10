@@ -498,7 +498,7 @@ class Player(Observed):
 
     def done_with_strikes(self):
         if self.has_forced_strikes:
-            logging.info("Forced strikes remain")
+            logging.info(f"{self} Forced strikes remain")
             return
         player = None
         for legion in self.game.battle_legions:
@@ -511,7 +511,7 @@ class Player(Observed):
 
     def done_with_counterstrikes(self):
         if self.has_forced_strikes:
-            logging.info("Forced strikes remain")
+            logging.info(f"{self} Forced strikes remain")
             return
         action = Action.StartReinforceBattlePhase(
             self.game.name, self.name, self.game.battle_turn

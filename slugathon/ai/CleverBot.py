@@ -1258,7 +1258,7 @@ class CleverBot(object):
         return score
 
     def strike(self, game):
-        logging.info("strike")
+        logging.info("")
         if not game.battle_active_player:
             logging.info("called strike with no battle")
             return

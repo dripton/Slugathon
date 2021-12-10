@@ -276,12 +276,15 @@ class Creature(object):
             return enemies
         legion = self.legion
         if legion is None:
+            logging.warning("")
             return enemies
         player = legion.player
         if player is None:
+            logging.warning("")
             return enemies
         game = player.game
         if game is None:
+            logging.warning("")
             return enemies
         hex1 = game.battlemap.hexes[self.hexlabel]
         hexlabel_to_enemy = self._hexlabel_to_enemy()
