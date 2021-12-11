@@ -89,14 +89,14 @@ if __name__ == "__main__":
     window.show_all()
     rolls = Dice.roll(numrolls=12)
     action = Action.Strike(
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        3,
+        3,
         rolls,
         sum(1 for roll in rolls if roll >= 4),
         1,

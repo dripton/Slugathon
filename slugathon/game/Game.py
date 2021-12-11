@@ -792,8 +792,9 @@ class Game(Observed):
             logging.info("")
             return
         legion = player.markerid_to_legion.get(markerid)
-        if legion is None:
-            return
+        assert legion is not None
+        assert legion.entry_side is not None
+        assert legion.previous_hexlabel is not None
         action = Action.UndoMoveLegion(
             self.name,
             playername,
@@ -1406,10 +1407,13 @@ class Game(Observed):
             striker = self.creatures_in_battle_hex(
                 action.striker_hexlabel
             ).pop()
+            assert striker.hexlabel is not None
             target = self.creatures_in_battle_hex(action.target_hexlabel).pop()
+            assert target.hexlabel is not None
             carry_target = self.creatures_in_battle_hex(
                 carry_target_hexlabel
             ).pop()
+            assert carry_target.hexlabel is not None
             assert carry_target in striker.engaged_enemies
             assert striker.number_of_dice(carry_target) >= action.num_dice
             assert striker.strike_number(carry_target) <= action.strike_number
@@ -1709,9 +1713,8 @@ class Game(Observed):
         creature = self.battle_active_legion.find_creature(
             creature_name, new_hexlabel
         )
-        if creature is None:
-            logging.warning(f"{playername} {creature_name} {new_hexlabel}")
-            return
+        assert creature is not None
+        assert creature.previous_hexlabel is not None
         action = Action.UndoMoveCreature(
             self.name,
             playername,
@@ -2016,6 +2019,7 @@ class Game(Observed):
                 return
             mutual = self.attacker_legion.dead and self.defender_legion.dead
             logging.info(f"{winner=} {loser=} {mutual=}")
+            assert self.current_engagement_hexlabel is not None
             action = Action.BattleOver(
                 self.name,
                 winner.markerid,
@@ -2240,8 +2244,8 @@ class Game(Observed):
                         action.playername,
                         action.parent_markerid,
                         action.child_markerid,
-                        action.parent_creature_names,
-                        action.child_creature_names,
+                        list(action.parent_creature_names),
+                        list(action.child_creature_names),
                     )
 
         elif isinstance(action, Action.UndoSplit):
@@ -2321,7 +2325,7 @@ class Game(Observed):
         elif isinstance(action, Action.RevealLegion):
             legion = self.find_legion(action.markerid)
             if legion:
-                legion.reveal_creatures(action.creature_names)
+                legion.reveal_creatures(list(action.creature_names))
 
         elif isinstance(action, Action.Flee):
             legion = self.find_legion(action.markerid)
@@ -2347,9 +2351,9 @@ class Game(Observed):
             if attacker_legion and defender_legion:
                 self._accept_proposal(
                     attacker_legion,
-                    action.attacker_creature_names,
+                    bag(action.attacker_creature_names),
                     defender_legion,
-                    action.defender_creature_names,
+                    bag(action.defender_creature_names),
                 )
 
         elif isinstance(action, Action.StartMusterPhase):

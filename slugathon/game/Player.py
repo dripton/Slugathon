@@ -298,6 +298,7 @@ class Player(Observed):
 
     def _roll_movement(self) -> None:
         self.movement_roll = Dice.roll()[0]
+        assert self.movement_roll is not None
         action = Action.RollMovement(
             self.game.name, self.name, self.movement_roll, self.mulligans_left
         )
@@ -525,6 +526,7 @@ class Player(Observed):
         if self.has_forced_strikes:
             logging.info(f"{self} Forced strikes remain")
             return
+        assert self.game.battle_turn is not None
         action = Action.StartReinforceBattlePhase(
             self.game.name, self.name, self.game.battle_turn
         )
