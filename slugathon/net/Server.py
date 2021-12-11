@@ -481,7 +481,7 @@ class Server(Observed):
         playername: str,
         game_name: str,
         markerid: str,
-        hexlabel: str,
+        hexlabel: int,
         entry_side: int,
         teleport: bool,
         teleporting_lord: str,
@@ -534,7 +534,7 @@ class Server(Observed):
             logging.warning(f"done_with_moves for bad game {game_name}")
 
     def resolve_engagement(
-        self, playername: str, game_name: str, hexlabel: str
+        self, playername: str, game_name: str, hexlabel: int
     ) -> None:
         """Pick the next engagement to resolve."""
         logging.info(

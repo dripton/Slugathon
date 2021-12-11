@@ -97,7 +97,7 @@ class BattleHex(object):
                         if self.x & 1:
                             self.neighbors[4] = hex1
 
-    def hexsides_with_border(self, border) -> Set[int]:
+    def hexsides_with_border(self, border: str) -> Set[int]:
         """Return the set of hexsides with this border."""
         result = set()
         for hexside, border2 in enumerate(self.borders):
@@ -105,7 +105,7 @@ class BattleHex(object):
                 result.add(hexside)
         return result
 
-    def opposite_border(self, hexside) -> str:
+    def opposite_border(self, hexside: int) -> Optional[str]:
         """Return the border type of the adjacent hex in direction hexside.
 
         Raise if there's no hex there.

@@ -1,4 +1,5 @@
 import ast
+from typing import Any
 
 from twisted.spread import pb
 
@@ -18,27 +19,27 @@ def fromstring(st):
 
 
 class Action(pb.Copyable, pb.RemoteCopy):
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__} {self.__dict__}"
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Based on all the attributes of the Action, but not its class,
         so that an Action and its matching UndoAction have the same hash.
         """
         return hash(tuple(sorted(list(self.__dict__.items()))))
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         """Based on all the attributes of the Action, and its class."""
         return self.__class__ == other.__class__ and hash(self) == hash(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
 
-    def undo_action(self):
+    def undo_action(self) -> Any:
         """If this action is undoable, construct the appropriate UndoAction."""
         return None
 
-    def undoable(self):
+    def undoable(self) -> bool:
         return self.undo_action() is not None
 
 

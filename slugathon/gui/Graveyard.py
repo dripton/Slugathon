@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import time
 
 import gi
 
@@ -7,7 +8,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject, Gdk
 
 from slugathon.gui import Chit, Marker
-from slugathon.game import Creature
+from slugathon.game import Creature, Game
 
 
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"
@@ -72,7 +73,9 @@ if __name__ == "__main__":
     ]
 
     playername = "test"
-    player = Player.Player(playername, None, None)
+    now = time.time()
+    game = Game.Game("g1", playername, now, now, 2, 6)
+    player = Player.Player(playername, game, 1)
     player.color = random.choice(playercolordata.colors)
     abbrev = player.color_abbrev
     index = random.randrange(1, 12 + 1)

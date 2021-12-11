@@ -1,3 +1,4 @@
+from __future__ import annotations
 from sys import maxsize
 import os
 import time
@@ -82,7 +83,7 @@ class Game(Observed):
         self.caretaker = Caretaker.Caretaker()
         self.history = History.History()
         self.add_observer(self.history)
-        self.current_engagement_hexlabel = None  # type: Optional[str]
+        self.current_engagement_hexlabel = None  # type: Optional[int]
         self.defender_chose_not_to_flee = False
         self.attacker_legion = None  # type: Optional[Legion.Legion]
         self.defender_legion = None  # type: Optional[Legion.Legion]
@@ -376,7 +377,9 @@ class Game(Observed):
 
         Only call this after towers are assigned.
         """
-        self.players.sort(key=lambda x: -x.starting_tower)
+        for player in self.players:
+            assert player.starting_tower is not None
+        self.players.sort(key=lambda x: -x.starting_tower)  # type: ignore
         self.active_player = self.players[0]
 
     @property
@@ -455,7 +458,7 @@ class Game(Observed):
                 player.create_starting_legion()
 
     def all_legions(
-        self, hexlabel: Optional[str] = None
+        self, hexlabel: Optional[int] = None
     ) -> Set[Legion.Legion]:
         """Return a set of all legions in hexlabel, or in the whole
         game if hexlabel is None"""
@@ -549,7 +552,7 @@ class Game(Observed):
         roll: int,
         block: int = None,
         came_from: int = None,
-    ) -> Set[Tuple[str, int]]:
+    ) -> Set[Tuple[int, int]]:
         """Recursively find non-teleport moves for legion from masterhex.
 
         If block >= 0, go only that way.
@@ -562,7 +565,7 @@ class Game(Observed):
             block = masterhex.find_block()
             if block is None:
                 block = ARCHES_AND_ARROWS
-        moves = set()  # type: Set[Tuple[str, int]]
+        moves = set()  # type: Set[Tuple[int, int]]
         hexlabel = masterhex.label
         player = legion.player
         # If there is an enemy legion and no friendly legion, mark the hex
@@ -628,7 +631,7 @@ class Game(Observed):
         masterhex: MasterHex.MasterHex,
         roll: int,
         came_from: Optional[int],
-    ) -> Set[Tuple[str, int]]:
+    ) -> Set[Tuple[int, int]]:
         """Recursively find empty hexes within roll hexes, for tower
         teleport"""
         hexlabel = masterhex.label
@@ -652,7 +655,7 @@ class Game(Observed):
 
     def find_tower_teleport_moves(
         self, legion: Legion.Legion, masterhex: MasterHex.MasterHex
-    ) -> Set[Tuple[str, int]]:
+    ) -> Set[Tuple[int, int]]:
         """Return set of (hexlabel, TELEPORT) describing where legion can tower
         teleport."""
         moves = set()
@@ -669,7 +672,7 @@ class Game(Observed):
 
     def find_titan_teleport_moves(
         self, legion: Legion.Legion
-    ) -> Set[Tuple[str, int]]:
+    ) -> Set[Tuple[int, int]]:
         """Return set of (hexlabel, TELEPORT) describing where legion can titan
         teleport."""
         player = legion.player
@@ -683,11 +686,11 @@ class Game(Observed):
 
     def find_all_teleport_moves(
         self, legion: Legion.Legion, masterhex: MasterHex.MasterHex, roll: int
-    ) -> Set[Tuple[str, int]]:
+    ) -> Set[Tuple[int, int]]:
         """Return set of (hexlabel, TELEPORT) tuples describing where legion
         can teleport."""
         player = legion.player
-        moves = set()  # type: Set[Tuple[str, int]]
+        moves = set()  # type: Set[Tuple[int, int]]
         if roll != 6 or player.teleported:
             return moves
         moves.update(self.find_tower_teleport_moves(legion, masterhex))
@@ -696,7 +699,7 @@ class Game(Observed):
 
     def find_all_moves(
         self, legion: Legion.Legion, masterhex: MasterHex.MasterHex, roll: int
-    ) -> Set[Tuple[str, int]]:
+    ) -> Set[Tuple[int, int]]:
         """Return set of (hexlabel, entry_side) tuples describing where legion
         can move."""
         moves = self.find_normal_moves(legion, masterhex, roll)
@@ -709,7 +712,7 @@ class Game(Observed):
         self,
         player: Player.Player,
         legion: Legion.Legion,
-        hexlabel: str,
+        hexlabel: int,
         entry_side: int,
         teleport: bool,
         teleporting_lord: str,
@@ -718,6 +721,9 @@ class Game(Observed):
         if player is not self.active_player or player is not legion.player:
             return False
         if legion.moved:
+            return False
+        if player.movement_roll is None:
+            logging.warning("")
             return False
         masterhex = self.board.hexes[legion.hexlabel]
         if teleport:
@@ -748,7 +754,7 @@ class Game(Observed):
         self,
         playername: str,
         markerid: str,
-        hexlabel: str,
+        hexlabel: int,
         entry_side: int,
         teleport: bool,
         teleporting_lord: str,
@@ -819,7 +825,7 @@ class Game(Observed):
                 f"{playername} done_with_moves in wrong phase {self.phase}"
             )
 
-    def resolve_engagement(self, playername: str, hexlabel: str) -> None:
+    def resolve_engagement(self, playername: str, hexlabel: int) -> None:
         """Called from Server."""
         logging.info("")
         if (
@@ -1227,7 +1233,7 @@ class Game(Observed):
         playername: str,
         markerid: str,
         creature_name: str,
-        recruiter_names: List[str],
+        recruiter_names: Tuple[str, ...],
     ) -> None:
         """Called from update."""
         logging.info(
@@ -1430,7 +1436,7 @@ class Game(Observed):
         self.notify(action2)
 
     @property
-    def engagement_hexlabels(self) -> Set[str]:
+    def engagement_hexlabels(self) -> Set[int]:
         """Return a set of all hexlabels with engagements"""
         hexlabels_to_legion_colors = defaultdict(set)
         for legion in self.all_legions():
@@ -2177,8 +2183,8 @@ class Game(Observed):
     def update(
         self,
         observed: Observed,
-        action,
-        names: Optional[List[str]],  # TODO Action
+        action: Any,
+        names: Optional[List[str]],
     ) -> None:
         if hasattr(action, "game_name") and action.game_name != self.name:
             return
@@ -2583,6 +2589,7 @@ class Game(Observed):
             loser_player.created_starting_legion = True
             logging.info(f"{loser_player.dead=}")
             if winner_player:
+                assert loser_player.color_abbrev is not None
                 winner_player.eliminated_colors.add(loser_player.color_abbrev)
                 winner_player.markerids_left.update(
                     loser_player.markerids_left

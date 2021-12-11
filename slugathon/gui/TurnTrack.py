@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import time
+
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -124,11 +126,17 @@ class TurnTrack(Gtk.DrawingArea):
 
 if __name__ == "__main__":
     from slugathon.util import guiutils
-    from slugathon.game import Legion
+    from slugathon.game import Game, Legion, Player
 
     window = Gtk.Window()
-    attacker = Legion.Legion(None, "Rd01", [], 1)
-    defender = Legion.Legion(None, "Bu01", [], 2)
+    playername1 = "Player 1"
+    playername2 = "Player 2"
+    now = time.time()
+    game = Game.Game("g1", playername1, now, now, 2, 6)
+    player1 = Player.Player(playername1, game, 1)
+    player2 = Player.Player(playername2, game, 2)
+    attacker = Legion.Legion(player1, "Rd01", [], 1)
+    defender = Legion.Legion(player2, "Bu01", [], 2)
     turntrack = TurnTrack(attacker, defender, None, 50)
     turntrack.connect("destroy", guiutils.exit)
     window.add(turntrack)

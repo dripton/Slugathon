@@ -36,7 +36,7 @@ class MasterHex(object):
     def __init__(
         self,
         board: "MasterBoard.MasterBoard",
-        label: str,
+        label: int,
         x: int,
         y: int,
         terrain: str,

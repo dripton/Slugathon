@@ -1,9 +1,11 @@
+from __future__ import annotations
 from functools import cmp_to_key
 import logging
+from typing import Any, Generator, List, Optional, Set, Tuple
 
 from slugathon.util.bag import bag
 from slugathon.data import recruitdata, markerdata, playercolordata
-from slugathon.game import Creature, Action
+from slugathon.game import Caretaker, Creature, Action, Player
 from slugathon.util.Observed import Observed
 
 
@@ -11,36 +13,41 @@ __copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def find_picname(markerid):
+def find_picname(markerid: str) -> str:
     color_name = playercolordata.abbrev_to_name[markerid[:2]]
     index = int(markerid[2:]) - 1
     return markerdata.data[color_name][index]
 
 
 class Legion(Observed):
-    def __init__(self, player, markerid, creatures, hexlabel):
+    def __init__(
+        self,
+        player: Player.Player,
+        markerid: str,
+        creatures: List[Creature.Creature],
+        hexlabel: int,
+    ):
         Observed.__init__(self)
         assert isinstance(hexlabel, int)
-        self.markerid = markerid
-        self.picname = find_picname(markerid)
-        self.creatures = creatures
+        self.markerid = markerid  # type: str
+        self.picname = find_picname(markerid)  # type: str
+        self.creatures = creatures  # type: List[Creature.Creature]
         for creature in self.creatures:
             creature.legion = self
-        self.hexlabel = hexlabel  # an int not a str
-        self.player = player
-        self.moved = False
-        self.teleported = False
-        self.teleporting_lord = None
-        self.entry_side = None
-        self.previous_hexlabel = None
-        self.recruited = False
-        # List of tuples of recruiter names
-        self.recruiter_names_list = []
-        self._angels_pending = 0
-        self._archangels_pending = 0
+        self.hexlabel = hexlabel  # type: int
+        self.player = player  # type: Player.Player
+        self.moved = False  # type: bool
+        self.teleported = False  # type: bool
+        self.teleporting_lord = None  # type: Optional[str]
+        self.entry_side = None  # type: Optional[int]
+        self.previous_hexlabel = None  # type: Optional[int]
+        self.recruited = False  # type: bool
+        self.recruiter_names_list = []  # type: List[Tuple[str,...]]
+        self._angels_pending = 0  # type: int
+        self._archangels_pending = 0  # type: int
 
     @property
-    def dead(self):
+    def dead(self) -> bool:
         """Return True iff this legion has been eliminated from battle."""
         if not self.player.has_titan:
             return True
@@ -54,51 +61,51 @@ class Legion(Observed):
         return not alive
 
     @property
-    def living_creatures(self):
+    def living_creatures(self) -> List[Creature.Creature]:
         return [creature for creature in self.creatures if not creature.dead]
 
     @property
-    def living_creature_names(self):
+    def living_creature_names(self) -> List[str]:
         return [creature.name for creature in self.living_creatures]
 
     @property
-    def dead_creatures(self):
+    def dead_creatures(self) -> List[Creature.Creature]:
         return [creature for creature in self.creatures if creature.dead]
 
     @property
-    def dead_creature_names(self):
+    def dead_creature_names(self) -> List[str]:
         return [creature.name for creature in self.dead_creatures]
 
     @property
-    def any_summonable(self):
+    def any_summonable(self) -> bool:
         for creature in self.creatures:
             if creature.summonable:
                 return True
         return False
 
     @property
-    def any_unknown(self):
+    def any_unknown(self) -> bool:
         for creature in self.creatures:
             if creature.is_unknown:
                 return True
         return False
 
     @property
-    def all_unknown(self):
+    def all_unknown(self) -> bool:
         for creature in self.creatures:
             if not creature.is_unknown:
                 return False
         return True
 
     @property
-    def all_known(self):
+    def all_known(self) -> bool:
         for creature in self.creatures:
             if creature.is_unknown:
                 return False
         return True
 
     @property
-    def can_summon(self):
+    def can_summon(self) -> bool:
         """Return True if this legion's player has not already summoned this
         turn and any of this player's other unengaged legions has a summonable.
         """
@@ -110,56 +117,56 @@ class Legion(Observed):
         return False
 
     @property
-    def engaged(self):
+    def engaged(self) -> bool:
         """Return True iff this legion is engaged with an enemy legion."""
         return self.hexlabel in self.player.game.engagement_hexlabels
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"Legion {self.markerid} ({self.picname}) in {self.hexlabel} "
             f"{self.creatures}"
         )
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of living creatures in the legion."""
         return len(self.living_creature_names)
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         """Zero-height legions should not be False."""
         return True
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         return hasattr(other, "markerid") and self.markerid == other.markerid
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         return self.markerid < other.markerid
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.markerid)
 
     @property
-    def num_lords(self):
+    def num_lords(self) -> int:
         return sum(creature.is_lord for creature in self.creatures)
 
     @property
-    def first_lord_name(self):
+    def first_lord_name(self) -> Optional[str]:
         for creature in self.creatures:
             if creature.is_lord:
                 return creature.name
         return None
 
     @property
-    def has_titan(self):
+    def has_titan(self) -> bool:
         for creature in self.creatures:
             if creature.is_titan:
                 return True
         return False
 
     @property
-    def lord_types(self):
+    def lord_types(self) -> Set[str]:
         """Return a set of names of all lords in this legion."""
         types = set()
         for creature in self.creatures:
@@ -168,45 +175,45 @@ class Legion(Observed):
         return types
 
     @property
-    def creature_names(self):
+    def creature_names(self) -> List[str]:
         return sorted(creature.name for creature in self.creatures)
 
     @property
-    def mobile_creatures(self):
+    def mobile_creatures(self) -> List[Creature.Creature]:
         return [creature for creature in self.creatures if creature.mobile]
 
     @property
-    def strikers(self):
+    def strikers(self) -> List[Creature.Creature]:
         return [creature for creature in self.creatures if creature.can_strike]
 
     @property
-    def forced_strikes(self):
+    def forced_strikes(self) -> bool:
         for creature in self.creatures:
             if not creature.struck and creature.engaged_enemies:
                 return True
         return False
 
-    def add_creature_by_name(self, creature_name):
+    def add_creature_by_name(self, creature_name: str) -> None:
         if len(self) >= 7:
             raise ValueError("no room to add another creature")
         creature = Creature.Creature(creature_name)
         creature.legion = self
         self.creatures.append(creature)
 
-    def remove_creature_by_name(self, creature_name):
+    def remove_creature_by_name(self, creature_name: str) -> None:
         for creature in self.creatures:
             if creature.name == creature_name:
                 self.creatures.remove(creature)
                 return
         raise ValueError("tried to remove missing creature")
 
-    def can_be_split(self, turn):
+    def can_be_split(self, turn: int) -> bool:
         if turn == 1:
             return len(self) == 8
         else:
             return len(self) >= 4
 
-    def is_legal_split(self, child1, child2):
+    def is_legal_split(self, child1: Legion, child2: Legion) -> bool:
         """Return whether this legion can be split into legions child1 and
         child2"""
         logging.info(f"{self=} {child1=} {child2=}")
@@ -236,7 +243,7 @@ class Legion(Observed):
                 return False
         return True
 
-    def reveal_creatures(self, creature_names):
+    def reveal_creatures(self, creature_names: List[str]) -> None:
         """Reveal the creatures from creature_names, if they're not
         already known to be in this legion."""
         if self.any_unknown:
@@ -251,13 +258,19 @@ class Legion(Observed):
                     creature.legion = self
                     count2 -= 1
 
-    def forget_creatures(self):
+    def forget_creatures(self) -> None:
         """Make all creatures Unknown."""
         self.creatures = Creature.n2c(len(self) * ["Unknown"])
         for creature in self.creatures:
             creature.legion = self
 
-    def move(self, hexlabel, teleport, teleporting_lord, entry_side):
+    def move(
+        self,
+        hexlabel: int,
+        teleport: bool,
+        teleporting_lord: Optional[str],
+        entry_side: int,
+    ) -> None:
         """Move this legion on the masterboard"""
         logging.info(
             f"{self=} {hexlabel=} {teleport=} {teleporting_lord=} "
@@ -272,11 +285,12 @@ class Legion(Observed):
         if teleporting_lord:
             self.reveal_creatures([teleporting_lord])
 
-    def undo_move(self):
+    def undo_move(self) -> None:
         """Undo this legion's last masterboard move"""
         if self.moved:
             self.moved = False
             # XXX This is bogus, but makes repainting the UI easier.
+            assert self.previous_hexlabel is not None
             (self.hexlabel, self.previous_hexlabel) = (
                 self.previous_hexlabel,
                 self.hexlabel,
@@ -287,10 +301,12 @@ class Legion(Observed):
             self.entry_side = None
 
     @property
-    def can_flee(self):
+    def can_flee(self) -> bool:
         return self.num_lords == 0
 
-    def _gen_sublists(self, recruits):
+    def _gen_sublists(
+        self, recruits: List[Tuple]
+    ) -> Generator[List[Tuple], None, None]:
         """Generate a sublist of recruits, within which up- and down-recruiting
         is possible."""
         sublist = []
@@ -302,7 +318,7 @@ class Legion(Observed):
                 sublist = []
         yield sublist
 
-    def _max_creatures_of_one_type(self):
+    def _max_creatures_of_one_type(self) -> int:
         """Return the maximum number of creatures (not lords or demi-lords) of
         the same type in this legion."""
         counts = bag(self.creature_names)
@@ -313,7 +329,7 @@ class Legion(Observed):
         return maximum
 
     @property
-    def can_recruit(self):
+    def can_recruit(self) -> bool:
         """Return True iff the legion can currently recruit, if it moved
         or defended in a battle.
         """
@@ -327,7 +343,9 @@ class Legion(Observed):
             self.available_recruits_and_recruiters(mterrain, caretaker)
         )
 
-    def could_recruit(self, mterrain, caretaker):
+    def could_recruit(
+        self, mterrain: str, caretaker: Caretaker.Caretaker
+    ) -> bool:
         """Return True iff the legion could recruit in a masterhex with
         terrain type mterrain, if it moved there and was the right height
         and had not already recruited this turn."""
@@ -335,7 +353,9 @@ class Legion(Observed):
             self.available_recruits_and_recruiters(mterrain, caretaker)
         )
 
-    def available_recruits(self, mterrain, caretaker):
+    def available_recruits(
+        self, mterrain: str, caretaker: Caretaker.Caretaker
+    ) -> List[str]:
         """Return a list of the creature names that this legion could
         recruit in a masterhex with terrain type mterrain, if it moved there.
 
@@ -348,7 +368,9 @@ class Legion(Observed):
                 recruits.append(recruit)
         return recruits
 
-    def available_recruits_and_recruiters(self, mterrain, caretaker):
+    def available_recruits_and_recruiters(
+        self, mterrain: str, caretaker: Caretaker.Caretaker
+    ) -> List[Tuple[str, ...]]:
         """Return a list of tuples with creature names and recruiters that this
         legion could recruit in a masterhex with terrain type mterrain, if it
         moved there.
@@ -358,7 +380,7 @@ class Legion(Observed):
 
         The list is sorted in the same order as within recruitdata.
         """
-        result_list = []
+        result_list = []  # type: List[Tuple[str, ...]]
         counts = bag(self.living_creature_names)
         recruits = recruitdata.data[mterrain]
         for sublist in self._gen_sublists(recruits):
@@ -367,10 +389,9 @@ class Legion(Observed):
             for ii in range(len(sublist)):
                 name = names[ii]
                 num = nums[ii]
+                prev = None  # type: Optional[str]
                 if ii >= 1:
                     prev = names[ii - 1]
-                else:
-                    prev = None
                 if prev == recruitdata.ANYTHING:
                     # basic tower creature
                     for jj in range(ii + 1):
@@ -411,7 +432,7 @@ class Legion(Observed):
                             if nums[jj] and caretaker.counts.get(names[jj]):
                                 result_list.append((names[jj], name))
 
-        def cmp_helper(tup1, tup2):
+        def cmp_helper(tup1: Tuple[str, ...], tup2: Tuple[str, ...]) -> int:
             ii = 0
             while True:
                 if len(tup1) < ii + 1:
@@ -429,7 +450,9 @@ class Legion(Observed):
         result_list.sort(key=cmp_to_key(cmp_helper))
         return result_list
 
-    def recruit_creature(self, creature, recruiter_names):
+    def recruit_creature(
+        self, creature: Creature.Creature, recruiter_names: Tuple[str, ...]
+    ) -> None:
         """Recruit creature."""
         logging.info(f"{self=} {creature=} {recruiter_names=}")
         if self.recruited:
@@ -453,7 +476,7 @@ class Legion(Observed):
             self.reveal_creatures([creature.name] + list(recruiter_names))
             self.recruited = True
 
-    def undo_recruit(self):
+    def undo_recruit(self) -> None:
         """Undo last recruit, and notify observers."""
         # Avoid double undo
         if not self.recruited:
@@ -474,7 +497,7 @@ class Legion(Observed):
         )
         self.notify(action)
 
-    def unreinforce(self):
+    def unreinforce(self) -> None:
         """Undo reinforcement, and notify observers."""
         # Avoid double undo
         if not self.recruited:
@@ -496,12 +519,12 @@ class Legion(Observed):
         self.notify(action)
 
     @property
-    def score(self):
+    def score(self) -> int:
         """Return the point value of this legion."""
         return sum(creature.score for creature in self.creatures)
 
     @property
-    def living_creatures_score(self):
+    def living_creatures_score(self) -> int:
         """Return the point value of living creatures in this legion.
 
         Used to award half points when a player's titan dies, but some
@@ -510,7 +533,7 @@ class Legion(Observed):
         return sum(creature.score for creature in self.living_creatures)
 
     @property
-    def sorted_creatures(self):
+    def sorted_creatures(self) -> List[Creature.Creature]:
         """Return creatures, sorted in descending order of value."""
         li = reversed(
             sorted(
@@ -520,7 +543,7 @@ class Legion(Observed):
         return [tup[1] for tup in li]
 
     @property
-    def sorted_living_creatures(self):
+    def sorted_living_creatures(self) -> List[Creature.Creature]:
         """Return living creatures, sorted in descending order of value."""
         li = reversed(
             sorted(
@@ -532,17 +555,17 @@ class Legion(Observed):
         return [tup[1] for tup in li]
 
     @property
-    def sort_value(self):
+    def sort_value(self) -> float:
         """Return a rough indication of legion value."""
         return sum(creature.sort_value for creature in self.living_creatures)
 
     @property
-    def combat_value(self):
+    def combat_value(self) -> float:
         """Return a rough indication of legion combat value."""
         return sum(creature.combat_value for creature in self.living_creatures)
 
     @property
-    def terrain_combat_value(self):
+    def terrain_combat_value(self) -> float:
         """Return a rough indication of legion combat value, considering its
         current terrain."""
         return sum(
@@ -551,12 +574,12 @@ class Legion(Observed):
 
     def die(
         self,
-        scoring_legion,
-        fled,
-        no_points,
-        check_for_victory=True,
-        kill_all_creatures=False,
-    ):
+        scoring_legion: Optional[Legion],
+        fled: bool,
+        no_points: bool,
+        check_for_victory: bool = True,
+        kill_all_creatures: bool = False,
+    ) -> None:
         logging.info(
             f"{self=} {scoring_legion=} {fled=} {no_points=} "
             f"{check_for_victory=}"
@@ -584,12 +607,15 @@ class Legion(Observed):
                 logging.info("setting dead_titan")
                 dead_titan = True
         if dead_titan:
+            assert self.player is not None
+            assert scoring_legion is not None
+            assert scoring_legion.player is not None
             self.player.die(scoring_legion.player, check_for_victory)
         # We do this last, so that any living allies of a dead titan remain
         # long enough to give half points.
         self.player.remove_legion(self.markerid)
 
-    def add_points(self, points, can_acquire_angels):
+    def add_points(self, points: int, can_acquire_angels: bool) -> None:
         logging.info(f"{self=} {points=} {can_acquire_angels=}")
         ARCHANGEL_POINTS = Creature.Creature("Archangel").acquirable_every
         ANGEL_POINTS = Creature.Creature("Angel").acquirable_every
@@ -629,20 +655,20 @@ class Legion(Observed):
                 self.notify(action)
 
     @property
-    def angels_pending(self):
+    def angels_pending(self) -> int:
         if len(self) >= 7:
             self._angels_pending = 0
             self._archangels_pending = 0
         return self._angels_pending
 
     @property
-    def archangels_pending(self):
+    def archangels_pending(self) -> int:
         if len(self) >= 7:
             self._angels_pending = 0
             self._archangels_pending = 0
         return self._archangels_pending
 
-    def acquire_angels(self, angels):
+    def acquire_angels(self, angels: List[Creature.Creature]) -> None:
         """Acquire angels."""
         logging.info(f"{angels=}")
         num_archangels = num_angels = 0
@@ -693,7 +719,7 @@ class Legion(Observed):
         self._archangels_pending = 0
         logging.info(f"end of acquire_angels {self=}")
 
-    def do_not_acquire_angels(self):
+    def do_not_acquire_angels(self) -> None:
         """Do not acquire any angels, and notify observers."""
         logging.info(f"{self=}")
         if self.angels_pending or self.archangels_pending:
@@ -703,17 +729,19 @@ class Legion(Observed):
             )
             self.notify(action)
 
-    def reset_angels_pending(self):
+    def reset_angels_pending(self) -> None:
         if self.angels_pending or self.archangels_pending:
             logging.info(f"{self=}")
             self._angels_pending = 0
             self._archangels_pending = 0
 
-    def enter_battle(self, hexlabel):
+    def enter_battle(self, hexlabel: str) -> None:
         for creature in self.creatures:
             creature.hexlabel = hexlabel
 
-    def find_creature(self, creature_name, hexlabel):
+    def find_creature(
+        self, creature_name: str, hexlabel: str
+    ) -> Optional[Creature.Creature]:
         """Return the Creature with creature_name at hexlabel, or None."""
         for creature in self.creatures:
             if (

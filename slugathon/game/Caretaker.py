@@ -15,7 +15,7 @@ class Caretaker(object):
 
     """Tracks creatures remaining, onboard, and dead."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.counts = {}
         self.max_counts = {}
         self.graveyard = {}
@@ -26,11 +26,11 @@ class Caretaker(object):
                 self.max_counts[creature.name] = creature.max_count
                 self.graveyard[creature.name] = 0
 
-    def num_left(self, creature_name):
+    def num_left(self, creature_name: str) -> int:
         """Return the number of creature_name left in the stacks."""
         return self.counts[creature_name]
 
-    def take_one(self, creature_name):
+    def take_one(self, creature_name: str) -> None:
         """Take one of creature_name off the stack.  Need to ensure that one
         remains before calling this."""
         if self.counts[creature_name] >= 1:
@@ -38,7 +38,7 @@ class Caretaker(object):
         else:
             raise AssertionError(f"No {creature_name} left to take")
 
-    def put_one_back(self, creature_name):
+    def put_one_back(self, creature_name: str) -> None:
         """Put one of creature_name back onto the stack."""
         creature = Creature.Creature(creature_name)
         if creature.is_unknown:
@@ -49,7 +49,7 @@ class Caretaker(object):
         else:
             self.counts[creature_name] += 1
 
-    def kill_one(self, creature_name):
+    def kill_one(self, creature_name: str) -> None:
         """If creature_name is mortal, put it in the graveyard.  Otherwise put
         it back onto the stack."""
         creature = Creature.Creature(creature_name)
@@ -58,7 +58,7 @@ class Caretaker(object):
         else:
             self.put_one_back(creature_name)
 
-    def number_in_play(self, creature_name):
+    def number_in_play(self, creature_name: str) -> int:
         """Return the number of creature_name that are currently onboard."""
         return (
             self.max_counts[creature_name]

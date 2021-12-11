@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 import logging
-from typing import Any, DefaultDict, Dict, List, Optional, Set
+from typing import Any, DefaultDict, Dict, List, Optional, Set, Tuple
 
 from slugathon.data import creaturedata, recruitdata, battlemapdata
 from slugathon.game import Legion, Phase
@@ -243,9 +243,12 @@ class Creature(object):
         game = player.game
         if game is None:
             return hexlabel_to_enemy
+        assert self.legion is not None
         legion2 = game.other_battle_legion(self.legion)
+        assert legion2 is not None
         for creature in legion2.creatures:
             if not creature.dead and not creature.offboard:
+                assert creature.hexlabel is not None
                 hexlabel_to_enemy[creature.hexlabel] = creature
         return hexlabel_to_enemy
 
@@ -261,10 +264,15 @@ class Creature(object):
         game = player.game
         if game is None:
             return hexlabel_to_enemy
+        assert self.legion is not None
         legion2 = game.other_battle_legion(self.legion)
+        assert legion2 is not None
         for creature in legion2.creatures:
             if creature.dead and not creature.offboard:
-                hexlabel_to_enemy[creature.hexlabel] = creature
+                if creature.hexlabel is not None:
+                    hexlabel_to_enemy[creature.hexlabel] = creature
+                else:
+                    logging.warning(f"{creature=}")
         return hexlabel_to_enemy
 
     @property
@@ -286,6 +294,7 @@ class Creature(object):
         if game is None:
             logging.warning("")
             return enemies
+        assert game.battlemap is not None
         hex1 = game.battlemap.hexes[self.hexlabel]
         hexlabel_to_enemy = self._hexlabel_to_enemy()
         for hexside, hex2 in hex1.neighbors.items():
@@ -313,6 +322,7 @@ class Creature(object):
         game = player.game
         if game is None:
             return enemies
+        assert game.battlemap is not None
         hex1 = game.battlemap.hexes[self.hexlabel]
         hexlabel_to_enemy = self._hexlabel_to_dead_enemy()
         for hexside, hex2 in hex1.neighbors.items():
@@ -337,6 +347,8 @@ class Creature(object):
         if game is None:
             return False
         map1 = game.battlemap
+        assert map1 is not None
+        assert self.hexlabel is not None
         return not map1.is_los_blocked(self.hexlabel, hexlabel, game)
 
     @property
@@ -362,6 +374,7 @@ class Creature(object):
             return enemies
         hexlabel_to_enemy = self._hexlabel_to_enemy()
         map1 = game.battlemap
+        assert map1 is not None
         for hexlabel, enemy in hexlabel_to_enemy.items():
             if (
                 map1.range(self.hexlabel, hexlabel) <= self.skill
@@ -504,13 +517,17 @@ class Creature(object):
         if game is None:
             return 0
         map1 = game.battlemap
+        assert map1 is not None
+        assert self.hexlabel is not None
         hex1 = map1.hexes[self.hexlabel]
+        assert target.hexlabel is not None
         hex2 = map1.hexes[target.hexlabel]
         if target in self.engaged_enemies:
             dice = self.power
             if hex1.terrain == "Volcano" and self.is_native(hex1.terrain):
                 dice += 2
             hexside = hex1.neighbor_to_hexside(hex2)
+            assert hexside is not None
             border = hex1.borders[hexside]
             if border == "Slope" and self.is_native(border):
                 dice += 1
@@ -527,16 +544,25 @@ class Creature(object):
             dice = 0
         return dice
 
-    def strike_number(self, target):
+    def strike_number(self, target: Creature) -> int:
         """Return the strike number to use if striking target."""
-        game = self.legion.player.game
+        legion = self.legion
+        assert legion is not None
+        player = legion.player
+        assert player is not None
+        game = player.game
         map1 = game.battlemap
+        assert map1 is not None
+        assert self.hexlabel is not None
         hex1 = map1.hexes[self.hexlabel]
+        assert target.hexlabel is not None
         hex2 = map1.hexes[target.hexlabel]
         skill1 = self.skill
         skill2 = target.skill
+        assert target.hexlabel is not None
         if target in self.engaged_enemies:
             hexside = hex1.neighbor_to_hexside(hex2)
+            assert hexside is not None
             border = hex1.borders[hexside]
             border2 = hex1.opposite_border(hexside)
             if hex1.terrain == "Bramble" and not self.is_native(hex1.terrain):
@@ -583,21 +609,36 @@ class Creature(object):
         return strike_number
 
     def can_carry_to(
-        self, carry_target, original_target, num_dice, strike_number
-    ):
+        self,
+        carry_target: Creature,
+        original_target: Creature,
+        num_dice: int,
+        strike_number: int,
+    ) -> bool:
         """Return whether a strike at original_target using num_dice and
         strike number can carry to carry_target"""
         # Natives to dunes may not carry over damage up dune hexsides when
         # their strike is not up a dune hexside (even though they do not roll
         # less dice striking up dunes).  -- Bruno's clarifications
-        map1 = self.legion.player.game.battlemap
+        legion = self.legion
+        assert legion is not None
+        player = legion.player
+        assert player is not None
+        game = player.game
+        map1 = game.battlemap
+        assert map1 is not None
+        assert self.hexlabel is not None
         hex1 = map1.hexes[self.hexlabel]
+        assert original_target.hexlabel is not None
         hex2 = map1.hexes[original_target.hexlabel]
+        assert carry_target.hexlabel is not None
         hex3 = map1.hexes[carry_target.hexlabel]
         hexside = hex1.neighbor_to_hexside(hex2)
+        assert hexside is not None
         border = hex1.opposite_border(hexside)
         if border != "Dune":
             hexside2 = hex1.neighbor_to_hexside(hex3)
+            assert hexside2 is not None
             border2 = hex1.opposite_border(hexside2)
             if border2 == "Dune" and self.is_native(border2):
                 return False
@@ -614,7 +655,9 @@ class Creature(object):
         )
         return retval
 
-    def carry_targets(self, original_target, num_dice, strike_number):
+    def carry_targets(
+        self, original_target: Creature, num_dice: int, strike_number: int
+    ) -> Set[Creature]:
         """Return a set of valid carry targets for this strike."""
         results = set()
         for target in self.engaged_enemies:
@@ -624,7 +667,9 @@ class Creature(object):
                 results.add(target)
         return results
 
-    def max_possible_carries(self, target, num_dice, strike_number):
+    def max_possible_carries(
+        self, target: Creature, num_dice: int, strike_number: int
+    ) -> int:
         """Return the maximum number of useful carries for the given target,
         number of dice, and strike_number.
 
@@ -636,7 +681,7 @@ class Creature(object):
                 max_carries += creature.power - creature.hits
         return max_carries
 
-    def valid_strike_penalties(self, target):
+    def valid_strike_penalties(self, target: Creature) -> Set[Tuple[int, int]]:
         """Return a set of all valid tuples (num_dice, strike_number) that
         this creature can use to strike target."""
         result = set()
@@ -650,13 +695,24 @@ class Creature(object):
                 # Neither natives nor non-natives to dunes may roll one less
                 # die, when their strike is not up a dune hexside, in order to
                 # allow carry over up a dune hexside.
-                map1 = self.legion.player.game.battlemap
+                legion = self.legion
+                assert legion is not None
+                player = legion.player
+                assert player is not None
+                game = player.game
+                map1 = game.battlemap
+                assert map1 is not None
+                assert self.hexlabel is not None
                 hex1 = map1.hexes[self.hexlabel]
+                assert target.hexlabel is not None
                 hex2 = map1.hexes[target.hexlabel]
+                assert creature.hexlabel is not None
                 hex3 = map1.hexes[creature.hexlabel]
                 hexside = hex1.neighbor_to_hexside(hex2)
+                assert hexside is not None
                 border = hex1.opposite_border(hexside)
                 hexside2 = hex1.neighbor_to_hexside(hex3)
+                assert hexside2 is not None
                 border2 = hex1.opposite_border(hexside2)
                 if border != "Dune" and border2 == "Dune":
                     pass
@@ -672,17 +728,17 @@ class Creature(object):
                     result.add((num_dice2, strike_number2))
         return result
 
-    def can_take_strike_penalty(self, target):
+    def can_take_strike_penalty(self, target: Creature) -> bool:
         """Return True if it's legal to take a strike penalty when striking
         target."""
         return len(self.valid_strike_penalties(target)) > 1
 
     @property
-    def offboard(self):
+    def offboard(self) -> bool:
         return self.hexlabel == "ATTACKER" or self.hexlabel == "DEFENDER"
 
-    def heal(self):
+    def heal(self) -> None:
         self.hits = 0
 
-    def kill(self):
+    def kill(self) -> None:
         self.hits = self.power
