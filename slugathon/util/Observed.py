@@ -6,7 +6,7 @@ from slugathon.game import Action
 from slugathon.util import Observer
 
 
-__copyright__ = "Copyright (c) 2004-2011 David Ripton"
+__copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
