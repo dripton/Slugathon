@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from slugathon.data import boarddata
 from slugathon.game import MasterHex
 
@@ -9,16 +11,16 @@ __license__ = "GNU GPL v2"
 class MasterBoard(object):
     """Model of the Titan MasterBoard.  No GUI logic allowed."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.compute_hexes_metadata()
         # str hexlabel to MasterHex
-        self.hexes = {}
+        self.hexes = {}  # type: Dict[int, MasterHex.MasterHex]
         for hexdata in boarddata.data:
             self.init_hex(hexdata)
         for hex1 in self.hexes.values():
             hex1.connect_to_neighbors()
 
-    def compute_hexes_metadata(self):
+    def compute_hexes_metadata(self) -> None:
         """Find the min, max, midpoint, width, and height of the hexes."""
         xs = [hexdata[1] for hexdata in boarddata.data]
         ys = [hexdata[2] for hexdata in boarddata.data]
@@ -31,7 +33,7 @@ class MasterBoard(object):
         self.width = self.max_x - self.min_x + 1
         self.height = self.max_y - self.min_y + 1
 
-    def init_hex(self, hexdata):
+    def init_hex(self, hexdata) -> None:
         assert len(hexdata) in (6, 8, 10)
         (label, x, y, terrain) = hexdata[:4]
         exits = hexdata[4:]
@@ -39,13 +41,13 @@ class MasterBoard(object):
         self.hexes[label] = hex1
 
     @property
-    def hex_width(self):
+    def hex_width(self) -> int:
         return self.max_x - self.min_x + 1
 
     @property
-    def hex_height(self):
+    def hex_height(self) -> int:
         return self.max_y - self.min_y + 1
 
-    def get_tower_labels(self):
+    def get_tower_labels(self) -> List[int]:
         """Return a list of int labels for this board's tower hexes."""
         return [hex1.label for hex1 in self.hexes.values() if hex1.tower]

@@ -1,10 +1,15 @@
-__copyright__ = "Copyright (c) 2003-2011 David Ripton"
+from typing import List, Tuple, Union
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
+
 
 """Static board data
 
 (label, x, y, terrain, neighbor1, gate1, neighbor2, gate2, neighbor3, gate3)
 """
+
 
 data = [
     (1, 7, 5, "Plains", 2, "ARROWS", 1000, "ARCH"),
@@ -106,4 +111,4 @@ data = [
     (4000, 7, 3, "Tundra", 22, "BLOCK", 5000, "ARROW", 3000, "ARROW"),
     (5000, 6, 3, "Mountains", 29, "BLOCK", 6000, "ARROW", 4000, "ARROW"),
     (6000, 6, 4, "Tundra", 36, "BLOCK", 1000, "ARROW", 5000, "ARROW"),
-]
+]  # type: List[Union[Tuple[int, int, int, str, int, str], Tuple[int, int, int, str, int, str, int, str], Tuple[int, int, int, str, int, str, int, str, int, str]]]

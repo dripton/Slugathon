@@ -6,7 +6,7 @@ __license__ = "GNU GPL v2"
 
 
 class IObserver(Interface):
-    def update(observed, action, names):
+    def update(observed, action, names):  # type: ignore
         """Inform this observer that action has happened to observed.
 
         observed may be None, in which case action should contain
