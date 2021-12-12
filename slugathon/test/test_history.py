@@ -144,7 +144,7 @@ def test_save():
 
     global tmp_path
     with tempfile.NamedTemporaryFile(
-        prefix="test_history", delete=False
+        prefix="test_history", mode="w", delete=False
     ) as fil:
         tmp_path = fil.name
         history.save(fil)
