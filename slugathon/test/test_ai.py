@@ -1,4 +1,5 @@
 import time
+from typing import List, Set
 
 from slugathon.ai import CleverBot
 from slugathon.game import Creature, Phase, Game
@@ -11,7 +12,13 @@ __license__ = "GNU GPL v2"
 def test_best7():
     assert CleverBot.best7([]) == set()
 
-    score_moves = [(1, "A1"), (2, "A2"), (3, "A3"), (4, "B1"), (5, "B2")]
+    score_moves = [
+        (1.0, "A1"),
+        (2.0, "A2"),
+        (3.0, "A3"),
+        (4.0, "B1"),
+        (5.0, "B2"),
+    ]
     assert CleverBot.best7(score_moves) == {"A1", "A2", "A3", "B1", "B2"}
 
     score_moves = [
@@ -88,7 +95,7 @@ def test_best7():
 def test_gen_legion_moves():
     cleverbot = CleverBot.CleverBot("player", 1)
 
-    movesets = []
+    movesets = []  # type: List[Set[str]]
     lm = sorted(cleverbot._gen_legion_moves(movesets))
     assert lm == [[]]
 
@@ -224,7 +231,9 @@ def test_score_legion_move_brush():
     bu01.move(3, False, None, 5)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
+    assert defender is not None
     attacker = game.attacker_legion
+    assert attacker is not None
     titan1 = defender.sorted_creatures[0]
     gorgon1 = defender.sorted_creatures[1]
     ranger1 = defender.sorted_creatures[2]
@@ -239,6 +248,7 @@ def test_score_legion_move_brush():
     cleverbot_d = CleverBot.CleverBot("p0", 1)
 
     hexlabel = ogre1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(ogre1)
     for move in moves:
@@ -255,6 +265,7 @@ def test_score_legion_move_brush():
     assert move_to_score["E4"] > move_to_score["F4"]
 
     hexlabel = gargoyle1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(gargoyle1)
     print("ogre1 moves", moves)
@@ -291,6 +302,7 @@ def test_score_legion_move_brush():
     ogre2 = attacker.sorted_creatures[5]
 
     hexlabel = titan2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(titan2)
     for move in moves:
@@ -309,6 +321,7 @@ def test_score_legion_move_brush():
     assert move_to_score["D3"] > move_to_score["B4"]
 
     hexlabel = ranger2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(ranger2)
     for move in moves:
@@ -351,6 +364,7 @@ def test_score_legion_move_brush():
     assert move_to_score["F2"] > move_to_score["D4"]
 
     hexlabel = gorgon2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(gorgon2)
     for move in moves:
@@ -394,6 +408,7 @@ def test_score_legion_move_brush():
     ranger2.move("B3")
 
     hexlabel = centaur2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(centaur2)
     for move in moves:
@@ -410,6 +425,7 @@ def test_score_legion_move_brush():
     centaur2.move("C3")
 
     hexlabel = gargoyle2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(gargoyle2)
     for move in moves:
@@ -421,6 +437,7 @@ def test_score_legion_move_brush():
     gargoyle2.move("D3")
 
     hexlabel = ogre2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(ogre2)
     for move in moves:
@@ -434,6 +451,7 @@ def test_score_legion_move_brush():
     ogre2.move("A2")
 
     hexlabel = titan2.hexlabel
+    assert hexlabel is not None
     titan2.moved = False
     move_to_score = {}
     moves = game.find_battle_moves(titan2)
@@ -487,7 +505,9 @@ def test_score_legion_move_plain():
     bu01.move(101, False, None, 5)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
+    assert defender is not None
     attacker = game.attacker_legion
+    assert attacker is not None
     titan1 = defender.creatures[0]
     ogre1 = defender.creatures[1]
     centaur1 = defender.creatures[2]
@@ -501,6 +521,7 @@ def test_score_legion_move_plain():
     cleverbot_d = CleverBot.CleverBot("p0", 1)
 
     hexlabel = ogre1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(ogre1)
     for move in moves:
@@ -513,6 +534,7 @@ def test_score_legion_move_plain():
     assert move_to_score["E5"] > move_to_score["E4"]
 
     hexlabel = gargoyle1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(gargoyle1)
     print("ogre1 moves", moves)
@@ -546,6 +568,7 @@ def test_score_legion_move_plain():
     ogre2 = attacker.sorted_creatures[5]
 
     hexlabel = titan2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(titan2)
     for move in moves:
@@ -562,6 +585,7 @@ def test_score_legion_move_plain():
     assert move_to_score["D3"] > move_to_score["B4"]
 
     hexlabel = ranger2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(ranger2)
     for move in moves:
@@ -586,6 +610,7 @@ def test_score_legion_move_plain():
     assert move_to_score["E3"] > move_to_score["B4"]
 
     hexlabel = gorgon2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(gorgon2)
     for move in moves:
@@ -608,6 +633,7 @@ def test_score_legion_move_plain():
     ranger2.move("B3")
 
     hexlabel = centaur2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(centaur2)
     for move in moves:
@@ -621,6 +647,7 @@ def test_score_legion_move_plain():
     centaur2.move("C3")
 
     hexlabel = gargoyle2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(gargoyle2)
     for move in moves:
@@ -630,6 +657,7 @@ def test_score_legion_move_plain():
     gargoyle2.move("D3")
 
     hexlabel = ogre2.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(ogre2)
     for move in moves:
@@ -643,6 +671,7 @@ def test_score_legion_move_plain():
     ogre2.move("A2")
 
     hexlabel = titan2.hexlabel
+    assert hexlabel is not None
     titan2.moved = False
     move_to_score = {}
     moves = game.find_battle_moves(titan2)
@@ -700,7 +729,9 @@ def test_score_legion_move_swamp():
     bu01.move(132, False, None, 1)
     game._init_battle(bu01, rd01)
     defender = game.defender_legion
+    assert defender is not None
     attacker = game.attacker_legion
+    assert attacker is not None
     d_titan = defender.creatures[0]
     d_ogre1 = defender.creatures[1]
     d_ogre2 = defender.creatures[2]
@@ -715,6 +746,7 @@ def test_score_legion_move_swamp():
     cleverbot_d = CleverBot.CleverBot("p0", 1)
 
     hexlabel = d_ogre1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(d_ogre1)
     for move in moves:
@@ -728,6 +760,7 @@ def test_score_legion_move_swamp():
             assert move_to_score[hexlabel1] > move_to_score[hexlabel2]
 
     hexlabel = d_troll1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(d_troll1)
     for move in moves:
@@ -741,6 +774,7 @@ def test_score_legion_move_swamp():
             assert move_to_score[hexlabel1] > move_to_score[hexlabel2]
 
     hexlabel = d_gargoyle.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(d_gargoyle)
     for move in moves:
@@ -759,6 +793,7 @@ def test_score_legion_move_swamp():
                 )
 
     hexlabel = d_titan.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(d_titan)
     for move in moves:
@@ -798,6 +833,7 @@ def test_score_legion_move_swamp():
     a_cyclops2 = attacker.creatures[6]
 
     hexlabel = a_titan.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(a_titan)
     for move in moves:
@@ -818,6 +854,7 @@ def test_score_legion_move_swamp():
                     )
 
     hexlabel = a_gargoyle1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(a_gargoyle1)
     for move in moves:
@@ -836,6 +873,7 @@ def test_score_legion_move_swamp():
                 )
 
     hexlabel = a_cyclops1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(a_cyclops1)
     for move in moves:
@@ -849,6 +887,7 @@ def test_score_legion_move_swamp():
             assert move_to_score[hexlabel2] > move_to_score[hexlabel1]
 
     hexlabel = a_warlock1.hexlabel
+    assert hexlabel is not None
     move_to_score = {}
     moves = game.find_battle_moves(a_warlock1)
     for move in moves:

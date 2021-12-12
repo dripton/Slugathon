@@ -17,8 +17,8 @@ def test_history_1():
     playername = "player"
     parent_markerid = "Rd01"
     child_markerid = "Rd02"
-    parent_creature_names = 4 * [None]
-    child_creature_names = 4 * [None]
+    parent_creature_names = 4 * ["Ogre"]
+    child_creature_names = 4 * ["Ogre"]
 
     history = History.History()
     assert history.actions == []
@@ -158,6 +158,7 @@ def test_load():
     history = History.History()
     assert history.actions == []
     assert history.undone == []
+    assert tmp_path is not None
     with open(tmp_path) as fil:
         history.load(fil)
     assert len(history.actions) == 2
@@ -230,8 +231,8 @@ def test_undo_nothing():
     playername = "player"
     parent_markerid = "Rd01"
     child_markerid = "Rd02"
-    parent_creature_names = 4 * [None]
-    child_creature_names = 4 * [None]
+    parent_creature_names = 4 * ["Ogre"]
+    child_creature_names = 4 * ["Ogre"]
 
     history = History.History()
     undo_action = Action.UndoSplit(
@@ -255,8 +256,8 @@ def test_undo_non_matching_action():
     parent_markerid = "Rd01"
     child_markerid = "Rd02"
     other_markerid = "Rd03"
-    parent_creature_names = 4 * [None]
-    child_creature_names = 4 * [None]
+    parent_creature_names = 4 * ["Ogre"]
+    child_creature_names = 4 * ["Ogre"]
 
     history = History.History()
     action = Action.SplitLegion(
@@ -288,8 +289,8 @@ def test_find_last_split():
     playername = "player"
     parent_markerid = "Rd01"
     child_markerid = "Rd02"
-    parent_creature_names = 4 * [None]
-    child_creature_names = 4 * [None]
+    parent_creature_names = 4 * ["Ogre"]
+    child_creature_names = 4 * ["Ogre"]
 
     history = History.History()
     action = Action.SplitLegion(
@@ -319,8 +320,8 @@ def test_undo_then_do_different():
     parent_markerid = "Rd01"
     child_markerid = "Rd02"
     other_markerid = "Rd03"
-    parent_creature_names = 4 * [None]
-    child_creature_names = 4 * [None]
+    parent_creature_names = 4 * ["Ogre"]
+    child_creature_names = 4 * ["Ogre"]
 
     history = History.History()
     action = Action.SplitLegion(

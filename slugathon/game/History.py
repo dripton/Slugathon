@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List, Optional, TextIO
+from typing import Any, IO, List, Optional
 
 from zope.interface import implementer
 
@@ -37,7 +37,7 @@ class History(object):
         self.undone.append(self.actions.pop())
 
     def update(
-        self, observed: Any, action: Action.Action, names: List[str]
+        self, observed: Any, action: Action.Action, names: Optional[List[str]]
     ) -> None:
         """Update history with a new action.
 
@@ -90,12 +90,12 @@ class History(object):
                 return action
         return None
 
-    def save(self, fil: TextIO) -> None:
+    def save(self, fil: IO[str]) -> None:
         """Save history to a file, which should already be open for write."""
         for action in self.actions:
             fil.write(repr(action) + "\n")
 
-    def load(self, fil: TextIO) -> None:
+    def load(self, fil: IO[str]) -> None:
         """Load history from a file, which should already be open for read."""
         self.actions = []
         self.undone = []

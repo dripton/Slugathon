@@ -291,7 +291,7 @@ class MoveLegion(Action):
         hexlabel: int,
         entry_side: int,
         teleport: bool,
-        teleporting_lord: str,
+        teleporting_lord: Optional[str],
         previous_hexlabel: int,
     ):
         self.game_name = game_name

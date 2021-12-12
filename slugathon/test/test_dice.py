@@ -1,6 +1,7 @@
 import math
 import logging
 from collections import defaultdict
+from typing import DefaultDict, Dict, Tuple
 
 from slugathon.util import Dice
 
@@ -101,12 +102,12 @@ def fail_if_abnormal(val, mean, var):
     """Fail if a result is outside the normal range."""
     # Avoid division by zero when we hit spot-on.
     if abs(var) < EPSILON:
-        sd = 0
-        z = 0
+        sd = 0.0
+        z = 0.0
     else:
         sd = math.sqrt(abs(var))
         z = (val - mean) / sd
-    if abs(z) > 3:
+    if abs(z) > 3.0:
         assert False
 
 
@@ -114,7 +115,7 @@ class TestDice(object):
     def setup_method(self, method):
         self.trials = 3000
         self.rolls = []
-        self.bins = {}
+        self.bins = {}  # type: Dict[int, int]
         for unused in range(self.trials):
             num = Dice.roll()[0]
             self.rolls.append(num)
@@ -239,7 +240,7 @@ class TestDice(object):
         assert len(s) == num_shuffles + 1
 
     def test_chi_square(self):
-        chi_square = 0
+        chi_square = 0.0
         for roll, num in self.bins.items():
             expected = self.trials / 6.0
             chi_square += (num - expected) ** 2.0 / expected
@@ -255,8 +256,7 @@ class TestDice(object):
             (0.2, 3),
             (0.1, 4),
         ]
-        # Can use a Counter when we require Python 2.7
-        counter = defaultdict(int)
+        counter = DefaultDict(int)  # type: DefaultDict[int, int]
         for trial in range(1000):
             tup = Dice.weighted_random_choice(lst)
             print(tup)

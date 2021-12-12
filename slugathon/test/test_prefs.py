@@ -18,7 +18,9 @@ def test_save_load_window_position():
     x1 = Dice.roll()[0]
     y1 = Dice.roll()[0]
     prefs.save_window_position(playername, window_name, x1, y1)
-    x2, y2 = prefs.load_window_position(playername, window_name)
+    tup = prefs.load_window_position(playername, window_name)
+    assert tup is not None
+    x2, y2 = tup
     assert x2 == x1
     assert y2 == y1
 
@@ -27,7 +29,9 @@ def test_save_load_window_size():
     x1 = Dice.roll()[0]
     y1 = Dice.roll()[0]
     prefs.save_window_size(playername, window_name, x1, y1)
-    x2, y2 = prefs.load_window_size(playername, window_name)
+    tup = prefs.load_window_size(playername, window_name)
+    assert tup is not None
+    x2, y2 = tup
     assert x2 == x1
     assert y2 == y1
 

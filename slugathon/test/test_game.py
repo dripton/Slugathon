@@ -103,7 +103,7 @@ class TestGame(object):
 
         finally:
             for legion in [legion1, legion2, legion3]:
-                legion.hexlabel = legion.previous_hexlabel
+                legion.hexlabel = legion.previous_hexlabel  # type: ignore
 
     def test_find_all_teleport_moves(self):
         game = self.game
@@ -301,6 +301,12 @@ def test_update_finish_order():
     ai4 = game.get_player_by_name("ai4")
     ai5 = game.get_player_by_name("ai5")
     ai6 = game.get_player_by_name("ai6")
+    assert ai1 is not None
+    assert ai2 is not None
+    assert ai3 is not None
+    assert ai4 is not None
+    assert ai5 is not None
+    assert ai6 is not None
     ai1.assign_starting_tower(600)
     ai2.assign_starting_tower(500)
     ai3.assign_starting_tower(400)
@@ -314,6 +320,7 @@ def test_update_finish_order():
     ai5.assign_color("Green")
     ai6.assign_color("Gold")
     for player in game.players:
+        assert player.color_abbrev is not None
         player.pick_marker(player.color_abbrev + "01")
         player.create_starting_legion()
     ai3.die(ai5, True)
@@ -360,6 +367,12 @@ def test_update_finish_order_3_draws():
     ai4 = game.get_player_by_name("ai4")
     ai5 = game.get_player_by_name("ai5")
     ai6 = game.get_player_by_name("ai6")
+    assert ai1 is not None
+    assert ai2 is not None
+    assert ai3 is not None
+    assert ai4 is not None
+    assert ai5 is not None
+    assert ai6 is not None
     ai1.assign_starting_tower(600)
     ai2.assign_starting_tower(500)
     ai3.assign_starting_tower(400)
@@ -373,6 +386,7 @@ def test_update_finish_order_3_draws():
     ai5.assign_color("Green")
     ai6.assign_color("Gold")
     for player in game.players:
+        assert player.color_abbrev is not None
         player.pick_marker(player.color_abbrev + "01")
         player.create_starting_legion()
     ai3.die(ai5, False)

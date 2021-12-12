@@ -323,7 +323,10 @@ def test_sorted_creatures():
             "Minotaur",
         ]
     )
-    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
     li = legion.sorted_creatures
     assert len(li) == len(creatures) == len(legion)
     names = [creature.name for creature in li]
@@ -350,7 +353,10 @@ def test_any_summonable():
             "Minotaur",
         ]
     )
-    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.any_summonable
     creatures = Creature.n2c(
         [
@@ -363,12 +369,12 @@ def test_any_summonable():
             "Minotaur",
         ]
     )
-    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.any_summonable
     creatures = Creature.n2c(
         ["Serpent", "Centaur", "Gargoyle", "Ogre", "Ranger", "Minotaur"]
     )
-    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert not legion.any_summonable
 
 
@@ -384,7 +390,10 @@ def test_unknown():
             "Minotaur",
         ]
     )
-    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert not legion.any_unknown
     assert legion.all_known
     assert not legion.all_unknown
@@ -400,13 +409,16 @@ def test_unknown():
             "Unknown",
         ]
     )
-    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    now = time.time()
+    game = Game.Game("g1", "p0", now, now, 2, 6)
+    player = Player.Player("p0", game, 0)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.any_unknown
     assert not legion.all_known
     assert not legion.all_unknown
 
     creatures = Creature.n2c(8 * ["Unknown"])
-    legion = Legion.Legion(None, "Rd01", creatures, 1)
+    legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert legion.any_unknown
     assert not legion.all_known
     assert legion.all_unknown
@@ -538,9 +550,6 @@ def test_combat_value():
     player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
 
-    # No terrain
-    legion.hexlabel = None
-    assert legion.terrain_combat_value == legion.combat_value
     # Plains
     legion.hexlabel = 1
     assert legion.terrain_combat_value == legion.combat_value

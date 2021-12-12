@@ -715,7 +715,7 @@ class Game(Observed):
         hexlabel: int,
         entry_side: int,
         teleport: bool,
-        teleporting_lord: str,
+        teleporting_lord: Optional[str],
     ) -> bool:
         """Return True iff player can legally move this legion."""
         if player is not self.active_player or player is not legion.player:
@@ -757,7 +757,7 @@ class Game(Observed):
         hexlabel: int,
         entry_side: int,
         teleport: bool,
-        teleporting_lord: str,
+        teleporting_lord: Optional[str],
     ) -> None:
         """Called from Server and update."""
         logging.info(

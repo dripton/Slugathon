@@ -49,7 +49,9 @@ class TestBattle(object):
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         assert self.game.battle_turn == 1
+        assert self.game.defender_legion is not None
         assert self.game.defender_legion.markerid == "Rd01"
+        assert self.game.attacker_legion is not None
         assert self.game.attacker_legion.markerid == "Bu01"
         assert self.game.battle_phase == Phase.MANEUVER
         assert (
@@ -105,6 +107,7 @@ class TestBattle(object):
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {
@@ -158,6 +161,7 @@ class TestBattle(object):
         self.bu01.move(41, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {
@@ -194,6 +198,7 @@ class TestBattle(object):
         self.bu01.move(3, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {
@@ -244,6 +249,7 @@ class TestBattle(object):
         self.bu01.move(200, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {"D5", "E4", "C4", "D4", "E3", "C3", "D3"}
@@ -263,6 +269,7 @@ class TestBattle(object):
         self.bu01.move(26, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {
@@ -297,6 +304,7 @@ class TestBattle(object):
         self.bu01.move(7, False, None, 5)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {
@@ -343,6 +351,7 @@ class TestBattle(object):
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {
@@ -402,6 +411,7 @@ class TestBattle(object):
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan = defender.sorted_creatures[0]
         assert titan.name == "Titan"
         set1 = {
@@ -464,6 +474,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         titan1 = defender.sorted_creatures[0]
         assert titan1.find_target_hexlabels() == set()
         assert titan1.engaged_enemies == set()
@@ -490,6 +501,7 @@ class TestBattle(object):
         assert gargoyle1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         titan2 = attacker.sorted_creatures[0]
         assert titan2.find_target_hexlabels() == set()
@@ -671,6 +683,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         ogre1 = defender.sorted_creatures[3]
         assert ogre1.find_target_hexlabels() == set()
         assert ogre1.engaged_enemies == set()
@@ -709,6 +722,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         ogre1 = defender.sorted_creatures[5]
         assert ogre1.find_target_hexlabels() == set()
         assert ogre1.engaged_enemies == set()
@@ -745,6 +759,7 @@ class TestBattle(object):
         assert gorgon1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[5]
@@ -838,6 +853,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         ogre1 = defender.sorted_creatures[5]
         assert ogre1.find_target_hexlabels() == set()
         assert ogre1.engaged_enemies == set()
@@ -874,6 +890,7 @@ class TestBattle(object):
         assert gorgon1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[5]
@@ -947,6 +964,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         ogre1 = defender.sorted_creatures[4]
         assert ogre1.find_target_hexlabels() == set()
         assert ogre1.engaged_enemies == set()
@@ -978,6 +996,7 @@ class TestBattle(object):
         assert ranger1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[5]
@@ -1047,6 +1066,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         ogre1 = defender.sorted_creatures[4]
         assert ogre1.find_target_hexlabels() == set()
         assert ogre1.engaged_enemies == set()
@@ -1078,6 +1098,7 @@ class TestBattle(object):
         assert ranger1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[4]
@@ -1132,6 +1153,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         ogre1 = defender.sorted_creatures[5]
         assert ogre1.find_target_hexlabels() == set()
         assert ogre1.engaged_enemies == set()
@@ -1168,6 +1190,7 @@ class TestBattle(object):
         assert dragon1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[5]
@@ -1236,6 +1259,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         centaur1 = defender.sorted_creatures[4]
         centaur1.move("D5")
         assert centaur1.find_target_hexlabels() == set()
@@ -1264,6 +1288,7 @@ class TestBattle(object):
         assert hydra1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[5]
@@ -1361,6 +1386,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         centaur1 = defender.sorted_creatures[4]
         centaur1.move("D5")
         assert centaur1.find_target_hexlabels() == set()
@@ -1389,6 +1415,7 @@ class TestBattle(object):
         assert ranger1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[5]
@@ -1481,6 +1508,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         centaur1 = defender.sorted_creatures[4]
         centaur1.move("D5")
         assert centaur1.find_target_hexlabels() == set()
@@ -1509,6 +1537,7 @@ class TestBattle(object):
         assert ranger1.engaged_enemies == set()
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         game.battle_active_legion = attacker
         game.battle_phase = Phase.STRIKE
         ogre2 = attacker.sorted_creatures[5]
@@ -1603,6 +1632,7 @@ class TestBattle(object):
         game = self.game
         game._init_battle(self.bu01, self.rd01)
         defender = self.game.defender_legion
+        assert defender is not None
         assert defender.markerid == "Rd01"
         for creature in defender.creatures:
             creature.legion = defender
@@ -1643,6 +1673,7 @@ class TestBattle(object):
         assert ogre1.hits == 0
 
         attacker = self.game.attacker_legion
+        assert attacker is not None
         assert attacker.markerid == "Bu01"
         game.battle_active_legion = attacker
         game.battle_phase = Phase.MOVE

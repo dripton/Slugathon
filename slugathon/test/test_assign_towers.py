@@ -1,4 +1,6 @@
 import time
+from typing import Dict
+
 from slugathon.game import Game
 
 
@@ -29,7 +31,7 @@ class TestAssignTowers(object):
     def _range_helper(self, num_players):
         trials = 50
         num_towers = 6
-        counts = {}
+        counts = {}  # type: Dict[int, int]
         for num in range(num_players - 1):
             self.game.add_player(f"p{(num + 2)}")
         for unused in range(trials):
@@ -37,10 +39,10 @@ class TestAssignTowers(object):
             towers = {player.starting_tower for player in self.game.players}
             assert len(towers) == num_players
             for tower in towers:
-                counts[tower] = counts.get(tower, 0) + 1
-        assert len(counts) == num_towers, f"len(counts) is wrong: {counts}"
+                counts[tower] = counts.get(tower, 0) + 1  # type: ignore
+        assert len(counts) == num_towers, f"len(counts) is wrong: {counts=}"
         assert sum(counts.values()) == trials * num_players
-        chi_square = 0
+        chi_square = 0.0
         mean = 1.0 * trials * num_players / num_towers
         for count in counts.values():
             chi_square += (count - mean) ** 2.0 / mean

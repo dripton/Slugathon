@@ -19,7 +19,7 @@ __license__ = "GNU GPL v2"
 
 def new(playername, legion, num_archangels, num_angels, caretaker, parent):
     """Create an AcquireAngels dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     acquire_angel = AcquireAngels(
         playername, legion, num_archangels, num_angels, caretaker, def1, parent
     )
@@ -73,6 +73,7 @@ class AcquireAngels(Gtk.Dialog):
         self.deferred = def1
         self.legion = legion
         player = legion.player
+        self.chit_to_combo = {}
 
         self.set_icon(icon.pixbuf)
         self.set_transient_for(parent)
@@ -114,12 +115,12 @@ class AcquireAngels(Gtk.Dialog):
             self.vbox.pack_start(hbox, True, True, 0)
             for unused in range(leading_spaces):
                 chit = Chit.Chit(None, player.color, scale=20, name="Nothing")
-                chit.combo = combo
+                self.chit_to_combo[chit] = combo
                 hbox.pack_start(chit.event_box, False, True, 0)
                 chit.connect("button-press-event", self.cb_click)
             for angel in combo:
                 chit = Chit.Chit(angel, player.color, scale=20)
-                chit.combo = combo
+                self.chit_to_combo[chit] = combo
                 hbox.pack_start(chit.event_box, False, True, 0)
                 chit.connect("button-press-event", self.cb_click)
 
@@ -132,7 +133,7 @@ class AcquireAngels(Gtk.Dialog):
         """Acquire an angel."""
         eventbox = widget
         chit = eventbox.chit
-        self.deferred.callback((self.legion, chit.combo))
+        self.deferred.callback((self.legion, self.chit_to_combo[chit]))
         self.destroy()
 
     def cb_cancel(self, widget, response_id):

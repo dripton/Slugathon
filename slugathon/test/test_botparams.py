@@ -7,14 +7,14 @@ __license__ = "GNU GPL v2"
 
 def test_default_bot_params():
     bp = BotParams.default_bot_params
-    assert bp.SQUASH == 0.6
+    assert bp.SQUASH == 0.6  # type: ignore
 
 
 def test_mutate_field():
     bp = BotParams.default_bot_params
     for unused in range(10):
         bp2 = bp.mutate_field("SQUASH", ratio=0.25)
-        assert 0.45 <= bp2.SQUASH <= 0.75
+        assert 0.45 <= bp2.SQUASH <= 0.75  # type: ignore
 
 
 def test_mutate_random_field():
@@ -22,7 +22,7 @@ def test_mutate_random_field():
     for unused in range(10):
         count = 0
         bp2 = bp.mutate_random_field(ratio=0.25)
-        for field in bp._fields:
+        for field in bp._fields:  # type: str
             if getattr(bp, field) != getattr(bp2, field):
                 count += 1
         assert count == 1
@@ -32,7 +32,7 @@ def test_mutate_all_fields():
     bp = BotParams.default_bot_params
     for unused in range(10):
         bp2 = bp.mutate_all_fields(ratio=0.25)
-        for field in bp._fields:
+        for field in bp._fields:  # type: str
             assert getattr(bp, field) != getattr(bp2, field)
 
 
@@ -49,7 +49,7 @@ def test_cross():
     bp3 = bp1.cross(bp2)
     assert bp3 != bp1
     assert bp3 != bp2
-    for field in bp3._fields:
+    for field in bp3._fields:  # type: str
         val1 = getattr(bp1, field)
         val2 = getattr(bp2, field)
         val3 = getattr(bp3, field)
@@ -74,7 +74,7 @@ def test_fromstring_complete():
     st = st.replace("\n", "")
     bp = BotParams.BotParams.fromstring(st)
     assert bp is not None
-    assert bp.SQUASH == 0.6
+    assert bp.SQUASH == 0.6  # type: ignore
 
 
 def test_fromstring_incomplete():
@@ -93,4 +93,4 @@ def test_fromstring_incomplete():
     st = st.replace("\n", "")
     bp = BotParams.BotParams.fromstring(st)
     assert bp is not None
-    assert bp.SQUASH == 0.6
+    assert bp.SQUASH == 0.6  # type: ignore
