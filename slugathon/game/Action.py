@@ -483,7 +483,9 @@ pb.setUnjellyableForClass(Flee, Flee)  # type: ignore
 
 
 class DoNotFlee(Action):
-    def __init__(self, game_name, markerid, enemy_markerid, hexlabel):
+    def __init__(
+        self, game_name: str, markerid: str, enemy_markerid: str, hexlabel: int
+    ):
         self.game_name = game_name
         self.markerid = markerid
         self.enemy_markerid = enemy_markerid

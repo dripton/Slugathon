@@ -28,7 +28,7 @@ def shuffle(lst: List[Any]) -> None:
     _rand.shuffle(lst)
 
 
-def weighted_random_choice(lst: List[Tuple[Any]]) -> Tuple[Any]:
+def weighted_random_choice(lst: List[Tuple[float, Any]]) -> Tuple[float, Any]:
     """Return an tuple from a list of tuples, selected randomly but with
     the odds weighted by the value of the first element of each tuple.
     """
@@ -39,5 +39,6 @@ def weighted_random_choice(lst: List[Tuple[Any]]) -> Tuple[Any]:
             return tup
         else:
             rand -= tup[0]
-    # unreachable but should make mypy happy
-    return tup[-1]
+    # Should be unreachable but makes mypy happy
+    assert False
+    return lst[-1]

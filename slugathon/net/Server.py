@@ -124,20 +124,21 @@ class Server(Observed):
             int,
             List[str],
             bool,
-            float,
+            Optional[float],
             List[str],
             List[str],
         ]
     ]:
         """Return a list of Game.info_tuple for each current or recent game."""
-        results = []
         num_wanted = 100
         num_from_db = max(0, num_wanted - len(self.games))
-        if num_from_db:
-            results = self.results.get_game_info_tuples(num_from_db)
+        lst_from_db = []
+        if num_from_db > 0:
+            lst_from_db = self.results.get_game_info_tuples(num_from_db)
+        lst_from_games = []
         for game in self.games[-num_wanted:]:
-            results.append(game.info_tuple)
-        return results
+            lst_from_games.append(game.info_tuple)
+        return lst_from_db + lst_from_games
 
     def send_chat_message(
         self, source: str, dest: Optional[List[str]], text: str
@@ -304,7 +305,7 @@ class Server(Observed):
             f"{game.name} min_players {game.min_players} num_players "
             f"{game.num_players} num_ais_needed {num_ais}"
         )
-        logging.debug(f"{game.name} excludes {sorted(excludes)}")
+        logging.debug(f"{game.name=} {excludes=}")
         ainames = []
         for unused in range(num_ais):
             player_id = self.results.get_weighted_random_player_id(

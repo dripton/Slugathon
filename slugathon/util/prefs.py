@@ -1,5 +1,6 @@
 import os
 import getpass
+from typing import Dict, List, Optional, Tuple
 
 from slugathon.net import config
 
@@ -24,21 +25,23 @@ AUTO_RANGESTRIKE_SINGLE_TARGET = "Auto rangestrike single target"
 AUTO_CARRY_TO_SINGLE_TARGET = "Auto carry to single target"
 
 
-def player_prefs_dir(playername):
+def player_prefs_dir(playername: str) -> str:
     """Return the path to the player prefs directory for playername."""
     if playername is None:
         playername = getpass.getuser()
     return os.path.join(PREFS_DIR, playername)
 
 
-def window_position_path(playername, window_name):
+def window_position_path(playername: str, window_name: str) -> str:
     """Return the path to the window position prefs file."""
     return os.path.join(
         player_prefs_dir(playername), window_name + "_position"
     )
 
 
-def save_window_position(playername, window_name, x, y):
+def save_window_position(
+    playername: str, window_name: str, x: int, y: int
+) -> None:
     """Save (x, y) as a preferred window position."""
     if not os.path.exists(player_prefs_dir(playername)):
         os.makedirs(player_prefs_dir(playername))
@@ -47,7 +50,9 @@ def save_window_position(playername, window_name, x, y):
         fil.write(f"{y}\n")
 
 
-def load_window_position(playername, window_name):
+def load_window_position(
+    playername: str, window_name: str
+) -> Optional[Tuple[int, int]]:
     """Return a preferred window position as (x, y)."""
     try:
         with open(window_position_path(playername, window_name)) as fil:
@@ -59,12 +64,14 @@ def load_window_position(playername, window_name):
         return None
 
 
-def window_size_path(playername, window_name):
+def window_size_path(playername: str, window_name: str) -> str:
     """Return the path to the window size prefs file."""
     return os.path.join(player_prefs_dir(playername), window_name + "_size")
 
 
-def save_window_size(playername, window_name, width, height):
+def save_window_size(
+    playername: str, window_name: str, width: int, height: int
+) -> None:
     """Save (width, height) as a preferred window size."""
     if not os.path.exists(player_prefs_dir(playername)):
         os.makedirs(player_prefs_dir(playername))
@@ -73,7 +80,9 @@ def save_window_size(playername, window_name, width, height):
         fil.write(f"{height}\n")
 
 
-def load_window_size(playername, window_name):
+def load_window_size(
+    playername: str, window_name: str
+) -> Optional[Tuple[int, int]]:
     """Return a preferred window size as (width, height)."""
     try:
         with open(window_size_path(playername, window_name)) as fil:
@@ -166,7 +175,7 @@ def last_server_path():
     return os.path.join(GLOBAL_PREFS_DIR, "last_server")
 
 
-def passwd_path():
+def passwd_path() -> str:
     """Return the path to the file that holds playernames and passwords.."""
     return os.path.join(GLOBAL_PREFS_DIR, "passwd")
 

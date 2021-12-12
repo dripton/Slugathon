@@ -3,9 +3,11 @@ import sqlite3
 import math
 from collections import namedtuple
 import logging
+from typing import Dict, List, Optional, Set, Tuple
 
 import trueskill
 
+from slugathon.game import Game
 from slugathon.util import prefs, Dice
 from slugathon.ai import BotParams, CleverBot
 from slugathon.net import config
@@ -50,11 +52,11 @@ CREATE TABLE rank (
 
 class Ranking(namedtuple("Ranking", ["mu", "sigma"])):
     @property
-    def skill(self):
+    def skill(self) -> int:
         """Return an integer rating based on mu - 3 * sigma, at least 1."""
         return max(1, int(math.floor(self.mu - 3 * self.sigma)))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Ranking: mu={self.mu} sigma={self.sigma} skill={self.skill}"
 
 
@@ -62,7 +64,7 @@ class Results(object):
 
     """Game results tracking using a sqlite database."""
 
-    def __init__(self, db_path=DB_PATH):
+    def __init__(self, db_path: str = DB_PATH):
         exists = os.path.exists(db_path) and os.path.getsize(db_path) > 0
         dirname = os.path.dirname(db_path)
         if not os.path.exists(dirname):
@@ -74,14 +76,14 @@ class Results(object):
         if not exists:
             self.create_db()
 
-    def enable_foreign_keys(self):
+    def enable_foreign_keys(self) -> None:
         query = "PRAGMA foreign_keys = ON"
         self.connection.execute(query)
 
-    def create_db(self):
+    def create_db(self) -> None:
         self.connection.executescript(ddl)
 
-    def save_game(self, game):
+    def save_game(self, game: Game.Game) -> None:
         """Save a finished Game to the results database.
 
         XXX This involves a non-trivial amount of computation and I/O, so
@@ -89,6 +91,7 @@ class Results(object):
         But sqlite is not thread-safe so we can't reuse connections.
         """
         logging.info("")
+        assert game.finish_time is not None
         with self.connection:
             cursor = self.connection.cursor()
             for player in game.players:
@@ -194,7 +197,7 @@ class Results(object):
                 cursor.execute(query, (mu, sigma, player_id))
         logging.info("")
 
-    def get_ranking(self, playername):
+    def get_ranking(self, playername: str) -> Ranking:
         """Return a Ranking object for one player name.
 
         If the player is not found, return default values.
@@ -219,7 +222,7 @@ class Results(object):
             ranking = Ranking(mu, sigma)
             return ranking
 
-    def get_player_info(self, player_id):
+    def get_player_info(self, player_id: int) -> Optional[str]:
         """Return the player_info string for player_id, from the database."""
         with self.connection:
             cursor = self.connection.cursor()
@@ -231,7 +234,7 @@ class Results(object):
                 return None
             return row["info"]
 
-    def get_player_id(self, player_info):
+    def get_player_id(self, player_info: str) -> Optional[int]:
         """Return the player_id for player_info, from the database."""
         with self.connection:
             cursor = self.connection.cursor()
@@ -244,7 +247,7 @@ class Results(object):
                 return None
             return row["player_id"]
 
-    def get_player_data(self):
+    def get_player_data(self) -> List[Dict]:
         """Return a list with one dict of data per player in the database."""
         data = []
         with self.connection:
@@ -275,7 +278,22 @@ class Results(object):
                 data.append(player_data)
         return data
 
-    def get_game_info_tuples(self, num=100):
+    def get_game_info_tuples(
+        self, num: int = 100
+    ) -> List[
+        Tuple[
+            str,
+            float,
+            float,
+            int,
+            int,
+            List[str],
+            bool,
+            Optional[float],
+            List[str],
+            List[str],
+        ]
+    ]:
         """Return a list of Game.info_tuple for the most recent num games."""
         results = []
         with self.connection:
@@ -326,7 +344,7 @@ class Results(object):
         results.reverse()
         return results
 
-    def _spawn_new_ai(self, cursor):
+    def _spawn_new_ai(self, cursor) -> int:
         """Spawn a new AI, mutated from default_bot_params, and return
         its player_id."""
         bp = BotParams.default_bot_params.mutate_all_fields()
@@ -394,13 +412,15 @@ class Results(object):
         logging.info(f"baby {player_id} {name} {bp3}")
         return player_id
 
-    def get_weighted_random_player_id(self, excludes=(), highest_mu=False):
+    def get_weighted_random_player_id(
+        self, excludes: Set = set(), highest_mu: bool = False
+    ):
         """Return a player_id.  Exclude any player_ids in excludes.
 
         If there are fewer than GENERATION_SIZE AI player_id in the database,
         add a new AI (by mutating the default) and return its player_id.
 
-        If highest_mu is not None, then return the eligible player_id with
+        If highest_mu is True, then return the eligible player_id with
         the highest mu.
 
         If there are fewer than GENERATION_SIZE AI player_ids in the database
@@ -443,7 +463,7 @@ class Results(object):
                 for row in rows:
                     player_id = row["player_id"]
                     if player_id not in excludes:
-                        logging.info(f"picked high-mu AI {player_id}")
+                        logging.info(f"picked high-mu AI {player_id=}")
                         return player_id
 
             if young_ai_count < GENERATION_SIZE and old_ai_count >= 2:
@@ -469,7 +489,7 @@ class Results(object):
                 if candidates:
                     tup = Dice.weighted_random_choice(candidates)
                     player_id = tup[1]
-                    logging.info(f"picked random AI {player_id}")
+                    logging.info(f"picked random AI {player_id=}")
                     return player_id
                 else:
                     # No eligible AIs available, so either breed or spawn

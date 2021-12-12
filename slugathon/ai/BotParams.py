@@ -1,6 +1,8 @@
+from __future__ import annotations
 from collections import namedtuple
 import random
 import re
+from typing import Optional
 
 
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"
@@ -47,7 +49,7 @@ default_keys = list(defaults.keys())
 
 class BotParams(namedtuple("BotParams", default_keys)):  # type: ignore[misc]
     @classmethod
-    def fromstring(klass, st):
+    def fromstring(klass, st: str) -> Optional[BotParams]:
         """Create a BotParams from a string.
 
         If any fields are missing, populate them with the default then
@@ -69,25 +71,25 @@ class BotParams(namedtuple("BotParams", default_keys)):  # type: ignore[misc]
         else:
             return None
 
-    def mutate_field(self, field, ratio=0.25):
+    def mutate_field(self, field: str, ratio: float = 0.25) -> BotParams:
         """Return a new BotParams with field mutated by up to ratio."""
         val = getattr(self, field)
         new = random.uniform(val * (1.0 - ratio), val * (1.0 + ratio))
-        return self._replace(**{field: new})
+        return self._replace(**{field: new})  # type: ignore
 
-    def mutate_random_field(self, ratio=0.25):
+    def mutate_random_field(self, ratio: float = 0.25) -> BotParams:
         """Return a new BotParams with a random field mutated."""
-        field = random.choice(self._fields)
+        field = random.choice(self._fields)  # type: str
         return self.mutate_field(field, ratio)
 
-    def mutate_all_fields(self, ratio=0.25):
+    def mutate_all_fields(self, ratio: float = 0.25) -> BotParams:
         """Return a new BotParams with all fields mutated."""
         dct = self._asdict()
         for key, val in dct.items():
             dct[key] = random.uniform(val * (1.0 - ratio), val * (1.0 + ratio))
-        return BotParams(**dct)
+        return BotParams(**dct)  # type: ignore
 
-    def cross(self, other):
+    def cross(self, other: BotParams) -> BotParams:
         """Return a new BotParams based on self and other.
 
         Each field has a 1/3 chance of copying from self, a 1/3 chance of
@@ -96,7 +98,7 @@ class BotParams(namedtuple("BotParams", default_keys)):  # type: ignore[misc]
         dct1 = self._asdict()
         dct2 = other._asdict()
         dct3 = {}
-        for field in self._fields:
+        for field in self._fields:  # type: str
             rand = random.randrange(3)
             if rand == 0:
                 dct3[field] = dct1[field]
@@ -104,7 +106,7 @@ class BotParams(namedtuple("BotParams", default_keys)):  # type: ignore[misc]
                 dct3[field] = dct2[field]
             else:
                 dct3[field] = (dct1[field] + dct2[field]) / 2.0
-        return BotParams(**dct3)
+        return BotParams(**dct3)  # type: ignore
 
 
 default_bot_params = BotParams(**defaults)  # type: ignore[call-arg]
