@@ -204,8 +204,8 @@ class SplitLegion(Action):
             self.playername,
             self.parent_markerid,
             self.child_markerid,
-            self.parent_creature_names,
-            self.child_creature_names,
+            list(self.parent_creature_names),
+            list(self.child_creature_names),
         )
 
 

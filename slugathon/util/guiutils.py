@@ -118,8 +118,8 @@ def exit(*unused):
     Used because sys.exit takes an argument, but it's not always
     convenient to pass one through a callback.
     """
-    if reactor.running:
-        reactor.stop()
+    if reactor.running:  # type: ignore
+        reactor.stop()  # type: ignore
     else:
         sys.exit(0)
 

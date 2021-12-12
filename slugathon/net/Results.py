@@ -385,10 +385,14 @@ class Results(object):
         tup2 = Dice.weighted_random_choice(possible_parents)
         player_id1 = tup1[1]
         info1 = self.get_player_info(player_id1)
+        assert info1 is not None
         bp1 = BotParams.BotParams.fromstring(info1)
         player_id2 = tup2[1]
         info2 = self.get_player_info(player_id2)
+        assert info2 is not None
         bp2 = BotParams.BotParams.fromstring(info2)
+        assert bp1 is not None
+        assert bp2 is not None
         bp3 = bp1.cross(bp2).mutate_random_field()
         bot = CleverBot.CleverBot("child", config.DEFAULT_AI_TIME_LIMIT, bp3)
         info = bot.player_info

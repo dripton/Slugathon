@@ -81,6 +81,7 @@ class AIClient(pb.Referenceable, Observed):
             player_id = results.get_weighted_random_player_id()
             playername = f"ai{player_id}"
             player_info = results.get_player_info(player_id)
+        assert player_info is not None
         bp = BotParams.BotParams.fromstring(player_info)
         self.ai = CleverBot.CleverBot(
             self.playername, ai_time_limit, bot_params=bp
@@ -142,7 +143,7 @@ class AIClient(pb.Referenceable, Observed):
         user_pass = credentials.UsernamePassword(
             bytes(self.playername, "utf-8"), bytes(self.password, "utf-8")
         )
-        reactor.connectTCP(self.host, self.port, self.factory)
+        reactor.connectTCP(self.host, self.port, self.factory)  # type: ignore
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
         def1.addErrback(self.connection_failed)
@@ -177,7 +178,7 @@ class AIClient(pb.Referenceable, Observed):
                 self.game_name = f"Game_{random.randrange(1000000)}"
             if not self.log_path:
                 self._setup_logging_form_game()
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "form_game",
                 self.game_name,
                 self.min_players,
@@ -194,7 +195,7 @@ class AIClient(pb.Referenceable, Observed):
             for game in self.games:
                 if not self.game_name or game.name == self.game_name:
                     logging.info(f"joining game {game.name}")
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "join_game",
                         game.name,
                         self.aiclass,
@@ -246,7 +247,7 @@ class AIClient(pb.Referenceable, Observed):
         if not game.finish_time and (
             not self.game_name or game.name == self.game_name
         ):
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "join_game", game.name, self.aiclass, self.ai.player_info
             )
             def1.addErrback(self.failure)
@@ -284,9 +285,9 @@ class AIClient(pb.Referenceable, Observed):
     def exit_unconditionally(self, returncode):
         """Just exit the process, with no tracebacks or other drama."""
         logging.info(f"{returncode}")
-        if reactor.running:
+        if reactor.running:  # type: ignore
             try:
-                reactor.stop()
+                reactor.stop()  # type: ignore
             except ReactorNotRunning:
                 pass
         sys.exit(returncode)
@@ -345,6 +346,7 @@ class AIClient(pb.Referenceable, Observed):
             )
             self.add_game(game_info_tuple)
             if action.playername == self.playername:
+                assert self.user is not None
                 def1 = self.user.callRemote("start_game", self.game_name)
                 def1.addErrback(self.failure)
 
@@ -356,12 +358,12 @@ class AIClient(pb.Referenceable, Observed):
                 f"AssignedAllTowers player_info {self.ai.player_info}"
             )
             game = self.name_to_game(action.game_name)
-            reactor.callLater(self.delay, self.ai.maybe_pick_color, game)
+            reactor.callLater(self.delay, self.ai.maybe_pick_color, game)  # type: ignore
 
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
             self.ai.maybe_pick_color(game)
-            reactor.callLater(
+            reactor.callLater(  # type: ignore
                 self.delay,
                 self.ai.maybe_pick_first_marker,
                 game,
@@ -371,7 +373,7 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.AssignedAllColors):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)  # type: ignore
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
@@ -385,7 +387,7 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)  # type: ignore
 
         elif isinstance(action, Action.CreateStartingLegion):
             game = self.name_to_game(action.game_name)
@@ -398,7 +400,7 @@ class AIClient(pb.Referenceable, Observed):
             )
             self.aps.append(ps)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.ai.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)  # type: ignore
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
@@ -416,7 +418,7 @@ class AIClient(pb.Referenceable, Observed):
                 )
             self.update_creatures(game)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.ai.split, game)
+                reactor.callLater(self.delay, self.ai.split, game)  # type: ignore
 
         elif isinstance(action, Action.UndoSplit):
             game = self.name_to_game(action.game_name)
@@ -433,41 +435,37 @@ class AIClient(pb.Referenceable, Observed):
         elif isinstance(action, Action.RollMovement):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.ai.move_legions, game)
+                reactor.callLater(self.delay, self.ai.move_legions, game)  # type: ignore
 
         elif isinstance(action, Action.MoveLegion):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(self.delay, self.ai.move_legions, game)
+                reactor.callLater(self.delay, self.ai.move_legions, game)  # type: ignore
 
         elif isinstance(action, Action.StartFightPhase):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                reactor.callLater(self.delay, self.ai.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.StartMusterPhase):
             if action.playername == self.playername:
                 game = self.name_to_game(action.game_name)
-                reactor.callLater(self.delay, self.ai.recruit, game)
+                reactor.callLater(self.delay, self.ai.recruit, game)  # type: ignore
 
         elif isinstance(action, Action.ResolvingEngagement):
             game = self.name_to_game(action.game_name)
-            reactor.callLater(
-                self.delay, self.ai.resolve_engagement, game, action.hexlabel
-            )
+            reactor.callLater(self.delay, self.ai.resolve_engagement, game, action.hexlabel)  # type: ignore
 
         elif isinstance(action, Action.Flee) or isinstance(
             action, Action.Concede
         ):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.DoNotFlee):
             game = self.name_to_game(action.game_name)
-            reactor.callLater(
-                self.delay, self.ai.resolve_engagement, game, action.hexlabel
-            )
+            reactor.callLater(self.delay, self.ai.resolve_engagement, game, action.hexlabel)  # type: ignore
 
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)
@@ -477,14 +475,14 @@ class AIClient(pb.Referenceable, Observed):
                 and game.defender_legion.player.name == self.playername
                 and action.defender_markerid in player.markerid_to_legion
             ):
-                reactor.callLater(self.delay, self.ai.move_creatures, game)
+                reactor.callLater(self.delay, self.ai.move_creatures, game)  # type: ignore
 
         elif isinstance(action, Action.MoveCreature):
             game = self.name_to_game(action.game_name)
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
-                    reactor.callLater(self.delay, self.ai.move_creatures, game)
+                    reactor.callLater(self.delay, self.ai.move_creatures, game)  # type: ignore
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -493,7 +491,7 @@ class AIClient(pb.Referenceable, Observed):
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
-                    reactor.callLater(self.delay, self.ai.strike, game)
+                    reactor.callLater(self.delay, self.ai.strike, game)  # type: ignore
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -503,7 +501,7 @@ class AIClient(pb.Referenceable, Observed):
             if legion:
                 if legion.player.name == self.playername:
                     if action.carries:
-                        reactor.callLater(
+                        reactor.callLater(  # type: ignore
                             self.delay,
                             self.ai.carry,
                             game,
@@ -516,7 +514,7 @@ class AIClient(pb.Referenceable, Observed):
                             action.carries,
                         )
                     else:
-                        reactor.callLater(self.delay, self.ai.strike, game)
+                        reactor.callLater(self.delay, self.ai.strike, game)  # type: ignore
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -526,7 +524,7 @@ class AIClient(pb.Referenceable, Observed):
             if legion:
                 if legion.player.name == self.playername:
                     if action.carries_left:
-                        reactor.callLater(
+                        reactor.callLater(  # type: ignore
                             self.delay,
                             self.ai.carry,
                             game,
@@ -539,7 +537,7 @@ class AIClient(pb.Referenceable, Observed):
                             action.carries_left,
                         )
                     else:
-                        reactor.callLater(self.delay, self.ai.strike, game)
+                        reactor.callLater(self.delay, self.ai.strike, game)  # type: ignore
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -548,7 +546,7 @@ class AIClient(pb.Referenceable, Observed):
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
-                    reactor.callLater(self.delay, self.ai.strike, game)
+                    reactor.callLater(self.delay, self.ai.strike, game)  # type: ignore
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -558,11 +556,9 @@ class AIClient(pb.Referenceable, Observed):
             if legion:
                 if legion.player.name == self.playername:
                     if legion == game.defender_legion:
-                        reactor.callLater(self.delay, self.ai.reinforce, game)
+                        reactor.callLater(self.delay, self.ai.reinforce, game)  # type: ignore
                     else:
-                        reactor.callLater(
-                            self.delay, self.ai.summon_angel, game
-                        )
+                        reactor.callLater(self.delay, self.ai.summon_angel, game)  # type: ignore
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -571,7 +567,7 @@ class AIClient(pb.Referenceable, Observed):
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
-                    reactor.callLater(self.delay, self.ai.move_creatures, game)
+                    reactor.callLater(self.delay, self.ai.move_creatures, game)  # type: ignore
             else:
                 logging.info("game.battle_active_legion not found")
 
@@ -587,23 +583,19 @@ class AIClient(pb.Referenceable, Observed):
             if action.playername == self.playername:
                 if game.phase == Phase.MUSTER:
                     if game.active_player.name == self.playername:
-                        reactor.callLater(self.delay, self.ai.recruit, game)
+                        reactor.callLater(self.delay, self.ai.recruit, game)  # type: ignore
                 elif game.phase == Phase.FIGHT:
                     if game.battle_phase == Phase.REINFORCE:
-                        reactor.callLater(self.delay, self.ai.reinforce, game)
+                        reactor.callLater(self.delay, self.ai.reinforce, game)  # type: ignore
                     else:
-                        reactor.callLater(
-                            self.delay, self.ai.choose_engagement, game
-                        )
+                        reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
             else:
                 if (
                     game.phase == Phase.FIGHT
                     and game.battle_phase != Phase.REINFORCE
                     and game.active_player.name == self.playername
                 ):
-                    reactor.callLater(
-                        self.delay, self.ai.choose_engagement, game
-                    )
+                    reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.UndoRecruit):
             game = self.name_to_game(action.game_name)
@@ -623,15 +615,13 @@ class AIClient(pb.Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 assert game.phase == Phase.FIGHT
-                reactor.callLater(self.delay, self.ai.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
             else:
                 if (
                     game.phase == Phase.FIGHT
                     and game.active_player.name == self.playername
                 ):
-                    reactor.callLater(
-                        self.delay, self.ai.choose_engagement, game
-                    )
+                    reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
@@ -645,11 +635,9 @@ class AIClient(pb.Referenceable, Observed):
             self.update_creatures(game)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
-                    reactor.callLater(self.delay, self.ai.summon_angel, game)
+                    reactor.callLater(self.delay, self.ai.summon_angel, game)  # type: ignore
                 else:
-                    reactor.callLater(
-                        self.delay, self.ai.choose_engagement, game
-                    )
+                    reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.UnsummonAngel):
             game = self.name_to_game(action.game_name)
@@ -665,21 +653,17 @@ class AIClient(pb.Referenceable, Observed):
             self.update_creatures(game)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
-                    reactor.callLater(self.delay, self.ai.summon_angel, game)
+                    reactor.callLater(self.delay, self.ai.summon_angel, game)  # type: ignore
                 else:
-                    reactor.callLater(
-                        self.delay, self.ai.choose_engagement, game
-                    )
+                    reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.DoNotSummonAngel):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
-                    reactor.callLater(self.delay, self.ai.summon_angel, game)
+                    reactor.callLater(self.delay, self.ai.summon_angel, game)  # type: ignore
                 else:
-                    reactor.callLater(
-                        self.delay, self.ai.choose_engagement, game
-                    )
+                    reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
@@ -699,9 +683,7 @@ class AIClient(pb.Referenceable, Observed):
                         legion.markerid == action.winner_markerid
                         and legion.can_summon
                     ):
-                        reactor.callLater(
-                            self.delay, self.ai.summon_angel, game
-                        )
+                        reactor.callLater(self.delay, self.ai.summon_angel, game)  # type: ignore
                         return
             else:
                 if game.defender_legion:
@@ -711,17 +693,15 @@ class AIClient(pb.Referenceable, Observed):
                             legion.markerid == action.winner_markerid
                             and legion.can_recruit
                         ):
-                            reactor.callLater(
-                                self.delay, self.ai.reinforce, game
-                            )
+                            reactor.callLater(self.delay, self.ai.reinforce, game)  # type: ignore
                             return
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.CanAcquireAngels):
             game = self.name_to_game(action.game_name)
             if action.playername == self.playername:
-                reactor.callLater(
+                reactor.callLater(  # type: ignore
                     self.delay,
                     self.ai.acquire_angels,
                     game,
@@ -737,21 +717,21 @@ class AIClient(pb.Referenceable, Observed):
             self.update_creatures(game)
             logging.info(f"active player {game.active_player}")
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.DoNotAcquireAngels):
             game = self.name_to_game(action.game_name)
             if game.active_player.name == self.playername:
-                reactor.callLater(self.delay, self.ai.choose_engagement, game)
+                reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
         elif isinstance(action, Action.EliminatePlayer) or isinstance(
             action, Action.Withdraw
         ):
             game = self.name_to_game(action.game_name)
-            if hasattr(action, "loser_playername"):
-                playername = action.loser_playername
+            if hasattr(action, "loser_playername"):  # type: ignore
+                playername = action.loser_playername  # type: ignore
             else:
-                playername = action.playername
+                playername = action.playername  # type: ignore
             if playername == self.playername:
                 if game.owner.name != self.playername:
                     logging.info("Eliminated; AI exiting")
@@ -841,8 +821,8 @@ def main():
         args.min_players,
         args.max_players,
     )
-    reactor.callWhenRunning(aiclient.connect)
-    reactor.run()
+    reactor.callWhenRunning(aiclient.connect)  # type: ignore
+    reactor.run()  # type: ignore
 
 
 if __name__ == "__main__":

@@ -5,13 +5,14 @@ from sys import maxsize
 import itertools
 import collections
 import logging
+from typing import DefaultDict, List, Optional, Set, Tuple
 
 from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.ai.Bot import Bot
 from slugathon.ai import BotParams
-from slugathon.game import Game, Creature, Phase, Legion
+from slugathon.game import Game, Creature, Phase, Legion, Player
 
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
@@ -21,14 +22,14 @@ __license__ = "GNU GPL v2"
 """An attempt at a smarter AI."""
 
 
-def best7(score_moves):
+def best7(score_moves: List[Tuple[float, str]]) -> Set[str]:
     """Return a set of the the best (highest score) (up to) 7 moves from
     score_moves, which is a sorted list of (score, move) tuples.
 
     If there's a tie, pick at random.
     """
     score_moves = score_moves[:]
-    best_moves = set()
+    best_moves = set()  # type: Set[str]
     while score_moves and len(best_moves) < 7:
         choices = []
         best_score = score_moves[-1][0]
@@ -45,7 +46,12 @@ def best7(score_moves):
 
 @implementer(Bot)
 class CleverBot(object):
-    def __init__(self, playername, ai_time_limit, bot_params=None):
+    def __init__(
+        self,
+        playername: str,
+        ai_time_limit: int,
+        bot_params: Optional[BotParams.BotParams] = None,
+    ):
         logging.info(f"CleverBot {playername=} {ai_time_limit=}")
         self.playername = playername
         self.user = None
@@ -57,39 +63,45 @@ class CleverBot(object):
             self.bp = bot_params
 
     @property
-    def player_info(self):
+    def player_info(self) -> str:
         """Return a string with information for result-tracking purposes."""
         return str(self.bp)
 
-    def maybe_pick_color(self, game):
+    def maybe_pick_color(self, game: Game.Game) -> None:
         logging.info("")
         if game.next_playername_to_pick_color == self.playername:
             color = random.choice(game.colors_left)
-            def1 = self.user.callRemote("pick_color", game.name, color)
+            def1 = self.user.callRemote("pick_color", game.name, color)  # type: ignore
             def1.addErrback(self.failure)
 
-    def maybe_pick_first_marker(self, game, playername):
+    def maybe_pick_first_marker(
+        self, game: Game.Game, playername: str
+    ) -> None:
         logging.info("")
         if playername == self.playername:
             player = game.get_player_by_name(playername)
+            assert player is not None
             markerid = self._choose_marker(player)
             self._pick_marker(game, self.playername, markerid)
 
-    def _pick_marker(self, game, playername, markerid):
+    def _pick_marker(
+        self, game: Game.Game, playername: str, markerid: str
+    ) -> None:
         logging.info("")
         player = game.get_player_by_name(playername)
+        assert player is not None
         if markerid is None:
             if not player.markerid_to_legion:
                 self.maybe_pick_first_marker(game, playername)
         else:
             player.pick_marker(markerid)
             if not player.markerid_to_legion:
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "pick_first_marker", game.name, markerid
                 )
                 def1.addErrback(self.failure)
 
-    def _choose_marker(self, player):
+    def _choose_marker(self, player: Player.Player) -> str:
         """Pick a legion marker randomly, except prefer my own markers
         to captured ones to be less annoying."""
         own_markerids_left = [
@@ -136,13 +148,13 @@ class CleverBot(object):
             else:
                 hexlabel = hexlabels[0]
             logging.info("calling resolve_engagement")
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "resolve_engagement", game.name, hexlabel
             )
             def1.addErrback(self.failure)
         else:
             logging.info("calling done_with_engagements")
-            def1 = self.user.callRemote("done_with_engagements", game.name)
+            def1 = self.user.callRemote("done_with_engagements", game.name)  # type: ignore
             def1.addErrback(self.failure)
 
     # TODO concede, negotiate
@@ -171,23 +183,23 @@ class CleverBot(object):
                 if defender.can_flee:
                     logging.info("can flee")
                     if (
-                        defender.terrain_combat_value * self.bp.FLEE_RATIO
+                        defender.terrain_combat_value * self.bp.FLEE_RATIO  # type: ignore
                         < attacker.terrain_combat_value
                     ):
                         logging.info("fleeing")
-                        def1 = self.user.callRemote(
+                        def1 = self.user.callRemote(  # type: ignore
                             "flee", game.name, defender.markerid
                         )
                         def1.addErrback(self.failure)
                     else:
                         logging.info("not fleeing")
-                        def1 = self.user.callRemote(
+                        def1 = self.user.callRemote(  # type: ignore
                             "do_not_flee", game.name, defender.markerid
                         )
                         def1.addErrback(self.failure)
                 else:
                     logging.info("can't flee")
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "do_not_flee", game.name, defender.markerid
                     )
                     def1.addErrback(self.failure)
@@ -197,7 +209,7 @@ class CleverBot(object):
                 logging.info("waiting for defender")
             else:
                 logging.info("attacker fighting")
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "fight", game.name, attacker.markerid, defender.markerid
                 )
                 def1.addErrback(self.failure)
@@ -213,7 +225,7 @@ class CleverBot(object):
         hexlabel = legion.hexlabel
         for enemy in player.enemy_legions():
             # TODO take terrain into account
-            if enemy.combat_value >= self.bp.BE_SQUASHED * legion_combat_value:
+            if enemy.combat_value >= self.bp.BE_SQUASHED * legion_combat_value:  # type: ignore
                 for roll in range(1, 6 + 1):
                     hex1 = game.board.hexes[enemy.hexlabel]
                     moves = game.find_normal_moves(enemy, hex1, roll).union(
@@ -241,7 +253,7 @@ class CleverBot(object):
             all_hexlabels.update(hexlabels)
         for enemy in player.enemy_legions():
             # TODO take terrain into account
-            if enemy.combat_value >= self.bp.BE_SQUASHED * legion_combat_value:
+            if enemy.combat_value >= self.bp.BE_SQUASHED * legion_combat_value:  # type: ignore
                 if enemy.hexlabel in all_hexlabels:
                     return True
         return False
@@ -267,7 +279,7 @@ class CleverBot(object):
             or len(legion) == 6
             or self._scary_enemy_legions_behind(legion)
             or self._scary_enemy_legions_ahead(legion)
-            or random.random() > self.bp.THIRD_CREATURE_RATIO
+            or random.random() > self.bp.THIRD_CREATURE_RATIO  # type: ignore
         ):
             best_recruit_index = 0
 
@@ -345,7 +357,7 @@ class CleverBot(object):
                         f"calling recruit_creature {legion.markerid=}"
                         f"{recruit=} {recruiters=}"
                     )
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "recruit_creature",
                         game.name,
                         legion.markerid,
@@ -355,7 +367,7 @@ class CleverBot(object):
                     def1.addErrback(self.failure)
                     return
         logging.info("calling done_with_recruits")
-        def1 = self.user.callRemote("done_with_recruits", game.name)
+        def1 = self.user.callRemote("done_with_recruits", game.name)  # type: ignore
         def1.addErrback(self.failure)
 
     def reinforce(self, game):
@@ -370,7 +382,7 @@ class CleverBot(object):
             recruit, recruiters = self._pick_recruit_and_recruiters(legion)
             if recruit is not None:
                 logging.info(f"calling recruit_creature {recruit=}")
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "recruit_creature",
                     game.name,
                     legion.markerid,
@@ -381,13 +393,13 @@ class CleverBot(object):
                 return
         if battle_over:
             logging.info("calling do_not_reinforce")
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "do_not_reinforce", game.name, legion.markerid
             )
             def1.addErrback(self.failure)
         else:
             logging.info("calling done_with_reinforcements")
-            def1 = self.user.callRemote("done_with_reinforcements", game.name)
+            def1 = self.user.callRemote("done_with_reinforcements", game.name)  # type: ignore
             def1.addErrback(self.failure)
 
     # TODO Consider value of this legion and donor legion before deciding
@@ -439,7 +451,7 @@ class CleverBot(object):
                         f"calling _summon_angel {legion.markerid} "
                         f"{donor.markerid} {summonable.name}"
                     )
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "summon_angel",
                         game.name,
                         legion.markerid,
@@ -450,14 +462,14 @@ class CleverBot(object):
                     return
 
         logging.info(f"calling do_not_summon_angel {legion.markerid}")
-        def1 = self.user.callRemote(
+        def1 = self.user.callRemote(  # type: ignore
             "do_not_summon_angel", game.name, legion.markerid
         )
         def1.addErrback(self.failure)
 
         if during_battle:
             logging.info("calling done_with_reinforcements")
-            def1 = self.user.callRemote("done_with_reinforcements", game.name)
+            def1 = self.user.callRemote("done_with_reinforcements", game.name)  # type: ignore
             def1.addErrback(self.failure)
 
     def acquire_angels(self, game, markerid, num_angels, num_archangels):
@@ -495,13 +507,13 @@ class CleverBot(object):
                     logging.info(
                         f"calling acquire_angels {markerid=} {angel_names=}"
                     )
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "acquire_angels", game.name, markerid, angel_names
                     )
                     def1.addErrback(self.failure)
                     return
         logging.info(f"calling do_not_acquire_angels {markerid=}")
-        def1 = self.user.callRemote(
+        def1 = self.user.callRemote(  # type: ignore
             "do_not_acquire_angels", game.name, markerid
         )
         def1.addErrback(self.failure)
@@ -543,7 +555,7 @@ class CleverBot(object):
                 for creature in new_creatures:
                     old_creatures.remove(creature)
                 logging.info(f"{new_creatures=} {old_creatures=}")
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "split_legion",
                     game.name,
                     legion.markerid,
@@ -592,14 +604,14 @@ class CleverBot(object):
                             new_legion1.hexlabel = hexlabel
                             if (
                                 enemy.terrain_combat_value
-                                < self.bp.SQUASH
+                                < self.bp.SQUASH  # type: ignore
                                 * new_legion1.terrain_combat_value
                             ):
                                 safe_split_rolls.add(roll)
                         else:
                             safe_split_rolls.add(roll)
                 if good_recruit_rolls and len(safe_split_rolls) == 6:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "split_legion",
                         game.name,
                         legion.markerid,
@@ -611,7 +623,7 @@ class CleverBot(object):
                     return
 
         # No splits, so move on to the next phase.
-        def1 = self.user.callRemote("done_with_splits", game.name)
+        def1 = self.user.callRemote("done_with_splits", game.name)  # type: ignore
         def1.addErrback(self.failure)
 
     def move_legions(self, game):
@@ -653,7 +665,7 @@ class CleverBot(object):
                         legions_with_good_moves.add(legion)
                 if len(legions_with_good_moves) < 2:
                     logging.info("taking a mulligan")
-                    def1 = self.user.callRemote("take_mulligan", game.name)
+                    def1 = self.user.callRemote("take_mulligan", game.name)  # type: ignore
                     def1.addErrback(self.failure)
                     return
 
@@ -685,7 +697,7 @@ class CleverBot(object):
                     else:
                         teleport = False
                         teleporting_lord = None
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "move_legion",
                         game.name,
                         legion.markerid,
@@ -699,13 +711,15 @@ class CleverBot(object):
 
             # No more legions will move.
             logging.debug("done_with_moves")
-            def1 = self.user.callRemote("done_with_moves", game.name)
+            def1 = self.user.callRemote("done_with_moves", game.name)  # type: ignore
             def1.addErrback(self.failure)
             return
 
-    def _score_move(self, legion, hexlabel, moved):
+    def _score_move(
+        self, legion: Legion.Legion, hexlabel: int, moved: bool
+    ) -> float:
         """Return a score for legion moving to (or staying in) hexlabel."""
-        score = 0
+        score = 0.0
         player = legion.player
         game = player.game
         caretaker = game.caretaker
@@ -721,10 +735,10 @@ class CleverBot(object):
             logging.debug(f"legion {legion} hexlabel {hexlabel}")
             logging.debug(f"legion_combat_value {legion_combat_value}")
             logging.debug(f"enemy_combat_value {enemy_combat_value}")
-            if enemy_combat_value < self.bp.SQUASH * legion_combat_value:
+            if enemy_combat_value < self.bp.SQUASH * legion_combat_value:  # type: ignore
                 score += enemy.score
             elif (
-                enemy_combat_value >= self.bp.BE_SQUASHED * legion_combat_value
+                enemy_combat_value >= self.bp.BE_SQUASHED * legion_combat_value  # type: ignore
             ):
                 score -= legion_sort_value
         if moved and (len(legion) < 7 or enemies):
@@ -739,7 +753,7 @@ class CleverBot(object):
                     recruit_value = recruit.sort_value
                 elif (
                     enemy_combat_value
-                    < self.bp.BE_SQUASHED * legion_combat_value
+                    < self.bp.BE_SQUASHED * legion_combat_value  # type: ignore
                 ):
                     recruit_value = 0.5 * recruit.sort_value
                 logging.debug(
@@ -757,7 +771,7 @@ class CleverBot(object):
                 for enemy in player.enemy_legions():
                     if (
                         enemy.terrain_combat_value
-                        >= self.bp.BE_SQUASHED * legion_combat_value
+                        >= self.bp.BE_SQUASHED * legion_combat_value  # type: ignore
                     ):
                         for roll in range(1, 6 + 1):
                             moves = game.find_normal_moves(
@@ -865,7 +879,7 @@ class CleverBot(object):
         # orders jumbled together at the beginning.
         random.shuffle(perms)
         best_score = -maxsize
-        best_perm = None
+        best_perm = perms[0]
         finish_time = time.time() + self.ai_time_limit
         for perm in perms:
             score = self._score_perm(game, sort_values, perm)
@@ -941,7 +955,6 @@ class CleverBot(object):
                     moveset = {creature.hexlabel}
             movesets.append(moveset)
             previous_creature = creature
-        best_legion_move = None
         now = time.time()
         legion_moves = list(self._gen_legion_moves(movesets))
         logging.info(
@@ -951,11 +964,12 @@ class CleverBot(object):
             legion_moves = list(self._gen_fallback_legion_moves(movesets))
             if not legion_moves:
                 return None
-        best_score = -maxsize
         start_time = time.time()
         finish_time = start_time + self.ai_time_limit
         # Scramble the moves, in case we don't have time to look at them all.
         random.shuffle(legion_moves)
+        best_legion_move = legion_moves[0]
+        best_score = -maxsize
         lc = len(creatures)
         llm0 = len(legion_moves[0])
         logging.info(f"len(creatures) = {lc} len(legion_moves[0]) = {llm0}")
@@ -1024,7 +1038,7 @@ class CleverBot(object):
                 logging.info(
                     f"calling move_creature {creature.name} {start} {finish}"
                 )
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "move_creature", game.name, creature.name, start, finish
                 )
                 def1.addErrback(self.failure)
@@ -1033,7 +1047,7 @@ class CleverBot(object):
         # No moves, so end the maneuver phase.
         logging.info("calling done_with_maneuvers")
         self.best_creature_moves = None
-        def1 = self.user.callRemote("done_with_maneuvers", game.name)
+        def1 = self.user.callRemote("done_with_maneuvers", game.name)  # type: ignore
         def1.addErrback(self.failure)
 
     def _score_legion_move(self, game, creatures):
@@ -1094,7 +1108,7 @@ class CleverBot(object):
             probable_death = total_mean_damage_taken >= creature.hits_left
 
             if engaged_with_rangestriker and not creature.rangestrikes:
-                score += self.bp.ENGAGE_RANGESTRIKER_BONUS
+                score += self.bp.ENGAGE_RANGESTRIKER_BONUS  # type: ignore
 
             # rangestriking
             if not engaged:
@@ -1107,7 +1121,7 @@ class CleverBot(object):
                     max_mean_hits = max(mean_hits, max_mean_hits)
                     can_rangestrike = True
             if can_rangestrike:
-                score += self.bp.RANGESTRIKE_BONUS
+                score += self.bp.RANGESTRIKE_BONUS  # type: ignore
 
             # Don't encourage titans to charge early.
             if (
@@ -1116,17 +1130,17 @@ class CleverBot(object):
                 or len(legion) == 1
             ):
                 if max_mean_hits:
-                    bonus = self.bp.HIT_BONUS * max_mean_hits
+                    bonus = self.bp.HIT_BONUS * max_mean_hits  # type: ignore
                     score += bonus
                 if kill_bonus:
-                    bonus = self.bp.KILL_MULTIPLIER * kill_bonus
+                    bonus = self.bp.KILL_MULTIPLIER * kill_bonus  # type: ignore
                     score += bonus
             if total_mean_damage_taken:
-                penalty = self.bp.DAMAGE_PENALTY * total_mean_damage_taken
+                penalty = self.bp.DAMAGE_PENALTY * total_mean_damage_taken  # type: ignore
                 score += penalty
             if probable_death:
                 penalty = (
-                    self.bp.DEATH_MULTIPLIER
+                    self.bp.DEATH_MULTIPLIER  # type: ignore
                     * probable_death
                     * creature.sort_value
                 )
@@ -1140,7 +1154,7 @@ class CleverBot(object):
                 or len(legion) == 1
             ):
                 if engaged or targets:
-                    score += self.bp.ATTACKER_AGGRESSION_BONUS
+                    score += self.bp.ATTACKER_AGGRESSION_BONUS  # type: ignore
                 else:
                     enemy_hexlabels = [
                         enemy.hexlabel for enemy in legion2.living_creatures
@@ -1154,7 +1168,7 @@ class CleverBot(object):
                                 for enemy_hexlabel in enemy_hexlabels
                             )
                         )
-                        penalty = min_range * self.bp.ATTACKER_DISTANCE_PENALTY
+                        penalty = min_range * self.bp.ATTACKER_DISTANCE_PENALTY  # type: ignore
                         score += penalty
 
             battlehex = battlemap.hexes[creature.hexlabel]
@@ -1176,7 +1190,7 @@ class CleverBot(object):
                     )
                     - 2
                 )
-                penalty = distance * self.bp.TITAN_FORWARD_PENALTY
+                penalty = distance * self.bp.TITAN_FORWARD_PENALTY  # type: ignore
                 if penalty:
                     score += penalty
 
@@ -1193,55 +1207,55 @@ class CleverBot(object):
                     )
                     - 2
                 )
-                penalty = distance * self.bp.DEFENDER_FORWARD_PENALTY
+                penalty = distance * self.bp.DEFENDER_FORWARD_PENALTY  # type: ignore
                 if penalty:
                     score += penalty
 
             # terrain
             if battlehex.elevation:
-                bonus = battlehex.elevation * self.bp.ELEVATION_BONUS
+                bonus = battlehex.elevation * self.bp.ELEVATION_BONUS  # type: ignore
                 score += bonus
             if terrain == "Bramble":
                 if creature.is_native(terrain):
-                    score += self.bp.NATIVE_BRAMBLE_BONUS
+                    score += self.bp.NATIVE_BRAMBLE_BONUS  # type: ignore
                 else:
-                    score += self.bp.NON_NATIVE_BRAMBLE_PENALTY
+                    score += self.bp.NON_NATIVE_BRAMBLE_PENALTY  # type: ignore
             elif terrain == "Tower":
                 # XXX Hardcoded to default Tower map
-                score += self.bp.TOWER_BONUS
+                score += self.bp.TOWER_BONUS  # type: ignore
                 if battlehex.elevation == 2:
                     if creature.is_titan:
-                        score += self.bp.TITAN_IN_CENTER_OF_TOWER_BONUS
+                        score += self.bp.TITAN_IN_CENTER_OF_TOWER_BONUS  # type: ignore
                     else:
-                        score += self.bp.CENTER_OF_TOWER_BONUS
+                        score += self.bp.CENTER_OF_TOWER_BONUS  # type: ignore
                 elif (
                     legion == game.defender_legion
                     and creature.name != "Titan"
                     and battlehex.label in ["C3", "D3"]
                 ):
-                    score += self.bp.FRONT_OF_TOWER_BONUS
+                    score += self.bp.FRONT_OF_TOWER_BONUS  # type: ignore
                 elif (
                     legion == game.defender_legion
                     and creature.name != "Titan"
                     and battlehex.label in ["C4", "E3"]
                 ):
-                    score += self.bp.MIDDLE_OF_TOWER_BONUS
+                    score += self.bp.MIDDLE_OF_TOWER_BONUS  # type: ignore
             elif terrain == "Drift":
                 if not creature.is_native(terrain):
-                    score += self.bp.NON_NATIVE_DRIFT_PENALTY
+                    score += self.bp.NON_NATIVE_DRIFT_PENALTY  # type: ignore
             elif terrain == "Volcano":
-                score += self.bp.NATIVE_VOLCANO_BONUS
+                score += self.bp.NATIVE_VOLCANO_BONUS  # type: ignore
 
             if "Slope" in battlehex.borders:
                 if creature.is_native("Slope"):
-                    score += self.bp.NATIVE_SLOPE_BONUS
+                    score += self.bp.NATIVE_SLOPE_BONUS  # type: ignore
                 else:
-                    score += self.bp.NON_NATIVE_SLOPE_PENALTY
+                    score += self.bp.NON_NATIVE_SLOPE_PENALTY  # type: ignore
             if "Dune" in battlehex.borders:
                 if creature.is_native("Dune"):
-                    score += self.bp.NATIVE_DUNE_BONUS
+                    score += self.bp.NATIVE_DUNE_BONUS  # type: ignore
                 else:
-                    score += self.bp.NON_NATIVE_DUNE_PENALTY
+                    score += self.bp.NON_NATIVE_DUNE_PENALTY  # type: ignore
 
             # allies
             num_adjacent_allies = 0
@@ -1250,7 +1264,7 @@ class CleverBot(object):
                     if ally.hexlabel == neighbor.label:
                         num_adjacent_allies += 1
             adjacent_allies_bonus = (
-                num_adjacent_allies * self.bp.ADJACENT_ALLY_BONUS
+                num_adjacent_allies * self.bp.ADJACENT_ALLY_BONUS  # type: ignore
             )
             if adjacent_allies_bonus:
                 score += adjacent_allies_bonus
@@ -1275,7 +1289,7 @@ class CleverBot(object):
                     target = game.creatures_in_battle_hex(hexlabel).pop()
                     num_dice = striker.number_of_dice(target)
                     strike_number = striker.strike_number(target)
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "strike",
                         game.name,
                         striker.name,
@@ -1289,7 +1303,9 @@ class CleverBot(object):
                     return
 
         # Then do the ones that have to choose a target.
-        target_to_total_mean_hits = collections.defaultdict(float)
+        target_to_total_mean_hits = collections.defaultdict(
+            float
+        )  # type: DefaultDict[Creature.Creature, float]
         best_target = None
         for striker in legion.sorted_creatures:
             if striker.can_strike:
@@ -1310,7 +1326,7 @@ class CleverBot(object):
                     best_target = target
         # If we can't kill anything, go after the target we can hurt most.
         if best_target is None:
-            max_total_mean_hits = 0
+            max_total_mean_hits = 0.0
             for target, total_mean_hits in target_to_total_mean_hits.items():
                 if total_mean_hits >= max_total_mean_hits:
                     best_target = target
@@ -1324,7 +1340,7 @@ class CleverBot(object):
                     if target is best_target:
                         num_dice = striker.number_of_dice(target)
                         strike_number = striker.strike_number(target)
-                        def1 = self.user.callRemote(
+                        def1 = self.user.callRemote(  # type: ignore
                             "strike",
                             game.name,
                             striker.name,
@@ -1338,12 +1354,12 @@ class CleverBot(object):
                         return
         # No strikes, so end the strike phase.
         if game.battle_phase == Phase.STRIKE:
-            def1 = self.user.callRemote("done_with_strikes", game.name)
+            def1 = self.user.callRemote("done_with_strikes", game.name)  # type: ignore
             def1.addErrback(self.failure)
         else:
             if game.battle_phase != Phase.COUNTERSTRIKE:
                 logging.info("wrong phase")
-            def1 = self.user.callRemote("done_with_counterstrikes", game.name)
+            def1 = self.user.callRemote("done_with_counterstrikes", game.name)  # type: ignore
             def1.addErrback(self.failure)
 
     def carry(
@@ -1391,7 +1407,8 @@ class CleverBot(object):
                     best_target = carry_target
                     best_num_dice = num_dice2
                     best_strike_number = strike_number2
-        def1 = self.user.callRemote(
+        assert best_target is not None
+        def1 = self.user.callRemote(  # type: ignore
             "carry", game.name, best_target.name, best_target.hexlabel, carries
         )
         def1.addErrback(self.failure)

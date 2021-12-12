@@ -366,7 +366,7 @@ class Node(object):
         best_sort_value = None
         creatures_to_remove = []
         for li in possible_splits:
-            total_sort_value = 0
+            total_sort_value = 0.0
             for name in li:
                 creature = Creature(name)
                 total_sort_value += creature.sort_value
@@ -395,6 +395,8 @@ class Node(object):
             self.turn_split = turn  # New split
 
         if self.has_split:
+            assert self.child1 is not None
+            assert self.child2 is not None
             known_keep1 = get_creature_names(
                 self.child1.certain_at_split_or_removed_creatures
             )
@@ -485,6 +487,8 @@ class Node(object):
                     new_info.certain = True
 
         if self.has_split:
+            assert self.child1 is not None
+            assert self.child2 is not None
             strong_list += self.child1.after_split_creatures
             for ci in self.child1.removed:
                 strong_list.remove(ci)
