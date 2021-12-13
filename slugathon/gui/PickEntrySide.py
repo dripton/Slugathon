@@ -46,7 +46,7 @@ hexlabel_to_entry_side = {
 
 def new(board, masterhex, entry_sides, parent, playername=None, scale=None):
     """Create a PickEntrySide dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pick_entry_side = PickEntrySide(
         board, masterhex, entry_sides, def1, parent, playername, scale
     )
@@ -282,7 +282,7 @@ class PickEntrySide(Gtk.Dialog):
     def repaint(self, hexlabels=None):
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
-        reactor.callLater(0, self.update_gui)
+        reactor.callLater(0, self.update_gui)  # type: ignore
 
     def callback_with_none(self, *args):
         """Called if the window is destroyed."""
@@ -296,7 +296,7 @@ if __name__ == "__main__":
 
     def my_callback(choice):
         logging.info(f"chose entry side {choice}")
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     board = MasterBoard.MasterBoard()
     masterhex = random.choice(list(board.hexes.values()))

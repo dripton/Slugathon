@@ -3,6 +3,7 @@
 import math
 from sys import maxsize, argv
 import logging
+from typing import Optional
 
 import gi
 
@@ -110,14 +111,20 @@ class GUIBattleMap(Gtk.EventBox):
         if game:
             self.turn_track = TurnTrack.TurnTrack(
                 game.attacker_legion, game.defender_legion, game, self.scale
-            )
+            )  # type: Optional[TurnTrack.TurnTrack]
             game.add_observer(self.turn_track)
-            self.battle_dice = BattleDice.BattleDice(self.scale)
+            self.battle_dice = BattleDice.BattleDice(
+                self.scale
+            )  # type: Optional[BattleDice.BattleDice]
             game.add_observer(self.battle_dice)
             event_log = EventLog.EventLog(game, self.playername)
             game.add_observer(event_log)
-            self.attacker_graveyard = Graveyard.Graveyard(game.attacker_legion)
-            self.defender_graveyard = Graveyard.Graveyard(game.defender_legion)
+            self.attacker_graveyard = Graveyard.Graveyard(
+                game.attacker_legion
+            )  # type: Optional[Graveyard.Graveyard]
+            self.defender_graveyard = Graveyard.Graveyard(
+                game.defender_legion
+            )  # type: Optional[Graveyard.Graveyard]
         else:
             self.turn_track = None
             self.battle_dice = None
@@ -553,7 +560,9 @@ class GUIBattleMap(Gtk.EventBox):
                 chit.hexlabel = None
                 if hexlabel is not None:
                     self.repaint([hexlabel])
+        assert self.attacker_graveyard is not None
         self.attacker_graveyard.update_gui()
+        assert self.defender_graveyard is not None
         self.defender_graveyard.update_gui()
 
     def _compute_chit_locations(self, hexlabel):
@@ -816,7 +825,7 @@ class GUIBattleMap(Gtk.EventBox):
     def repaint(self, hexlabels=None):
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
-        reactor.callLater(0, self.update_gui)
+        reactor.callLater(0, self.update_gui)  # type: ignore
 
     def build_chit_image(self, hexlabel):
         for chit in self.chits:

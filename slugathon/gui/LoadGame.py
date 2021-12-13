@@ -66,7 +66,7 @@ class LoadGame(Gtk.FileChooserDialog):
 if __name__ == "__main__":
 
     def my_callback(*args):
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     user = NullUser()
     playername = "test user"

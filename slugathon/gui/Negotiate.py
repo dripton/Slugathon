@@ -30,7 +30,7 @@ FIGHT = 3
 
 def new(playername, attacker_legion, defender_legion, parent):
     """Create a Negotiate dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     negotiate = Negotiate(
         playername, attacker_legion, defender_legion, def1, parent
     )
@@ -228,7 +228,7 @@ if __name__ == "__main__":
 
     def my_callback(*args):
         logging.info(f"callback {args}")
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     _, def1 = new(defender_playername, attacker_legion, defender_legion, None)
     def1.addCallback(my_callback)

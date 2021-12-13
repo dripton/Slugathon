@@ -20,7 +20,7 @@ __license__ = "GNU GPL v2"
 
 def new(playername, game, colors_left, parent):
     """Return a PickColor dialog and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pickcolor = PickColor(playername, game, colors_left, parent, def1)
     return pickcolor, def1
 

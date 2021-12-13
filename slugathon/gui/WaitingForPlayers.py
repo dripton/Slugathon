@@ -176,7 +176,7 @@ class WaitingForPlayers(Gtk.Dialog):
             if self.game.num_players >= self.game.max_players:
                 self.start_game()
             else:
-                reactor.callLater(1, self.update_countdown)
+                reactor.callLater(1, self.update_countdown)  # type: ignore
         else:
             if self.game.num_players >= self.game.min_players:
                 self.start_game()
@@ -239,4 +239,4 @@ if __name__ == "__main__":
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
     wfp = WaitingForPlayers(user, playername, game, None)
     wfp.connect("destroy", lambda x: reactor.stop())  # type: ignore
-    reactor.run()  # type: ignore[attr-defined]
+    reactor.run()  # type: ignore

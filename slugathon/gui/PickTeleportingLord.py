@@ -18,7 +18,7 @@ __license__ = "GNU GPL v2"
 
 def new(playername, legion, parent):
     """Create a PickTeleportingLord dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pick_teleporting_lord = PickTeleportingLord(
         playername, legion, def1, parent
     )

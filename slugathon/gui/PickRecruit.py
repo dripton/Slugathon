@@ -20,7 +20,7 @@ __license__ = "GNU GPL v2"
 def new(playername, legion, mterrain, caretaker, parent):
     """Create a PickRecruit dialog and return it and a Deferred."""
     logging.info(f"new {playername} {legion} {mterrain}")
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pickrecruit = PickRecruit(
         playername, legion, mterrain, caretaker, def1, parent
     )
@@ -43,6 +43,9 @@ class PickRecruit(Gtk.Dialog):
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.vbox.set_spacing(9)
+
+        self.chit_to_recruit = {}
+        self.chit_to_recruiter_names = {}
 
         legion_name = Gtk.Label(
             label=f"Pick recruit for legion {legion.markerid} "
@@ -88,8 +91,8 @@ class PickRecruit(Gtk.Dialog):
                 else:
                     creature = Creature.Creature(name)
                     chit = Chit.Chit(creature, player.color, scale=20)
-                chit.recruit = recruit
-                chit.recruiter_names = recruiter_names
+                self.chit_to_recruit[chit] = recruit
+                self.chit_to_recruiter_names[chit] = recruiter_names
                 if ii < len(li) - 2:
                     hbox.pack_start(chit.event_box, False, True, 0)
                 elif ii == len(li) - 2:
@@ -109,7 +112,11 @@ class PickRecruit(Gtk.Dialog):
         eventbox = widget
         chit = eventbox.chit
         self.deferred.callback(
-            (self.legion, chit.recruit, chit.recruiter_names)
+            (
+                self.legion,
+                self.chit_to_recruit[chit],
+                self.chit_to_recruiter_names[chit],
+            )
         )
         self.destroy()
 

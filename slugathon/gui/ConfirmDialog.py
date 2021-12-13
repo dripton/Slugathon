@@ -21,7 +21,7 @@ __license__ = "GNU GPL v2"
 
 
 def new(parent, title, message):
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     confirm_dialog = ConfirmDialog(parent, title, message, def1)
     return confirm_dialog, def1
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     def print_arg(arg):
         print(arg)
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     def1.addCallback(print_arg)
     def1.addErrback(print_arg)

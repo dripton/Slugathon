@@ -125,7 +125,7 @@ class Connect(Gtk.Window):
         self._setup_logging(log_path)
 
         if connect_now:
-            reactor.callWhenRunning(self.cb_connect_button_clicked)
+            reactor.callWhenRunning(self.cb_connect_button_clicked)  # type: ignore
 
     def _setup_logging(self, log_path):
         log_observer = log.PythonLoggingObserver()
@@ -290,7 +290,7 @@ def main():
         args.connect,
         args.log_path,
     )
-    reactor.run()
+    reactor.run()  # type: ignore
 
 
 if __name__ == "__main__":

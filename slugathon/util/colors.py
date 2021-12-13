@@ -1,5 +1,9 @@
-__copyright__ = "Copyright (c) 2003-2011 David Ripton"
+from typing import Dict, Tuple, Union
+
+
+__copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
+
 
 """Constants for colors, in decimal RGB format"""
 
@@ -165,7 +169,7 @@ rgb_colors = {
     "titan_gold": (165, 148, 49),
     "titan_green": (24, 173, 66),
     "titan_red": (189, 0, 24),
-}
+}  #  type: Dict[str, Tuple[int, int, int]]
 
 terrain_colors = {
     "Brush": "green",
@@ -179,7 +183,7 @@ terrain_colors = {
     "Tower": "gray",
     "Tundra": "sky_blue",
     "Woods": "olive",
-}
+}  #  type: Dict[str, str]
 
 battle_terrain_colors = {
     "Plain": "light_olive",
@@ -196,7 +200,7 @@ battle_terrain_colors = {
     "Bog": "gray",
     "Volcano": "dark_red",
     "Drift": "blue",
-}
+}  #  type: Dict[Union[str, Tuple[str, int]], str]
 
 contrasting_colors = {
     "Black": "White",
@@ -205,4 +209,4 @@ contrasting_colors = {
     "Green": "Black",
     "Gold": "Black",
     "Red": "White",
-}
+}  # type: Dict[str, str]

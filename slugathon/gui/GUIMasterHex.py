@@ -1,5 +1,6 @@
 import math
 from sys import maxsize
+from typing import List, Tuple, Union
 
 import cairo
 import gi
@@ -53,9 +54,9 @@ class GUIMasterHex(object):
         Each vertex is the midpoint between the vertexes of the two
         bordering hexes.
         """
-        self.vertexes = []
+        self.vertexes = []  # type: List[Tuple[float, float]]
         for unused in range(6):
-            self.vertexes.append(None)
+            self.vertexes.append((0.0, 0.0))
         cx = self.cx
         cy = self.cy
         scale = self.guiboard.scale
@@ -78,10 +79,10 @@ class GUIMasterHex(object):
     def bounding_rect(self):
         """Return the bounding rectangle (x, y, width, height) of this hex."""
         scale = self.guiboard.scale
-        min_x = maxsize
-        max_x = -maxsize
-        min_y = maxsize
-        max_y = -maxsize
+        min_x = float(maxsize)
+        max_x = float(-maxsize)
+        min_y = float(maxsize)
+        max_y = float(-maxsize)
         for x, y in self.vertexes:
             min_x = min(min_x, x)
             min_y = min(min_y, y)
@@ -265,14 +266,15 @@ def _init_block(x0, y0, x1, y1, theta, unit):
     return xy
 
 
-def _init_arch(x0, y0, x1, y1, theta, unit):
+def _init_arch(
+    x0: float, y0: float, x1: float, y1: float, theta: float, unit: float
+) -> List[Union[Tuple[float, float], float]]:
     """Return a list of points to make an approximate arch."""
-    xy = []
     half = unit / 2.0
     p0 = (x0 + half * math.sin(theta), y0 - half * math.cos(theta))
     p1 = (x1 + half * math.sin(theta), y1 - half * math.cos(theta))
 
-    xy = []
+    xy = []  # type: List[Union[Tuple[float, float], float]]
 
     xy.append((x0, y0))
     xy.append(p0)

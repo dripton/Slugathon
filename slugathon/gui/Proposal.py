@@ -38,7 +38,7 @@ def new(
     parent,
 ):
     """Create a Proposal dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     proposal = Proposal(
         playername,
         attacker_legion,
@@ -210,7 +210,7 @@ if __name__ == "__main__":
 
     def my_callback(*args):
         logging.info(f"my_callback {args}")
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     _, def1 = new(
         defender_playername,

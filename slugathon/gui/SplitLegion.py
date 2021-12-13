@@ -17,7 +17,7 @@ __license__ = "GNU GPL v2"
 
 def new(playername, legion, parent):
     """Create a SplitLegion dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     splitlegion = SplitLegion(playername, legion, def1, parent)
     return splitlegion, def1
 

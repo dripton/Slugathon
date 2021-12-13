@@ -33,7 +33,7 @@ def new(
     parent,
 ):
     """Create a PickCarry dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pickcarry = PickCarry(
         playername,
         game_name,
@@ -174,7 +174,7 @@ def main():
     def my_callback(tup):
         (creature, carries) = tup
         logging.info(f"carry {carries} hits to {creature}")
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     _, def1 = new(playername, game_name, titan2, centaur1, 6, 4, 1, None)
     def1.addCallback(my_callback)

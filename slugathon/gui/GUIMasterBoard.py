@@ -4,6 +4,7 @@
 import math
 from sys import maxsize
 import logging
+from typing import List, Optional, Set, Tuple, Union
 
 import gi
 
@@ -498,6 +499,7 @@ class GUIMasterBoard(Gtk.EventBox):
         hexlabel = moves[0][0]
         masterhex = self.game.board.hexes[hexlabel]
         terrain = masterhex.terrain
+        entry_sides = set()  # type: Set[Union[int, str]]
         if terrain == "Tower":
             entry_sides = {5}
         elif teleport:
@@ -527,6 +529,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self.highlight_unmoved_legions()
             return
         hexlabel = moves[0][0]
+        lord_name = None  # type: Optional[str]
         if teleport:
             if legion.player.enemy_legions(hexlabel):
                 assert legion.has_titan
@@ -605,7 +608,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self.unselect_all()
             self.clear_all_recruitchits()
             if legion.moved:
-                moves = []
+                moves = []  # type: List[Tuple[int, int]]
             else:
                 if player.movement_roll is None:
                     logging.info("movement_roll is None; timing problem?")
@@ -989,7 +992,7 @@ class GUIMasterBoard(Gtk.EventBox):
     def repaint(self, hexlabels=None):
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
-        reactor.callLater(0, self.update_gui)
+        reactor.callLater(0, self.update_gui)  # type: ignore
 
     def unselect_all(self):
         for guihex in self.guihexes.values():

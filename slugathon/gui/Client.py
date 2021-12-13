@@ -54,7 +54,7 @@ class Client(pb.Referenceable, Observed):
         user_pass = credentials.UsernamePassword(
             bytes(self.playername, "utf-8"), bytes(self.password, "utf-8")
         )
-        reactor.connectTCP(self.host, self.port, self.factory)
+        reactor.connectTCP(self.host, self.port, self.factory)  # type: ignore
         def1 = self.factory.login(user_pass, self)
         def1.addCallback(self.connected)
         # No errback here; let Connect's errback handle failed login.
@@ -72,7 +72,7 @@ class Client(pb.Referenceable, Observed):
         self.playernames.clear()
         for playername in playernames:
             self.playernames.add(playername)
-        def1 = self.user.callRemote("get_games")
+        def1 = self.user.callRemote("get_games")  # type: ignore
         def1.addCallback(self.got_games)
         def1.addErrback(self.failure)
 
@@ -128,9 +128,6 @@ class Client(pb.Referenceable, Observed):
             game.add_player(playername)
         if winner_names:
             logging.debug(winner_names)
-            # XXX Hack
-            game._winner_names = winner_names
-            game._loser_names = loser_names
         self.games.append(game)
 
     def remove_game(self, game_name):
@@ -178,7 +175,7 @@ class Client(pb.Referenceable, Observed):
         if color is None:
             self._maybe_pick_color(game)
         else:
-            def1 = self.user.callRemote("pick_color", game.name, color)
+            def1 = self.user.callRemote("pick_color", game.name, color)  # type: ignore
             def1.addErrback(self.failure)
 
     def _maybe_pick_first_marker(self, game, playername):
@@ -202,7 +199,7 @@ class Client(pb.Referenceable, Observed):
         else:
             player.pick_marker(markerid)
             if not player.markerid_to_legion:
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "pick_first_marker", game_name, markerid
                 )
                 def1.addErrback(self.failure)

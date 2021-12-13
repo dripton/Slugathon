@@ -3,6 +3,7 @@
 
 import collections
 import logging
+from typing import DefaultDict
 
 import gi
 
@@ -26,7 +27,7 @@ __license__ = "GNU GPL v2"
 
 def new(playername, game_name, markers_left, parent):
     """Create a PickMarker dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pickmarker = PickMarker(playername, game_name, markers_left, def1, parent)
     return pickmarker, def1
 
@@ -38,7 +39,7 @@ def sorted_markers(markers):
     The intent is to have the player's own color first, then the color
     of captured markers that he's actually been using next.
     """
-    color_count = collections.defaultdict(int)
+    color_count = collections.defaultdict(int)  # type: DefaultDict[str, int]
     for marker in markers:
         color = marker[:2]
         color_count[color] += 1
@@ -81,7 +82,7 @@ class PickMarker(Gtk.Dialog):
                 previous_color = button_name[:2]
                 hbox = Gtk.HBox()
                 self.vbox.add(hbox)
-            hbox.add(button)
+                hbox.add(button)
 
         self.connect("destroy", self.cb_destroy)
         self.show_all()
@@ -101,7 +102,7 @@ if __name__ == "__main__":
     def my_callback(tup):
         (game_name, playername, markerid) = tup
         logging.info(f"picked {markerid}")
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     playername = "test user"
     game_name = "test game"

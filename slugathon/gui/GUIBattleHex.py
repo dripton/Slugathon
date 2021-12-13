@@ -1,6 +1,7 @@
 import os
 import math
 from sys import maxsize
+from typing import List, Tuple
 
 import cairo
 import gi
@@ -64,7 +65,7 @@ class GUIBattleHex(object):
             (terrain, self.battlehex.elevation), None
         )
         if not color:
-            color = colors.battle_terrain_colors.get(terrain)
+            color = colors.battle_terrain_colors[terrain]
         return guiutils.rgb_to_float(colors.rgb_colors[color])
 
     def init_vertexes(self):
@@ -73,9 +74,9 @@ class GUIBattleHex(object):
         Each vertex is the midpoint between the vertexes of the two
         bordering hexes.
         """
-        self.vertexes = []
+        self.vertexes = []  # type: List[Tuple[float, float]]
         for unused in range(6):
-            self.vertexes.append(None)
+            self.vertexes.append((0.0, 0.0))
         cx = self.cx
         cy = self.cy
         scale = self.guimap.scale
@@ -103,10 +104,10 @@ class GUIBattleHex(object):
     @property
     def bounding_rect(self):
         """Return the bounding rectangle (x, y, width, height) of this hex."""
-        min_x = maxsize
-        max_x = -maxsize
-        min_y = maxsize
-        max_y = -maxsize
+        min_x = float(maxsize)
+        max_x = float(-maxsize)
+        min_y = float(maxsize)
+        max_y = float(-maxsize)
         for x, y in self.vertexes:
             min_x = min(min_x, x)
             min_y = min(min_y, y)

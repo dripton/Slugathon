@@ -29,7 +29,7 @@ FLEE = 1
 
 def new(playername, attacker_legion, defender_legion, parent):
     """Create a Flee dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     flee = Flee(playername, attacker_legion, defender_legion, def1, parent)
     return flee, def1
 
@@ -182,7 +182,7 @@ if __name__ == "__main__":
     def my_callback(tup):
         (attacker, defender, fled) = tup
         logging.info(f"{fled=}")
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     _, def1 = new(defender_playername, attacker_legion, defender_legion, None)
     def1.addCallback(my_callback)

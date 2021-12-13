@@ -230,6 +230,7 @@ class Lobby(Gtk.EventBox):
             for dct in player_data:
                 playername_to_data[dct["name"]] = dct
         sorted_playernames = sorted(self.playernames)
+        assert self.user_store is not None
         leng = len(self.user_store)
         for ii, playername in enumerate(sorted_playernames):
             dct = playername_to_data.get(playername)
@@ -252,6 +253,7 @@ class Lobby(Gtk.EventBox):
         self.update_old_game_store()
 
     def update_new_game_store(self):
+        assert self.new_game_store is not None
         length = len(self.new_game_store)
         ii = -1
         for game in self.games:
@@ -282,6 +284,7 @@ class Lobby(Gtk.EventBox):
             del self.new_game_store[length]
 
     def update_current_game_store(self):
+        assert self.current_game_store is not None
         length = len(self.current_game_store)
         ii = -1
         for game in self.games:
@@ -301,6 +304,7 @@ class Lobby(Gtk.EventBox):
             del self.current_game_store[length]
 
     def update_old_game_store(self):
+        assert self.old_game_store is not None
         length = len(self.old_game_store)
         ii = -1
         for game in self.games:
@@ -322,7 +326,7 @@ class Lobby(Gtk.EventBox):
 
     def failure(self, error):
         log.err(error)
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     def cb_keypress(self, entry, event):
         if event.keyval == Gdk.KEY_Return:
@@ -382,6 +386,7 @@ class Lobby(Gtk.EventBox):
 
     def cb_user_list_select(self, selection, model, path, is_selected, unused):
         index = path[0]
+        assert self.user_store is not None
         row = self.user_store[index, 0]
         name = row[0]
         if is_selected:
@@ -392,6 +397,7 @@ class Lobby(Gtk.EventBox):
 
     def cb_game_list_select(self, path, unused):
         index = path[0]
+        assert self.new_game_store is not None
         tup = self.new_game_store[index, 0]
         name = tup[0]
         game = self.name_to_game(name)
@@ -420,12 +426,12 @@ class Lobby(Gtk.EventBox):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
         elif isinstance(action, Action.AssignedAllTowers):
-            reactor.callLater(1, self.update_game_stores)
+            reactor.callLater(1, self.update_game_stores)  # type: ignore
         elif isinstance(action, Action.GameOver):
-            reactor.callLater(1, self.update_game_stores)
-            reactor.callLater(1, self.update_user_store)
+            reactor.callLater(1, self.update_game_stores)  # type: ignore
+            reactor.callLater(1, self.update_user_store)  # type: ignore
         elif isinstance(action, Action.EliminatePlayer):
-            reactor.callLater(1, self.update_game_stores)
+            reactor.callLater(1, self.update_game_stores)  # type: ignore
         elif isinstance(action, Action.ChatMessage):
             buf = self.chat_view.get_buffer()
             message = action.message.strip() + "\n"

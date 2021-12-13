@@ -23,7 +23,7 @@ NORMAL_MOVE = 2
 
 def new(playername, legion, hexlabel, parent):
     """Create a PickMoveType dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pickmovetype = PickMoveType(playername, legion, hexlabel, def1, parent)
     return pickmovetype, def1
 

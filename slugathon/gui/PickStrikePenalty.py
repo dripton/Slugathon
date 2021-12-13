@@ -2,6 +2,7 @@
 
 
 import logging
+from typing import Dict, Set, Tuple
 
 import gi
 
@@ -16,7 +17,7 @@ from twisted.internet import reactor, defer
 from gi.repository import Gtk, GObject
 
 from slugathon.gui import icon
-from slugathon.game import Phase
+from slugathon.game import Phase, Creature
 
 
 __copyright__ = "Copyright (c) 2009-2021 David Ripton"
@@ -25,7 +26,7 @@ __license__ = "GNU GPL v2"
 
 def new(playername, game_name, striker, target, parent):
     """Create a PickStrikePenalty dialog and return it and a Deferred."""
-    def1 = defer.Deferred()
+    def1 = defer.Deferred()  # type: defer.Deferred
     pick_strike_penalty = PickStrikePenalty(
         playername, game_name, striker, target, def1, parent
     )
@@ -60,7 +61,9 @@ class PickStrikePenalty(Gtk.Dialog):
         self.vbox.add(label)
 
         # Map tuple of (num_dice, strike_number) to set of creatures it can hit
-        dice_strike_to_creatures = {}
+        dice_strike_to_creatures = (
+            {}
+        )  # type: Dict[Tuple[int, int], Set[Creature.Creature]]
         for tup in striker.valid_strike_penalties(target):
             num_dice, strike_number = tup
             dice_strike_to_creatures[tup] = set()
@@ -179,7 +182,7 @@ def main():
             f"called my_callback {striker} {target} {num_dice} "
             f"{strike_number}"
         )
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
     pick_strike_penalty, def1 = new(
         playername, game_name, titan2, gargoyle1, None
