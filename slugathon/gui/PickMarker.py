@@ -82,6 +82,7 @@ class PickMarker(Gtk.Dialog):
                 previous_color = button_name[:2]
                 hbox = Gtk.HBox()
                 self.vbox.add(hbox)
+            if hbox is not None:
                 hbox.add(button)
 
         self.connect("destroy", self.cb_destroy)
