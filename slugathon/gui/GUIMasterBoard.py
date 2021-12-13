@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import math
 from sys import maxsize
 import logging
-from typing import List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 import gi
 
@@ -49,7 +49,7 @@ from slugathon.gui import (
 from slugathon.net import User
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
-from slugathon.game import Action, Phase, Game, Creature
+from slugathon.game import Action, Phase, Game, Creature, Legion
 from slugathon.util.bag import bag
 
 
@@ -147,7 +147,7 @@ class GUIMasterBoard(Gtk.EventBox):
         self.area.set_size_request(self.compute_width(), self.compute_height())
         self.vbox.pack_start(self.area, False, True, 0)
         self.markers = []  # type: List[Marker.Marker]
-        self.guihexes = {}
+        self.guihexes = {}  # type: Dict[int, GUIMasterHex.GUIMasterHex]
         # list of tuples (Chit, hexlabel)
         self.recruitchits = []  # type: List[Tuple[Chit.Chit, int]]
         for hex1 in self.board.hexes.values():
@@ -155,13 +155,15 @@ class GUIMasterBoard(Gtk.EventBox):
         self.selected_marker = None
         self.negotiate = None
         self.proposals = set()  # type: Set[Proposal.Proposal]
-        self.guimap = None
-        self.acquire_angels = None
-        self.game_over = None
-        self.guicaretaker = None
-        self.status_screen = None
-        self.inspector = None
-        self.event_log = None
+        self.guimap = None  # type: Optional[GUIBattleMap.GUIBattleMap]
+        self.acquire_angels = (
+            None
+        )  # type: Optional[AcquireAngels.AcquireAngels]
+        self.game_over = None  # type: Optional[InfoDialog.InfoDialog]
+        self.guicaretaker = None  # type: Optional[GUICaretaker.GUICaretaker]
+        self.status_screen = None  # type: Optional[StatusScreen.StatusScreen]
+        self.inspector = None  # type: Optional[Inspector.Inspector]
+        self.event_log = None  # type: Optional[EventLog.EventLog]
         self.destroyed = False
 
         # Set of hexlabels of hexes to redraw.
@@ -321,6 +323,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def _init_caretaker(self):
         if not self.guicaretaker:
+            assert self.game is not None
             self.guicaretaker = GUICaretaker.GUICaretaker(
                 self.game, self.playername
             )
@@ -329,6 +332,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def _init_status_screen(self):
         if not self.status_screen:
+            assert self.game is not None
             self.status_screen = StatusScreen.StatusScreen(
                 self.game, self.playername
             )
@@ -344,6 +348,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def _init_event_log(self):
         if not self.event_log:
+            assert self.game is not None
             self.event_log = EventLog.EventLog(self.game, self.playername)
             self.game.add_observer(self.event_log)
             self.vbox.pack_start(self.event_log, True, True, 0)
@@ -364,7 +369,7 @@ class GUIMasterBoard(Gtk.EventBox):
         if confirmed:
             self.destroyed = True
             if self.game:
-                def1 = self.user.callRemote("withdraw", self.game.name)
+                def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
                 def1.addErrback(self.failure)
             if self.guimap is not None:
                 self.guimap.destroy()
@@ -374,7 +379,7 @@ class GUIMasterBoard(Gtk.EventBox):
         """Withdraw from the game, but do not destroy the GUIMasterBoard."""
         if confirmed:
             if self.game:
-                def1 = self.user.callRemote("withdraw", self.game.name)
+                def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
                 def1.addErrback(self.failure)
 
     def cb_area_expose(self, area, event):
@@ -403,7 +408,9 @@ class GUIMasterBoard(Gtk.EventBox):
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 if self.game:
+                    assert self.playername is not None
                     player = self.game.get_player_by_name(self.playername)
+                    assert player is not None
                     player_color = player.color
                 else:
                     player_color = "Black"
@@ -468,7 +475,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 self.highlight_unmoved_legions()
             elif phase == Phase.FIGHT:
                 if guihex.selected:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "resolve_engagement",
                         self.game.name,
                         guihex.masterhex.label,
@@ -498,6 +505,7 @@ class GUIMasterBoard(Gtk.EventBox):
         if teleport is None:
             self.highlight_unmoved_legions()
             return
+        assert self.game is not None
         hexlabel = moves[0][0]
         masterhex = self.game.board.hexes[hexlabel]
         terrain = masterhex.terrain
@@ -558,8 +566,9 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def _do_move_legion(self, lord_name, legion, moves, teleport, entry_side):
         """Call the server to request a legion move."""
+        assert self.game is not None
         hexlabel = moves[0][0]
-        def1 = self.user.callRemote(
+        def1 = self.user.callRemote(  # type: ignore
             "move_legion",
             self.game.name,
             legion.markerid,
@@ -571,6 +580,7 @@ class GUIMasterBoard(Gtk.EventBox):
         def1.addErrback(self.failure)
 
     def clicked_on_marker(self, area, event, marker):
+        assert self.game is not None
         phase = self.game.phase
         if phase == Phase.SPLIT:
             legion = marker.legion
@@ -610,16 +620,17 @@ class GUIMasterBoard(Gtk.EventBox):
             self.unselect_all()
             self.clear_all_recruitchits()
             if legion.moved:
-                moves = []  # type: List[Tuple[int, int]]
+                moves = set()  # type: Set[Tuple[int, int]]
             else:
                 if player.movement_roll is None:
-                    logging.info("movement_roll is None; timing problem?")
-                    moves = []
-                moves = self.game.find_all_moves(
-                    legion,
-                    self.board.hexes[legion.hexlabel],
-                    player.movement_roll,
-                )
+                    logging.warning("movement_roll is None; timing problem?")
+                    moves = set()
+                else:
+                    moves = self.game.find_all_moves(
+                        legion,
+                        self.board.hexes[legion.hexlabel],
+                        player.movement_roll,
+                    )
             if moves:
                 self.selected_marker = marker
                 for move in moves:
@@ -640,7 +651,7 @@ class GUIMasterBoard(Gtk.EventBox):
             legion = marker.legion
             guihex = self.guihexes[legion.hexlabel]
             if guihex.selected:
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "resolve_engagement",
                     self.game.name,
                     guihex.masterhex.label,
@@ -668,7 +679,9 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def picked_marker_presplit(self, tup, legion):
         (game_name, playername, markerid) = tup
+        assert self.game is not None
         player = self.game.get_player_by_name(playername)
+        assert player is not None
         player.pick_marker(markerid)
         if markerid:
             self.split_legion(legion)
@@ -682,12 +695,15 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def try_to_split_legion(self, tup1):
         (old_legion, new_legion1, new_legion2) = tup1
+        assert self.game is not None
         if old_legion is None:
             # canceled
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             player.selected_markerid = None
             return
-        def1 = self.user.callRemote(
+        def1 = self.user.callRemote(  # type: ignore
             "split_legion",
             self.game.name,
             new_legion1.markerid,
@@ -700,8 +716,9 @@ class GUIMasterBoard(Gtk.EventBox):
     def picked_recruit(self, tup2):
         """Callback from PickRecruit"""
         (legion, creature, recruiter_names) = tup2
+        assert self.game is not None
         if creature is not None:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "recruit_creature",
                 self.game.name,
                 legion.markerid,
@@ -710,7 +727,7 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
         elif self.game.phase == Phase.FIGHT:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "do_not_reinforce", self.game.name, legion.markerid
             )
             def1.addErrback(self.failure)
@@ -718,13 +735,14 @@ class GUIMasterBoard(Gtk.EventBox):
     def picked_summon(self, tup3):
         """Callback from SummonAngel"""
         (legion, donor, creature) = tup3
+        assert self.game is not None
         if donor is None or creature is None:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "do_not_summon_angel", self.game.name, legion.markerid
             )
             def1.addErrback(self.failure)
         else:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "summon_angel",
                 self.game.name,
                 legion.markerid,
@@ -737,15 +755,16 @@ class GUIMasterBoard(Gtk.EventBox):
         """Callback from AcquireAngels"""
         (legion, angels) = tup4
         logging.info(f"picked_angels {legion} {angels}")
+        assert self.game is not None
         self.acquire_angels = None
         if not angels:
             logging.info(f"calling do_not_acquire_angels {legion}")
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "do_not_acquire_angels", self.game.name, legion.markerid
             )
             def1.addErrback(self.failure)
         else:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "acquire_angels",
                 self.game.name,
                 legion.markerid,
@@ -886,14 +905,13 @@ class GUIMasterBoard(Gtk.EventBox):
             self._render_marker(chit, ctx)
 
     def draw_movement_die(self, ctx):
-        try:
-            phase = self.game.phase
-            if phase == Phase.MOVE:
-                roll = self.game.active_player.movement_roll
-            else:
-                roll = None
-        except AttributeError:
+        if self.game is None or self.game.active_player is None:
             return
+        phase = self.game.phase
+        if phase == Phase.MOVE:
+            roll = self.game.active_player.movement_roll
+        else:
+            roll = None
         if roll:
             die = Die.Die(roll, scale=self.scale)
             ctx.set_source_surface(die.surface, 0, 0)
@@ -908,15 +926,17 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             ctx.fill()
 
-    def bounding_rect_for_hexlabels(self, hexlabels):
+    def bounding_rect_for_hexlabels(
+        self, hexlabels: Set[int]
+    ) -> Tuple[int, int, int, int]:
         """Return the minimum bounding rectangle that encloses all
         GUIMasterHexes whose hexlabels are given, as a tuple
         (x, y, width, height)
         """
-        min_x = maxsize
-        max_x = -maxsize
-        min_y = maxsize
-        max_y = -maxsize
+        min_x = float(maxsize)
+        max_x = float(-maxsize)
+        min_y = float(maxsize)
+        max_y = float(-maxsize)
         for hexlabel in hexlabels:
             try:
                 guihex = self.guihexes[hexlabel]
@@ -929,7 +949,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 pass
         width = max_x - min_x
         height = max_y - min_y
-        return min_x, min_y, width, height
+        return int(min_x), int(min_y), int(width), int(height)
 
     def update_gui(self, event=None):
         """Repaint the amount of the GUI that needs repainting.
@@ -958,8 +978,8 @@ class GUIMasterBoard(Gtk.EventBox):
         allocation = self.get_allocation()
         x = allocation.x
         y = allocation.y
-        width = int(allocation.width)
-        height = int(allocation.height)
+        width = allocation.width
+        height = allocation.height
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         ctx = cairo.Context(surface)
         ctx.rectangle(*clip_rect)
@@ -1027,6 +1047,7 @@ class GUIMasterBoard(Gtk.EventBox):
         occupied_hexlabels = set()
         stray_hexlabels = set()
         new_recruitchits = []
+        assert self.game is not None
         for legion in self.game.all_legions():
             occupied_hexlabels.add(legion.hexlabel)
         for chit, hexlabel in self.recruitchits:
@@ -1041,7 +1062,10 @@ class GUIMasterBoard(Gtk.EventBox):
     def highlight_tall_legions(self):
         """Highlight all hexes containing a legion of height 7 or more
         belonging to the active, current player."""
+        assert self.game is not None
+        assert self.playername is not None
         player = self.game.get_player_by_name(self.playername)
+        assert player is not None
         if player == self.game.active_player:
             self.unselect_all()
             if player.markerids_left:
@@ -1055,7 +1079,10 @@ class GUIMasterBoard(Gtk.EventBox):
     def highlight_unmoved_legions(self):
         """Highlight all hexes containing an unmoved legion belonging to the
         active, current player."""
+        assert self.game is not None
+        assert self.playername is not None
         player = self.game.get_player_by_name(self.playername)
+        assert player is not None
         if player == self.game.active_player:
             self.clear_all_recruitchits()
             self.unselect_all()
@@ -1071,6 +1098,7 @@ class GUIMasterBoard(Gtk.EventBox):
     def highlight_engagements(self):
         """Highlight all hexes with engagements."""
         self.unselect_all()
+        assert self.game is not None
         hexlabels = self.game.engagement_hexlabels
         for hexlabel in hexlabels:
             guihex = self.guihexes[hexlabel]
@@ -1086,7 +1114,10 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def highlight_recruits(self):
         """Highlight all hexes in which the active player can recruit."""
+        assert self.game is not None
+        assert self.playername is not None
         player = self.game.get_player_by_name(self.playername)
+        assert player is not None
         if player == self.game.active_player:
             self.unselect_all()
             hexlabels = set()
@@ -1100,17 +1131,19 @@ class GUIMasterBoard(Gtk.EventBox):
             self.repaint(hexlabels)
 
     def cb_save(self, action):
-        def1 = self.user.callRemote("save", self.game.name)
+        def1 = self.user.callRemote("save", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
     def cb_done(self, action):
         if not self.game:
             return
+        assert self.playername is not None
         player = self.game.get_player_by_name(self.playername)
+        assert player is not None
         if player == self.game.active_player:
             if self.game.phase == Phase.SPLIT:
                 if player.can_exit_split_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_splits", self.game.name
                     )
                     def1.addErrback(self.failure)
@@ -1122,7 +1155,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     )
             elif self.game.phase == Phase.MOVE:
                 if player.can_exit_move_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_moves", self.game.name
                     )
                     def1.addErrback(self.failure)
@@ -1140,7 +1173,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     )
             elif self.game.phase == Phase.FIGHT:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
@@ -1150,7 +1183,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     )
             elif self.game.phase == Phase.MUSTER:
                 player.forget_enemy_legions()
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "done_with_recruits", self.game.name
                 )
                 def1.addErrback(self.failure)
@@ -1158,23 +1191,28 @@ class GUIMasterBoard(Gtk.EventBox):
     def cb_mulligan(self, action):
         if not self.game:
             return
+        assert self.playername is not None
         player = self.game.get_player_by_name(self.playername)
+        assert player is not None
         if player.can_take_mulligan:
             history = self.game.history
+            assert history is not None
+            assert self.playername is not None
             if history.can_undo(self.playername):
                 last_action = history.actions[-1]
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "apply_action", last_action.undo_action()
                 )
                 def1.addCallback(self.cb_mulligan)
                 def1.addErrback(self.failure)
             else:
-                def1 = self.user.callRemote("take_mulligan", self.game.name)
+                def1 = self.user.callRemote("take_mulligan", self.game.name)  # type: ignore
                 def1.addErrback(self.failure)
 
     def _cb_checkbox_helper(self, option):
         checkmenuitem = self.ui.get_widget(f"/Menubar/OptionsMenu/{option}")
         active = checkmenuitem.get_active()
+        assert self.playername is not None
         prev = prefs.load_bool_option(self.playername, option)
         if active != prev:
             prefs.save_bool_option(self.playername, option, active)
@@ -1200,9 +1238,11 @@ class GUIMasterBoard(Gtk.EventBox):
     def cb_undo(self, action):
         if self.game:
             history = self.game.history
+            assert history is not None
+            assert self.playername is not None
             if history.can_undo(self.playername):
                 last_action = history.actions[-1]
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "apply_action", last_action.undo_action()
                 )
                 def1.addErrback(self.failure)
@@ -1210,9 +1250,11 @@ class GUIMasterBoard(Gtk.EventBox):
     def cb_undo_all(self, action):
         if self.game:
             history = self.game.history
+            assert history is not None
+            assert self.playername is not None
             if history.can_undo(self.playername):
                 last_action = history.actions[-1]
-                def1 = self.user.callRemote(
+                def1 = self.user.callRemote(  # type: ignore
                     "apply_action", last_action.undo_action()
                 )
                 def1.addCallback(self.cb_undo_all)
@@ -1221,9 +1263,11 @@ class GUIMasterBoard(Gtk.EventBox):
     def cb_redo(self, action):
         if self.game:
             history = self.game.history
+            assert history is not None
+            assert self.playername is not None
             if history.can_redo(self.playername):
                 action = history.undone[-1]
-                def1 = self.user.callRemote("apply_action", action)
+                def1 = self.user.callRemote("apply_action", action)  # type: ignore
                 def1.addErrback(self.failure)
 
     def cb_quit(self, action):
@@ -1253,13 +1297,14 @@ class GUIMasterBoard(Gtk.EventBox):
             def1.addErrback(self.failure)
 
     def cb_maybe_flee(self, tup5):
+        assert self.game is not None
         (attacker, defender, fled) = tup5
         if fled:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "flee", self.game.name, defender.markerid
             )
         else:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "do_not_flee", self.game.name, defender.markerid
             )
         def1.addErrback(self.failure)
@@ -1273,7 +1318,10 @@ class GUIMasterBoard(Gtk.EventBox):
             defender_creature_names,
             response_id,
         ) = tup6
+        assert self.game is not None
+        assert self.playername is not None
         player = self.game.get_player_by_name(self.playername)
+        assert player is not None
         hexlabel = attacker_legion.hexlabel
         for legion in player.friendly_legions(hexlabel):
             friendly_legion = legion
@@ -1282,7 +1330,7 @@ class GUIMasterBoard(Gtk.EventBox):
         else:
             enemy_legion = attacker_legion
         if response_id == Negotiate.CONCEDE:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "concede",
                 self.game.name,
                 friendly_legion.markerid,
@@ -1291,7 +1339,8 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
         elif response_id == Negotiate.MAKE_PROPOSAL:
-            def1 = self.user.callRemote(
+            assert self.game is not None
+            def1 = self.user.callRemote(  # type: ignore
                 "make_proposal",
                 self.game.name,
                 attacker_legion.markerid,
@@ -1301,7 +1350,8 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
         elif response_id == Negotiate.DONE_PROPOSING:
-            def1 = self.user.callRemote(
+            assert self.game is not None
+            def1 = self.user.callRemote(  # type: ignore
                 "no_more_proposals",
                 self.game.name,
                 attacker_legion.markerid,
@@ -1309,7 +1359,8 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
         elif response_id == Negotiate.FIGHT:
-            def1 = self.user.callRemote(
+            assert self.game is not None
+            def1 = self.user.callRemote(  # type: ignore
                 "fight",
                 self.game.name,
                 attacker_legion.markerid,
@@ -1326,8 +1377,9 @@ class GUIMasterBoard(Gtk.EventBox):
             defender_creature_names,
             response_id,
         ) = tup7
+        assert self.game is not None
         if response_id == Proposal.ACCEPT:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "accept_proposal",
                 self.game.name,
                 attacker_legion.markerid,
@@ -1337,7 +1389,7 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
         elif response_id == Proposal.REJECT:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "reject_proposal",
                 self.game.name,
                 attacker_legion.markerid,
@@ -1347,7 +1399,7 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
         elif response_id == Proposal.FIGHT:
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "fight",
                 self.game.name,
                 attacker_legion.markerid,
@@ -1356,11 +1408,11 @@ class GUIMasterBoard(Gtk.EventBox):
             def1.addErrback(self.failure)
 
     def pause_ai(self, action):
-        def1 = self.user.callRemote("pause_ai", self.game.name)
+        def1 = self.user.callRemote("pause_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
     def resume_ai(self, action):
-        def1 = self.user.callRemote("resume_ai", self.game.name)
+        def1 = self.user.callRemote("resume_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
     def destroy_negotiate(self):
@@ -1375,6 +1427,9 @@ class GUIMasterBoard(Gtk.EventBox):
         log.err(arg)
 
     def update(self, observed, action, names):
+        attacker = None  # type: Optional[Legion.Legion]
+        defender = None  # type: Optional[Legion.Legion]
+
         if isinstance(action, Action.PickedColor):
             self._init_caretaker()
             self._init_status_screen()
@@ -1384,18 +1439,23 @@ class GUIMasterBoard(Gtk.EventBox):
             self.show_all()
 
         elif isinstance(action, Action.CreateStartingLegion):
+            assert self.game is not None
             legion = self.game.find_legion(action.markerid)
             if legion:
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.SplitLegion):
+            assert self.game is not None
             legion = self.game.find_legion(action.parent_markerid)
+            assert legion is not None
             self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_tall_legions()
 
         elif isinstance(action, Action.UndoSplit):
+            assert self.game is not None
             legion = self.game.find_legion(action.parent_markerid)
+            assert legion is not None
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
@@ -1404,6 +1464,7 @@ class GUIMasterBoard(Gtk.EventBox):
         elif isinstance(action, Action.RollMovement):
             # show movement die
             self.repaint_hexlabels.update(list(self.board.hexes.keys()))
+            assert self.playername is not None
             if action.playername == self.playername:
                 if action.mulligans_left == 0:
                     self.disable_mulligan()
@@ -1414,9 +1475,11 @@ class GUIMasterBoard(Gtk.EventBox):
         elif isinstance(action, Action.MoveLegion) or isinstance(
             action, Action.UndoMoveLegion
         ):
+            assert self.game is not None
             self.selected_marker = None
             self.unselect_all()
             legion = self.game.find_legion(action.markerid)
+            assert legion is not None
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
@@ -1427,33 +1490,39 @@ class GUIMasterBoard(Gtk.EventBox):
                 self.repaint()
 
         elif isinstance(action, Action.StartFightPhase):
+            assert self.game is not None
             # clear movement die
             self.repaint_hexlabels.update(list(self.board.hexes.keys()))
+            assert self.playername is not None
             if action.playername == self.playername:
                 self.clear_all_recruitchits()
             self.highlight_engagements()
             player = self.game.active_player
+            assert player is not None
             if self.playername == player.name:
                 if not self.game.engagement_hexlabels:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.StartMusterPhase):
+            assert self.game is not None
             # clear movement die
             self.repaint_hexlabels.update(list(self.board.hexes.keys()))
             self.highlight_recruits()
             player = self.game.active_player
+            assert player is not None
             if self.playername == player.name:
                 if not player.can_recruit:
                     player.forget_enemy_legions()
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_recruits", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.ResolvingEngagement):
+            assert self.game is not None
             hexlabel = action.hexlabel
             self.highlight_hex(hexlabel)
             for legion in self.game.all_legions(hexlabel):
@@ -1461,6 +1530,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     attacker = legion
                 else:
                     defender = legion
+            assert defender is not None
             if defender.player.name == self.playername:
                 if defender.can_flee:
                     _, def1 = Flee.new(
@@ -1473,19 +1543,24 @@ class GUIMasterBoard(Gtk.EventBox):
                     self.cb_maybe_flee((attacker, defender, False))
 
         elif isinstance(action, Action.Flee):
+            assert self.game is not None
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotFlee):
+            assert self.game is not None
             markerid = action.markerid
             defender = self.game.find_legion(markerid)
+            assert defender is not None
             hexlabel = defender.hexlabel
             attacker = None
             for legion in self.game.all_legions(hexlabel=hexlabel):
@@ -1501,18 +1576,22 @@ class GUIMasterBoard(Gtk.EventBox):
                 def1.addCallback(self.cb_negotiate)
 
         elif isinstance(action, Action.Concede):
+            assert self.game is not None
             self.destroy_negotiate()
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.MakeProposal):
+            assert self.game is not None
             attacker_markerid = action.attacker_markerid
             attacker = self.game.find_legion(attacker_markerid)
             defender_markerid = action.defender_markerid
@@ -1530,18 +1609,22 @@ class GUIMasterBoard(Gtk.EventBox):
                 self.proposals.add(proposal)
 
         elif isinstance(action, Action.AcceptProposal):
+            assert self.game is not None
             self.destroy_negotiate()
             self.repaint_hexlabels.add(action.hexlabel)
             self.highlight_engagements()
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.RejectProposal):
+            assert self.game is not None
             attacker_markerid = action.attacker_markerid
             attacker = self.game.find_legion(attacker_markerid)
             defender_markerid = action.defender_markerid
@@ -1553,6 +1636,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 def1.addCallback(self.cb_negotiate)
 
         elif isinstance(action, Action.RecruitCreature):
+            assert self.game is not None
             legion = self.game.find_legion(action.markerid)
             if legion:
                 self.repaint_hexlabels.add(legion.hexlabel)
@@ -1566,6 +1650,7 @@ class GUIMasterBoard(Gtk.EventBox):
         elif isinstance(action, Action.UndoRecruit) or isinstance(
             action, Action.UnReinforce
         ):
+            assert self.game is not None
             legion = self.game.find_legion(action.markerid)
             if legion:
                 self.repaint_hexlabels.add(legion.hexlabel)
@@ -1573,17 +1658,20 @@ class GUIMasterBoard(Gtk.EventBox):
             self.highlight_recruits()
 
         elif isinstance(action, Action.StartSplitPhase):
+            assert self.game is not None
             player = self.game.active_player
+            assert player is not None
             if self.playername == player.name:
                 self.unselect_all()
                 self.highlight_tall_legions()
                 if not player.can_split:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_splits", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.SummonAngel):
+            assert self.game is not None
             legion = self.game.find_legion(action.markerid)
             donor = self.game.find_legion(action.donor_markerid)
             lst = []
@@ -1596,19 +1684,24 @@ class GUIMasterBoard(Gtk.EventBox):
                 lst.append(donor.hexlabel)
             self.repaint(lst)
             self.highlight_engagements()
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotSummonAngel):
+            assert self.game is not None
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
@@ -1616,6 +1709,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     self.highlight_engagements()
 
         elif isinstance(action, Action.UnsummonAngel):
+            assert self.game is not None
             legion = self.game.find_legion(action.markerid)
             donor = self.game.find_legion(action.donor_markerid)
             lst = []
@@ -1628,6 +1722,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self.highlight_engagements()
 
         elif isinstance(action, Action.CanAcquireAngels):
+            assert self.game is not None
             if (
                 self.acquire_angels is None
                 and action.playername == self.playername
@@ -1637,19 +1732,21 @@ class GUIMasterBoard(Gtk.EventBox):
                 angels = action.angels
                 archangels = action.archangels
                 caretaker = self.game.caretaker
+                assert caretaker is not None
                 if angels or archangels:
                     self.acquire_angels, def1 = AcquireAngels.new(
                         self.playername,
                         legion,
                         archangels,
                         angels,
-                        self.game.caretaker,
+                        caretaker,
                         self.parent_window,
                     )
                     def1.addCallback(self.picked_angels)
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.AcquireAngels):
+            assert self.game is not None
             markerid = action.markerid
             legion = self.game.find_legion(markerid)
             if legion and legion.hexlabel and action.angel_names:
@@ -1658,19 +1755,24 @@ class GUIMasterBoard(Gtk.EventBox):
                 )
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.DoNotAcquireAngels):
+            assert self.game is not None
+            assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
@@ -1678,6 +1780,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     self.highlight_engagements()
 
         elif isinstance(action, Action.Fight):
+            assert self.game is not None
             self.destroy_negotiate()
             self.unselect_all()
             if self.guimap is None and not self.destroyed:
@@ -1688,10 +1791,13 @@ class GUIMasterBoard(Gtk.EventBox):
                     self.playername,
                     parent_window=self.parent_window,
                 )
+                assert self.parent_window is not None
                 self.parent_window.add_guimap(self.guimap)
                 self.game.add_observer(self.guimap)
 
         elif isinstance(action, Action.BattleOver):
+            assert self.game is not None
+            assert self.playername is not None
             legion = self.game.find_legion(action.winner_markerid)
             if legion:
                 player = legion.player
@@ -1708,7 +1814,7 @@ class GUIMasterBoard(Gtk.EventBox):
                             def1.addCallback(self.picked_summon)
                         else:
                             logging.info("calling do_not_summon_angel")
-                            def1 = self.user.callRemote(
+                            def1 = self.user.callRemote(  # type: ignore
                                 "do_not_summon_angel",
                                 self.game.name,
                                 legion.markerid,
@@ -1731,7 +1837,7 @@ class GUIMasterBoard(Gtk.EventBox):
                             def1.addCallback(self.picked_recruit)
                         else:
                             logging.info("calling do_not_reinforce")
-                            def1 = self.user.callRemote(
+                            def1 = self.user.callRemote(  # type: ignore
                                 "do_not_reinforce",
                                 self.game.name,
                                 legion.markerid,
@@ -1750,15 +1856,18 @@ class GUIMasterBoard(Gtk.EventBox):
             self.repaint_hexlabels.add(hexlabel)
             self.highlight_engagements()
             player = self.game.get_player_by_name(self.playername)
+            assert player is not None
             if player == self.game.active_player:
                 if player.can_exit_fight_phase:
-                    def1 = self.user.callRemote(
+                    def1 = self.user.callRemote(  # type: ignore
                         "done_with_engagements", self.game.name
                     )
                     def1.addErrback(self.failure)
 
         elif isinstance(action, Action.EliminatePlayer):
+            assert self.game is not None
             player = self.game.get_player_by_name(action.loser_playername)
+            assert player is not None
             for legion in player.legions:
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.clear_stray_recruitchits()
