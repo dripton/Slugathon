@@ -1,5 +1,6 @@
 import sys
 import math
+from typing import List, Tuple
 
 from twisted.internet import reactor
 
@@ -8,7 +9,7 @@ __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def flatten_point_list(points):
+def flatten_point_list(points: List[Tuple[int, int]]) -> Tuple[int, ...]:
     """Flatten a list of (x, y) tuples into a single tuple"""
     li = []
     for tup in points:
@@ -17,19 +18,21 @@ def flatten_point_list(points):
     return tuple(li)
 
 
-def rgb_to_gtk(rgb):
+def rgb_to_gtk(rgb: Tuple[int, int, int]) -> Tuple[int, ...]:
     """Convert a tuple of 8-bit decimal RGB color values to 16-bit."""
     li = [256 * value for value in rgb]
     return tuple(li)
 
 
-def rgb_to_float(rgb):
+def rgb_to_float(rgb: Tuple[int, int, int]) -> Tuple[float, ...]:
     """Convert a tuple of 8-bit decimal RGB color values to 0.0 - 1.0."""
     li = [value / 256.0 for value in rgb]
     return tuple(li)
 
 
-def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
+def get_semicircle_points(
+    x0: float, y0: float, x1: float, y1: float, numpoints: int = 8
+) -> List[Tuple[int, int]]:
     """Return a list of integer 2-tuple points along the semicircle that
     has (x0, y0) and (x1, y1) on opposite sides, going clockwise.
     """
@@ -56,7 +59,7 @@ def get_semicircle_points(x0, y0, x1, y1, numpoints=8):
     return list(zip(xlist, ylist))
 
 
-def scale_polygon(vertexes, ratio):
+def scale_polygon(vertexes, ratio: float):
     """Return a rescaled version of the polygon, with the same center."""
     totalx = 0
     totaly = 0

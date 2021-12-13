@@ -94,12 +94,12 @@ def load_window_size(
         return None
 
 
-def global_window_position_path(window_name):
+def global_window_position_path(window_name: str) -> str:
     """Return the path to the window position prefs file."""
     return os.path.join(GLOBAL_PREFS_DIR, window_name + "_position")
 
 
-def save_global_window_position(window_name, x, y):
+def save_global_window_position(window_name: str, x: int, y: int) -> None:
     """Save (x, y) as a preferred window position."""
     if not os.path.exists(GLOBAL_PREFS_DIR):
         os.makedirs(GLOBAL_PREFS_DIR)
@@ -108,7 +108,7 @@ def save_global_window_position(window_name, x, y):
         fil.write(f"{y}\n")
 
 
-def load_global_window_position(window_name):
+def load_global_window_position(window_name: str) -> Optional[Tuple[int, int]]:
     """Return a preferred window position as (x, y)."""
     try:
         with open(global_window_position_path(window_name)) as fil:
@@ -120,12 +120,12 @@ def load_global_window_position(window_name):
         return None
 
 
-def global_window_size_path(window_name):
+def global_window_size_path(window_name: str) -> str:
     """Return the path to the window size prefs file."""
     return os.path.join(GLOBAL_PREFS_DIR, window_name + "_size")
 
 
-def save_global_window_size(window_name, width, height):
+def save_global_window_size(window_name: str, width: int, height: int) -> None:
     """Save (width, height) as a preferred window size."""
     if not os.path.exists(GLOBAL_PREFS_DIR):
         os.makedirs(GLOBAL_PREFS_DIR)
@@ -134,7 +134,7 @@ def save_global_window_size(window_name, width, height):
         fil.write(f"{height}\n")
 
 
-def load_global_window_size(window_name):
+def load_global_window_size(window_name: str) -> Optional[Tuple[int, int]]:
     """Return a preferred window size as (width, height)."""
     try:
         with open(global_window_size_path(window_name)) as fil:
@@ -146,16 +146,16 @@ def load_global_window_size(window_name):
         return None
 
 
-def option_path(playername, option):
+def option_path(playername: str, option: str) -> str:
     return os.path.join(player_prefs_dir(playername), option)
 
 
-def save_bool_option(playername, option, value):
+def save_bool_option(playername: str, option: str, value: str):
     with open(option_path(playername, option), "w") as fil:
         fil.write(f"{value}\n")
 
 
-def load_bool_option(playername, option):
+def load_bool_option(playername: str, option: str) -> Optional[bool]:
     try:
         with open(option_path(playername, option)) as fil:
             tokens = fil.read().split()
@@ -165,12 +165,12 @@ def load_bool_option(playername, option):
         return None
 
 
-def server_path():
+def server_path() -> str:
     """Return the path to the file that holds known servers and ports.."""
     return os.path.join(GLOBAL_PREFS_DIR, "servers")
 
 
-def last_server_path():
+def last_server_path() -> str:
     """Return the path to the file that holds the last used server:port."""
     return os.path.join(GLOBAL_PREFS_DIR, "last_server")
 
@@ -180,7 +180,7 @@ def passwd_path() -> str:
     return os.path.join(GLOBAL_PREFS_DIR, "passwd")
 
 
-def load_servers():
+def load_servers() -> List[Tuple[str, int]]:
     """Return a list of (str server_name, int server_port) tuples."""
     server_entries = set()
     server_entries.add(("localhost", config.DEFAULT_PORT))
@@ -197,7 +197,7 @@ def load_servers():
     return sorted(server_entries)
 
 
-def load_last_server():
+def load_last_server() -> Tuple[str, int]:
     """Return the last (str server_name, int server_port) used, or
     the default if there are none."""
     if os.path.exists(last_server_path()):
@@ -207,10 +207,10 @@ def load_last_server():
                 if line:
                     host, port = line.split(":")
                     return (host, int(port))
-    return ("localhost", "config.DEFAULT_PORT")
+    return ("localhost", config.DEFAULT_PORT)
 
 
-def save_server(server_name, server_port):
+def save_server(server_name: str, server_port: int) -> None:
     """Add server_name and server_port to the list of known servers,
     and save it as the last server used."""
     if not os.path.exists(GLOBAL_PREFS_DIR):
@@ -224,7 +224,7 @@ def save_server(server_name, server_port):
         fil.write(f"{server_name}:{int(server_port)}\n")
 
 
-def load_playernames():
+def load_playernames() -> List[str]:
     """Return a sorted list of known player names."""
     playernames = set()
     playernames.add(getpass.getuser())
@@ -236,12 +236,12 @@ def load_playernames():
     return sorted(playernames)
 
 
-def last_playername_path():
+def last_playername_path() -> str:
     """Return the path to the file that holds the last playername."""
     return os.path.join(GLOBAL_PREFS_DIR, "last_player")
 
 
-def last_playername():
+def last_playername() -> str:
     """Return the last player name used, or "" if none."""
     if os.path.exists(last_playername_path()):
         with open(last_playername_path()) as fil:
@@ -250,7 +250,7 @@ def last_playername():
     return ""
 
 
-def save_last_playername(playername):
+def save_last_playername(playername: str) -> None:
     if not os.path.exists(GLOBAL_PREFS_DIR):
         os.makedirs(GLOBAL_PREFS_DIR)
     with open(last_playername_path(), "w") as fil:

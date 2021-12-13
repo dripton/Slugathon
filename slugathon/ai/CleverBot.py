@@ -13,6 +13,7 @@ from zope.interface import implementer
 from slugathon.ai.Bot import Bot
 from slugathon.ai import BotParams
 from slugathon.game import Game, Creature, Phase, Legion, Player
+from slugathon.net import User
 
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
@@ -54,7 +55,7 @@ class CleverBot(object):
     ):
         logging.info(f"CleverBot {playername=} {ai_time_limit=}")
         self.playername = playername
-        self.user = None
+        self.user = None  # type: Optional[User.User]
         self.ai_time_limit = ai_time_limit
         self.best_creature_moves = None
         if bot_params is None:

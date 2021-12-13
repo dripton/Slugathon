@@ -6,13 +6,14 @@ import tempfile
 import sys
 import time
 import logging
+from typing import Set
 
 import gi
 
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
-gtk3reactor.install()
+gtk3reactor.install()  # type: ignore
 from twisted.internet import reactor, utils, defer
 from twisted.python import log
 from gi.repository import GObject, Gtk, Gdk
@@ -34,18 +35,18 @@ class Connect(Gtk.Window):
 
     def __init__(
         self,
-        playername,
-        password,
-        server_name,
-        server_port,
-        connect_now,
-        log_path,
+        playername: str,
+        password: str,
+        server_name: str,
+        server_port: int,
+        connect_now: bool,
+        log_path: str,
     ):
         GObject.GObject.__init__(self)
 
-        self.playernames = set()
-        self.server_names = set()
-        self.server_ports = set()
+        self.playernames = set()  # type: Set[str]
+        self.server_names = set()  # type: Set[str]
+        self.server_ports = set()  # type: Set[int]
 
         self.set_title("Slugathon - Connect")
         self.set_default_size(400, -1)
@@ -127,8 +128,8 @@ class Connect(Gtk.Window):
         if connect_now:
             reactor.callWhenRunning(self.cb_connect_button_clicked)  # type: ignore
 
-    def _setup_logging(self, log_path):
-        log_observer = log.PythonLoggingObserver()
+    def _setup_logging(self, log_path: str) -> None:
+        log_observer = log.PythonLoggingObserver()  # type: ignore
         log_observer.start()
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
@@ -143,7 +144,7 @@ class Connect(Gtk.Window):
         logging.getLogger().addHandler(console_handler)
         logging.getLogger().setLevel(logging.DEBUG)
 
-    def _init_playernames(self, playername):
+    def _init_playernames(self, playername: str) -> None:
         self.playernames.update(prefs.load_playernames())
         if not playername:
             playername = prefs.last_playername()
@@ -158,11 +159,13 @@ class Connect(Gtk.Window):
         self.playername_comboboxentry.set_entry_text_column(0)
         self.playername_comboboxentry.set_active(active_index)
 
-    def _init_password(self, password):
+    def _init_password(self, password: str) -> None:
         if password:
             self.password_entry.set_text(password)
 
-    def _init_server_names_and_ports(self, server_name, server_port):
+    def _init_server_names_and_ports(
+        self, server_name: str, server_port: int
+    ) -> None:
         last_server_name, last_server_port = prefs.load_last_server()
         server_entries = prefs.load_servers()
         for name, port in server_entries:
@@ -256,7 +259,7 @@ class Connect(Gtk.Window):
         self.status_textview.get_buffer().set_text(f"Server failed {str(arg)}")
 
 
-def add_arguments(parser):
+def add_arguments(parser: argparse.ArgumentParser) -> None:
     tempdir = tempfile.gettempdir()
     logdir = os.path.join(tempdir, "slugathon")
     if not os.path.exists(logdir):
@@ -278,7 +281,7 @@ def add_arguments(parser):
     )
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     args, extras = parser.parse_known_args()

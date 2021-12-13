@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+from __future__ import annotations
 import argparse
 import random
 import tempfile
@@ -8,6 +9,7 @@ import os
 import logging
 import re
 import sys
+from typing import List, NoReturn, Optional
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -18,7 +20,7 @@ from twisted.spread.pb import PBConnectionLost, DeadReferenceError
 from twisted.python import log
 from zope.interface import implementer
 
-from slugathon.net import config, Results
+from slugathon.net import config, Results, User
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game, Phase, Creature
@@ -43,18 +45,18 @@ defer.setDebugging(True)
 class AIClient(pb.Referenceable, Observed):
     def __init__(
         self,
-        playername,
-        password,
-        host,
-        port,
-        delay,
-        game_name,
-        log_path,
-        ai_time_limit,
-        player_time_limit,
-        form_game,
-        min_players,
-        max_players,
+        playername: str,
+        password: str,
+        host: str,
+        port: int,
+        delay: int,
+        game_name: str,
+        log_path: str,
+        ai_time_limit: int,
+        player_time_limit: int,
+        form_game: bool,
+        min_players: int,
+        max_players: int,
     ):
         Observed.__init__(self)
         self.playername = playername
@@ -63,10 +65,10 @@ class AIClient(pb.Referenceable, Observed):
         self.port = port
         self.delay = delay
         self.aiclass = "CleverBot"
-        self.factory = pb.PBClientFactory()
+        self.factory = pb.PBClientFactory()  # type: ignore
         self.factory.unsafeTracebacks = True
-        self.user = None
-        self.games = []
+        self.user = None  # type: Optional[User.User]
+        self.games = []  # type: List[Game.Game]
         self.log_path = log_path
         self._setup_logging()
 
@@ -93,12 +95,12 @@ class AIClient(pb.Referenceable, Observed):
         self.min_players = min_players
         self.max_players = max_players
         self.paused = False
-        self.last_actions = []
+        self.last_actions = []  # type: List[Action.Action]
         self.aps = predictsplits.AllPredictSplits()
 
-    def _setup_logging(self):
+    def _setup_logging(self) -> None:
         if self.log_path:
-            log_observer = log.PythonLoggingObserver()
+            log_observer = log.PythonLoggingObserver()  # type: ignore
             log_observer.start()
             formatter = logging.Formatter(
                 "%(asctime)s %(levelname)s %(filename)s %(funcName)s "
@@ -109,8 +111,8 @@ class AIClient(pb.Referenceable, Observed):
             logging.getLogger().addHandler(file_handler)
             logging.getLogger().setLevel(logging.DEBUG)
 
-    def _setup_logging_form_game(self):
-        log_observer = log.PythonLoggingObserver()
+    def _setup_logging_form_game(self) -> None:
+        log_observer = log.PythonLoggingObserver()  # type: ignore
         log_observer.start()
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
@@ -130,33 +132,33 @@ class AIClient(pb.Referenceable, Observed):
         logging.getLogger().addHandler(console_handler)
         logging.getLogger().setLevel(logging.DEBUG)
 
-    def remote_set_name(self, name):
+    def remote_set_name(self, name: str) -> None:
         self.playername = name
 
-    def remote_ping(self):
+    def remote_ping(self) -> bool:
         return True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "AIClient " + str(self.playername)
 
-    def connect(self):
-        user_pass = credentials.UsernamePassword(
+    def connect(self) -> None:
+        user_pass = credentials.UsernamePassword(  # type: ignore
             bytes(self.playername, "utf-8"), bytes(self.password, "utf-8")
         )
         reactor.connectTCP(self.host, self.port, self.factory)  # type: ignore
-        def1 = self.factory.login(user_pass, self)
+        def1 = self.factory.login(user_pass, self)  # type: ignore
         def1.addCallback(self.connected)
         def1.addErrback(self.connection_failed)
 
-    def connected(self, user):
+    def connected(self, user: User.User) -> None:
         logging.info("connected")
         if user:
             self.user = user
             self.ai.user = user
-            def1 = user.callRemote("get_games")
+            def1 = user.callRemote("get_games")  # type: ignore
             def1.addCallback(self.got_games)
             def1.addErrback(self.failure)
-            lc = LoopingCall(user.callRemote, "ping")
+            lc = LoopingCall(user.callRemote, "ping")  # type: ignore
             def2 = lc.start(10)
             def2.addErrback(self.failure)
         else:
@@ -282,7 +284,7 @@ class AIClient(pb.Referenceable, Observed):
         observed = None
         self.update(observed, action, names)
 
-    def exit_unconditionally(self, returncode):
+    def exit_unconditionally(self, returncode: int) -> NoReturn:
         """Just exit the process, with no tracebacks or other drama."""
         logging.info(f"{returncode}")
         if reactor.running:  # type: ignore
@@ -763,7 +765,7 @@ class AIClient(pb.Referenceable, Observed):
             logging.info(f"got unhandled action {action}")
 
 
-def add_arguments(parser):
+def add_arguments(parser: argparse.ArgumentParser) -> None:
     # Twisted throws a TypeError if playername or password is None.
     parser.add_argument(
         "-n", "--playername", action="store", type=str, default=""
@@ -803,7 +805,7 @@ def add_arguments(parser):
     parser.add_argument("--max-players", type=int, default=6)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     args, extras = parser.parse_known_args()

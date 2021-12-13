@@ -1,3 +1,4 @@
+from __future__ import annotations
 import math
 from sys import maxsize
 from typing import List, Tuple, Union
@@ -8,8 +9,9 @@ import gi
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango, PangoCairo
 
+from slugathon.game import MasterHex
+from slugathon.gui import GUIMasterBoard
 from slugathon.util import guiutils, colors, fileutils
-
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
@@ -26,10 +28,14 @@ rp = guiutils.roundpoint
 
 
 class GUIMasterHex(object):
-    def __init__(self, masterhex, guiboard):
+    def __init__(
+        self,
+        masterhex: MasterHex.MasterHex,
+        guiboard: GUIMasterBoard.GUIMasterBoard,
+    ):
         self.masterhex = masterhex
         self.guiboard = guiboard
-        scale = self.guiboard.scale
+        scale = self.guiboard.scale  # type: int
         self.cx = masterhex.x * 4 * scale
         self.cy = masterhex.y * 4 * SQRT3 * scale
         if not masterhex.inverted:
@@ -48,7 +54,7 @@ class GUIMasterHex(object):
             self.inner_vertexes.append(rp(point))
         self.init_overlay()
 
-    def init_vertexes(self):
+    def init_vertexes(self) -> None:
         """Setup the hex vertexes.
 
         Each vertex is the midpoint between the vertexes of the two
@@ -76,7 +82,7 @@ class GUIMasterHex(object):
             self.vertexes[5] = rp((cx, cy + 2 * SQRT3 * scale))
 
     @property
-    def bounding_rect(self):
+    def bounding_rect(self) -> Tuple[float, float, float, float]:
         """Return the bounding rectangle (x, y, width, height) of this hex."""
         scale = self.guiboard.scale
         min_x = float(maxsize)
@@ -95,7 +101,7 @@ class GUIMasterHex(object):
         max_y += scale
         return min_x, min_y, max_x - min_x, max_y - min_y
 
-    def draw_hexagon(self, ctx):
+    def draw_hexagon(self, ctx) -> None:
         """Create the polygon, filled with the terrain color."""
 
         if self.selected:
@@ -125,7 +131,7 @@ class GUIMasterHex(object):
             guiutils.draw_polygon(ctx, self.points)
             ctx.stroke()
 
-    def init_gates(self):
+    def init_gates(self) -> None:
         """Setup the entrance and exit gates.
 
         There are up to 3 gates to draw on a hexside.  Each is 1/6
@@ -184,7 +190,7 @@ class GUIMasterHex(object):
             return _init_arrows(vx1, vy1, vx2, vy2, theta, unit)
         return None
 
-    def init_overlay(self):
+    def init_overlay(self) -> None:
         """Setup the overlay with terrain name and image."""
         scale = self.guiboard.scale
         self.bboxsize = (6 * scale, int(3 * SQRT3 * scale))
@@ -213,11 +219,11 @@ class GUIMasterHex(object):
         ctx.set_source_surface(input_surface)
         ctx.paint()
 
-    def draw_overlay(self, ctx):
+    def draw_overlay(self, ctx) -> None:
         ctx.set_source_surface(self.surface, self.dest_x, self.dest_y)
         ctx.paint()
 
-    def draw_label(self, ctx):
+    def draw_label(self, ctx) -> None:
         """Display the hex label."""
         label = str(self.masterhex.label)
         side = self.masterhex.label_side
@@ -250,13 +256,15 @@ class GUIMasterHex(object):
         ctx.move_to(x, y)
         PangoCairo.show_layout(ctx, layout)
 
-    def update_gui(self, ctx):
+    def update_gui(self, ctx) -> None:
         self.draw_hexagon(ctx)
         self.draw_overlay(ctx)
         self.draw_label(ctx)
 
 
-def _init_block(x0, y0, x1, y1, theta, unit):
+def _init_block(
+    x0: float, y0: float, x1: float, y1: float, theta: float, unit: float
+) -> List[Tuple[float, float]]:
     """Return a list of points to make a block."""
     xy = []
     xy.append((x0, y0))

@@ -1,5 +1,6 @@
 import copy
 import itertools
+from typing import List, Optional
 
 from slugathon.game.Creature import Creature
 
@@ -568,7 +569,7 @@ class PredictSplits(object):
         creatures = [CreatureInfo(name, True, True) for name in creature_names]
         self.root = Node(root_id, 0, creatures, None)
 
-    def get_nodes(self, root=None):
+    def get_nodes(self, root: Optional[Node] = None) -> List[Node]:
         """Return all nodes in subtree starting from root."""
         if root is None:
             root = self.root
@@ -577,7 +578,7 @@ class PredictSplits(object):
             nodes += self.get_nodes(child)
         return nodes
 
-    def get_leaves(self, root=None):
+    def get_leaves(self, root: Optional[Node] = None) -> List[Node]:
         """Return all non-empty childless nodes in subtree."""
         if root is None:
             root = self.root
@@ -651,10 +652,10 @@ class AllPredictSplits(list):
 
     """List of PredictSplits objects, for convenient testing."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(AllPredictSplits, self).__init__()
 
-    def get_leaf(self, markerid):
+    def get_leaf(self, markerid: str) -> Optional[Node]:
         """Return the leaf with markerid, or None."""
         for ps in self:
             leaf = ps.get_leaf(markerid)

@@ -11,6 +11,7 @@ gi.require_version("PangoCairo", "1.0")
 import cairo
 from gi.repository import Gtk, Pango, PangoCairo, GdkPixbuf
 
+from slugathon.game import Legion
 from slugathon.util import guiutils, fileutils
 
 
@@ -25,7 +26,9 @@ class Marker(object):
 
     """Clickable GUI legion marker"""
 
-    def __init__(self, legion, show_height, scale=15):
+    def __init__(
+        self, legion: Legion.Legion, show_height: bool, scale: int = 15
+    ):
         self.legion = legion
         self.name = legion.markerid
         self.chit_scale = CHIT_SCALE_FACTOR * scale

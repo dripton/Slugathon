@@ -12,7 +12,7 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor
@@ -46,6 +46,7 @@ from slugathon.gui import (
     ConfirmDialog,
     EventLog,
 )
+from slugathon.net import User
 from slugathon.util import guiutils, prefs
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature
@@ -108,11 +109,11 @@ class GUIMasterBoard(Gtk.EventBox):
     def __init__(
         self,
         board,
-        game=None,
-        user=None,
-        playername=None,
-        scale=None,
-        parent_window=None,
+        game: Optional[Game.Game] = None,
+        user: Optional[User.User] = None,
+        playername: Optional[str] = None,
+        scale: Optional[int] = None,
+        parent_window: Optional[Gtk.Window] = None,
     ):
         GObject.GObject.__init__(self)
 
@@ -139,21 +140,21 @@ class GUIMasterBoard(Gtk.EventBox):
         self.vbox.pack_start(self.ui.get_widget("/Toolbar"), False, False, 0)
 
         if scale is None:
-            self.scale = self.compute_scale()
+            self.scale = self.compute_scale()  # type: int
         else:
             self.scale = scale
         self.area = Gtk.DrawingArea()
         self.area.set_size_request(self.compute_width(), self.compute_height())
         self.vbox.pack_start(self.area, False, True, 0)
-        self.markers = []
+        self.markers = []  # type: List[Marker.Marker]
         self.guihexes = {}
         # list of tuples (Chit, hexlabel)
-        self.recruitchits = []
+        self.recruitchits = []  # type: List[Tuple[Chit.Chit, int]]
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
         self.negotiate = None
-        self.proposals = set()
+        self.proposals = set()  # type: Set[Proposal.Proposal]
         self.guimap = None
         self.acquire_angels = None
         self.game_over = None
@@ -166,7 +167,7 @@ class GUIMasterBoard(Gtk.EventBox):
         # Set of hexlabels of hexes to redraw.
         # If set to all hexlabels then we redraw the whole window.
         # Used to combine nearly simultaneous redraws into one.
-        self.repaint_hexlabels = set()
+        self.repaint_hexlabels = set()  # type: Set[int]
 
         self.area.connect("draw", self.cb_area_expose)
         self.area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
@@ -175,7 +176,7 @@ class GUIMasterBoard(Gtk.EventBox):
         self.area.connect("motion-notify-event", self.cb_motion)
         self.show_all()
 
-    def create_ui(self):
+    def create_ui(self) -> None:
         ag = Gtk.ActionGroup(name="MasterActions")
         actions = [
             ("GameMenu", None, "_Game"),
@@ -281,14 +282,15 @@ class GUIMasterBoard(Gtk.EventBox):
 
         for tup in toggle_actions:
             option = tup[0]
-            value = prefs.load_bool_option(self.playername, option)
-            if value is True:
-                checkmenuitem = self.ui.get_widget(
-                    f"/Menubar/OptionsMenu/{option}"
-                )
-                checkmenuitem.set_active(True)
+            if self.playername is not None:
+                value = prefs.load_bool_option(self.playername, option)
+                if value:
+                    checkmenuitem = self.ui.get_widget(
+                        f"/Menubar/OptionsMenu/{option}"
+                    )
+                    checkmenuitem.set_active(True)
 
-    def enable_resume_ai(self):
+    def enable_resume_ai(self) -> None:
         """Enable Resume AI and disable Pause AI."""
         pause_ai_button = self.ui.get_widget("/Toolbar/Pause AI")
         pause_ai_button.set_sensitive(False)
@@ -299,7 +301,7 @@ class GUIMasterBoard(Gtk.EventBox):
         resume_ai_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Resume AI")
         resume_ai_menuitem.set_sensitive(True)
 
-    def enable_pause_ai(self):
+    def enable_pause_ai(self) -> None:
         """Enable Pause AI and disable Resume AI."""
         pause_ai_button = self.ui.get_widget("/Toolbar/Pause AI")
         pause_ai_button.set_sensitive(True)
@@ -310,7 +312,7 @@ class GUIMasterBoard(Gtk.EventBox):
         resume_ai_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Resume AI")
         resume_ai_menuitem.set_sensitive(False)
 
-    def disable_mulligan(self):
+    def disable_mulligan(self) -> None:
         """Disable taking mulligans."""
         mulligan_button = self.ui.get_widget("/Toolbar/Mulligan")
         mulligan_button.set_sensitive(False)
@@ -751,7 +753,7 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def compute_scale(self):
+    def compute_scale(self) -> int:
         """Return the approximate maximum scale that let the board fit on
         the screen."""
         width = Gdk.Screen.width()
@@ -761,11 +763,11 @@ class GUIMasterBoard(Gtk.EventBox):
         yscale = height / (self.board.hex_height * 4 * SQRT3) - 5
         return int(min(xscale, yscale))
 
-    def compute_width(self):
+    def compute_width(self) -> int:
         """Return the width of the board in pixels."""
         return int(math.ceil(self.scale * (self.board.hex_width * 4 + 2)))
 
-    def compute_height(self):
+    def compute_height(self) -> int:
         """Return the height of the board in pixels."""
         return int(math.ceil(self.scale * self.board.hex_height * 4 * SQRT3))
 
@@ -776,16 +778,18 @@ class GUIMasterBoard(Gtk.EventBox):
             if marker.legion.hexlabel == hexlabel
         ]
 
-    def _add_missing_markers(self):
+    def _add_missing_markers(self) -> None:
         """Add markers for any legions that lack them."""
         markerids = {marker.name for marker in self.markers}
+        assert self.game is not None
         for legion in self.game.all_legions():
             if legion.markerid not in markerids:
                 marker = Marker.Marker(legion, True, self.scale)
                 self.markers.append(marker)
 
-    def _remove_extra_markers(self):
+    def _remove_extra_markers(self) -> None:
         """Remove markers for any legions that are no longer there."""
+        assert self.game is not None
         all_markerids = {legion.markerid for legion in self.game.all_legions()}
         hitlist = [
             marker
@@ -795,7 +799,9 @@ class GUIMasterBoard(Gtk.EventBox):
         for marker in hitlist:
             self.markers.remove(marker)
 
-    def _place_chits(self, chits, guihex):
+    def _place_chits(
+        self, chits: List[Chit.Chit], guihex: GUIMasterHex.GUIMasterHex
+    ) -> None:
         """Compute and set the correct locations for each chit (or recruitchit
         or marker) in the list, if they're all in guihex, taking their scale
         into account.

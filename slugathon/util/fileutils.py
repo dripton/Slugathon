@@ -5,7 +5,7 @@ __copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def basedir(*args):
+def basedir(*args: str) -> str:
     """Return an absolute path based on the base slugathon package directory
     and the passed paths."""
     if "_MEIPASS2" in os.environ:
