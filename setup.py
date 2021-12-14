@@ -45,7 +45,10 @@ def head_commit():
     if proc.returncode != 0:
         return ""
     if stdout:
-        return stdout.strip()
+        commit = stdout.strip()
+        if isinstance(commit, bytes):
+            commit = commit.decode("utf-8")
+        return commit
     else:
         return ""
 
