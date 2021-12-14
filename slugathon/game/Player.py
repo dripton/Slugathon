@@ -477,6 +477,7 @@ class Player(Observed):
             return False
         for creature in self.game.battle_active_legion.creatures:
             if creature.engaged and not creature.struck:
+                logging.info(f"{creature=} has forced strikes")
                 return True
         return False
 
