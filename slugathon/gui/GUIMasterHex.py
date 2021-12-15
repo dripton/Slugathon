@@ -1,7 +1,7 @@
 from __future__ import annotations
 import math
 from sys import maxsize
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import cairo
 import gi
@@ -148,6 +148,7 @@ class GUIMasterHex(object):
         ap = []
         for i in range(6):
             gp = [vertexes[i]]
+            assert gp is not None
             n = (i + 1) % 6
             if hex1.exits[i] is not None:
                 li = self.init_gate(
@@ -157,6 +158,7 @@ class GUIMasterHex(object):
                     vertexes[n][1],
                     hex1.exits[i],
                 )
+                assert li is not None
                 gp.extend(li)
             if hex1.entrances[i] is not None:
                 li = self.init_gate(
@@ -166,12 +168,20 @@ class GUIMasterHex(object):
                     vertexes[i][1],
                     hex1.entrances[i],
                 )
+                assert li is not None
                 li.reverse()
                 gp.extend(li)
             ap.extend(gp)
         self.points = [rp(point) for point in ap]
 
-    def init_gate(self, vx1, vy1, vx2, vy2, gate_type):
+    def init_gate(
+        self,
+        vx1: float,
+        vy1: float,
+        vx2: float,
+        vy2: float,
+        gate_type: Optional[int],
+    ) -> Optional[List[Tuple[float, float]]]:
         """Setup gate on one entrance / exit hexside."""
         x0 = vx1 + (vx2 - vx1) / 6.0
         y0 = vy1 + (vy2 - vy1) / 6.0
@@ -276,13 +286,13 @@ def _init_block(
 
 def _init_arch(
     x0: float, y0: float, x1: float, y1: float, theta: float, unit: float
-) -> List[Union[Tuple[float, float], float]]:
+) -> List[Tuple[float, float]]:
     """Return a list of points to make an approximate arch."""
     half = unit / 2.0
     p0 = (x0 + half * math.sin(theta), y0 - half * math.cos(theta))
     p1 = (x1 + half * math.sin(theta), y1 - half * math.cos(theta))
 
-    xy = []  # type: List[Union[Tuple[float, float], float]]
+    xy = []  # type: List[Tuple[float, float]]
 
     xy.append((x0, y0))
     xy.append(p0)
@@ -296,7 +306,9 @@ def _init_arch(
     return xy
 
 
-def _init_arrow(x0, y0, x1, y1, theta, unit):
+def _init_arrow(
+    x0: float, y0: float, x1: float, y1: float, theta: float, unit: float
+) -> List[Tuple[float, float]]:
     """Return a list of points to make a single arrow."""
     xy = []
     xy.append((x0, y0))

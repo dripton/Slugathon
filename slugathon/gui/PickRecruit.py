@@ -37,6 +37,7 @@ class PickRecruit(Gtk.Dialog):
         )
         self.legion = legion
         player = legion.player
+        assert player is not None
         self.deferred = def1
 
         self.set_icon(icon.pixbuf)
@@ -66,6 +67,7 @@ class PickRecruit(Gtk.Dialog):
         marker = Marker.Marker(legion, True, scale=20)
         marker_hbox.pack_start(marker.event_box, False, False, 0)
 
+        assert player.color is not None
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, False, True, 0)

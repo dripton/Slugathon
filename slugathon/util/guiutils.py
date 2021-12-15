@@ -2,6 +2,7 @@ import sys
 import math
 from typing import List, Tuple
 
+import cairo
 from twisted.internet import reactor
 
 
@@ -103,16 +104,18 @@ def point_in_polygon(point, vertexes):
     return c
 
 
-def midpoint(point1, point2):
+def midpoint(
+    point1: Tuple[float, float], point2: Tuple[float, float]
+) -> Tuple[float, float]:
     """Return a point midway between two points."""
     xx = (point1[0] + point2[0]) / 2.0
     yy = (point1[1] + point2[1]) / 2.0
     return (xx, yy)
 
 
-def roundpoint(point):
+def roundpoint(point: Tuple[float, float]) -> Tuple[float, float]:
     """Return a point with both coordinates rounded to integers."""
-    return (int(round(point[0])), int(round(point[1])))
+    return (round(point[0]), round(point[1]))
 
 
 def exit(*unused):
@@ -127,7 +130,9 @@ def exit(*unused):
         sys.exit(0)
 
 
-def draw_polygon(ctx, points):
+def draw_polygon(
+    ctx: cairo.Context, points: List[Tuple[float, float]]
+) -> None:
     """Draw a polygon using Cairo"""
     ctx.move_to(*points[0])
     for point in points[1:]:

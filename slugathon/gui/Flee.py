@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 
+from __future__ import annotations
 import logging
+from typing import Tuple
 
 import gi
 
@@ -9,13 +11,14 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
 from twisted.python import log
 from gi.repository import Gtk, GObject
 
+from slugathon.game import Legion
 from slugathon.gui import Chit, Marker, icon, ConfirmDialog
 
 
@@ -27,7 +30,12 @@ DO_NOT_FLEE = 0
 FLEE = 1
 
 
-def new(playername, attacker_legion, defender_legion, parent):
+def new(
+    playername: str,
+    attacker_legion: Legion.Legion,
+    defender_legion: Legion.Legion,
+    parent: Gtk.Window,
+) -> Tuple[Flee, defer.Deferred]:
     """Create a Flee dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     flee = Flee(playername, attacker_legion, defender_legion, def1, parent)
@@ -39,7 +47,12 @@ class Flee(Gtk.Dialog):
     """Dialog to choose whether to flee."""
 
     def __init__(
-        self, playername, attacker_legion, defender_legion, def1, parent
+        self,
+        playername: str,
+        attacker_legion: Legion.Legion,
+        defender_legion: Legion.Legion,
+        def1: defer.Deferred,
+        parent: Gtk.Window,
     ):
         GObject.GObject.__init__(
             self, title=f"Flee - {playername}", parent=parent
@@ -80,6 +93,9 @@ class Flee(Gtk.Dialog):
 
         self.attacker_chits_hbox = Gtk.HBox(homogeneous=False, spacing=3)
         self.attacker_hbox.pack_start(self.attacker_chits_hbox, True, True, 0)
+        assert attacker_legion is not None
+        assert attacker_legion.player is not None
+        assert attacker_legion.player.color is not None
         for creature in attacker_legion.sorted_creatures:
             chit = Chit.Chit(creature, attacker_legion.player.color, scale=20)
             chit.show()
@@ -99,6 +115,8 @@ class Flee(Gtk.Dialog):
         self.defender_hbox.pack_start(
             self.defender_score_label, False, True, 0
         )
+        assert defender_legion.player is not None
+        assert defender_legion.player.color is not None
 
         self.defender_chits_hbox = Gtk.HBox(homogeneous=False, spacing=3)
         self.defender_hbox.pack_start(self.defender_chits_hbox, True, True, 0)
@@ -148,7 +166,7 @@ class Flee(Gtk.Dialog):
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Creature, Legion, Player, Game
+    from slugathon.game import Creature, Player, Game
 
     now = time.time()
     attacker_playername = "Roar!"

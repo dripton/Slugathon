@@ -10,12 +10,13 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
 from gi.repository import Gtk, GObject
 
+from slugathon.game import Legion
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util.bag import bag
 
@@ -30,12 +31,12 @@ FIGHT = 2
 
 
 def new(
-    playername,
-    attacker_legion,
-    attacker_creature_names,
-    defender_legion,
-    defender_creature_names,
-    parent,
+    playername: str,
+    attacker_legion: Legion.Legion,
+    attacker_creature_names: List[str],
+    defender_legion: Legion.Legion,
+    defender_creature_names: List[str],
+    parent: Gtk.Window,
 ):
     """Create a Proposal dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
@@ -57,13 +58,13 @@ class Proposal(Gtk.Dialog):
 
     def __init__(
         self,
-        playername,
-        attacker_legion,
-        attacker_creature_names,
-        defender_legion,
-        defender_creature_names,
-        def1,
-        parent,
+        playername: str,
+        attacker_legion: Legion.Legion,
+        attacker_creature_names: List[str],
+        defender_legion: Legion.Legion,
+        defender_creature_names: List[str],
+        def1: defer.Deferred,
+        parent: Gtk.Window,
     ):
         GObject.GObject.__init__(
             self, title=f"Proposal - {playername}", parent=parent
@@ -115,6 +116,8 @@ class Proposal(Gtk.Dialog):
 
         surviving_attackers = bag(attacker_creature_names)
         surviving_defenders = bag(defender_creature_names)
+        assert attacker_legion.player is not None
+        assert attacker_legion.player.color is not None
 
         for creature in attacker_legion.sorted_creatures:
             name = creature.name
@@ -131,6 +134,8 @@ class Proposal(Gtk.Dialog):
 
         defender_chits = []
 
+        assert defender_legion.player is not None
+        assert defender_legion.player.color is not None
         for creature in defender_legion.sorted_creatures:
             name = creature.name
             if name in surviving_defenders:
@@ -168,7 +173,7 @@ class Proposal(Gtk.Dialog):
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Creature, Legion, Player, Game
+    from slugathon.game import Creature, Player, Game
 
     now = time.time()
     game_name = "Game1"

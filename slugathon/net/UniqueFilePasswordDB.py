@@ -29,7 +29,7 @@ class UniqueFilePasswordDB(FilePasswordDB):
         cache: bool = False,
         server: Optional[Server.Server] = None,
     ):
-        FilePasswordDB.__init__(
+        FilePasswordDB.__init__(  # type: ignore
             self,
             filename,
             delim,
@@ -48,4 +48,4 @@ class UniqueFilePasswordDB(FilePasswordDB):
             # already logged in
             return defer.fail(LoginDenied())
         else:
-            return FilePasswordDB.requestAvatarId(self, credentials)
+            return FilePasswordDB.requestAvatarId(self, credentials)  # type: ignore

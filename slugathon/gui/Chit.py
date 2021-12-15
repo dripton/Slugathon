@@ -4,6 +4,7 @@
 import tempfile
 import os
 import math
+from typing import Optional, Tuple
 
 import gi
 
@@ -13,6 +14,7 @@ gi.require_version("PangoCairo", "1.0")
 import cairo
 from gi.repository import Gtk, Pango, PangoCairo, GdkPixbuf
 
+from slugathon.game import Creature
 from slugathon.util import guiutils, colors, fileutils
 
 
@@ -34,13 +36,13 @@ class Chit(object):
 
     def __init__(
         self,
-        creature,
-        playercolor,
-        scale=15,
-        dead=False,
-        rotate=0,
-        outlined=False,
-        name=None,
+        creature: Optional[Creature.Creature],
+        playercolor: Optional[str],
+        scale: int = 15,
+        dead: bool = False,
+        rotate: int = 0,
+        outlined: bool = False,
+        name: Optional[str] = None,
     ):
         self.creature = creature
         if creature is None:
@@ -55,10 +57,15 @@ class Chit(object):
         # to Cairo.
         self.rotate = -rotate * math.pi / 180
         self.outlined = outlined
-        self.location = None  # (x, y) of top left corner
+        # (x, y) of top left corner
+        self.location = None  # type: Optional[Tuple[float, float]]
         self.chit_scale = CHIT_SCALE_FACTOR * scale
 
-        if creature and creature.name in ["Titan", "Angel"]:
+        if (
+            creature
+            and creature.name in ["Titan", "Angel"]
+            and playercolor is not None
+        ):
             self.bases = [self.name + playercolor]
         else:
             self.bases = [self.name]
@@ -73,6 +80,7 @@ class Chit(object):
         else:
             color_name = "black"
         if color_name == "by_player":
+            assert playercolor is not None
             color_name = f"titan_{playercolor.lower()}"
         self.rgb = guiutils.rgb_to_float(colors.rgb_colors[color_name])
 
@@ -125,11 +133,11 @@ class Chit(object):
         os.remove(tmp_path)
         self.image.set_from_pixbuf(self.pixbuf)
 
-    def point_inside(self, point):
+    def point_inside(self, point: Tuple[float, float]) -> bool:
         assert self.location
         return guiutils.point_in_square(point, self.location, self.chit_scale)
 
-    def show(self):
+    def show(self) -> None:
         self.event_box.show()
         self.image.show()
 
@@ -236,8 +244,6 @@ class Chit(object):
 
 
 if __name__ == "__main__":
-    from slugathon.game import Creature
-
     creature = Creature.Creature("Ogre")
     creature.hits = 3
     chit = Chit(creature, "Red", scale=45, rotate=90)

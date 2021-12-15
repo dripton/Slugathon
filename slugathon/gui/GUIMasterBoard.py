@@ -886,6 +886,7 @@ class GUIMasterBoard(Gtk.EventBox):
         for (chit, hexlabel2) in self.recruitchits:
             if hexlabel == hexlabel2:
                 chits.append(chit)
+                assert chit.creature is not None
                 old_chits.add(chit.creature.name)
         new_chits = bag()
         for name in recruit_names:
@@ -894,7 +895,7 @@ class GUIMasterBoard(Gtk.EventBox):
         for name, number in diff.items():
             for unused in range(number):
                 recruit = Creature.Creature(name)
-                chit = Chit.Chit(recruit, player.color, recruitchit_scale)
+                chit = Chit.Chit(recruit, player.color, int(recruitchit_scale))
                 chits.append(chit)
                 self.recruitchits.append((chit, hexlabel))
         self._place_chits(chits, guihex)
@@ -1530,6 +1531,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     attacker = legion
                 else:
                     defender = legion
+            assert attacker is not None
             assert defender is not None
             if defender.player.name == self.playername:
                 if defender.can_flee:
@@ -1596,13 +1598,14 @@ class GUIMasterBoard(Gtk.EventBox):
             attacker = self.game.find_legion(attacker_markerid)
             defender_markerid = action.defender_markerid
             defender = self.game.find_legion(defender_markerid)
+            assert self.playername is not None
             if attacker is not None and defender is not None:
                 proposal, def1 = Proposal.new(
                     self.playername,
                     attacker,
-                    action.attacker_creature_names,
+                    list(action.attacker_creature_names),
                     defender,
-                    action.defender_creature_names,
+                    list(action.defender_creature_names),
                     self.parent_window,
                 )
                 def1.addCallback(self.cb_proposal)
@@ -1729,6 +1732,7 @@ class GUIMasterBoard(Gtk.EventBox):
             ):
                 markerid = action.markerid
                 legion = self.game.find_legion(markerid)
+                assert legion is not None
                 angels = action.angels
                 archangels = action.archangels
                 caretaker = self.game.caretaker

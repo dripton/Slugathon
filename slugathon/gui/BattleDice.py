@@ -9,7 +9,7 @@ from zope.interface import implementer
 
 from slugathon.gui import Die, Chit
 from slugathon.util.Observer import IObserver
-from slugathon.game import Action
+from slugathon.game import Action, Creature
 
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"

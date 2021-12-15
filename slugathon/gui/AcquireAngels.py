@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 
+from __future__ import annotations
 import logging
+from typing import List, Tuple
 
 import gi
 
@@ -10,14 +12,21 @@ from gi.repository import Gtk, GObject
 from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.game import Creature
+from slugathon.game import Caretaker, Creature, Legion
 
 
 __copyright__ = "Copyright (c) 2007-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, legion, num_archangels, num_angels, caretaker, parent):
+def new(
+    playername: str,
+    legion: Legion.Legion,
+    num_archangels: int,
+    num_angels: int,
+    caretaker: Caretaker.Caretaker,
+    parent: Gtk.Window,
+) -> Tuple[AcquireAngels, defer.Deferred]:
     """Create an AcquireAngels dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     acquire_angel = AcquireAngels(
@@ -27,8 +36,11 @@ def new(playername, legion, num_archangels, num_angels, caretaker, parent):
 
 
 def find_angel_combos(
-    num_archangels, num_angels, archangels_left, angels_left
-):
+    num_archangels: int,
+    num_angels: int,
+    archangels_left: int,
+    angels_left: int,
+) -> List[Tuple[Creature.Creature, ...]]:
     """Return a list of tuples of Creatures, corresponding to each
     possible group of angels and archangels."""
     set1 = set()
@@ -59,13 +71,13 @@ class AcquireAngels(Gtk.Dialog):
 
     def __init__(
         self,
-        playername,
-        legion,
-        num_archangels,
-        num_angels,
-        caretaker,
-        def1,
-        parent,
+        playername: str,
+        legion: Legion.Legion,
+        num_archangels: int,
+        num_angels: int,
+        caretaker: Caretaker.Caretaker,
+        def1: defer.Deferred,
+        parent: Gtk.Window,
     ):
         GObject.GObject.__init__(
             self, title=f"AcquireAngels - {playername}", parent=parent
@@ -98,6 +110,7 @@ class AcquireAngels(Gtk.Dialog):
         chits_hbox = Gtk.HBox(spacing=3)
         legion_hbox.pack_start(chits_hbox, True, True, 0)
 
+        assert player.color is not None
         for creature in legion.sorted_living_creatures:
             chit = Chit.Chit(creature, player.color, scale=20)
             chits_hbox.pack_start(chit.event_box, False, True, 0)
@@ -129,21 +142,21 @@ class AcquireAngels(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event):
         """Acquire an angel."""
         eventbox = widget
         chit = eventbox.chit
         self.deferred.callback((self.legion, self.chit_to_combo[chit]))
         self.destroy()
 
-    def cb_cancel(self, widget, response_id):
+    def cb_cancel(self, widget: Gtk.Widget, response_id: int):
         self.deferred.callback((self.legion, None))
         self.destroy()
 
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Legion, Player, Game
+    from slugathon.game import Player, Game
     from slugathon.util import guiutils
 
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]

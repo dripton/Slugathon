@@ -368,7 +368,7 @@ class Results(object):
         logging.info(f"spawning new AI {player_id} {name} {bp}")
         return player_id
 
-    def _breed_new_ai(self, cursor, old_player_ids):
+    def _breed_new_ai(self, cursor: sqlite3.Cursor, old_player_ids: Set[int]):
         """Breed a new AI, from two weighted-random experienced parents."""
         query = """SELECT p.player_id, p.mu FROM player p
                    WHERE p.class = 'CleverBot'"""

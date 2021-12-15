@@ -59,7 +59,7 @@ class Server(Observed):
         self._setup_logging(log_path)
 
     def _setup_logging(self, log_path: str) -> None:
-        log_observer = log.PythonLoggingObserver()
+        log_observer = log.PythonLoggingObserver()  # type: ignore
         log_observer.start()
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s %(funcName)s %(lineno)d "
@@ -1160,15 +1160,15 @@ def main() -> None:
     args, extras = parser.parse_known_args()
     port = args.port
     server = Server(args.no_passwd, args.passwd_path, args.port, args.log_path)
-    realm = Realm.Realm(server)
+    realm = Realm.Realm(server)  # type: ignore
     if args.no_passwd:
         checker = UniqueNoPassword(
             None, server=server
         )  # type: UniqueFilePasswordDB
     else:
         checker = UniqueFilePasswordDB(args.passwd_path, server=server)
-    portal = Portal(realm, [checker])
-    pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)
+    portal = Portal(realm, [checker])  # type: ignore
+    pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)  # type: ignore
     reactor.listenTCP(port, pbfact)  # type: ignore[attr-defined]
     logging.info("main calling reactor.run")
     reactor.run()  # type: ignore[attr-defined]
