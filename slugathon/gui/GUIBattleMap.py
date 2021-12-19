@@ -559,15 +559,19 @@ class GUIBattleMap(Gtk.EventBox):
     def _remove_dead_chits(self) -> None:
         for chit in reversed(self.chits):
             assert chit.creature is not None
-            if chit.creature.dead or chit.creature.hexlabel in [
-                "ATTACKER",
-                "DEFENDER",
-            ]:
+            if (
+                (chit.creature.dead)
+                or (chit.creature.hexlabel in {"ATTACKER", "DEFENDER"})
+                and self.game is not None
+                and chit.creature.legion is not None
+                and self.game.battle_active_player
+                != chit.creature.legion.player
+            ):
                 self.chits.remove(chit)
                 hexlabel = (
                     chit.creature.hexlabel or chit.creature.previous_hexlabel
                 )
-                chit.hexlabel = None
+                chit.creature.hexlabel = None
                 if hexlabel is not None:
                     self.repaint({hexlabel})
         assert self.attacker_graveyard is not None
