@@ -134,7 +134,7 @@ class NewGame(Gtk.Dialog):
             self.player_time_limit = (
                 self.player_time_limit_spin.get_value_as_int()
             )
-            def1 = self.user.callRemote(
+            def1 = self.user.callRemote(  # type: ignore
                 "form_game",
                 self.game_name,
                 self.min_players,

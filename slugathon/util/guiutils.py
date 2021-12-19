@@ -143,7 +143,8 @@ def draw_polygon(
 
 
 def rectangles_intersect(
-    rect1: Tuple[int, int, int, int], rect2: Tuple[int, int, int, int]
+    rect1: Tuple[float, float, float, float],
+    rect2: Tuple[float, float, float, float],
 ) -> bool:
     """Return True iff the two rectangles intersect"""
     x1, y1, width1, height1 = rect1

@@ -153,7 +153,7 @@ class GUIMasterBoard(Gtk.EventBox):
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
         self.selected_marker = None
-        self.negotiate = None
+        self.negotiate = None  # type: Optional[Negotiate.Negotiate]
         self.proposals = set()  # type: Set[Proposal.Proposal]
         self.guimap = None  # type: Optional[GUIBattleMap.GUIBattleMap]
         self.acquire_angels = (
@@ -324,6 +324,7 @@ class GUIMasterBoard(Gtk.EventBox):
     def _init_caretaker(self):
         if not self.guicaretaker:
             assert self.game is not None
+            assert self.playername is not None
             self.guicaretaker = GUICaretaker.GUICaretaker(
                 self.game, self.playername
             )
@@ -333,6 +334,7 @@ class GUIMasterBoard(Gtk.EventBox):
     def _init_status_screen(self):
         if not self.status_screen:
             assert self.game is not None
+            assert self.playername is not None
             self.status_screen = StatusScreen.StatusScreen(
                 self.game, self.playername
             )
@@ -342,6 +344,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def _init_inspector(self):
         if not self.inspector:
+            assert self.playername is not None
             self.inspector = Inspector.Inspector(self.playername)
             self.vbox2.pack_start(Gtk.HSeparator(), True, True, 0)
             self.vbox2.pack_start(self.inspector, True, True, 0)
@@ -412,6 +415,7 @@ class GUIMasterBoard(Gtk.EventBox):
                     player = self.game.get_player_by_name(self.playername)
                     assert player is not None
                     player_color = player.color
+                    assert player_color is not None
                 else:
                     player_color = "Black"
                 if self.inspector:
@@ -492,6 +496,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self._pick_entry_side(False, legion, moves)
         else:
             hexlabel = moves[0][0]
+            assert self.playername is not None
             _, def1 = PickMoveType.new(
                 self.playername, legion, hexlabel, self.parent_window
             )
@@ -527,7 +532,10 @@ class GUIMasterBoard(Gtk.EventBox):
             else:
                 entry_sides = {move[1] for move in moves}
             _, def1 = PickEntrySide.new(
-                self.board, masterhex, entry_sides, self.parent_window
+                self.board,
+                masterhex,
+                entry_sides,  # type: ignore
+                self.parent_window,
             )
             def1.addCallback(
                 self._pick_teleporting_lord, legion, moves, teleport
@@ -549,6 +557,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 if len(lord_types) == 1:
                     lord_name = lord_types.pop()
                 else:
+                    assert self.playername is not None
                     _, def1 = PickTeleportingLord.new(
                         self.playername, legion, self.parent_window
                     )
@@ -666,6 +675,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 mterrain = masterhex.terrain
                 caretaker = self.game.caretaker
                 if legion.can_recruit:
+                    assert self.playername is not None
                     logging.info("PickRecruit.new (muster)")
                     _, def1 = PickRecruit.new(
                         self.playername,
@@ -688,6 +698,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def split_legion(self, legion):
         if legion is not None:
+            assert self.playername is not None
             _, def1 = SplitLegion.new(
                 self.playername, legion, self.parent_window
             )
@@ -1510,7 +1521,7 @@ class GUIMasterBoard(Gtk.EventBox):
         elif isinstance(action, Action.StartMusterPhase):
             assert self.game is not None
             # clear movement die
-            self.repaint_hexlabels.update(list(self.board.hexes.keys()))
+            self.repaint_hexlabels.update(self.board.hexes.keys())
             self.highlight_recruits()
             player = self.game.active_player
             assert player is not None
@@ -1630,8 +1641,11 @@ class GUIMasterBoard(Gtk.EventBox):
             assert self.game is not None
             attacker_markerid = action.attacker_markerid
             attacker = self.game.find_legion(attacker_markerid)
+            assert attacker is not None
             defender_markerid = action.defender_markerid
             defender = self.game.find_legion(defender_markerid)
+            assert defender is not None
+            assert self.playername is not None
             if action.other_playername == self.playername:
                 self.negotiate, def1 = Negotiate.new(
                     self.playername, attacker, defender, self.parent_window
@@ -1788,6 +1802,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self.destroy_negotiate()
             self.unselect_all()
             if self.guimap is None and not self.destroyed:
+                assert self.game.battlemap is not None
                 self.guimap = GUIBattleMap.GUIBattleMap(
                     self.game.battlemap,
                     self.game,

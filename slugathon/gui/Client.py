@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -6,7 +7,7 @@ from twisted.internet import reactor
 from twisted.python import log
 from zope.interface import implementer
 
-from slugathon.net import config
+from slugathon.net import config, User
 from slugathon.util.Observer import IObserver
 from slugathon.util.Observed import Observed
 from slugathon.game import Action, Game
@@ -34,7 +35,7 @@ class Client(pb.Referenceable, Observed):
         self.port = port
         self.factory = pb.PBClientFactory()
         self.factory.unsafeTracebacks = True
-        self.user = None
+        self.user = None  # type: Optional[User.User]
         self.playernames = set()
         self.games = []
         self.guiboards = {}  # Maps game to guiboard
@@ -83,6 +84,7 @@ class Client(pb.Referenceable, Observed):
         for game_info_tuple in game_info_tuples:
             self.add_game(game_info_tuple)
         self.main_window = MainWindow.MainWindow(self.playername)
+        assert self.user is not None
         lobby = Lobby.Lobby(
             self.user,
             self.playername,

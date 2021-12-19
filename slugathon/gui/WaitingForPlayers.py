@@ -148,16 +148,16 @@ class WaitingForPlayers(Gtk.Dialog):
         self.show_all()
 
     def cb_click_join(self, widget, event):
-        def1 = self.user.callRemote("join_game", self.game.name, "Human", "")
+        def1 = self.user.callRemote("join_game", self.game.name, "Human", "")  # type: ignore
         def1.addErrback(self.failure)
 
     def cb_destroy(self, unused):
         if self.game and not self.game.started:
-            def1 = self.user.callRemote("withdraw", self.game.name)
+            def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
             def1.addErrback(self.failure)
 
     def cb_click_drop(self, widget, event):
-        def1 = self.user.callRemote("withdraw", self.game.name)
+        def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
         self.destroy()
 

@@ -227,6 +227,7 @@ class StatusScreen(Gtk.EventBox):
             self.battle_player_label.set_text(
                 self.game.battle_active_player.name
             )
+            assert self.game.battle_phase is not None
             self.battle_phase_label.set_text(
                 Phase.battle_phase_names[self.game.battle_phase]
             )
@@ -248,6 +249,7 @@ class StatusScreen(Gtk.EventBox):
         elif isinstance(action, Action.PickedColor):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
+            assert player is not None
             player_num = self.game.players.index(player)
             color = action.color
             color_label = getattr(self, "color%d_label" % player_num)
@@ -268,6 +270,7 @@ class StatusScreen(Gtk.EventBox):
         elif isinstance(action, Action.CreateStartingLegion):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
+            assert player is not None
             player_num = self.game.players.index(player)
             legions_label = getattr(self, "legions%d_label" % player_num)
             legions_label.set_text(str(len(player.markerid_to_legion)))
@@ -283,6 +286,7 @@ class StatusScreen(Gtk.EventBox):
         ):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
+            assert player is not None
             player_num = self.game.players.index(player)
             legions_label = getattr(self, "legions%d_label" % player_num)
             legions_label.set_text(str(len(player.markerid_to_legion)))
@@ -299,6 +303,7 @@ class StatusScreen(Gtk.EventBox):
             self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
             playername = action.playername
             player = self.game.get_player_by_name(playername)
+            assert player is not None
             player_num = self.game.players.index(player)
             legions_label = getattr(self, "legions%d_label" % player_num)
             legions_label.set_text(str(len(player.markerid_to_legion)))
@@ -313,6 +318,7 @@ class StatusScreen(Gtk.EventBox):
         ):
             playername = action.playername
             player = self.game.get_player_by_name(playername)
+            assert player is not None
             player_num = self.game.players.index(player)
             creatures_label = getattr(self, "creatures%d_label" % player_num)
             creatures_label.set_text(str(player.num_creatures))

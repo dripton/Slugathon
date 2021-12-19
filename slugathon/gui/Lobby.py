@@ -347,7 +347,7 @@ class Lobby(Gtk.EventBox):
                     dest = None
                 else:
                     dest = self.selected_names
-                def1 = self.user.callRemote("send_chat_message", dest, text)
+                def1 = self.user.callRemote("send_chat_message", dest, text)  # type: ignore
                 def1.addErrback(self.failure)
                 self.chat_entry.set_text("")
 
