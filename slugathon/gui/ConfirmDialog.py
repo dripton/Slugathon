@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+from typing import Tuple
 
 import gi
 
@@ -7,7 +9,7 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
@@ -20,7 +22,9 @@ __copyright__ = "Copyright (c) 2010-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(parent, title, message):
+def new(
+    parent: Gtk.Window, title: str, message: str
+) -> Tuple[ConfirmDialog, defer.Deferred]:
     def1 = defer.Deferred()  # type: defer.Deferred
     confirm_dialog = ConfirmDialog(parent, title, message, def1)
     return confirm_dialog, def1
@@ -32,7 +36,13 @@ class ConfirmDialog(Gtk.MessageDialog):
     The deferred fires True on Yes, False on No.
     """
 
-    def __init__(self, parent, title, message, def1):
+    def __init__(
+        self,
+        parent: Gtk.Window,
+        title: str,
+        message: str,
+        def1: defer.Deferred,
+    ):
         GObject.GObject.__init__(
             self, parent=parent, buttons=Gtk.ButtonsType.YES_NO
         )

@@ -8,7 +8,7 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor
@@ -17,8 +17,10 @@ from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
-from slugathon.game import Action
+from slugathon.game import Action, Game
+
 from slugathon.gui import icon
+from slugathon.net import User
 from slugathon.util.NullUser import NullUser
 
 
@@ -26,7 +28,7 @@ __copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def format_time(secs):
+def format_time(secs: float) -> str:
     tup = time.localtime(secs)
     return time.strftime("%H:%M:%S", tup)
 
@@ -36,7 +38,13 @@ class WaitingForPlayers(Gtk.Dialog):
 
     """Waiting for players to start game dialog."""
 
-    def __init__(self, user, playername, game, parent):
+    def __init__(
+        self,
+        user: User.User,
+        playername: str,
+        game: Game.Game,
+        parent: Gtk.Window,
+    ):
         GObject.GObject.__init__(
             self, title=f"Waiting for Players - {playername}", parent=parent
         )
@@ -156,10 +164,10 @@ class WaitingForPlayers(Gtk.Dialog):
     def cb_click_start(self, widget, event):
         self.start_game()
 
-    def start_game(self):
+    def start_game(self) -> None:
         if not self.started:
             self.started = True
-            def1 = self.user.callRemote("start_game", self.game.name)
+            def1 = self.user.callRemote("start_game", self.game.name)  # type: ignore
             def1.addErrback(self.failure)
 
     # TODO Save the selection and do something useful with it.
@@ -168,7 +176,7 @@ class WaitingForPlayers(Gtk.Dialog):
         self.player_store[index, 0]
         return False
 
-    def update_countdown(self):
+    def update_countdown(self) -> None:
         diff = int(self.game.start_time - time.time())
         label = str(max(diff, 0))
         self.countdown_entry.set_text(label)
@@ -181,8 +189,8 @@ class WaitingForPlayers(Gtk.Dialog):
             if self.game.num_players >= self.game.min_players:
                 self.start_game()
 
-    def update_player_store(self):
-        def1 = self.user.callRemote("get_player_data")
+    def update_player_store(self) -> None:
+        def1 = self.user.callRemote("get_player_data")  # type: ignore
         def1.addCallback(self._got_player_data)
         def1.addErrback(self.failure)
 
@@ -231,8 +239,6 @@ class WaitingForPlayers(Gtk.Dialog):
 
 
 if __name__ == "__main__":
-    from slugathon.game import Game
-
     now = time.time()
     user = NullUser()
     playername = "Player 1"

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from typing import Any, List, Optional, Tuple
 
 import gi
 
@@ -8,6 +9,7 @@ from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
 
 from slugathon.gui import Die, Chit
+from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Creature
 
@@ -21,7 +23,7 @@ class BattleDice(Gtk.EventBox):
 
     """Widget to show die rolls in battle."""
 
-    def __init__(self, scale):
+    def __init__(self, scale: int):
         GObject.GObject.__init__(self)
         self.scale = scale
         self.n_rows = 2
@@ -40,13 +42,18 @@ class BattleDice(Gtk.EventBox):
 
         self.show_all()
 
-    def row_and_column(self, ii):
+    def row_and_column(self, ii: int) -> Tuple[int, int]:
         """Return the row and column for ii."""
         row = ii // self.n_columns
         column = ii % self.n_columns
         return (row, column)
 
-    def update(self, observed, action, names):
+    def update(
+        self,
+        observed: Optional[Observed],
+        action: Any,
+        names: Optional[List[str]],
+    ) -> None:
         if isinstance(action, Action.Strike):
             rolls = sorted(action.rolls, reverse=True)
             changed = False

@@ -1,7 +1,8 @@
+from __future__ import annotations
 import os
 import math
 from sys import maxsize
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import cairo
 import gi
@@ -9,6 +10,8 @@ import gi
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango, PangoCairo
 
+from slugathon.game import BattleHex
+from slugathon.gui import GUIBattleMap
 from slugathon.util import guiutils, colors, sliceborder, fileutils
 
 
@@ -29,7 +32,9 @@ IMAGE_DIR = fileutils.basedir("images/battlehex")
 
 
 class GUIBattleHex(object):
-    def __init__(self, battlehex, guimap):
+    def __init__(
+        self, battlehex: BattleHex.BattleHex, guimap: GUIBattleMap.GUIBattleMap
+    ):
         self.battlehex = battlehex
         self.guimap = guimap
         scale = self.guimap.scale
@@ -50,16 +55,16 @@ class GUIBattleHex(object):
                 self.vertexes[3][1] - self.vertexes[0][1],
             )
         )
-        self.hex_surface = None
-        self.hex_surface_x = None
-        self.hex_surface_y = None
-        self.border_surfaces = []
-        self.border_surface_x = None
-        self.border_surface_y = None
+        self.hex_surface = None  # type: Optional[cairo.ImageSurface]
+        self.hex_surface_x = None  # type: Optional[int]
+        self.hex_surface_y = None  # type: Optional[int]
+        self.border_surfaces = []  # type: List[Optional[cairo.Surface]]
+        self.border_surface_x = None  # type: Optional[float]
+        self.border_surface_y = None  # type: Optional[float]
         self.init_hex_overlay()
         self.init_border_overlays()
 
-    def find_fillcolor(self):
+    def find_fillcolor(self) -> Tuple[float, ...]:
         terrain = self.battlehex.terrain
         color = colors.battle_terrain_colors.get(
             (terrain, self.battlehex.elevation), None
@@ -68,7 +73,7 @@ class GUIBattleHex(object):
             color = colors.battle_terrain_colors[terrain]
         return guiutils.rgb_to_float(colors.rgb_colors[color])
 
-    def init_vertexes(self):
+    def init_vertexes(self) -> None:
         """Setup the hex vertexes.
 
         Each vertex is the midpoint between the vertexes of the two
@@ -115,21 +120,21 @@ class GUIBattleHex(object):
             max_y = max(max_y, y)
         return min_x, min_y, max_x - min_x, max_y - min_y
 
-    def draw_hexagon(self, ctx):
+    def draw_hexagon(self, ctx: cairo.Context):
         """Create the polygon, filled with the terrain color."""
         # inner hex
         ctx.set_source_rgb(*self.fillcolor)
         guiutils.draw_polygon(ctx, self.points)
         ctx.fill()
 
-    def draw_selection(self, ctx):
+    def draw_selection(self, ctx: cairo.Context):
         """If the hex is selected, draw the red outline."""
         if self.selected:
             ctx.set_source_rgba(1, 0, 0, 0.8)
             guiutils.draw_polygon(ctx, self.points)
             ctx.stroke()
 
-    def init_hex_overlay(self):
+    def init_hex_overlay(self) -> None:
         """Setup the overlay with terrain name and image."""
         overlay_filename = f"{self.battlehex.terrain}.png"
         image_path = os.path.join(IMAGE_DIR, overlay_filename)
@@ -155,7 +160,7 @@ class GUIBattleHex(object):
         ctx.set_source_surface(input_surface)
         ctx.paint()
 
-    def init_border_overlays(self):
+    def init_border_overlays(self) -> None:
         """Setup the overlays for each border."""
         myboxsize = [int(round(0.97 * mag)) for mag in self.bboxsize]
         self.border_surface_x = int(round(self.center[0] - myboxsize[0] / 2.0))
@@ -165,6 +170,7 @@ class GUIBattleHex(object):
             overlay_filename = f"{border}.png"
             image_path = os.path.join(IMAGE_DIR, overlay_filename)
             if os.path.exists(image_path):
+                assert border is not None
                 hexsides = self.battlehex.hexsides_with_border(border)
                 hexsides_str = "".join(map(str, sorted(hexsides)))
                 border_filename = f"{border}-{hexsides_str}.png"
@@ -191,27 +197,33 @@ class GUIBattleHex(object):
                 ctx.paint()
             self.border_surfaces.append(border_surface)
 
-    def draw_hex_overlay(self, ctx):
+    def draw_hex_overlay(self, ctx: cairo.Context):
         """Draw the main terrain overlay for the hex."""
         if self.hex_surface is None:
             return
+        assert self.hex_surface_x is not None
+        assert self.hex_surface_y is not None
         ctx.set_source_surface(
             self.hex_surface, self.hex_surface_x, self.hex_surface_y
         )
         ctx.paint()
 
-    def draw_border_overlays(self, ctx):
+    def draw_border_overlays(self, ctx: cairo.Context):
         """Draw the overlays for all borders that have them."""
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
+                border_surface = self.border_surfaces[hexside]
+                assert border_surface is not None
+                assert self.border_surface_x is not None
+                assert self.border_surface_y is not None
                 ctx.set_source_surface(
-                    self.border_surfaces[hexside],
+                    border_surface,
                     self.border_surface_x,
                     self.border_surface_y,
                 )
                 ctx.paint()
 
-    def draw_label(self, ctx, label, side):
+    def draw_label(self, ctx: cairo.Context, label, side):
         """Display the hex label."""
         layout = PangoCairo.create_layout(ctx)
         # TODO Vary font size with scale
@@ -242,7 +254,7 @@ class GUIBattleHex(object):
         ctx.move_to(x, y)
         PangoCairo.show_layout(ctx, layout)
 
-    def update_gui(self, ctx):
+    def update_gui(self, ctx: cairo.Context) -> None:
         self.draw_hexagon(ctx)
         if not self.battlehex.entrance:
             self.draw_hex_overlay(ctx)
@@ -255,5 +267,5 @@ class GUIBattleHex(object):
             )
         self.draw_selection(ctx)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"GUIBattleHex {self.battlehex.label}"

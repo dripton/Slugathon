@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
+from typing import Optional, Tuple
 
 import gi
 
@@ -10,14 +11,20 @@ from gi.repository import Gtk, GObject
 from twisted.internet import defer
 
 from slugathon.gui import Chit, Marker, icon
-from slugathon.game import Creature
+from slugathon.game import Caretaker, Creature, Legion
 
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, legion, mterrain, caretaker, parent):
+def new(
+    playername: str,
+    legion: Legion.Legion,
+    mterrain: str,
+    caretaker: Caretaker.Caretaker,
+    parent: Optional[Gtk.Window],
+) -> Tuple[PickRecruit, defer.Deferred]:
     """Create a PickRecruit dialog and return it and a Deferred."""
     logging.info(f"new {playername} {legion} {mterrain}")
     def1 = defer.Deferred()  # type: defer.Deferred
@@ -31,7 +38,15 @@ class PickRecruit(Gtk.Dialog):
 
     """Dialog to pick a recruit."""
 
-    def __init__(self, playername, legion, mterrain, caretaker, def1, parent):
+    def __init__(
+        self,
+        playername: str,
+        legion: Legion.Legion,
+        mterrain: str,
+        caretaker: Caretaker.Caretaker,
+        def1: defer.Deferred,
+        parent: Optional[Gtk.Window],
+    ):
         GObject.GObject.__init__(
             self, title=f"PickRecruit - {playername}", parent=parent
         )
@@ -130,7 +145,7 @@ class PickRecruit(Gtk.Dialog):
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Legion, Player, Game
+    from slugathon.game import Player, Game
     from slugathon.util import guiutils
 
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]

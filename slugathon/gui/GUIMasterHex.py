@@ -322,7 +322,9 @@ def _init_arrow(
     return xy
 
 
-def _init_arrows(vx1, vy1, vx2, vy2, theta, unit):
+def _init_arrows(
+    vx1: float, vy1: float, vx2: float, vy2: float, theta: float, unit: float
+) -> List[Tuple[float, float]]:
     """Return a list of points to make three arrows."""
     xy = []
     for i in range(3):

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 
+from __future__ import annotations
 import math
 from sys import maxsize
 import logging
+from typing import Optional, Set, Tuple
 
 import gi
 
@@ -11,13 +13,13 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
 from gi.repository import Gtk, GObject, Gdk
 
-from slugathon.game import BattleMap
+from slugathon.game import BattleMap, MasterBoard, MasterHex
 from slugathon.gui import icon, GUIBattleHex
 from slugathon.util import guiutils, prefs
 
@@ -44,7 +46,14 @@ hexlabel_to_entry_side = {
 }
 
 
-def new(board, masterhex, entry_sides, parent, playername=None, scale=None):
+def new(
+    board: MasterBoard.MasterBoard,
+    masterhex: MasterHex.MasterHex,
+    entry_sides: Set[int],
+    parent: Gtk.Window,
+    playername: Optional[str] = None,
+    scale: Optional[int] = None,
+) -> Tuple[PickEntrySide, defer.Deferred]:
     """Create a PickEntrySide dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     pick_entry_side = PickEntrySide(
@@ -59,13 +68,13 @@ class PickEntrySide(Gtk.Dialog):
 
     def __init__(
         self,
-        board,
-        masterhex,
-        entry_sides,
-        def1,
-        parent,
-        playername=None,
-        scale=None,
+        board: MasterBoard.MasterBoard,
+        masterhex: MasterHex.MasterHex,
+        entry_sides: Set[int],
+        def1: defer.Deferred,
+        parent: Gtk.Window,
+        playername: Optional[str] = None,
+        scale: Optional[int] = None,
     ):
         GObject.GObject.__init__(
             self, title=f"Pick Entry Side - {playername}", parent=parent
@@ -134,10 +143,10 @@ class PickEntrySide(Gtk.Dialog):
                 self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(
                     hex1, self
                 )
-        self.repaint_hexlabels = set()
+        self.repaint_hexlabels = set()  # type: Set[str]
         # Hexes that need their bounding rectangles cleared, too.
         # This fixes chits.
-        self.clear_hexlabels = set()
+        self.clear_hexlabels = set()  # type: Set[str]
 
         self.area.connect("draw", self.cb_area_expose)
         self.area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
@@ -150,7 +159,7 @@ class PickEntrySide(Gtk.Dialog):
                 self.guihexes[hexlabel].selected = True
         self.show_all()
 
-    def compute_scale(self):
+    def compute_scale(self) -> int:
         """Return the approximate maximum scale that lets the map fit on the
         screen."""
         width = Gdk.Screen.width()
@@ -163,17 +172,19 @@ class PickEntrySide(Gtk.Dialog):
         )
         return int(min(xscale, yscale))
 
-    def compute_width(self):
+    def compute_width(self) -> int:
         """Return the width of the map in pixels."""
         return int(math.ceil(self.scale * self.battlemap.hex_width * 3.2))
 
-    def compute_height(self):
+    def compute_height(self) -> int:
         """Return the height of the map in pixels."""
         return int(
             math.ceil(self.scale * self.battlemap.hex_height * 2 * SQRT3)
         )
 
-    def masterhex_label(self, masterhex):
+    def masterhex_label(
+        self, masterhex: Optional[MasterHex.MasterHex]
+    ) -> Gtk.EventBox:
         """Return a Gtk.Label describing masterhex, inside a white
         Gtk.EventBox."""
         eventbox = Gtk.EventBox()
@@ -292,7 +303,6 @@ class PickEntrySide(Gtk.Dialog):
 
 if __name__ == "__main__":
     import random
-    from slugathon.game import MasterBoard
 
     def my_callback(choice):
         logging.info(f"chose entry side {choice}")

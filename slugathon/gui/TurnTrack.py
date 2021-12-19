@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+from typing import Optional
 
 import gi
 
@@ -11,7 +12,7 @@ from zope.interface import implementer
 
 from slugathon.gui import Marker
 from slugathon.util.Observer import IObserver
-from slugathon.game import Action
+from slugathon.game import Action, Game, Legion
 
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
@@ -22,7 +23,13 @@ __license__ = "GNU GPL v2"
 class TurnTrack(Gtk.DrawingArea):
     """Widget to show the battle turn."""
 
-    def __init__(self, attacker, defender, game, scale):
+    def __init__(
+        self,
+        attacker: Legion.Legion,
+        defender: Legion.Legion,
+        game: Optional[Game.Game],
+        scale: int,
+    ):
         GObject.GObject.__init__(self)
         self.attacker = attacker
         self.defender = defender
@@ -41,11 +48,11 @@ class TurnTrack(Gtk.DrawingArea):
         self.connect("draw", self.cb_area_expose)
         self.show_all()
 
-    def compute_width(self):
+    def compute_width(self) -> float:
         """Return the width of the area in pixels."""
         return int(round(13.5 * self.scale))
 
-    def compute_height(self):
+    def compute_height(self) -> float:
         """Return the height of the area in pixels."""
         return int(round(3 * self.scale))
 
@@ -126,7 +133,7 @@ class TurnTrack(Gtk.DrawingArea):
 
 if __name__ == "__main__":
     from slugathon.util import guiutils
-    from slugathon.game import Game, Legion, Player
+    from slugathon.game import Player
 
     window = Gtk.Window()
     playername1 = "Player 1"

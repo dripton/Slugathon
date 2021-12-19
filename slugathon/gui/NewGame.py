@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 
+from typing import Optional
+
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -9,7 +11,7 @@ from twisted.python import log
 
 from slugathon.gui import icon, InfoDialog
 from slugathon.util.NullUser import NullUser
-from slugathon.net import config
+from slugathon.net import config, User
 
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
@@ -20,7 +22,12 @@ class NewGame(Gtk.Dialog):
 
     """Form new game dialog."""
 
-    def __init__(self, user, playername, parent_window):
+    def __init__(
+        self,
+        user: User.User,
+        playername: str,
+        parent_window: Optional[Gtk.Window],
+    ):
         GObject.GObject.__init__(
             self, title=f"Form New Game - {playername}", parent=parent_window
         )

@@ -4,7 +4,7 @@
 import tempfile
 import os
 import math
-from typing import Optional, Tuple
+from typing import Callable, Optional, Tuple
 
 import gi
 
@@ -95,7 +95,7 @@ class Chit(object):
         self.event_box.add(self.image)
         self.build_image()
 
-    def build_image(self):
+    def build_image(self) -> None:
         path = self.paths[0]
         input_surface = cairo.ImageSurface.create_from_png(path)
         ctx = cairo.Context(input_surface)
@@ -141,10 +141,10 @@ class Chit(object):
         self.event_box.show()
         self.image.show()
 
-    def connect(self, event, method):
+    def connect(self, event: str, method: Callable) -> None:
         self.event_box.connect(event, method)
 
-    def _render_text(self, surface):
+    def _render_text(self, surface: cairo.ImageSurface) -> None:
         """Add creature name, power, and toughness to a Cairo surface"""
         if not self.creature:
             return
@@ -165,7 +165,7 @@ class Chit(object):
             label = self.name.upper()
             # TODO If width is too big, try a smaller font
             x = 0.5 * size
-            y = 0
+            y = 0.0
             ctx.move_to(x, y)
             layout.set_text(label)
             PangoCairo.show_layout(ctx, layout)
@@ -188,8 +188,8 @@ class Chit(object):
             layout.set_text(label)
             PangoCairo.show_layout(ctx, layout)
 
-    def _render_x(self, surface):
-        """Add a big red X through a Cairo surface"""
+    def _render_x(self, surface: cairo.ImageSurface) -> None:
+        """Add a big red X"""
         ctx = cairo.Context(surface)
         size = surface.get_width()
         ctx.set_source_rgb(1, 0, 0)
@@ -200,8 +200,8 @@ class Chit(object):
         ctx.line_to(size, 0)
         ctx.stroke()
 
-    def _render_outline(self, surface):
-        """Add a red rectangle around a Cairo surface"""
+    def _render_outline(self, surface: cairo.ImageSurface) -> None:
+        """Add a red rectangle"""
         ctx = cairo.Context(surface)
         size = surface.get_width()
         ctx.set_source_rgb(1, 0, 0)
@@ -213,8 +213,8 @@ class Chit(object):
         ctx.line_to(0, 0)
         ctx.stroke()
 
-    def _render_hits(self, surface):
-        """Add the number of hits to a Cairo surface"""
+    def _render_hits(self, surface: cairo.ImageSurface) -> None:
+        """Add the number of hits"""
         if not self.creature or not self.creature.hits:
             return
         ctx = cairo.Context(surface)

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+from typing import Optional, Tuple
 
 import gi
 
@@ -15,7 +17,9 @@ __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, legion, parent):
+def new(
+    playername: str, legion: Legion.Legion, parent: Optional[Gtk.Window]
+) -> Tuple[SplitLegion, defer.Deferred]:
     """Create a SplitLegion dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     splitlegion = SplitLegion(playername, legion, def1, parent)
@@ -26,7 +30,13 @@ class SplitLegion(Gtk.Dialog):
 
     """Dialog to split a legion."""
 
-    def __init__(self, playername, legion, def1, parent):
+    def __init__(
+        self,
+        playername: str,
+        legion: Legion.Legion,
+        def1: defer.Deferred,
+        parent: Optional[Gtk.Window],
+    ):
         GObject.GObject.__init__(
             self, title=f"SplitLegion - {playername}", parent=parent
         )
@@ -65,6 +75,7 @@ class SplitLegion(Gtk.Dialog):
         self.new_legion1 = Legion.Legion(
             player, legion.markerid, legion.sorted_creatures, legion.hexlabel
         )
+        assert player.selected_markerid is not None
         self.new_legion2 = Legion.Legion(
             player, player.selected_markerid, [], legion.hexlabel
         )

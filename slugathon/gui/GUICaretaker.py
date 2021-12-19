@@ -10,7 +10,7 @@ from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
 from slugathon.gui import Chit
-from slugathon.game import Creature, Action
+from slugathon.game import Creature, Action, Game, Player
 from slugathon.data import creaturedata
 
 
@@ -23,7 +23,7 @@ class GUICaretaker(Gtk.EventBox):
 
     """Caretaker status window."""
 
-    def __init__(self, game, playername):
+    def __init__(self, game: Game.Game, playername: str):
         self.playername = playername
         self.caretaker = game.caretaker
 
@@ -67,13 +67,19 @@ class GUICaretaker(Gtk.EventBox):
 
         self.show_all()
 
-    def update_max_count_label(self, creature_name, max_count):
+    def update_max_count_label(
+        self, creature_name: str, max_count: int
+    ) -> None:
         label = self.max_count_labels[creature_name]
         label.set_markup(f"<span foreground='blue'>{max_count}</span>")
 
     def update_counts_label(
-        self, creature_name, left_count, game_count, dead_count
-    ):
+        self,
+        creature_name: str,
+        left_count: int,
+        game_count: int,
+        dead_count: int,
+    ) -> None:
         label = self.counts_labels[creature_name]
         label.set_markup(
             f"<span foreground='black'>{left_count}</span>"
@@ -90,7 +96,7 @@ class GUICaretaker(Gtk.EventBox):
                 chit.dead = False
                 chit.build_image()
 
-    def update_creature(self, creature_name):
+    def update_creature(self, creature_name: str) -> None:
         left_count = self.caretaker.counts[creature_name]
         max_count = self.caretaker.max_counts[creature_name]
         dead_count = self.caretaker.graveyard[creature_name]
@@ -139,7 +145,6 @@ class GUICaretaker(Gtk.EventBox):
 if __name__ == "__main__":
     import time
     from slugathon.util import guiutils
-    from slugathon.game import Game, Player
 
     now = time.time()
     playername = "Player 1"

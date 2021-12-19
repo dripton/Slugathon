@@ -14,7 +14,7 @@ __license__ = "GNU GPL v2"
 
 
 class InfoDialog(Gtk.MessageDialog):
-    def __init__(self, parent, title, message):
+    def __init__(self, parent: Gtk.Window, title: str, message: str):
         GObject.GObject.__init__(
             self, parent=parent, buttons=Gtk.ButtonsType.OK
         )

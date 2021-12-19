@@ -1,20 +1,28 @@
 #!/usr/bin/env python3
 
 
+from typing import Optional
+
 import gi
 
 gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from gi.repository import Gtk, GObject, Gdk
 from twisted.internet import reactor
 from twisted.python import log
 
-from slugathon.gui import icon, ConfirmDialog
+from slugathon.gui import (
+    icon,
+    ConfirmDialog,
+    Lobby,
+    GUIBattleMap,
+    GUIMasterBoard,
+)
 from slugathon.util import prefs
 
 
@@ -22,7 +30,7 @@ __copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def modify_fg_all_states(widget, color_name):
+def modify_fg_all_states(widget: Gtk.Widget, color_name: str) -> None:
     color = Gdk.color_parse(color_name)
     for state in [
         Gtk.StateType.NORMAL,
@@ -38,13 +46,14 @@ class MainWindow(Gtk.Window):
 
     """Main GUI window."""
 
-    def __init__(self, playername=None, scale=None):
+    def __init__(self, playername: str = None, scale: int = None):
         GObject.GObject.__init__(self)
 
         self.playername = playername
         self.game = None
-        self.lobby = None
-        self.guiboard = None
+        self.lobby = None  # type: Optional[Lobby.Lobby]
+        self.guiboard = None  # type: Optional[GUIMasterBoard.GUIMasterBoard]
+        self.guimap = None  # type: Optional[GUIBattleMap.GUIBattleMap]
         self.accel_group = None
 
         self.set_icon(icon.pixbuf)
@@ -87,33 +96,33 @@ class MainWindow(Gtk.Window):
         if accel_group is not None:
             self.add_accel_group(accel_group)
 
-    def add_lobby(self, lobby):
+    def add_lobby(self, lobby: Lobby.Lobby) -> None:
         self.lobby = lobby
         label = Gtk.Label(label="Lobby")
         self.notebook.prepend_page(lobby, label)
         self.show_all()
 
-    def add_guiboard(self, guiboard):
+    def add_guiboard(self, guiboard: GUIMasterBoard.GUIMasterBoard) -> None:
         self.guiboard = guiboard
         label = Gtk.Label(label="MasterBoard")
         modify_fg_all_states(label, "Red")
         self.notebook.append_page(guiboard, label)
         self.show_all()
 
-    def remove_guiboard(self):
+    def remove_guiboard(self) -> None:
         if self.guiboard:
             page_num = self.notebook.page_num(self.guiboard)
             self.notebook.remove_page(page_num)
             self.guiboard = None
 
-    def add_guimap(self, guimap):
+    def add_guimap(self, guimap: GUIBattleMap.GUIBattleMap) -> None:
         self.guimap = guimap
         label = Gtk.Label(label="BattleMap")
         modify_fg_all_states(label, "Red")
         self.notebook.append_page(guimap, label)
         self.show_all()
 
-    def remove_guimap(self):
+    def remove_guimap(self) -> None:
         if self.guimap:
             accel_group = self.guimap.ui.get_accel_group()
             self.remove_accel_group(accel_group)
@@ -121,7 +130,7 @@ class MainWindow(Gtk.Window):
             self.notebook.remove_page(page_num)
             self.guimap = None
 
-    def highlight_lobby_label(self):
+    def highlight_lobby_label(self) -> None:
         if self.lobby:
             label = self.notebook.get_tab_label(self.lobby)
             modify_fg_all_states(label, "Red")
@@ -137,7 +146,7 @@ class MainWindow(Gtk.Window):
             def1.addErrback(self.failure)
         return True
 
-    def cb_destroy(self, confirmed):
+    def cb_destroy(self, confirmed: bool) -> None:
         """Withdraw from the game, and destroy the window."""
         if confirmed:
             self.destroyed = True
@@ -169,7 +178,7 @@ class MainWindow(Gtk.Window):
         label = self.notebook.get_tab_label(page_widget)
         modify_fg_all_states(label, "Black")
 
-    def compute_scale(self):
+    def compute_scale(self) -> int:
         """Return the approximate maximum scale that let the board fit on
         the screen."""
         # TODO
@@ -183,13 +192,12 @@ if __name__ == "__main__":
     import time
     from slugathon.game import Game
     from slugathon.util.NullUser import NullUser
-    from slugathon.gui import Lobby
 
     now = time.time()
     user = NullUser()
     playername = "Player 1"
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
-    playernames = [playername]
+    playernames = {playername}
     games = [game]
     main_window = MainWindow()
     lobby = Lobby.Lobby(user, playername, playernames, games, main_window)

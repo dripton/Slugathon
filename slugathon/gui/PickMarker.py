@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import collections
 import logging
-from typing import DefaultDict
+from typing import DefaultDict, List, Tuple
 
 import gi
 
@@ -11,7 +11,7 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
@@ -25,14 +25,19 @@ __copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, game_name, markers_left, parent):
+def new(
+    playername: str,
+    game_name: str,
+    markers_left: List[str],
+    parent: Gtk.Window,
+) -> Tuple[PickMarker, defer.Deferred]:
     """Create a PickMarker dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     pickmarker = PickMarker(playername, game_name, markers_left, def1, parent)
     return pickmarker, def1
 
 
-def sorted_markers(markers):
+def sorted_markers(markers: List[str]) -> List[str]:
     """Return a copy of markers sorted so that the colors that have the
     fewest markers left come first.
 
@@ -56,7 +61,14 @@ class PickMarker(Gtk.Dialog):
 
     """Dialog to pick a legion marker."""
 
-    def __init__(self, playername, game_name, markers_left, def1, parent):
+    def __init__(
+        self,
+        playername: str,
+        game_name: str,
+        markers_left: List[str],
+        def1: defer.Deferred,
+        parent: Gtk.Window,
+    ):
         title = f"PickMarker - {playername}"
         GObject.GObject.__init__(self, title=title, parent=parent)
         self.playername = playername

@@ -26,7 +26,7 @@ class Die(object):
 
     IMAGE_DIR = "dice"
 
-    def __init__(self, number, hit=True, scale=15):
+    def __init__(self, number: int, hit: bool = True, scale: int = 15):
         hit_or_miss = "Hit" if hit else "Miss"
         self.name = f"{hit_or_miss}{number}"
         self.chit_scale = CHIT_SCALE_FACTOR * scale
@@ -57,7 +57,7 @@ class Die(object):
         self.event_box.add(self.image)
         self.location = None  # (x, y) of top left corner
 
-    def show(self):
+    def show(self) -> None:
         self.event_box.show()
         self.image.show()
 

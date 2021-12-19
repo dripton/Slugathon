@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+from typing import Optional, Tuple
 
 import logging
 
@@ -9,6 +11,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 from twisted.internet import defer
 
+from slugathon.game import Creature, Legion, Player, Game
 from slugathon.gui import Chit, Marker, icon
 
 
@@ -16,7 +19,9 @@ __copyright__ = "Copyright (c) 2009-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, legion, parent):
+def new(
+    playername: str, legion: Legion.Legion, parent: Optional[Gtk.Window]
+) -> Tuple[PickTeleportingLord, defer.Deferred]:
     """Create a PickTeleportingLord dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     pick_teleporting_lord = PickTeleportingLord(
@@ -29,7 +34,13 @@ class PickTeleportingLord(Gtk.Dialog):
 
     """Dialog to pick a lord to reveal for tower teleport."""
 
-    def __init__(self, playername, legion, def1, parent):
+    def __init__(
+        self,
+        playername: str,
+        legion: Legion.Legion,
+        def1: defer.Deferred,
+        parent: Optional[Gtk.Window],
+    ):
         GObject.GObject.__init__(
             self, title=f"PickTeleportingLord - {playername}", parent=parent
         )
@@ -80,7 +91,6 @@ class PickTeleportingLord(Gtk.Dialog):
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Creature, Legion, Player, Game
     from slugathon.util import guiutils
 
     now = time.time()

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
+from typing import Tuple
 
 import gi
 
@@ -9,12 +10,13 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
 from gi.repository import Gtk, GObject
 
+from slugathon.game import Legion
 from slugathon.gui import Chit, Marker, icon
 
 
@@ -28,7 +30,12 @@ DONE_PROPOSING = 2
 FIGHT = 3
 
 
-def new(playername, attacker_legion, defender_legion, parent):
+def new(
+    playername: str,
+    attacker_legion: Legion.Legion,
+    defender_legion: Legion.Legion,
+    parent: Gtk.Window,
+) -> Tuple[Negotiate, defer.Deferred]:
     """Create a Negotiate dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     negotiate = Negotiate(
@@ -42,7 +49,12 @@ class Negotiate(Gtk.Dialog):
     """Dialog to choose whether to concede, negotiate, or fight."""
 
     def __init__(
-        self, playername, attacker_legion, defender_legion, def1, parent
+        self,
+        playername: str,
+        attacker_legion: Legion.Legion,
+        defender_legion: Legion.Legion,
+        def1: defer.Deferred,
+        parent: Gtk.Window,
     ):
         GObject.GObject.__init__(
             self, title=f"Negotiate - {playername}", parent=parent
@@ -195,7 +207,7 @@ class Negotiate(Gtk.Dialog):
 if __name__ == "__main__":
     import time
 
-    from slugathon.game import Creature, Legion, Player, Game
+    from slugathon.game import Creature, Player, Game
 
     now = time.time()
     game_name = "Game1"

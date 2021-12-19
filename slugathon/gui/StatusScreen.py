@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 
+from typing import Union
+
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -8,7 +10,7 @@ from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
-from slugathon.game import Action, Phase
+from slugathon.game import Action, Phase, Game
 from slugathon.util import colors
 
 
@@ -16,7 +18,9 @@ __copyright__ = "Copyright (c) 2006-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def add_label(table, col, row, gtkcolor, text=""):
+def add_label(
+    table: Gtk.Table, col: int, row: int, gtkcolor: Gdk.Color, text: str = ""
+) -> Gtk.Label:
     """Add a label inside an eventbox to the table."""
     label = Gtk.Label(label=text)
     eventbox = Gtk.EventBox()
@@ -27,7 +31,7 @@ def add_label(table, col, row, gtkcolor, text=""):
     return label
 
 
-def set_bg(label, color):
+def set_bg(label: Gtk.Label, color: Union[str, Gdk.Color]) -> None:
     if color:
         if isinstance(color, str):
             gtkcolor = Gdk.color_parse(color)
@@ -41,7 +45,7 @@ class StatusScreen(Gtk.EventBox):
 
     """Game status window."""
 
-    def __init__(self, game, playername):
+    def __init__(self, game: Game.Game, playername: str):
         GObject.GObject.__init__(self)
         self.game = game
         self.playername = playername
@@ -114,7 +118,7 @@ class StatusScreen(Gtk.EventBox):
 
         self.show_all()
 
-    def _init_turn(self):
+    def _init_turn(self) -> None:
         self.game_turn_label.set_text(str(self.game.turn))
         self.game_phase_label.set_text(Phase.phase_names[self.game.phase])
         if self.game.active_player:
@@ -126,22 +130,19 @@ class StatusScreen(Gtk.EventBox):
         self._clear_battle()
         self._color_player_columns()
 
-    def _color_player_columns(self):
+    def _color_player_columns(self) -> None:
         for num, player in enumerate(self.game.players):
             bg = self.default_bg
-            try:
-                if player.name == self.game.active_player.name:
-                    bg = "Yellow"
-                elif player.dead:
-                    bg = "Red"
-            except AttributeError:
-                pass
+            if (
+                self.game.active_player is not None
+                and player.name == self.game.active_player.name
+            ):
+                bg = "Yellow"
+            elif player.dead:
+                bg = "Red"
             playercolor = self.default_bg
-            try:
-                if player.color is not None:
-                    playercolor = player.color
-            except AttributeError:
-                pass
+            if player.color is not None:
+                playercolor = player.color
             name_label = getattr(self, "name%d_label" % num)
             set_bg(name_label, playercolor)
             tower_label = getattr(self, "tower%d_label" % num)
@@ -161,16 +162,16 @@ class StatusScreen(Gtk.EventBox):
             score_label = getattr(self, "score%d_label" % num)
             set_bg(score_label, bg)
 
-    def _init_players(self):
+    def _init_players(self) -> None:
         for num, player in enumerate(self.game.players):
             bg = self.default_bg
-            try:
-                if player.name == self.game.active_player.name:
-                    bg = "Yellow"
-                elif player.dead:
-                    bg = "Red"
-            except AttributeError:
-                pass
+            if (
+                self.game.active_player is not None
+                and player.name == self.game.active_player.name
+            ):
+                bg = "Yellow"
+            elif player.dead:
+                bg = "Red"
             playercolor = self.default_bg
             try:
                 if player.color is not None:
@@ -232,7 +233,7 @@ class StatusScreen(Gtk.EventBox):
         else:
             self._clear_battle()
 
-    def _clear_battle(self):
+    def _clear_battle(self) -> None:
         self.battle_turn_label.set_text("")
         set_bg(self.battle_player_label, self.default_bg)
         self.battle_player_label.set_text("")

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
+from typing import Optional, Tuple
 
 import gi
 
@@ -9,13 +10,16 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import defer
 from gi.repository import Gtk, GObject
 
+from slugathon.game import Legion
 from slugathon.gui import Chit, Marker, icon
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, legion, parent):
+def new(
+    playername: str, legion: Legion.Legion, parent: Optional[Gtk.Window]
+) -> Tuple[SummonAngel, defer.Deferred]:
     """Create a SummonAngel dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     summonangel = SummonAngel(playername, legion, def1, parent)
@@ -26,7 +30,13 @@ class SummonAngel(Gtk.Dialog):
 
     """Dialog to summon an angel."""
 
-    def __init__(self, playername, legion, def1, parent):
+    def __init__(
+        self,
+        playername: str,
+        legion: Legion.Legion,
+        def1: defer.Deferred,
+        parent: Optional[Gtk.Window],
+    ):
         GObject.GObject.__init__(
             self, title=f"SummonAngel - {playername}", parent=parent
         )
@@ -95,7 +105,7 @@ class SummonAngel(Gtk.Dialog):
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Creature, Legion, Player, Game
+    from slugathon.game import Creature, Player, Game
     from slugathon.util import guiutils
 
     now = time.time()

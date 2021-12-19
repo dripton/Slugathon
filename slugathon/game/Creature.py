@@ -77,16 +77,18 @@ class Creature(object):
             self.plural_name,
             self._power,
             self.skill,
-            rangestrikes,
-            self.flies,
+            rangestrikes_int,
+            flies_int,
             self.character_type,
-            self.summonable,
+            summonable_int,
             self.acquirable_every,
             self.max_count,
             self.color_name,
         ) = creaturedata.data[name]
-        self.rangestrikes = bool(rangestrikes)
-        self.magicmissile = rangestrikes == 2
+        self.rangestrikes = bool(rangestrikes_int)
+        self.magicmissile = rangestrikes_int == 2
+        self.flies = bool(flies_int)
+        self.summonable = bool(summonable_int)
         self.acquirable = bool(self.acquirable_every)
         self.hits = 0
         self.moved = False

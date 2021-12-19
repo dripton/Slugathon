@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
+from typing import List, Tuple
 
 import gi
 
@@ -10,6 +11,7 @@ from gi.repository import Gtk, GObject, Gdk
 from twisted.internet import defer
 
 from slugathon.data.playercolordata import colors
+from slugathon.game import Game
 from slugathon.gui import icon
 from slugathon.util.colors import contrasting_colors
 
@@ -18,7 +20,12 @@ __copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, game, colors_left, parent):
+def new(
+    playername: str,
+    game: Game.Game,
+    colors_left: List[str],
+    parent: Gtk.Window,
+) -> Tuple[PickColor, defer.Deferred]:
     """Return a PickColor dialog and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     pickcolor = PickColor(playername, game, colors_left, parent, def1)
@@ -28,7 +35,14 @@ def new(playername, game, colors_left, parent):
 class PickColor(Gtk.Dialog):
     """Dialog to pick a player color."""
 
-    def __init__(self, playername, game, colors_left, parent, def1):
+    def __init__(
+        self,
+        playername: str,
+        game: Game.Game,
+        colors_left: List[str],
+        parent: Gtk.Window,
+        def1: defer.Deferred,
+    ):
         GObject.GObject.__init__(
             self, title=f"Pick Color - {playername}", parent=parent
         )
@@ -74,7 +88,6 @@ class PickColor(Gtk.Dialog):
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Game
     from slugathon.util import guiutils
 
     def my_callback(tup):

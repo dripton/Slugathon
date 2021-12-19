@@ -2,6 +2,7 @@
 
 
 import time
+from typing import Dict, List, Optional, Set
 
 import gi
 
@@ -13,7 +14,8 @@ from zope.interface import implementer
 
 from slugathon.gui import NewGame, LoadGame, WaitingForPlayers
 from slugathon.util.Observer import IObserver
-from slugathon.game import Action
+from slugathon.game import Action, Game
+from slugathon.net import User
 from slugathon.util import guiutils
 
 
@@ -26,17 +28,26 @@ class Lobby(Gtk.EventBox):
 
     """GUI for a multiplayer chat and game finding lobby."""
 
-    def __init__(self, user, playername, playernames, games, parent_window):
+    def __init__(
+        self,
+        user: User.User,
+        playername: str,
+        playernames: Set[str],
+        games: List[Game.Game],
+        parent_window: Gtk.Window,
+    ):
         GObject.GObject.__init__(self)
         self.initialized = False
         self.user = user
         self.playername = playername
-        self.playernames = playernames  # set, aliased from Client
-        self.games = games  # list, aliased from Client
+        # aliased from Client
+        self.playernames = playernames  # type: Set[str]
+        # aliased from Client
+        self.games = games  # type: List[Game.Game]
         self.parent_window = parent_window
 
-        self.wfps = {}  # game name : WaitingForPlayers
-        self.selected_names = set()
+        self.wfps = {}  # type: Dict[str, WaitingForPlayers.WaitingForPlayers]
+        self.selected_names = set()  # type: Set[str]
 
         vbox1 = Gtk.VBox()
         self.add(vbox1)
@@ -155,14 +166,14 @@ class Lobby(Gtk.EventBox):
         self.show_all()
         self.initialized = True
 
-    def name_to_game(self, game_name):
+    def name_to_game(self, game_name: str) -> Optional[Game.Game]:
         """Return the Game with game_name, or None."""
         for game in self.games:
             if game.name == game_name:
                 return game
         return None
 
-    def _init_liststores(self):
+    def _init_liststores(self) -> None:
         self.user_store = Gtk.ListStore(str, int)
         self.update_user_store()
         self.user_list.set_model(self.user_store)
@@ -219,8 +230,8 @@ class Lobby(Gtk.EventBox):
         for game in self.games:
             self.add_game(game)
 
-    def update_user_store(self):
-        def1 = self.user.callRemote("get_player_data")
+    def update_user_store(self) -> None:
+        def1 = self.user.callRemote("get_player_data")  # type: ignore
         def1.addCallback(self._got_player_data)
         def1.addErrback(self.failure)
 
@@ -247,12 +258,12 @@ class Lobby(Gtk.EventBox):
         while len(self.user_store) > leng:
             del self.user_store[leng]
 
-    def update_game_stores(self):
+    def update_game_stores(self) -> None:
         self.update_new_game_store()
         self.update_current_game_store()
         self.update_old_game_store()
 
-    def update_new_game_store(self):
+    def update_new_game_store(self) -> None:
         assert self.new_game_store is not None
         length = len(self.new_game_store)
         ii = -1
@@ -283,7 +294,7 @@ class Lobby(Gtk.EventBox):
         while len(self.new_game_store) > length:
             del self.new_game_store[length]
 
-    def update_current_game_store(self):
+    def update_current_game_store(self) -> None:
         assert self.current_game_store is not None
         length = len(self.current_game_store)
         ii = -1
@@ -303,7 +314,7 @@ class Lobby(Gtk.EventBox):
         while len(self.current_game_store) > length:
             del self.current_game_store[length]
 
-    def update_old_game_store(self):
+    def update_old_game_store(self) -> None:
         assert self.old_game_store is not None
         length = len(self.old_game_store)
         ii = -1
@@ -346,7 +357,7 @@ class Lobby(Gtk.EventBox):
     def cb_load_game_button_click(self, widget, event):
         LoadGame.LoadGame(self.user, self.playername, self.parent_window)
 
-    def _add_wfp(self, game):
+    def _add_wfp(self, game: Game.Game) -> None:
         wfp = self.wfps.get(game.name)
         if wfp is not None:
             if wfp.has_user_ref_count:
@@ -359,27 +370,27 @@ class Lobby(Gtk.EventBox):
         )
         self.wfps[game.name] = wfp
 
-    def _remove_wfp(self, game_name):
+    def _remove_wfp(self, game_name: str) -> None:
         if game_name in self.wfps:
             wfp = self.wfps[game_name]
             wfp.destroy()
             del self.wfps[game_name]
 
-    def add_game(self, game):
+    def add_game(self, game: Game.Game) -> None:
         self.update_game_stores()
         if not game.started and self.playername in game.playernames:
             self._add_wfp(game)
 
-    def remove_game(self, game_name):
+    def remove_game(self, game_name: str) -> None:
         self.update_game_stores()
         game = self.name_to_game(game_name)
         if game:
             game.remove_observer(self)
 
-    def joined_game(self, playername, game_name):
+    def joined_game(self, playername: str, game_name: str) -> None:
         self.update_game_stores()
 
-    def withdrew_from_game(self, game_name, playername):
+    def withdrew_from_game(self, game_name: str, playername: str) -> None:
         if playername == self.playername:
             self._remove_wfp(game_name)
         self.update_game_stores()
@@ -443,14 +454,13 @@ class Lobby(Gtk.EventBox):
 
 
 if __name__ == "__main__":
-    from slugathon.game import Game
     from slugathon.util.NullUser import NullUser
 
     now = time.time()
     user = NullUser()
     playername = "Player 1"
     game = Game.Game("g1", "Player 1", now, now, 2, 6)
-    playernames = [playername]
+    playernames = {playername}
     games = [game]
     window = Gtk.Window()
     window.set_default_size(1024, 768)

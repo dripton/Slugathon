@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
+from typing import Tuple
 
 import gi
 
@@ -9,12 +10,13 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
 from gi.repository import Gtk, GObject
 
+from slugathon.game import Creature
 from slugathon.gui import icon
 
 
@@ -23,15 +25,15 @@ __license__ = "GNU GPL v2"
 
 
 def new(
-    playername,
-    game_name,
-    striker,
-    target,
-    num_dice,
-    strike_number,
-    carries,
-    parent,
-):
+    playername: str,
+    game_name: str,
+    striker: Creature.Creature,
+    target: Creature.Creature,
+    num_dice: int,
+    strike_number: int,
+    carries: int,
+    parent: Gtk.Window,
+) -> Tuple[PickCarry, defer.Deferred]:
     """Create a PickCarry dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     pickcarry = PickCarry(
@@ -54,15 +56,15 @@ class PickCarry(Gtk.Dialog):
 
     def __init__(
         self,
-        playername,
-        game_name,
-        striker,
-        target,
-        num_dice,
-        strike_number,
-        carries,
-        def1,
-        parent,
+        playername: str,
+        game_name: str,
+        striker: Creature.Creature,
+        target: Creature.Creature,
+        num_dice: int,
+        strike_number: int,
+        carries: int,
+        def1: defer.Deferred,
+        parent: Gtk.Window,
     ):
         GObject.GObject.__init__(
             self, title=f"PickCarry - {playername}", parent=parent
@@ -106,7 +108,7 @@ class PickCarry(Gtk.Dialog):
             self.deferred.callback((None, 0))
 
 
-def main():
+def main() -> None:
     import time
     from slugathon.game import Game, Phase
 

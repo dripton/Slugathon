@@ -76,7 +76,9 @@ def scale_polygon(vertexes, ratio: float):
     return nv
 
 
-def point_in_square(point, topleft, length):
+def point_in_square(
+    point: Tuple[float, float], topleft: Tuple[float, float], length: float
+) -> bool:
     return (
         point[0] >= topleft[0]
         and point[1] >= topleft[1]
@@ -85,7 +87,7 @@ def point_in_square(point, topleft, length):
     )
 
 
-def point_in_polygon(point, vertexes):
+def point_in_polygon(point, vertexes) -> bool:
     """Return True iff the point (a 2-tuple) is in the polygon specified
     by vertexes (a sequence of 2-tuples).
 
@@ -140,7 +142,9 @@ def draw_polygon(
     ctx.close_path()
 
 
-def rectangles_intersect(rect1, rect2):
+def rectangles_intersect(
+    rect1: Tuple[int, int, int, int], rect2: Tuple[int, int, int, int]
+) -> bool:
     """Return True iff the two rectangles intersect"""
     x1, y1, width1, height1 = rect1
     x2, y2, width2, height2 = rect2
@@ -151,7 +155,9 @@ def rectangles_intersect(rect1, rect2):
     return True
 
 
-def combine_rectangles(rect1, rect2):
+def combine_rectangles(
+    rect1: Tuple[int, int, int, int], rect2: Tuple[int, int, int, int]
+) -> Tuple[int, int, int, int]:
     """Return the smallest rectangle containing both passed rectangles."""
     x1, y1, width1, height1 = rect1
     x2, y2, width2, height2 = rect2

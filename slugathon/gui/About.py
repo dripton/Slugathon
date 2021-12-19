@@ -20,7 +20,7 @@ __license__ = "GNU GPL v2"
 
 
 class About(Gtk.AboutDialog):
-    def __init__(self, parent):
+    def __init__(self, parent: Gtk.Window):
         GObject.GObject.__init__(self)
         self.set_icon(icon.pixbuf)
         self.set_position(Gtk.WindowPosition.MOUSE)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
 from typing import Dict, Set, Tuple
 
@@ -10,7 +10,7 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor, defer
@@ -24,7 +24,13 @@ __copyright__ = "Copyright (c) 2009-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def new(playername, game_name, striker, target, parent):
+def new(
+    playername: str,
+    game_name: str,
+    striker: Creature.Creature,
+    target: Creature.Creature,
+    parent: Gtk.Window,
+) -> Tuple[PickStrikePenalty, defer.Deferred]:
     """Create a PickStrikePenalty dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     pick_strike_penalty = PickStrikePenalty(
@@ -38,7 +44,15 @@ class PickStrikePenalty(Gtk.Dialog):
     """Dialog to pick whether to take a strike penalty to allow carrying
     excess hits."""
 
-    def __init__(self, playername, game_name, striker, target, def1, parent):
+    def __init__(
+        self,
+        playername: str,
+        game_name: str,
+        striker: Creature.Creature,
+        target: Creature.Creature,
+        def1: defer.Deferred,
+        parent: Gtk.Window,
+    ):
         GObject.GObject.__init__(
             self, title=f"PickStrikePenalty - {playername}", parent=parent
         )
@@ -111,7 +125,7 @@ class PickStrikePenalty(Gtk.Dialog):
         self.deferred.callback((None, None, None, None))
 
 
-def main():
+def main() -> None:
     import time
     from slugathon.game import Game
 

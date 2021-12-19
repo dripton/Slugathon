@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+from typing import Optional
 
 import gi
 
@@ -9,7 +10,7 @@ from gi.repository import Gtk, GObject
 
 from slugathon.gui import Chit, Marker
 from slugathon.data import recruitdata
-from slugathon.game import Creature
+from slugathon.game import Creature, Legion
 
 
 __copyright__ = "Copyright (c) 2006-2021 David Ripton"
@@ -20,7 +21,7 @@ class Inspector(Gtk.EventBox):
 
     """Window to show a legion's contents."""
 
-    def __init__(self, playername):
+    def __init__(self, playername: str):
         GObject.GObject.__init__(self)
 
         self.playername = playername
@@ -40,9 +41,9 @@ class Inspector(Gtk.EventBox):
         hbox.pack_start(self.chits_hbox, True, True, 0)
 
         self.legion = None
-        self.marker = None
+        self.marker = None  # type: Optional[Marker.Marker]
 
-    def show_legion(self, legion):
+    def show_legion(self, legion: Legion.Legion) -> None:
         self.legion_name.set_text(
             (
                 f"Legion {legion.markerid} "
@@ -67,7 +68,7 @@ class Inspector(Gtk.EventBox):
 
         self.show_all()
 
-    def show_recruit_tree(self, terrain, playercolor):
+    def show_recruit_tree(self, terrain: str, playercolor: str) -> None:
         """Show the recruit tree for terrain."""
         self.legion_name.set_text(terrain)
         for hbox in [self.marker_hbox, self.chits_hbox]:
@@ -89,7 +90,7 @@ class Inspector(Gtk.EventBox):
 if __name__ == "__main__":
     import random
     from slugathon.data import creaturedata, playercolordata
-    from slugathon.game import Game, Legion, Player
+    from slugathon.game import Game, Player
     from slugathon.util import guiutils
 
     def cb_destroy(confirmed):

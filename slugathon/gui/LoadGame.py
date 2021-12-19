@@ -7,7 +7,7 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor
@@ -15,6 +15,7 @@ from twisted.python import log
 from gi.repository import Gtk
 
 from slugathon.gui import icon
+from slugathon.net import User
 from slugathon.util import prefs
 from slugathon.util.NullUser import NullUser
 
@@ -27,7 +28,7 @@ class LoadGame(Gtk.FileChooserDialog):
 
     """Load saved game dialog."""
 
-    def __init__(self, user, playername, parent):
+    def __init__(self, user: User.User, playername: str, parent: Gtk.Window):
         title = f"Load Saved Game - {playername}"
         Gtk.FileChooserDialog.__init__(
             self, title=title, parent=parent, action=Gtk.FileChooserAction.OPEN
@@ -50,13 +51,13 @@ class LoadGame(Gtk.FileChooserDialog):
         else:
             self.cancel()
 
-    def ok(self):
+    def ok(self) -> None:
         filename = self.get_filename()
-        def1 = self.user.callRemote("load_game", filename)
+        def1 = self.user.callRemote("load_game", filename)  # type: ignore
         def1.addErrback(self.failure)
         self.destroy()
 
-    def cancel(self):
+    def cancel(self) -> None:
         self.destroy()
 
     def failure(self, error):

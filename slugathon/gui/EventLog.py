@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from typing import Optional
 
 import gi
 
@@ -7,14 +8,14 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor
 from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
-from slugathon.game import Action, Legion
+from slugathon.game import Action, Legion, Game
 from slugathon.util.Observer import IObserver
 
 
@@ -27,7 +28,7 @@ class EventLog(Gtk.EventBox):
 
     """Graphical log of game events."""
 
-    def __init__(self, game, playername):
+    def __init__(self, game: Optional[Game.Game], playername: Optional[str]):
         GObject.GObject.__init__(self)
         self.game = game
         self.playername = playername

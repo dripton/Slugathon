@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
+from typing import Optional, Tuple
 
 import gi
 
@@ -9,6 +10,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 from twisted.internet import defer
 
+from slugathon.game import Creature, Legion, Player, Game
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 
@@ -21,7 +23,12 @@ TELEPORT = 1
 NORMAL_MOVE = 2
 
 
-def new(playername, legion, hexlabel, parent):
+def new(
+    playername: str,
+    legion: Legion.Legion,
+    hexlabel: int,
+    parent: Optional[Gtk.Window],
+) -> Tuple[PickMoveType, defer.Deferred]:
     """Create a PickMoveType dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     pickmovetype = PickMoveType(playername, legion, hexlabel, def1, parent)
@@ -32,7 +39,14 @@ class PickMoveType(Gtk.Dialog):
 
     """Dialog to choose whether to teleport."""
 
-    def __init__(self, playername, legion, hexlabel, def1, parent):
+    def __init__(
+        self,
+        playername: str,
+        legion: Legion.Legion,
+        hexlabel: int,
+        def1: defer.Deferred,
+        parent: Optional[Gtk.Window],
+    ):
         GObject.GObject.__init__(
             self, title=f"PickMoveType - {playername}", parent=parent
         )
@@ -92,7 +106,6 @@ class PickMoveType(Gtk.Dialog):
 
 if __name__ == "__main__":
     import time
-    from slugathon.game import Creature, Legion, Player, Game
 
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)

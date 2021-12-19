@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
 import math
 from sys import maxsize, argv
 import logging
-from typing import Optional
+from typing import List, Optional, Set, Tuple
 
 import gi
 
@@ -11,7 +12,7 @@ gi.require_version("Gtk", "3.0")
 from twisted.internet import gtk3reactor
 
 try:
-    gtk3reactor.install()
+    gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
 from twisted.internet import reactor
@@ -38,7 +39,8 @@ from slugathon.gui import (
     About,
 )
 from slugathon.util import guiutils, prefs
-from slugathon.game import Phase, Action
+from slugathon.game import Phase, Action, BattleMap, Game, MasterHex
+from slugathon.net import User
 
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
@@ -77,12 +79,12 @@ class GUIBattleMap(Gtk.EventBox):
 
     def __init__(
         self,
-        battlemap,
-        game=None,
-        user=None,
-        playername=None,
-        scale=None,
-        parent_window=None,
+        battlemap: BattleMap.BattleMap,
+        game: Optional[Game.Game] = None,
+        user: Optional[User.User] = None,
+        playername: Optional[str] = None,
+        scale: Optional[int] = None,
+        parent_window: Optional[Gtk.Window] = None,
     ):
         GObject.GObject.__init__(self)
 
@@ -92,7 +94,7 @@ class GUIBattleMap(Gtk.EventBox):
         self.playername = playername
         self.parent_window = parent_window
 
-        self.chits = []
+        self.chits = []  # type: List[Chit.Chit]
         self.selected_chit = None
 
         self.vbox = Gtk.VBox(spacing=1)
@@ -108,7 +110,7 @@ class GUIBattleMap(Gtk.EventBox):
         gtkcolor = Gdk.color_parse("white")
         self.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
 
-        if game:
+        if game and game.attacker_legion and game.defender_legion:
             self.turn_track = TurnTrack.TurnTrack(
                 game.attacker_legion, game.defender_legion, game, self.scale
             )  # type: Optional[TurnTrack.TurnTrack]
@@ -147,12 +149,14 @@ class GUIBattleMap(Gtk.EventBox):
         if game:
             self.vbox.pack_start(event_log, True, True, 0)
             gtkcolor = Gdk.color_parse("white")
+            assert game.attacker_legion is not None
             attacker_marker = Marker.Marker(
-                game.attacker_legion, True, self.scale / 2
+                game.attacker_legion, True, self.scale // 2
             )
             attacker_marker.event_box.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
+            assert game.defender_legion is not None
             defender_marker = Marker.Marker(
-                game.defender_legion, True, self.scale / 2
+                game.defender_legion, True, self.scale // 2
             )
             defender_marker.event_box.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
             board = game.board
@@ -179,7 +183,7 @@ class GUIBattleMap(Gtk.EventBox):
         self.guihexes = {}
         for hex1 in self.battlemap.hexes.values():
             self.guihexes[hex1.label] = GUIBattleHex.GUIBattleHex(hex1, self)
-        self.repaint_hexlabels = set()
+        self.repaint_hexlabels = set()  # type: Set[str]
 
         self.area.connect("draw", self.cb_area_expose)
         self.area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
@@ -193,7 +197,7 @@ class GUIBattleMap(Gtk.EventBox):
             self.highlight_mobile_chits()
         self.pickcarry = None
 
-    def create_ui(self):
+    def create_ui(self) -> None:
         ag = Gtk.ActionGroup(name="BattleActions")
         actions = [
             ("PhaseMenu", None, "_Phase"),
@@ -224,7 +228,7 @@ class GUIBattleMap(Gtk.EventBox):
         self.ui.insert_action_group(ag, 0)
         self.ui.add_ui_from_string(ui_string)
 
-    def compute_scale(self):
+    def compute_scale(self) -> int:
         """Return the approximate maximum scale that lets the map fit on the
         screen."""
         width = Gdk.Screen.width()
@@ -235,19 +239,21 @@ class GUIBattleMap(Gtk.EventBox):
         yscale = height / (2 * SQRT3 * self.battlemap.hex_height) - 22
         return int(min(xscale, yscale))
 
-    def compute_width(self):
+    def compute_width(self) -> int:
         """Return the width of the map in pixels."""
         return int(
             math.ceil(self.scale * (self.battlemap.hex_width + 1) * 3.2)
         )
 
-    def compute_height(self):
+    def compute_height(self) -> int:
         """Return the height of the map in pixels."""
         return int(
             (math.ceil(self.scale * self.battlemap.hex_height) * 2 * SQRT3)
         )
 
-    def masterhex_label(self, masterhex, size):
+    def masterhex_label(
+        self, masterhex: MasterHex.MasterHex, size: str
+    ) -> Gtk.EventBox:
         """Return a Gtk.Label describing masterhex, inside a white
         Gtk.EventBox."""
         eventbox = Gtk.EventBox()
@@ -265,14 +271,14 @@ class GUIBattleMap(Gtk.EventBox):
         eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
-    def build_spacer(self):
+    def build_spacer(self) -> Gtk.EventBox:
         """Return a white Gtk.EventBox."""
         eventbox = Gtk.EventBox()
         gtkcolor = Gdk.color_parse("white")
         eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
-    def unselect_all(self):
+    def unselect_all(self) -> None:
         """Unselect all guihexes."""
         for hexlabel, guihex in self.guihexes.items():
             if guihex.selected:
@@ -280,18 +286,20 @@ class GUIBattleMap(Gtk.EventBox):
                 self.repaint_hexlabels.add(hexlabel)
         self.repaint()
 
-    def highlight_mobile_chits(self):
+    def highlight_mobile_chits(self) -> None:
         """Highlight the hexes containing all creatures that can move now."""
         if not self.game:
             return
         if (
             not self.game.battle_active_player
             or self.game.battle_active_player.name != self.playername
+            or self.game.battle_active_legion is None
         ):
             self.unselect_all()
             return
         hexlabels = set()
         for creature in self.game.battle_active_legion.mobile_creatures:
+            assert creature.hexlabel is not None
             hexlabels.add(creature.hexlabel)
         self.unselect_all()
         for hexlabel in hexlabels:
@@ -526,9 +534,10 @@ class GUIBattleMap(Gtk.EventBox):
                     guihex.selected = True
                 self.repaint(hexlabels)
 
-    def _add_missing_chits(self):
+    def _add_missing_chits(self) -> None:
         """Add chits for any creatures that lack them."""
         chit_creatures = set(chit.creature for chit in self.chits)
+        assert self.game is not None
         for (legion, rotate) in [
             (self.game.attacker_legion, GdkPixbuf.PixbufRotation.CLOCKWISE),
             (
@@ -542,13 +551,14 @@ class GUIBattleMap(Gtk.EventBox):
                         chit = Chit.Chit(
                             creature,
                             legion.player.color,
-                            self.scale / 2,
+                            self.scale // 2,
                             rotate=rotate,
                         )
                         self.chits.append(chit)
 
-    def _remove_dead_chits(self):
+    def _remove_dead_chits(self) -> None:
         for chit in reversed(self.chits):
+            assert chit.creature is not None
             if chit.creature.dead or chit.creature.hexlabel in [
                 "ATTACKER",
                 "DEFENDER",
@@ -559,13 +569,13 @@ class GUIBattleMap(Gtk.EventBox):
                 )
                 chit.hexlabel = None
                 if hexlabel is not None:
-                    self.repaint([hexlabel])
+                    self.repaint({hexlabel})
         assert self.attacker_graveyard is not None
         self.attacker_graveyard.update_gui()
         assert self.defender_graveyard is not None
         self.defender_graveyard.update_gui()
 
-    def _compute_chit_locations(self, hexlabel):
+    def _compute_chit_locations(self, hexlabel) -> None:
         chits = self.chits_in_hex(hexlabel)
         num = len(chits)
         guihex = self.guihexes[hexlabel]
@@ -613,7 +623,8 @@ class GUIBattleMap(Gtk.EventBox):
         else:
             raise AssertionError("invalid number of chits in hex")
 
-    def _render_chit(self, chit, ctx):
+    def _render_chit(self, chit: Chit.Chit, ctx: cairo.Context) -> None:
+        assert chit.location is not None
         ctx.set_source_surface(
             chit.surface,
             int(round(chit.location[0])),
@@ -621,17 +632,23 @@ class GUIBattleMap(Gtk.EventBox):
         )
         ctx.paint()
 
-    def chits_in_hex(self, hexlabel):
+    def chits_in_hex(self, hexlabel: str) -> List[Chit.Chit]:
         """Return a list of all Chits found in the hex with hexlabel."""
         return [
-            chit for chit in self.chits if chit.creature.hexlabel == hexlabel
+            chit
+            for chit in self.chits
+            if chit.creature is not None and chit.creature.hexlabel == hexlabel
         ]
 
-    def draw_chits(self, ctx):
+    def draw_chits(self, ctx: cairo.Context) -> None:
         if not self.game:
             return
         self._add_missing_chits()
-        hexlabels = {chit.creature.hexlabel for chit in self.chits}
+        hexlabels = {
+            chit.creature.hexlabel
+            for chit in self.chits
+            if chit.creature is not None
+        }
         for hexlabel in hexlabels:
             if hexlabel is not None:
                 self._compute_chit_locations(hexlabel)
@@ -735,7 +752,9 @@ class GUIBattleMap(Gtk.EventBox):
     def cb_about(self, action):
         About.About(self.parent_window)
 
-    def bounding_rect_for_hexlabels(self, hexlabels):
+    def bounding_rect_for_hexlabels(
+        self, hexlabels: Set[str]
+    ) -> Tuple[int, int, int, int]:
         """Return the minimum bounding rectangle that encloses all
         GUIMasterHexes whose hexlabels are given, as a tuple
         (x, y, width, height)
@@ -758,7 +777,7 @@ class GUIBattleMap(Gtk.EventBox):
         height = max_y - min_y
         return min_x, min_y, width, height
 
-    def update_gui(self, event=None):
+    def update_gui(self, event: Optional[Gtk.Event] = None) -> None:
         """Repaint the amount of the GUI that needs repainting.
 
         Compute the dirty rectangle from the union of
@@ -817,12 +836,12 @@ class GUIBattleMap(Gtk.EventBox):
 
         self.repaint_hexlabels.clear()
 
-    def repaint_all(self):
+    def repaint_all(self) -> None:
         for hexlabel in self.guihexes:
             self.repaint_hexlabels.add(hexlabel)
         self.update_gui()
 
-    def repaint(self, hexlabels=None):
+    def repaint(self, hexlabels: Optional[Set[str]] = None) -> None:
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
         reactor.callLater(0, self.update_gui)  # type: ignore
@@ -1228,7 +1247,6 @@ class GUIBattleMap(Gtk.EventBox):
 
 if __name__ == "__main__":
     import random
-    from slugathon.game import BattleMap
     from slugathon.data import battlemapdata
 
     window = Gtk.Window()

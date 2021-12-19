@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2006-2010 David Ripton"
+__copyright__ = "Copyright (c) 2006-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
@@ -7,7 +7,12 @@ __license__ = "GNU GPL v2"
 
 from twisted.internet import defer
 
+from slugathon.net import User
 
-class NullUser(object):
-    def callRemote(*args):
+
+class NullUser(User.User):
+    def __init__(self) -> None:
+        pass
+
+    def callRemote(*args) -> defer.Deferred:
         return defer.Deferred()

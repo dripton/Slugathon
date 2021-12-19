@@ -3,6 +3,7 @@
 
 import tempfile
 import os
+from typing import Callable, Tuple
 
 import gi
 
@@ -37,7 +38,7 @@ class Marker(object):
         self.location = None  # (x, y) of top left corner
         self.build_image()
 
-    def build_image(self):
+    def build_image(self) -> None:
         self.height = len(self.legion)
         input_surface = cairo.ImageSurface.create_from_png(self.image_path)
         self._render_text(input_surface)
@@ -64,27 +65,27 @@ class Marker(object):
         self.image.set_from_pixbuf(pixbuf)
         self.event_box.add(self.image)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Marker {self.name} in {self.legion.hexlabel}"
 
-    def point_inside(self, point):
+    def point_inside(self, point: Tuple[float, float]) -> bool:
         if not self.location:
             return False
         return guiutils.point_in_square(point, self.location, self.chit_scale)
 
-    def update_height(self):
+    def update_height(self) -> None:
         if self.show_height and self.height != len(self.legion):
             self.build_image()
 
-    def show(self):
+    def show(self) -> None:
         self.event_box.show()
         self.image.show()
 
-    def connect(self, event, method):
+    def connect(self, event: str, method: Callable):
         self.event_box.connect(event, method)
 
-    def _render_text(self, surface):
-        """Add legion height to a Cairo surface."""
+    def _render_text(self, surface: cairo.ImageSurface) -> None:
+        """Add legion height."""
         if not self.show_height:
             return
         ctx = cairo.Context(surface)

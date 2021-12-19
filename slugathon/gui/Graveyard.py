@@ -8,7 +8,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject, Gdk
 
 from slugathon.gui import Chit, Marker
-from slugathon.game import Creature, Game
+from slugathon.game import Creature, Game, Legion
 
 
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"
@@ -19,7 +19,7 @@ class Graveyard(Gtk.EventBox):
 
     """Show a legion's dead creatures."""
 
-    def __init__(self, legion):
+    def __init__(self, legion: Legion.Legion):
         GObject.GObject.__init__(self)
 
         self.legion = legion
@@ -39,7 +39,7 @@ class Graveyard(Gtk.EventBox):
 
         self.show_all()
 
-    def update_gui(self):
+    def update_gui(self) -> None:
         for chit in self.chits_hbox.get_children():
             self.chits_hbox.remove(chit)
 
@@ -54,7 +54,7 @@ class Graveyard(Gtk.EventBox):
 if __name__ == "__main__":
     import random
     from slugathon.data import creaturedata, playercolordata
-    from slugathon.game import Legion, Player
+    from slugathon.game import Player
     from slugathon.util import guiutils
 
     def cb_destroy(confirmed):
