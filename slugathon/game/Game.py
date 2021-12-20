@@ -1988,6 +1988,9 @@ class Game(Observed):
         if player is None:
             logging.info("")
             return
+        if self.current_engagement_hexlabel is None:
+            logging.info("")
+            return
         if player is not self.battle_active_player:
             logging.info("ending counterstrike phase out of turn")
             return
@@ -2019,7 +2022,6 @@ class Game(Observed):
                 return
             mutual = self.attacker_legion.dead and self.defender_legion.dead
             logging.info(f"{winner=} {loser=} {mutual=}")
-            assert self.current_engagement_hexlabel is not None
             action = Action.BattleOver(
                 self.name,
                 winner.markerid,
