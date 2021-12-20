@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+from typing import Any
 
 import gi
 
@@ -57,12 +58,7 @@ if __name__ == "__main__":
     from slugathon.game import Player
     from slugathon.util import guiutils
 
-    def cb_destroy(confirmed):
-        print("destroy")
-        graveyard.destroy()
-        Gtk.main_quit()
-
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:  # type: ignore
         if self.legion.living_creatures:
             random.choice(self.legion.living_creatures).kill()
             graveyard.update_gui()

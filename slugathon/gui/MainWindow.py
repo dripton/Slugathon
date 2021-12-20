@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from typing import Optional
+from typing import Any, Optional
 
 import gi
 
@@ -89,7 +89,7 @@ class MainWindow(Gtk.Window):
         self.notebook.set_tab_pos(Gtk.PositionType.BOTTOM)
         self.show_all()
 
-    def replace_accel_group(self, accel_group):
+    def replace_accel_group(self, accel_group: Gtk.AccelGroup) -> None:
         if self.accel_group is not None:
             self.remove_accel_group(self.accel_group)
         self.accel_group = accel_group
@@ -135,7 +135,7 @@ class MainWindow(Gtk.Window):
             label = self.notebook.get_tab_label(self.lobby)
             modify_fg_all_states(label, "Red")
 
-    def cb_delete_event(self, widget, event):
+    def cb_delete_event(self, widget: Gtk.Widget, event: Any) -> bool:
         if self.game is None or self.game.over:
             self.cb_destroy(True)
         else:
@@ -155,7 +155,7 @@ class MainWindow(Gtk.Window):
                 def1.addErrback(self.failure)
             self.destroy()
 
-    def cb_configure_event(self, event, unused):
+    def cb_configure_event(self, event: Any, unused: Any) -> bool:
         if self.playername:
             x, y = self.get_position()
             prefs.save_window_position(
@@ -167,7 +167,9 @@ class MainWindow(Gtk.Window):
             )
         return False
 
-    def cb_switch_page(self, widget, dummy, page_num):
+    def cb_switch_page(
+        self, widget: Gtk.Widget, dummy: Any, page_num: int
+    ) -> None:
         page_widget = widget.get_nth_page(page_num)
         if hasattr(page_widget, "ui") and hasattr(
             page_widget.ui, "get_accel_group"
@@ -184,7 +186,7 @@ class MainWindow(Gtk.Window):
         # TODO
         return 15
 
-    def failure(self, arg):
+    def failure(self, arg: Any) -> None:
         log.err(arg)
 
 

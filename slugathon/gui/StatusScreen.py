@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from typing import Union
+from typing import List, Union
 
 import gi
 
@@ -10,6 +10,7 @@ from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved
 from slugathon.game import Action, Phase, Game
 from slugathon.util import colors
 
@@ -214,7 +215,7 @@ class StatusScreen(Gtk.EventBox):
             score_label.set_text(str(player.score))
             set_bg(score_label, bg)
 
-    def _init_battle(self):
+    def _init_battle(self) -> None:
         if (
             self.game.battle_turn is not None
             and self.game.battle_active_player is not None
@@ -240,7 +241,9 @@ class StatusScreen(Gtk.EventBox):
         self.battle_player_label.set_text("")
         self.battle_phase_label.set_text("")
 
-    def update(self, observed, action, names):
+    def update(
+        self, observed: IObserved, action: Action.Action, names: List[str]
+    ) -> None:
         if isinstance(action, Action.AssignedAllTowers):
             # Players got renumbered, so re-init everything.
             self._init_players()

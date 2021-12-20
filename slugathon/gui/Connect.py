@@ -6,7 +6,7 @@ import tempfile
 import sys
 import time
 import logging
-from typing import Set
+from typing import Any, Set
 
 import gi
 
@@ -19,6 +19,7 @@ from twisted.python import log
 from gi.repository import GObject, Gtk, Gdk
 
 from slugathon.gui import Client, icon
+from slugathon.net import User
 from slugathon.util import guiutils, prefs
 
 
@@ -200,7 +201,7 @@ class Connect(Gtk.Window):
         self.server_port_comboboxentry.set_entry_text_column(0)
         self.server_port_comboboxentry.set_active(active_index)
 
-    def cb_connect_button_clicked(self, *args):
+    def cb_connect_button_clicked(self, *args: Any) -> None:
         playername = self.playername_comboboxentry.get_child().get_text()
         password = self.password_entry.get_text()
         server_name = self.server_name_comboboxentry.get_child().get_text()
@@ -215,7 +216,7 @@ class Connect(Gtk.Window):
         def1.addCallback(self.connected)
         def1.addErrback(self.connection_failed)
 
-    def cb_start_server_button_clicked(self, *args):
+    def cb_start_server_button_clicked(self, *args: Any) -> None:
         if hasattr(sys, "frozen"):
             # TODO Find the absolute path.
             def1 = utils.getProcessValue(
@@ -230,29 +231,29 @@ class Connect(Gtk.Window):
         def1.addCallback(self.server_exited)
         def1.addErrback(self.server_failed)
 
-    def server_exited(self, returncode):
+    def server_exited(self, returncode: int) -> None:
         logging.info(f"server exited with {returncode=}")
 
-    def save_window_position(self):
+    def save_window_position(self) -> None:
         x, y = self.get_position()
         prefs.save_global_window_position(self.__class__.__name__, x, y)
         width, height = self.get_size()
         prefs.save_global_window_size(self.__class__.__name__, width, height)
 
-    def cb_configure_event(self, event, unused):
+    def cb_configure_event(self, event: str, unused: Any) -> bool:
         self.save_window_position()
         return False
 
-    def connected(self, user):
+    def connected(self, user: User.User) -> None:
         self.hide()
 
-    def connection_failed(self, arg):
+    def connection_failed(self, arg: Any) -> None:
         self.status_textview.modify_text(
             Gtk.StateType.NORMAL, Gdk.color_parse("red")
         )
         self.status_textview.get_buffer().set_text(f"Login failed {arg}")
 
-    def server_failed(self, arg):
+    def server_failed(self, arg: Any) -> None:
         self.status_textview.modify_text(
             Gtk.StateType.NORMAL, Gdk.color_parse("red")
         )

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import gi
 
@@ -94,7 +94,7 @@ class SplitLegion(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         """Move the clicked-on Chit's EventBox to the other hbox."""
         eventbox = widget
         if eventbox in self.old_chits_hbox.get_children():
@@ -117,7 +117,7 @@ class SplitLegion(Gtk.Dialog):
         )
         self.ok_button.set_sensitive(legal)
 
-    def cb_response(self, widget, response_id):
+    def cb_response(self, widget: Gtk.Widget, response_id: int) -> None:
         self.destroy()
         if response_id == Gtk.ResponseType.OK:
             self.deferred.callback(

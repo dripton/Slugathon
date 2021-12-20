@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import gi
 
@@ -89,7 +89,7 @@ class SummonAngel(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         """Summon the clicked-on Chit's creature."""
         eventbox = widget
         chit = eventbox.chit
@@ -98,7 +98,7 @@ class SummonAngel(Gtk.Dialog):
         self.deferred.callback((self.legion, donor, creature))
         self.destroy()
 
-    def cb_cancel(self, widget, response_id):
+    def cb_cancel(self, widget: Gtk.Widget, response_id: int) -> None:
         self.deferred.callback((self.legion, None, None))
         self.destroy()
 
@@ -141,7 +141,9 @@ if __name__ == "__main__":
     for legion in [legion1, legion2, legion3, legion4, legion5]:
         player.markerid_to_legion[legion.markerid] = legion
 
-    def my_callback(tup):
+    def my_callback(
+        tup: Tuple[Legion.Legion, Legion.Legion, Creature.Creature]
+    ) -> None:
         (legion, donor, creature) = tup
         logging.info(f"Will summon {creature} from {donor} into {legion}")
         guiutils.exit()

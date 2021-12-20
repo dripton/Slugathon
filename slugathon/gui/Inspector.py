@@ -93,11 +93,6 @@ if __name__ == "__main__":
     from slugathon.game import Game, Player
     from slugathon.util import guiutils
 
-    def cb_destroy(confirmed):
-        print("destroy")
-        inspector.destroy()
-        Gtk.main_quit()
-
     creatures = [
         Creature.Creature(name)
         for name in creaturedata.starting_creature_names

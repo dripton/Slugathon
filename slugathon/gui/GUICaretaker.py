@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from typing import List
 
 import gi
 
@@ -9,6 +10,7 @@ from gi.repository import GObject
 from zope.interface import implementer
 
 from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved
 from slugathon.gui import Chit
 from slugathon.game import Creature, Action, Game, Player
 from slugathon.data import creaturedata
@@ -105,7 +107,9 @@ class GUICaretaker(Gtk.EventBox):
             creature_name, left_count, game_count, dead_count
         )
 
-    def update(self, observed, action, names):
+    def update(
+        self, observed: IObserved, action: Action.Action, names: List[str]
+    ) -> None:
         if isinstance(action, Action.CreateStartingLegion):
             for creature_name in set(creaturedata.starting_creature_names):
                 self.update_creature(creature_name)
