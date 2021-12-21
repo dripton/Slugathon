@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 from sys import maxsize
 import logging
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple, Union
 
 import gi
 
@@ -48,6 +48,7 @@ from slugathon.gui import (
 )
 from slugathon.net import User
 from slugathon.util import guiutils, prefs
+from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Phase, Game, Creature, Legion
 from slugathon.util.bag import bag
@@ -108,7 +109,7 @@ class GUIMasterBoard(Gtk.EventBox):
 
     def __init__(
         self,
-        board,
+        board: MasterBoard.MasterBoard,
         game: Optional[Game.Game] = None,
         user: Optional[User.User] = None,
         playername: Optional[str] = None,
@@ -152,7 +153,7 @@ class GUIMasterBoard(Gtk.EventBox):
         self.recruitchits = []  # type: List[Tuple[Chit.Chit, int]]
         for hex1 in self.board.hexes.values():
             self.guihexes[hex1.label] = GUIMasterHex.GUIMasterHex(hex1, self)
-        self.selected_marker = None
+        self.selected_marker = None  # type: Optional[Marker.Marker]
         self.negotiate = None  # type: Optional[Negotiate.Negotiate]
         self.proposals = set()  # type: Set[Proposal.Proposal]
         self.guimap = None  # type: Optional[GUIBattleMap.GUIBattleMap]
@@ -321,7 +322,7 @@ class GUIMasterBoard(Gtk.EventBox):
         mulligan_menuitem = self.ui.get_widget("/Menubar/PhaseMenu/Mulligan")
         mulligan_menuitem.set_sensitive(False)
 
-    def _init_caretaker(self):
+    def _init_caretaker(self) -> None:
         if not self.guicaretaker:
             assert self.game is not None
             assert self.playername is not None
@@ -331,7 +332,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self.vbox2.pack_start(self.guicaretaker, True, True, 0)
             self.game.add_observer(self.guicaretaker)
 
-    def _init_status_screen(self):
+    def _init_status_screen(self) -> None:
         if not self.status_screen:
             assert self.game is not None
             assert self.playername is not None
@@ -342,21 +343,21 @@ class GUIMasterBoard(Gtk.EventBox):
             self.vbox2.pack_start(self.status_screen, True, True, 0)
             self.game.add_observer(self.status_screen)
 
-    def _init_inspector(self):
+    def _init_inspector(self) -> None:
         if not self.inspector:
             assert self.playername is not None
             self.inspector = Inspector.Inspector(self.playername)
             self.vbox2.pack_start(Gtk.HSeparator(), True, True, 0)
             self.vbox2.pack_start(self.inspector, True, True, 0)
 
-    def _init_event_log(self):
+    def _init_event_log(self) -> None:
         if not self.event_log:
             assert self.game is not None
             self.event_log = EventLog.EventLog(self.game, self.playername)
             self.game.add_observer(self.event_log)
             self.vbox.pack_start(self.event_log, True, True, 0)
 
-    def cb_delete_event(self, widget, event):
+    def cb_delete_event(self, widget: Gtk.Widget, event: Gtk.Event) -> bool:
         if self.game is None or self.game.over:
             self.cb_destroy(True)
         else:
@@ -367,7 +368,7 @@ class GUIMasterBoard(Gtk.EventBox):
             def1.addErrback(self.failure)
         return True
 
-    def cb_destroy(self, confirmed):
+    def cb_destroy(self, confirmed: bool) -> None:
         """Withdraw from the game, and destroy the GUIMasterBoard."""
         if confirmed:
             self.destroyed = True
@@ -378,18 +379,18 @@ class GUIMasterBoard(Gtk.EventBox):
                 self.guimap.destroy()
             self.destroy()
 
-    def cb_withdraw2(self, confirmed):
+    def cb_withdraw2(self, confirmed: bool) -> None:
         """Withdraw from the game, but do not destroy the GUIMasterBoard."""
         if confirmed:
             if self.game:
                 def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
                 def1.addErrback(self.failure)
 
-    def cb_area_expose(self, area, event):
+    def cb_area_expose(self, area: Gtk.DrawingArea, event: Gtk.Event) -> bool:
         self.update_gui(event=event)
         return True
 
-    def cb_click(self, area, event):
+    def cb_click(self, area: Gtk.DrawingArea, event: Gtk.Event) -> bool:
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
                 self.clicked_on_marker(area, event, marker)
@@ -401,7 +402,7 @@ class GUIMasterBoard(Gtk.EventBox):
         self.clicked_on_background(area, event)
         return True
 
-    def cb_motion(self, area, event):
+    def cb_motion(self, area: Gtk.DrawingArea, event: Gtk.Event) -> bool:
         """Callback for mouse motion."""
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
@@ -425,21 +426,23 @@ class GUIMasterBoard(Gtk.EventBox):
                 return True
         return True
 
-    def _all_teleports(self, moves):
+    def _all_teleports(self, moves: List[Tuple[int, int]]) -> bool:
         """Return True iff all the move tuples in moves are teleports"""
         for move in moves:
             if move[1] != Game.TELEPORT:
                 return False
         return True
 
-    def _no_teleports(self, moves):
+    def _no_teleports(self, moves: List[Tuple[int, int]]) -> bool:
         """Return True iff none of the move tuples in moves are teleports"""
         for move in moves:
             if move[1] == Game.TELEPORT:
                 return False
         return True
 
-    def clicked_on_background(self, area, event):
+    def clicked_on_background(
+        self, area: Gtk.DrawingArea, event: Gtk.Event
+    ) -> None:
         """The user clicked on the board outside a hex or marker."""
         if self.game:
             if self.game.phase == Phase.SPLIT:
@@ -452,7 +455,12 @@ class GUIMasterBoard(Gtk.EventBox):
             elif self.game.phase == Phase.MUSTER:
                 self.highlight_recruits()
 
-    def clicked_on_hex(self, area, event, guihex):
+    def clicked_on_hex(
+        self,
+        area: Gtk.DrawingArea,
+        event: Gtk.Event,
+        guihex: GUIMasterHex.GUIMasterHex,
+    ) -> None:
         if not self.game:
             return
         if event.button == 1:
@@ -462,6 +470,8 @@ class GUIMasterBoard(Gtk.EventBox):
             elif phase == Phase.MOVE and self.selected_marker:
                 if guihex.selected:
                     legion = self.selected_marker.legion
+                    assert legion.player is not None
+                    assert legion.player.movement_roll is not None
                     all_moves = self.game.find_all_moves(
                         legion,
                         self.board.hexes[legion.hexlabel],
@@ -488,7 +498,9 @@ class GUIMasterBoard(Gtk.EventBox):
             elif phase == Phase.MUSTER:
                 self.highlight_recruits()
 
-    def _pick_move_type(self, legion, moves):
+    def _pick_move_type(
+        self, legion: Legion.Legion, moves: List[Tuple[int, int]]
+    ) -> None:
         """Figure out whether to teleport, then call _pick_entry_side."""
         if self._all_teleports(moves):
             self._pick_entry_side(True, legion, moves)
@@ -502,7 +514,12 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addCallback(self._pick_entry_side, legion, moves)
 
-    def _pick_entry_side(self, teleport, legion, moves):
+    def _pick_entry_side(
+        self,
+        teleport: Optional[bool],
+        legion: Legion.Legion,
+        moves: List[Tuple[int, int]],
+    ) -> None:
         """Pick an entry side, then call _pick_teleporting_lord.
 
         teleport can be True, False, or None (cancel the move).
@@ -524,7 +541,7 @@ class GUIMasterBoard(Gtk.EventBox):
             entry_sides.discard("TELEPORT")
         if len(entry_sides) == 1 or not legion.player.enemy_legions(hexlabel):
             self._pick_teleporting_lord(
-                entry_sides.pop(), legion, moves, teleport
+                entry_sides.pop(), legion, moves, teleport  # type: ignore
             )
         else:
             if teleport:
@@ -541,7 +558,13 @@ class GUIMasterBoard(Gtk.EventBox):
                 self._pick_teleporting_lord, legion, moves, teleport
             )
 
-    def _pick_teleporting_lord(self, entry_side, legion, moves, teleport):
+    def _pick_teleporting_lord(
+        self,
+        entry_side: int,
+        legion: Legion.Legion,
+        moves: List[Tuple[int, Union[int, str]]],
+        teleport: bool,
+    ) -> None:
         """Pick a teleporting lord, then call _do_move_legion."""
         if entry_side is None:
             self.highlight_unmoved_legions()
@@ -573,7 +596,14 @@ class GUIMasterBoard(Gtk.EventBox):
             lord_name = None
         self._do_move_legion(lord_name, legion, moves, teleport, entry_side)
 
-    def _do_move_legion(self, lord_name, legion, moves, teleport, entry_side):
+    def _do_move_legion(
+        self,
+        lord_name: Optional[str],
+        legion: Legion.Legion,
+        moves: List[Tuple[int, Union[str, int]]],
+        teleport: bool,
+        entry_side: int,
+    ) -> None:
         """Call the server to request a legion move."""
         assert self.game is not None
         hexlabel = moves[0][0]
@@ -588,7 +618,9 @@ class GUIMasterBoard(Gtk.EventBox):
         )
         def1.addErrback(self.failure)
 
-    def clicked_on_marker(self, area, event, marker):
+    def clicked_on_marker(
+        self, area: Gtk.DrawingArea, event: Gtk.Event, marker: Marker.Marker
+    ) -> None:
         assert self.game is not None
         phase = self.game.phase
         if phase == Phase.SPLIT:
@@ -613,7 +645,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 _, def1 = PickMarker.new(
                     self.playername,
                     self.game.name,
-                    player.markerids_left,
+                    sorted(player.markerids_left),
                     self.parent_window,
                 )
                 def1.addCallback(self.picked_marker_presplit, legion)
@@ -687,7 +719,9 @@ class GUIMasterBoard(Gtk.EventBox):
                     def1.addCallback(self.picked_recruit)
             self.highlight_recruits()
 
-    def picked_marker_presplit(self, tup, legion):
+    def picked_marker_presplit(
+        self, tup: Tuple[str, str, str], legion: Legion.Legion
+    ) -> None:
         (game_name, playername, markerid) = tup
         assert self.game is not None
         player = self.game.get_player_by_name(playername)
@@ -696,7 +730,7 @@ class GUIMasterBoard(Gtk.EventBox):
         if markerid:
             self.split_legion(legion)
 
-    def split_legion(self, legion):
+    def split_legion(self, legion: Legion.Legion) -> None:
         if legion is not None:
             assert self.playername is not None
             _, def1 = SplitLegion.new(
@@ -704,7 +738,9 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addCallback(self.try_to_split_legion)
 
-    def try_to_split_legion(self, tup1):
+    def try_to_split_legion(
+        self, tup1: Tuple[Legion.Legion, Legion.Legion, Legion.Legion]
+    ) -> None:
         (old_legion, new_legion1, new_legion2) = tup1
         assert self.game is not None
         if old_legion is None:
@@ -724,7 +760,9 @@ class GUIMasterBoard(Gtk.EventBox):
         )
         def1.addErrback(self.failure)
 
-    def picked_recruit(self, tup2):
+    def picked_recruit(
+        self, tup2: Tuple[Legion.Legion, Creature.Creature, List[str]]
+    ) -> None:
         """Callback from PickRecruit"""
         (legion, creature, recruiter_names) = tup2
         assert self.game is not None
@@ -743,7 +781,9 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def picked_summon(self, tup3):
+    def picked_summon(
+        self, tup3: Tuple[Legion.Legion, Legion.Legion, Creature.Creature]
+    ) -> None:
         """Callback from SummonAngel"""
         (legion, donor, creature) = tup3
         assert self.game is not None
@@ -762,7 +802,9 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def picked_angels(self, tup4):
+    def picked_angels(
+        self, tup4: Tuple[Legion.Legion, List[Creature.Creature]]
+    ) -> None:
         """Callback from AcquireAngels"""
         (legion, angels) = tup4
         logging.info(f"picked_angels {legion} {angels}")
@@ -801,7 +843,7 @@ class GUIMasterBoard(Gtk.EventBox):
         """Return the height of the board in pixels."""
         return int(math.ceil(self.scale * self.board.hex_height * 4 * SQRT3))
 
-    def markers_in_hex(self, hexlabel):
+    def markers_in_hex(self, hexlabel: int) -> List[Marker.Marker]:
         return [
             marker
             for marker in self.markers
@@ -830,7 +872,9 @@ class GUIMasterBoard(Gtk.EventBox):
             self.markers.remove(marker)
 
     def _place_chits(
-        self, chits: List[Chit.Chit], guihex: GUIMasterHex.GUIMasterHex
+        self,
+        chits: Sequence[Union[Chit.Chit, Marker.Marker]],
+        guihex: GUIMasterHex.GUIMasterHex,
     ) -> None:
         """Compute and set the correct locations for each chit (or recruitchit
         or marker) in the list, if they're all in guihex, taking their scale
@@ -861,15 +905,18 @@ class GUIMasterBoard(Gtk.EventBox):
                 first_location[1] + ii * increment,
             )
 
-    def _render_marker(self, marker, ctx):
-        ctx.set_source_surface(
-            marker.surface,
-            int(round(marker.location[0])),
-            int(round(marker.location[1])),
-        )
+    def _render_marker(
+        self, marker: Union[Marker.Marker, Chit.Chit], ctx: cairo.Context
+    ) -> None:
+        if marker.location is not None:
+            ctx.set_source_surface(
+                marker.surface,
+                int(round(marker.location[0])),
+                int(round(marker.location[1])),
+            )
         ctx.paint()
 
-    def draw_markers(self, ctx):
+    def draw_markers(self, ctx: cairo.Context) -> None:
         if not self.game:
             return
         self._add_missing_markers()
@@ -885,7 +932,9 @@ class GUIMasterBoard(Gtk.EventBox):
                 marker.update_height()
                 self._render_marker(marker, ctx)
 
-    def create_recruitchits(self, legion, hexlabel, recruit_names):
+    def create_recruitchits(
+        self, legion: Legion.Legion, hexlabel: int, recruit_names: List[str]
+    ) -> None:
         player = legion.player
         guihex = self.guihexes[hexlabel]
         recruitchit_scale = self.scale * Chit.CHIT_SCALE_FACTOR / 4
@@ -911,12 +960,12 @@ class GUIMasterBoard(Gtk.EventBox):
                 self.recruitchits.append((chit, hexlabel))
         self._place_chits(chits, guihex)
 
-    def draw_recruitchits(self, ctx):
+    def draw_recruitchits(self, ctx: cairo.Context) -> None:
         # Draw in forward order so the last recruitchit in the list is on top.
         for (chit, unused) in self.recruitchits:
             self._render_marker(chit, ctx)
 
-    def draw_movement_die(self, ctx):
+    def draw_movement_die(self, ctx: cairo.Context) -> None:
         if self.game is None or self.game.active_player is None:
             return
         phase = self.game.phase
@@ -963,7 +1012,7 @@ class GUIMasterBoard(Gtk.EventBox):
         height = max_y - min_y
         return int(min_x), int(min_y), int(width), int(height)
 
-    def update_gui(self, event=None):
+    def update_gui(self, event: Optional[Gtk.Event] = None) -> None:
         """Repaint the amount of the GUI that needs repainting.
 
         Compute the dirty rectangle from the union of
@@ -1027,34 +1076,34 @@ class GUIMasterBoard(Gtk.EventBox):
 
         self.repaint_hexlabels.clear()
 
-    def repaint(self, hexlabels=None):
+    def repaint(self, hexlabels: Set[int] = None) -> None:
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
         reactor.callLater(0, self.update_gui)  # type: ignore
 
-    def unselect_all(self):
+    def unselect_all(self) -> None:
         for guihex in self.guihexes.values():
             if guihex.selected:
                 guihex.selected = False
                 self.repaint_hexlabels.add(guihex.masterhex.label)
         self.repaint()
 
-    def clear_all_recruitchits(self, *unused):
+    def clear_all_recruitchits(self, *unused: Any) -> None:
         if self.recruitchits:
             hexlabels = {tup[1] for tup in self.recruitchits}
             self.recruitchits = []
             self.repaint(hexlabels)
 
-    def clear_recruitchits(self, hexlabel):
+    def clear_recruitchits(self, hexlabel: int) -> None:
         """Clear recruitchits in one hex."""
         self.recruitchits = [
             (chit, hexlabel2)
             for (chit, hexlabel2) in self.recruitchits
             if hexlabel2 != hexlabel
         ]
-        self.repaint([hexlabel])
+        self.repaint({hexlabel})
 
-    def clear_stray_recruitchits(self):
+    def clear_stray_recruitchits(self) -> None:
         """Clear recruitchits in all empty hexes."""
         occupied_hexlabels = set()
         stray_hexlabels = set()
@@ -1071,7 +1120,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self.recruitchits = new_recruitchits
             self.repaint(stray_hexlabels)
 
-    def highlight_tall_legions(self):
+    def highlight_tall_legions(self) -> None:
         """Highlight all hexes containing a legion of height 7 or more
         belonging to the active, current player."""
         assert self.game is not None
@@ -1088,7 +1137,7 @@ class GUIMasterBoard(Gtk.EventBox):
                         guihex.selected = True
             self.repaint()
 
-    def highlight_unmoved_legions(self):
+    def highlight_unmoved_legions(self) -> None:
         """Highlight all hexes containing an unmoved legion belonging to the
         active, current player."""
         assert self.game is not None
@@ -1107,7 +1156,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 guihex.selected = True
             self.repaint(hexlabels)
 
-    def highlight_engagements(self):
+    def highlight_engagements(self) -> None:
         """Highlight all hexes with engagements."""
         self.unselect_all()
         assert self.game is not None
@@ -1117,14 +1166,14 @@ class GUIMasterBoard(Gtk.EventBox):
             guihex.selected = True
         self.repaint(hexlabels)
 
-    def highlight_hex(self, hexlabel):
+    def highlight_hex(self, hexlabel: int) -> None:
         """Highlight one hex."""
         self.unselect_all()
         guihex = self.guihexes[hexlabel]
         guihex.selected = True
-        self.repaint([hexlabel])
+        self.repaint({hexlabel})
 
-    def highlight_recruits(self):
+    def highlight_recruits(self) -> None:
         """Highlight all hexes in which the active player can recruit."""
         assert self.game is not None
         assert self.playername is not None
@@ -1142,11 +1191,11 @@ class GUIMasterBoard(Gtk.EventBox):
                 guihex.selected = True
             self.repaint(hexlabels)
 
-    def cb_save(self, action):
+    def cb_save(self, action: Action.Action) -> None:
         def1 = self.user.callRemote("save", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
-    def cb_done(self, action):
+    def cb_done(self, action: Action.Action) -> None:
         if not self.game:
             return
         assert self.playername is not None
@@ -1200,7 +1249,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 )
                 def1.addErrback(self.failure)
 
-    def cb_mulligan(self, action):
+    def cb_mulligan(self, action: Action.Action) -> None:
         if not self.game:
             return
         assert self.playername is not None
@@ -1221,7 +1270,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 def1 = self.user.callRemote("take_mulligan", self.game.name)  # type: ignore
                 def1.addErrback(self.failure)
 
-    def _cb_checkbox_helper(self, option):
+    def _cb_checkbox_helper(self, option: str) -> None:
         checkmenuitem = self.ui.get_widget(f"/Menubar/OptionsMenu/{option}")
         active = checkmenuitem.get_active()
         assert self.playername is not None
@@ -1229,25 +1278,25 @@ class GUIMasterBoard(Gtk.EventBox):
         if active != prev:
             prefs.save_bool_option(self.playername, option, active)
 
-    def cb_auto_strike_single(self, action):
+    def cb_auto_strike_single(self, action: Action.Action) -> None:
         logging.info("cb_auto_strike_single")
         option = prefs.AUTO_STRIKE_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
-    def cb_auto_rangestrike_single(self, action):
+    def cb_auto_rangestrike_single(self, action: Action.Action) -> None:
         logging.info("cb_auto_rangestrike_single")
         option = prefs.AUTO_RANGESTRIKE_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
-    def cb_auto_carry_single(self, action):
+    def cb_auto_carry_single(self, action: Action.Action) -> None:
         logging.info("cb_auto_carry_single")
         option = prefs.AUTO_CARRY_TO_SINGLE_TARGET
         self._cb_checkbox_helper(option)
 
-    def cb_about(self, action):
+    def cb_about(self, action: Action.Action) -> None:
         About.About(self.parent_window)
 
-    def cb_undo(self, action):
+    def cb_undo(self, action: Action.Action) -> None:
         if self.game:
             history = self.game.history
             assert history is not None
@@ -1259,7 +1308,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 )
                 def1.addErrback(self.failure)
 
-    def cb_undo_all(self, action):
+    def cb_undo_all(self, action: Action.Action) -> None:
         if self.game:
             history = self.game.history
             assert history is not None
@@ -1272,7 +1321,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 def1.addCallback(self.cb_undo_all)
                 def1.addErrback(self.failure)
 
-    def cb_redo(self, action):
+    def cb_redo(self, action: Action.Action) -> None:
         if self.game:
             history = self.game.history
             assert history is not None
@@ -1282,7 +1331,7 @@ class GUIMasterBoard(Gtk.EventBox):
                 def1 = self.user.callRemote("apply_action", action)  # type: ignore
                 def1.addErrback(self.failure)
 
-    def cb_quit(self, action):
+    def cb_quit(self, action: Action.Action) -> None:
         """Quit the game, destroy the board and map, and unsubscribe from this
         game's events."""
         if self.game and (
@@ -1297,7 +1346,7 @@ class GUIMasterBoard(Gtk.EventBox):
             def1.addCallback(self.cb_destroy)
             def1.addErrback(self.failure)
 
-    def cb_withdraw(self, action):
+    def cb_withdraw(self, action: Action.Action) -> None:
         """Withdraw from the game but keep watching it."""
         if self.game and self.game.over:
             self.cb_destroy(True)
@@ -1308,7 +1357,9 @@ class GUIMasterBoard(Gtk.EventBox):
             def1.addCallback(self.cb_withdraw2)
             def1.addErrback(self.failure)
 
-    def cb_maybe_flee(self, tup5):
+    def cb_maybe_flee(
+        self, tup5: Tuple[Legion.Legion, Legion.Legion, bool]
+    ) -> None:
         assert self.game is not None
         (attacker, defender, fled) = tup5
         if fled:
@@ -1321,7 +1372,10 @@ class GUIMasterBoard(Gtk.EventBox):
             )
         def1.addErrback(self.failure)
 
-    def cb_negotiate(self, tup6):
+    def cb_negotiate(
+        self,
+        tup6: Tuple[Legion.Legion, List[str], Legion.Legion, List[str], int],
+    ) -> None:
         """Callback from Negotiate dialog."""
         (
             attacker_legion,
@@ -1380,7 +1434,10 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def cb_proposal(self, tup7):
+    def cb_proposal(
+        self,
+        tup7: Tuple[Legion.Legion, List[str], Legion.Legion, List[str], int],
+    ) -> None:
         """Callback from Proposal dialog."""
         (
             attacker_legion,
@@ -1419,15 +1476,15 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def pause_ai(self, action):
+    def pause_ai(self, action: Action.Action) -> None:
         def1 = self.user.callRemote("pause_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
-    def resume_ai(self, action):
+    def resume_ai(self, action: Action.Action) -> None:
         def1 = self.user.callRemote("resume_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
-    def destroy_negotiate(self):
+    def destroy_negotiate(self) -> None:
         if self.negotiate is not None:
             self.negotiate.destroy()
             self.negotiate = None
@@ -1435,10 +1492,12 @@ class GUIMasterBoard(Gtk.EventBox):
             proposal.destroy()
         self.proposals.clear()
 
-    def failure(self, arg):
+    def failure(self, arg: Any) -> None:
         log.err(arg)
 
-    def update(self, observed, action, names):
+    def update(
+        self, observed: Observed, action: Action.Action, names: List[str]
+    ) -> None:
         attacker = None  # type: Optional[Legion.Legion]
         defender = None  # type: Optional[Legion.Legion]
 
@@ -1495,7 +1554,8 @@ class GUIMasterBoard(Gtk.EventBox):
             for hexlabel in [legion.hexlabel, legion.previous_hexlabel]:
                 if hexlabel is not None:
                     self.repaint_hexlabels.add(hexlabel)
-            self.clear_recruitchits(legion.previous_hexlabel)
+            if legion.previous_hexlabel:
+                self.clear_recruitchits(legion.previous_hexlabel)
             if action.playername == self.playername:
                 self.highlight_unmoved_legions()
             else:
@@ -1691,15 +1751,15 @@ class GUIMasterBoard(Gtk.EventBox):
             assert self.game is not None
             legion = self.game.find_legion(action.markerid)
             donor = self.game.find_legion(action.donor_markerid)
-            lst = []
+            hexlabels = set()
             if legion and legion.hexlabel:
-                lst.append(legion.hexlabel)
+                hexlabels.add(legion.hexlabel)
                 self.create_recruitchits(
                     legion, legion.hexlabel, [action.creature_name]
                 )
             if donor and donor.hexlabel:
-                lst.append(donor.hexlabel)
-            self.repaint(lst)
+                hexlabels.add(donor.hexlabel)
+            self.repaint(hexlabels)
             self.highlight_engagements()
             assert self.playername is not None
             player = self.game.get_player_by_name(self.playername)
@@ -1729,13 +1789,13 @@ class GUIMasterBoard(Gtk.EventBox):
             assert self.game is not None
             legion = self.game.find_legion(action.markerid)
             donor = self.game.find_legion(action.donor_markerid)
-            lst = []
+            hexlabels = set()
             if legion and legion.hexlabel:
-                lst.append(legion.hexlabel)
+                hexlabels.add(legion.hexlabel)
                 self.clear_recruitchits(legion.hexlabel)
             if donor and donor.hexlabel:
-                lst.append(donor.hexlabel)
-            self.repaint(lst)
+                hexlabels.add(donor.hexlabel)
+            self.repaint(hexlabels)
             self.highlight_engagements()
 
         elif isinstance(action, Action.CanAcquireAngels):
@@ -1769,7 +1829,7 @@ class GUIMasterBoard(Gtk.EventBox):
             legion = self.game.find_legion(markerid)
             if legion and legion.hexlabel and action.angel_names:
                 self.create_recruitchits(
-                    legion, legion.hexlabel, action.angel_names
+                    legion, legion.hexlabel, list(action.angel_names)
                 )
                 self.repaint_hexlabels.add(legion.hexlabel)
             self.highlight_engagements()
