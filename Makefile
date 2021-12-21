@@ -3,8 +3,7 @@ all: black mypy test build install
 build:
 	python3 setup.py build
 
-install:
-	python3 setup.py build
+install: build
 	sudo python3 setup.py install
 
 mypy:
