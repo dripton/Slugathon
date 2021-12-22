@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+from typing import Any, Dict, List, Optional, Union
 
 import gi
 
@@ -16,12 +17,13 @@ from twisted.python import log
 from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
-from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Game
 
 from slugathon.gui import icon
 from slugathon.net import User
 from slugathon.util.NullUser import NullUser
+from slugathon.util.Observed import Observed
+from slugathon.util.Observer import IObserver
 
 
 __copyright__ = "Copyright (c) 2004-2021 David Ripton"
@@ -147,21 +149,21 @@ class WaitingForPlayers(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click_join(self, widget, event):
+    def cb_click_join(self, widget: Gtk.Widget, event: Any) -> None:
         def1 = self.user.callRemote("join_game", self.game.name, "Human", "")  # type: ignore
         def1.addErrback(self.failure)
 
-    def cb_destroy(self, unused):
+    def cb_destroy(self, unused: Any) -> None:
         if self.game and not self.game.started:
             def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
             def1.addErrback(self.failure)
 
-    def cb_click_drop(self, widget, event):
+    def cb_click_drop(self, widget: Gtk.Widget, event: Any) -> None:
         def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
         self.destroy()
 
-    def cb_click_start(self, widget, event):
+    def cb_click_start(self, widget: Gtk.Widget, event: Any) -> None:
         self.start_game()
 
     def start_game(self) -> None:
@@ -171,7 +173,7 @@ class WaitingForPlayers(Gtk.Dialog):
             def1.addErrback(self.failure)
 
     # TODO Save the selection and do something useful with it.
-    def cb_player_list_select(self, path, unused):
+    def cb_player_list_select(self, path: List[int], unused: Any) -> bool:
         index = path[0]
         self.player_store[index, 0]
         return False
@@ -194,15 +196,17 @@ class WaitingForPlayers(Gtk.Dialog):
         def1.addCallback(self._got_player_data)
         def1.addErrback(self.failure)
 
-    def _got_player_data(self, player_data):
+    def _got_player_data(
+        self, player_data: List[Dict[str, Union[str, float]]]
+    ) -> None:
         playername_to_data = {}
         if player_data:
             for dct in player_data:
                 playername_to_data[dct["name"]] = dct
         length = len(self.player_store)
         for ii, playername in enumerate(self.game.playernames):
-            dct = playername_to_data.get(playername)
-            if dct:
+            if playername in playername_to_data:
+                dct = playername_to_data[playername]
                 skill = dct["skill"]
             else:
                 # TODO unhardcode
@@ -218,14 +222,19 @@ class WaitingForPlayers(Gtk.Dialog):
             self.playername == self.game.owner.name
         )
 
-    def failure(self, arg):
+    def failure(self, arg: Any) -> None:
         log.err(arg)
 
-    def shutdown(self):
+    def shutdown(self) -> None:
         self.game.remove_observer(self)
         self.destroy()
 
-    def update(self, observed, action, names):
+    def update(
+        self,
+        observed: Observed,
+        action: Action.Action,
+        names: Optional[List[str]],
+    ) -> None:
         if isinstance(action, Action.RemoveGame):
             if action.game_name == self.game.name:
                 self.shutdown()

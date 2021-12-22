@@ -101,7 +101,7 @@ class GUIMasterHex(object):
         max_y += scale
         return min_x, min_y, max_x - min_x, max_y - min_y
 
-    def draw_hexagon(self, ctx) -> None:
+    def draw_hexagon(self, ctx: cairo.Context) -> None:
         """Create the polygon, filled with the terrain color."""
 
         if self.selected:
@@ -229,11 +229,11 @@ class GUIMasterHex(object):
         ctx.set_source_surface(input_surface)
         ctx.paint()
 
-    def draw_overlay(self, ctx) -> None:
+    def draw_overlay(self, ctx: cairo.Context) -> None:
         ctx.set_source_surface(self.surface, self.dest_x, self.dest_y)
         ctx.paint()
 
-    def draw_label(self, ctx) -> None:
+    def draw_label(self, ctx: cairo.Context) -> None:
         """Display the hex label."""
         label = str(self.masterhex.label)
         side = self.masterhex.label_side
@@ -266,7 +266,7 @@ class GUIMasterHex(object):
         ctx.move_to(x, y)
         PangoCairo.show_layout(ctx, layout)
 
-    def update_gui(self, ctx) -> None:
+    def update_gui(self, ctx: cairo.Context) -> None:
         self.draw_hexagon(ctx)
         self.draw_overlay(ctx)
         self.draw_label(ctx)

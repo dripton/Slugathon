@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Dict, Set, Tuple
+from typing import Any, Dict, Set, Tuple
 
 import gi
 
@@ -113,14 +113,14 @@ class PickStrikePenalty(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         self.destroy()
         num_dice, strike_number = widget.tup
         self.deferred.callback(
             (self.striker, self.target, num_dice, strike_number)
         )
 
-    def cb_cancel(self, widget, response_id):
+    def cb_cancel(self, widget: Gtk.Widget, response_id: int) -> None:
         self.destroy()
         self.deferred.callback((None, None, None, None))
 
@@ -190,7 +190,9 @@ def main() -> None:
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
-    def my_callback(tup):
+    def my_callback(
+        tup: Tuple[Creature.Creature, Creature.Creature, int, int]
+    ) -> None:
         (striker, target, num_dice, strike_number) = tup
         logging.info(
             f"called my_callback {striker} {target} {num_dice} "

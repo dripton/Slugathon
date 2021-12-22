@@ -27,7 +27,7 @@ class InfoDialog(Gtk.MessageDialog):
         self.connect("response", self.cb_response)
         self.show_all()
 
-    def cb_response(self, widget, response_id):
+    def cb_response(self, widget: Gtk.Widget, response_id: int) -> None:
         self.destroy()
 
 

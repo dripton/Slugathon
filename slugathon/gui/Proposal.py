@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import logging
-from typing import List
+from typing import Any, List, Tuple
 
 import gi
 
@@ -37,7 +37,7 @@ def new(
     defender_legion: Legion.Legion,
     defender_creature_names: List[str],
     parent: Gtk.Window,
-):
+) -> Tuple[Proposal, defer.Deferred]:
     """Create a Proposal dialog and return it and a Deferred."""
     def1 = defer.Deferred()  # type: defer.Deferred
     proposal = Proposal(
@@ -156,7 +156,7 @@ class Proposal(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_response(self, widget, response_id):
+    def cb_response(self, widget: Gtk.Widget, response_id: int) -> None:
         """Fires the Deferred with the attacker, the defender, and
         the response_id."""
         self.destroy()
@@ -213,7 +213,7 @@ if __name__ == "__main__":
         defender_player, "Rd01", defender_creatures, 1
     )
 
-    def my_callback(*args):
+    def my_callback(*args: Any) -> None:
         logging.info(f"my_callback {args}")
         reactor.stop()  # type: ignore
 

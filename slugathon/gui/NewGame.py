@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from typing import Optional
+from typing import Any, Optional
 
 import gi
 
@@ -125,7 +125,7 @@ class NewGame(Gtk.Dialog):
 
         self.show_all()
 
-    def ok(self, widget, event):
+    def ok(self, widget: Gtk.Widget, event: Any) -> None:
         if self.name_entry.get_text():
             self.game_name = self.name_entry.get_text()
             self.min_players = self.min_players_spin.get_value_as_int()
@@ -148,13 +148,13 @@ class NewGame(Gtk.Dialog):
             def1.addErrback(self.failure)
             self.destroy()
 
-    def cancel(self, widget, event):
+    def cancel(self, widget: Gtk.Widget, event: Any) -> None:
         self.destroy()
 
-    def failure(self, error):
+    def failure(self, error: Any) -> None:
         log.err(error)
 
-    def got_information(self, information):
+    def got_information(self, information: Optional[str]) -> None:
         if information:
             InfoDialog.InfoDialog(self.parent_window, "Info", str(information))
 

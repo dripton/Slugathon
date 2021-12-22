@@ -107,7 +107,7 @@ class GUIBattleHex(object):
             self.points.append(rp(point))
 
     @property
-    def bounding_rect(self):
+    def bounding_rect(self) -> Tuple[float, float, float, float]:
         """Return the bounding rectangle (x, y, width, height) of this hex."""
         min_x = float(maxsize)
         max_x = float(-maxsize)
@@ -120,14 +120,14 @@ class GUIBattleHex(object):
             max_y = max(max_y, y)
         return min_x, min_y, max_x - min_x, max_y - min_y
 
-    def draw_hexagon(self, ctx: cairo.Context):
+    def draw_hexagon(self, ctx: cairo.Context) -> None:
         """Create the polygon, filled with the terrain color."""
         # inner hex
         ctx.set_source_rgb(*self.fillcolor)
         guiutils.draw_polygon(ctx, self.points)
         ctx.fill()
 
-    def draw_selection(self, ctx: cairo.Context):
+    def draw_selection(self, ctx: cairo.Context) -> None:
         """If the hex is selected, draw the red outline."""
         if self.selected:
             ctx.set_source_rgba(1, 0, 0, 0.8)
@@ -197,7 +197,7 @@ class GUIBattleHex(object):
                 ctx.paint()
             self.border_surfaces.append(border_surface)
 
-    def draw_hex_overlay(self, ctx: cairo.Context):
+    def draw_hex_overlay(self, ctx: cairo.Context) -> None:
         """Draw the main terrain overlay for the hex."""
         if self.hex_surface is None:
             return
@@ -208,7 +208,7 @@ class GUIBattleHex(object):
         )
         ctx.paint()
 
-    def draw_border_overlays(self, ctx: cairo.Context):
+    def draw_border_overlays(self, ctx: cairo.Context) -> None:
         """Draw the overlays for all borders that have them."""
         for hexside, border in enumerate(self.battlehex.borders):
             if border:
@@ -223,7 +223,7 @@ class GUIBattleHex(object):
                 )
                 ctx.paint()
 
-    def draw_label(self, ctx: cairo.Context, label, side):
+    def draw_label(self, ctx: cairo.Context, label: str, side: int) -> None:
         """Display the hex label."""
         layout = PangoCairo.create_layout(ctx)
         # TODO Vary font size with scale
@@ -232,24 +232,13 @@ class GUIBattleHex(object):
         layout.set_alignment(Pango.Alignment.CENTER)
         layout.set_text(label)
         width, height = layout.get_pixel_size()
-        x = int(
-            round(
-                (
-                    self.cx
-                    + self.bboxsize[0] * x_font_position[side]
-                    - width / 2.0
-                )
-            )
+        x = round(
+            (self.cx + self.bboxsize[0] * x_font_position[side] - width / 2.0)
         )
-        y = int(
-            round(
-                (
-                    self.cy
-                    + self.bboxsize[1] * y_font_position[side]
-                    - height / 2.0
-                )
-            )
+        y = round(
+            (self.cy + self.bboxsize[1] * y_font_position[side] - height / 2.0)
         )
+
         ctx.set_source_rgb(0, 0, 0)
         ctx.move_to(x, y)
         PangoCairo.show_layout(ctx, layout)

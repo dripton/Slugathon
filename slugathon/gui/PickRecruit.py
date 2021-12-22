@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import gi
 
@@ -124,7 +124,7 @@ class PickRecruit(Gtk.Dialog):
         self.connect("response", self.cb_cancel)
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         """Chose a recruit."""
         eventbox = widget
         chit = eventbox.chit
@@ -137,7 +137,7 @@ class PickRecruit(Gtk.Dialog):
         )
         self.destroy()
 
-    def cb_cancel(self, widget, response_id):
+    def cb_cancel(self, widget: Gtk.Widget, response_id: int) -> None:
         """The cancel button was pressed, so exit"""
         self.deferred.callback((self.legion, None, None))
         self.destroy()
@@ -151,7 +151,9 @@ if __name__ == "__main__":
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 
-    def my_callback(tup):
+    def my_callback(
+        tup: Tuple[Legion.Legion, Creature.Creature, List[str]]
+    ) -> None:
         (legion, creature, recruiter_names) = tup
         logging.info(f"{legion} recruited {creature} {recruiter_names}")
         guiutils.exit()

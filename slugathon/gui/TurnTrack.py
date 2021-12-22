@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
 import time
-from typing import Optional
+from typing import Any, List, Optional
 
 import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("PangoCairo", "1.0")
+import cairo
 from gi.repository import Gtk, Pango, PangoCairo, GObject
 from zope.interface import implementer
 
 from slugathon.gui import Marker
+from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Game, Legion
 
@@ -56,7 +58,7 @@ class TurnTrack(Gtk.DrawingArea):
         """Return the height of the area in pixels."""
         return int(round(3 * self.scale))
 
-    def draw_turn_box(self, ctx, ii):
+    def draw_turn_box(self, ctx: cairo.Context, ii: int) -> None:
         cx = int(round((0.6 + ii * 1.8) * self.scale))
         cy = int(round(0.75 * self.scale))
         ctx.set_source_rgb(0, 0, 0)
@@ -70,7 +72,7 @@ class TurnTrack(Gtk.DrawingArea):
         ctx.close_path()
         ctx.stroke()
 
-    def draw_turn_number(self, ctx, ii):
+    def draw_turn_number(self, ctx: cairo.Context, ii: int) -> None:
         layout = PangoCairo.create_layout(ctx)
         # TODO Vary font size with scale
         desc = Pango.FontDescription("Sans 17")
@@ -83,7 +85,7 @@ class TurnTrack(Gtk.DrawingArea):
         ctx.move_to(cx, cy)
         PangoCairo.show_layout(ctx, layout)
 
-    def draw_marker(self, ctx):
+    def draw_marker(self, ctx: cairo.Context) -> None:
         ii = self.battle_turn - 1
         marker = self.active_marker
         cx = int(round((0.6 + ii * 1.8) * self.scale))
@@ -93,11 +95,11 @@ class TurnTrack(Gtk.DrawingArea):
         ctx.set_source_surface(marker.surface, cx, cy)
         ctx.paint()
 
-    def cb_area_expose(self, area, event):
+    def cb_area_expose(self, area: Gtk.DrawingArea, event: Any) -> bool:
         self.update_gui(event=event)
         return True
 
-    def update_gui(self, event=None):
+    def update_gui(self, event: Any = None) -> None:
         if not self.get_window():
             return
         ctx = self.get_window().cairo_create()
@@ -118,10 +120,12 @@ class TurnTrack(Gtk.DrawingArea):
             self.draw_turn_number(ctx, ii)
         self.draw_marker(ctx)
 
-    def repaint(self):
+    def repaint(self) -> None:
         self.update_gui()
 
-    def update(self, observed, action, names):
+    def update(
+        self, observed: Observed, action: Action.Action, names: List[str]
+    ) -> None:
         if isinstance(action, Action.StartReinforceBattlePhase):
             self.battle_turn = action.battle_turn
             if action.playername == self.defender.player.name:

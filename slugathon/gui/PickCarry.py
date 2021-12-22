@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Tuple
+from typing import Any, Tuple
 
 import gi
 
@@ -99,7 +99,7 @@ class PickCarry(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         creature = widget.creature
         self.destroy()
         if creature:
@@ -173,7 +173,7 @@ def main() -> None:
     gargoyle2.move("D4")
     game.battle_phase = Phase.STRIKE
 
-    def my_callback(tup):
+    def my_callback(tup: Tuple[Creature.Creature, int]) -> None:
         (creature, carries) = tup
         logging.info(f"carry {carries} hits to {creature}")
         reactor.stop()  # type: ignore

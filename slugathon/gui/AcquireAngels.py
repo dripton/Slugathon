@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 import logging
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import gi
 
@@ -142,14 +142,14 @@ class AcquireAngels(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         """Acquire an angel."""
         eventbox = widget
         chit = eventbox.chit
         self.deferred.callback((self.legion, self.chit_to_combo[chit]))
         self.destroy()
 
-    def cb_cancel(self, widget: Gtk.Widget, response_id: int):
+    def cb_cancel(self, widget: Gtk.Widget, response_id: int) -> None:
         self.deferred.callback((self.legion, None))
         self.destroy()
 
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 
-    def my_callback(tup):
+    def my_callback(tup: Tuple[Legion.Legion, Creature.Creature]) -> None:
         (legion, creature) = tup
         logging.info(f"{legion} acquired {creature}")
         guiutils.exit()

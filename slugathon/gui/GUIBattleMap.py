@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 from sys import maxsize, argv
 import logging
-from typing import List, Optional, Set, Tuple
+from typing import Any, List, Optional, Set, Tuple
 
 import gi
 
@@ -21,6 +21,7 @@ from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 import cairo
 from zope.interface import implementer
 
+from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.gui import (
     GUIBattleHex,
@@ -39,7 +40,15 @@ from slugathon.gui import (
     About,
 )
 from slugathon.util import guiutils, prefs
-from slugathon.game import Phase, Action, BattleMap, Game, MasterHex
+from slugathon.game import (
+    Phase,
+    Action,
+    BattleMap,
+    Game,
+    MasterHex,
+    Creature,
+    Legion,
+)
 from slugathon.net import User
 
 
@@ -95,7 +104,7 @@ class GUIBattleMap(Gtk.EventBox):
         self.parent_window = parent_window
 
         self.chits = []  # type: List[Chit.Chit]
-        self.selected_chit = None
+        self.selected_chit = None  # type: Optional[Chit.Chit]
 
         self.vbox = Gtk.VBox(spacing=1)
         self.add(self.vbox)
@@ -306,7 +315,7 @@ class GUIBattleMap(Gtk.EventBox):
             self.guihexes[hexlabel].selected = True
         self.repaint(hexlabels)
 
-    def highlight_strikers(self):
+    def highlight_strikers(self) -> None:
         """Highlight the hexes containing creatures that can strike now."""
         if not self.game:
             return
@@ -319,13 +328,20 @@ class GUIBattleMap(Gtk.EventBox):
         hexlabels = set()
         assert self.game.battle_active_legion is not None
         for creature in self.game.battle_active_legion.strikers:
-            hexlabels.add(creature.hexlabel)
+            if creature.hexlabel is not None:
+                hexlabels.add(creature.hexlabel)
         self.unselect_all()
         for hexlabel in hexlabels:
             self.guihexes[hexlabel].selected = True
         self.repaint(hexlabels)
 
-    def strike(self, striker, target, num_dice, strike_number):
+    def strike(
+        self,
+        striker: Creature.Creature,
+        target: Creature.Creature,
+        num_dice: int,
+        strike_number: int,
+    ) -> None:
         """Have striker strike target."""
         assert self.game is not None
         def1 = self.user.callRemote(  # type: ignore
@@ -340,7 +356,7 @@ class GUIBattleMap(Gtk.EventBox):
         )
         def1.addErrback(self.failure)
 
-    def _do_auto_strike(self):
+    def _do_auto_strike(self) -> bool:
         """Do an automatic strike if appropriate.
 
         Return True iff we did one.
@@ -381,8 +397,13 @@ class GUIBattleMap(Gtk.EventBox):
         return False
 
     def _do_auto_carry(
-        self, striker, target, num_dice, strike_number, carries
-    ):
+        self,
+        striker: Creature.Creature,
+        target: Creature.Creature,
+        num_dice: int,
+        strike_number: int,
+        carries: int,
+    ) -> bool:
         """Automatically carry if appropriate.
 
         Return True iff we carried.
@@ -409,11 +430,13 @@ class GUIBattleMap(Gtk.EventBox):
                 return True
         return False
 
-    def cb_area_expose(self, area, event):
+    def cb_area_expose(
+        self, area: Gtk.DrawingArea, event: cairo.Context
+    ) -> bool:
         self.update_gui(event=event)
         return True
 
-    def cb_click(self, area, event):
+    def cb_click(self, area: Gtk.DrawingArea, event: Gdk.EventButton) -> bool:
         for chit in self.chits:
             if chit.point_inside((event.x, event.y)):
                 self.clicked_on_chit(area, event, chit)
@@ -431,7 +454,9 @@ class GUIBattleMap(Gtk.EventBox):
         self.clicked_on_background(area, event)
         return True
 
-    def clicked_on_background(self, area, event):
+    def clicked_on_background(
+        self, area: Gtk.DrawingArea, event: Gdk.EventButton
+    ) -> None:
         self.selected_chit = None
         self.unselect_all()
         if not self.game or not self.game.battle_active_player:
@@ -446,7 +471,12 @@ class GUIBattleMap(Gtk.EventBox):
             if self.game.battle_active_player.name == self.playername:
                 self.highlight_strikers()
 
-    def clicked_on_hex(self, area, event, guihex):
+    def clicked_on_hex(
+        self,
+        area: Gtk.DrawingArea,
+        event: Gdk.EventButton,
+        guihex: GUIBattleHex.GUIBattleHex,
+    ) -> None:
         if not self.game:
             guihex.selected = not guihex.selected
             self.repaint(hexlabels={guihex.battlehex.label})
@@ -455,14 +485,15 @@ class GUIBattleMap(Gtk.EventBox):
         if phase == Phase.MANEUVER:
             if self.selected_chit is not None and guihex.selected:
                 creature = self.selected_chit.creature
-                def1 = self.user.callRemote(  # type: ignore
-                    "move_creature",
-                    self.game.name,
-                    creature.name,
-                    creature.hexlabel,
-                    guihex.battlehex.label,
-                )
-                def1.addErrback(self.failure)
+                if creature is not None:
+                    def1 = self.user.callRemote(  # type: ignore
+                        "move_creature",
+                        self.game.name,
+                        creature.name,
+                        creature.hexlabel,
+                        guihex.battlehex.label,
+                    )
+                    def1.addErrback(self.failure)
             self.selected_chit = None
             self.unselect_all()
             if (
@@ -474,12 +505,16 @@ class GUIBattleMap(Gtk.EventBox):
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
             self.highlight_strikers()
 
-    def clicked_on_chit(self, area, event, chit):
+    def clicked_on_chit(
+        self, area: Gtk.DrawingArea, event: Gdk.EventButton, chit: Chit.Chit
+    ) -> None:
         assert self.game is not None
         phase = self.game.battle_phase
         if phase == Phase.MANEUVER:
             creature = chit.creature
+            assert creature is not None
             legion = creature.legion
+            assert legion is not None
             player = legion.player
             if player.name != self.playername:
                 return
@@ -495,7 +530,10 @@ class GUIBattleMap(Gtk.EventBox):
 
         elif phase == Phase.STRIKE or phase == Phase.COUNTERSTRIKE:
             creature = chit.creature
+            assert creature is not None
+            assert creature.hexlabel is not None
             legion = creature.legion
+            assert legion is not None
             player = legion.player
             guihex = self.guihexes[creature.hexlabel]
 
@@ -515,19 +553,21 @@ class GUIBattleMap(Gtk.EventBox):
                 # striking enemy creature
                 target = creature
                 striker = self.selected_chit.creature
-                if striker.can_take_strike_penalty(target):
-                    _, def1 = PickStrikePenalty.new(
-                        self.playername,
-                        self.game.name,
-                        striker,
-                        target,
-                        self.parent_window,
-                    )
-                    def1.addCallback(self.picked_strike_penalty)
-                else:
-                    num_dice = striker.number_of_dice(target)
-                    strike_number = striker.strike_number(target)
-                    self.strike(striker, target, num_dice, strike_number)
+                if striker is not None:
+                    assert self.playername is not None
+                    if striker.can_take_strike_penalty(target):
+                        _, def1 = PickStrikePenalty.new(
+                            self.playername,
+                            self.game.name,
+                            striker,
+                            target,
+                            self.parent_window,
+                        )
+                        def1.addCallback(self.picked_strike_penalty)
+                    else:
+                        num_dice = striker.number_of_dice(target)
+                        strike_number = striker.strike_number(target)
+                        self.strike(striker, target, num_dice, strike_number)
 
             else:
                 # picking a striker
@@ -588,7 +628,7 @@ class GUIBattleMap(Gtk.EventBox):
         assert self.defender_graveyard is not None
         self.defender_graveyard.update_gui()
 
-    def _compute_chit_locations(self, hexlabel) -> None:
+    def _compute_chit_locations(self, hexlabel: str) -> None:
         chits = self.chits_in_hex(hexlabel)
         num = len(chits)
         guihex = self.guihexes[hexlabel]
@@ -669,7 +709,7 @@ class GUIBattleMap(Gtk.EventBox):
                 for chit in chits:
                     self._render_chit(chit, ctx)
 
-    def cb_undo(self, action):
+    def cb_undo(self, action: Action.Action) -> None:
         if self.game:
             history = self.game.history
             assert self.playername is not None
@@ -680,7 +720,7 @@ class GUIBattleMap(Gtk.EventBox):
                 )
                 def1.addErrback(self.failure)
 
-    def cb_undo_all(self, action):
+    def cb_undo_all(self, action: Action.Action) -> None:
         if self.game:
             history = self.game.history
             assert self.playername is not None
@@ -692,20 +732,22 @@ class GUIBattleMap(Gtk.EventBox):
                 def1.addCallback(self.cb_undo_all)
                 def1.addErrback(self.failure)
 
-    def cb_redo(self, action):
+    def cb_redo(self, action: Action.Action) -> None:
         if self.game:
             history = self.game.history
+            assert self.playername is not None
             if history.can_redo(self.playername):
                 action = history.undone[-1]
                 def1 = self.user.callRemote("apply_action", action)  # type: ignore
                 def1.addErrback(self.failure)
 
-    def cb_done(self, action):
+    def cb_done(self, action: Action.Action) -> None:
         if not self.game:
             return
         assert self.playername is not None
         player = self.game.get_player_by_name(self.playername)
         if player == self.game.battle_active_player:
+            assert self.game.battle_active_legion is not None
             if self.game.battle_phase == Phase.REINFORCE:
                 def1 = self.user.callRemote(  # type: ignore
                     "done_with_reinforcements", self.game.name
@@ -737,18 +779,20 @@ class GUIBattleMap(Gtk.EventBox):
                         self.parent_window, "Info", "Forced strikes remain"
                     )
 
-    def cb_concede(self, event):
-        for legion in self.game.battle_legions:
-            if legion.player.name == self.playername:
-                confirm_dialog, def1 = ConfirmDialog.new(
-                    self.parent_window,
-                    "Confirm",
-                    "Are you sure you want to concede?",
-                )
-                def1.addCallback(self.cb_concede2)
-                def1.addErrback(self.failure)
+    def cb_concede(self, event: Any) -> None:
+        logging.info(f"{event=}")
+        if self.game:
+            for legion in self.game.battle_legions:
+                if legion.player.name == self.playername:
+                    confirm_dialog, def1 = ConfirmDialog.new(
+                        self.parent_window,
+                        "Confirm",
+                        "Are you sure you want to concede?",
+                    )
+                    def1.addCallback(self.cb_concede2)
+                    def1.addErrback(self.failure)
 
-    def cb_concede2(self, confirmed):
+    def cb_concede2(self, confirmed: bool) -> None:
         logging.info(f"cb_concede2 {confirmed}")
         assert self.game is not None
         if confirmed:
@@ -766,20 +810,20 @@ class GUIBattleMap(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def cb_about(self, action):
+    def cb_about(self, action: Action.Action) -> None:
         About.About(self.parent_window)
 
     def bounding_rect_for_hexlabels(
         self, hexlabels: Set[str]
-    ) -> Tuple[int, int, int, int]:
+    ) -> Tuple[float, float, float, float]:
         """Return the minimum bounding rectangle that encloses all
         GUIMasterHexes whose hexlabels are given, as a tuple
         (x, y, width, height)
         """
-        min_x = maxsize
-        max_x = -maxsize
-        min_y = maxsize
-        max_y = -maxsize
+        min_x = float(maxsize)
+        max_x = float(-maxsize)
+        min_y = float(maxsize)
+        max_y = float(-maxsize)
         for hexlabel in hexlabels:
             try:
                 guihex = self.guihexes[hexlabel]
@@ -794,7 +838,7 @@ class GUIBattleMap(Gtk.EventBox):
         height = max_y - min_y
         return min_x, min_y, width, height
 
-    def update_gui(self, event: Optional[Gtk.Event] = None) -> None:
+    def update_gui(self, event: Optional[cairo.Context] = None) -> None:
         """Repaint the amount of the GUI that needs repainting.
 
         Compute the dirty rectangle from the union of
@@ -863,21 +907,26 @@ class GUIBattleMap(Gtk.EventBox):
             self.repaint_hexlabels.update(hexlabels)
         reactor.callLater(0, self.update_gui)  # type: ignore
 
-    def build_chit_image(self, hexlabel):
+    def build_chit_image(self, hexlabel: str) -> None:
         for chit in self.chits:
-            if chit.creature.hexlabel == hexlabel:
+            if chit.creature and chit.creature.hexlabel == hexlabel:
                 chit.build_image()
         self.repaint({hexlabel})
 
-    def update(self, observed, action, names):
+    def update(
+        self,
+        observed: Observed,
+        action: Action.Action,
+        names: Optional[List[str]],
+    ) -> None:
         logging.info(f"GUIBattleMap.update {observed} {action} {names}")
 
         if isinstance(action, Action.MoveCreature) or isinstance(
             action, Action.UndoMoveCreature
         ):
-            for hexlabel in [action.old_hexlabel, action.new_hexlabel]:
-                if hexlabel is not None:
-                    self.repaint_hexlabels.add(hexlabel)
+            for bhexlabel in [action.old_hexlabel, action.new_hexlabel]:
+                if bhexlabel is not None:
+                    self.repaint_hexlabels.add(bhexlabel)
             self.repaint({action.old_hexlabel, action.new_hexlabel})
             self.highlight_mobile_chits()
 
@@ -887,6 +936,7 @@ class GUIBattleMap(Gtk.EventBox):
                 self.game
                 and self.game.battle_active_player
                 and self.game.battle_active_player.name == self.playername
+                and self.game.battle_active_legion
             ):
                 if not self.game.battle_active_legion.mobile_creatures:
                     def1 = self.user.callRemote(  # type: ignore
@@ -900,6 +950,7 @@ class GUIBattleMap(Gtk.EventBox):
             if (
                 self.game.battle_active_player
                 and self.game.battle_active_player.name == self.playername
+                and self.game.battle_active_legion
             ):
                 strikers = self.game.battle_active_legion.strikers
                 if not strikers:
@@ -954,11 +1005,13 @@ class GUIBattleMap(Gtk.EventBox):
                 for creature in striker.carry_targets(
                     target, num_dice, strike_number
                 ):
+                    assert creature.hexlabel is not None
                     self.guihexes[creature.hexlabel].selected = True
                     self.repaint({creature.hexlabel})
             elif (
                 self.game.battle_active_player
                 and self.game.battle_active_player.name == self.playername
+                and self.game.battle_active_legion is not None
             ):
                 strikers = self.game.battle_active_legion.strikers
                 if not strikers:
@@ -1026,8 +1079,9 @@ class GUIBattleMap(Gtk.EventBox):
                 for creature in striker.carry_targets(
                     target, num_dice, strike_number
                 ):
+                    assert creature.hexlabel is not None
                     self.guihexes[creature.hexlabel].selected = True
-                    self.repaint([creature.hexlabel])
+                    self.repaint({creature.hexlabel})
             elif (
                 self.game.battle_active_player
                 and self.game.battle_active_player.name == self.playername
@@ -1075,8 +1129,8 @@ class GUIBattleMap(Gtk.EventBox):
                 legion = self.game.defender_legion
                 assert legion is not None
                 caretaker = self.game.caretaker
-                hexlabel = legion.hexlabel
-                mterrain = self.game.board.hexes[hexlabel].terrain
+                mhexlabel = legion.hexlabel
+                mterrain = self.game.board.hexes[mhexlabel].terrain
                 if legion.can_recruit:
                     logging.info("PickRecruit.new (battle turn 4)")
                     _, def1 = PickRecruit.new(
@@ -1207,7 +1261,9 @@ class GUIBattleMap(Gtk.EventBox):
         elif isinstance(action, Action.UnsummonAngel):
             self.repaint({"ATTACKER"})
 
-    def picked_reinforcement(self, tup):
+    def picked_reinforcement(
+        self, tup: Tuple[Legion.Legion, Creature.Creature, List[str]]
+    ) -> None:
         (legion, creature, recruiter_names) = tup
         assert self.game is not None
         if legion and creature:
@@ -1225,7 +1281,9 @@ class GUIBattleMap(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def picked_summon(self, tup1):
+    def picked_summon(
+        self, tup1: Tuple[Legion.Legion, Legion.Legion, Creature.Creature]
+    ) -> None:
         (legion, donor, creature) = tup1
         assert self.game is not None
         if legion and donor and creature:
@@ -1243,7 +1301,7 @@ class GUIBattleMap(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def picked_carry(self, tup2):
+    def picked_carry(self, tup2: Tuple[Creature.Creature, int]) -> None:
         (carry_target, carries) = tup2
         logging.info(f"picked_carry {carry_target} {carries}")
         assert self.game is not None
@@ -1259,7 +1317,9 @@ class GUIBattleMap(Gtk.EventBox):
         )
         def1.addErrback(self.failure)
 
-    def picked_strike_penalty(self, tup3):
+    def picked_strike_penalty(
+        self, tup3: Tuple[Creature.Creature, Creature.Creature, int, int]
+    ) -> None:
         (striker, target, num_dice, strike_number) = tup3
         logging.info(
             f"picked_strike_penalty {striker} {target} {num_dice} "
@@ -1284,7 +1344,7 @@ class GUIBattleMap(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def failure(self, arg):
+    def failure(self, arg: Any) -> None:
         log.err(arg)
 
 

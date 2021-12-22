@@ -157,8 +157,9 @@ def rectangles_intersect(
 
 
 def combine_rectangles(
-    rect1: Tuple[int, int, int, int], rect2: Tuple[int, int, int, int]
-) -> Tuple[int, int, int, int]:
+    rect1: Tuple[float, float, float, float],
+    rect2: Tuple[float, float, float, float],
+) -> Tuple[float, float, float, float]:
     """Return the smallest rectangle containing both passed rectangles."""
     x1, y1, width1, height1 = rect1
     x2, y2, width2, height2 = rect2

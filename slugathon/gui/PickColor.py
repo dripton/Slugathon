@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import logging
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import gi
 
@@ -76,12 +76,12 @@ class PickColor(Gtk.Dialog):
         self.connect("destroy", self.cb_destroy)
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         color = widget.get_label()
         self.deferred.callback((self.game, color))
         self.destroy()
 
-    def cb_destroy(self, widget):
+    def cb_destroy(self, widget: Gtk.Widget) -> None:
         if not self.deferred.called:
             self.deferred.callback((self.game, None))
 
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     import time
     from slugathon.util import guiutils
 
-    def my_callback(tup):
+    def my_callback(tup: Tuple[Game.Game, str]) -> None:
         (game, color) = tup
         logging.info(f"picked {color}")
         guiutils.exit()

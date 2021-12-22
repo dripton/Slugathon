@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
-from typing import Optional, Tuple
-
+from typing import Any, Optional, Tuple
 import logging
 
 import gi
@@ -78,14 +77,14 @@ class PickTeleportingLord(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         eventbox = widget
         chit = eventbox.chit
         creature = chit.creature
         self.deferred.callback(creature.name)
         self.destroy()
 
-    def cb_cancel(self, widget, response_id):
+    def cb_cancel(self, widget: Gtk.Widget, response_id: int) -> None:
         self.destroy()
 
 
@@ -105,7 +104,7 @@ if __name__ == "__main__":
     legion = Legion.Legion(player, "Rd01", creatures1, 1)
     player.markerid_to_legion[legion.markerid] = legion
 
-    def my_callback(creature_name):
+    def my_callback(creature_name: str) -> None:
         logging.info(f"Picked {creature_name}")
         guiutils.exit()
 

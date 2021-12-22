@@ -81,7 +81,7 @@ class Marker(object):
         self.event_box.show()
         self.image.show()
 
-    def connect(self, event: str, method: Callable):
+    def connect(self, event: str, method: Callable) -> None:
         self.event_box.connect(event, method)
 
     def _render_text(self, surface: cairo.ImageSurface) -> None:

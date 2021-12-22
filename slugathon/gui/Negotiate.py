@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Tuple
+from typing import Any, List, Tuple
 
 import gi
 
@@ -137,7 +137,7 @@ class Negotiate(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         """Toggle the clicked-on chit's creature's status."""
         event_box = widget
         if hasattr(event_box, "chit"):
@@ -165,26 +165,30 @@ class Negotiate(Gtk.Dialog):
         legal = self.is_legal_proposal()
         self.proposal_button.set_sensitive(legal)
 
-    def all_dead(self, li):
+    def all_dead(self, li: List[Chit.Chit]) -> bool:
         """Return True if all elements in the list are dead."""
         for chit in li:
             if not chit.dead:
                 return False
         return True
 
-    def is_legal_proposal(self):
+    def is_legal_proposal(self) -> bool:
         """Return True iff at least one of the two legions is completely
         dead."""
         return self.all_dead(self.attacker_chits) or self.all_dead(
             self.defender_chits
         )
 
-    def surviving_creature_names(self, chits):
+    def surviving_creature_names(self, chits: List[Chit.Chit]) -> List[str]:
         """Return a list of creature names for the survivors."""
-        return [chit.creature.name for chit in chits if not chit.dead]
+        return [
+            chit.creature.name
+            for chit in chits
+            if not chit.dead and chit.creature is not None
+        ]
 
-    def cb_response(self, widget, response_id):
-        """Fires the Deferred, with the attacker, the defender, and
+    def cb_response(self, widget: Gtk.Widget, response_id: int) -> None:
+        """Fire the Deferred, with the attacker, the defender, and
         the response_id."""
         self.destroy()
         attacker_creature_names = self.surviving_creature_names(
@@ -238,7 +242,7 @@ if __name__ == "__main__":
         defender_player, "Rd01", defender_creatures, 1
     )
 
-    def my_callback(*args):
+    def my_callback(*args: Any) -> None:
         logging.info(f"callback {args}")
         reactor.stop()  # type: ignore
 

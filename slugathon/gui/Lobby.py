@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 
+import logging
 import time
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Union
 
 import gi
 
@@ -13,6 +14,7 @@ from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.gui import NewGame, LoadGame, WaitingForPlayers
+from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 from slugathon.game import Action, Game
 from slugathon.net import User
@@ -235,7 +237,9 @@ class Lobby(Gtk.EventBox):
         def1.addCallback(self._got_player_data)
         def1.addErrback(self.failure)
 
-    def _got_player_data(self, player_data):
+    def _got_player_data(
+        self, player_data: List[Dict[str, Union[str, float]]]
+    ) -> None:
         playername_to_data = {}
         if player_data:
             for dct in player_data:
@@ -335,11 +339,11 @@ class Lobby(Gtk.EventBox):
         while len(self.old_game_store) > length:
             del self.old_game_store[length]
 
-    def failure(self, error):
+    def failure(self, error: Any) -> None:
         log.err(error)
         reactor.stop()  # type: ignore
 
-    def cb_keypress(self, entry, event):
+    def cb_keypress(self, entry: Gtk.Entry, event: Any) -> None:
         if event.keyval == Gdk.KEY_Return:
             text = self.chat_entry.get_text()
             if text:
@@ -351,10 +355,12 @@ class Lobby(Gtk.EventBox):
                 def1.addErrback(self.failure)
                 self.chat_entry.set_text("")
 
-    def cb_new_game_button_click(self, widget, event):
+    def cb_new_game_button_click(self, widget: Gtk.Widget, event: Any) -> None:
         NewGame.NewGame(self.user, self.playername, self.parent_window)
 
-    def cb_load_game_button_click(self, widget, event):
+    def cb_load_game_button_click(
+        self, widget: Gtk.Widget, event: Any
+    ) -> None:
         LoadGame.LoadGame(self.user, self.playername, self.parent_window)
 
     def _add_wfp(self, game: Game.Game) -> None:
@@ -395,7 +401,14 @@ class Lobby(Gtk.EventBox):
             self._remove_wfp(game_name)
         self.update_game_stores()
 
-    def cb_user_list_select(self, selection, model, path, is_selected, unused):
+    def cb_user_list_select(
+        self,
+        selection: Gtk.TreeSelection,
+        model: Gtk.ListStore,
+        path: List[int],
+        is_selected: bool,
+        unused: Any,
+    ) -> None:
         index = path[0]
         assert self.user_store is not None
         row = self.user_store[index, 0]
@@ -406,7 +419,7 @@ class Lobby(Gtk.EventBox):
             self.selected_names.add(name)
         return True
 
-    def cb_game_list_select(self, path, unused):
+    def cb_game_list_select(self, path: List[int], unused: Any) -> None:
         index = path[0]
         assert self.new_game_store is not None
         tup = self.new_game_store[index, 0]
@@ -418,7 +431,12 @@ class Lobby(Gtk.EventBox):
             self._add_wfp(game)
         return False
 
-    def update(self, observed, action, names):
+    def update(
+        self,
+        observed: Observed,
+        action: Action.Action,
+        names: Optional[List[str]],
+    ) -> None:
         if isinstance(action, Action.AddUsername):
             self.update_user_store()
         elif isinstance(action, Action.DelUsername):

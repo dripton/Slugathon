@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Optional
+from typing import List, Optional
 
 import gi
 
@@ -16,6 +16,7 @@ from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
 from slugathon.game import Action, Legion, Game
+from slugathon.util.Observed import Observed
 from slugathon.util.Observer import IObserver
 
 
@@ -42,15 +43,21 @@ class EventLog(Gtk.EventBox):
         self.scrolledwindow.add_with_viewport(self.vbox2)
         self.show_all()
 
-    def update(self, observed, action, names):
+    def update(
+        self, observed: Observed, action: Action.Action, names: List[str]
+    ) -> None:
+        if self.game is None:
+            return
         st = None
         if isinstance(action, Action.AssignTower):
             st = f"{action.playername} gets tower {action.tower_num}"
         elif isinstance(action, Action.PickedColor):
             st = f"{action.playername} gets color {action.color}"
         elif isinstance(action, Action.StartSplitPhase):
-            playercolor = self.game.get_player_by_name(action.playername).color
-            st = f"{action.playername} ({playercolor}) turn {action.turn}"
+            player = self.game.get_player_by_name(action.playername)
+            if player is not None:
+                playercolor = player.color
+                st = f"{action.playername} ({playercolor}) turn {action.turn}"
         elif isinstance(action, Action.SplitLegion):
             st = (
                 f"{action.parent_markerid} "
@@ -81,11 +88,13 @@ class EventLog(Gtk.EventBox):
                 f"merges with splitoff"
             )
         elif isinstance(action, Action.RollMovement):
-            playercolor = self.game.get_player_by_name(action.playername).color
-            st = (
-                f"{action.playername} ({playercolor}) rolls "
-                f"{action.movement_roll} for movement"
-            )
+            player = self.game.get_player_by_name(action.playername)
+            if player is not None:
+                playercolor = player.color
+                st = (
+                    f"{action.playername} ({playercolor}) rolls "
+                    f"{action.movement_roll} for movement"
+                )
         elif isinstance(action, Action.MoveLegion):
             st = (
                 f"{action.markerid} "
@@ -156,29 +165,36 @@ class EventLog(Gtk.EventBox):
                 f"hex {action.hexlabel}"
             )
         elif isinstance(action, Action.StartReinforceBattlePhase):
-            playercolor = self.game.get_player_by_name(action.playername).color
-            st = (
-                f"{action.playername} "
-                f"({playercolor}) "
-                f"starts battle turn {action.battle_turn}"
-            )
+            player = self.game.get_player_by_name(action.playername)
+            if player is not None:
+                playercolor = player.color
+                st = (
+                    f"{action.playername} "
+                    f"({playercolor}) "
+                    f"starts battle turn {action.battle_turn}"
+                )
         elif isinstance(action, Action.MoveCreature):
-            playercolor = self.game.get_player_by_name(action.playername).color
-            st = (
-                f"{action.playername} "
-                f"({playercolor}) "
-                f"moves {action.creature_name} "
-                f"in {self.game.battlemap.hexes[action.old_hexlabel].terrain} "
-                f"hex {action.old_hexlabel} "
-                f"to {self.game.battlemap.hexes[action.new_hexlabel].terrain} "
-                f"hex {action.new_hexlabel}"
-            )
+            player = self.game.get_player_by_name(action.playername)
+            battlemap = self.game.battlemap
+            if player is not None and battlemap is not None:
+                playercolor = player.color
+                st = (
+                    f"{action.playername} "
+                    f"({playercolor}) "
+                    f"moves {action.creature_name} "
+                    f"in {battlemap.hexes[action.old_hexlabel].terrain} "
+                    f"hex {action.old_hexlabel} "
+                    f"to {battlemap.hexes[action.new_hexlabel].terrain} "
+                    f"hex {action.new_hexlabel}"
+                )
         elif isinstance(action, Action.UndoMoveCreature):
-            st = (
-                f"{action.creature_name} "
-                f"in {self.game.battlemap.hexes[action.new_hexlabel].terrain} "
-                f"hex {action.new_hexlabel} undoes move"
-            )
+            battlemap = self.game.battlemap
+            if battlemap is not None:
+                st = (
+                    f"{action.creature_name} "
+                    f"in {battlemap.hexes[action.new_hexlabel].terrain} "
+                    f"hex {action.new_hexlabel} undoes move"
+                )
         elif isinstance(action, Action.Strike):
             if action.carries:
                 st = (

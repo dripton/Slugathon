@@ -2,6 +2,7 @@
 
 
 import os
+from typing import Any
 
 import gi
 
@@ -70,7 +71,7 @@ class About(Gtk.AboutDialog):
         self.connect("response", self.cb_response)
         self.show()
 
-    def cb_response(self, widget, event):
+    def cb_response(self, widget: Gtk.Widget, event: Any) -> None:
         self.destroy()
 
 

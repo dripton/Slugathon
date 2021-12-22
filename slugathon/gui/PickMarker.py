@@ -3,7 +3,7 @@
 from __future__ import annotations
 import collections
 import logging
-from typing import DefaultDict, List, Tuple
+from typing import Any, DefaultDict, List, Tuple
 
 import gi
 
@@ -100,19 +100,19 @@ class PickMarker(Gtk.Dialog):
         self.connect("destroy", self.cb_destroy)
         self.show_all()
 
-    def cb_click(self, widget, event):
+    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         markerid = widget.tag
         self.deferred.callback((self.game_name, self.playername, markerid))
         self.destroy()
 
-    def cb_destroy(self, widget):
+    def cb_destroy(self, widget: Gtk.Widget) -> None:
         if not self.deferred.called:
             self.deferred.callback((self.game_name, self.playername, None))
 
 
 if __name__ == "__main__":
 
-    def my_callback(tup):
+    def my_callback(tup: Tuple[str, str, str]) -> None:
         (game_name, playername, markerid) = tup
         logging.info(f"picked {markerid}")
         reactor.stop()  # type: ignore

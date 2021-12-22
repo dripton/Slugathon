@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 import gi
 
@@ -56,7 +56,7 @@ class ConfirmDialog(Gtk.MessageDialog):
         self.connect("response", self.cb_response)
         self.show_all()
 
-    def cb_response(self, widget, response_id):
+    def cb_response(self, widget: Gtk.Widget, response_id: int) -> None:
         retval = response_id == Gtk.ResponseType.YES
         self.deferred.callback(retval)
         self.destroy()
@@ -67,7 +67,7 @@ if __name__ == "__main__":
         parent=None, title="Info", message="Are we having fun yet?"
     )
 
-    def print_arg(arg):
+    def print_arg(arg: Any) -> None:
         print(arg)
         reactor.stop()  # type: ignore
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from sys import maxsize
 import logging
-from typing import Optional, Set, Tuple
+from typing import Any, Optional, Set, Tuple
 
 import gi
 
@@ -202,32 +202,39 @@ class PickEntrySide(Gtk.Dialog):
         eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
-    def cb_area_expose(self, area, event):
+    def cb_area_expose(self, area: Gtk.DrawingArea, event: Any) -> bool:
         self.update_gui(event=event)
         return True
 
-    def cb_click(self, area, event):
+    def cb_click(self, area: Gtk.DrawingArea, event: Any) -> bool:
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
                 return True
         return True
 
-    def clicked_on_hex(self, area, event, guihex):
+    def clicked_on_hex(
+        self,
+        area: Gtk.DrawingArea,
+        event: Any,
+        guihex: GUIBattleHex.GUIBattleHex,
+    ) -> None:
         if guihex.selected:
             entry_side = hexlabel_to_entry_side[guihex.battlehex.label]
             self.deferred.callback(entry_side)
             self.destroy()
 
-    def bounding_rect_for_hexlabels(self, hexlabels):
+    def bounding_rect_for_hexlabels(
+        self, hexlabels: Set[str]
+    ) -> Tuple[float, float, float, float]:
         """Return the minimum bounding rectangle that encloses all
         GUIMasterHexes whose hexlabels are given, as a tuple
         (x, y, width, height)
         """
-        min_x = maxsize
-        max_x = -maxsize
-        min_y = maxsize
-        max_y = -maxsize
+        min_x = float(maxsize)
+        max_x = float(-maxsize)
+        min_y = float(maxsize)
+        max_y = float(-maxsize)
         for hexlabel in hexlabels:
             try:
                 guihex = self.guihexes[hexlabel]
@@ -242,7 +249,7 @@ class PickEntrySide(Gtk.Dialog):
         height = max_y - min_y
         return min_x, min_y, width, height
 
-    def update_gui(self, event=None):
+    def update_gui(self, event: Any = None) -> None:
         """Repaint the amount of the GUI that needs repainting.
 
         Compute the dirty rectangle from the union of
@@ -290,12 +297,12 @@ class PickEntrySide(Gtk.Dialog):
         self.repaint_hexlabels.clear()
         self.clear_hexlabels.clear()
 
-    def repaint(self, hexlabels=None):
+    def repaint(self, hexlabels: Set[str] = None) -> None:
         if hexlabels:
             self.repaint_hexlabels.update(hexlabels)
         reactor.callLater(0, self.update_gui)  # type: ignore
 
-    def callback_with_none(self, *args):
+    def callback_with_none(self, *args: Any) -> None:
         """Called if the window is destroyed."""
         if not self.deferred.called:
             self.deferred.callback(None)
@@ -304,7 +311,7 @@ class PickEntrySide(Gtk.Dialog):
 if __name__ == "__main__":
     import random
 
-    def my_callback(choice):
+    def my_callback(choice: int) -> None:
         logging.info(f"chose entry side {choice}")
         reactor.stop()  # type: ignore
 

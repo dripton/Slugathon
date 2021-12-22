@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 import logging
-from typing import Tuple
+from typing import Any, Tuple
 
 import gi
 
@@ -131,7 +131,7 @@ class Flee(Gtk.Dialog):
         self.connect("response", self.cb_response)
         self.show_all()
 
-    def cb_response(self, widget, response_id):
+    def cb_response(self, widget: Gtk.Widget, response_id: int) -> None:
         """Fire the deferred, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""
         if response_id == FLEE and (
@@ -152,7 +152,7 @@ class Flee(Gtk.Dialog):
             (self.attacker_legion, self.defender_legion, response_id)
         )
 
-    def cb_response2(self, confirmed):
+    def cb_response2(self, confirmed: bool) -> None:
         """Fire the deferred, with the attacker, the defender, and
         a boolean which is True iff the user chose to flee."""
         self.destroy()
@@ -160,7 +160,7 @@ class Flee(Gtk.Dialog):
             (self.attacker_legion, self.defender_legion, confirmed)
         )
 
-    def failure(self, arg):
+    def failure(self, arg: Any) -> None:
         log.err(arg)
 
 
@@ -197,7 +197,7 @@ if __name__ == "__main__":
         defender_player, "Rd01", defender_creatures, 1
     )
 
-    def my_callback(tup):
+    def my_callback(tup: Tuple[Legion.Legion, Legion.Legion, bool]) -> None:
         (attacker, defender, fled) = tup
         logging.info(f"{fled=}")
         reactor.stop()  # type: ignore

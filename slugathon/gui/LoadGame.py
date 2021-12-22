@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from typing import Any
 
 import gi
 
@@ -60,13 +61,13 @@ class LoadGame(Gtk.FileChooserDialog):
     def cancel(self) -> None:
         self.destroy()
 
-    def failure(self, error):
+    def failure(self, error: Any) -> None:
         log.err(error)
 
 
 if __name__ == "__main__":
 
-    def my_callback(*args):
+    def my_callback(*args: Any) -> None:
         reactor.stop()  # type: ignore
 
     user = NullUser()

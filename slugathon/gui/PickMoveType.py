@@ -94,7 +94,7 @@ class PickMoveType(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_response(self, widget, response_id):
+    def cb_response(self, widget: Gtk.Widget, response_id: int) -> None:
         if response_id == TELEPORT:
             self.deferred.callback(True)
         elif response_id == NORMAL_MOVE:
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     creature_names = ["Titan", "Dragon", "Dragon", "Minotaur", "Minotaur"]
     creatures = Creature.n2c(creature_names)
 
-    def mycallback(teleported):
+    def mycallback(teleported: bool) -> None:
         if teleported is None:
             logging.info("canceled")
         elif teleported:
