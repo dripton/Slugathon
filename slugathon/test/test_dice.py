@@ -113,7 +113,7 @@ def fail_if_abnormal(val, mean, var):
 
 class TestDice(object):
     def setup_method(self, method):
-        self.trials = 3000
+        self.trials = 5000
         self.rolls = []
         self.bins = {}  # type: Dict[int, int]
         for unused in range(self.trials):
