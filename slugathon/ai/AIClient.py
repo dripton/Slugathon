@@ -9,7 +9,7 @@ import os
 import logging
 import re
 import sys
-from typing import List, NoReturn, Optional
+from typing import Any, List, NoReturn, Optional, Tuple
 
 from twisted.spread import pb
 from twisted.cred import credentials
@@ -165,11 +165,27 @@ class AIClient(pb.Referenceable, Observed):
             logging.info("failed to get user; exiting")
             self.exit_unconditionally(1)
 
-    def connection_failed(self, arg):
+    def connection_failed(self, arg: Any) -> None:
         log.err(arg)
         self.exit_unconditionally(1)
 
-    def got_games(self, game_info_tuples):
+    def got_games(
+        self,
+        game_info_tuples: List[
+            Tuple[
+                str,
+                float,
+                float,
+                int,
+                int,
+                List[str],
+                bool,
+                float,
+                List[str],
+                List[str],
+            ]
+        ],
+    ) -> None:
         """Only called when the client first connects to the server."""
         logging.info(f"got games {game_info_tuples}")
         del self.games[:]
@@ -206,18 +222,32 @@ class AIClient(pb.Referenceable, Observed):
                     def1.addCallback(self.joined_game)
                     def1.addErrback(self.failure)
 
-    def joined_game(self, success):
+    def joined_game(self, success: bool) -> None:
         if not success:
             logging.info("failed to join game; aborting")
             self.exit_unconditionally(1)
 
-    def name_to_game(self, game_name):
+    def name_to_game(self, game_name: str) -> Optional[Game.Game]:
         for game in self.games:
             if game.name == game_name:
                 return game
         return None
 
-    def add_game(self, game_info_tuple):
+    def add_game(
+        self,
+        game_info_tuple: Tuple[
+            str,
+            float,
+            float,
+            int,
+            int,
+            List[str],
+            bool,
+            Optional[float],
+            List[str],
+            List[str],
+        ],
+    ) -> None:
         logging.info(f"add_game {game_info_tuple}")
         (
             name,
@@ -254,13 +284,13 @@ class AIClient(pb.Referenceable, Observed):
             )
             def1.addErrback(self.failure)
 
-    def remove_game(self, game_name):
+    def remove_game(self, game_name: str) -> None:
         game = self.name_to_game(game_name)
         if game:
             self.remove_observer(game)
             self.games.remove(game)
 
-    def update_creatures(self, game):
+    def update_creatures(self, game: Game.Game) -> None:
         """Update creatures in game from self.aps."""
         for legion in game.all_legions():
             markerid = legion.markerid
@@ -270,12 +300,12 @@ class AIClient(pb.Referenceable, Observed):
                 for creature in legion.creatures:
                     creature.legion = legion
 
-    def failure(self, error):
+    def failure(self, error: Any) -> None:
         log.err(error)
         if error.check(PBConnectionLost, DeadReferenceError):
             self.exit_unconditionally(1)
 
-    def remote_update(self, action, names):
+    def remote_update(self, action: Action.Action, names: List[str]) -> None:
         """Near-IObserver on the remote User, except observed is
         not passed remotely.
 
@@ -294,13 +324,18 @@ class AIClient(pb.Referenceable, Observed):
                 pass
         sys.exit(returncode)
 
-    def update(self, observed, action, names):
-        """Updates from User will come via remote_update, with
-        observed set to None."""
+    def update(
+        self,
+        observed: Optional[Observed],
+        action: Action.Action,
+        names: Optional[List[str]],
+    ) -> None:
+        """Updates from User will come via remote_update, with observed set to
+        None."""
         if (
             self.game_name is not None
             and hasattr(action, "game_name")
-            and action.game_name != self.game_name
+            and action.game_name != self.game_name  # type: ignore
         ):
             return
         if isinstance(action, Action.AddUsername) or isinstance(
@@ -321,6 +356,7 @@ class AIClient(pb.Referenceable, Observed):
         # legion before we send the Action to Game.
         if isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             node = self.aps.get_leaf(action.donor_markerid)
             if node:
                 node.reveal_creatures([action.creature_name])
@@ -343,9 +379,9 @@ class AIClient(pb.Referenceable, Observed):
                 [action.playername],
                 False,
                 None,
-                None,
-                None,
-            )
+                [],
+                [],
+            )  # type: Tuple[str, float, float, int, int, List[str], bool, Optional[float], List[str], List[str]]
             self.add_game(game_info_tuple)
             if action.playername == self.playername:
                 assert self.user is not None
@@ -364,6 +400,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.PickedColor):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             self.ai.maybe_pick_color(game)
             reactor.callLater(  # type: ignore
                 self.delay,
@@ -374,13 +411,17 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.AssignedAllColors):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)  # type: ignore
 
         elif isinstance(action, Action.GameOver):
             if action.winner_names:
-                names = " and ".join(action.winner_names)
-                logging.info(f"Game {action.game_name} over, won by {names}")
+                names_str = " and ".join(action.winner_names)
+                logging.info(
+                    f"Game {action.game_name} over, won by {names_str}"
+                )
             else:
                 logging.info(f"Game {action.game_name} over, draw")
             logging.info("AI exiting")
@@ -388,6 +429,8 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartSplitPhase):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.split, game)  # type: ignore
 
@@ -406,6 +449,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SplitLegion):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             parent = self.aps.get_leaf(action.parent_markerid)
             assert parent is not None
             parent.split(
@@ -426,6 +470,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UndoSplit):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             logging.info(
                 f"self.aps.get_leaf('{action.parent_markerid}')"
                 + f".merge(self.aps.get_leaf('{action.child_markerid}'), "
@@ -433,7 +478,9 @@ class AIClient(pb.Referenceable, Observed):
             )
             parent = self.aps.get_leaf(action.parent_markerid)
             assert parent is not None
-            parent.merge(self.aps.get_leaf(action.child_markerid), game.turn)
+            child = self.aps.get_leaf(action.child_markerid)
+            assert child is not None
+            parent.merge(child, game.turn)
             self.update_creatures(game)
 
         elif isinstance(action, Action.RollMovement):
@@ -464,6 +511,8 @@ class AIClient(pb.Referenceable, Observed):
             action, Action.Concede
         ):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
@@ -473,7 +522,9 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.Fight):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             player = game.get_player_by_name(self.playername)
+            assert player is not None
             if (
                 game.defender_legion
                 and game.defender_legion.player.name == self.playername
@@ -483,6 +534,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.MoveCreature):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
@@ -492,6 +544,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartStrikeBattlePhase):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
@@ -501,6 +554,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.Strike):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
@@ -524,6 +578,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.Carry):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
@@ -547,6 +602,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartCounterstrikeBattlePhase):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
@@ -556,6 +612,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartReinforceBattlePhase):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
@@ -568,6 +625,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.StartManeuverBattlePhase):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.battle_active_legion
             if legion:
                 if legion.player.name == self.playername:
@@ -577,6 +635,8 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.RecruitCreature):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             leaf = self.aps.get_leaf(action.markerid)
             assert leaf is not None
             leaf.reveal_creatures(list(action.recruiter_names))
@@ -584,7 +644,10 @@ class AIClient(pb.Referenceable, Observed):
             self.update_creatures(game)
             if action.playername == self.playername:
                 if game.phase == Phase.MUSTER:
-                    if game.active_player.name == self.playername:
+                    if (
+                        game.active_player
+                        and game.active_player.name == self.playername
+                    ):
                         reactor.callLater(self.delay, self.ai.recruit, game)  # type: ignore
                 elif game.phase == Phase.FIGHT:
                     if game.battle_phase == Phase.REINFORCE:
@@ -601,6 +664,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UndoRecruit):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             leaf = self.aps.get_leaf(action.markerid)
             assert leaf is not None
             leaf.remove_creature(action.creature_name)
@@ -608,6 +672,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UnReinforce):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             leaf = self.aps.get_leaf(action.markerid)
             assert leaf is not None
             leaf.remove_creature(action.creature_name)
@@ -615,6 +680,8 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.DoNotReinforce):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             if action.playername == self.playername:
                 assert game.phase == Phase.FIGHT
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
@@ -627,6 +694,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             donor = self.aps.get_leaf(action.donor_markerid)
             if donor:
                 donor.reveal_creatures([action.creature_name])
@@ -643,6 +711,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.UnsummonAngel):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             leaf = self.aps.get_leaf(action.markerid)
             assert leaf is not None
             leaf.reveal_creatures([action.creature_name])
@@ -659,6 +728,7 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.DoNotSummonAngel):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
                     reactor.callLater(self.delay, self.ai.summon_angel, game)  # type: ignore
@@ -667,6 +737,8 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.BattleOver):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             if action.winner_losses:
                 node = self.aps.get_leaf(action.winner_markerid)
                 if node:
@@ -712,6 +784,8 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.AcquireAngels):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             for angel_name in action.angel_names:
                 leaf = self.aps.get_leaf(action.markerid)
                 assert leaf is not None
@@ -723,6 +797,8 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.DoNotAcquireAngels):
             game = self.name_to_game(action.game_name)
+            assert game is not None
+            assert game.active_player is not None
             if game.active_player.name == self.playername:
                 reactor.callLater(self.delay, self.ai.choose_engagement, game)  # type: ignore
 
@@ -730,6 +806,7 @@ class AIClient(pb.Referenceable, Observed):
             action, Action.Withdraw
         ):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             if hasattr(action, "loser_playername"):  # type: ignore
                 playername = action.loser_playername  # type: ignore
             else:
@@ -741,7 +818,9 @@ class AIClient(pb.Referenceable, Observed):
             # Remove the dead player's PredictSplits from self.aps
             # to avoid problems later if his markers get reused.
             player = game.get_player_by_name(playername)
+            assert player is not None
             color_abbrev = player.color_abbrev
+            assert color_abbrev is not None
             for ps in self.aps:
                 for node in ps.get_nodes():
                     if node.markerid.startswith(color_abbrev):
@@ -750,12 +829,13 @@ class AIClient(pb.Referenceable, Observed):
 
         elif isinstance(action, Action.RevealLegion):
             game = self.name_to_game(action.game_name)
+            assert game is not None
             legion = game.find_legion(action.markerid)
             if legion:
-                legion.reveal_creatures(action.creature_names)
+                legion.reveal_creatures(list(action.creature_names))
                 node = self.aps.get_leaf(action.markerid)
                 if node is not None:
-                    node.reveal_creatures(action.creature_names)
+                    node.reveal_creatures(list(action.creature_names))
                 self.update_creatures(game)
 
         elif isinstance(action, Action.PauseAI):

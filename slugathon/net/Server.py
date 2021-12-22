@@ -1103,8 +1103,11 @@ class Server(Observed):
             self.games.remove(game)
 
     def update(
-        self, observed: Observed, action, names: Optional[List[str]]
-    ) -> None:  # TODO action
+        self,
+        observed: Observed,
+        action: Action.Action,
+        names: Optional[List[str]],
+    ) -> None:
         logging.info(f"{observed=} {action=} {names=}")
         if isinstance(action, Action.GameOver):
             game = self.name_to_game(action.game_name)

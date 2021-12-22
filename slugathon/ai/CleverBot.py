@@ -5,7 +5,17 @@ from sys import maxsize
 import itertools
 import collections
 import logging
-from typing import DefaultDict, List, Optional, Set, Tuple
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+)
 
 from twisted.python import log
 from zope.interface import implementer
@@ -57,7 +67,9 @@ class CleverBot(object):
         self.playername = playername
         self.user = None  # type: Optional[User.User]
         self.ai_time_limit = ai_time_limit
-        self.best_creature_moves = None
+        self.best_creature_moves = (
+            None
+        )  # type: Optional[List[Tuple[str, str, str]]]
         if bot_params is None:
             self.bp = BotParams.default_bot_params
         else:
@@ -116,7 +128,7 @@ class CleverBot(object):
             return random.choice(list(player.markerids_left))
 
     # TODO Avoid hitting 100-point multiples with 7-high legions.
-    def choose_engagement(self, game):
+    def choose_engagement(self, game: Game.Game) -> None:
         """Resolve engagements.
 
         Fight with legions that have angels first (so we can summon them),
@@ -137,6 +149,7 @@ class CleverBot(object):
         if hexlabels:
             if len(hexlabels) >= 2:
                 player = game.get_player_by_name(self.playername)
+                assert player is not None
                 value_to_hexlabel = []
                 for hexlabel in hexlabels:
                     legion = player.friendly_legions(hexlabel=hexlabel).pop()
@@ -159,7 +172,7 @@ class CleverBot(object):
             def1.addErrback(self.failure)
 
     # TODO concede, negotiate
-    def resolve_engagement(self, game, hexlabel):
+    def resolve_engagement(self, game: Game.Game, hexlabel: int) -> None:
         """Resolve the engagement in hexlabel."""
         logging.info(f"{game=} {hexlabel=}")
         attacker = None
@@ -217,7 +230,7 @@ class CleverBot(object):
         else:
             logging.info("not my engagement")
 
-    def _scary_enemy_legions_behind(self, legion):
+    def _scary_enemy_legions_behind(self, legion: Legion.Legion) -> bool:
         """Return True if there are any scary enemy legions that can
         catch this legion next turn."""
         player = legion.player
@@ -237,7 +250,7 @@ class CleverBot(object):
                         return True
         return False
 
-    def _scary_enemy_legions_ahead(self, legion):
+    def _scary_enemy_legions_ahead(self, legion: Legion.Legion) -> bool:
         """Return True if there are any scary enemy legions that this
         legion can catch next turn."""
         player = legion.player
@@ -259,8 +272,10 @@ class CleverBot(object):
                     return True
         return False
 
-    def _pick_recruit_and_recruiters(self, legion):
-        """Return a tuple of (recruit, recruiters), or (None, None)."""
+    def _pick_recruit_and_recruiters(
+        self, legion: Legion.Legion
+    ) -> Tuple[Optional[str], Optional[Tuple[str, ...]]]:
+        """Return a tuple of (recruit name, recruiter names), or (None, None)."""
         player = legion.player
         game = player.game
         caretaker = game.caretaker
@@ -344,12 +359,13 @@ class CleverBot(object):
         recruiters = random.choice(list(possible_recruiters))
         return (recruit3, recruiters)
 
-    def recruit(self, game):
+    def recruit(self, game: Game.Game) -> None:
         logging.info("")
-        if game.active_player.name != self.playername:
+        player = game.active_player
+        assert player is not None
+        if player.name != self.playername:
             logging.info("not my turn")
             return
-        player = game.active_player
         for legion in player.legions:
             if legion.moved and legion.can_recruit:
                 recruit, recruiters = self._pick_recruit_and_recruiters(legion)
@@ -371,14 +387,16 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_recruits", game.name)  # type: ignore
         def1.addErrback(self.failure)
 
-    def reinforce(self, game):
+    def reinforce(self, game: Game.Game) -> None:
         """Reinforce, during the REINFORCE battle phase or after the battle"""
         logging.info("")
         battle_over = game.is_battle_over
         if not battle_over:
+            assert game.battle_active_player is not None
             assert game.battle_active_player.name == self.playername
             assert game.battle_phase == Phase.REINFORCE
         legion = game.defender_legion
+        assert legion is not None
         if legion.can_recruit and (battle_over or game.battle_turn == 4):
             recruit, recruiters = self._pick_recruit_and_recruiters(legion)
             if recruit is not None:
@@ -406,19 +424,22 @@ class CleverBot(object):
     # TODO Consider value of this legion and donor legion before deciding
     # whether to summon.  But we may want to summon from a greater legion
     # if it's 7 high and doing this lets it recruit.
-    def summon_angel(self, game):
+    def summon_angel(self, game: Game.Game) -> None:
         """Summon, during the REINFORCE battle phase or after the battle."""
         logging.info("")
         during_battle = not game.is_battle_over
+        assert game.active_player is not None
         assert game.active_player.name == self.playername
         if during_battle and game.battle_phase != Phase.REINFORCE:
             return
         legion = game.attacker_legion
+        assert legion is not None
         assert legion.player.name == self.playername
         if legion.can_summon and (
             not during_battle
-            or game.first_attacker_kill
-            in [game.battle_turn - 1, game.battle_turn]
+            or game.battle_turn is not None
+            and game.first_attacker_kill
+            in {game.battle_turn - 1, game.battle_turn}
         ):
             summonables = legion.player.all_summonables
             if summonables:
@@ -448,6 +469,7 @@ class CleverBot(object):
 
                 if not recruit or summonable.sort_value > recruit.sort_value:
                     donor = summonable.legion
+                    assert donor is not None
                     logging.info(
                         f"calling _summon_angel {legion.markerid} "
                         f"{donor.markerid} {summonable.name}"
@@ -473,9 +495,16 @@ class CleverBot(object):
             def1 = self.user.callRemote("done_with_reinforcements", game.name)  # type: ignore
             def1.addErrback(self.failure)
 
-    def acquire_angels(self, game, markerid, num_angels, num_archangels):
+    def acquire_angels(
+        self,
+        game: Game.Game,
+        markerid: str,
+        num_angels: int,
+        num_archangels: int,
+    ) -> None:
         logging.info(f"{markerid=} {num_angels=} {num_archangels=}")
         player = game.get_player_by_name(self.playername)
+        assert player is not None
         legion = player.markerid_to_legion.get(markerid)
         if legion is None:
             return
@@ -521,9 +550,10 @@ class CleverBot(object):
 
     # TODO Sometimes split off a better creature to enable better recruiting.
     # TODO Fear being caught from behind by a bigger legion.
-    def split(self, game):
+    def split(self, game: Game.Game) -> None:
         """Split a legion, or end split phase."""
         logging.info("split")
+        assert game.active_player is not None
         logging.info(
             f"playername {self.playername} active_playername "
             f"{game.active_player.name}"
@@ -532,6 +562,7 @@ class CleverBot(object):
             logging.warning("called split out of turn; exiting")
             return
         player = game.active_player
+        assert player is not None
         caretaker = game.caretaker
         # Let more important legions get the first crack at markers.
         for legion in player.sorted_legions:
@@ -627,13 +658,15 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_splits", game.name)  # type: ignore
         def1.addErrback(self.failure)
 
-    def move_legions(self, game):
+    def move_legions(self, game: Game.Game) -> None:
         """Move one or more legions, and then end the Move phase."""
         logging.debug("")
-        if game.active_player.name != self.playername:
+        player = game.active_player
+        assert player is not None
+        if player.name != self.playername:
             logging.info("not active player; aborting")
             return
-        player = game.active_player
+        assert player.movement_roll is not None
         non_moves = {}  # markerid: score
         while True:
             # Score moves
@@ -686,6 +719,7 @@ class CleverBot(object):
                     or not player.moved_legions
                     or len(player.friendly_legions(legion.hexlabel)) >= 2
                 ):
+                    teleporting_lord = None  # type: Optional[str]
                     if entry_side == Game.TELEPORT:
                         teleport = True
                         masterhex = game.board.hexes[hexlabel]
@@ -697,7 +731,6 @@ class CleverBot(object):
                         teleporting_lord = sorted(legion.lord_types)[-1]
                     else:
                         teleport = False
-                        teleporting_lord = None
                     def1 = self.user.callRemote(  # type: ignore
                         "move_legion",
                         game.name,
@@ -785,7 +818,9 @@ class CleverBot(object):
                 legion.hexlabel = previous_hexlabel
         return score
 
-    def _gen_legion_moves_inner(self, movesets):
+    def _gen_legion_moves_inner(
+        self, movesets: List[Set[str]]
+    ) -> Generator[Tuple, None, None]:
         """Yield tuples of distinct hexlabels, one from each moveset, in order,
         with no duplicates.
 
@@ -805,7 +840,9 @@ class CleverBot(object):
                 for moves in self._gen_legion_moves_inner(movesets1):
                     yield (move,) + moves
 
-    def _gen_legion_moves(self, movesets):
+    def _gen_legion_moves(
+        self, movesets: List[Set[str]]
+    ) -> Generator[List[str], None, None]:
         """Yield all possible legion_moves for movesets.
 
         movesets is a list of sets of hexlabels to which each Creature can move
@@ -823,7 +860,9 @@ class CleverBot(object):
             if len(moves) == len(movesets):
                 yield list(moves)
 
-    def _gen_fallback_legion_moves(self, movesets):
+    def _gen_fallback_legion_moves(
+        self, movesets: List[Set[str]]
+    ) -> Generator[List[str], None, None]:
         """Yield all possible legion_moves for movesets, possibly including
         some missing moves in the case where not all creatures can get onboard.
 
@@ -841,12 +880,17 @@ class CleverBot(object):
         for moves in self._gen_legion_moves_inner(movesets):
             yield list(moves)
 
-    def _score_perm(self, game, sort_values, perm):
+    def _score_perm(
+        self,
+        game: Game.Game,
+        sort_values: Dict[str, float],
+        perm: Iterable[Tuple[str, str, str]],
+    ) -> float:
         """Score one move order permutation."""
-        score = 0
+        score = 0.0
         moved_creatures = set()
         try:
-            for creature_name, start, move in perm:
+            for (creature_name, start, move) in perm:
                 creature = game.creatures_in_battle_hex(
                     start, creature_name
                 ).pop()
@@ -861,25 +905,29 @@ class CleverBot(object):
                 creature.hexlabel = creature.previous_hexlabel
                 creature.previous_hexlabel = None
 
-    def _find_move_order(self, game, creature_moves):
+    def _find_move_order(
+        self, game: Game.Game, creature_moves: List[Tuple[str, str, str]]
+    ) -> List[Tuple[str, str, str]]:
         """Return a new list with creature_moves rearranged so that as
         many of the moves as possible can be legally made.
 
         creature_moves is a list of (creature_name, start_hexlabel,
         finish_hexlabel) tuples.
         """
-        max_score = 0
+        max_score = 0.0
         sort_values = {}
         for creature_name, start, move in creature_moves:
             creature = game.creatures_in_battle_hex(start, creature_name).pop()
             sort_values[creature_name] = creature.sort_value
             max_score += creature.sort_value
-        perms = list(itertools.permutations(creature_moves))
+        perms = list(
+            itertools.permutations(creature_moves)
+        )  # type: List[Iterable[Tuple[str, str, str]]]
         logging.info(f"{len(perms)} perms")
         # Scramble the list so we don't get a bunch of similar bad
         # orders jumbled together at the beginning.
         random.shuffle(perms)
-        best_score = -maxsize
+        best_score = float(-maxsize)
         best_perm = perms[0]
         finish_time = time.time() + self.ai_time_limit
         for perm in perms:
@@ -897,7 +945,9 @@ class CleverBot(object):
         logging.info(f"returning {list(best_perm)}")
         return list(best_perm)
 
-    def _find_best_creature_moves(self, game):
+    def _find_best_creature_moves(
+        self, game: Game.Game
+    ) -> Optional[List[Tuple[str, str, str]]]:
         """Return a list of up to one (creature_name, start_hexlabel,
         finish_hexlabel) tuple for each Creature in the battle active legion.
 
@@ -917,6 +967,7 @@ class CleverBot(object):
         ):
             return None
         legion = game.battle_active_legion
+        assert legion is not None
         logging.info(f"{legion=}")
         creatures = legion.sorted_living_creatures
         if not creatures:
@@ -925,6 +976,7 @@ class CleverBot(object):
         previous_creature = None
         moveset = None
         for creature in creatures:
+            assert creature.hexlabel is not None
             if (
                 previous_creature
                 and creature.name == previous_creature.name
@@ -970,7 +1022,7 @@ class CleverBot(object):
         # Scramble the moves, in case we don't have time to look at them all.
         random.shuffle(legion_moves)
         best_legion_move = legion_moves[0]
-        best_score = -maxsize
+        best_score = float(-maxsize)
         lc = len(creatures)
         llm0 = len(legion_moves[0])
         logging.info(f"len(creatures) = {lc} len(legion_moves[0]) = {llm0}")
@@ -994,21 +1046,28 @@ class CleverBot(object):
         logging.info(
             f"found best_legion_move {best_legion_move} in {now - start_time}"
         )
+        for creature in creatures:
+            assert creature.hexlabel is not None
         start_hexlabels = [creature.hexlabel for creature in creatures]
         creature_names = [creature.name for creature in creatures]
+        assert (
+            len(creature_names)
+            == len(start_hexlabels)
+            == len(best_legion_move)
+        )
         creature_moves = list(
             zip(creature_names, start_hexlabels, best_legion_move)
         )
         logging.info(f"creature_moves {creature_moves}")
         now = time.time()
-        ordered_creature_moves = self._find_move_order(game, creature_moves)
+        ordered_creature_moves = self._find_move_order(game, creature_moves)  # type: ignore
         logging.info(
             f"found ordered_creature_moves {ordered_creature_moves} in "
             f"{time.time() - now}"
         )
         return ordered_creature_moves
 
-    def move_creatures(self, game):
+    def move_creatures(self, game: Game.Game) -> None:
         """Move all creatures in the legion.
 
         Idea: Find all possible moves for each creature in the legion,
@@ -1051,21 +1110,27 @@ class CleverBot(object):
         def1 = self.user.callRemote("done_with_maneuvers", game.name)  # type: ignore
         def1.addErrback(self.failure)
 
-    def _score_legion_move(self, game, creatures):
+    def _score_legion_move(
+        self, game: Game.Game, creatures: List[Creature.Creature]
+    ) -> float:
         """Return a score for creatures in their current hexlabels."""
+        assert game.battle_turn is not None
         score = 0
         battlemap = game.battlemap
+        assert battlemap is not None
         legion = creatures[0].legion
+        assert legion is not None
         legion2 = game.other_battle_legion(legion)
+        assert legion2 is not None
 
         # For each enemy, figure out the average damage we could do to it if
         # everyone concentrated on hitting it, and if that's enough to kill it,
         # give every creature a kill bonus.
         # (This is not quite right because each creature can only hit one enemy
         # (ignoring carries), but it's a start.)
-        kill_bonus = 0
+        kill_bonus = 0.0
         for enemy in legion2.creatures:
-            total_mean_hits = 0
+            total_mean_hits = 0.0
             for creature in creatures:
                 if enemy in creature.engaged_enemies or (
                     not creature.engaged
@@ -1079,6 +1144,7 @@ class CleverBot(object):
                 kill_bonus += enemy.sort_value
 
         for creature in creatures:
+            assert creature.hexlabel is not None
             can_rangestrike = False
             engaged = creature.engaged_enemies
             max_mean_hits = 0.0
@@ -1158,7 +1224,9 @@ class CleverBot(object):
                     score += self.bp.ATTACKER_AGGRESSION_BONUS  # type: ignore
                 else:
                     enemy_hexlabels = [
-                        enemy.hexlabel for enemy in legion2.living_creatures
+                        enemy.hexlabel
+                        for enemy in legion2.living_creatures
+                        if enemy.hexlabel is not None
                     ]
                     if enemy_hexlabels:
                         min_range = min(
@@ -1272,7 +1340,7 @@ class CleverBot(object):
 
         return score
 
-    def strike(self, game):
+    def strike(self, game: Game.Game) -> None:
         logging.info("")
         if not game.battle_active_player:
             logging.info("called strike with no battle")
@@ -1281,6 +1349,7 @@ class CleverBot(object):
             logging.info("called strike for wrong player")
             return
         legion = game.battle_active_legion
+        assert legion is not None
         # First do the strikers with only one target.
         for striker in legion.sorted_creatures:
             if striker.can_strike:
@@ -1365,15 +1434,15 @@ class CleverBot(object):
 
     def carry(
         self,
-        game,
-        striker_name,
-        striker_hexlabel,
-        target_name,
-        target_hexlabel,
-        num_dice,
-        strike_number,
-        carries,
-    ):
+        game: Game.Game,
+        striker_name: str,
+        striker_hexlabel: str,
+        target_name: str,
+        target_hexlabel: str,
+        num_dice: int,
+        strike_number: int,
+        carries: int,
+    ) -> None:
         striker = game.creatures_in_battle_hex(striker_hexlabel).pop()
         target = game.creatures_in_battle_hex(target_hexlabel).pop()
         carry_targets = []
@@ -1395,8 +1464,8 @@ class CleverBot(object):
                         best_target = carry_target
         # If we can't kill anything then go after the hardest target to hit.
         if best_target is None:
-            best_num_dice = None
-            best_strike_number = None
+            best_num_dice = maxsize
+            best_strike_number = 0
             for carry_target in carry_targets:
                 num_dice2 = striker.number_of_dice(carry_target)
                 strike_number2 = striker.strike_number(carry_target)
@@ -1414,5 +1483,5 @@ class CleverBot(object):
         )
         def1.addErrback(self.failure)
 
-    def failure(self, error):
+    def failure(self, error: Any) -> None:
         log.err(error)

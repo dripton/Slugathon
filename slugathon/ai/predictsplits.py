@@ -1,6 +1,7 @@
+from __future__ import annotations
 import copy
 import itertools
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from slugathon.game.Creature import Creature
 
@@ -12,7 +13,7 @@ __license__ = "GNU GPL v2"
 """Split prediction for the AI."""
 
 
-def superset(big, little):
+def superset(big: List[str], little: List[str]) -> bool:
     """Return True if list big is a superset of list little."""
     for el in little:
         if big.count(el) < little.count(el):
@@ -20,7 +21,7 @@ def superset(big, little):
     return True
 
 
-def subtract_lists(big, little):
+def subtract_lists(big: List[str], little: List[str]) -> List[str]:
     """Return the elements of big, minus the elements of little.
 
     If big is not a superset of little, raise an exception.
@@ -32,7 +33,7 @@ def subtract_lists(big, little):
     return li
 
 
-def num_creature(li, creature_name):
+def num_creature(li: List[CreatureInfo], creature_name: str) -> int:
     """Return the number of elements of the list with .name creature_name."""
     count = 0
     for ci in li:
@@ -41,7 +42,9 @@ def num_creature(li, creature_name):
     return count
 
 
-def get_creature_info(li, creature_name):
+def get_creature_info(
+    li: List[CreatureInfo], creature_name: str
+) -> Optional[CreatureInfo]:
     """Return the first CreatureInfo that matches the passed name.
 
     Return None if no matching CreatureInfo is found.
@@ -52,12 +55,12 @@ def get_creature_info(li, creature_name):
     return None
 
 
-def get_creature_names(li):
+def get_creature_names(li: List[CreatureInfo]) -> List[str]:
     """Return .name for each element in the list."""
     return [ci.name for ci in li]
 
 
-def remove_last_uncertain_creature(li):
+def remove_last_uncertain_creature(li: List[CreatureInfo]) -> None:
     """Remove the last uncertain creature from the list.
 
     Raise if there are no uncertain creatures.
@@ -73,13 +76,13 @@ def remove_last_uncertain_creature(li):
     raise ValueError("No uncertain creatures")
 
 
-def min_count(lili, name):
+def min_count(lili: List[List[str]], name: str) -> int:
     """Return the minimum number of times name appears in any of the lists
     contained in the list of lists."""
     return min([li.count(name) for li in lili])
 
 
-def max_count(lili, name):
+def max_count(lili: List[List[str]], name: str) -> int:
     """Return the maximum number of times name appears in any of the lists
     contained in the list of lists."""
     return max([li.count(name) for li in lili])
@@ -89,12 +92,12 @@ class CreatureInfo(Creature):
 
     """A Creature with some extra attributes for split prediction."""
 
-    def __init__(self, name, certain, at_split):
+    def __init__(self, name: str, certain: bool, at_split: bool):
         Creature.__init__(self, name)
         self.certain = certain
         self.at_split = at_split
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         st = self.name
         if not self.certain:
             st += "?"
@@ -102,11 +105,11 @@ class CreatureInfo(Creature):
             st += "*"
         return st
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Two CreatureInfo objects match if the names match."""
-        return self.name
+        return hash(self.name)
 
-    def sort_key(self):
+    def sort_key(self) -> Tuple[float, str]:
         """Sort by sort_value descending, then by name."""
         return (-self.sort_value, self.name)
 
@@ -115,28 +118,36 @@ class Node(object):
 
     """A view of a Legion at a point in time."""
 
-    def __init__(self, markerid, turn_created, creatures, parent):
+    def __init__(
+        self,
+        markerid: str,
+        turn_created: int,
+        creatures: List[CreatureInfo],
+        parent: Optional[Node],
+    ):
         self.markerid = markerid  # Not unique!
         self.turn_created = turn_created
         self.creatures = creatures  # list of CreatureInfo
-        self.removed = []  # list of CreatureInfo, only if at_split
+        # list of CreatureInfo, only if at_split
+        self.removed = []  # type: List[CreatureInfo]
         self.parent = parent
         self.clear_children()
 
-    def clear_children(self):
+    def clear_children(self) -> None:
         """Clear out all child nodes."""
         # All are at the time this node was split.
         self.child_size2 = 0  # size of the smaller splitoff
-        self.child1 = None  # child1 is the presumed "better" legion
-        self.child2 = None
+        # child1 is the presumed "better" legion
+        self.child1 = None  # type: Optional[Node]
+        self.child2 = None  # type: Optional[Node]
         self.turn_split = -1
 
     @property
-    def _full_name(self):
+    def _full_name(self) -> str:
         """markerid and turn_created"""
         return self.markerid + "(" + str(self.turn_created) + ")"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Show a string with both current and removed creatures."""
         self.creatures.sort(key=CreatureInfo.sort_key)
         st = self._full_name + ":"
@@ -146,27 +157,27 @@ class Node(object):
             st += " " + str(ci) + "-"
         return st
 
-    def sort_key(self):
+    def sort_key(self) -> Tuple[int, str]:
         """Sort by turn_created then by markerid."""
         return (self.turn_created, self.markerid)
 
     @property
-    def certain_creatures(self):
+    def certain_creatures(self) -> List[CreatureInfo]:
         """Return list of CreatureInfo where certain is true."""
         return [ci for ci in self.creatures if ci.certain]
 
     @property
-    def num_certain_creatures(self):
+    def num_certain_creatures(self) -> int:
         """Return number of certain creatures."""
         return len(self.certain_creatures)
 
     @property
-    def num_uncertain_creatures(self):
+    def num_uncertain_creatures(self) -> int:
         """Return number of uncertain creatures."""
         return len(self) - self.num_certain_creatures
 
     @property
-    def all_certain(self):
+    def all_certain(self) -> bool:
         """Return True if all creatures are certain."""
         for ci in self.creatures:
             if not ci.certain:
@@ -174,7 +185,7 @@ class Node(object):
         return True
 
     @property
-    def has_split(self):
+    def has_split(self) -> bool:
         """Return True if this legion has split."""
         if self.child1 is None and self.child2 is None:
             return False
@@ -183,15 +194,17 @@ class Node(object):
         return True
 
     @property
-    def children(self):
+    def children(self) -> List[Node]:
         """Return a list of this node's child nodes."""
         if self.has_split:
+            assert self.child1 is not None
+            assert self.child2 is not None
             return [self.child1, self.child2]
         else:
             return []
 
     @property
-    def all_descendents_certain(self):
+    def all_descendents_certain(self) -> bool:
         """Return True if all of this node's children, grandchildren, etc.
         have no uncertain creatures."""
         for child in self.children:
@@ -200,12 +213,12 @@ class Node(object):
         return True
 
     @property
-    def after_split_creatures(self):
+    def after_split_creatures(self) -> List[CreatureInfo]:
         """Return list of CreatureInfo where at_split is false."""
         return [ci for ci in self.creatures if not ci.at_split]
 
     @property
-    def certain_at_split_or_removed_creatures(self):
+    def certain_at_split_or_removed_creatures(self) -> List[CreatureInfo]:
         """Return list of CreatureInfo where both certain and at_split are
         true, plus removed creatures."""
         alive = [ci for ci in self.creatures if ci.certain and ci.at_split]
@@ -213,7 +226,7 @@ class Node(object):
         return alive + dead
 
     @property
-    def other_child_markerid(self):
+    def other_child_markerid(self) -> Optional[str]:
         """Return the child markerid that's different from this node's
         markerid, or None."""
         for child in self.children:
@@ -221,15 +234,15 @@ class Node(object):
                 return child.markerid
         return None
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.creatures)
 
     @property
-    def creature_names(self):
+    def creature_names(self) -> List[str]:
         """Return this node's creatures' names, in sorted order."""
         return sorted((creature.name for creature in self.creatures))
 
-    def reveal_creatures(self, cnl):
+    def reveal_creatures(self, cnl: List[str]) -> bool:
         """Reveal all creatures in the creature name list as certain.
 
         Return True iff new information was sent to this legion's parent.
@@ -293,8 +306,9 @@ class Node(object):
             self.parent.update_child_contents()
             return True
 
-    def update_child_contents(self):
+    def update_child_contents(self) -> None:
         """Tell this parent legion the updated contents of its children."""
+        assert self.other_child_markerid is not None
         names = []
         for child in self.children:
             names.extend(
@@ -305,14 +319,16 @@ class Node(object):
             self.split(self.child_size2, self.other_child_markerid)
 
     @property
-    def is_legal_initial_splitoff(self):
+    def is_legal_initial_splitoff(self) -> bool:
         """Return True if this Node is a valid turn 1 splitoff."""
         if len(self) != 4:
             return False
         names = self.creature_names
         return names.count("Titan") + names.count("Angel") == 1
 
-    def _find_all_possible_splits(self, child_size, known_keep, known_split):
+    def _find_all_possible_splits(
+        self, child_size: int, known_keep: List[str], known_split: List[str]
+    ) -> List[List[str]]:
         """Return a list of lists of all legal combinations of splitoff names.
 
         Raise if the combination of known_keep and known_split contains
@@ -356,7 +372,9 @@ class Node(object):
         possible_splits = [list(pos2) for pos2 in possible_splits_set]
         return possible_splits
 
-    def _choose_creatures_to_split_out(self, possible_splits):
+    def _choose_creatures_to_split_out(
+        self, possible_splits: List[List[str]]
+    ) -> List[str]:
         """Decide how to split this legion, and return a list of creature
         names to remove.
 
@@ -380,13 +398,16 @@ class Node(object):
                 creatures_to_remove = li
         return creatures_to_remove
 
-    def _split_children(self):
+    def _split_children(self) -> None:
         """Recursively split this node's children."""
         for child in self.children:
             if child.has_split:
+                assert child.other_child_markerid is not None
                 child.split(child.child_size2, child.other_child_markerid)
 
-    def split(self, child_size, other_markerid, turn=-1):
+    def split(
+        self, child_size: int, other_markerid: str, turn: int = -1
+    ) -> None:
         """Split this legion."""
         assert len(self) <= 8
 
@@ -425,7 +446,11 @@ class Node(object):
             subtract_lists(all_names, names) for names in possible_splits
         ]
 
-        def find_certain_child(certain, uncertain, possibles):
+        def find_certain_child(
+            certain: List[str],
+            uncertain: List[str],
+            possibles: List[List[str]],
+        ) -> List[str]:
             """Return a list of names that are certainly in the child node."""
             li = []
             for name in set(certain):
@@ -436,7 +461,7 @@ class Node(object):
         known_keep2 = find_certain_child(certain, uncertain, possible_keeps)
         known_split2 = find_certain_child(certain, uncertain, possible_splits)
 
-        def merge_knowns(known1, known2):
+        def merge_knowns(known1: List[str], known2: List[str]) -> List[str]:
             """Return a merged list of names from the two lists."""
             all_names = set(known1 + known2)
             li = []
@@ -448,7 +473,9 @@ class Node(object):
         known_keep = merge_knowns(known_keep1, known_keep2)
         known_split = merge_knowns(known_split1, known_split2)
 
-        def _inherit_parent_certainty(certain, known, other):
+        def _inherit_parent_certainty(
+            certain: List[str], known: List[str], other: List[str]
+        ) -> None:
             """If one of the child legions is fully known, assign the
             creatures in the other child legion the same certainty they
             have in the parent.
@@ -505,7 +532,7 @@ class Node(object):
 
         self._split_children()
 
-    def merge(self, other, turn):
+    def merge(self, other: Node, turn: int) -> None:
         """Recombine this legion and other, because it was not possible to
         move either one.
 
@@ -514,6 +541,7 @@ class Node(object):
         will remain.
         """
         parent = self.parent
+        assert parent is not None
         assert parent == other.parent
         if (
             parent.markerid == self.markerid
@@ -527,7 +555,7 @@ class Node(object):
             parent.clear_children()
             parent.split(len(self) + len(other), self.markerid, turn)
 
-    def add_creature(self, creature_name):
+    def add_creature(self, creature_name: str) -> None:
         """Add a Creature by its name."""
         # Allow adding to 7-high legion, to support the case of summoning
         # into a legion that has lost creatures whose removal has not
@@ -535,7 +563,7 @@ class Node(object):
         ci = CreatureInfo(creature_name, True, False)
         self.creatures.append(ci)
 
-    def remove_creature(self, creature_name):
+    def remove_creature(self, creature_name: str) -> None:
         """Remove a Creature by its name."""
         if not self:
             raise ValueError("Tried removing from 0-high legion")
@@ -552,7 +580,7 @@ class Node(object):
                 del self.creatures[ii]
                 break
 
-    def remove_creatures(self, creature_names):
+    def remove_creatures(self, creature_names: List[str]) -> None:
         """Remove Creatures by their names."""
         self.reveal_creatures(creature_names)
         for name in creature_names:
@@ -563,7 +591,9 @@ class PredictSplits(object):
 
     """Split predictor."""
 
-    def __init__(self, playername, root_id, creature_names):
+    def __init__(
+        self, playername: str, root_id: str, creature_names: List[str]
+    ):
         self.playername = playername
         # All creatures in root legion must be known
         creatures = [CreatureInfo(name, True, True) for name in creature_names]
@@ -608,7 +638,7 @@ class PredictSplits(object):
 
         return leaves
 
-    def print_leaves(self, newlines=True):
+    def print_leaves(self, newlines: bool = True) -> None:
         """Print all childless nodes in tree, in string order."""
         leaves = self.get_leaves()
         leaves.sort(key=str)
@@ -619,7 +649,7 @@ class PredictSplits(object):
         if newlines:
             print()
 
-    def print_nodes(self, newlines=True):
+    def print_nodes(self, newlines: bool = True) -> None:
         """Print all nodes in tree, in string order."""
         nodes = self.get_nodes()
         nodes.sort(key=Node.sort_key)
@@ -630,7 +660,7 @@ class PredictSplits(object):
         if newlines:
             print()
 
-    def get_leaf(self, markerid):
+    def get_leaf(self, markerid: str) -> Optional[Node]:
         """Return the leaf node with matching markerid"""
         leaves = self.get_leaves()
         for leaf in leaves:
@@ -639,7 +669,7 @@ class PredictSplits(object):
         return None
 
     @property
-    def num_uncertain_legions(self):
+    def num_uncertain_legions(self) -> int:
         """Return the number of uncertain legions."""
         count = 0
         for node in self.get_leaves():
@@ -663,21 +693,21 @@ class AllPredictSplits(list):
                 return leaf
         return None
 
-    def print_leaves(self):
+    def print_leaves(self) -> None:
         """Print all leaf nodes."""
         print()
         for ps in self:
             ps.print_leaves(False)
         print()
 
-    def print_nodes(self):
+    def print_nodes(self) -> None:
         """Print all nodes."""
         print()
         for ps in self:
             ps.print_nodes(False)
         print()
 
-    def check(self):
+    def check(self) -> None:
         """Sanity check"""
         for ps in self:
             assert ps.num_uncertain_legions != 1
