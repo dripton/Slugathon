@@ -141,18 +141,21 @@ class Server(Observed):
         return lst_from_db + lst_from_games
 
     def send_chat_message(
-        self, source: str, dest: Optional[List[str]], text: str
+        self, source: str, dest: Optional[Set[str]], text: str
     ) -> None:
         """Send a chat message from user source to users in dest.
 
-        source is a playername.  dest is a list of playernames.
+        source is a playername.  dest is a set of playernames.
         If dest is None, send to all users
         """
         message = f"{source}: {text}"
         if dest is not None:
-            dest.append(source)
+            dest.add(source)
         action = Action.ChatMessage(source, message)
-        self.notify(action, names=dest)
+        names = None
+        if dest:
+            names = list(dest)
+        self.notify(action, names=names)
 
     def form_game(
         self,
