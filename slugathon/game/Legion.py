@@ -28,7 +28,6 @@ class Legion(Observed):
         hexlabel: int,
     ):
         Observed.__init__(self)
-        assert isinstance(hexlabel, int)
         self.markerid = markerid  # type: str
         self.picname = find_picname(markerid)  # type: str
         self.creatures = creatures  # type: List[Creature.Creature]
