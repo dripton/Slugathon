@@ -405,7 +405,6 @@ class User(Avatar):
 
     def update(self, observed, action, names):
         """Defers updates to its client, dropping the observed reference."""
-        logging.info(f"{observed=} {action=} {names=}")
         # Filter DriftDamage; we redo it on the client.
         if isinstance(action, Action.DriftDamage):
             return
