@@ -5,3 +5,4 @@ pyflakes
 pycodestyle
 black
 mypy
+mypy-zope
