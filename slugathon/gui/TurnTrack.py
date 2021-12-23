@@ -12,8 +12,7 @@ from gi.repository import Gtk, Pango, PangoCairo, GObject
 from zope.interface import implementer
 
 from slugathon.gui import Marker
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action, Game, Legion
 
 
@@ -124,7 +123,10 @@ class TurnTrack(Gtk.DrawingArea):
         self.update_gui()
 
     def update(
-        self, observed: Observed, action: Action.Action, names: List[str]
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: List[str] = None,
     ) -> None:
         if isinstance(action, Action.StartReinforceBattlePhase):
             self.battle_turn = action.battle_turn

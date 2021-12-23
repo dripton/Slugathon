@@ -3,7 +3,7 @@ from typing import Any, IO, List, Optional
 
 from zope.interface import implementer
 
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action
 
 
@@ -24,7 +24,7 @@ class History(object):
         self.actions = []  # type: List[Any]
         self.undone = []  # type: List[Any]
 
-    def _undo(self, undo_action: Action.Action):
+    def _undo(self, undo_action: Action.Action) -> None:
         """Undoes the last action performed, if it corresponds to undo_action.
 
         Otherwise, fails silently.
@@ -37,7 +37,10 @@ class History(object):
         self.undone.append(self.actions.pop())
 
     def update(
-        self, observed: Any, action: Action.Action, names: Optional[List[str]]
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: Optional[List[str]] = None,
     ) -> None:
         """Update history with a new action.
 

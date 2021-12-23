@@ -1,8 +1,9 @@
+from typing import List, Optional
+
 from zope.interface import implementer
 
 from slugathon.game import Action
-from slugathon.util.Observer import IObserver
-from slugathon.util.Observed import Observed
+from slugathon.util.Observed import IObserved, IObserver, Observed
 
 
 __copyright__ = "Copyright (c) 2011-2021 David Ripton"
@@ -14,7 +15,12 @@ update_counter = 0
 
 @implementer(IObserver)
 class MyObserver:
-    def update(self, observed, action, names):
+    def update(
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: Optional[List[str]] = None,
+    ):
         global update_counter
         update_counter += 1
 

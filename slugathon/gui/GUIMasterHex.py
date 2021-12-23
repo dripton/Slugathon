@@ -180,7 +180,7 @@ class GUIMasterHex(object):
         vy1: float,
         vx2: float,
         vy2: float,
-        gate_type: Optional[int],
+        gate_type: Optional[str],
     ) -> Optional[List[Tuple[float, float]]]:
         """Setup gate on one entrance / exit hexside."""
         x0 = vx1 + (vx2 - vx1) / 6.0

@@ -14,8 +14,7 @@ from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.gui import NewGame, LoadGame, WaitingForPlayers
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action, Game
 from slugathon.net import User
 from slugathon.util import guiutils
@@ -433,9 +432,9 @@ class Lobby(Gtk.EventBox):
 
     def update(
         self,
-        observed: Observed,
+        observed: Optional[IObserved],
         action: Action.Action,
-        names: Optional[List[str]],
+        names: Optional[List[str]] = None,
     ) -> None:
         if isinstance(action, Action.AddUsername):
             self.update_user_store()

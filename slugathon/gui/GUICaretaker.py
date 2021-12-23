@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import List
+from typing import List, Optional
 
 import gi
 
@@ -9,8 +9,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 from zope.interface import implementer
 
-from slugathon.util.Observer import IObserver
-from slugathon.util.Observed import IObserved
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.gui import Chit
 from slugathon.game import Creature, Action, Game, Player
 from slugathon.data import creaturedata
@@ -108,7 +107,10 @@ class GUICaretaker(Gtk.EventBox):
         )
 
     def update(
-        self, observed: IObserved, action: Action.Action, names: List[str]
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: List[str] = None,
     ) -> None:
         if isinstance(action, Action.CreateStartingLegion):
             for creature_name in set(creaturedata.starting_creature_names):

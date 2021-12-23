@@ -256,7 +256,7 @@ class Player(Observed):
         parent_creature_names = parent.creature_names
         child_creature_names = child.creature_names
         parent.creatures += child.creatures
-        child.remove_observer(self)
+        child.remove_observer(self.game)
         del self.markerid_to_legion[child_markerid]
         self.markerids_left.add(child.markerid)
         self.selected_markerid = None
@@ -621,7 +621,7 @@ class Player(Observed):
         assert type(markerid) == str
         if markerid in self.markerid_to_legion:
             legion = self.markerid_to_legion[markerid]
-            legion.remove_observer(self)
+            legion.remove_observer(self.game)
             del self.markerid_to_legion[markerid]
             del legion
             self.markerids_left.add(markerid)

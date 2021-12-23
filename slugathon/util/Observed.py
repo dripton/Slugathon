@@ -1,9 +1,10 @@
+from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from zope.interface import Interface, implementer
 
 from slugathon.game import Action
-from slugathon.util import Observer
+from slugathon.util.Observer import IObserver
 
 
 __copyright__ = "Copyright (c) 2004-2021 David Ripton"
@@ -11,13 +12,15 @@ __license__ = "GNU GPL v2"
 
 
 class IObserved(Interface):
-    def add_observer(observer, name=None):
+    def add_observer(observer: IObserver, name: str = "") -> None:
         """Add an observer to this object."""
 
-    def remove_observer(observer):
+    def remove_observer(observer: IObserver) -> None:
         """Remove an observer from this object."""
 
-    def notify(action, names=None):
+    def notify(
+        action: Action.Action, names: Optional[List[str]] = None
+    ) -> None:
         """Tell observers about this action."""
 
 
@@ -27,13 +30,13 @@ class Observed(object):
     to be observed."""
 
     def __init__(self) -> None:
-        self.observers = {}  # type: Dict[Observer.IObserver, str]
+        self.observers = {}  # type: Dict[IObserver, str]
 
-    def add_observer(self, observer, name: str = "") -> None:
+    def add_observer(self, observer: IObserver, name: str = "") -> None:
         if observer not in self.observers:
             self.observers[observer] = name
 
-    def remove_observer(self, observer) -> None:
+    def remove_observer(self, observer: IObserver) -> None:
         if observer in self.observers:
             del self.observers[observer]
 

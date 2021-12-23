@@ -21,8 +21,7 @@ from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.net import config, Results, User
-from slugathon.util.Observer import IObserver
-from slugathon.util.Observed import Observed
+from slugathon.util.Observed import IObserved, IObserver, Observed
 from slugathon.game import Action, Game, Phase, Creature
 from slugathon.ai import CleverBot, predictsplits, BotParams
 from slugathon.data.creaturedata import starting_creature_names
@@ -326,9 +325,9 @@ class AIClient(pb.Referenceable, Observed):
 
     def update(
         self,
-        observed: Optional[Observed],
+        observed: Optional[IObserved],
         action: Action.Action,
-        names: Optional[List[str]],
+        names: Optional[List[str]] = None,
     ) -> None:
         """Updates from User will come via remote_update, with observed set to
         None."""

@@ -22,8 +22,7 @@ from slugathon.game import (
     MasterHex,
 )
 from slugathon.data import playercolordata
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver, Observed
 from slugathon.util import prefs, Dice
 from slugathon.util.bag import bag
 from slugathon.net import config
@@ -2188,11 +2187,11 @@ class Game(Observed):
 
     def update(
         self,
-        observed: Observed,
-        action: Any,
-        names: Optional[List[str]],
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: Optional[List[str]] = None,
     ) -> None:
-        if hasattr(action, "game_name") and action.game_name != self.name:
+        if hasattr(action, "game_name") and action.game_name != self.name:  # type: ignore
             return
         logging.info(f"{observed=} {action=} {names=}")
 

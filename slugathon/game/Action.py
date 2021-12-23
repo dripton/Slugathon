@@ -1,3 +1,4 @@
+from __future__ import annotations
 import ast
 from typing import Any, List, Optional, Tuple
 
@@ -198,7 +199,7 @@ class SplitLegion(Action):
         self.parent_creature_names = tuple(parent_creature_names)
         self.child_creature_names = tuple(child_creature_names)
 
-    def undo_action(self):
+    def undo_action(self) -> UndoSplit:
         return UndoSplit(
             self.game_name,
             self.playername,
@@ -241,12 +242,12 @@ pb.setUnjellyableForClass(UndoSplit, UndoSplit)  # type: ignore
 class MergeLegions(Action):
     def __init__(
         self,
-        game_name,
-        playername,
-        parent_markerid,
-        child_markerid,
-        parent_creature_names,
-        child_creature_names,
+        game_name: str,
+        playername: str,
+        parent_markerid: str,
+        child_markerid: str,
+        parent_creature_names: List[str],
+        child_creature_names: List[str],
     ):
         """Used for involuntarily undoing a split during the movement phase,
         because of a lack of legal non-teleport moves.
@@ -303,7 +304,7 @@ class MoveLegion(Action):
         self.teleporting_lord = teleporting_lord
         self.previous_hexlabel = previous_hexlabel
 
-    def undo_action(self):
+    def undo_action(self) -> UndoMoveLegion:
         return UndoMoveLegion(
             self.game_name,
             self.playername,
@@ -387,7 +388,7 @@ class RecruitCreature(Action):
         self.creature_name = creature_name
         self.recruiter_names = tuple(recruiter_names)
 
-    def undo_action(self):
+    def undo_action(self) -> UndoRecruit:
         return UndoRecruit(
             self.game_name,
             self.playername,
@@ -620,7 +621,7 @@ pb.setUnjellyableForClass(NoMoreProposals, NoMoreProposals)  # type: ignore
 class MoveCreature(Action):
     def __init__(
         self,
-        game_name,
+        game_name: str,
         playername: str,
         creature_name: str,
         old_hexlabel: str,
@@ -632,7 +633,7 @@ class MoveCreature(Action):
         self.old_hexlabel = old_hexlabel
         self.new_hexlabel = new_hexlabel
 
-    def undo_action(self):
+    def undo_action(self) -> UndoMoveCreature:
         return UndoMoveCreature(
             self.game_name,
             self.playername,

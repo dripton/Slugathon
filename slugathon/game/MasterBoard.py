@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple, Union
 
 from slugathon.data import boarddata
 from slugathon.game import MasterHex
@@ -33,7 +33,14 @@ class MasterBoard(object):
         self.width = self.max_x - self.min_x + 1
         self.height = self.max_y - self.min_y + 1
 
-    def init_hex(self, hexdata) -> None:
+    def init_hex(
+        self,
+        hexdata: Union[
+            Tuple[int, int, int, str, int, str],
+            Tuple[int, int, int, str, int, str, int, str],
+            Tuple[int, int, int, str, int, str, int, str, int, str],
+        ],
+    ) -> None:
         assert len(hexdata) in (6, 8, 10)
         (label, x, y, terrain) = hexdata[:4]
         exits = hexdata[4:]

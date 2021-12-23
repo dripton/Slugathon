@@ -150,7 +150,7 @@ def option_path(playername: str, option: str) -> str:
     return os.path.join(player_prefs_dir(playername), option)
 
 
-def save_bool_option(playername: str, option: str, value: str):
+def save_bool_option(playername: str, option: str, value: str) -> None:
     with open(option_path(playername, option), "w") as fil:
         fil.write(f"{value}\n")
 

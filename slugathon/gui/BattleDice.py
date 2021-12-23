@@ -9,8 +9,7 @@ from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
 
 from slugathon.gui import Die, Chit
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action, Creature
 
 
@@ -50,9 +49,9 @@ class BattleDice(Gtk.EventBox):
 
     def update(
         self,
-        observed: Optional[Observed],
+        observed: Optional[IObserved],
         action: Any,
-        names: Optional[List[str]],
+        names: Optional[List[str]] = None,
     ) -> None:
         if isinstance(action, Action.Strike):
             rolls = sorted(action.rolls, reverse=True)

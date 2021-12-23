@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 import sqlite3
 import math
@@ -344,7 +345,7 @@ class Results(object):
         results.reverse()
         return results
 
-    def _spawn_new_ai(self, cursor) -> int:
+    def _spawn_new_ai(self, cursor: sqlite3.Cursor) -> int:
         """Spawn a new AI, mutated from default_bot_params, and return
         its player_id."""
         bp = BotParams.default_bot_params.mutate_all_fields()
@@ -368,7 +369,9 @@ class Results(object):
         logging.info(f"spawning new AI {player_id} {name} {bp}")
         return player_id
 
-    def _breed_new_ai(self, cursor: sqlite3.Cursor, old_player_ids: Set[int]):
+    def _breed_new_ai(
+        self, cursor: sqlite3.Cursor, old_player_ids: Set[int]
+    ) -> int:
         """Breed a new AI, from two weighted-random experienced parents."""
         query = """SELECT p.player_id, p.mu FROM player p
                    WHERE p.class = 'CleverBot'"""
@@ -418,7 +421,7 @@ class Results(object):
 
     def get_weighted_random_player_id(
         self, excludes: Set = set(), highest_mu: bool = False
-    ):
+    ) -> int:
         """Return a player_id.  Exclude any player_ids in excludes.
 
         If there are fewer than GENERATION_SIZE AI player_id in the database,

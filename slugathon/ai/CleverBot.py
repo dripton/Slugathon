@@ -94,7 +94,7 @@ class CleverBot(object):
         if playername == self.playername:
             player = game.get_player_by_name(playername)
             assert player is not None
-            markerid = self._choose_marker(player)
+            markerid = self.choose_marker(player)
             self._pick_marker(game, self.playername, markerid)
 
     def _pick_marker(
@@ -114,7 +114,7 @@ class CleverBot(object):
                 )
                 def1.addErrback(self.failure)
 
-    def _choose_marker(self, player: Player.Player) -> str:
+    def choose_marker(self, player: Player.Player) -> str:
         """Pick a legion marker randomly, except prefer my own markers
         to captured ones to be less annoying."""
         own_markerids_left = [
@@ -574,7 +574,7 @@ class CleverBot(object):
                 # split_gargs, split_ogres, split_centaurs,
                 # gargs_with_titan, ogres_with_titan, centaurs_with_titan
                 logging.info("initial split")
-                new_markerid = self._choose_marker(player)
+                new_markerid = self.choose_marker(player)
                 lord = random.choice(["Titan", "Angel"])
                 creatures = ["Centaur", "Gargoyle", "Ogre"]
                 creature1 = random.choice(creatures)
@@ -601,7 +601,7 @@ class CleverBot(object):
                 logging.info("7-high")
                 good_recruit_rolls = set()
                 safe_split_rolls = set()
-                new_markerid = self._choose_marker(player)
+                new_markerid = self.choose_marker(player)
                 lst = legion.sorted_creatures
                 split = lst[-2:]
                 split_names = [creature.name for creature in split]

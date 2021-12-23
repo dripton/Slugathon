@@ -1,4 +1,6 @@
+from __future__ import annotations
 import logging
+from typing import List, Optional
 
 from twisted.spread.pb import Avatar, PBConnectionLost
 from twisted.internet.error import ConnectionLost
@@ -6,8 +8,9 @@ from twisted.internet.task import LoopingCall
 from twisted.python import log
 from zope.interface import implementer
 
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action
+from slugathon.net import Server
 
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
@@ -19,7 +22,7 @@ class User(Avatar):
 
     """Perspective for a player or spectator."""
 
-    def __init__(self, name, server, client):
+    def __init__(self, name: str, server: Server.Server, client):
         self.name = name
         self.server = server
         self.client = client
@@ -260,35 +263,35 @@ class User(Avatar):
         logging.info(f"do_not_acquire_angels {self} {game_name} {markerid}")
         self.server.do_not_acquire_angels(self.name, game_name, markerid)
 
-    def perspective_done_with_engagements(self, game_name):
+    def perspective_done_with_engagements(self, game_name) -> None:
         self.server.done_with_engagements(self.name, game_name)
 
     def perspective_recruit_creature(
         self, game_name, markerid, creature_name, recruiter_names
-    ):
+    ) -> None:
         self.server.recruit_creature(
             self.name, game_name, markerid, creature_name, recruiter_names
         )
 
-    def perspective_done_with_recruits(self, game_name):
+    def perspective_done_with_recruits(self, game_name) -> None:
         self.server.done_with_recruits(self.name, game_name)
 
     def perspective_summon_angel(
         self, game_name, markerid, donor_markerid, creature_name
-    ):
+    ) -> None:
         self.server.summon_angel(
             self.name, game_name, markerid, donor_markerid, creature_name
         )
 
-    def perspective_do_not_summon_angel(self, game_name, markerid):
+    def perspective_do_not_summon_angel(self, game_name, markerid) -> None:
         self.server.do_not_summon_angel(self.name, game_name, markerid)
 
-    def perspective_do_not_reinforce(self, game_name, markerid):
+    def perspective_do_not_reinforce(self, game_name, markerid) -> None:
         self.server.do_not_reinforce(self.name, game_name, markerid)
 
     def perspective_carry(
         self, game_name, carry_target_name, carry_target_hexlabel, carries
-    ):
+    ) -> None:
         logging.info(
             f"perspective_carry {carry_target_name} {carry_target_hexlabel} "
             f"{carries}"
@@ -301,7 +304,7 @@ class User(Avatar):
             carries,
         )
 
-    def perspective_apply_action(self, action):
+    def perspective_apply_action(self, action) -> None:
         """Pull the exact method and args out of the Action."""
         if isinstance(action, Action.UndoSplit):
             self.server.undo_split(
@@ -331,8 +334,8 @@ class User(Avatar):
                 action.game_name,
                 action.parent_markerid,
                 action.child_markerid,
-                action.parent_creature_names,
-                action.child_creature_names,
+                list(action.parent_creature_names),
+                list(action.child_creature_names),
             )
         elif isinstance(action, Action.MoveLegion):
             self.server.move_legion(
@@ -358,28 +361,28 @@ class User(Avatar):
                 action.game_name,
                 action.markerid,
                 action.creature_name,
-                action.recruiter_names,
+                list(action.recruiter_names),
             )
 
-    def perspective_save(self, game_name):
+    def perspective_save(self, game_name) -> None:
         self.server.save(self.name, game_name)
 
-    def perspective_withdraw(self, game_name):
+    def perspective_withdraw(self, game_name) -> None:
         self.server.withdraw(self.name, game_name)
 
-    def perspective_pause_ai(self, game_name):
+    def perspective_pause_ai(self, game_name) -> None:
         self.server.pause_ai(self.name, game_name)
 
-    def perspective_resume_ai(self, game_name):
+    def perspective_resume_ai(self, game_name) -> None:
         self.server.resume_ai(self.name, game_name)
 
     def perspective_get_player_data(self):
         return self.server.get_player_data()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "User " + self.name
 
-    def add_observer(self, mind):
+    def add_observer(self, mind) -> None:
         logging.info(f"User.add_observer {self} {mind}")
         def1 = self.client.callRemote("set_name", self.name)
         def1.addErrback(self.trap_connection_lost)
@@ -389,22 +392,27 @@ class User(Avatar):
         def2.addErrback(self.trap_connection_lost)
         def2.addErrback(self.log_failure)
 
-    def trap_connection_lost(self, failure):
+    def trap_connection_lost(self, failure) -> None:
         failure.trap(ConnectionLost, PBConnectionLost)
         if not self.logging_out:
             self.logging_out = True
             logging.info(f"Connection lost for {self.name}; logging out")
             self.logout()
 
-    def log_failure(self, failure):
+    def log_failure(self, failure) -> None:
         log.err(failure)
 
-    def logout(self):
+    def logout(self) -> None:
         logging.info(f"logout {self.name}")
         self.server.logout(self)
 
-    def update(self, observed, action, names):
-        """Defers updates to its client, dropping the observed reference."""
+    def update(
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: Optional[List[str]] = None,
+    ) -> None:
+        """Defer updates to its client, dropping the observed reference."""
         # Filter DriftDamage; we redo it on the client.
         if isinstance(action, Action.DriftDamage):
             return

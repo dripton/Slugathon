@@ -1,3 +1,4 @@
+from __future__ import annotations
 import tempfile
 import os
 import time
@@ -7,7 +8,7 @@ from slugathon.net import Results
 from slugathon.game import Game
 
 
-__copyright__ = "Copyright (c) 2012 David Ripton"
+__copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 

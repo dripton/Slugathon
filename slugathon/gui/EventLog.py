@@ -16,8 +16,7 @@ from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
 from slugathon.game import Action, Legion, Game
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
@@ -44,7 +43,10 @@ class EventLog(Gtk.EventBox):
         self.show_all()
 
     def update(
-        self, observed: Observed, action: Action.Action, names: List[str]
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: List[str] = None,
     ) -> None:
         if self.game is None:
             return

@@ -8,8 +8,7 @@ from twisted.python import log
 from zope.interface import implementer
 
 from slugathon.net import config, User
-from slugathon.util.Observer import IObserver
-from slugathon.util.Observed import IObserved, Observed
+from slugathon.util.Observed import IObserved, IObserver, Observed
 from slugathon.game import Action, Game
 from slugathon.gui import Lobby, PickColor, PickMarker, GUIMasterBoard
 from slugathon.gui import MainWindow
@@ -263,7 +262,7 @@ class Client(pb.Referenceable, Observed):
         self,
         observed: Optional[IObserved],
         action: Action.Action,
-        names: List[str],
+        names: List[str] = None,
     ) -> None:
         """Updates from User will come via remote_update, with
         observed set to None."""

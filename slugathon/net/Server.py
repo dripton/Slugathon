@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-
+from __future__ import annotations
 import os
 import time
 import argparse
@@ -10,7 +10,7 @@ import random
 import hashlib
 import logging
 from logging.handlers import RotatingFileHandler
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING, Union
 
 from twisted.spread import pb
 from twisted.cred.portal import Portal
@@ -20,13 +20,14 @@ from zope.interface import implementer
 
 from slugathon.net import Realm, config, Results
 from slugathon.game import Game, Action, Phase
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver, Observed
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
 from slugathon.net.UniqueNoPassword import UniqueNoPassword
-from slugathon.net import User
 from slugathon.util import prefs
 from slugathon.util.bag import bag
+
+if TYPE_CHECKING:
+    from slugathon.net import User
 
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
@@ -85,16 +86,18 @@ class Server(Observed):
     def __repr__(self) -> str:
         return "Server"
 
-    def add_observer(self, user: User.User) -> None:  # type: ignore
-        playername = user.name
+    def add_observer(self, user: IObserver, name: str = "") -> None:  # type: ignore
+        assert hasattr(user, "name")
+        playername = user.name  # type: ignore
         Observed.add_observer(self, user, playername)
         self.playernames.add(playername)
         action = Action.AddUsername(playername)
         self.notify(action)
 
-    def remove_observer(self, user: User.User) -> None:
+    def remove_observer(self, user: IObserver) -> None:  # type: ignore
         Observed.remove_observer(self, user)
-        playername = user.name
+        assert hasattr(user, "name")
+        playername = user.name  # type: ignore
         if playername in self.playernames:
             self.playernames.remove(playername)
             action = Action.DelUsername(playername)
@@ -488,7 +491,7 @@ class Server(Observed):
         hexlabel: int,
         entry_side: int,
         teleport: bool,
-        teleporting_lord: str,
+        teleporting_lord: Optional[str],
     ) -> None:
         """Move one legion on the masterboard."""
         game = self.name_to_game(game_name)
@@ -1104,9 +1107,9 @@ class Server(Observed):
 
     def update(
         self,
-        observed: Observed,
+        observed: Optional[IObserved],
         action: Action.Action,
-        names: Optional[List[str]],
+        names: Optional[List[str]] = None,
     ) -> None:
         logging.info(f"{observed=} {action=} {names=}")
         if isinstance(action, Action.GameOver):
@@ -1125,9 +1128,6 @@ class AIProcessProtocol(protocol.ProcessProtocol):
 
     def connectionMade(self) -> None:
         logging.info(f"{self.game_name} {self.ainame}")
-        # We don't use stdin, so reduce the number of open files.
-        if self.transport is not None:
-            self.transport.closeStdin()
 
     def processExited(self, status: failure.Failure) -> None:
         logging.debug(f"{self.game_name} {self.ainame} {status}")

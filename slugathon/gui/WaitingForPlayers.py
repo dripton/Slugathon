@@ -22,8 +22,7 @@ from slugathon.game import Action, Game
 from slugathon.gui import icon
 from slugathon.net import User
 from slugathon.util.NullUser import NullUser
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 
 
 __copyright__ = "Copyright (c) 2004-2021 David Ripton"
@@ -231,9 +230,9 @@ class WaitingForPlayers(Gtk.Dialog):
 
     def update(
         self,
-        observed: Observed,
+        observed: Optional[IObserved],
         action: Action.Action,
-        names: Optional[List[str]],
+        names: Optional[List[str]] = None,
     ) -> None:
         if isinstance(action, Action.RemoveGame):
             if action.game_name == self.game.name:

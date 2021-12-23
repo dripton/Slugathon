@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from typing import List, Union
+from typing import List, Optional, Union
 
 import gi
 
@@ -9,8 +9,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject, Gdk
 from zope.interface import implementer
 
-from slugathon.util.Observer import IObserver
-from slugathon.util.Observed import IObserved
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action, Phase, Game
 from slugathon.util import colors
 
@@ -242,7 +241,10 @@ class StatusScreen(Gtk.EventBox):
         self.battle_phase_label.set_text("")
 
     def update(
-        self, observed: IObserved, action: Action.Action, names: List[str]
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: List[str] = None,
     ) -> None:
         if isinstance(action, Action.AssignedAllTowers):
             # Players got renumbered, so re-init everything.

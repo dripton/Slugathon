@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
 from slugathon.game import MasterBoard
 
@@ -40,7 +40,11 @@ class MasterHex(object):
         x: int,
         y: int,
         terrain: str,
-        exits: List[int],
+        exits: Union[
+            Tuple[int, str],
+            Tuple[int, str, int, str],
+            Tuple[int, str, int, str, int, str],
+        ],
     ):
         self.board = board
         self.label = label
@@ -49,8 +53,8 @@ class MasterHex(object):
         self.inverted = (self.x + self.y) & 1 == 0
         self.terrain = terrain
         self._exits = exits
-        self.exits = []  # type: List[Optional[int]]
-        self.entrances = []  # type: List[Optional[int]]
+        self.exits = []  # type: List[Optional[str]]
+        self.entrances = []  # type: List[Optional[str]]
         self.neighbors = []  # type: List[Optional[MasterHex]]
         for unused in range(6):
             self.exits.append(None)
@@ -65,6 +69,8 @@ class MasterHex(object):
     def connect_to_neighbors(self) -> None:
         it = iter(self._exits)
         for (neighbor_label, gate_type) in zip(it, it):
+            assert isinstance(neighbor_label, int)
+            assert isinstance(gate_type, str)
             direction = self.find_direction(neighbor_label)
             self.exits[direction] = gate_type
             neighbor = self.board.hexes[neighbor_label]

@@ -48,8 +48,7 @@ from slugathon.gui import (
 )
 from slugathon.net import User
 from slugathon.util import guiutils, prefs
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action, Phase, Game, Creature, Legion
 from slugathon.util.bag import bag
 
@@ -1494,7 +1493,10 @@ class GUIMasterBoard(Gtk.EventBox):
         log.err(arg)
 
     def update(
-        self, observed: Observed, action: Action.Action, names: List[str]
+        self,
+        observed: Optional[IObserved],
+        action: Action.Action,
+        names: List[str] = None,
     ) -> None:
         attacker = None  # type: Optional[Legion.Legion]
         defender = None  # type: Optional[Legion.Legion]
@@ -1920,10 +1922,10 @@ class GUIMasterBoard(Gtk.EventBox):
                                 legion.markerid,
                             )
                             def1.addErrback(self.failure)
-
-            self.game.remove_observer(self.guimap)
-            del self.guimap
-            self.guimap = None
+            if self.guimap is not None:
+                self.game.remove_observer(self.guimap)
+                del self.guimap
+                self.guimap = None
             hexlabel = action.hexlabel
             self.clear_recruitchits(hexlabel)
             if legion:

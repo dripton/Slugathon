@@ -21,8 +21,7 @@ from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 import cairo
 from zope.interface import implementer
 
-from slugathon.util.Observed import Observed
-from slugathon.util.Observer import IObserver
+from slugathon.util.Observed import IObserved, IObserver
 from slugathon.gui import (
     GUIBattleHex,
     Chit,
@@ -915,9 +914,9 @@ class GUIBattleMap(Gtk.EventBox):
 
     def update(
         self,
-        observed: Observed,
+        observed: Optional[IObserved],
         action: Action.Action,
-        names: Optional[List[str]],
+        names: Optional[List[str]] = None,
     ) -> None:
         logging.info(f"GUIBattleMap.update {observed} {action} {names}")
 

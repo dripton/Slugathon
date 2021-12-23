@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional
 
 from twisted.cred.error import LoginDenied
 from twisted.cred.checkers import FilePasswordDB
-from twisted.cred.credentials import ICredentials
+from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.internet import defer
 
 from slugathon.net import Server
@@ -41,11 +41,11 @@ class UniqueFilePasswordDB(FilePasswordDB):
         )
         self.server = server
 
-    def requestAvatarId(self, credentials: ICredentials) -> Any:
+    def requestAvatarId(self, credentials: IUsernameHashedPassword) -> Any:
         if self.server is None:
             return defer.fail(LoginDenied())
-        elif credentials.username in self.server.playernames:
+        elif credentials.username in self.server.playernames:  # type: ignore
             # already logged in
             return defer.fail(LoginDenied())
         else:
-            return FilePasswordDB.requestAvatarId(self, credentials)  # type: ignore
+            return FilePasswordDB.requestAvatarId(self, credentials)
