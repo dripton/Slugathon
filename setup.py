@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-from glob import glob
-from distutils.core import setup
-from distutils.command.install_data import install_data
-import subprocess
 import datetime
-import sys
 import os
-
+import subprocess
+import sys
+from distutils.command.install_data import install_data
+from distutils.core import setup
+from glob import glob
 
 __copyright__ = "Copyright (c) 2009-2021 David Ripton"
 __license__ = "GNU GPL v2"

@@ -2,16 +2,15 @@
 
 
 import argparse
-import sys
-import os
 import logging
+import os
 import random
+import sys
 
 from twisted.internet import reactor, utils
 from twisted.python import log
 
 from slugathon.net import config
-
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"

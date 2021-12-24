@@ -4,7 +4,6 @@ from typing import Dict, Optional, Set
 
 from slugathon.game import BattleMap
 
-
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

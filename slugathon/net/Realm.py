@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Any, Callable, Tuple, Type, TYPE_CHECKING
+
+from typing import TYPE_CHECKING, Any, Callable, Tuple, Type
 
 from twisted.cred import portal
 from twisted.spread.pb import IPerspective

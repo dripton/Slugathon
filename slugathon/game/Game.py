@@ -1,32 +1,32 @@
 from __future__ import annotations
-from sys import maxsize
+
+import logging
 import os
 import time
 from collections import defaultdict
-import logging
+from sys import maxsize
 from typing import Any, DefaultDict, List, Optional, Set, Tuple, Union
 
 from twisted.internet import reactor
 from zope.interface import implementer
 
+from slugathon.data import playercolordata
 from slugathon.game import (
-    Player,
-    MasterBoard,
     Action,
-    Phase,
+    BattleMap,
     Caretaker,
     Creature,
     History,
-    BattleMap,
     Legion,
+    MasterBoard,
     MasterHex,
+    Phase,
+    Player,
 )
-from slugathon.data import playercolordata
-from slugathon.util.Observed import IObserved, IObserver, Observed
-from slugathon.util import prefs, Dice
-from slugathon.util.bag import bag
 from slugathon.net import config
-
+from slugathon.util import Dice, prefs
+from slugathon.util.bag import bag
+from slugathon.util.Observed import IObserved, IObserver, Observed
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"

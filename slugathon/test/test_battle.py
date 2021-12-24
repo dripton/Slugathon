@@ -1,8 +1,7 @@
 import time
 from sys import maxsize
 
-from slugathon.game import Game, Phase, Creature, Legion
-
+from slugathon.game import Creature, Game, Legion, Phase
 
 __copyright__ = "Copyright (c) 2008-2021 David Ripton"
 __license__ = "GNU GPL v2"

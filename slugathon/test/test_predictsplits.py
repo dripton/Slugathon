@@ -1,11 +1,10 @@
-from slugathon.data.creaturedata import starting_creature_names
 from slugathon.ai.predictsplits import (
-    PredictSplits,
+    AllPredictSplits,
     CreatureInfo,
     Node,
-    AllPredictSplits,
+    PredictSplits,
 )
-
+from slugathon.data.creaturedata import starting_creature_names
 
 __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"

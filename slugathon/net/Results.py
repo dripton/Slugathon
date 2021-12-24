@@ -1,18 +1,18 @@
 from __future__ import annotations
+
+import logging
+import math
 import os
 import sqlite3
-import math
 from collections import namedtuple
-import logging
 from typing import Dict, List, Optional, Set, Tuple
 
 import trueskill
 
-from slugathon.game import Game
-from slugathon.util import prefs, Dice
 from slugathon.ai import BotParams, CleverBot
+from slugathon.game import Game
 from slugathon.net import config
-
+from slugathon.util import Dice, prefs
 
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"

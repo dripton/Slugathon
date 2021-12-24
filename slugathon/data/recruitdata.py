@@ -1,6 +1,5 @@
 from typing import Dict, List, Tuple, Union
 
-
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

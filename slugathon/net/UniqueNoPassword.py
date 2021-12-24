@@ -6,7 +6,6 @@ from twisted.internet import defer
 
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
 
-
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

@@ -5,7 +5,6 @@ from zope.interface import implementer
 from slugathon.game import Action
 from slugathon.util.Observed import IObserved, IObserver, Observed
 
-
 __copyright__ = "Copyright (c) 2011-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

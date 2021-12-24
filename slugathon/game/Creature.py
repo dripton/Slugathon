@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from collections import defaultdict
 import logging
+from collections import defaultdict
 from typing import Any, DefaultDict, Dict, List, Optional, Set, Tuple
 
-from slugathon.data import creaturedata, recruitdata, battlemapdata
+from slugathon.data import battlemapdata, creaturedata, recruitdata
 from slugathon.game import Legion, Phase
-
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"

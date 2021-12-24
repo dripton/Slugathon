@@ -2,7 +2,6 @@ import os
 
 from slugathon.util import fileutils
 
-
 __copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
 

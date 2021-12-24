@@ -1,6 +1,5 @@
-from slugathon.gui import AcquireAngels
 from slugathon.game import Creature
-
+from slugathon.gui import AcquireAngels
 
 __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"

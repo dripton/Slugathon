@@ -1,6 +1,5 @@
 from slugathon.ai import BotParams
 
-
 __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 

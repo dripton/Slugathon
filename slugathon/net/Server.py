@@ -1,30 +1,31 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
-import os
-import time
+
 import argparse
-import tempfile
-import sys
-import random
 import hashlib
 import logging
+import os
+import random
+import sys
+import tempfile
+import time
 from logging.handlers import RotatingFileHandler
-from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 
-from twisted.spread import pb
 from twisted.cred.portal import Portal
-from twisted.internet import reactor, protocol, defer
-from twisted.python import log, failure
+from twisted.internet import defer, protocol, reactor
+from twisted.python import failure, log
+from twisted.spread import pb
 from zope.interface import implementer
 
-from slugathon.net import Realm, config, Results
-from slugathon.game import Game, Action, Phase
-from slugathon.util.Observed import IObserved, IObserver, Observed
+from slugathon.game import Action, Game, Phase
+from slugathon.net import Realm, Results, config
 from slugathon.net.UniqueFilePasswordDB import UniqueFilePasswordDB
 from slugathon.net.UniqueNoPassword import UniqueNoPassword
 from slugathon.util import prefs
 from slugathon.util.bag import bag
+from slugathon.util.Observed import IObserved, IObserver, Observed
 
 if TYPE_CHECKING:
     from slugathon.net import User

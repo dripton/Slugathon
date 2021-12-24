@@ -1,7 +1,6 @@
 import time
 
-from slugathon.game import Player, Game, Phase
-
+from slugathon.game import Game, Phase, Player
 
 __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"

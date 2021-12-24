@@ -1,10 +1,9 @@
-import shutil
 import getpass
 import os
+import shutil
 
-from slugathon.util import prefs, Dice
 from slugathon.net import config
-
+from slugathon.util import Dice, prefs
 
 __copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"

@@ -1,10 +1,10 @@
 from __future__ import annotations
+
 import copy
 import itertools
 from typing import List, Optional, Tuple
 
 from slugathon.game.Creature import Creature
-
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"

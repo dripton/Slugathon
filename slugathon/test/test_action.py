@@ -1,6 +1,5 @@
 from slugathon.game import Action
 
-
 __copyright__ = "Copyright (c) 2008-2012 David Ripton"
 __license__ = "GNU GPL v2"
 

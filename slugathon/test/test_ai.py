@@ -2,8 +2,7 @@ import time
 from typing import List, Set
 
 from slugathon.ai import CleverBot
-from slugathon.game import Creature, Phase, Game
-
+from slugathon.game import Creature, Game, Phase
 
 __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"

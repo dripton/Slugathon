@@ -1,13 +1,13 @@
 from __future__ import annotations
-from functools import cmp_to_key
+
 import logging
+from functools import cmp_to_key
 from typing import Any, Generator, List, Optional, Set, Tuple
 
+from slugathon.data import markerdata, playercolordata, recruitdata
+from slugathon.game import Action, Caretaker, Creature, Player
 from slugathon.util.bag import bag
-from slugathon.data import recruitdata, markerdata, playercolordata
-from slugathon.game import Caretaker, Creature, Action, Player
 from slugathon.util.Observed import Observed
-
 
 __copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"

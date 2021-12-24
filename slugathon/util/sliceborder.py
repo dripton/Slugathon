@@ -6,7 +6,6 @@ from typing import List, Set, Tuple
 
 import cairo
 
-
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

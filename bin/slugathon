@@ -13,6 +13,7 @@ from slugathon.ai.AIClient import add_arguments as aiclient_add_arguments
 from slugathon.net.Server import add_arguments as server_add_arguments
 
 
+
 __copyright__ = "Copyright (c) 2011-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
@@ -43,13 +44,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.subparser_name == "client":
         from slugathon.gui import Connect
-
         Connect.main()
     elif args.subparser_name == "server":
         from slugathon.net import Server
-
         Server.main()
     elif args.subparser_name == "ai":
         from slugathon.ai import AIClient
-
         AIClient.main()

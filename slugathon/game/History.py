@@ -1,11 +1,10 @@
 import logging
-from typing import Any, IO, List, Optional
+from typing import IO, Any, List, Optional
 
 from zope.interface import implementer
 
-from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action
-
+from slugathon.util.Observed import IObserved, IObserver
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"

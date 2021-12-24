@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Callable, Optional
 
-from twisted.cred.error import LoginDenied
 from twisted.cred.checkers import FilePasswordDB
 from twisted.cred.credentials import IUsernameHashedPassword
+from twisted.cred.error import LoginDenied
 from twisted.internet import defer
 
 from slugathon.net import Server

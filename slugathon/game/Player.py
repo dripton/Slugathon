@@ -1,15 +1,15 @@
 from __future__ import annotations
+
 import logging
 from typing import Dict, List, Optional, Set
 
 from twisted.internet import reactor
 
-from slugathon.util.Observed import Observed
+from slugathon.data import creaturedata, markerdata, playercolordata
 from slugathon.game import Action, Creature, Game, Legion, Phase
-from slugathon.data import playercolordata, creaturedata, markerdata
-from slugathon.util.bag import bag
 from slugathon.util import Dice
-
+from slugathon.util.bag import bag
+from slugathon.util.Observed import Observed
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"

@@ -1,9 +1,8 @@
-import tempfile
-import os
 import io as StringIO
+import os
+import tempfile
 
-from slugathon.game import History, Action
-
+from slugathon.game import Action, History
 
 __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"

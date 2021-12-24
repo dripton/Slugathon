@@ -2,30 +2,30 @@
 
 
 from __future__ import annotations
+
 import argparse
-import random
-import tempfile
-import os
 import logging
+import os
+import random
 import re
 import sys
+import tempfile
 from typing import Any, List, NoReturn, Optional, Tuple
 
-from twisted.spread import pb
 from twisted.cred import credentials
-from twisted.internet import reactor, defer
+from twisted.internet import defer, reactor
 from twisted.internet.error import ReactorNotRunning
 from twisted.internet.task import LoopingCall
-from twisted.spread.pb import PBConnectionLost, DeadReferenceError
 from twisted.python import log
+from twisted.spread import pb
+from twisted.spread.pb import DeadReferenceError, PBConnectionLost
 from zope.interface import implementer
 
-from slugathon.net import config, Results, User
-from slugathon.util.Observed import IObserved, IObserver, Observed
-from slugathon.game import Action, Game, Phase, Creature
-from slugathon.ai import CleverBot, predictsplits, BotParams
+from slugathon.ai import BotParams, CleverBot, predictsplits
 from slugathon.data.creaturedata import starting_creature_names
-
+from slugathon.game import Action, Creature, Game, Phase
+from slugathon.net import Results, User, config
+from slugathon.util.Observed import IObserved, IObserver, Observed
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"

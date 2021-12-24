@@ -4,7 +4,6 @@ from typing import List, Optional, Tuple, Union
 
 from slugathon.game import MasterBoard
 
-
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

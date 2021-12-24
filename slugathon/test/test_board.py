@@ -1,6 +1,5 @@
-from slugathon.util import guiutils
 from slugathon.game import MasterBoard
-
+from slugathon.util import guiutils
 
 __copyright__ = "Copyright (c) 2003-2011 David Ripton"
 __license__ = "GNU GPL v2"

@@ -1,19 +1,19 @@
 from __future__ import annotations
+
 import logging
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-from twisted.spread.pb import Avatar, PBConnectionLost
 from twisted.internet.error import ConnectionLost
 from twisted.internet.task import LoopingCall
 from twisted.python import log
 from twisted.python.failure import Failure
+from twisted.spread.pb import Avatar, PBConnectionLost
 from zope.interface import implementer
 
-from slugathon.util.bag import bag
-from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action
 from slugathon.net import Server
-
+from slugathon.util.bag import bag
+from slugathon.util.Observed import IObserved, IObserver
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"

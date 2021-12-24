@@ -1,9 +1,8 @@
-import time
 import logging
+import time
 
-from slugathon.game import Legion, Player, Creature, Game, Caretaker
 from slugathon.data import creaturedata
-
+from slugathon.game import Caretaker, Creature, Game, Legion, Player
 
 __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"

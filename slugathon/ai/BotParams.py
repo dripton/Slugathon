@@ -1,9 +1,9 @@
 from __future__ import annotations
-from collections import namedtuple
+
 import random
 import re
+from collections import namedtuple
 from typing import Optional
-
 
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"

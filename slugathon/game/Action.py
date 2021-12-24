@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 import ast
 from typing import Any, List, Optional, Tuple
 
 from twisted.spread import pb
 
 from slugathon.util.bag import bag
-
 
 __copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"

@@ -1,9 +1,8 @@
-import os
 import getpass
+import os
 from typing import Dict, List, Optional, Tuple
 
 from slugathon.net import config
-
 
 __copyright__ = "Copyright (c) 2008-2012 David Ripton"
 __license__ = "GNU GPL v2"

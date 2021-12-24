@@ -1,7 +1,6 @@
 import random
 from typing import Any, List, Tuple
 
-
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

@@ -6,3 +6,4 @@ pycodestyle
 black
 mypy
 mypy-zope
+isort

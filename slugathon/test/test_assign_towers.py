@@ -3,7 +3,6 @@ from typing import Dict
 
 from slugathon.game import Game
 
-
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
 

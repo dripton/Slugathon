@@ -1,10 +1,10 @@
-import random
+import collections
 import copy
+import itertools
+import logging
+import random
 import time
 from sys import maxsize
-import itertools
-import collections
-import logging
 from typing import (
     Any,
     DefaultDict,
@@ -20,11 +20,10 @@ from typing import (
 from twisted.python import log
 from zope.interface import implementer
 
-from slugathon.ai.Bot import Bot
 from slugathon.ai import BotParams
-from slugathon.game import Game, Creature, Phase, Legion, Player
+from slugathon.ai.Bot import Bot
+from slugathon.game import Creature, Game, Legion, Phase, Player
 from slugathon.net import User
-
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
 __license__ = "GNU GPL v2"

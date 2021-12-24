@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"

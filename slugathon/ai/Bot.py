@@ -2,7 +2,6 @@ from zope.interface import Interface
 
 from slugathon.game import Game, Player
 
-
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
