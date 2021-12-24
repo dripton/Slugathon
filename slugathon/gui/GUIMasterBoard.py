@@ -1490,7 +1490,7 @@ class GUIMasterBoard(Gtk.EventBox):
         self.proposals.clear()
 
     def failure(self, arg: Any) -> None:
-        log.err(arg)
+        log.err(arg)  # type: ignore
 
     def update(
         self,

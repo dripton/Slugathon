@@ -62,7 +62,7 @@ class LoadGame(Gtk.FileChooserDialog):
         self.destroy()
 
     def failure(self, error: Any) -> None:
-        log.err(error)
+        log.err(error)  # type: ignore
 
 
 if __name__ == "__main__":

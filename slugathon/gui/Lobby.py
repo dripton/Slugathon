@@ -339,7 +339,7 @@ class Lobby(Gtk.EventBox):
             del self.old_game_store[length]
 
     def failure(self, error: Any) -> None:
-        log.err(error)
+        log.err(error)  # type: ignore
         reactor.stop()  # type: ignore
 
     def cb_keypress(self, entry: Gtk.Entry, event: Any) -> None:

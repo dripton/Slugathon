@@ -221,13 +221,13 @@ class Connect(Gtk.Window):
             # TODO Find the absolute path.
             def1 = utils.getProcessValue(
                 "slugathon.exe", ["server", "-n"], env=os.environ
-            )
+            )  # type: ignore
         else:
             def1 = utils.getProcessValue(
                 sys.executable,
                 ["-m", "slugathon.net.Server", "-n"],
                 env=os.environ,
-            )
+            )  # type: ignore
         def1.addCallback(self.server_exited)
         def1.addErrback(self.server_failed)
 

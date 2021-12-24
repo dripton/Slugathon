@@ -152,7 +152,7 @@ class NewGame(Gtk.Dialog):
         self.destroy()
 
     def failure(self, error: Any) -> None:
-        log.err(error)
+        log.err(error)  # type: ignore
 
     def got_information(self, information: Optional[str]) -> None:
         if information:

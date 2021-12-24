@@ -1484,4 +1484,4 @@ class CleverBot(object):
         def1.addErrback(self.failure)
 
     def failure(self, error: Any) -> None:
-        log.err(error)
+        log.err(error)  # type: ignore

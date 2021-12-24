@@ -623,7 +623,7 @@ class Server(Observed):
         game_name: str,
         markerid: str,
         enemy_markerid: str,
-        hexlabel: str,
+        hexlabel: int,
     ) -> None:
         """Concede an engagement."""
         game = self.name_to_game(game_name)

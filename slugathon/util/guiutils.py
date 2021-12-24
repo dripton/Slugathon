@@ -1,6 +1,6 @@
 import sys
 import math
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import cairo
 from twisted.internet import reactor
@@ -60,10 +60,12 @@ def get_semicircle_points(
     return list(zip(xlist, ylist))
 
 
-def scale_polygon(vertexes, ratio: float):
+def scale_polygon(
+    vertexes: List[Tuple[float, float]], ratio: float
+) -> List[Tuple[float, float]]:
     """Return a rescaled version of the polygon, with the same center."""
-    totalx = 0
-    totaly = 0
+    totalx = 0.0
+    totaly = 0.0
     for (px, py) in vertexes:
         totalx += px
         totaly += py
@@ -87,7 +89,9 @@ def point_in_square(
     )
 
 
-def point_in_polygon(point, vertexes) -> bool:
+def point_in_polygon(
+    point: Tuple[float, float], vertexes: List[Tuple[float, float]]
+) -> bool:
     """Return True iff the point (a 2-tuple) is in the polygon specified
     by vertexes (a sequence of 2-tuples).
 
@@ -120,7 +124,7 @@ def roundpoint(point: Tuple[float, float]) -> Tuple[float, float]:
     return (round(point[0]), round(point[1]))
 
 
-def exit(*unused):
+def exit(*unused: Any) -> None:
     """Quit the program with return status 0.
 
     Used because sys.exit takes an argument, but it's not always

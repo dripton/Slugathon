@@ -36,7 +36,7 @@ class Client(pb.Referenceable, Observed):
         self.password = password
         self.host = host
         self.port = port
-        self.factory = pb.PBClientFactory()
+        self.factory = pb.PBClientFactory()  # type: ignore
         self.factory.unsafeTracebacks = True
         self.user = None  # type: Optional[User.User]
         self.playernames = set()  # type: Set[str]
@@ -59,9 +59,9 @@ class Client(pb.Referenceable, Observed):
     def connect(self) -> defer.Deferred:
         user_pass = credentials.UsernamePassword(
             bytes(self.playername, "utf-8"), bytes(self.password, "utf-8")
-        )
+        )  # type: ignore
         reactor.connectTCP(self.host, self.port, self.factory)  # type: ignore
-        def1 = self.factory.login(user_pass, self)
+        def1 = self.factory.login(user_pass, self)  # type: ignore
         def1.addCallback(self.connected)
         # No errback here; let Connect's errback handle failed login.
         return def1
@@ -185,7 +185,7 @@ class Client(pb.Referenceable, Observed):
                         return
 
     def failure(self, error: Any) -> None:
-        log.err(error)
+        log.err(error)  # type: ignore
 
     def remote_update(self, action: Action.Action, names: List[str]) -> None:
         """Near-IObserver on the remote User, except observed is

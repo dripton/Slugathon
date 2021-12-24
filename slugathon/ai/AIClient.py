@@ -165,7 +165,7 @@ class AIClient(pb.Referenceable, Observed):
             self.exit_unconditionally(1)
 
     def connection_failed(self, arg: Any) -> None:
-        log.err(arg)
+        log.err(arg)  # type: ignore
         self.exit_unconditionally(1)
 
     def got_games(
@@ -300,7 +300,7 @@ class AIClient(pb.Referenceable, Observed):
                     creature.legion = legion
 
     def failure(self, error: Any) -> None:
-        log.err(error)
+        log.err(error)  # type: ignore
         if error.check(PBConnectionLost, DeadReferenceError):
             self.exit_unconditionally(1)
 

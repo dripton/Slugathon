@@ -222,7 +222,7 @@ class WaitingForPlayers(Gtk.Dialog):
         )
 
     def failure(self, arg: Any) -> None:
-        log.err(arg)
+        log.err(arg)  # type: ignore
 
     def shutdown(self) -> None:
         self.game.remove_observer(self)

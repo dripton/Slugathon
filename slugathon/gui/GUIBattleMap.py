@@ -1344,7 +1344,7 @@ class GUIBattleMap(Gtk.EventBox):
             def1.addErrback(self.failure)
 
     def failure(self, arg: Any) -> None:
-        log.err(arg)
+        log.err(arg)  # type: ignore
 
 
 if __name__ == "__main__":

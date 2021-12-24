@@ -637,7 +637,7 @@ class Player(Observed):
         """Die and give half points to scoring_player, except for legions
         which are engaged with someone else.
         """
-        logging.info(f"Player.die {self} {scoring_player} {check_for_victory}")
+        logging.info(f"{self} {scoring_player=} {check_for_victory=}")
         # First reveal all this player's legions.
         for legion in self.legions:
             if legion.all_known and legion not in self.game.battle_legions:
