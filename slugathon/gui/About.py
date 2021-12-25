@@ -7,10 +7,10 @@ from typing import Any
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject
+from gi.repository import GObject, Gtk
 
 from slugathon.gui import icon
-from slugathon.util import guiutils, fileutils
+from slugathon.util import fileutils, guiutils
 
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"

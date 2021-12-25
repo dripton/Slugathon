@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
+
+import logging
 import math
 from sys import maxsize
-import logging
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple, Union
 
+import cairo
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
@@ -17,40 +21,38 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-from gi.repository import Gtk, GObject, Gdk
-import cairo
 from zope.interface import implementer
 
+from slugathon.game import Action, Creature, Game, Legion, Phase
 from slugathon.gui import (
-    GUIMasterHex,
-    Marker,
-    PickMarker,
-    SplitLegion,
     About,
-    Die,
-    PickRecruit,
-    Flee,
-    Inspector,
-    Chit,
-    Negotiate,
-    Proposal,
     AcquireAngels,
-    GUIBattleMap,
-    SummonAngel,
-    PickEntrySide,
-    PickMoveType,
-    PickTeleportingLord,
-    InfoDialog,
-    StatusScreen,
-    GUICaretaker,
+    Chit,
     ConfirmDialog,
+    Die,
     EventLog,
+    Flee,
+    GUIBattleMap,
+    GUICaretaker,
+    GUIMasterHex,
+    InfoDialog,
+    Inspector,
+    Marker,
+    Negotiate,
+    PickEntrySide,
+    PickMarker,
+    PickMoveType,
+    PickRecruit,
+    PickTeleportingLord,
+    Proposal,
+    SplitLegion,
+    StatusScreen,
+    SummonAngel,
 )
 from slugathon.net import User
 from slugathon.util import guiutils, prefs
-from slugathon.util.Observed import IObserved, IObserver
-from slugathon.game import Action, Phase, Game, Creature, Legion
 from slugathon.util.bag import bag
+from slugathon.util.Observed import IObserved, IObserver
 
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"

@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
-import math
-from sys import maxsize, argv
+
 import logging
+import math
+from sys import argv, maxsize
 from typing import Any, List, Optional, Set, Tuple
 
+import cairo
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
+from gi.repository import Gdk, GdkPixbuf, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
@@ -17,38 +21,36 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
-import cairo
 from zope.interface import implementer
 
-from slugathon.util.Observed import IObserved, IObserver
-from slugathon.gui import (
-    GUIBattleHex,
-    Chit,
-    PickRecruit,
-    SummonAngel,
-    PickCarry,
-    PickStrikePenalty,
-    InfoDialog,
-    ConfirmDialog,
-    Marker,
-    TurnTrack,
-    BattleDice,
-    EventLog,
-    Graveyard,
-    About,
-)
-from slugathon.util import guiutils, prefs
 from slugathon.game import (
-    Phase,
     Action,
     BattleMap,
-    Game,
-    MasterHex,
     Creature,
+    Game,
     Legion,
+    MasterHex,
+    Phase,
+)
+from slugathon.gui import (
+    About,
+    BattleDice,
+    Chit,
+    ConfirmDialog,
+    EventLog,
+    Graveyard,
+    GUIBattleHex,
+    InfoDialog,
+    Marker,
+    PickCarry,
+    PickRecruit,
+    PickStrikePenalty,
+    SummonAngel,
+    TurnTrack,
 )
 from slugathon.net import User
+from slugathon.util import guiutils, prefs
+from slugathon.util.Observed import IObserved, IObserver
 
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"

@@ -5,23 +5,24 @@ from typing import Any, Optional
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
     gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
-from gi.repository import Gtk, GObject, Gdk
 from twisted.internet import reactor
 from twisted.python import log
 
 from slugathon.gui import (
-    icon,
     ConfirmDialog,
-    Lobby,
     GUIBattleMap,
     GUIMasterBoard,
+    Lobby,
+    icon,
 )
 from slugathon.util import prefs
 

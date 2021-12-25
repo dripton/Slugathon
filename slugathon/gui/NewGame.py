@@ -6,12 +6,12 @@ from typing import Any, Optional
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject
+from gi.repository import GObject, Gtk
 from twisted.python import log
 
-from slugathon.gui import icon, InfoDialog
+from slugathon.gui import InfoDialog, icon
+from slugathon.net import User, config
 from slugathon.util.NullUser import NullUser
-from slugathon.net import config, User
 
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"

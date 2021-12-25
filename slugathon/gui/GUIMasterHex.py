@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import math
 from sys import maxsize
 from typing import List, Optional, Tuple, Union
@@ -11,7 +12,8 @@ from gi.repository import Pango, PangoCairo
 
 from slugathon.game import MasterHex
 from slugathon.gui import GUIMasterBoard
-from slugathon.util import guiutils, colors, fileutils
+from slugathon.util import colors, fileutils, guiutils
+
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"

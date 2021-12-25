@@ -5,13 +5,14 @@ from typing import List, Optional, Union
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
+from gi.repository import Gdk, GObject, Gtk
 from zope.interface import implementer
 
-from slugathon.util.Observed import IObserved, IObserver
-from slugathon.game import Action, Phase, Game
+from slugathon.game import Action, Game, Phase
 from slugathon.util import colors
+from slugathon.util.Observed import IObserved, IObserver
 
 
 __copyright__ = "Copyright (c) 2006-2021 David Ripton"

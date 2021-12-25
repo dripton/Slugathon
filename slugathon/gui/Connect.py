@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
-import tempfile
-import sys
-import time
 import logging
+import os
+import sys
+import tempfile
+import time
 from typing import Any, Set
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 gtk3reactor.install()  # type: ignore
-from twisted.internet import reactor, utils, defer
+from twisted.internet import defer, reactor, utils
 from twisted.python import log
-from gi.repository import GObject, Gtk, Gdk
 
 from slugathon.gui import Client, icon
 from slugathon.net import User

@@ -2,25 +2,27 @@
 
 
 from __future__ import annotations
+
+import logging
 import math
 from sys import maxsize
-import logging
 from typing import Any, Optional, Set, Tuple
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
     gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
-from twisted.internet import reactor, defer
-from gi.repository import Gtk, GObject, Gdk
+from twisted.internet import defer, reactor
 
 from slugathon.game import BattleMap, MasterBoard, MasterHex
-from slugathon.gui import icon, GUIBattleHex
+from slugathon.gui import GUIBattleHex, icon
 from slugathon.util import guiutils, prefs
 
 

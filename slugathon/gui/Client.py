@@ -1,18 +1,22 @@
 import logging
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from twisted.spread import pb
 from twisted.cred import credentials
 from twisted.internet import defer, reactor
 from twisted.python import log
+from twisted.spread import pb
 from zope.interface import implementer
 
-from slugathon.net import config, User
-from slugathon.util.Observed import IObserved, IObserver, Observed
 from slugathon.game import Action, Game
-from slugathon.gui import Lobby, PickColor, PickMarker, GUIMasterBoard
-from slugathon.gui import MainWindow
-
+from slugathon.gui import (
+    GUIMasterBoard,
+    Lobby,
+    MainWindow,
+    PickColor,
+    PickMarker,
+)
+from slugathon.net import User, config
+from slugathon.util.Observed import IObserved, IObserver, Observed
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"
 __license__ = "GNU GPL v2"

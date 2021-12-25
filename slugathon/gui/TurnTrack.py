@@ -3,17 +3,17 @@
 import time
 from typing import Any, List, Optional
 
+import cairo
 import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("PangoCairo", "1.0")
-import cairo
-from gi.repository import Gtk, Pango, PangoCairo, GObject
+from gi.repository import GObject, Gtk, Pango, PangoCairo
 from zope.interface import implementer
 
+from slugathon.game import Action, Game, Legion
 from slugathon.gui import Marker
 from slugathon.util.Observed import IObserved, IObserver
-from slugathon.game import Action, Game, Legion
 
 
 __copyright__ = "Copyright (c) 2010-2021 David Ripton"

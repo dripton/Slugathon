@@ -5,11 +5,12 @@ from typing import Any
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
+from gi.repository import Gdk, GObject, Gtk
 
-from slugathon.gui import Chit, Marker
 from slugathon.game import Creature, Game, Legion
+from slugathon.gui import Chit, Marker
 
 
 __copyright__ = "Copyright (c) 2012-2021 David Ripton"

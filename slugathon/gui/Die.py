@@ -4,11 +4,12 @@
 import os
 import tempfile
 
+import cairo
 import gi
 
+gi.require_version("GdkPixbuf", "2.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GdkPixbuf
-import cairo
+from gi.repository import GdkPixbuf, Gtk
 
 from slugathon.util import fileutils
 

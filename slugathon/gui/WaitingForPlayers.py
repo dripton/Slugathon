@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 import gi
 
 gi.require_version("Gtk", "3.0")
+from gi.repository import GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
@@ -14,11 +15,9 @@ except AssertionError:
     pass
 from twisted.internet import reactor
 from twisted.python import log
-from gi.repository import Gtk, GObject
 from zope.interface import implementer
 
 from slugathon.game import Action, Game
-
 from slugathon.gui import icon
 from slugathon.net import User
 from slugathon.util.NullUser import NullUser

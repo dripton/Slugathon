@@ -6,11 +6,11 @@ from typing import Optional
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject
+from gi.repository import GObject, Gtk
 
-from slugathon.gui import Chit, Marker
 from slugathon.data import recruitdata
 from slugathon.game import Creature, Legion
+from slugathon.gui import Chit, Marker
 
 
 __copyright__ = "Copyright (c) 2006-2021 David Ripton"

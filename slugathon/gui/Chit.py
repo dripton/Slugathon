@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 
 
-import tempfile
-import os
 import math
+import os
+import tempfile
 from typing import Callable, Optional, Tuple
 
+import cairo
 import gi
 
+gi.require_version("GdkPixbuf", "2.0")
 gi.require_version("Gtk", "3.0")
 gi.require_foreign("cairo")
 gi.require_version("PangoCairo", "1.0")
-import cairo
-from gi.repository import Gtk, Pango, PangoCairo, GdkPixbuf
+from gi.repository import GdkPixbuf, Gtk, Pango, PangoCairo
 
 from slugathon.game import Creature
-from slugathon.util import guiutils, colors, fileutils
+from slugathon.util import colors, fileutils, guiutils
 
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"

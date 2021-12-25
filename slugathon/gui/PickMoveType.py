@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
+
 import logging
 from typing import Optional, Tuple
 
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject
+from gi.repository import GObject, Gtk
 from twisted.internet import defer
 
-from slugathon.game import Creature, Legion, Player, Game
+from slugathon.game import Creature, Game, Legion, Player
 from slugathon.gui import Chit, Marker, icon
 from slugathon.util import guiutils
 

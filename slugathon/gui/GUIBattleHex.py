@@ -1,6 +1,7 @@
 from __future__ import annotations
-import os
+
 import math
+import os
 from sys import maxsize
 from typing import List, Optional, Tuple
 
@@ -12,7 +13,7 @@ from gi.repository import Pango, PangoCairo
 
 from slugathon.game import BattleHex
 from slugathon.gui import GUIBattleMap
-from slugathon.util import guiutils, colors, sliceborder, fileutils
+from slugathon.util import colors, fileutils, guiutils, sliceborder
 
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"

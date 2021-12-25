@@ -7,17 +7,18 @@ from typing import Any, Dict, List, Optional, Set, Union
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import reactor
 from twisted.python import log
 from zope.interface import implementer
 
-from slugathon.gui import NewGame, LoadGame, WaitingForPlayers
-from slugathon.util.Observed import IObserved, IObserver
 from slugathon.game import Action, Game
+from slugathon.gui import LoadGame, NewGame, WaitingForPlayers
 from slugathon.net import User
 from slugathon.util import guiutils
+from slugathon.util.Observed import IObserved, IObserver
 
 
 __copyright__ = "Copyright (c) 2003-2021 David Ripton"

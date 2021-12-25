@@ -5,14 +5,13 @@ from typing import List, Optional
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
-from gi.repository import GObject
+from gi.repository import GObject, Gtk
 from zope.interface import implementer
 
-from slugathon.util.Observed import IObserved, IObserver
-from slugathon.gui import Chit
-from slugathon.game import Creature, Action, Game, Player
 from slugathon.data import creaturedata
+from slugathon.game import Action, Creature, Game, Player
+from slugathon.gui import Chit
+from slugathon.util.Observed import IObserved, IObserver
 
 
 __copyright__ = "Copyright (c) 2009-2021 David Ripton"

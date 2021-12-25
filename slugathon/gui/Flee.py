@@ -2,24 +2,25 @@
 
 
 from __future__ import annotations
+
 import logging
 from typing import Any, Tuple
 
 import gi
 
 gi.require_version("Gtk", "3.0")
+from gi.repository import GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
     gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
-from twisted.internet import defer, reactor
+from twisted.internet import defer, gtk3reactor, reactor
 from twisted.python import log
-from gi.repository import Gtk, GObject
 
 from slugathon.game import Legion
-from slugathon.gui import Chit, Marker, icon, ConfirmDialog
+from slugathon.gui import Chit, ConfirmDialog, Marker, icon
 
 
 __copyright__ = "Copyright (c) 2006-2021 David Ripton"

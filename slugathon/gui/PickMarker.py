@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
+
 import collections
 import logging
 from typing import Any, DefaultDict, List, Tuple
 
 import gi
 
+gi.require_version("GdkPixbuf", "2.0")
 gi.require_version("Gtk", "3.0")
+from gi.repository import GdkPixbuf, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
     gtk3reactor.install()  # type: ignore
 except AssertionError:
     pass
-from twisted.internet import reactor, defer
-from gi.repository import Gtk, GObject, GdkPixbuf
+from twisted.internet import defer, reactor
 
 from slugathon.gui import icon
 from slugathon.util import fileutils

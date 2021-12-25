@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
+
 from typing import Any, Optional, Tuple
 
 import gi
 
 gi.require_version("Gtk", "3.0")
+from gi.repository import GObject, Gtk
 from twisted.internet import defer
-from gi.repository import Gtk, GObject
 
-from slugathon.gui import Chit, Marker, icon
 from slugathon.game import Legion
+from slugathon.gui import Chit, Marker, icon
 
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
+
 import logging
 from typing import Any, List, Tuple
 
 import gi
 
 gi.require_version("Gtk", "3.0")
+from gi.repository import GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
@@ -14,7 +16,6 @@ try:
 except AssertionError:
     pass
 from twisted.internet import defer, reactor
-from gi.repository import Gtk, GObject
 
 from slugathon.game import Legion
 from slugathon.gui import Chit, Marker, icon
