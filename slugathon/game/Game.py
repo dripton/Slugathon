@@ -132,13 +132,9 @@ class Game(Observed):
         self.defender_legion = defender_legion
         assert defender_legion.hexlabel == attacker_legion.hexlabel
         self.battle_masterhex = self.board.hexes[attacker_legion.hexlabel]
-        if self.battle_masterhex is None:
-            logging.warning(f"self.battle_masterhex=")
-            return
+        assert self.battle_masterhex is not None
         self.battle_entry_side = attacker_legion.entry_side
-        if self.battle_entry_side is None:
-            logging.warning(f"{self.battle_entry_side=}")
-            return
+        assert self.battle_entry_side is not None
         self.battlemap = BattleMap.BattleMap(
             self.battle_masterhex.terrain, self.battle_entry_side
         )
