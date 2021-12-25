@@ -44,7 +44,7 @@ class ConfirmDialog(Gtk.MessageDialog):
         message: str,
         def1: defer.Deferred,
     ):
-        GObject.GObject.__init__(
+        Gtk.MessageDialog.__init__(
             self, parent=parent, buttons=Gtk.ButtonsType.YES_NO
         )
         self.deferred = def1
@@ -64,8 +64,9 @@ class ConfirmDialog(Gtk.MessageDialog):
 
 
 if __name__ == "__main__":
+    window = Gtk.Window()
     confirm_dialog, def1 = new(
-        parent=None, title="Info", message="Are we having fun yet?"
+        parent=window, title="Info", message="Are we having fun yet?"
     )
 
     def print_arg(arg: Any) -> None:

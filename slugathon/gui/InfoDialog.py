@@ -15,7 +15,7 @@ __license__ = "GNU GPL v2"
 
 class InfoDialog(Gtk.MessageDialog):
     def __init__(self, parent: Gtk.Window, title: str, message: str):
-        GObject.GObject.__init__(
+        Gtk.MessageDialog.__init__(
             self, parent=parent, buttons=Gtk.ButtonsType.OK
         )
         self.set_title(title)
@@ -34,8 +34,10 @@ class InfoDialog(Gtk.MessageDialog):
 if __name__ == "__main__":
     from slugathon.util import guiutils
 
+    window = Gtk.Window()
+
     info_dialog = InfoDialog(
-        parent=None, title="Info", message="Look out behind you!"
+        parent=window, title="Info", message="Look out behind you!"
     )
     info_dialog.connect("destroy", guiutils.exit)
     Gtk.main()
