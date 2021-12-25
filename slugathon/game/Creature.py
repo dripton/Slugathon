@@ -305,7 +305,7 @@ class Creature(object):
                     and hex2.borders[(hexside + 3) % 6] != "Cliff"
                 ):
                     enemies.add(hexlabel_to_enemy[hex2.label])
-        logging.info(f"{enemies=}")
+        logging.debug(f"{enemies=}")
         return enemies
 
     @property

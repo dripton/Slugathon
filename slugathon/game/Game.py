@@ -1118,13 +1118,12 @@ class Game(Observed):
     ) -> None:
         """Called from update."""
         logging.info(
-            f"{playername} {attacker_markerid} {defender_markerid} "
-            f"{self.battle_turn}"
+            f"{playername=} {attacker_markerid=} {defender_markerid=} "
+            f"{self.battle_turn=}"
         )
         attacker_legion = self.find_legion(attacker_markerid)
         defender_legion = self.find_legion(defender_markerid)
-        logging.info(f"attacker {attacker_legion}")
-        logging.info(f"defender {defender_legion}")
+        logging.info(f"{attacker_legion=} {defender_legion=}")
         if (
             not attacker_legion
             or not defender_legion

@@ -685,7 +685,7 @@ class CleverBot(object):
             best_moves.sort(
                 key=lambda move: (move[0], move[1], move[2], str(move[3]))
             )
-            logging.debug(f"best moves {best_moves}")
+            logging.debug(f"{best_moves=}")
             if not best_moves:
                 logging.debug("dumping all legions")
                 for legion in game.all_legions():
