@@ -150,6 +150,7 @@ class NewGame(Gtk.Dialog):
             self.destroy()
 
     def cancel(self, widget: Gtk.Widget, event: Any) -> None:
+        logging.debug(f"{event=}")
         self.destroy()
 
     def failure(self, error: Any) -> None:

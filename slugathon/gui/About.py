@@ -2,6 +2,7 @@
 
 
 import os
+import logging
 from typing import Any
 
 import gi
@@ -72,6 +73,7 @@ class About(Gtk.AboutDialog):
         self.show()
 
     def cb_response(self, widget: Gtk.Widget, event: Any) -> None:
+        logging.debug(f"{event=}")
         self.destroy()
 
 

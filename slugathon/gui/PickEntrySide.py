@@ -309,6 +309,7 @@ class PickEntrySide(Gtk.Dialog):
 
     def callback_with_none(self, *args: Any) -> None:
         """Called if the window is destroyed."""
+        logging.debug(f"{args=}")
         if not self.deferred.called:
             self.deferred.callback(None)
 

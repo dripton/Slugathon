@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Optional
 
 import gi
@@ -174,6 +175,7 @@ class MainWindow(Gtk.Window):
     def cb_switch_page(
         self, widget: Gtk.Widget, dummy: Gtk.EventBox, page_num: int
     ) -> None:
+        logging.debug(f"{dummy=}")
         page_widget = widget.get_nth_page(page_num)
         if hasattr(page_widget, "ui") and hasattr(
             page_widget.ui, "get_accel_group"

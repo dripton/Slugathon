@@ -359,6 +359,7 @@ class GUIMasterBoard(Gtk.EventBox):
             self.vbox.pack_start(self.event_log, True, True, 0)
 
     def cb_delete_event(self, widget: Gtk.Widget, event: Any) -> bool:
+        logging.debug(f"{event=}")
         if self.game is None or self.game.over:
             self.cb_destroy(True)
         else:
@@ -1483,10 +1484,12 @@ class GUIMasterBoard(Gtk.EventBox):
             def1.addErrback(self.failure)
 
     def pause_ai(self, arg: Any) -> None:
+        logging.debug(f"{arg=}")
         def1 = self.user.callRemote("pause_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
     def resume_ai(self, arg: Any) -> None:
+        logging.debug(f"{arg=}")
         def1 = self.user.callRemote("resume_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 

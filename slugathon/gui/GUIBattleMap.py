@@ -781,7 +781,7 @@ class GUIBattleMap(Gtk.EventBox):
                     )
 
     def cb_concede(self, event: Any) -> None:
-        logging.info(f"{event=}")
+        logging.debug(f"{event=}")
         if self.game:
             for legion in self.game.battle_legions:
                 if legion.player.name == self.playername:

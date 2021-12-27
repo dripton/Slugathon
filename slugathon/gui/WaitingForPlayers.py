@@ -180,6 +180,7 @@ class WaitingForPlayers(Gtk.Dialog):
 
     # TODO Save the selection and do something useful with it.
     def cb_player_list_select(self, path: List[int], unused: Any) -> bool:
+        logging.debug(f"{unused=}")
         index = path[0]
         self.player_store[index, 0]
         return False

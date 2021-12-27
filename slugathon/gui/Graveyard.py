@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import time
 from typing import Any
 
@@ -60,6 +61,7 @@ if __name__ == "__main__":
     from slugathon.util import guiutils
 
     def cb_click(self, widget: Gtk.Widget, event: Any) -> None:  # type: ignore
+        logging.debug(f"{event=}")
         if self.legion.living_creatures:
             random.choice(self.legion.living_creatures).kill()
             graveyard.update_gui()

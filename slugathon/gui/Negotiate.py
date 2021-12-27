@@ -140,6 +140,7 @@ class Negotiate(Gtk.Dialog):
 
     def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
         """Toggle the clicked-on chit's creature's status."""
+        logging.debug(f"{event=}")
         event_box = widget
         if hasattr(event_box, "chit"):
             chit = event_box.chit

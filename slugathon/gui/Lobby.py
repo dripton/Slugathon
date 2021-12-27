@@ -344,6 +344,7 @@ class Lobby(Gtk.EventBox):
         reactor.stop()  # type: ignore
 
     def cb_keypress(self, entry: Gtk.Entry, event: Any) -> None:
+        logging.debug(f"{event=}")
         if event.keyval == Gdk.KEY_Return:
             text = self.chat_entry.get_text()
             if text:
@@ -363,6 +364,7 @@ class Lobby(Gtk.EventBox):
     def cb_load_game_button_click(
         self, widget: Gtk.Widget, event: Any
     ) -> None:
+        logging.debug(f"{event=}")
         LoadGame.LoadGame(self.user, self.playername, self.parent_window)
 
     def _add_wfp(self, game: Game.Game) -> None:
@@ -411,6 +413,7 @@ class Lobby(Gtk.EventBox):
         is_selected: bool,
         unused: Any,
     ) -> None:
+        logging.debug(f"{unused=}")
         index = path[0]
         assert self.user_store is not None
         row = self.user_store[index, 0]
@@ -422,6 +425,7 @@ class Lobby(Gtk.EventBox):
         return True
 
     def cb_game_list_select(self, path: List[int], unused: Any) -> None:
+        logging.debug(f"{unused=}")
         index = path[0]
         assert self.new_game_store is not None
         tup = self.new_game_store[index, 0]

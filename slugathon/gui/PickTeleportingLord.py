@@ -79,6 +79,7 @@ class PickTeleportingLord(Gtk.Dialog):
         self.show_all()
 
     def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+        logging.debug(f"{event=}")
         eventbox = widget
         chit = eventbox.chit
         creature = chit.creature
