@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from typing import Callable, Optional
 
 from twisted.cred.checkers import FilePasswordDB
 from twisted.cred.credentials import IUsernameHashedPassword
@@ -41,7 +41,9 @@ class UniqueFilePasswordDB(FilePasswordDB):
         )
         self.server = server
 
-    def requestAvatarId(self, credentials: IUsernameHashedPassword) -> Any:
+    def requestAvatarId(
+        self, credentials: IUsernameHashedPassword
+    ) -> defer.Deferred:
         if self.server is None:
             return defer.fail(LoginDenied())
         elif credentials.username in self.server.playernames:  # type: ignore

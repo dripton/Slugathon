@@ -1,5 +1,5 @@
 import logging
-from typing import IO, Any, List, Optional
+from typing import IO, List, Optional
 
 from zope.interface import implementer
 
@@ -20,8 +20,8 @@ class History(object):
     """
 
     def __init__(self) -> None:
-        self.actions = []  # type: List[Any]
-        self.undone = []  # type: List[Any]
+        self.actions = []  # type: List[Action.Action]
+        self.undone = []  # type: List[Action.Action]
 
     def _undo(self, undo_action: Action.Action) -> None:
         """Undoes the last action performed, if it corresponds to undo_action.
@@ -66,14 +66,21 @@ class History(object):
             return False
         action = self.actions[-1]
         logging.debug(action)
-        return action.undoable() and action.playername == playername
+        return (
+            action.undoable()
+            and hasattr(action, "playername")
+            and action.playername == playername  # type: ignore
+        )
 
     def can_redo(self, playername: str) -> bool:
         """Return True iff playername can redo an undone action."""
         if not self.undone:
             return False
         action = self.undone[-1]
-        return action.playername == playername
+        return (
+            hasattr(action, "playername")
+            and action.playername == playername  # type: ignore
+        )
 
     def find_last_split(
         self, playername: str, markerid1: str, markerid2: str

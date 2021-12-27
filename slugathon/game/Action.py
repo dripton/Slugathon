@@ -11,7 +11,7 @@ __copyright__ = "Copyright (c) 2004-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def fromstring(st: str) -> Any:
+def fromstring(st: str) -> Action:
     """Construct and return the appropriate Action subclass from the given
     repr string."""
     classname, dictstr = st.split(" ", 1)
@@ -38,7 +38,7 @@ class Action(pb.Copyable, pb.RemoteCopy):
     def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
 
-    def undo_action(self) -> Any:
+    def undo_action(self) -> Optional[UndoAction]:
         """If this action is undoable, construct the appropriate UndoAction."""
         return None
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import gi
 
@@ -51,7 +51,7 @@ class BattleDice(Gtk.EventBox):
     def update(
         self,
         observed: Optional[IObserved],
-        action: Any,
+        action: Action.Action,
         names: Optional[List[str]] = None,
     ) -> None:
         if isinstance(action, Action.Strike):
