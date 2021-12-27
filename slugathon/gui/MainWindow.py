@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
 
 from typing import Any, Optional
 
@@ -136,7 +137,7 @@ class MainWindow(Gtk.Window):
             label = self.notebook.get_tab_label(self.lobby)
             modify_fg_all_states(label, "Red")
 
-    def cb_delete_event(self, widget: Gtk.Widget, event: Any) -> bool:
+    def cb_delete_event(self, widget: Gtk.Widget, event: Gdk.Event) -> bool:
         if self.game is None or self.game.over:
             self.cb_destroy(True)
         else:
@@ -156,7 +157,9 @@ class MainWindow(Gtk.Window):
                 def1.addErrback(self.failure)
             self.destroy()
 
-    def cb_configure_event(self, event: Any, unused: Any) -> bool:
+    def cb_configure_event(
+        self, event: MainWindow, unused: Gdk.EventConfigure
+    ) -> bool:
         if self.playername:
             x, y = self.get_position()
             prefs.save_window_position(
@@ -169,7 +172,7 @@ class MainWindow(Gtk.Window):
         return False
 
     def cb_switch_page(
-        self, widget: Gtk.Widget, dummy: Any, page_num: int
+        self, widget: Gtk.Widget, dummy: Gtk.EventBox, page_num: int
     ) -> None:
         page_widget = widget.get_nth_page(page_num)
         if hasattr(page_widget, "ui") and hasattr(

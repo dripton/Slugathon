@@ -387,11 +387,13 @@ class GUIMasterBoard(Gtk.EventBox):
                 def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
                 def1.addErrback(self.failure)
 
-    def cb_area_expose(self, area: Gtk.DrawingArea, event: Any) -> bool:
+    def cb_area_expose(
+        self, area: Gtk.DrawingArea, event: cairo.Context
+    ) -> bool:
         self.update_gui(event=event)
         return True
 
-    def cb_click(self, area: Gtk.DrawingArea, event: Any) -> bool:
+    def cb_click(self, area: Gtk.DrawingArea, event: Gdk.EventButton) -> bool:
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
                 self.clicked_on_marker(area, event, marker)
@@ -403,7 +405,7 @@ class GUIMasterBoard(Gtk.EventBox):
         self.clicked_on_background(area, event)
         return True
 
-    def cb_motion(self, area: Gtk.DrawingArea, event: Any) -> bool:
+    def cb_motion(self, area: Gtk.DrawingArea, event: Gdk.EventMotion) -> bool:
         """Callback for mouse motion."""
         for marker in self.markers:
             if marker.point_inside((event.x, event.y)):
@@ -441,7 +443,9 @@ class GUIMasterBoard(Gtk.EventBox):
                 return False
         return True
 
-    def clicked_on_background(self, area: Gtk.DrawingArea, event: Any) -> None:
+    def clicked_on_background(
+        self, area: Gtk.DrawingArea, event: Gdk.EventButton
+    ) -> None:
         """The user clicked on the board outside a hex or marker."""
         if self.game:
             if self.game.phase == Phase.SPLIT:
@@ -457,7 +461,7 @@ class GUIMasterBoard(Gtk.EventBox):
     def clicked_on_hex(
         self,
         area: Gtk.DrawingArea,
-        event: Any,
+        event: Gdk.EventButton,
         guihex: GUIMasterHex.GUIMasterHex,
     ) -> None:
         if not self.game:
@@ -618,7 +622,10 @@ class GUIMasterBoard(Gtk.EventBox):
         def1.addErrback(self.failure)
 
     def clicked_on_marker(
-        self, area: Gtk.DrawingArea, event: Any, marker: Marker.Marker
+        self,
+        area: Gtk.DrawingArea,
+        event: Gdk.EventButton,
+        marker: Marker.Marker,
     ) -> None:
         assert self.game is not None
         phase = self.game.phase
@@ -1011,7 +1018,7 @@ class GUIMasterBoard(Gtk.EventBox):
         height = max_y - min_y
         return int(min_x), int(min_y), int(width), int(height)
 
-    def update_gui(self, event: Any = None) -> None:
+    def update_gui(self, event: Optional[cairo.Context] = None) -> None:
         """Repaint the amount of the GUI that needs repainting.
 
         Compute the dirty rectangle from the union of

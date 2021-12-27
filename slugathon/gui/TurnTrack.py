@@ -94,11 +94,13 @@ class TurnTrack(Gtk.DrawingArea):
         ctx.set_source_surface(marker.surface, cx, cy)
         ctx.paint()
 
-    def cb_area_expose(self, area: Gtk.DrawingArea, event: Any) -> bool:
+    def cb_area_expose(
+        self, area: Gtk.DrawingArea, event: cairo.Context
+    ) -> bool:
         self.update_gui(event=event)
         return True
 
-    def update_gui(self, event: Any = None) -> None:
+    def update_gui(self, event: Optional[cairo.Context] = None) -> None:
         if not self.get_window():
             return
         ctx = self.get_window().cairo_create()

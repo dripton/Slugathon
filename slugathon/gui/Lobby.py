@@ -355,7 +355,9 @@ class Lobby(Gtk.EventBox):
                 def1.addErrback(self.failure)
                 self.chat_entry.set_text("")
 
-    def cb_new_game_button_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_new_game_button_click(
+        self, widget: Gtk.Widget, event: Gdk.EventButton
+    ) -> None:
         NewGame.NewGame(self.user, self.playername, self.parent_window)
 
     def cb_load_game_button_click(

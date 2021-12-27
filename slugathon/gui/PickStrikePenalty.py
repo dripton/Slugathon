@@ -8,7 +8,8 @@ from typing import Any, Dict, Set, Tuple
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import GObject, Gtk
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
@@ -114,7 +115,7 @@ class PickStrikePenalty(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         self.destroy()
         num_dice, strike_number = widget.tup
         self.deferred.callback(

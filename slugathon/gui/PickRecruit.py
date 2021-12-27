@@ -7,8 +7,9 @@ from typing import Any, List, Optional, Tuple
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import defer
 
 from slugathon.game import Caretaker, Creature, Legion
@@ -125,7 +126,7 @@ class PickRecruit(Gtk.Dialog):
         self.connect("response", self.cb_cancel)
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         """Chose a recruit."""
         eventbox = widget
         chit = eventbox.chit

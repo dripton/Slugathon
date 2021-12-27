@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Optional, Tuple
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import defer
 
 from slugathon.game import Legion
@@ -95,7 +97,7 @@ class SplitLegion(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         """Move the clicked-on Chit's EventBox to the other hbox."""
         eventbox = widget
         if eventbox in self.old_chits_hbox.get_children():

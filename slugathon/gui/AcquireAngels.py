@@ -8,8 +8,9 @@ from typing import Any, List, Tuple
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import defer
 
 from slugathon.game import Caretaker, Creature, Legion
@@ -143,7 +144,7 @@ class AcquireAngels(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         """Acquire an angel."""
         eventbox = widget
         chit = eventbox.chit

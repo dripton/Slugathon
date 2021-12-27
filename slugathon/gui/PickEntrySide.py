@@ -8,6 +8,7 @@ import math
 from sys import maxsize
 from typing import Any, Optional, Set, Tuple
 
+import cairo
 import gi
 
 gi.require_version("Gdk", "3.0")
@@ -204,11 +205,13 @@ class PickEntrySide(Gtk.Dialog):
         eventbox.modify_bg(Gtk.StateType.NORMAL, gtkcolor)
         return eventbox
 
-    def cb_area_expose(self, area: Gtk.DrawingArea, event: Any) -> bool:
+    def cb_area_expose(
+        self, area: Gtk.DrawingArea, event: cairo.Context
+    ) -> bool:
         self.update_gui(event=event)
         return True
 
-    def cb_click(self, area: Gtk.DrawingArea, event: Any) -> bool:
+    def cb_click(self, area: Gtk.DrawingArea, event: Gdk.EventButton) -> bool:
         for guihex in self.guihexes.values():
             if guiutils.point_in_polygon((event.x, event.y), guihex.points):
                 self.clicked_on_hex(area, event, guihex)
@@ -218,7 +221,7 @@ class PickEntrySide(Gtk.Dialog):
     def clicked_on_hex(
         self,
         area: Gtk.DrawingArea,
-        event: Any,
+        event: Gdk.EventButton,
         guihex: GUIBattleHex.GUIBattleHex,
     ) -> None:
         if guihex.selected:
@@ -251,7 +254,7 @@ class PickEntrySide(Gtk.Dialog):
         height = max_y - min_y
         return min_x, min_y, width, height
 
-    def update_gui(self, event: Any = None) -> None:
+    def update_gui(self, event: Optional[cairo.Context] = None) -> None:
         """Repaint the amount of the GUI that needs repainting.
 
         Compute the dirty rectangle from the union of

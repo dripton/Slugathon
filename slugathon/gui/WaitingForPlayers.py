@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
+import logging
 import time
 from typing import Any, Dict, List, Optional, Union
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
@@ -148,20 +152,24 @@ class WaitingForPlayers(Gtk.Dialog):
         self.show_all()
 
     def cb_click_join(self, widget: Gtk.Widget, event: Any) -> None:
+        logging.debug(f"{event=}")
         def1 = self.user.callRemote("join_game", self.game.name, "Human", "")  # type: ignore
         def1.addErrback(self.failure)
 
-    def cb_destroy(self, unused: Any) -> None:
+    def cb_destroy(self, unused: WaitingForPlayers) -> None:
         if self.game and not self.game.started:
             def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
             def1.addErrback(self.failure)
 
     def cb_click_drop(self, widget: Gtk.Widget, event: Any) -> None:
+        logging.debug(f"{event=}")
         def1 = self.user.callRemote("withdraw", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
         self.destroy()
 
-    def cb_click_start(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click_start(
+        self, widget: Gtk.Widget, event: Gdk.EventButton
+    ) -> None:
         self.start_game()
 
     def start_game(self) -> None:

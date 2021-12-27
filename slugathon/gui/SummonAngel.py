@@ -7,8 +7,9 @@ from typing import Any, Optional, Tuple
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk
 from twisted.internet import defer
 
 from slugathon.game import Legion
@@ -91,7 +92,7 @@ class SummonAngel(Gtk.Dialog):
 
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         """Summon the clicked-on Chit's creature."""
         eventbox = widget
         chit = eventbox.chit

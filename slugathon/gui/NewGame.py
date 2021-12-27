@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-
+import logging
 from typing import Any, Optional
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk
 from twisted.python import log
 
 from slugathon.gui import InfoDialog, icon
@@ -125,7 +126,7 @@ class NewGame(Gtk.Dialog):
 
         self.show_all()
 
-    def ok(self, widget: Gtk.Widget, event: Any) -> None:
+    def ok(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         if self.name_entry.get_text():
             self.game_name = self.name_entry.get_text()
             self.min_players = self.min_players_spin.get_value_as_int()

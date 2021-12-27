@@ -78,7 +78,7 @@ class PickColor(Gtk.Dialog):
         self.connect("destroy", self.cb_destroy)
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         color = widget.get_label()
         self.deferred.callback((self.game, color))
         self.destroy()

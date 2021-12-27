@@ -8,9 +8,10 @@ from typing import Any, DefaultDict, List, Tuple
 
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("GdkPixbuf", "2.0")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GdkPixbuf, GObject, Gtk
+from gi.repository import Gdk, GdkPixbuf, GObject, Gtk
 from twisted.internet import gtk3reactor
 
 try:
@@ -102,7 +103,7 @@ class PickMarker(Gtk.Dialog):
         self.connect("destroy", self.cb_destroy)
         self.show_all()
 
-    def cb_click(self, widget: Gtk.Widget, event: Any) -> None:
+    def cb_click(self, widget: Gtk.Widget, event: Gdk.EventButton) -> None:
         markerid = widget.tag
         self.deferred.callback((self.game_name, self.playername, markerid))
         self.destroy()
