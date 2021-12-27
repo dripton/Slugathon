@@ -941,16 +941,16 @@ class GUIMasterBoard(Gtk.EventBox):
         # without clearing them), use a bag and take the maximum number
         # of each creature.
         chits = []
-        old_chits = bag()
+        old_names = bag()  # type: bag[str]
         for (chit, hexlabel2) in self.recruitchits:
             if hexlabel == hexlabel2:
                 chits.append(chit)
                 assert chit.creature is not None
-                old_chits.add(chit.creature.name)
-        new_chits = bag()
+                old_names.add(chit.creature.name)
+        new_names = bag()  # type: bag[str]
         for name in recruit_names:
-            new_chits.add(name)
-        diff = new_chits.difference(old_chits)
+            new_names.add(name)
+        diff = new_names.difference(old_names)
         for name, number in diff.items():
             for unused in range(number):
                 recruit = Creature.Creature(name)

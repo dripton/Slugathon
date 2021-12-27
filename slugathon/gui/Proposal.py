@@ -115,8 +115,8 @@ class Proposal(Gtk.Dialog):
 
         attacker_chits = []
 
-        surviving_attackers = bag(attacker_creature_names)
-        surviving_defenders = bag(defender_creature_names)
+        surviving_attackers = bag(attacker_creature_names)  # type: bag[str]
+        surviving_defenders = bag(defender_creature_names)  # type: bag[str]
         assert attacker_legion.player is not None
         assert attacker_legion.player.color is not None
 

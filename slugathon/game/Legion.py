@@ -246,8 +246,8 @@ class Legion(Observed):
         """Reveal the creatures from creature_names, if they're not
         already known to be in this legion."""
         if self.any_unknown:
-            bag1 = bag(self.creature_names)
-            bag2 = bag(creature_names)
+            bag1 = bag(self.creature_names)  # type: bag[str]
+            bag2 = bag(creature_names)  # type: bag[str]
             for creature_name, count2 in bag2.items():
                 count1 = bag1[creature_name]
                 while count2 > count1 and self.any_unknown:
@@ -320,7 +320,7 @@ class Legion(Observed):
     def _max_creatures_of_one_type(self) -> int:
         """Return the maximum number of creatures (not lords or demi-lords) of
         the same type in this legion."""
-        counts = bag(self.creature_names)
+        counts = bag(self.creature_names)  # type: bag[str]
         maximum = 0
         for name, num in counts.items():
             if num > maximum and Creature.Creature(name).is_creature:
@@ -380,7 +380,7 @@ class Legion(Observed):
         The list is sorted in the same order as within recruitdata.
         """
         result_list = []  # type: List[Tuple[str, ...]]
-        counts = bag(self.living_creature_names)
+        counts = bag(self.living_creature_names)  # type: bag[str]
         recruits = recruitdata.data[mterrain]
         for sublist in self._gen_sublists(recruits):
             names = [tup[0] for tup in sublist]
@@ -417,7 +417,7 @@ class Legion(Observed):
                                         li.append(recruiter)
                                     tup = tuple(li)
                                     result_list.append(tup)
-                    if counts[prev] >= num:
+                    if prev is not None and counts[prev] >= num:
                         # recruit up
                         if num and caretaker.counts.get(name):
                             li = [name]

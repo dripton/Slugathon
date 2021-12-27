@@ -968,7 +968,7 @@ class Game(Observed):
                 self.name, losing_legion.markerid, losing_legion.creature_names
             )
             self.notify(action)
-            survivors = bag(attacker_creature_names)
+            survivors = bag(attacker_creature_names)  # type: bag[str]
             self._accept_proposal_helper(
                 winning_legion, losing_legion, survivors
             )

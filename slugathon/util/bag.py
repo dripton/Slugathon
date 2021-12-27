@@ -1,6 +1,16 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+)
 
 __copyright__ = "Copyright (c) 2005-2021 David Ripton"
 __license__ = "GNU GPL v2"
@@ -8,8 +18,10 @@ __license__ = "GNU GPL v2"
 
 """A multiset, built on a dictionary."""
 
+T = TypeVar("T")
 
-class bag(object):
+
+class bag(Generic[T]):
     """A multiset, built on a dictionary."""
 
     def __init__(self, iterable: Optional[Iterable] = None):
@@ -30,35 +42,35 @@ class bag(object):
             for item in iterable:
                 self.add(item)
 
-    def add(self, key: Any) -> None:
+    def add(self, key: T) -> None:
         """Add one of key."""
         self._dct[key] = self._dct.get(key, 0) + 1
 
-    def remove(self, key: Any) -> None:
+    def remove(self, key: T) -> None:
         """Remove one of key."""
         if self._dct[key] <= 1:
             del self._dct[key]
         else:
             self._dct[key] -= 1
 
-    def discard(self, key: Any) -> None:
+    def discard(self, key: T) -> None:
         """Remove one of key, if possible.  If not, do nothing."""
         if key not in self._dct:
             return
         self.remove(key)
 
-    def __getitem__(self, key: Any) -> int:
+    def __getitem__(self, key: T) -> int:
         """Return the count for key."""
         return self._dct.get(key, 0)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: T, value: int) -> None:
         """Set the count for key to value."""
         if value >= 1:
             self._dct[key] = value
         else:
             del self._dct[key]
 
-    def __contains__(self, item: Any) -> bool:
+    def __contains__(self, item: T) -> bool:
         """Return True iff item is in the bag."""
         return item in self._dct
 
@@ -81,11 +93,11 @@ class bag(object):
         """Return True iff other is not equal to this bag."""
         return not self.__eq__(other)
 
-    def union(self, other: Any) -> bag:
+    def union(self, other: bag) -> bag:
         """Return a new bag containing all items in this bag and the other."""
         if not isinstance(other, bag):
             raise TypeError("not a bag")
-        newbag = bag(self._dct)
+        newbag = bag(self._dct)  # type: bag[T]
         for key, val in other._dct.items():
             newbag[key] += val
         return newbag
@@ -98,28 +110,28 @@ class bag(object):
         """Return a shallow copy."""
         return bag(self._dct)
 
-    def difference(self, other: Any) -> bag:
+    def difference(self, other: bag) -> bag:
         """Return the difference between this bag and other as a new bag."""
         if not isinstance(other, bag):
             raise TypeError("not a bag")
-        newbag = bag(self._dct)
+        newbag = bag(self._dct)  # type: bag[T]
         for key, val in self._dct.items():
             val2 = other[key]
             if val2:
                 newbag[key] = max(val - val2, 0)
         return newbag
 
-    def intersection(self, other: Any) -> bag:
+    def intersection(self, other: bag) -> bag:
         """Return a new bag with the elements that are in both bags."""
         if not isinstance(other, bag):
             raise TypeError("not a bag")
-        newbag = bag(self._dct)
+        newbag = bag(self._dct)  # type: bag[T]
         for key, val in self._dct.items():
             val2 = other[key]
             newbag[key] = min(val, val2)
         return newbag
 
-    def issubset(self, other: Any) -> bool:
+    def issubset(self, other: bag) -> bool:
         """Report whether the other bag contains everything in this one."""
         if not isinstance(other, bag):
             raise TypeError("not a bag")
@@ -129,7 +141,7 @@ class bag(object):
                 return False
         return True
 
-    def issuperset(self, other: Any) -> bool:
+    def issuperset(self, other: bag) -> bool:
         """Report whether this bag contains everything in the other one."""
         if not isinstance(other, bag):
             raise TypeError("not a bag")
@@ -147,10 +159,10 @@ class bag(object):
         """Return a list of item, count pairs."""
         return list(self._dct.items())
 
-    def keys(self) -> List[Any]:
+    def keys(self) -> List[T]:
         """Return a list of one of each item in the set."""
         return list(self._dct.keys())
 
-    def values(self) -> List[Any]:
+    def values(self) -> List[int]:
         """Return a list of counts for each item in the set."""
         return list(self._dct.values())
