@@ -1475,11 +1475,11 @@ class GUIMasterBoard(Gtk.EventBox):
             )
             def1.addErrback(self.failure)
 
-    def pause_ai(self, action: Action.Action) -> None:
+    def pause_ai(self, arg: Any) -> None:
         def1 = self.user.callRemote("pause_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
-    def resume_ai(self, action: Action.Action) -> None:
+    def resume_ai(self, arg: Any) -> None:
         def1 = self.user.callRemote("resume_ai", self.game.name)  # type: ignore
         def1.addErrback(self.failure)
 
