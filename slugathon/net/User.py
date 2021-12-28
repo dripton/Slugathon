@@ -7,7 +7,7 @@ from twisted.internet.error import ConnectionLost
 from twisted.internet.task import LoopingCall
 from twisted.python import log
 from twisted.python.failure import Failure
-from twisted.spread.pb import Avatar, PBConnectionLost
+from twisted.spread.pb import Avatar, PBConnectionLost, RemoteReference
 from zope.interface import implementer
 
 from slugathon.game import Action
@@ -24,7 +24,9 @@ class User(Avatar):
 
     """Perspective for a player or spectator."""
 
-    def __init__(self, name: str, server: Server.Server, client: Any):
+    def __init__(
+        self, name: str, server: Server.Server, client: RemoteReference
+    ):
         self.name = name
         self.server = server
         self.client = client
@@ -435,7 +437,7 @@ class User(Avatar):
 
     def add_observer(self, mind: Any) -> None:
         logging.info(f"User.add_observer {self} {mind}")
-        def1 = self.client.callRemote("set_name", self.name)
+        def1 = self.client.callRemote("set_name", self.name)  # type: ignore
         def1.addErrback(self.trap_connection_lost)
         def1.addErrback(self.log_failure)
         lc = LoopingCall(self.client.callRemote, "ping")
@@ -475,6 +477,6 @@ class User(Avatar):
             and "Unknown" in action.parent_creature_names
         ):
             return
-        def1 = self.client.callRemote("update", action, names)
+        def1 = self.client.callRemote("update", action, names)  # type: ignore
         def1.addErrback(self.trap_connection_lost)
         def1.addErrback(self.log_failure)

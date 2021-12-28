@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, Tuple, Type
 
 from twisted.cred import portal
-from twisted.spread.pb import IPerspective
+from twisted.spread.pb import IPerspective, RemoteReference
 from zope.interface import implementer
 
 from slugathon.net import User
@@ -22,7 +22,10 @@ class Realm(object):
         self.server = server
 
     def requestAvatar(
-        self, avatarId: bytes, mind: None, *interfaces: Any
+        self,
+        avatarId: bytes,
+        mind: RemoteReference,
+        *interfaces: Tuple[IPerspective, ...],
     ) -> Tuple[Type[IPerspective], User.User, Callable]:
         assert IPerspective in interfaces
         str_avatar_id = avatarId.decode()
