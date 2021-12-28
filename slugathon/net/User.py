@@ -81,8 +81,8 @@ class User(Avatar):
         game_name: str,
         min_players: int,
         max_players: int,
-        ai_time_limit: int,
-        player_time_limit: int,
+        ai_time_limit: float,
+        player_time_limit: float,
         player_class: str,
         player_info: str,
     ) -> Optional[str]:

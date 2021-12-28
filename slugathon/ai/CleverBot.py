@@ -59,7 +59,7 @@ class CleverBot(object):
     def __init__(
         self,
         playername: str,
-        ai_time_limit: int,
+        ai_time_limit: float,
         bot_params: Optional[BotParams.BotParams] = None,
     ):
         logging.info(f"CleverBot {playername=} {ai_time_limit=}")

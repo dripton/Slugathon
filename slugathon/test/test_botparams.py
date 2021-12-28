@@ -57,7 +57,7 @@ def test_cross():
 
 
 def test_fromstring_complete():
-    st = """version=2 ai_time_limit=5 BotParams(SQUASH=0.6, BE_SQUASHED=1.0,
+    st = """version=2 ai_time_limit=5.0 BotParams(SQUASH=0.6, BE_SQUASHED=1.0,
     FLEE_RATIO=1.5, ATTACKER_AGGRESSION_BONUS=1.0,
     ATTACKER_DISTANCE_PENALTY=-1.0, HIT_BONUS=1.0, KILL_MULTIPLIER=1.0,
     DAMAGE_PENALTY=-1.0, DEATH_MULTIPLIER=-1.0, ELEVATION_BONUS=0.5,
@@ -77,7 +77,7 @@ def test_fromstring_complete():
 
 
 def test_fromstring_incomplete():
-    st = """version=2 ai_time_limit=5 BotParams(SQUASH=0.6, BE_SQUASHED=1.0,
+    st = """version=2 ai_time_limit=2.5 BotParams(SQUASH=0.6, BE_SQUASHED=1.0,
     FLEE_RATIO=1.5, ATTACKER_AGGRESSION_BONUS=1.0,
     ATTACKER_DISTANCE_PENALTY=-1.0, HIT_BONUS=1.0, KILL_MULTIPLIER=1.0,
     DAMAGE_PENALTY=-1.0, DEATH_MULTIPLIER=-1.0, ELEVATION_BONUS=0.5,

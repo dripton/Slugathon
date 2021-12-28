@@ -69,16 +69,16 @@ class NewGame(Gtk.Dialog):
         )
         ai_time_limit_adjustment = Gtk.Adjustment(
             value=config.DEFAULT_AI_TIME_LIMIT,
-            lower=1,
-            upper=99,
-            step_increment=1,
-            page_increment=0,
+            lower=0.1,
+            upper=99.0,
+            step_increment=0.1,
+            page_increment=1,
             page_size=0,
         )
         player_time_limit_adjustment = Gtk.Adjustment(
             value=config.DEFAULT_PLAYER_TIME_LIMIT,
-            lower=1,
-            upper=999,
+            lower=1.0,
+            upper=999.0,
             step_increment=1,
             page_increment=100,
             page_size=0,
@@ -105,14 +105,14 @@ class NewGame(Gtk.Dialog):
         label4 = Gtk.Label(label="AI time limit")
         hbox2.pack_start(label4, False, True, 0)
         self.ai_time_limit_spin = Gtk.SpinButton(
-            adjustment=ai_time_limit_adjustment, climb_rate=1, digits=0
+            adjustment=ai_time_limit_adjustment, climb_rate=1, digits=1
         )
         self.ai_time_limit_spin.set_numeric(True)
         hbox2.pack_start(self.ai_time_limit_spin, False, True, 0)
         label5 = Gtk.Label(label="Player time limit")
         hbox2.pack_start(label5, False, True, 0)
         self.player_time_limit_spin = Gtk.SpinButton(
-            adjustment=player_time_limit_adjustment, climb_rate=1, digits=0
+            adjustment=player_time_limit_adjustment, climb_rate=1, digits=1
         )
         self.player_time_limit_spin.set_numeric(True)
         hbox2.pack_start(self.player_time_limit_spin, False, True, 0)
@@ -131,10 +131,8 @@ class NewGame(Gtk.Dialog):
             self.game_name = self.name_entry.get_text()
             self.min_players = self.min_players_spin.get_value_as_int()
             self.max_players = self.max_players_spin.get_value_as_int()
-            self.ai_time_limit = self.ai_time_limit_spin.get_value_as_int()
-            self.player_time_limit = (
-                self.player_time_limit_spin.get_value_as_int()
-            )
+            self.ai_time_limit = self.ai_time_limit_spin.get_value()
+            self.player_time_limit = self.player_time_limit_spin.get_value()
             def1 = self.user.callRemote(  # type: ignore
                 "form_game",
                 self.game_name,

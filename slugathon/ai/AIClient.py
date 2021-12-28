@@ -52,11 +52,11 @@ class AIClient(Referenceable, Observed):
         password: str,
         host: str,
         port: int,
-        delay: int,
+        delay: float,
         game_name: str,
         log_path: str,
-        ai_time_limit: int,
-        player_time_limit: int,
+        ai_time_limit: float,
+        player_time_limit: float,
         form_game: bool,
         min_players: int,
         max_players: int,
@@ -874,13 +874,13 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--ai-time-limit",
         action="store",
-        type=int,
+        type=float,
         default=config.DEFAULT_AI_TIME_LIMIT,
     )
     parser.add_argument(
         "--player-time-limit",
         action="store",
-        type=int,
+        type=float,
         default=config.DEFAULT_PLAYER_TIME_LIMIT,
     )
     parser.add_argument("--form-game", action="store_true", default=False)
