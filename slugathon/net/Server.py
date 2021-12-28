@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 from twisted.cred.portal import Portal
 from twisted.internet import defer, protocol, reactor
 from twisted.python import failure, log
-from twisted.spread import pb
+from twisted.spread.pb import PBServerFactory
 from zope.interface import implementer
 
 from slugathon.game import Action, Game, Phase
@@ -1175,7 +1175,7 @@ def main() -> None:
     else:
         checker = UniqueFilePasswordDB(args.passwd_path, server=server)
     portal = Portal(realm, [checker])  # type: ignore
-    pbfact = pb.PBServerFactory(portal, unsafeTracebacks=True)  # type: ignore
+    pbfact = PBServerFactory(portal, unsafeTracebacks=True)  # type: ignore
     reactor.listenTCP(port, pbfact)  # type: ignore[attr-defined]
     logging.info("main calling reactor.run")
     reactor.run()  # type: ignore[attr-defined]

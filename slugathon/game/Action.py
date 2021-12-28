@@ -3,7 +3,7 @@ from __future__ import annotations
 import ast
 from typing import Any, List, Optional, Tuple
 
-from twisted.spread import pb
+from twisted.spread.pb import Copyable, RemoteCopy, setUnjellyableForClass
 
 from slugathon.util.bag import bag
 
@@ -21,7 +21,7 @@ def fromstring(st: str) -> Action:
     return obj
 
 
-class Action(pb.Copyable, pb.RemoteCopy):
+class Action(Copyable, RemoteCopy):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__} {self.__dict__}"
 
@@ -46,7 +46,7 @@ class Action(pb.Copyable, pb.RemoteCopy):
         return self.undo_action() is not None
 
 
-pb.setUnjellyableForClass(Action, Action)  # type: ignore
+setUnjellyableForClass(Action, Action)  # type: ignore
 
 
 class UndoAction(Action):
@@ -68,7 +68,7 @@ class AddUsername(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(AddUsername, AddUsername)  # type: ignore
+setUnjellyableForClass(AddUsername, AddUsername)  # type: ignore
 
 
 class DelUsername(Action):
@@ -76,7 +76,7 @@ class DelUsername(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(DelUsername, DelUsername)  # type: ignore
+setUnjellyableForClass(DelUsername, DelUsername)  # type: ignore
 
 
 class FormGame(Action):
@@ -105,7 +105,7 @@ class FormGame(Action):
         self.player_info = player_info
 
 
-pb.setUnjellyableForClass(FormGame, FormGame)  # type: ignore
+setUnjellyableForClass(FormGame, FormGame)  # type: ignore
 
 
 class RemoveGame(Action):
@@ -113,7 +113,7 @@ class RemoveGame(Action):
         self.game_name = game_name
 
 
-pb.setUnjellyableForClass(RemoveGame, RemoveGame)  # type: ignore
+setUnjellyableForClass(RemoveGame, RemoveGame)  # type: ignore
 
 
 class JoinGame(Action):
@@ -130,7 +130,7 @@ class JoinGame(Action):
         self.player_info = player_info
 
 
-pb.setUnjellyableForClass(JoinGame, JoinGame)  # type: ignore
+setUnjellyableForClass(JoinGame, JoinGame)  # type: ignore
 
 
 class AssignTower(Action):
@@ -140,7 +140,7 @@ class AssignTower(Action):
         self.tower_num = tower_num
 
 
-pb.setUnjellyableForClass(AssignTower, AssignTower)  # type: ignore
+setUnjellyableForClass(AssignTower, AssignTower)  # type: ignore
 
 
 class AssignedAllTowers(Action):
@@ -148,7 +148,7 @@ class AssignedAllTowers(Action):
         self.game_name = game_name
 
 
-pb.setUnjellyableForClass(AssignedAllTowers, AssignedAllTowers)  # type: ignore
+setUnjellyableForClass(AssignedAllTowers, AssignedAllTowers)  # type: ignore
 
 
 class PickedColor(Action):
@@ -158,7 +158,7 @@ class PickedColor(Action):
         self.color = color
 
 
-pb.setUnjellyableForClass(PickedColor, PickedColor)  # type: ignore
+setUnjellyableForClass(PickedColor, PickedColor)  # type: ignore
 
 
 class AssignedAllColors(Action):
@@ -166,7 +166,7 @@ class AssignedAllColors(Action):
         self.game_name = game_name
 
 
-pb.setUnjellyableForClass(AssignedAllColors, AssignedAllColors)  # type: ignore
+setUnjellyableForClass(AssignedAllColors, AssignedAllColors)  # type: ignore
 
 
 class CreateStartingLegion(Action):
@@ -176,7 +176,7 @@ class CreateStartingLegion(Action):
         self.markerid = markerid
 
 
-pb.setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)  # type: ignore
+setUnjellyableForClass(CreateStartingLegion, CreateStartingLegion)  # type: ignore
 
 
 class SplitLegion(Action):
@@ -210,7 +210,7 @@ class SplitLegion(Action):
         )
 
 
-pb.setUnjellyableForClass(SplitLegion, SplitLegion)  # type: ignore
+setUnjellyableForClass(SplitLegion, SplitLegion)  # type: ignore
 
 
 class UndoSplit(UndoAction):
@@ -236,7 +236,7 @@ class UndoSplit(UndoAction):
         self.child_creature_names = tuple(child_creature_names)
 
 
-pb.setUnjellyableForClass(UndoSplit, UndoSplit)  # type: ignore
+setUnjellyableForClass(UndoSplit, UndoSplit)  # type: ignore
 
 
 class MergeLegions(Action):
@@ -263,7 +263,7 @@ class MergeLegions(Action):
         self.child_creature_names = tuple(child_creature_names)
 
 
-pb.setUnjellyableForClass(MergeLegions, MergeLegions)  # type: ignore
+setUnjellyableForClass(MergeLegions, MergeLegions)  # type: ignore
 
 
 class RollMovement(Action):
@@ -280,7 +280,7 @@ class RollMovement(Action):
         self.mulligans_left = mulligans_left
 
 
-pb.setUnjellyableForClass(RollMovement, RollMovement)  # type: ignore
+setUnjellyableForClass(RollMovement, RollMovement)  # type: ignore
 
 
 class MoveLegion(Action):
@@ -317,7 +317,7 @@ class MoveLegion(Action):
         )
 
 
-pb.setUnjellyableForClass(MoveLegion, MoveLegion)  # type: ignore
+setUnjellyableForClass(MoveLegion, MoveLegion)  # type: ignore
 
 
 class UndoMoveLegion(UndoAction):
@@ -342,7 +342,7 @@ class UndoMoveLegion(UndoAction):
         self.previous_hexlabel = previous_hexlabel
 
 
-pb.setUnjellyableForClass(UndoMoveLegion, UndoMoveLegion)  # type: ignore
+setUnjellyableForClass(UndoMoveLegion, UndoMoveLegion)  # type: ignore
 
 
 class StartSplitPhase(Action):
@@ -352,7 +352,7 @@ class StartSplitPhase(Action):
         self.turn = turn
 
 
-pb.setUnjellyableForClass(StartSplitPhase, StartSplitPhase)  # type: ignore
+setUnjellyableForClass(StartSplitPhase, StartSplitPhase)  # type: ignore
 
 
 class StartFightPhase(Action):
@@ -361,7 +361,7 @@ class StartFightPhase(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(StartFightPhase, StartFightPhase)  # type: ignore
+setUnjellyableForClass(StartFightPhase, StartFightPhase)  # type: ignore
 
 
 class StartMusterPhase(Action):
@@ -370,7 +370,7 @@ class StartMusterPhase(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(StartMusterPhase, StartMusterPhase)  # type: ignore
+setUnjellyableForClass(StartMusterPhase, StartMusterPhase)  # type: ignore
 
 
 class RecruitCreature(Action):
@@ -398,7 +398,7 @@ class RecruitCreature(Action):
         )
 
 
-pb.setUnjellyableForClass(RecruitCreature, RecruitCreature)  # type: ignore
+setUnjellyableForClass(RecruitCreature, RecruitCreature)  # type: ignore
 
 
 class DoNotReinforce(Action):
@@ -408,7 +408,7 @@ class DoNotReinforce(Action):
         self.markerid = markerid
 
 
-pb.setUnjellyableForClass(DoNotReinforce, DoNotReinforce)  # type: ignore
+setUnjellyableForClass(DoNotReinforce, DoNotReinforce)  # type: ignore
 
 
 class UnReinforce(UndoAction):
@@ -427,7 +427,7 @@ class UnReinforce(UndoAction):
         self.recruiter_names = recruiter_names
 
 
-pb.setUnjellyableForClass(UnReinforce, UnReinforce)  # type: ignore
+setUnjellyableForClass(UnReinforce, UnReinforce)  # type: ignore
 
 
 class UndoRecruit(UndoAction):
@@ -446,7 +446,7 @@ class UndoRecruit(UndoAction):
         self.recruiter_names = recruiter_names
 
 
-pb.setUnjellyableForClass(UndoRecruit, UndoRecruit)  # type: ignore
+setUnjellyableForClass(UndoRecruit, UndoRecruit)  # type: ignore
 
 
 class RevealLegion(Action):
@@ -458,7 +458,7 @@ class RevealLegion(Action):
         self.creature_names = tuple(creature_names)  # type: Tuple[str, ...]
 
 
-pb.setUnjellyableForClass(RevealLegion, RevealLegion)  # type: ignore
+setUnjellyableForClass(RevealLegion, RevealLegion)  # type: ignore
 
 
 class ResolvingEngagement(Action):
@@ -467,7 +467,7 @@ class ResolvingEngagement(Action):
         self.hexlabel = hexlabel
 
 
-pb.setUnjellyableForClass(ResolvingEngagement, ResolvingEngagement)  # type: ignore
+setUnjellyableForClass(ResolvingEngagement, ResolvingEngagement)  # type: ignore
 
 
 class Flee(Action):
@@ -480,7 +480,7 @@ class Flee(Action):
         self.hexlabel = hexlabel
 
 
-pb.setUnjellyableForClass(Flee, Flee)  # type: ignore
+setUnjellyableForClass(Flee, Flee)  # type: ignore
 
 
 class DoNotFlee(Action):
@@ -493,7 +493,7 @@ class DoNotFlee(Action):
         self.hexlabel = hexlabel
 
 
-pb.setUnjellyableForClass(DoNotFlee, DoNotFlee)  # type: ignore
+setUnjellyableForClass(DoNotFlee, DoNotFlee)  # type: ignore
 
 
 class Concede(Action):
@@ -506,7 +506,7 @@ class Concede(Action):
         self.hexlabel = hexlabel
 
 
-pb.setUnjellyableForClass(Concede, Concede)  # type: ignore
+setUnjellyableForClass(Concede, Concede)  # type: ignore
 
 
 class Fight(Action):
@@ -523,7 +523,7 @@ class Fight(Action):
         self.hexlabel = hexlabel
 
 
-pb.setUnjellyableForClass(Fight, Fight)  # type: ignore
+setUnjellyableForClass(Fight, Fight)  # type: ignore
 
 
 class MakeProposal(Action):
@@ -546,7 +546,7 @@ class MakeProposal(Action):
         self.defender_creature_names = tuple(defender_creature_names)
 
 
-pb.setUnjellyableForClass(MakeProposal, MakeProposal)  # type: ignore
+setUnjellyableForClass(MakeProposal, MakeProposal)  # type: ignore
 
 
 class AcceptProposal(Action):
@@ -575,7 +575,7 @@ class AcceptProposal(Action):
         self.hexlabel = hexlabel
 
 
-pb.setUnjellyableForClass(AcceptProposal, AcceptProposal)  # type: ignore
+setUnjellyableForClass(AcceptProposal, AcceptProposal)  # type: ignore
 
 
 class RejectProposal(Action):
@@ -598,7 +598,7 @@ class RejectProposal(Action):
         self.defender_creature_names = tuple(defender_creature_names)
 
 
-pb.setUnjellyableForClass(RejectProposal, RejectProposal)  # type: ignore
+setUnjellyableForClass(RejectProposal, RejectProposal)  # type: ignore
 
 
 class NoMoreProposals(Action):
@@ -615,7 +615,7 @@ class NoMoreProposals(Action):
         self.defender_markerid = defender_markerid
 
 
-pb.setUnjellyableForClass(NoMoreProposals, NoMoreProposals)  # type: ignore
+setUnjellyableForClass(NoMoreProposals, NoMoreProposals)  # type: ignore
 
 
 class MoveCreature(Action):
@@ -643,7 +643,7 @@ class MoveCreature(Action):
         )
 
 
-pb.setUnjellyableForClass(MoveCreature, MoveCreature)  # type: ignore
+setUnjellyableForClass(MoveCreature, MoveCreature)  # type: ignore
 
 
 class UndoMoveCreature(UndoAction):
@@ -662,7 +662,7 @@ class UndoMoveCreature(UndoAction):
         self.new_hexlabel = new_hexlabel
 
 
-pb.setUnjellyableForClass(UndoMoveCreature, UndoMoveCreature)  # type: ignore
+setUnjellyableForClass(UndoMoveCreature, UndoMoveCreature)  # type: ignore
 
 
 class StartReinforceBattlePhase(Action):
@@ -672,7 +672,7 @@ class StartReinforceBattlePhase(Action):
         self.battle_turn = battle_turn
 
 
-pb.setUnjellyableForClass(StartReinforceBattlePhase, StartReinforceBattlePhase)  # type: ignore
+setUnjellyableForClass(StartReinforceBattlePhase, StartReinforceBattlePhase)  # type: ignore
 
 
 class StartManeuverBattlePhase(Action):
@@ -681,7 +681,7 @@ class StartManeuverBattlePhase(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(StartManeuverBattlePhase, StartManeuverBattlePhase)  # type: ignore
+setUnjellyableForClass(StartManeuverBattlePhase, StartManeuverBattlePhase)  # type: ignore
 
 
 class StartStrikeBattlePhase(Action):
@@ -690,7 +690,7 @@ class StartStrikeBattlePhase(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(StartStrikeBattlePhase, StartStrikeBattlePhase)  # type: ignore
+setUnjellyableForClass(StartStrikeBattlePhase, StartStrikeBattlePhase)  # type: ignore
 
 
 class StartCounterstrikeBattlePhase(Action):
@@ -699,7 +699,7 @@ class StartCounterstrikeBattlePhase(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(  # type: ignore
+setUnjellyableForClass(  # type: ignore
     StartCounterstrikeBattlePhase, StartCounterstrikeBattlePhase
 )
 
@@ -714,7 +714,7 @@ class DriftDamage(Action):
         self.hits = hits
 
 
-pb.setUnjellyableForClass(DriftDamage, DriftDamage)  # type: ignore
+setUnjellyableForClass(DriftDamage, DriftDamage)  # type: ignore
 
 
 class Strike(Action):
@@ -748,7 +748,7 @@ class Strike(Action):
         self.carries = carries
 
 
-pb.setUnjellyableForClass(Strike, Strike)  # type: ignore
+setUnjellyableForClass(Strike, Strike)  # type: ignore
 
 
 class Carry(Action):
@@ -784,7 +784,7 @@ class Carry(Action):
         self.carries_left = carries_left
 
 
-pb.setUnjellyableForClass(Carry, Carry)  # type: ignore
+setUnjellyableForClass(Carry, Carry)  # type: ignore
 
 
 class SummonAngel(Action):
@@ -803,7 +803,7 @@ class SummonAngel(Action):
         self.creature_name = creature_name
 
 
-pb.setUnjellyableForClass(SummonAngel, SummonAngel)  # type: ignore
+setUnjellyableForClass(SummonAngel, SummonAngel)  # type: ignore
 
 
 class UnsummonAngel(Action):
@@ -822,7 +822,7 @@ class UnsummonAngel(Action):
         self.creature_name = creature_name
 
 
-pb.setUnjellyableForClass(UnsummonAngel, UnsummonAngel)  # type: ignore
+setUnjellyableForClass(UnsummonAngel, UnsummonAngel)  # type: ignore
 
 
 class DoNotSummonAngel(Action):
@@ -832,7 +832,7 @@ class DoNotSummonAngel(Action):
         self.markerid = markerid
 
 
-pb.setUnjellyableForClass(DoNotSummonAngel, DoNotSummonAngel)  # type: ignore
+setUnjellyableForClass(DoNotSummonAngel, DoNotSummonAngel)  # type: ignore
 
 
 class CanAcquireAngels(Action):
@@ -851,7 +851,7 @@ class CanAcquireAngels(Action):
         self.archangels = archangels
 
 
-pb.setUnjellyableForClass(CanAcquireAngels, CanAcquireAngels)  # type: ignore
+setUnjellyableForClass(CanAcquireAngels, CanAcquireAngels)  # type: ignore
 
 
 class AcquireAngels(Action):
@@ -868,7 +868,7 @@ class AcquireAngels(Action):
         self.angel_names = tuple(angel_names)
 
 
-pb.setUnjellyableForClass(AcquireAngels, AcquireAngels)  # type: ignore
+setUnjellyableForClass(AcquireAngels, AcquireAngels)  # type: ignore
 
 
 class DoNotAcquireAngels(Action):
@@ -878,7 +878,7 @@ class DoNotAcquireAngels(Action):
         self.markerid = markerid
 
 
-pb.setUnjellyableForClass(DoNotAcquireAngels, DoNotAcquireAngels)  # type: ignore
+setUnjellyableForClass(DoNotAcquireAngels, DoNotAcquireAngels)  # type: ignore
 
 
 class BattleOver(Action):
@@ -907,7 +907,7 @@ class BattleOver(Action):
         self.mutual = mutual
 
 
-pb.setUnjellyableForClass(BattleOver, BattleOver)  # type: ignore
+setUnjellyableForClass(BattleOver, BattleOver)  # type: ignore
 
 
 class Withdraw(Action):
@@ -916,7 +916,7 @@ class Withdraw(Action):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(Withdraw, Withdraw)  # type: ignore
+setUnjellyableForClass(Withdraw, Withdraw)  # type: ignore
 
 
 class EliminatePlayer(Action):
@@ -933,7 +933,7 @@ class EliminatePlayer(Action):
         self.check_for_victory = check_for_victory
 
 
-pb.setUnjellyableForClass(EliminatePlayer, EliminatePlayer)  # type: ignore
+setUnjellyableForClass(EliminatePlayer, EliminatePlayer)  # type: ignore
 
 
 class GameOver(Action):
@@ -945,7 +945,7 @@ class GameOver(Action):
         self.finish_time = finish_time
 
 
-pb.setUnjellyableForClass(GameOver, GameOver)  # type: ignore
+setUnjellyableForClass(GameOver, GameOver)  # type: ignore
 
 
 class PauseAI(EphemeralAction):
@@ -954,7 +954,7 @@ class PauseAI(EphemeralAction):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(PauseAI, PauseAI)  # type: ignore
+setUnjellyableForClass(PauseAI, PauseAI)  # type: ignore
 
 
 class ResumeAI(EphemeralAction):
@@ -963,7 +963,7 @@ class ResumeAI(EphemeralAction):
         self.playername = playername
 
 
-pb.setUnjellyableForClass(ResumeAI, ResumeAI)  # type: ignore
+setUnjellyableForClass(ResumeAI, ResumeAI)  # type: ignore
 
 
 class ChatMessage(EphemeralAction):
@@ -972,4 +972,4 @@ class ChatMessage(EphemeralAction):
         self.message = message
 
 
-pb.setUnjellyableForClass(ChatMessage, ChatMessage)  # type: ignore
+setUnjellyableForClass(ChatMessage, ChatMessage)  # type: ignore

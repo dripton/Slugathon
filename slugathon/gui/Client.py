@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from twisted.cred import credentials
 from twisted.internet import defer, reactor
 from twisted.python import log
-from twisted.spread import pb
+from twisted.spread.pb import PBClientFactory, Referenceable
 from zope.interface import implementer
 
 from slugathon.game import Action, Game
@@ -26,7 +26,7 @@ __license__ = "GNU GPL v2"
 
 
 @implementer(IObserver)
-class Client(pb.Referenceable, Observed):
+class Client(Referenceable, Observed):
     def __init__(
         self,
         playername: str,
@@ -40,7 +40,7 @@ class Client(pb.Referenceable, Observed):
         self.password = password
         self.host = host
         self.port = port
-        self.factory = pb.PBClientFactory()  # type: ignore
+        self.factory = PBClientFactory()  # type: ignore
         self.factory.unsafeTracebacks = True
         self.user = None  # type: Optional[User.User]
         self.playernames = set()  # type: Set[str]

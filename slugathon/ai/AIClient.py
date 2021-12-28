@@ -17,8 +17,12 @@ from twisted.internet import defer, reactor
 from twisted.internet.error import ReactorNotRunning
 from twisted.internet.task import LoopingCall
 from twisted.python import log
-from twisted.spread import pb
-from twisted.spread.pb import DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import (
+    DeadReferenceError,
+    PBClientFactory,
+    PBConnectionLost,
+    Referenceable,
+)
 from zope.interface import implementer
 
 from slugathon.ai import BotParams, CleverBot, predictsplits
@@ -41,7 +45,7 @@ defer.setDebugging(True)
 
 
 @implementer(IObserver)
-class AIClient(pb.Referenceable, Observed):
+class AIClient(Referenceable, Observed):
     def __init__(
         self,
         playername: str,
@@ -64,7 +68,7 @@ class AIClient(pb.Referenceable, Observed):
         self.port = port
         self.delay = delay
         self.aiclass = "CleverBot"
-        self.factory = pb.PBClientFactory()  # type: ignore
+        self.factory = PBClientFactory()  # type: ignore
         self.factory.unsafeTracebacks = True
         self.user = None  # type: Optional[User.User]
         self.games = []  # type: List[Game.Game]
