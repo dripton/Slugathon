@@ -6,6 +6,7 @@ import logging
 import os
 import random
 import sys
+from typing import Any, Tuple
 
 from twisted.internet import reactor, utils
 from twisted.python import log
@@ -20,29 +21,29 @@ __license__ = "GNU GPL v2"
 
 
 # We never stop the server, but it seems to go down when this script does.
-def start_server():
+def start_server() -> None:
     def1 = utils.getProcessOutputAndValue(
         sys.executable, ["-m", "slugathon.net.Server"], env=os.environ
-    )
+    )  # type: ignore
     def1.addCallback(server_exited)
     def1.addErrback(server_failed)
 
 
-def server_exited(tup):
+def server_exited(tup: Tuple[str, str, int] ) -> None:
     out, err, code = tup
     logging.info(f"server exited with returncode {code} stderr {err}")
 
 
-def server_failed(arg):
-    log.err(f"server failed {arg}")
+def server_failed(arg: Any) -> None:
+    log.err(f"server failed {arg}")  # type: ignore
 
 
 def start_game(
-    playername, password, ai_time_limit, min_players, max_players, num_games
-):
+    playername: str, password: str, ai_time_limit: float, min_players: int, max_players: int, num_games: int
+) -> None:
     if num_games <= 0:
         logging.info("finished running games")
-        reactor.callWhenRunning(reactor.stop)
+        reactor.callWhenRunning(reactor.stop)  # type: ignore
         return
     num_players = random.randrange(min_players, max_players + 1)
     def1 = utils.getProcessValue(
@@ -65,7 +66,7 @@ def start_game(
             f"stresstest_game_{os.getpid()}_{num_games}",
         ],
         env=os.environ,
-    )
+    )  # type: ignore
     def1.addCallback(
         game_exited,
         playername,
@@ -79,14 +80,14 @@ def start_game(
 
 
 def game_exited(
-    returncode,
-    playername,
-    password,
-    ai_time_limit,
-    min_players,
-    max_players,
-    num_games,
-):
+    returncode: int,
+    playername: str,
+    password: str,
+    ai_time_limit: float,
+    min_players: int,
+    max_players: int,
+    num_games: int,
+) -> None:
     logging.info(f"{returncode=}")
     if returncode == 0:
         start_game(
@@ -98,14 +99,14 @@ def game_exited(
             num_games,
         )
     else:
-        reactor.stop()
+        reactor.stop()  # type: ignore
 
 
-def game_failed(arg):
-    log.err(f"game failed {arg}")
+def game_failed(arg: Any) -> None:
+    log.err(f"game failed {arg}")  # type: ignore
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(prog="stresstest-slugathon")
     parser.add_argument(
         "-n", "--playername", action="store", type=str, default=""
@@ -124,7 +125,7 @@ def main():
     parser.add_argument("--max-players", action="store", type=int, default=6)
     args = parser.parse_args()
 
-    log_observer = log.PythonLoggingObserver()
+    log_observer = log.PythonLoggingObserver()  # type: ignore
     log_observer.start()
     formatter = logging.Formatter(
         "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s"
@@ -146,7 +147,7 @@ def main():
         args.max_players,
         args.num_games,
     )
-    reactor.run()
+    reactor.run() # type: ignore
 
 
 if __name__ == "__main__":

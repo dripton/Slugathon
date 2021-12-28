@@ -3,8 +3,9 @@
 
 import argparse
 import sys
+from typing import Callable, Optional
 
-connect_add_arguments = None
+connect_add_arguments = None  # type: Optional[Callable]
 try:
     from slugathon.gui.Connect import add_arguments as connect_add_arguments
 except ImportError:
