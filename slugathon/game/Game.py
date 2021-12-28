@@ -1866,6 +1866,7 @@ class Game(Observed):
         """Return True iff the battle is over."""
         logging.info(f"{self.battle_legions=}")
         if self.battle_turn is None:
+            logging.debug("")
             return True
         for legion in self.battle_legions:
             if legion.dead:
@@ -1874,6 +1875,7 @@ class Game(Observed):
         if self.battle_turn > 7:
             logging.info("battle_turn > 7; time loss")
             return True
+        logging.debug("")
         return False
 
     def _end_battle(self) -> None:
@@ -2044,6 +2046,7 @@ class Game(Observed):
     def cleanup_offboard_creatures(self) -> None:
         logging.info("")
         if self.battlemap is None:
+            logging.debug("")
             return
         for legion in self.battle_legions:
             if legion != self.battle_active_legion:
@@ -2072,8 +2075,10 @@ class Game(Observed):
     def cleanup_dead_creatures(self) -> None:
         logging.info("")
         for legion in self.battle_legions:
+            logging.debug(f"{legion=}")
             for creature in legion.creatures:
                 if creature.dead:
+                    logging.debug(f"{creature=}")
                     if (
                         self.first_attacker_kill is None
                         and creature.legion is self.defender_legion
