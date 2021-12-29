@@ -319,7 +319,7 @@ class AIClient(Referenceable, Observed):
 
     def exit_unconditionally(self, returncode: int) -> NoReturn:
         """Just exit the process, with no tracebacks or other drama."""
-        logging.info(f"{returncode}")
+        logging.info(f"{returncode=}")
         if reactor.running:  # type: ignore
             try:
                 reactor.stop()  # type: ignore

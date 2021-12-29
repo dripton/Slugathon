@@ -177,8 +177,8 @@ class Server(Observed):
         Return None normally, or an error string if there's a problem.
         """
         logging.info(
-            f"{playername} {game_name} {min_players} {max_players} "
-            f"{ai_time_limit} {player_time_limit} {player_class} {player_info}"
+            f"{playername=} {game_name=} {min_players=} {max_players=} "
+            f"{ai_time_limit=} {player_time_limit=} {player_class=} {player_info=}"
         )
         if not game_name:
             st = "Games must be named"
@@ -294,7 +294,7 @@ class Server(Observed):
             fil.write(f"{ainame}:{password}\n")
 
     def _spawn_ais(self, game: Game.Game) -> None:
-        logging.debug(game.name)
+        logging.debug(f"{game.name=}")
         excludes = set()
         for game3 in self.games:
             if not game3.over:
@@ -309,8 +309,8 @@ class Server(Observed):
                     excludes.add(player_id)
         num_ais = game.min_players - game.num_players
         logging.debug(
-            f"{game.name} min_players {game.min_players} num_players "
-            f"{game.num_players} num_ais_needed {num_ais}"
+            f"{game.name=} {game.min_players=} "
+            f"{game.num_players=} {num_ais=}"
         )
         logging.debug(f"{game.name=} {excludes=}")
         ainames = []
@@ -324,7 +324,7 @@ class Server(Observed):
         for ainame in ainames:
             if self._passwd_for_playername(ainame) is None:
                 self._add_playername_with_random_password(ainame)
-        logging.debug(f"{game.name} ainames {ainames}")
+        logging.debug(f"{game.name=} {ainames=}")
         # Add all AIs to the wait list first, to avoid a race.
         self.game_to_waiting_ais[game.name] = set(ainames)
         if hasattr(sys, "frozen"):
@@ -367,7 +367,10 @@ class Server(Observed):
                     )
                 else:
                     args.extend(["--password", aipass])
-            logging.info(f"spawning AI process for {game} {ainame}")
+            logging.info(
+                f"spawning AI process for {game=} {ainame=} {pp=} "
+                f"{executable=} {args=}"
+            )
             reactor.spawnProcess(pp, executable, args=args, env=os.environ)  # type: ignore
 
     def pick_color(self, playername: str, game_name: str, color: str) -> None:
