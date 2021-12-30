@@ -163,7 +163,7 @@ class Node(object):
 
     @property
     def certain_creatures(self) -> List[CreatureInfo]:
-        """Return list of CreatureInfo where certain is true."""
+        """Return list of CreatureInfo where certain is True."""
         return [ci for ci in self.creatures if ci.certain]
 
     @property
@@ -660,13 +660,13 @@ class PredictSplits(object):
         if newlines:
             print()
 
-    def get_leaf(self, markerid: str) -> Optional[Node]:
-        """Return the leaf node with matching markerid"""
+    def get_leaf(self, markerid: str) -> Node:
+        """Return the leaf node with matching markerid, or raise if not found."""
         leaves = self.get_leaves()
         for leaf in leaves:
             if leaf.markerid == markerid:
                 return leaf
-        return None
+        raise KeyError(f"{markerid=} not found")
 
     @property
     def num_uncertain_legions(self) -> int:
@@ -685,13 +685,15 @@ class AllPredictSplits(list):
     def __init__(self) -> None:
         super(AllPredictSplits, self).__init__()
 
-    def get_leaf(self, markerid: str) -> Optional[Node]:
-        """Return the leaf with markerid, or None."""
+    def get_leaf(self, markerid: str) -> Node:
+        """Return the leaf with markerid, or raise if not found."""
         for ps in self:
-            leaf = ps.get_leaf(markerid)
-            if leaf:
+            try:
+                leaf = ps.get_leaf(markerid)
                 return leaf
-        return None
+            except KeyError:
+                pass
+        raise KeyError(f"{markerid=} not found")
 
     def print_leaves(self) -> None:
         """Print all leaf nodes."""

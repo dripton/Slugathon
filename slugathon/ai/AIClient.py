@@ -346,7 +346,7 @@ class AIClient(Referenceable, Observed):
         ):
             return
 
-        logging.info(f"{action}")
+        logging.info(f"{action=}")
 
         if isinstance(action, Action.ResumeAI):
             self.paused = False
@@ -454,7 +454,6 @@ class AIClient(Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             assert game is not None
             parent = self.aps.get_leaf(action.parent_markerid)
-            assert parent is not None
             parent.split(
                 len(action.child_creature_names),
                 action.child_markerid,
@@ -462,10 +461,8 @@ class AIClient(Referenceable, Observed):
             )
             if action.parent_creature_names[0] != "Unknown":
                 parent = self.aps.get_leaf(action.parent_markerid)
-                assert parent is not None
                 parent.reveal_creatures(list(action.parent_creature_names))
                 child = self.aps.get_leaf(action.child_markerid)
-                assert child is not None
                 child.reveal_creatures(list(action.child_creature_names))
             self.update_creatures(game)
             if action.playername == self.playername:
@@ -480,9 +477,7 @@ class AIClient(Referenceable, Observed):
                 + f"{game.turn})"
             )
             parent = self.aps.get_leaf(action.parent_markerid)
-            assert parent is not None
             child = self.aps.get_leaf(action.child_markerid)
-            assert child is not None
             parent.merge(child, game.turn)
             self.update_creatures(game)
 
@@ -641,7 +636,6 @@ class AIClient(Referenceable, Observed):
             assert game is not None
             assert game.active_player is not None
             leaf = self.aps.get_leaf(action.markerid)
-            assert leaf is not None
             leaf.reveal_creatures(list(action.recruiter_names))
             leaf.add_creature(action.creature_name)
             self.update_creatures(game)
@@ -669,7 +663,6 @@ class AIClient(Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             assert game is not None
             leaf = self.aps.get_leaf(action.markerid)
-            assert leaf is not None
             leaf.remove_creature(action.creature_name)
             self.update_creatures(game)
 
@@ -677,7 +670,6 @@ class AIClient(Referenceable, Observed):
             game = self.name_to_game(action.game_name)
             assert game is not None
             leaf = self.aps.get_leaf(action.markerid)
-            assert leaf is not None
             leaf.remove_creature(action.creature_name)
             self.update_creatures(game)
 
@@ -698,13 +690,19 @@ class AIClient(Referenceable, Observed):
         elif isinstance(action, Action.SummonAngel):
             game = self.name_to_game(action.game_name)
             assert game is not None
-            donor = self.aps.get_leaf(action.donor_markerid)
-            if donor:
+            try:
+                donor = self.aps.get_leaf(action.donor_markerid)
                 donor.reveal_creatures([action.creature_name])
                 donor.remove_creature(action.creature_name)
-            recipient = self.aps.get_leaf(action.markerid)
-            if recipient:
+            except KeyError:
+                logging.info("")
+                pass
+            try:
+                recipient = self.aps.get_leaf(action.markerid)
                 recipient.add_creature(action.creature_name)
+            except KeyError:
+                logging.info("")
+                pass
             self.update_creatures(game)
             if action.playername == self.playername:
                 if game.battle_phase == Phase.REINFORCE:
