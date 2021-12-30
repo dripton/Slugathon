@@ -1,21 +1,19 @@
 import time
 
+import pytest
+
 from slugathon.game import Creature, Game, Player
 
 __copyright__ = "Copyright (c) 2003-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_non_existent_creature():
-    try:
+def test_non_existent_creature() -> None:
+    with pytest.raises(KeyError):
         Creature.Creature("Jackalope")
-    except KeyError:
-        pass
-    else:
-        assert False, "Should have raised"
 
 
-def test_init():
+def test_init() -> None:
     creature = Creature.Creature("Ogre")
     assert creature.name == "Ogre"
     assert creature.plural_name == "Ogres"
@@ -36,14 +34,14 @@ def test_init():
     assert creature.color_name == "ogre_red"
 
 
-def test_score():
+def test_score() -> None:
     creature = Creature.Creature("Ogre")
     assert creature.score == 12
     creature = Creature.Creature("Colossus")
     assert creature.score == 40
 
 
-def test_native():
+def test_native() -> None:
     ogre = Creature.Creature("Ogre")
     assert ogre.is_native("Bog")
     assert ogre.is_native("Slope")
@@ -98,7 +96,7 @@ def test_native():
     assert unicorn.is_native("Slope")
 
 
-def test_titan_power():
+def test_titan_power() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)

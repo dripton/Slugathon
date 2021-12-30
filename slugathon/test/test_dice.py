@@ -1,7 +1,7 @@
 import logging
 import math
 from collections import defaultdict
-from typing import DefaultDict, Dict, Tuple
+from typing import Callable, DefaultDict, Dict, List, Optional, Tuple
 
 from slugathon.util import Dice
 
@@ -12,10 +12,8 @@ __license__ = "GNU GPL v2"
 EPSILON = 0.000001
 
 
-def find_median(rolls):
+def find_median(rolls: List[float]) -> float:
     """Find the median of a sequence of numbers."""
-    if len(rolls) == 0:
-        return None
     clone = list(rolls)
     clone.sort()
     midpoint = (len(clone) - 1) / 2.0
@@ -28,7 +26,7 @@ def find_median(rolls):
         ) / 2.0
 
 
-def convert_to_binary(rolls, median):
+def convert_to_binary(rolls: List[float], median: float) -> List[int]:
     ms = []
     for roll in rolls:
         if roll <= median:
@@ -38,7 +36,7 @@ def convert_to_binary(rolls, median):
     return ms
 
 
-def count_zeros(rolls):
+def count_zeros(rolls: List[int]) -> int:
     count = 0
     for roll in rolls:
         if roll == 0:
@@ -46,7 +44,7 @@ def count_zeros(rolls):
     return count
 
 
-def count_runs(rolls):
+def count_runs(rolls: List[int]) -> int:
     prev = None
     count = 0
     for roll in rolls:
@@ -56,8 +54,8 @@ def count_runs(rolls):
     return count
 
 
-def count_positive_diffs(rolls):
-    prev = 7
+def count_positive_diffs(rolls: List[float]) -> int:
+    prev = 7.0
     count = 0
     for roll in rolls:
         if roll > prev:
@@ -66,7 +64,7 @@ def count_positive_diffs(rolls):
     return count
 
 
-def count_non_zero_diffs(rolls):
+def count_non_zero_diffs(rolls: List[float]) -> int:
     prev = None
     count = 0
     for roll in rolls:
@@ -76,7 +74,7 @@ def count_non_zero_diffs(rolls):
     return count
 
 
-def trim_zero_runs(rolls):
+def trim_zero_runs(rolls: List[float]) -> List[float]:
     """Return the list with runs of identical rolls reduced to just one."""
     li = []
     prev = None
@@ -87,7 +85,7 @@ def trim_zero_runs(rolls):
     return li
 
 
-def sign(num):
+def sign(num: float) -> int:
     """Return 1 if num is positive, 0 if zero, -1 if negative."""
     if num > 0:
         return 1
@@ -97,7 +95,7 @@ def sign(num):
         return -1
 
 
-def fail_if_abnormal(val, mean, var):
+def fail_if_abnormal(val: float, mean: float, var: float) -> None:
     """Fail if a result is outside the normal range."""
     # Avoid division by zero when we hit spot-on.
     if abs(var) < EPSILON:
@@ -111,23 +109,22 @@ def fail_if_abnormal(val, mean, var):
 
 
 class TestDice(object):
-    def setup_method(self, method):
+    def setup_method(self, method: Callable) -> None:
         self.trials = 5000
-        self.rolls = []
+        self.rolls = []  # type: List[float]
         self.bins = {}  # type: Dict[int, int]
         for unused in range(self.trials):
             num = Dice.roll()[0]
             self.rolls.append(num)
             self.bins[num] = self.bins.get(num, 0) + 1
 
-    def test_find_median(self):
-        assert find_median([]) is None
+    def test_find_median(self) -> None:
         assert find_median([0]) == 0
         assert find_median([-2, 0, 25]) == 0
         assert find_median([25, -2, 0]) == 0
         assert abs(find_median([2, 0.15, 3, 4329473]) - 2.5) < EPSILON
 
-    def test_convert_to_binary(self):
+    def test_convert_to_binary(self) -> None:
         assert convert_to_binary([-11111, 0.1, 2, 3, 4, 23947], 2.5) == [
             0,
             0,
@@ -137,18 +134,18 @@ class TestDice(object):
             1,
         ]
 
-    def test_count_runs(self):
+    def test_count_runs(self) -> None:
         assert count_runs([1, 2, 2, 2, 3, 2, 1, 6, 6, 5, 5, 1]) == 8
 
-    def test_count_positive_diffs(self):
+    def test_count_positive_diffs(self) -> None:
         assert count_positive_diffs([]) == 0
         assert count_positive_diffs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == 4
 
-    def test_count_non_zero_diffs(self):
+    def test_count_non_zero_diffs(self) -> None:
         assert count_non_zero_diffs([]) == 0
         assert count_non_zero_diffs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == 8
 
-    def test_trim_zero_runs(self):
+    def test_trim_zero_runs(self) -> None:
         assert trim_zero_runs([]) == []
         assert trim_zero_runs([3, 3, 4, 2, 5, 3, 4, 2, 6, 1]) == [
             3,
@@ -162,7 +159,7 @@ class TestDice(object):
             1,
         ]
 
-    def test_M(self):
+    def test_M(self) -> None:
         """Recode each sample as 0 if <= sample median, 1 if > sample median
         M is number of runs of consecutive 0s and 1s.
         r is number of 0s.
@@ -185,7 +182,7 @@ class TestDice(object):
         logging.info(f"M test: r = {r} M = {M} mean = {mean_M} var = {var_M}")
         fail_if_abnormal(M, mean_M, var_M)
 
-    def test_sign(self):
+    def test_sign(self) -> None:
         """P is number of positive signs among x2-x1, x3-x2, etc. (not zeros)
         If M non-zero values of xi - x(i-1), mean_P is m/2, variance_P is M/12
         """
@@ -198,7 +195,7 @@ class TestDice(object):
         )
         fail_if_abnormal(P, mean_P, var_P)
 
-    def test_runs(self):
+    def test_runs(self) -> None:
         trimmed = trim_zero_runs(self.rolls)
         m = len(trimmed)
         pos = count_positive_diffs(trimmed)
@@ -213,7 +210,7 @@ class TestDice(object):
         )
         fail_if_abnormal(R, mean_R, var_R)
 
-    def test_mann_kendall(self):
+    def test_mann_kendall(self) -> None:
         S = 0
         n = len(self.rolls)
         for i in range(1, n):
@@ -227,7 +224,7 @@ class TestDice(object):
         )
         fail_if_abnormal(S, mean_S, var_S)
 
-    def test_shuffle(self):
+    def test_shuffle(self) -> None:
         s = set()
         lst = list(range(10))
         s.add(tuple(lst))
@@ -238,7 +235,7 @@ class TestDice(object):
         # We are highly unlikely to get a duplicate.  Though it's possible...
         assert len(s) == num_shuffles + 1
 
-    def test_chi_square(self):
+    def test_chi_square(self) -> None:
         chi_square = 0.0
         for roll, num in self.bins.items():
             expected = self.trials / 6.0
@@ -248,7 +245,7 @@ class TestDice(object):
         # degrees of freedom = 5, 99.5% chance of randomness
         assert chi_square < 0.4117
 
-    def test_weighted_random_choice(self):
+    def test_weighted_random_choice(self) -> None:
         lst = [
             (0.4, 1),
             (0.3, 2),

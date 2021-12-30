@@ -12,7 +12,7 @@ __copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_db_creation():
+def test_db_creation() -> None:
     with tempfile.NamedTemporaryFile(
         prefix="slugathon", suffix=".db", delete=True
     ) as tmp_file:
@@ -21,7 +21,7 @@ def test_db_creation():
         assert os.path.getsize(db_path) > 0
 
 
-def test_save_game_and_get_ranking():
+def test_save_game_and_get_ranking() -> None:
     with tempfile.NamedTemporaryFile(
         prefix="slugathon", suffix=".db", delete=True
     ) as tmp_file:

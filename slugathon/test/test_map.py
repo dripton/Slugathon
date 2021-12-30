@@ -1,5 +1,7 @@
 from sys import maxsize
 
+import pytest
+
 from slugathon.game import BattleMap
 from slugathon.util import guiutils
 
@@ -23,7 +25,7 @@ map4 = BattleMap.BattleMap("Desert", 5)
 map5 = BattleMap.BattleMap("Jungle", 5)
 
 
-def test_all_labels():
+def test_all_labels() -> None:
     assert len(BattleMap.all_labels) == 29
     assert "A1" in BattleMap.all_labels
     assert "A4" not in BattleMap.all_labels
@@ -31,7 +33,7 @@ def test_all_labels():
     assert "DEFENDER" in BattleMap.all_labels
 
 
-def test_default_hex_init():
+def test_default_hex_init() -> None:
     assert hex1.terrain == "Plain"
     assert hex1.elevation == 0
     for ii in range(6):
@@ -39,7 +41,7 @@ def test_default_hex_init():
         assert hex6.borders[ii] is None
 
 
-def test_non_default_hex_init():
+def test_non_default_hex_init() -> None:
     assert hex2.terrain == "Plain"
     assert hex2.elevation == 1
     assert hex2.borders[0] is None
@@ -68,32 +70,28 @@ def test_non_default_hex_init():
     assert hex7.borders[5] == "Wall"
 
 
-def test_label_to_coords():
+def test_label_to_coords() -> None:
     assert BattleMap.label_to_coords("A1", 1) == (5, 1)
     assert BattleMap.label_to_coords("A1", 1, True) == (5, 1.5)
     assert BattleMap.label_to_coords("B2", 1) == (4, 2)
     assert BattleMap.label_to_coords("B2", 1, True) == (4, 2)
     for label in ("", "A0", "A4", "A10", "G1"):
-        try:
+        with pytest.raises(KeyError):
             BattleMap.label_to_coords(label, 1)
-        except KeyError:
-            pass
-        else:
-            assert False
 
 
-def test_midpoint():
+def test_midpoint() -> None:
     assert guiutils.midpoint((1, 0), (6, 3)) == (3.5, 1.5)
 
 
-def test_roundpoint():
+def test_roundpoint() -> None:
     assert guiutils.roundpoint((1, 2)) == (1, 2)
     assert guiutils.roundpoint((1.0, 2.0)) == (1, 2)
     assert guiutils.roundpoint((1.5, 2.4999)) == (2, 2)
     assert guiutils.roundpoint((-0.3, 9.5)) == (0, 10)
 
 
-def test_hexsides_with_border():
+def test_hexsides_with_border() -> None:
     assert hex1.hexsides_with_border("Slope") == set()
     assert hex1.hexsides_with_border("Cliff") == set()
     assert hex1.hexsides_with_border("Wall") == set()
@@ -102,7 +100,7 @@ def test_hexsides_with_border():
     assert hex3.hexsides_with_border("Cliff") == {1}
 
 
-def test_spin_border_dict():
+def test_spin_border_dict() -> None:
     assert map1.spin_border_dict({}, 1) == {}
     assert map1.spin_border_dict({}, 3) == {}
     assert map1.spin_border_dict({}, 5) == {}
@@ -111,13 +109,13 @@ def test_spin_border_dict():
     assert map1.spin_border_dict({0: "Slope"}, 5) == {1: "Slope"}
 
 
-def test_startlist():
+def test_startlist() -> None:
     assert map1.startlist is None
     map2 = BattleMap.BattleMap("Tower", 1)
     assert map2.startlist == ["C3", "C4", "D3", "D4", "D5", "E3", "E4"]
 
 
-def test_neighbors():
+def test_neighbors() -> None:
     assert len(hex1.neighbors) == 4
     assert hex1.neighbors[0].label == "A1"
     assert hex1.neighbors[3].label == "A3"
@@ -149,7 +147,7 @@ def test_neighbors():
     assert hex5.neighbors[3].label == "F2"
 
 
-def test_range():
+def test_range() -> None:
     assert map1.range("A1", "A1") == 1
     assert map1.range("A1", "A2") == 2
     assert map1.range("A2", "A1") == 2
@@ -189,7 +187,7 @@ def test_range():
     assert map1.range("DEFENDER", "A1", True) == 2
 
 
-def test_opposite_border():
+def test_opposite_border() -> None:
     hex1 = map1.hexes["D3"]
     assert hex1.opposite_border(0) is None
     assert hex1.opposite_border(1) is None
@@ -206,7 +204,7 @@ def test_opposite_border():
     assert hex1.opposite_border(5) is None
 
 
-def test_is_los_blocked():
+def test_is_los_blocked() -> None:
     # Mountains
     assert map1.is_los_blocked("D5", "D3", None)
     assert not map1.is_los_blocked("D5", "E3", None)
@@ -265,16 +263,16 @@ def test_is_los_blocked():
     assert not map5.is_los_blocked("E2", "E2", None)
 
 
-def test_battlehex_repr():
+def test_battlehex_repr() -> None:
     assert repr(hex1) == "BattleHex A2 (5, 2.0)"
 
 
-def test_neighbor_to_hexside():
+def test_neighbor_to_hexside() -> None:
     assert hex1.neighbor_to_hexside(hex2) == 0
     assert hex2.neighbor_to_hexside(hex1) == 3
     assert hex1.neighbor_to_hexside(hex3) is None
 
 
-def test_width_and_height():
+def test_width_and_height() -> None:
     assert map1.hex_width == 8
     assert map1.hex_height == 6

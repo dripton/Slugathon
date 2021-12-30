@@ -1,12 +1,14 @@
 import time
 
+import pytest
+
 from slugathon.game import Game, Phase, Player
 
 __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_can_exit_split_phase():
+def test_can_exit_split_phase() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -28,7 +30,7 @@ def test_can_exit_split_phase():
     assert player.can_exit_split_phase
 
 
-def test_friendly_legions():
+def test_friendly_legions() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -59,7 +61,7 @@ def test_friendly_legions():
     assert player.friendly_legions(200) == {legion2}
 
 
-def test_can_exit_move_phase():
+def test_can_exit_move_phase() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -84,7 +86,7 @@ def test_can_exit_move_phase():
     assert player.can_exit_move_phase
 
 
-def test_num_creatures():
+def test_num_creatures() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -97,7 +99,7 @@ def test_num_creatures():
     assert player.num_creatures == 8
 
 
-def test_teleported():
+def test_teleported() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -125,7 +127,7 @@ def test_teleported():
     assert not player.teleported
 
 
-def test_pick_marker():
+def test_pick_marker() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -138,55 +140,39 @@ def test_pick_marker():
     assert player.selected_markerid == "Rd01"
 
 
-def test_take_marker():
+def test_take_marker() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
     player.assign_starting_tower(600)
     player.assign_color("Red")
     assert len(player.markerids_left) == 12
-    try:
+    with pytest.raises(Exception):
         player.take_marker("Bu01")
-    except Exception:
-        pass
-    else:
-        assert False
     player.take_marker("Rd01")
     assert len(player.markerids_left) == 11
 
 
-def test_create_starting_legion():
+def test_create_starting_legion() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
     player.assign_starting_tower(600)
     player.assign_color("Red")
     assert len(player.markerids_left) == 12
-    try:
+    with pytest.raises(Exception):
         player.create_starting_legion()
-    except Exception:
-        pass
-    else:
-        assert False
     player.selected_markerid = "Bu01"
-    try:
+    with pytest.raises(Exception):
         player.create_starting_legion()
-    except Exception:
-        pass
-    else:
-        assert False
     player.pick_marker("Rd01")
     player.create_starting_legion()
     player.pick_marker("Rd02")
-    try:
+    with pytest.raises(Exception):
         player.create_starting_legion()
-    except Exception:
-        pass
-    else:
-        assert False
 
 
-def test_can_split():
+def test_can_split() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -216,7 +202,7 @@ def test_can_split():
     assert not player.can_split
 
 
-def test_sorted_legions():
+def test_sorted_legions() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)

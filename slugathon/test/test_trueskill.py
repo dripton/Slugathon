@@ -4,7 +4,7 @@ __copyright__ = "Copyright (c) 2012-2021 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_6_players_no_draws():
+def test_6_players_no_draws() -> None:
     r1 = trueskill.Rating()
     r2 = trueskill.Rating()
     r3 = trueskill.Rating()
@@ -20,7 +20,7 @@ def test_6_players_no_draws():
         assert rating.sigma < sigma0
 
 
-def test_3_player_draw():
+def test_3_player_draw() -> None:
     r1 = trueskill.Rating()
     r2 = trueskill.Rating()
     r3 = trueskill.Rating()

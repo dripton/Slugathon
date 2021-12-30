@@ -10,24 +10,24 @@ hex1 = board.hexes[1]
 hex2 = board.hexes[2]
 
 
-def test_init_hex():
+def test_init_hex() -> None:
     assert hex1.terrain == "Plains"
     assert hex1.x == 7
     assert hex1.y == 5
 
 
-def test_find_direction():
+def test_find_direction() -> None:
     """Returns a direction (0 to 5) to the hex with the given label."""
     assert hex1.find_direction(2) == 2
     assert hex1.find_direction(1000) == 0
 
 
-def test_hex_inverted():
+def test_hex_inverted() -> None:
     assert hex1.inverted
     assert not board.hexes[2].inverted
 
 
-def test_exits():
+def test_exits() -> None:
     assert hex1.exits[0] == "ARCH"
     assert hex1.exits[1] is None
     assert hex1.exits[2] == "ARROWS"
@@ -54,7 +54,7 @@ def test_exits():
     assert hex2.entrances[5] == "ARROWS"
 
 
-def test_neighbors():
+def test_neighbors() -> None:
     assert hex1.neighbors[0] == board.hexes[1000]
     assert hex1.neighbors[1] is None
     assert hex1.neighbors[2] == board.hexes[2]
@@ -63,7 +63,7 @@ def test_neighbors():
     assert hex1.neighbors[5] is None
 
 
-def test_flatten_point_list():
+def test_flatten_point_list() -> None:
     vertexes = [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10, 11)]
     assert guiutils.flatten_point_list(vertexes) == (
         0,
@@ -81,18 +81,18 @@ def test_flatten_point_list():
     )
 
 
-def test_rgb_to_gtk():
+def test_rgb_to_gtk() -> None:
     assert guiutils.rgb_to_gtk((0, 0, 0)) == ((0, 0, 0))
     assert guiutils.rgb_to_gtk((255, 255, 255)) == ((65280, 65280, 65280))
     assert guiutils.rgb_to_gtk((189, 0, 24)) == ((48384, 0, 6144))
 
 
-def test_build_overlay_filename():
+def test_build_overlay_filename() -> None:
     assert hex1.overlay_filename == "Plains_i.png"
     assert hex2.overlay_filename == "Woods_n.png"
 
 
-def test_find_label_side():
+def test_find_label_side() -> None:
     assert hex1.find_label_side() == 3
     assert hex2.find_label_side() == 0
     assert board.hexes[115].find_label_side() == 1
@@ -101,7 +101,7 @@ def test_find_label_side():
     assert board.hexes[105].find_label_side() == 5
 
 
-def test_get_semicircle_points():
+def test_get_semicircle_points() -> None:
     assert guiutils.get_semicircle_points(0, 0, 1, 1, 0) == []
 
     li = guiutils.get_semicircle_points(100, 100, 200, 100, 4)
@@ -133,8 +133,8 @@ def test_get_semicircle_points():
     assert li[3] == (100, 100)
 
 
-def test_scale_polygon():
-    vertexes = [(100, 0), (200, 100), (100, 200), (0, 100)]
+def test_scale_polygon() -> None:
+    vertexes = [(100.0, 0.0), (200.0, 100.0), (100.0, 200.0), (0.0, 100.0)]
     nv = guiutils.scale_polygon(vertexes, 0.5)
     assert int(round(nv[0][0])) == 100
     assert int(round(nv[0][1])) == 50
@@ -146,15 +146,15 @@ def test_scale_polygon():
     assert int(round(nv[3][1])) == 100
 
 
-def test_towers():
+def test_towers() -> None:
     labels = board.get_tower_labels()
     labels.sort()
     assert labels == [100, 200, 300, 400, 500, 600]
 
 
-def test_hex_width():
+def test_hex_width() -> None:
     assert board.hex_width == 15
 
 
-def test_hex_height():
+def test_hex_height() -> None:
     assert board.hex_height == 8

@@ -4,7 +4,7 @@ __copyright__ = "Copyright (c) 2009-2011 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_rectangles_intersect():
+def test_rectangles_intersect() -> None:
     ri = guiutils.rectangles_intersect
     rect1 = (0, 0, 0, 0)
     rect2 = (0, 0, 1, 1)
@@ -23,7 +23,7 @@ def test_rectangles_intersect():
     assert not ri(rect4, rect5)
 
 
-def test_combine_rectangles():
+def test_combine_rectangles() -> None:
     cr = guiutils.combine_rectangles
     rect1 = (0, 0, 0, 0)
     rect2 = (0, 0, 1, 1)
@@ -44,9 +44,9 @@ def test_combine_rectangles():
     assert cr(rect4, rect5) == (0.5, 0.5, 1.5, 1.5)
 
 
-def test_point_in_polygon1():
+def test_point_in_polygon1() -> None:
     pip = guiutils.point_in_polygon
-    v3 = [(0, 0), (6, 0), (0, 6)]
+    v3 = [(0.0, 0.0), (6.0, 0.0), (0.0, 6.0)]
     assert pip((1, 1), v3)
     assert pip((2, 1), v3)
     assert pip((3, 1), v3)
@@ -74,17 +74,24 @@ def test_point_in_polygon1():
     assert not pip((6, 5), v3)
 
 
-def test_point_in_polygon2():
+def test_point_in_polygon2() -> None:
     pip = guiutils.point_in_polygon
-    v4 = [(0, 0), (5, 0), (5, 10), (0, 10)]
+    v4 = [(0.0, 0.0), (5.0, 0.0), (5.0, 10.0), (0.0, 10.0)]
     assert not pip((5, 0), v4)
     assert not pip((5, 10), v4)
     assert not pip((0, 10), v4)
     assert pip((0.001, 0.001), v4)
 
 
-def test_point_in_polygon3():
+def test_point_in_polygon3() -> None:
     pip = guiutils.point_in_polygon
-    v6 = [(1, 3), (4, 3), (5, 0), (4, -3), (1, -3), (0, 0)]
+    v6 = [
+        (1.0, 3.0),
+        (4.0, 3.0),
+        (5.0, 0.0),
+        (4.0, -3.0),
+        (1.0, -3.0),
+        (0.0, 0.0),
+    ]
     assert pip((4, 0), v6)
     assert pip((3, 1), v6)

@@ -11,7 +11,7 @@ __license__ = "GNU GPL v2"
 tmp_path = None
 
 
-def test_history_1():
+def test_history_1() -> None:
     game_name = "game"
     playername = "player"
     parent_markerid = "Rd01"
@@ -62,7 +62,7 @@ def test_history_1():
     assert not history.can_redo(playername)
 
 
-def test_history_2():
+def test_history_2() -> None:
     game_name = "game"
     playername = "player"
     parent_markerid = "Rd01"
@@ -113,7 +113,7 @@ def test_history_2():
     assert history.can_redo(playername)
 
 
-def test_save():
+def test_save() -> None:
     game_name = "game"
     playername = "player"
     parent_markerid = "Rd01"
@@ -148,12 +148,12 @@ def test_save():
         tmp_path = fil.name
         history.save(fil)
 
-    with open(tmp_path) as fil:
-        lines = fil.readlines()
+    with open(tmp_path) as fil2:
+        lines = fil2.readlines()
     assert len(lines) == 2
 
 
-def test_load():
+def test_load() -> None:
     history = History.History()
     assert history.actions == []
     assert history.undone == []
@@ -216,7 +216,7 @@ RecruitCreature {'playername': 'dripton', 'markerid': 'Rd04', \
 """
 
 
-def test_load2():
+def test_load2() -> None:
     history = History.History()
     assert history.actions == []
     assert history.undone == []
@@ -225,7 +225,7 @@ def test_load2():
     assert len(history.actions) == 23
 
 
-def test_undo_nothing():
+def test_undo_nothing() -> None:
     game_name = "game"
     playername = "player"
     parent_markerid = "Rd01"
@@ -249,7 +249,7 @@ def test_undo_nothing():
     assert not history.can_redo(playername)
 
 
-def test_undo_non_matching_action():
+def test_undo_non_matching_action() -> None:
     game_name = "game"
     playername = "player"
     parent_markerid = "Rd01"
@@ -283,7 +283,7 @@ def test_undo_non_matching_action():
     assert not history.can_redo(playername)
 
 
-def test_find_last_split():
+def test_find_last_split() -> None:
     game_name = "game"
     playername = "player"
     parent_markerid = "Rd01"
@@ -313,7 +313,7 @@ def test_find_last_split():
     assert history.find_last_split(playername, "Rd03", "Rd04") is None
 
 
-def test_undo_then_do_different():
+def test_undo_then_do_different() -> None:
     game_name = "game"
     playername = "player"
     parent_markerid = "Rd01"

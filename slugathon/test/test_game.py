@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Callable
 
 from slugathon.game import Game
 
@@ -8,7 +9,7 @@ __license__ = "GNU GPL v2"
 
 
 class TestGame(object):
-    def setup_method(self, method):
+    def setup_method(self, method: Callable) -> None:
         now = time.time()
         self.game = game = Game.Game("g1", "p0", now, now, 2, 6)
         game.add_player("p1")
@@ -31,7 +32,7 @@ class TestGame(object):
         )
         player0.done_with_splits()
 
-    def test_all_legions(self):
+    def test_all_legions(self) -> None:
         game = self.game
         logging.info(game.all_legions())
         assert len(game.all_legions()) == 3
@@ -39,7 +40,7 @@ class TestGame(object):
         assert len(game.all_legions(100)) == 1
         assert len(game.all_legions(300)) == 0
 
-    def test_find_normal_moves(self):
+    def test_find_normal_moves(self) -> None:
         game = self.game
         player = self.game.players[0]
         legion = player.markerid_to_legion["Rd01"]
@@ -63,7 +64,7 @@ class TestGame(object):
         moves = self.game.find_normal_moves(legion, masterhex, 6)
         assert moves == {(15, 1), (11, 5), (103, 5)}
 
-    def test_find_normal_moves2(self):
+    def test_find_normal_moves2(self) -> None:
         game = self.game
         player = self.game.players[0]
         legion1 = player.markerid_to_legion["Rd01"]
@@ -104,7 +105,7 @@ class TestGame(object):
             for legion in [legion1, legion2, legion3]:
                 legion.hexlabel = legion.previous_hexlabel  # type: ignore
 
-    def test_find_all_teleport_moves(self):
+    def test_find_all_teleport_moves(self) -> None:
         game = self.game
         player = game.players[0]
         legion = player.markerid_to_legion["Rd01"]
@@ -113,7 +114,7 @@ class TestGame(object):
         moves = game.find_all_teleport_moves(legion, masterhex, 1)
         assert not moves
 
-    def test_find_all_teleport_moves2(self):
+    def test_find_all_teleport_moves2(self) -> None:
         game = self.game
         player = game.players[0]
         legion = player.markerid_to_legion["Rd01"]
@@ -173,7 +174,7 @@ class TestGame(object):
             6000,
         }
 
-    def test_find_all_moves(self):
+    def test_find_all_moves(self) -> None:
         game = self.game
         player = game.players[0]
         legion = player.markerid_to_legion["Rd01"]
@@ -182,7 +183,7 @@ class TestGame(object):
         moves = game.find_all_moves(legion, masterhex, 1)
         assert moves == {(6, 5), (10, 1), (108, 3)}
 
-    def test_find_all_moves2(self):
+    def test_find_all_moves2(self) -> None:
         game = self.game
         player = game.players[0]
         legion = player.markerid_to_legion["Rd01"]
@@ -244,7 +245,7 @@ class TestGame(object):
         assert (15, 1) in moves
         assert (103, 5) in moves
 
-    def test_can_move_legion(self):
+    def test_can_move_legion(self) -> None:
         game = self.game
         player = game.players[0]
         legion = player.markerid_to_legion["Rd01"]
@@ -254,7 +255,7 @@ class TestGame(object):
         assert game.can_move_legion(player, legion, 108, 3, False, None)
         assert not game.can_move_legion(player, legion, 108, 3, True, None)
 
-    def test_can_move_legion2(self):
+    def test_can_move_legion2(self) -> None:
         game = self.game
         player = game.players[0]
         legion = player.markerid_to_legion["Rd01"]
@@ -269,7 +270,7 @@ class TestGame(object):
         assert not game.can_move_legion(player, legion, 16, 4, True, "Titan")
         assert game.can_move_legion(player, legion, 4000, 1, True, "Titan")
 
-    def test_next_player_and_turn(self):
+    def test_next_player_and_turn(self) -> None:
         game = self.game
         player0 = game.players[0]
         player1 = game.players[1]
@@ -278,7 +279,7 @@ class TestGame(object):
         assert game.next_player_and_turn == (player1, 1)
         player0.done_with_splits()
 
-    def test_eq_ne(self):
+    def test_eq_ne(self) -> None:
         now = time.time()
         game2 = Game.Game("g1", "p0", now, now, 2, 6)
         assert self.game == game2
@@ -286,7 +287,7 @@ class TestGame(object):
         assert self.game != game3
 
 
-def test_update_finish_order():
+def test_update_finish_order() -> None:
     now = time.time()
     game = Game.Game("g1", "ai1", now, now, 2, 6)
     game.add_player("ai2")
@@ -352,7 +353,7 @@ def test_update_finish_order():
     ]
 
 
-def test_update_finish_order_3_draws():
+def test_update_finish_order_3_draws() -> None:
     now = time.time()
     game = Game.Game("g1", "ai1", now, now, 2, 6)
     game.add_player("ai2")

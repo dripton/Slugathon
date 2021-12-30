@@ -5,7 +5,7 @@ __copyright__ = "Copyright (c) 2010-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_find_angel_combos():
+def test_find_angel_combos() -> None:
     fac = AcquireAngels.find_angel_combos
     C = Creature.Creature
 

@@ -1,5 +1,6 @@
 import time
 from sys import maxsize
+from typing import Callable
 
 from slugathon.game import Creature, Game, Legion, Phase
 
@@ -8,7 +9,7 @@ __license__ = "GNU GPL v2"
 
 
 class TestBattle(object):
-    def setup_method(self, method):
+    def setup_method(self, method: Callable) -> None:
         now = time.time()
         self.game = Game.Game("g1", "p0", now, now, 2, 6)
         self.game.add_player("p1")
@@ -43,7 +44,7 @@ class TestBattle(object):
             legion.player = self.player1
         self.bu01 = self.player1.markerid_to_legion["Bu01"]
 
-    def test_battle_init(self):
+    def test_battle_init(self) -> None:
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -57,7 +58,7 @@ class TestBattle(object):
             self.game.battle_active_player == self.game.defender_legion.player
         )
 
-    def test_hex_entry_cost(self):
+    def test_hex_entry_cost(self) -> None:
         titan = Creature.Creature("Titan")
         assert self.game.battle_hex_entry_cost(titan, "Bramble", None) == 2
         assert self.game.battle_hex_entry_cost(titan, "Plain", None) == 1
@@ -101,7 +102,7 @@ class TestBattle(object):
         assert self.game.battle_hex_entry_cost(dragon, "Drift", None) == 2
         assert self.game.battle_hex_entry_cost(dragon, "Volcano", None) == 1
 
-    def test_find_moves_plain(self):
+    def test_find_moves_plain(self) -> None:
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -155,7 +156,7 @@ class TestBattle(object):
         }
         assert self.game.find_battle_moves(gargoyle) == set3
 
-    def test_find_moves_marsh(self):
+    def test_find_moves_marsh(self) -> None:
         self.rd01.move(41, False, None, 3)
         self.bu01.move(41, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -192,7 +193,7 @@ class TestBattle(object):
         set3 = {"D1", "F1", "C1", "D2", "E2", "F2", "B1", "D3", "F3"}
         assert self.game.find_battle_moves(gargoyle) == set3
 
-    def test_find_moves_brush(self):
+    def test_find_moves_brush(self) -> None:
         self.rd01.move(3, False, None, 3)
         self.bu01.move(3, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -243,7 +244,7 @@ class TestBattle(object):
         }
         assert self.game.find_battle_moves(gargoyle) == set3
 
-    def test_find_moves_tower(self):
+    def test_find_moves_tower(self) -> None:
         self.rd01.move(200, False, None, 3)
         self.bu01.move(200, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -263,7 +264,7 @@ class TestBattle(object):
         assert gargoyle.name == "Gargoyle"
         assert self.game.find_battle_moves(gargoyle) == set1
 
-    def test_find_moves_jungle(self):
+    def test_find_moves_jungle(self) -> None:
         self.rd01.move(26, False, None, 3)
         self.bu01.move(26, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -298,7 +299,7 @@ class TestBattle(object):
         set3 = {"D1", "E1", "F1", "C1", "D2", "E2", "F2", "B1", "C2", "E3"}
         assert self.game.find_battle_moves(gargoyle) == set3
 
-    def test_find_moves_desert(self):
+    def test_find_moves_desert(self) -> None:
         self.rd01.move(7, False, None, 5)
         self.bu01.move(7, False, None, 5)
         self.game._init_battle(self.bu01, self.rd01)
@@ -345,7 +346,7 @@ class TestBattle(object):
         assert gargoyle.name == "Gargoyle"
         assert self.game.find_battle_moves(gargoyle) == set3
 
-    def test_find_moves_flyover(self):
+    def test_find_moves_flyover(self) -> None:
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -405,7 +406,7 @@ class TestBattle(object):
         set4 = {"C1", "D2", "E2", "F2", "B1", "C2", "D3", "E3", "F3"}
         assert self.game.find_battle_moves(gargoyle) == set4
 
-    def test_find_moves_ignore_mobile_allies(self):
+    def test_find_moves_ignore_mobile_allies(self) -> None:
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
         self.game._init_battle(self.bu01, self.rd01)
@@ -467,7 +468,7 @@ class TestBattle(object):
         }
         assert self.game.find_battle_moves(gargoyle, True) == set4
 
-    def test_strikes_plain(self):
+    def test_strikes_plain(self) -> None:
         self.rd01.move(6, False, None, 3)
         self.bu01.move(6, False, None, 3)
         game = self.game
@@ -611,7 +612,7 @@ class TestBattle(object):
         assert gargoyle2.number_of_dice(ogre1) == 4
         assert gargoyle2.strike_number(ogre1) == 3
 
-    def test_strikes_plain2(self):
+    def test_strikes_plain2(self) -> None:
         rd02 = Legion.Legion(
             self.player0, "Rd02", Creature.n2c(["Angel", "Ranger"]), 1
         )
@@ -676,7 +677,7 @@ class TestBattle(object):
         assert ranger1.number_of_dice(troll1) == 2
         assert ranger1.strike_number(troll1) == 2
 
-    def test_strikes_marsh(self):
+    def test_strikes_marsh(self) -> None:
         self.rd01.move(41, False, None, 5)
         self.bu01.move(41, False, None, 5)
         game = self.game
@@ -708,7 +709,7 @@ class TestBattle(object):
         assert titan1.find_target_hexlabels() == set()
         assert titan1.engaged_enemies == set()
 
-    def test_strikes_bramble(self):
+    def test_strikes_bramble(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Ranger"))
         self.rd01.creatures.append(Creature.Creature("Gorgon"))
         self.bu01.creatures.append(Creature.Creature("Ranger"))
@@ -842,7 +843,7 @@ class TestBattle(object):
         assert ranger2.number_of_dice(centaur1) == 2
         assert ranger2.strike_number(centaur1) == 5
 
-    def test_strikes_tower(self):
+    def test_strikes_tower(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Ranger"))
         self.rd01.creatures.append(Creature.Creature("Gorgon"))
         self.bu01.creatures.append(Creature.Creature("Ranger"))
@@ -954,7 +955,7 @@ class TestBattle(object):
         assert ogre1.number_of_dice(ogre2) == 6
         assert ogre1.strike_number(ogre2) == 3
 
-    def test_strikes_tower2(self):
+    def test_strikes_tower2(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Ranger"))
         self.bu01.creatures.append(Creature.Creature("Ranger"))
         self.bu01.creatures.append(Creature.Creature("Gorgon"))
@@ -1057,7 +1058,7 @@ class TestBattle(object):
         assert ranger1.number_of_dice(ranger2) == 2
         assert ranger1.strike_number(ranger2) == 5
 
-    def test_strikes_tower3(self):
+    def test_strikes_tower3(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Ranger"))
         self.bu01.creatures.append(Creature.Creature("Ranger"))
         self.rd01.move(100, False, None, 5)
@@ -1142,7 +1143,7 @@ class TestBattle(object):
         assert ranger1.number_of_dice(ogre2) == 2
         assert ranger1.strike_number(ogre2) == 2
 
-    def test_strikes_mountains(self):
+    def test_strikes_mountains(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Lion"))
         self.rd01.creatures.append(Creature.Creature("Dragon"))
         self.bu01.creatures.append(Creature.Creature("Minotaur"))
@@ -1248,7 +1249,7 @@ class TestBattle(object):
         assert ogre1.engaged_enemies == set()
         assert titan1.engaged_enemies == set()
 
-    def test_strikes_desert(self):
+    def test_strikes_desert(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Lion"))
         self.rd01.creatures.append(Creature.Creature("Hydra"))
         self.bu01.creatures.append(Creature.Creature("Lion"))
@@ -1372,7 +1373,7 @@ class TestBattle(object):
         assert ogre2.engaged_enemies == set()
         assert titan2.engaged_enemies == set()
 
-    def test_strikes_desert2(self):
+    def test_strikes_desert2(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Lion"))
         self.rd01.creatures.append(Creature.Creature("Ranger"))
         self.bu01.creatures.append(Creature.Creature("Lion"))
@@ -1497,7 +1498,7 @@ class TestBattle(object):
         assert ogre2.engaged_enemies == set()
         assert titan2.engaged_enemies == set()
 
-    def test_strikes_desert3(self):
+    def test_strikes_desert3(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Lion"))
         self.rd01.creatures.append(Creature.Creature("Ranger"))
         self.bu01.creatures.append(Creature.Creature("Lion"))
@@ -1621,7 +1622,7 @@ class TestBattle(object):
         assert ogre2.strike_number(gargoyle1) == 5
         assert titan2.engaged_enemies == set()
 
-    def test_strikes_tundra(self):
+    def test_strikes_tundra(self) -> None:
         self.rd01.creatures.append(Creature.Creature("Troll"))
         self.rd01.creatures.append(Creature.Creature("Giant"))
         self.bu01.creatures.append(Creature.Creature("Warbear"))
@@ -1728,7 +1729,7 @@ class TestBattle(object):
         assert ogre1.strike_number(colossus2) == 6
         assert titan1.engaged_enemies == set()
 
-    def test_strikes_brush(self):
+    def test_strikes_brush(self) -> None:
         game = self.game
         rd01 = self.rd01
         bu01 = self.bu01

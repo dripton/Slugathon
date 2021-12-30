@@ -4,19 +4,19 @@ __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_default_bot_params():
+def test_default_bot_params() -> None:
     bp = BotParams.default_bot_params
     assert bp.SQUASH == 0.6  # type: ignore
 
 
-def test_mutate_field():
+def test_mutate_field() -> None:
     bp = BotParams.default_bot_params
     for unused in range(10):
         bp2 = bp.mutate_field("SQUASH", ratio=0.25)
         assert 0.45 <= bp2.SQUASH <= 0.75  # type: ignore
 
 
-def test_mutate_random_field():
+def test_mutate_random_field() -> None:
     bp = BotParams.default_bot_params
     for unused in range(10):
         count = 0
@@ -27,7 +27,7 @@ def test_mutate_random_field():
         assert count == 1
 
 
-def test_mutate_all_fields():
+def test_mutate_all_fields() -> None:
     bp = BotParams.default_bot_params
     for unused in range(10):
         bp2 = bp.mutate_all_fields(ratio=0.25)
@@ -35,14 +35,14 @@ def test_mutate_all_fields():
             assert getattr(bp, field) != getattr(bp2, field)
 
 
-def test_cross_degenerate():
+def test_cross_degenerate() -> None:
     bp1 = BotParams.default_bot_params
     bp2 = BotParams.default_bot_params
     bp3 = bp1.cross(bp2)
     assert bp3 == bp1
 
 
-def test_cross():
+def test_cross() -> None:
     bp1 = BotParams.default_bot_params
     bp2 = BotParams.default_bot_params.mutate_all_fields()
     bp3 = bp1.cross(bp2)
@@ -56,7 +56,7 @@ def test_cross():
         assert val3 <= max(val1, val2)
 
 
-def test_fromstring_complete():
+def test_fromstring_complete() -> None:
     st = """version=2 ai_time_limit=5.0 BotParams(SQUASH=0.6, BE_SQUASHED=1.0,
     FLEE_RATIO=1.5, ATTACKER_AGGRESSION_BONUS=1.0,
     ATTACKER_DISTANCE_PENALTY=-1.0, HIT_BONUS=1.0, KILL_MULTIPLIER=1.0,
@@ -76,7 +76,7 @@ def test_fromstring_complete():
     assert bp.SQUASH == 0.6  # type: ignore
 
 
-def test_fromstring_incomplete():
+def test_fromstring_incomplete() -> None:
     st = """version=2 ai_time_limit=2.5 BotParams(SQUASH=0.6, BE_SQUASHED=1.0,
     FLEE_RATIO=1.5, ATTACKER_AGGRESSION_BONUS=1.0,
     ATTACKER_DISTANCE_PENALTY=-1.0, HIT_BONUS=1.0, KILL_MULTIPLIER=1.0,

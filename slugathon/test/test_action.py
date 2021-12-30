@@ -4,7 +4,7 @@ __copyright__ = "Copyright (c) 2008-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_fromstring():
+def test_fromstring() -> None:
     obj = Action.fromstring(
         "MoveLegion {'markerid': 'Rd01', \
 'entry_side': 1, 'teleport': False, 'playername': 'player', \
@@ -22,7 +22,7 @@ def test_fromstring():
     assert obj.previous_hexlabel == 2
 
 
-def test_eq():
+def test_eq() -> None:
     obj1 = Action.fromstring(
         "MoveLegion {'markerid': 'Rd01', \
 'entry_side': 1, 'teleport': False, 'playername': 'player', \

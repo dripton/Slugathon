@@ -8,7 +8,7 @@ __copyright__ = "Copyright (c) 2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_best7():
+def test_best7() -> None:
     assert CleverBot.best7([]) == set()
 
     score_moves = [
@@ -91,7 +91,7 @@ def test_best7():
     assert seen == {"A2", "A3", "C2", "B1", "B2", "B3", "B4", "C1"}
 
 
-def test_gen_legion_moves():
+def test_gen_legion_moves() -> None:
     cleverbot = CleverBot.CleverBot("player", 1)
 
     movesets = []  # type: List[Set[str]]
@@ -192,7 +192,7 @@ def test_gen_legion_moves():
     assert lm == []
 
 
-def test_score_legion_move_brush():
+def test_score_legion_move_brush() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     game.add_player("p1")
@@ -466,7 +466,7 @@ def test_score_legion_move_brush():
     titan2.move("A1")
 
 
-def test_score_legion_move_plain():
+def test_score_legion_move_plain() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     game.add_player("p1")
@@ -686,7 +686,7 @@ def test_score_legion_move_plain():
     titan2.move("A1")
 
 
-def test_score_legion_move_swamp():
+def test_score_legion_move_swamp() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     game.add_player("p1")
@@ -912,7 +912,7 @@ def test_score_legion_move_swamp():
     a_titan.move("F4")
 
 
-def test_score_move_scary_pursuer():
+def test_score_move_scary_pursuer() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     game.add_player("p1")
@@ -985,7 +985,7 @@ def test_score_move_scary_pursuer():
     assert hexlabel_to_score[5] > hexlabel_to_score[4]
 
 
-def test_player_info():
+def test_player_info() -> None:
     cleverbot = CleverBot.CleverBot("ai1", 1)
     assert cleverbot.player_info.startswith("BotParams(SQUASH=0.6, ")
     assert cleverbot.player_info.endswith(")")

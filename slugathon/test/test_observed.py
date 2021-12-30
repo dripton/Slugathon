@@ -19,7 +19,7 @@ class MyObserver:
         observed: Optional[IObserved],
         action: Action.Action,
         names: Optional[List[str]] = None,
-    ):
+    ) -> None:
         global update_counter
         update_counter += 1
 
@@ -28,13 +28,15 @@ class MyObserved(Observed):
     pass
 
 
-def test_observed():
+def test_observed() -> None:
     observer = MyObserver()
     observer2 = MyObserver()
     observed = MyObserved()
 
+    action = Action.Action()
+
     assert update_counter == 0
-    observer.update(None, None, None)
+    observer.update(None, action, None)
     assert update_counter == 1
 
     assert len(observed.observers) == 0

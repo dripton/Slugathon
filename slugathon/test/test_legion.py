@@ -1,6 +1,8 @@
 import logging
 import time
 
+import pytest
+
 from slugathon.data import creaturedata
 from slugathon.game import Caretaker, Creature, Game, Legion, Player
 
@@ -8,7 +10,7 @@ __copyright__ = "Copyright (c) 2005-2012 David Ripton"
 __license__ = "GNU GPL v2"
 
 
-def test_num_lords():
+def test_num_lords() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -36,7 +38,7 @@ def test_num_lords():
     assert legion.can_flee
 
 
-def test_creature_names():
+def test_creature_names() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -54,7 +56,7 @@ def test_creature_names():
     ]
 
 
-def test_remove_creature_by_name():
+def test_remove_creature_by_name() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -67,12 +69,8 @@ def test_remove_creature_by_name():
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 6
     assert "Gargoyle" not in legion.creature_names
-    try:
+    with pytest.raises(ValueError):
         legion.remove_creature_by_name("Gargoyle")
-    except ValueError:
-        pass
-    else:
-        assert False
     legion.remove_creature_by_name("Ogre")
     legion.remove_creature_by_name("Ogre")
     legion.remove_creature_by_name("Centaur")
@@ -85,27 +83,19 @@ def test_remove_creature_by_name():
     assert legion
 
 
-def test_add_creature_by_name():
+def test_add_creature_by_name() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
     player = Player.Player("p0", game, 0)
     legion = Legion.Legion(player, "Rd01", creatures, 1)
     assert len(legion) == 8
-    try:
+    with pytest.raises(ValueError):
         legion.add_creature_by_name("Cyclops")
-    except ValueError:
-        pass
-    else:
-        assert False
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 7
-    try:
+    with pytest.raises(ValueError):
         legion.add_creature_by_name("Cyclops")
-    except ValueError:
-        pass
-    else:
-        assert False
     assert "Gargoyle" in legion.creature_names
     legion.remove_creature_by_name("Gargoyle")
     assert len(legion) == 6
@@ -115,7 +105,7 @@ def test_add_creature_by_name():
     assert "Troll" in legion.creature_names
 
 
-def test_is_legal_split():
+def test_is_legal_split() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -161,7 +151,7 @@ def test_is_legal_split():
     assert parent.is_legal_split(child5, child6)
 
 
-def test_could_recruit():
+def test_could_recruit() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -181,7 +171,7 @@ def test_could_recruit():
     assert legion.could_recruit("Tower", caretaker)
 
 
-def test_available_recruits():
+def test_available_recruits() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -209,7 +199,7 @@ def test_available_recruits():
     ]
 
 
-def test_available_recruits_and_recruiters():
+def test_available_recruits_and_recruiters() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -301,7 +291,7 @@ def test_available_recruits_and_recruiters():
     ]
 
 
-def test_score():
+def test_score() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -310,7 +300,7 @@ def test_score():
     assert legion.score == 120
 
 
-def test_sorted_creatures():
+def test_sorted_creatures() -> None:
     creatures = Creature.n2c(
         [
             "Archangel",
@@ -340,7 +330,7 @@ def test_sorted_creatures():
     ]
 
 
-def test_any_summonable():
+def test_any_summonable() -> None:
     creatures = Creature.n2c(
         [
             "Archangel",
@@ -377,7 +367,7 @@ def test_any_summonable():
     assert not legion.any_summonable
 
 
-def test_unknown():
+def test_unknown() -> None:
     creatures = Creature.n2c(
         [
             "Archangel",
@@ -423,7 +413,7 @@ def test_unknown():
     assert legion.all_unknown
 
 
-def test_engaged():
+def test_engaged() -> None:
     now = time.time()
     game = Game.Game("g1", "p1", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -446,7 +436,7 @@ def test_engaged():
     assert legion2.engaged
 
 
-def test_can_summon():
+def test_can_summon() -> None:
     now = time.time()
     game = Game.Game("g1", "p1", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -470,13 +460,13 @@ def test_can_summon():
     assert not legion2.can_summon
 
 
-def test_find_picname():
+def test_find_picname() -> None:
     assert Legion.find_picname("Rd01") == "Cross"
     assert Legion.find_picname("Rd02") == "Eagle"
     assert Legion.find_picname("Gr12") == "Ourobouros"
 
 
-def test_picname():
+def test_picname() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -501,7 +491,7 @@ def test_picname():
     assert legion.picname == "Ourobouros"
 
 
-def test_reveal_creatures():
+def test_reveal_creatures() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     player = Player.Player("p0", game, 0)
@@ -542,7 +532,7 @@ def test_reveal_creatures():
     assert legion.creature_names == ["Centaur", "Centaur", "Lion", "Unknown"]
 
 
-def test_combat_value():
+def test_combat_value() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
@@ -584,7 +574,7 @@ def test_combat_value():
     assert legion.terrain_combat_value == legion.combat_value
 
 
-def test_find_creature():
+def test_find_creature() -> None:
     now = time.time()
     game = Game.Game("g1", "p0", now, now, 2, 6)
     creatures = Creature.n2c(creaturedata.starting_creature_names)
