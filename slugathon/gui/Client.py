@@ -50,9 +50,8 @@ class Client(Referenceable, Observed):
         )  # type: Dict[Game.Game, GUIMasterBoard.GUIMasterBoard]
         self.pickcolor = None  # type: Optional[PickColor.PickColor]
 
-    def remote_set_name(self, name: str) -> str:
-        self.playername = name
-        return name
+    def remote_set_playername(self, playername: str) -> None:
+        self.playername = playername
 
     def remote_ping(self) -> bool:
         return True

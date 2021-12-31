@@ -88,8 +88,8 @@ class Server(Observed):
         return "Server"
 
     def add_observer(self, user: IObserver, name: str = "") -> None:  # type: ignore
-        assert hasattr(user, "name")
-        playername = user.name  # type: ignore
+        assert hasattr(user, "playername")
+        playername = user.playername  # type: ignore
         Observed.add_observer(self, user, playername)
         self.playernames.add(playername)
         action = Action.AddUsername(playername)
@@ -97,15 +97,15 @@ class Server(Observed):
 
     def remove_observer(self, user: IObserver) -> None:  # type: ignore
         Observed.remove_observer(self, user)
-        assert hasattr(user, "name")
-        playername = user.name  # type: ignore
+        assert hasattr(user, "playername")
+        playername = user.playername  # type: ignore
         if playername in self.playernames:
             self.playernames.remove(playername)
             action = Action.DelUsername(playername)
             self.notify(action)
 
     def logout(self, user: User.User) -> None:
-        playername = user.name
+        playername = user.playername
         self.remove_observer(user)
         for game in self.games:
             if playername in game.playernames:

@@ -135,8 +135,8 @@ class AIClient(Referenceable, Observed):
         logging.getLogger().addHandler(console_handler)
         logging.getLogger().setLevel(logging.DEBUG)
 
-    def remote_set_name(self, name: str) -> None:
-        self.playername = name
+    def remote_set_playername(self, playername: str) -> None:
+        self.playername = playername
 
     def remote_ping(self) -> bool:
         return True
