@@ -1173,7 +1173,7 @@ class Game(Observed):
             and not self.pending_reinforcement
         ):
             self._cleanup_battle()
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def do_not_acquire_angels(self, playername: str, markerid: str) -> None:
         """Called from Server."""
@@ -1247,7 +1247,7 @@ class Game(Observed):
             self.pending_reinforcement = False
             if self.is_battle_over and not self.pending_acquire:
                 self._cleanup_battle()
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def undo_recruit(self, playername: str, markerid: str) -> None:
         """Called from Server and update."""
@@ -1308,7 +1308,7 @@ class Game(Observed):
         self.pending_summon = False
         if self.is_battle_over and not self.pending_acquire:
             self._cleanup_battle()
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def do_not_summon_angel(self, playername: str, markerid: str) -> None:
         """Called from Server."""
@@ -1321,7 +1321,7 @@ class Game(Observed):
         if legion is None:
             return
         player.do_not_summon_angel(legion)
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def _do_not_summon_angel(self, playername: str, markerid: str) -> None:
         """Called from update."""
@@ -1329,7 +1329,7 @@ class Game(Observed):
         self.pending_summon = False
         if self.is_battle_over and not self.pending_acquire:
             self._cleanup_battle()
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def do_not_reinforce(self, playername: str, markerid: str) -> None:
         """Called from Server."""
@@ -1342,7 +1342,7 @@ class Game(Observed):
         if legion is None:
             return
         player.do_not_reinforce(legion)
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def _do_not_reinforce(self, playername: str, markerid: str) -> None:
         """Called from update."""
@@ -1351,7 +1351,7 @@ class Game(Observed):
             self.pending_reinforcement = False
             if self.is_battle_over and not self.pending_acquire:
                 self._cleanup_battle()
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def _unreinforce(self, playername: str, markerid: str) -> None:
         """Called from update."""
@@ -1952,7 +1952,7 @@ class Game(Observed):
             and not self.pending_acquire
         ):
             self._cleanup_battle()
-        reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+        reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
     def _end_dead_player_turn(self) -> None:
         """If the active player is dead then advance phases if possible."""
@@ -2544,7 +2544,7 @@ class Game(Observed):
                 return
             angels = [Creature.Creature(name) for name in action.angel_names]
             legion.acquire_angels(angels)
-            reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+            reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
         elif isinstance(action, Action.DoNotAcquireAngels):
             player = self.get_player_by_name(action.playername)
@@ -2555,7 +2555,7 @@ class Game(Observed):
             if legion is None:
                 return
             legion.do_not_acquire_angels()
-            reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+            reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
         elif isinstance(action, Action.EliminatePlayer):
             winner_player = self.get_player_by_name(action.winner_playername)
@@ -2602,12 +2602,12 @@ class Game(Observed):
             self._update_finish_order(winner_player, loser_player)
             if action.check_for_victory:
                 self.check_for_victory()
-            reactor.callLater(1, self._end_dead_player_turn)  # type: ignore
+            reactor.callLater(0, self._end_dead_player_turn)  # type: ignore
 
         elif isinstance(action, Action.GameOver):
             self.finish_time = action.finish_time
             reactor.callLater(  # type: ignore
-                1, self._cleanup_dead_players, action.winner_names
+                0, self._cleanup_dead_players, action.winner_names
             )
 
         elif isinstance(action, Action.Withdraw):

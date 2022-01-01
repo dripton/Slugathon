@@ -657,7 +657,7 @@ class Player(Observed):
         action2 = Action.EliminatePlayer(
             self.game.name, scoring_player_name, self.name, check_for_victory
         )
-        reactor.callLater(0.1, self.notify, action2)  # type: ignore
+        reactor.callLater(0, self.notify, action2)  # type: ignore
 
     def add_points(self, points: int) -> None:
         """Add points.  Do not acquire.

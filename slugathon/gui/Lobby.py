@@ -461,12 +461,12 @@ class Lobby(Gtk.EventBox):
             if action.game_name in self.wfps:
                 del self.wfps[action.game_name]
         elif isinstance(action, Action.AssignedAllTowers):
-            reactor.callLater(1, self.update_game_stores)  # type: ignore
+            reactor.callLater(0, self.update_game_stores)  # type: ignore
         elif isinstance(action, Action.GameOver):
-            reactor.callLater(1, self.update_game_stores)  # type: ignore
-            reactor.callLater(1, self.update_user_store)  # type: ignore
+            reactor.callLater(0, self.update_game_stores)  # type: ignore
+            reactor.callLater(0, self.update_user_store)  # type: ignore
         elif isinstance(action, Action.EliminatePlayer):
-            reactor.callLater(1, self.update_game_stores)  # type: ignore
+            reactor.callLater(0, self.update_game_stores)  # type: ignore
         elif isinstance(action, Action.ChatMessage):
             buf = self.chat_view.get_buffer()
             message = action.message.strip() + "\n"

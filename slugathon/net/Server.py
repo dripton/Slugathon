@@ -255,7 +255,7 @@ class Server(Observed):
                 set1.discard(playername)
                 if not set1:
                     game = self.name_to_game(game_name)
-                    reactor.callLater(1, game.start, game.owner.name)  # type: ignore
+                    reactor.callLater(0, game.start, game.owner.name)  # type: ignore
             return True
         return False
 
