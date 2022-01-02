@@ -1118,7 +1118,7 @@ class Server(Observed):
             game = self.name_to_game(action.game_name)
             if game in self.games:
                 # Wait to ensure that EliminatePlayer got through.
-                reactor.callLater(1, self._finish_with_game, game)  # type: ignore
+                reactor.callLater(0, self._finish_with_game, game)  # type: ignore
         self.notify(action, names)
 
 
