@@ -412,7 +412,7 @@ class Lobby(Gtk.EventBox):
         path: List[int],
         is_selected: bool,
         unused: Any,
-    ) -> None:
+    ) -> bool:
         logging.debug(f"{unused=}")
         index = path[0]
         assert self.user_store is not None
@@ -424,14 +424,14 @@ class Lobby(Gtk.EventBox):
             self.selected_names.add(name)
         return True
 
-    def cb_game_list_select(self, path: List[int], unused: Any) -> None:
+    def cb_game_list_select(self, path: List[int], unused: Any) -> bool:
         logging.debug(f"{unused=}")
         index = path[0]
         assert self.new_game_store is not None
         tup = self.new_game_store[index, 0]
         name = tup[0]
         game = self.name_to_game(name)
-        if not game.started and self.initialized:
+        if game is not None and not game.started and self.initialized:
             # We get a spurious call to this method during initialization,
             # so don't add a WaitingForPlayers until fully initialized.
             self._add_wfp(game)
