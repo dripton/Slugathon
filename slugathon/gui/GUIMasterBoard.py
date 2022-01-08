@@ -814,7 +814,7 @@ class GUIMasterBoard(Gtk.EventBox):
     ) -> None:
         """Callback from AcquireAngels"""
         (legion, angels) = tup4
-        logging.info(f"picked_angels {legion} {angels}")
+        logging.info(f"{legion=} {angels=}")
         assert self.game is not None
         self.acquire_angels = None
         if not angels:
