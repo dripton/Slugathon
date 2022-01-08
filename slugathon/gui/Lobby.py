@@ -252,9 +252,9 @@ class Lobby(Gtk.EventBox):
         assert self.user_store is not None
         leng = len(self.user_store)
         for ii, playername in enumerate(sorted_playernames):
-            dct = playername_to_data.get(playername)
-            if dct:
-                skill = dct["skill"]
+            dct2 = playername_to_data.get(playername)
+            if dct2:
+                skill = dct2["skill"]
             else:
                 # TODO unhardcode
                 skill = 1
