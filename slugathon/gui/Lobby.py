@@ -150,10 +150,10 @@ class Lobby(Gtk.EventBox):
         self.user_list.set_enable_search(False)
         scrolled_window3.add(self.user_list)
 
-        self.user_store = None  # ListStore
-        self.new_game_store = None  # ListStore
-        self.current_game_store = None  # ListStore
-        self.old_game_store = None  # ListStore
+        self.user_store = None  # type: Optional[Gtk.ListStore]
+        self.new_game_store = None  # type: Optional[Gtk.ListStore]
+        self.current_game_store = None  # type: Optional[Gtk.ListStore]
+        self.old_game_store = None  # type: Optional[Gtk.ListStore]
         self._init_liststores()
 
         self.connect("destroy", guiutils.exit)
