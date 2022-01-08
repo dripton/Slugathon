@@ -185,6 +185,7 @@ class Lobby(Gtk.EventBox):
         headers = ["User Name", "Skill"]
         for (ii, title) in enumerate(headers):
             column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(), text=ii)
+            column.set_sort_column_id(ii)
             self.user_list.append_column(column)
 
         self.new_game_store = Gtk.ListStore(str, str, str, str, int, int, str)
@@ -208,6 +209,7 @@ class Lobby(Gtk.EventBox):
         ]
         for (ii, title) in enumerate(new_headers):
             column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(), text=ii)
+            column.set_sort_column_id(ii)
             self.new_game_list.append_column(column)
         current_headers = [
             "Game Name",
@@ -217,6 +219,7 @@ class Lobby(Gtk.EventBox):
         ]
         for (ii, title) in enumerate(current_headers):
             column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(), text=ii)
+            column.set_sort_column_id(ii)
             self.current_game_list.append_column(column)
         old_headers = [
             "Game Name",
@@ -227,6 +230,7 @@ class Lobby(Gtk.EventBox):
         ]
         for (ii, title) in enumerate(old_headers):
             column = Gtk.TreeViewColumn(title, Gtk.CellRendererText(), text=ii)
+            column.set_sort_column_id(ii)
             self.old_game_list.append_column(column)
 
         for game in self.games:
