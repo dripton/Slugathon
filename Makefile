@@ -7,7 +7,7 @@ install: build
 	sudo python3 setup.py install
 
 mypy:
-	mypy --disallow-untyped-calls --disallow-untyped-defs slugathon
+	mypy slugathon
 
 black:
 	black slugathon/
